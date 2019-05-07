@@ -137,7 +137,8 @@ public abstract class UaNode implements Node {
 
         return opt.map(CompletableFuture::completedFuture).orElseGet(() -> {
             ReadValueId readValueId = new ReadValueId(
-                nodeId, attributeId.uid(), null, QualifiedName.NULL_VALUE);
+                nodeId, attributeId.uid(), null, QualifiedName.NULL_VALUE
+            );
 
             CompletableFuture<ReadResponse> future =
                 client.read(0.0, TimestampsToReturn.Both, newArrayList(readValueId));
@@ -156,7 +157,8 @@ public abstract class UaNode implements Node {
 
     protected CompletableFuture<StatusCode> writeAttribute(AttributeId attributeId, DataValue value) {
         WriteValue writeValue = new WriteValue(
-            nodeId, attributeId.uid(), null, value);
+            nodeId, attributeId.uid(), null, value
+        );
 
         return client.write(newArrayList(writeValue)).thenApply(response -> {
             StatusCode statusCode = l(response.getResults()).get(0);

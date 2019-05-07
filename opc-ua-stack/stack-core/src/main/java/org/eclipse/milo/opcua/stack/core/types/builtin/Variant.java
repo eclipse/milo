@@ -51,13 +51,13 @@ public final class Variant {
         this.value = value;
     }
 
-    public Optional<NodeId> getDataType() {
+    public Optional<ExpandedNodeId> getDataType() {
         if (value == null) return Optional.empty();
 
         if (value instanceof UaStructure) {
             return Optional.of(((UaStructure) value).getTypeId());
         } else if (value instanceof UaEnumeration) {
-            return Optional.of(Identifiers.Int32);
+            return Optional.of(Identifiers.Int32.expanded());
         } else {
             Class<?> clazz = value.getClass().isArray() ?
                 ArrayUtil.getType(value) : value.getClass();
@@ -65,7 +65,7 @@ public final class Variant {
             int typeId = TypeUtil.getBuiltinTypeId(clazz);
 
             return typeId == -1 ?
-                Optional.empty() : Optional.of(new NodeId(0, typeId));
+                Optional.empty() : Optional.of(new NodeId(0, typeId).expanded());
         }
     }
 

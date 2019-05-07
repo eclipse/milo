@@ -10,19 +10,26 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum RedundancySupport implements UaEnumeration {
-
     None(0),
+
     Cold(1),
+
     Warm(2),
+
     Hot(3),
+
     Transparent(4),
+
     HotAndMirrored(5);
 
     private final int value;
@@ -36,29 +43,44 @@ public enum RedundancySupport implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, RedundancySupport> VALUES;
-
-    static {
-        Builder<Integer, RedundancySupport> builder = ImmutableMap.builder();
-        for (RedundancySupport e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static RedundancySupport from(int value) {
+        switch (value) {
+            case 0:
+                return None;
+            case 1:
+                return Cold;
+            case 2:
+                return Warm;
+            case 3:
+                return Hot;
+            case 4:
+                return Transparent;
+            case 5:
+                return HotAndMirrored;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static RedundancySupport from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=851");
     }
 
-    public static void encode(RedundancySupport redundancySupport, UaEncoder encoder) {
-        encoder.writeInt32(null, redundancySupport.getValue());
+    public static class Codec extends GenericDataTypeCodec<RedundancySupport> {
+        @Override
+        public Class<RedundancySupport> getType() {
+            return RedundancySupport.class;
+        }
+
+        @Override
+        public RedundancySupport decode(SerializationContext context, UaDecoder decoder) {
+            return RedundancySupport.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, RedundancySupport value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static RedundancySupport decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

@@ -10,71 +10,74 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-public class HistoryEventFieldList implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class HistoryEventFieldList extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=920");
 
-    public static final NodeId TypeId = Identifiers.HistoryEventFieldList;
-    public static final NodeId BinaryEncodingId = Identifiers.HistoryEventFieldList_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.HistoryEventFieldList_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=921");
 
-    protected final Variant[] eventFields;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=922");
 
-    public HistoryEventFieldList() {
-        this.eventFields = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15349");
+
+    private final Variant[] eventFields;
 
     public HistoryEventFieldList(Variant[] eventFields) {
         this.eventFields = eventFields;
     }
 
-    @Nullable
-    public Variant[] getEventFields() { return eventFields; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("EventFields", eventFields)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<HistoryEventFieldList> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public Variant[] getEventFields() {
+        return eventFields;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<HistoryEventFieldList> {
         @Override
         public Class<HistoryEventFieldList> getType() {
             return HistoryEventFieldList.class;
         }
 
         @Override
-        public HistoryEventFieldList decode(UaDecoder decoder) throws UaSerializationException {
-            Variant[] eventFields = decoder.readArray("EventFields", decoder::readVariant, Variant.class);
-
+        public HistoryEventFieldList decode(SerializationContext context, UaDecoder decoder) {
+            Variant[] eventFields = decoder.readVariantArray("EventFields");
             return new HistoryEventFieldList(eventFields);
         }
 
         @Override
-        public void encode(HistoryEventFieldList value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeArray("EventFields", value.eventFields, encoder::writeVariant);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           HistoryEventFieldList value) {
+            encoder.writeVariantArray("EventFields", value.getEventFields());
         }
     }
-
 }

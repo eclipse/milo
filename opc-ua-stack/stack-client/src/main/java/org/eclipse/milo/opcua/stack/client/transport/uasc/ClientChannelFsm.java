@@ -181,7 +181,8 @@ public class ClientChannelFsm {
             LOGGER.debug("[{}] Sending CloseSecureChannelRequest...", ctx.getInstanceId());
 
             channel.pipeline().fireUserEventTriggered(
-                new CloseSecureChannelRequest(requestHeader));
+                new CloseSecureChannelRequest(requestHeader)
+            );
 
             return disconnectFuture;
         }

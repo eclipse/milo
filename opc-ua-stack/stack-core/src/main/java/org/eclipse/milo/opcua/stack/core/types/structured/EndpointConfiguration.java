@@ -10,44 +10,54 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class EndpointConfiguration implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class EndpointConfiguration extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=331");
 
-    public static final NodeId TypeId = Identifiers.EndpointConfiguration;
-    public static final NodeId BinaryEncodingId = Identifiers.EndpointConfiguration_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.EndpointConfiguration_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=332");
 
-    protected final Integer operationTimeout;
-    protected final Boolean useBinaryEncoding;
-    protected final Integer maxStringLength;
-    protected final Integer maxByteStringLength;
-    protected final Integer maxArrayLength;
-    protected final Integer maxMessageSize;
-    protected final Integer maxBufferSize;
-    protected final Integer channelLifetime;
-    protected final Integer securityTokenLifetime;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=333");
 
-    public EndpointConfiguration() {
-        this.operationTimeout = null;
-        this.useBinaryEncoding = null;
-        this.maxStringLength = null;
-        this.maxByteStringLength = null;
-        this.maxArrayLength = null;
-        this.maxMessageSize = null;
-        this.maxBufferSize = null;
-        this.channelLifetime = null;
-        this.securityTokenLifetime = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15199");
 
-    public EndpointConfiguration(Integer operationTimeout, Boolean useBinaryEncoding, Integer maxStringLength, Integer maxByteStringLength, Integer maxArrayLength, Integer maxMessageSize, Integer maxBufferSize, Integer channelLifetime, Integer securityTokenLifetime) {
+    private final Integer operationTimeout;
+
+    private final Boolean useBinaryEncoding;
+
+    private final Integer maxStringLength;
+
+    private final Integer maxByteStringLength;
+
+    private final Integer maxArrayLength;
+
+    private final Integer maxMessageSize;
+
+    private final Integer maxBufferSize;
+
+    private final Integer channelLifetime;
+
+    private final Integer securityTokenLifetime;
+
+    public EndpointConfiguration(Integer operationTimeout, Boolean useBinaryEncoding,
+                                 Integer maxStringLength, Integer maxByteStringLength, Integer maxArrayLength,
+                                 Integer maxMessageSize, Integer maxBufferSize, Integer channelLifetime,
+                                 Integer securityTokenLifetime) {
         this.operationTimeout = operationTimeout;
         this.useBinaryEncoding = useBinaryEncoding;
         this.maxStringLength = maxStringLength;
@@ -59,57 +69,65 @@ public class EndpointConfiguration implements UaStructure {
         this.securityTokenLifetime = securityTokenLifetime;
     }
 
-    public Integer getOperationTimeout() { return operationTimeout; }
-
-    public Boolean getUseBinaryEncoding() { return useBinaryEncoding; }
-
-    public Integer getMaxStringLength() { return maxStringLength; }
-
-    public Integer getMaxByteStringLength() { return maxByteStringLength; }
-
-    public Integer getMaxArrayLength() { return maxArrayLength; }
-
-    public Integer getMaxMessageSize() { return maxMessageSize; }
-
-    public Integer getMaxBufferSize() { return maxBufferSize; }
-
-    public Integer getChannelLifetime() { return channelLifetime; }
-
-    public Integer getSecurityTokenLifetime() { return securityTokenLifetime; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("OperationTimeout", operationTimeout)
-            .add("UseBinaryEncoding", useBinaryEncoding)
-            .add("MaxStringLength", maxStringLength)
-            .add("MaxByteStringLength", maxByteStringLength)
-            .add("MaxArrayLength", maxArrayLength)
-            .add("MaxMessageSize", maxMessageSize)
-            .add("MaxBufferSize", maxBufferSize)
-            .add("ChannelLifetime", channelLifetime)
-            .add("SecurityTokenLifetime", securityTokenLifetime)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<EndpointConfiguration> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public Integer getOperationTimeout() {
+        return operationTimeout;
+    }
+
+    public Boolean getUseBinaryEncoding() {
+        return useBinaryEncoding;
+    }
+
+    public Integer getMaxStringLength() {
+        return maxStringLength;
+    }
+
+    public Integer getMaxByteStringLength() {
+        return maxByteStringLength;
+    }
+
+    public Integer getMaxArrayLength() {
+        return maxArrayLength;
+    }
+
+    public Integer getMaxMessageSize() {
+        return maxMessageSize;
+    }
+
+    public Integer getMaxBufferSize() {
+        return maxBufferSize;
+    }
+
+    public Integer getChannelLifetime() {
+        return channelLifetime;
+    }
+
+    public Integer getSecurityTokenLifetime() {
+        return securityTokenLifetime;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<EndpointConfiguration> {
         @Override
         public Class<EndpointConfiguration> getType() {
             return EndpointConfiguration.class;
         }
 
         @Override
-        public EndpointConfiguration decode(UaDecoder decoder) throws UaSerializationException {
+        public EndpointConfiguration decode(SerializationContext context, UaDecoder decoder) {
             Integer operationTimeout = decoder.readInt32("OperationTimeout");
             Boolean useBinaryEncoding = decoder.readBoolean("UseBinaryEncoding");
             Integer maxStringLength = decoder.readInt32("MaxStringLength");
@@ -119,22 +137,21 @@ public class EndpointConfiguration implements UaStructure {
             Integer maxBufferSize = decoder.readInt32("MaxBufferSize");
             Integer channelLifetime = decoder.readInt32("ChannelLifetime");
             Integer securityTokenLifetime = decoder.readInt32("SecurityTokenLifetime");
-
             return new EndpointConfiguration(operationTimeout, useBinaryEncoding, maxStringLength, maxByteStringLength, maxArrayLength, maxMessageSize, maxBufferSize, channelLifetime, securityTokenLifetime);
         }
 
         @Override
-        public void encode(EndpointConfiguration value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeInt32("OperationTimeout", value.operationTimeout);
-            encoder.writeBoolean("UseBinaryEncoding", value.useBinaryEncoding);
-            encoder.writeInt32("MaxStringLength", value.maxStringLength);
-            encoder.writeInt32("MaxByteStringLength", value.maxByteStringLength);
-            encoder.writeInt32("MaxArrayLength", value.maxArrayLength);
-            encoder.writeInt32("MaxMessageSize", value.maxMessageSize);
-            encoder.writeInt32("MaxBufferSize", value.maxBufferSize);
-            encoder.writeInt32("ChannelLifetime", value.channelLifetime);
-            encoder.writeInt32("SecurityTokenLifetime", value.securityTokenLifetime);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           EndpointConfiguration value) {
+            encoder.writeInt32("OperationTimeout", value.getOperationTimeout());
+            encoder.writeBoolean("UseBinaryEncoding", value.getUseBinaryEncoding());
+            encoder.writeInt32("MaxStringLength", value.getMaxStringLength());
+            encoder.writeInt32("MaxByteStringLength", value.getMaxByteStringLength());
+            encoder.writeInt32("MaxArrayLength", value.getMaxArrayLength());
+            encoder.writeInt32("MaxMessageSize", value.getMaxMessageSize());
+            encoder.writeInt32("MaxBufferSize", value.getMaxBufferSize());
+            encoder.writeInt32("ChannelLifetime", value.getChannelLifetime());
+            encoder.writeInt32("SecurityTokenLifetime", value.getSecurityTokenLifetime());
         }
     }
-
 }

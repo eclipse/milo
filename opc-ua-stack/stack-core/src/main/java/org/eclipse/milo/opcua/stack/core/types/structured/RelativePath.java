@@ -10,78 +10,72 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class RelativePath implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class RelativePath extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=540");
 
-    public static final NodeId TypeId = Identifiers.RelativePath;
-    public static final NodeId BinaryEncodingId = Identifiers.RelativePath_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.RelativePath_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=541");
 
-    protected final RelativePathElement[] elements;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=542");
 
-    public RelativePath() {
-        this.elements = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15189");
+
+    private final RelativePathElement[] elements;
 
     public RelativePath(RelativePathElement[] elements) {
         this.elements = elements;
     }
 
-    @Nullable
-    public RelativePathElement[] getElements() { return elements; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Elements", elements)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<RelativePath> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public RelativePathElement[] getElements() {
+        return elements;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<RelativePath> {
         @Override
         public Class<RelativePath> getType() {
             return RelativePath.class;
         }
 
         @Override
-        public RelativePath decode(UaDecoder decoder) throws UaSerializationException {
-            RelativePathElement[] elements =
-                decoder.readBuiltinStructArray(
-                    "Elements",
-                    RelativePathElement.class
-                );
-
+        public RelativePath decode(SerializationContext context, UaDecoder decoder) {
+            RelativePathElement[] elements = (RelativePathElement[]) decoder.readStructArray("Elements", RelativePathElement.TYPE_ID);
             return new RelativePath(elements);
         }
 
         @Override
-        public void encode(RelativePath value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStructArray(
-                "Elements",
-                value.elements,
-                RelativePathElement.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, RelativePath value) {
+            encoder.writeStructArray("Elements", value.getElements(), RelativePathElement.TYPE_ID);
         }
     }
-
 }

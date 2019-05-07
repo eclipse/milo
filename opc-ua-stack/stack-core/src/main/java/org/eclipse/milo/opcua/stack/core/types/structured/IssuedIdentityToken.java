@@ -10,29 +10,36 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class IssuedIdentityToken extends UserIdentityToken {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class IssuedIdentityToken extends UserIdentityToken implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=938");
 
-    public static final NodeId TypeId = Identifiers.IssuedIdentityToken;
-    public static final NodeId BinaryEncodingId = Identifiers.IssuedIdentityToken_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.IssuedIdentityToken_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=939");
 
-    protected final ByteString tokenData;
-    protected final String encryptionAlgorithm;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=940");
 
-    public IssuedIdentityToken() {
-        super(null);
-        this.tokenData = null;
-        this.encryptionAlgorithm = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15144");
+
+    private final ByteString tokenData;
+
+    private final String encryptionAlgorithm;
 
     public IssuedIdentityToken(String policyId, ByteString tokenData, String encryptionAlgorithm) {
         super(policyId);
@@ -40,50 +47,48 @@ public class IssuedIdentityToken extends UserIdentityToken {
         this.encryptionAlgorithm = encryptionAlgorithm;
     }
 
-    public ByteString getTokenData() { return tokenData; }
-
-    public String getEncryptionAlgorithm() { return encryptionAlgorithm; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("PolicyId", policyId)
-            .add("TokenData", tokenData)
-            .add("EncryptionAlgorithm", encryptionAlgorithm)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<IssuedIdentityToken> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public ByteString getTokenData() {
+        return tokenData;
+    }
+
+    public String getEncryptionAlgorithm() {
+        return encryptionAlgorithm;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<IssuedIdentityToken> {
         @Override
         public Class<IssuedIdentityToken> getType() {
             return IssuedIdentityToken.class;
         }
 
         @Override
-        public IssuedIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+        public IssuedIdentityToken decode(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
             ByteString tokenData = decoder.readByteString("TokenData");
             String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
-
             return new IssuedIdentityToken(policyId, tokenData, encryptionAlgorithm);
         }
 
         @Override
-        public void encode(IssuedIdentityToken value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("PolicyId", value.policyId);
-            encoder.writeByteString("TokenData", value.tokenData);
-            encoder.writeString("EncryptionAlgorithm", value.encryptionAlgorithm);
+        public void encode(SerializationContext context, UaEncoder encoder, IssuedIdentityToken value) {
+            encoder.writeString("PolicyId", value.getPolicyId());
+            encoder.writeByteString("TokenData", value.getTokenData());
+            encoder.writeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
         }
     }
-
 }

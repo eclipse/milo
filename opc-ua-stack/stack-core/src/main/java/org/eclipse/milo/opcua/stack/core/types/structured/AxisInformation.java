@@ -10,40 +10,46 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 
-public class AxisInformation implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class AxisInformation extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12079");
 
-    public static final NodeId TypeId = Identifiers.AxisInformation;
-    public static final NodeId BinaryEncodingId = Identifiers.AxisInformation_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.AxisInformation_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12081");
 
-    protected final EUInformation engineeringUnits;
-    protected final Range eURange;
-    protected final LocalizedText title;
-    protected final AxisScaleEnumeration axisScaleType;
-    protected final Double[] axisSteps;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12089");
 
-    public AxisInformation() {
-        this.engineeringUnits = null;
-        this.eURange = null;
-        this.title = null;
-        this.axisScaleType = null;
-        this.axisSteps = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15379");
 
-    public AxisInformation(EUInformation engineeringUnits, Range eURange, LocalizedText title, AxisScaleEnumeration axisScaleType, Double[] axisSteps) {
+    private final EUInformation engineeringUnits;
+
+    private final Range eURange;
+
+    private final LocalizedText title;
+
+    private final AxisScaleEnumeration axisScaleType;
+
+    private final Double[] axisSteps;
+
+    public AxisInformation(EUInformation engineeringUnits, Range eURange, LocalizedText title,
+                           AxisScaleEnumeration axisScaleType, Double[] axisSteps) {
         this.engineeringUnits = engineeringUnits;
         this.eURange = eURange;
         this.title = title;
@@ -51,63 +57,64 @@ public class AxisInformation implements UaStructure {
         this.axisSteps = axisSteps;
     }
 
-    public EUInformation getEngineeringUnits() { return engineeringUnits; }
-
-    public Range getEURange() { return eURange; }
-
-    public LocalizedText getTitle() { return title; }
-
-    public AxisScaleEnumeration getAxisScaleType() { return axisScaleType; }
-
-    @Nullable
-    public Double[] getAxisSteps() { return axisSteps; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("EngineeringUnits", engineeringUnits)
-            .add("EURange", eURange)
-            .add("Title", title)
-            .add("AxisScaleType", axisScaleType)
-            .add("AxisSteps", axisSteps)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<AxisInformation> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public EUInformation getEngineeringUnits() {
+        return engineeringUnits;
+    }
+
+    public Range getEURange() {
+        return eURange;
+    }
+
+    public LocalizedText getTitle() {
+        return title;
+    }
+
+    public AxisScaleEnumeration getAxisScaleType() {
+        return axisScaleType;
+    }
+
+    public Double[] getAxisSteps() {
+        return axisSteps;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<AxisInformation> {
         @Override
         public Class<AxisInformation> getType() {
             return AxisInformation.class;
         }
 
         @Override
-        public AxisInformation decode(UaDecoder decoder) throws UaSerializationException {
-            EUInformation engineeringUnits = (EUInformation) decoder.readBuiltinStruct("EngineeringUnits", EUInformation.class);
-            Range eURange = (Range) decoder.readBuiltinStruct("EURange", Range.class);
+        public AxisInformation decode(SerializationContext context, UaDecoder decoder) {
+            EUInformation engineeringUnits = (EUInformation) decoder.readStruct("EngineeringUnits", EUInformation.TYPE_ID);
+            Range eURange = (Range) decoder.readStruct("EURange", Range.TYPE_ID);
             LocalizedText title = decoder.readLocalizedText("Title");
             AxisScaleEnumeration axisScaleType = AxisScaleEnumeration.from(decoder.readInt32("AxisScaleType"));
-            Double[] axisSteps = decoder.readArray("AxisSteps", decoder::readDouble, Double.class);
-
+            Double[] axisSteps = decoder.readDoubleArray("AxisSteps");
             return new AxisInformation(engineeringUnits, eURange, title, axisScaleType, axisSteps);
         }
 
         @Override
-        public void encode(AxisInformation value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("EngineeringUnits", value.engineeringUnits, EUInformation.class);
-            encoder.writeBuiltinStruct("EURange", value.eURange, Range.class);
-            encoder.writeLocalizedText("Title", value.title);
-            encoder.writeInt32("AxisScaleType", value.axisScaleType != null ? value.axisScaleType.getValue() : 0);
-            encoder.writeArray("AxisSteps", value.axisSteps, encoder::writeDouble);
+        public void encode(SerializationContext context, UaEncoder encoder, AxisInformation value) {
+            encoder.writeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
+            encoder.writeStruct("EURange", value.getEURange(), Range.TYPE_ID);
+            encoder.writeLocalizedText("Title", value.getTitle());
+            encoder.writeInt32("AxisScaleType", value.getAxisScaleType().getValue());
+            encoder.writeDoubleArray("AxisSteps", value.getAxisSteps());
         }
     }
-
 }

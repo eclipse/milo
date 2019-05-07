@@ -10,40 +10,47 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class SetTriggeringResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class SetTriggeringResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=776");
 
-    public static final NodeId TypeId = Identifiers.SetTriggeringResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.SetTriggeringResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.SetTriggeringResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=778");
 
-    protected final ResponseHeader responseHeader;
-    protected final StatusCode[] addResults;
-    protected final DiagnosticInfo[] addDiagnosticInfos;
-    protected final StatusCode[] removeResults;
-    protected final DiagnosticInfo[] removeDiagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=777");
 
-    public SetTriggeringResponse() {
-        this.responseHeader = null;
-        this.addResults = null;
-        this.addDiagnosticInfos = null;
-        this.removeResults = null;
-        this.removeDiagnosticInfos = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15333");
 
-    public SetTriggeringResponse(ResponseHeader responseHeader, StatusCode[] addResults, DiagnosticInfo[] addDiagnosticInfos, StatusCode[] removeResults, DiagnosticInfo[] removeDiagnosticInfos) {
+    private final ResponseHeader responseHeader;
+
+    private final StatusCode[] addResults;
+
+    private final DiagnosticInfo[] addDiagnosticInfos;
+
+    private final StatusCode[] removeResults;
+
+    private final DiagnosticInfo[] removeDiagnosticInfos;
+
+    public SetTriggeringResponse(ResponseHeader responseHeader, StatusCode[] addResults,
+                                 DiagnosticInfo[] addDiagnosticInfos, StatusCode[] removeResults,
+                                 DiagnosticInfo[] removeDiagnosticInfos) {
         this.responseHeader = responseHeader;
         this.addResults = addResults;
         this.addDiagnosticInfos = addDiagnosticInfos;
@@ -51,66 +58,65 @@ public class SetTriggeringResponse implements UaResponseMessage {
         this.removeDiagnosticInfos = removeDiagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    @Nullable
-    public StatusCode[] getAddResults() { return addResults; }
-
-    @Nullable
-    public DiagnosticInfo[] getAddDiagnosticInfos() { return addDiagnosticInfos; }
-
-    @Nullable
-    public StatusCode[] getRemoveResults() { return removeResults; }
-
-    @Nullable
-    public DiagnosticInfo[] getRemoveDiagnosticInfos() { return removeDiagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("AddResults", addResults)
-            .add("AddDiagnosticInfos", addDiagnosticInfos)
-            .add("RemoveResults", removeResults)
-            .add("RemoveDiagnosticInfos", removeDiagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<SetTriggeringResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public StatusCode[] getAddResults() {
+        return addResults;
+    }
+
+    public DiagnosticInfo[] getAddDiagnosticInfos() {
+        return addDiagnosticInfos;
+    }
+
+    public StatusCode[] getRemoveResults() {
+        return removeResults;
+    }
+
+    public DiagnosticInfo[] getRemoveDiagnosticInfos() {
+        return removeDiagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<SetTriggeringResponse> {
         @Override
         public Class<SetTriggeringResponse> getType() {
             return SetTriggeringResponse.class;
         }
 
         @Override
-        public SetTriggeringResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-            StatusCode[] addResults = decoder.readArray("AddResults", decoder::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] addDiagnosticInfos = decoder.readArray("AddDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-            StatusCode[] removeResults = decoder.readArray("RemoveResults", decoder::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] removeDiagnosticInfos = decoder.readArray("RemoveDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public SetTriggeringResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            StatusCode[] addResults = decoder.readStatusCodeArray("AddResults");
+            DiagnosticInfo[] addDiagnosticInfos = decoder.readDiagnosticInfoArray("AddDiagnosticInfos");
+            StatusCode[] removeResults = decoder.readStatusCodeArray("RemoveResults");
+            DiagnosticInfo[] removeDiagnosticInfos = decoder.readDiagnosticInfoArray("RemoveDiagnosticInfos");
             return new SetTriggeringResponse(responseHeader, addResults, addDiagnosticInfos, removeResults, removeDiagnosticInfos);
         }
 
         @Override
-        public void encode(SetTriggeringResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeArray("AddResults", value.addResults, encoder::writeStatusCode);
-            encoder.writeArray("AddDiagnosticInfos", value.addDiagnosticInfos, encoder::writeDiagnosticInfo);
-            encoder.writeArray("RemoveResults", value.removeResults, encoder::writeStatusCode);
-            encoder.writeArray("RemoveDiagnosticInfos", value.removeDiagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           SetTriggeringResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeStatusCodeArray("AddResults", value.getAddResults());
+            encoder.writeDiagnosticInfoArray("AddDiagnosticInfos", value.getAddDiagnosticInfos());
+            encoder.writeStatusCodeArray("RemoveResults", value.getRemoveResults());
+            encoder.writeDiagnosticInfoArray("RemoveDiagnosticInfos", value.getRemoveDiagnosticInfos());
         }
     }
-
 }

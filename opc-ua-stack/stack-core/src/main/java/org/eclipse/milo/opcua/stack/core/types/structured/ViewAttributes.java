@@ -10,73 +10,78 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class ViewAttributes extends NodeAttributes {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ViewAttributes extends NodeAttributes implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=373");
 
-    public static final NodeId TypeId = Identifiers.ViewAttributes;
-    public static final NodeId BinaryEncodingId = Identifiers.ViewAttributes_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ViewAttributes_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=375");
 
-    protected final Boolean containsNoLoops;
-    protected final UByte eventNotifier;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=374");
 
-    public ViewAttributes() {
-        super(null, null, null, null, null);
-        this.containsNoLoops = null;
-        this.eventNotifier = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15162");
 
-    public ViewAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean containsNoLoops, UByte eventNotifier) {
+    private final Boolean containsNoLoops;
+
+    private final UByte eventNotifier;
+
+    public ViewAttributes(UInteger specifiedAttributes, LocalizedText displayName,
+                          LocalizedText description, UInteger writeMask, UInteger userWriteMask,
+                          Boolean containsNoLoops, UByte eventNotifier) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.containsNoLoops = containsNoLoops;
         this.eventNotifier = eventNotifier;
     }
 
-    public Boolean getContainsNoLoops() { return containsNoLoops; }
-
-    public UByte getEventNotifier() { return eventNotifier; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", specifiedAttributes)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .add("WriteMask", writeMask)
-            .add("UserWriteMask", userWriteMask)
-            .add("ContainsNoLoops", containsNoLoops)
-            .add("EventNotifier", eventNotifier)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ViewAttributes> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public Boolean getContainsNoLoops() {
+        return containsNoLoops;
+    }
+
+    public UByte getEventNotifier() {
+        return eventNotifier;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ViewAttributes> {
         @Override
         public Class<ViewAttributes> getType() {
             return ViewAttributes.class;
         }
 
         @Override
-        public ViewAttributes decode(UaDecoder decoder) throws UaSerializationException {
+        public ViewAttributes decode(SerializationContext context, UaDecoder decoder) {
             UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");
@@ -84,20 +89,18 @@ public class ViewAttributes extends NodeAttributes {
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
             Boolean containsNoLoops = decoder.readBoolean("ContainsNoLoops");
             UByte eventNotifier = decoder.readByte("EventNotifier");
-
             return new ViewAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, containsNoLoops, eventNotifier);
         }
 
         @Override
-        public void encode(ViewAttributes value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
-            encoder.writeUInt32("WriteMask", value.writeMask);
-            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
-            encoder.writeBoolean("ContainsNoLoops", value.containsNoLoops);
-            encoder.writeByte("EventNotifier", value.eventNotifier);
+        public void encode(SerializationContext context, UaEncoder encoder, ViewAttributes value) {
+            encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.writeUInt32("WriteMask", value.getWriteMask());
+            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeBoolean("ContainsNoLoops", value.getContainsNoLoops());
+            encoder.writeByte("EventNotifier", value.getEventNotifier());
         }
     }
-
 }

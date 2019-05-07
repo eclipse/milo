@@ -10,16 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum DeadbandType implements UaEnumeration {
-
     None(0),
+
     Absolute(1),
+
     Percent(2);
 
     private final int value;
@@ -33,29 +37,38 @@ public enum DeadbandType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, DeadbandType> VALUES;
-
-    static {
-        Builder<Integer, DeadbandType> builder = ImmutableMap.builder();
-        for (DeadbandType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static DeadbandType from(int value) {
+        switch (value) {
+            case 0:
+                return None;
+            case 1:
+                return Absolute;
+            case 2:
+                return Percent;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static DeadbandType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=718");
     }
 
-    public static void encode(DeadbandType deadbandType, UaEncoder encoder) {
-        encoder.writeInt32(null, deadbandType.getValue());
+    public static class Codec extends GenericDataTypeCodec<DeadbandType> {
+        @Override
+        public Class<DeadbandType> getType() {
+            return DeadbandType.class;
+        }
+
+        @Override
+        public DeadbandType decode(SerializationContext context, UaDecoder decoder) {
+            return DeadbandType.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, DeadbandType value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static DeadbandType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

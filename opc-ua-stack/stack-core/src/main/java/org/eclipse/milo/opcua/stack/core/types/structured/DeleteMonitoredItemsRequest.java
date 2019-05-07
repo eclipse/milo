@@ -10,87 +10,93 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class DeleteMonitoredItemsRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DeleteMonitoredItemsRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=779");
 
-    public static final NodeId TypeId = Identifiers.DeleteMonitoredItemsRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.DeleteMonitoredItemsRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DeleteMonitoredItemsRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=781");
 
-    protected final RequestHeader requestHeader;
-    protected final UInteger subscriptionId;
-    protected final UInteger[] monitoredItemIds;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=780");
 
-    public DeleteMonitoredItemsRequest() {
-        this.requestHeader = null;
-        this.subscriptionId = null;
-        this.monitoredItemIds = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15335");
 
-    public DeleteMonitoredItemsRequest(RequestHeader requestHeader, UInteger subscriptionId, UInteger[] monitoredItemIds) {
+    private final RequestHeader requestHeader;
+
+    private final UInteger subscriptionId;
+
+    private final UInteger[] monitoredItemIds;
+
+    public DeleteMonitoredItemsRequest(RequestHeader requestHeader, UInteger subscriptionId,
+                                       UInteger[] monitoredItemIds) {
         this.requestHeader = requestHeader;
         this.subscriptionId = subscriptionId;
         this.monitoredItemIds = monitoredItemIds;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public UInteger getSubscriptionId() { return subscriptionId; }
-
-    @Nullable
-    public UInteger[] getMonitoredItemIds() { return monitoredItemIds; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("SubscriptionId", subscriptionId)
-            .add("MonitoredItemIds", monitoredItemIds)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DeleteMonitoredItemsRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public UInteger getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public UInteger[] getMonitoredItemIds() {
+        return monitoredItemIds;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DeleteMonitoredItemsRequest> {
         @Override
         public Class<DeleteMonitoredItemsRequest> getType() {
             return DeleteMonitoredItemsRequest.class;
         }
 
         @Override
-        public DeleteMonitoredItemsRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public DeleteMonitoredItemsRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            UInteger[] monitoredItemIds = decoder.readArray("MonitoredItemIds", decoder::readUInt32, UInteger.class);
-
+            UInteger[] monitoredItemIds = decoder.readUInt32Array("MonitoredItemIds");
             return new DeleteMonitoredItemsRequest(requestHeader, subscriptionId, monitoredItemIds);
         }
 
         @Override
-        public void encode(DeleteMonitoredItemsRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
-            encoder.writeArray("MonitoredItemIds", value.monitoredItemIds, encoder::writeUInt32);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           DeleteMonitoredItemsRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.writeUInt32Array("MonitoredItemIds", value.getMonitoredItemIds());
         }
     }
-
 }

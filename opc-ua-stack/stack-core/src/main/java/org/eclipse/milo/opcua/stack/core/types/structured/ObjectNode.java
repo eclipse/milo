@@ -1,21 +1,14 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -23,59 +16,58 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-public class ObjectNode extends InstanceNode {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ObjectNode extends InstanceNode implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=261");
 
-    public static final NodeId TypeId = Identifiers.ObjectNode;
-    public static final NodeId BinaryEncodingId = Identifiers.ObjectNode_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ObjectNode_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=263");
 
-    protected final UByte eventNotifier;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=262");
 
-    public ObjectNode() {
-        super(null, null, null, null, null, null, null, null);
-        this.eventNotifier = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15071");
 
-    public ObjectNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, UByte eventNotifier) {
+    private final UByte eventNotifier;
+
+    public ObjectNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
+                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                      UInteger userWriteMask, ReferenceNode[] references, UByte eventNotifier) {
         super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
         this.eventNotifier = eventNotifier;
     }
 
-    public UByte getEventNotifier() { return eventNotifier; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("NodeClass", nodeClass)
-            .add("BrowseName", browseName)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .add("WriteMask", writeMask)
-            .add("UserWriteMask", userWriteMask)
-            .add("References", references)
-            .add("EventNotifier", eventNotifier)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ObjectNode> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public UByte getEventNotifier() {
+        return eventNotifier;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ObjectNode> {
         @Override
         public Class<ObjectNode> getType() {
             return ObjectNode.class;
         }
 
         @Override
-        public ObjectNode decode(UaDecoder decoder) throws UaSerializationException {
+        public ObjectNode decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -83,32 +75,22 @@ public class ObjectNode extends InstanceNode {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            ReferenceNode[] references =
-                decoder.readBuiltinStructArray(
-                    "References",
-                    ReferenceNode.class
-                );
+            ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
             UByte eventNotifier = decoder.readByte("EventNotifier");
-
             return new ObjectNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, eventNotifier);
         }
 
         @Override
-        public void encode(ObjectNode value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
-            encoder.writeQualifiedName("BrowseName", value.browseName);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
-            encoder.writeUInt32("WriteMask", value.writeMask);
-            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
-            encoder.writeBuiltinStructArray(
-                "References",
-                value.references,
-                ReferenceNode.class
-            );
-            encoder.writeByte("EventNotifier", value.eventNotifier);
+        public void encode(SerializationContext context, UaEncoder encoder, ObjectNode value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeInt32("NodeClass", value.getNodeClass().getValue());
+            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.writeUInt32("WriteMask", value.getWriteMask());
+            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
+            encoder.writeByte("EventNotifier", value.getEventNotifier());
         }
     }
-
 }

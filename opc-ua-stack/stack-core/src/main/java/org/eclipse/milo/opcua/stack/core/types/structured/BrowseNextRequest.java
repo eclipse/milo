@@ -10,87 +10,92 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class BrowseNextRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class BrowseNextRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=531");
 
-    public static final NodeId TypeId = Identifiers.BrowseNextRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.BrowseNextRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.BrowseNextRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=533");
 
-    protected final RequestHeader requestHeader;
-    protected final Boolean releaseContinuationPoints;
-    protected final ByteString[] continuationPoints;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=532");
 
-    public BrowseNextRequest() {
-        this.requestHeader = null;
-        this.releaseContinuationPoints = null;
-        this.continuationPoints = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15186");
 
-    public BrowseNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoints, ByteString[] continuationPoints) {
+    private final RequestHeader requestHeader;
+
+    private final Boolean releaseContinuationPoints;
+
+    private final ByteString[] continuationPoints;
+
+    public BrowseNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoints,
+                             ByteString[] continuationPoints) {
         this.requestHeader = requestHeader;
         this.releaseContinuationPoints = releaseContinuationPoints;
         this.continuationPoints = continuationPoints;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public Boolean getReleaseContinuationPoints() { return releaseContinuationPoints; }
-
-    @Nullable
-    public ByteString[] getContinuationPoints() { return continuationPoints; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("ReleaseContinuationPoints", releaseContinuationPoints)
-            .add("ContinuationPoints", continuationPoints)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<BrowseNextRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public Boolean getReleaseContinuationPoints() {
+        return releaseContinuationPoints;
+    }
+
+    public ByteString[] getContinuationPoints() {
+        return continuationPoints;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<BrowseNextRequest> {
         @Override
         public Class<BrowseNextRequest> getType() {
             return BrowseNextRequest.class;
         }
 
         @Override
-        public BrowseNextRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public BrowseNextRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
-            ByteString[] continuationPoints = decoder.readArray("ContinuationPoints", decoder::readByteString, ByteString.class);
-
+            ByteString[] continuationPoints = decoder.readByteStringArray("ContinuationPoints");
             return new BrowseNextRequest(requestHeader, releaseContinuationPoints, continuationPoints);
         }
 
         @Override
-        public void encode(BrowseNextRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBoolean("ReleaseContinuationPoints", value.releaseContinuationPoints);
-            encoder.writeArray("ContinuationPoints", value.continuationPoints, encoder::writeByteString);
+        public void encode(SerializationContext context, UaEncoder encoder, BrowseNextRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
+            encoder.writeByteStringArray("ContinuationPoints", value.getContinuationPoints());
         }
     }
-
 }

@@ -10,17 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertNotNull;
 
 public class BuiltinDataTypeDictionaryTest {
 
     @Test
-    public void testGetBuiltinCodec() throws Exception {
-        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(EndpointDescription.class);
+    public void testGetBuiltinCodec() {
+        DataTypeCodec codec = BuiltinDataTypeDictionary.getBinaryInstance().getCodec(
+            EndpointDescription.TYPE_ID.local()
+                .orElseThrow(IllegalStateException::new)
+        );
 
         assertNotNull(codec);
     }

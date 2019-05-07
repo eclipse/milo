@@ -1,105 +1,92 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class BrowseResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class BrowseResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=522");
 
-    public static final NodeId TypeId = Identifiers.BrowseResult;
-    public static final NodeId BinaryEncodingId = Identifiers.BrowseResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.BrowseResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=524");
 
-    protected final StatusCode statusCode;
-    protected final ByteString continuationPoint;
-    protected final ReferenceDescription[] references;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=523");
 
-    public BrowseResult() {
-        this.statusCode = null;
-        this.continuationPoint = null;
-        this.references = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15183");
 
-    public BrowseResult(StatusCode statusCode, ByteString continuationPoint, ReferenceDescription[] references) {
+    private final StatusCode statusCode;
+
+    private final ByteString continuationPoint;
+
+    private final ReferenceDescription[] references;
+
+    public BrowseResult(StatusCode statusCode, ByteString continuationPoint,
+                        ReferenceDescription[] references) {
         this.statusCode = statusCode;
         this.continuationPoint = continuationPoint;
         this.references = references;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    public ByteString getContinuationPoint() { return continuationPoint; }
-
-    @Nullable
-    public ReferenceDescription[] getReferences() { return references; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("ContinuationPoint", continuationPoint)
-            .add("References", references)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<BrowseResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public ByteString getContinuationPoint() {
+        return continuationPoint;
+    }
+
+    public ReferenceDescription[] getReferences() {
+        return references;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<BrowseResult> {
         @Override
         public Class<BrowseResult> getType() {
             return BrowseResult.class;
         }
 
         @Override
-        public BrowseResult decode(UaDecoder decoder) throws UaSerializationException {
+        public BrowseResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
-            ReferenceDescription[] references =
-                decoder.readBuiltinStructArray(
-                    "References",
-                    ReferenceDescription.class
-                );
-
+            ReferenceDescription[] references = (ReferenceDescription[]) decoder.readStructArray("References", ReferenceDescription.TYPE_ID);
             return new BrowseResult(statusCode, continuationPoint, references);
         }
 
         @Override
-        public void encode(BrowseResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
-            encoder.writeBuiltinStructArray(
-                "References",
-                value.references,
-                ReferenceDescription.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, BrowseResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
+            encoder.writeStructArray("References", value.getReferences(), ReferenceDescription.TYPE_ID);
         }
     }
-
 }

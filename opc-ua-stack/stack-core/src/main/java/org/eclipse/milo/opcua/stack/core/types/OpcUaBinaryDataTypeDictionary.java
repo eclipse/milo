@@ -78,6 +78,12 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     }
 
     @Override
+    public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId dataTypeId) {
+        codecsByDescription.put(description, codec);
+        codecsByDataTypeId.put(dataTypeId, codec);
+    }
+
+    @Override
     public void registerStructCodec(
         OpcUaBinaryDataTypeCodec<?> codec,
         String description,

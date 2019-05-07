@@ -36,10 +36,8 @@ import com.google.common.io.CharStreams;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -792,21 +790,24 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
         String typeName = node.getLocalName();
 
-        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(typeName);
+        DataTypeCodec codec = OpcUaDataTypeManager.getInstance().getCodec(
+            Namespaces.OPC_UA_XSD,
+            String.format("//xs:element[@name='%s']", typeName)
+        );
 
-        if (codec == null) {
+        if (codec instanceof OpcUaXmlDataTypeCodec<?>) {
+            currentNode = node.getFirstChild();
+
+            try {
+                return (UaMessage) ((OpcUaXmlDataTypeCodec<?>) codec).decode(context, this);
+            } finally {
+                currentNode = node.getNextSibling();
+            }
+        } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 "no codec registered: " + typeName
             );
-        }
-
-        currentNode = node.getFirstChild();
-
-        try {
-            return (UaMessage) codec.decode(context, this);
-        } finally {
-            currentNode = node.getNextSibling();
         }
     }
 
@@ -1074,13 +1075,25 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId
+        NodeId dataTypeNodeId = dataTypeId
             .local(context.getNamespaceTable())
-            .map(id -> readStructArray(field, id))
-            .orElseThrow(() -> new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
-            ));
+            .orElse(null);
+
+        if (dataTypeNodeId != null) {
+            return readStructArray(field, dataTypeNodeId);
+        } else {
+            if (dataTypeId.isLocal()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "namespace not registered: " + dataTypeId.getNamespaceUri()
+                );
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "ExpandedNodeId not local: " + dataTypeId
+                );
+            }
+        }
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {
@@ -1092,38 +1105,6 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
                     length, context.getEncodingLimits().getMaxArrayLength())
             );
         }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends UaStructure> T readBuiltinStruct(
-        String field,
-        Class<T> typeClass) throws UaSerializationException {
-
-        Node node = currentNode(field);
-
-        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(typeClass);
-
-        if (codec == null) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + typeClass
-            );
-        }
-
-        try {
-            return (T) codec.decode(context, this);
-        } finally {
-            currentNode = node.getNextSibling();
-        }
-    }
-
-    @Override
-    public <T extends UaStructure> T[] readBuiltinStructArray(
-        String field,
-        Class<T> clazz) throws UaSerializationException {
-
-        return readArray(field, f -> readBuiltinStruct(null, clazz), clazz);
     }
 
     private static XmlElement nodeToXmlElement(Node node) throws UaSerializationException {

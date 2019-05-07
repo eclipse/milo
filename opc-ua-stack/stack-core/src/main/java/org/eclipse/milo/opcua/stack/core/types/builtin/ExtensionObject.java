@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -164,7 +165,15 @@ public final class ExtensionObject {
         UaStructure struct
     ) throws UaSerializationException {
 
-        NodeId encodingId = struct.getBinaryEncodingId();
+        NodeId encodingId = struct.getBinaryEncodingId()
+            .local(context.getNamespaceTable())
+            .orElseThrow(
+                () ->
+                    new UaSerializationException(
+                        StatusCodes.Bad_EncodingError,
+                        "namespace not registered: " +
+                            struct.getBinaryEncodingId().getNamespaceUri())
+            );
 
         return encodeDefaultBinary(context, struct, encodingId);
     }
@@ -207,6 +216,28 @@ public final class ExtensionObject {
         SerializationContext context = newDefaultSerializationContext();
 
         return encode(context, object, encodingId, encoding);
+    }
+
+    public static ExtensionObject encode(
+        SerializationContext context,
+        Object object,
+        ExpandedNodeId xEncodingId,
+        DataTypeEncoding encoding
+    ) throws UaSerializationException {
+
+        NodeId encodingId = xEncodingId
+            .local(context.getNamespaceTable())
+            .orElseThrow(
+                () ->
+                    new UaSerializationException(
+                        StatusCodes.Bad_EncodingError,
+                        "namespace not registered: " +
+                            xEncodingId.getNamespaceUri())
+            );
+
+        Object body = encoding.encode(context, object, encodingId);
+
+        return new ExtensionObject(body, encodingId);
     }
 
     public static ExtensionObject encode(

@@ -10,92 +10,103 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class SamplingIntervalDiagnosticsDataType implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class SamplingIntervalDiagnosticsDataType extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=856");
 
-    public static final NodeId TypeId = Identifiers.SamplingIntervalDiagnosticsDataType;
-    public static final NodeId BinaryEncodingId = Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=857");
 
-    protected final Double samplingInterval;
-    protected final UInteger monitoredItemCount;
-    protected final UInteger maxMonitoredItemCount;
-    protected final UInteger disabledMonitoredItemCount;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=858");
 
-    public SamplingIntervalDiagnosticsDataType() {
-        this.samplingInterval = null;
-        this.monitoredItemCount = null;
-        this.maxMonitoredItemCount = null;
-        this.disabledMonitoredItemCount = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15365");
 
-    public SamplingIntervalDiagnosticsDataType(Double samplingInterval, UInteger monitoredItemCount, UInteger maxMonitoredItemCount, UInteger disabledMonitoredItemCount) {
+    private final Double samplingInterval;
+
+    private final UInteger monitoredItemCount;
+
+    private final UInteger maxMonitoredItemCount;
+
+    private final UInteger disabledMonitoredItemCount;
+
+    public SamplingIntervalDiagnosticsDataType(Double samplingInterval, UInteger monitoredItemCount,
+                                               UInteger maxMonitoredItemCount, UInteger disabledMonitoredItemCount) {
         this.samplingInterval = samplingInterval;
         this.monitoredItemCount = monitoredItemCount;
         this.maxMonitoredItemCount = maxMonitoredItemCount;
         this.disabledMonitoredItemCount = disabledMonitoredItemCount;
     }
 
-    public Double getSamplingInterval() { return samplingInterval; }
-
-    public UInteger getMonitoredItemCount() { return monitoredItemCount; }
-
-    public UInteger getMaxMonitoredItemCount() { return maxMonitoredItemCount; }
-
-    public UInteger getDisabledMonitoredItemCount() { return disabledMonitoredItemCount; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SamplingInterval", samplingInterval)
-            .add("MonitoredItemCount", monitoredItemCount)
-            .add("MaxMonitoredItemCount", maxMonitoredItemCount)
-            .add("DisabledMonitoredItemCount", disabledMonitoredItemCount)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<SamplingIntervalDiagnosticsDataType> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public Double getSamplingInterval() {
+        return samplingInterval;
+    }
+
+    public UInteger getMonitoredItemCount() {
+        return monitoredItemCount;
+    }
+
+    public UInteger getMaxMonitoredItemCount() {
+        return maxMonitoredItemCount;
+    }
+
+    public UInteger getDisabledMonitoredItemCount() {
+        return disabledMonitoredItemCount;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<SamplingIntervalDiagnosticsDataType> {
         @Override
         public Class<SamplingIntervalDiagnosticsDataType> getType() {
             return SamplingIntervalDiagnosticsDataType.class;
         }
 
         @Override
-        public SamplingIntervalDiagnosticsDataType decode(UaDecoder decoder) throws UaSerializationException {
+        public SamplingIntervalDiagnosticsDataType decode(SerializationContext context,
+                                                          UaDecoder decoder) {
             Double samplingInterval = decoder.readDouble("SamplingInterval");
             UInteger monitoredItemCount = decoder.readUInt32("MonitoredItemCount");
             UInteger maxMonitoredItemCount = decoder.readUInt32("MaxMonitoredItemCount");
             UInteger disabledMonitoredItemCount = decoder.readUInt32("DisabledMonitoredItemCount");
-
             return new SamplingIntervalDiagnosticsDataType(samplingInterval, monitoredItemCount, maxMonitoredItemCount, disabledMonitoredItemCount);
         }
 
         @Override
-        public void encode(SamplingIntervalDiagnosticsDataType value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeDouble("SamplingInterval", value.samplingInterval);
-            encoder.writeUInt32("MonitoredItemCount", value.monitoredItemCount);
-            encoder.writeUInt32("MaxMonitoredItemCount", value.maxMonitoredItemCount);
-            encoder.writeUInt32("DisabledMonitoredItemCount", value.disabledMonitoredItemCount);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           SamplingIntervalDiagnosticsDataType value) {
+            encoder.writeDouble("SamplingInterval", value.getSamplingInterval());
+            encoder.writeUInt32("MonitoredItemCount", value.getMonitoredItemCount());
+            encoder.writeUInt32("MaxMonitoredItemCount", value.getMaxMonitoredItemCount());
+            encoder.writeUInt32("DisabledMonitoredItemCount", value.getDisabledMonitoredItemCount());
         }
     }
-
 }

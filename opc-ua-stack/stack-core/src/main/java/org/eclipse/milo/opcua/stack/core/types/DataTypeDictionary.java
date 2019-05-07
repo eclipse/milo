@@ -37,6 +37,16 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
     void registerEnumCodec(T codec, String description);
 
     /**
+     * Register a {@link DataTypeCodec} that serializes an enumeration with this dictionary.
+     *
+     * @param codec       the codec to register.
+     * @param description the value of the DataTypeDescription Node that identifies {@code codec} in the dictionary.
+     * @param dataTypeId  the {@link NodeId} of the DataType Node for the DataType serialized by {@code codec}.
+     */
+    void registerEnumCodec(T codec, String description, NodeId dataTypeId);
+
+
+    /**
      * Register a {@link DataTypeCodec} that serializes a structure with this dictionary.
      *
      * @param codec       the codec to register.

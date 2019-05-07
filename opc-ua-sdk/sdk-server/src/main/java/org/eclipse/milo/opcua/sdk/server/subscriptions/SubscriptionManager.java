@@ -929,7 +929,10 @@ public class SubscriptionManager {
 
             ResponseHeader header = service.createResponseHeader();
             SetMonitoringModeResponse response = new SetMonitoringModeResponse(
-                header, results, new DiagnosticInfo[0]);
+                header,
+                results,
+                new DiagnosticInfo[0]
+            );
 
             service.setResponse(response);
         } catch (UaException e) {

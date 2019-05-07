@@ -343,7 +343,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 maxAge,
                 timestampsToReturn,
-                a(readValueIds, ReadValueId.class));
+                a(readValueIds, ReadValueId.class)
+            );
 
             return sendRequest(request);
         });
@@ -354,7 +355,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             WriteRequest request = new WriteRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(writeValues, WriteValue.class));
+                a(writeValues, WriteValue.class)
+            );
 
             return sendRequest(request);
         });
@@ -372,7 +374,8 @@ public class OpcUaClient implements UaClient {
                 ExtensionObject.encode(getSerializationContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
-                a(nodesToRead, HistoryReadValueId.class));
+                a(nodesToRead, HistoryReadValueId.class)
+            );
 
             return sendRequest(request);
         });
@@ -387,7 +390,8 @@ public class OpcUaClient implements UaClient {
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                details);
+                details
+            );
 
             return sendRequest(request);
         });
@@ -403,7 +407,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 viewDescription,
                 maxReferencesPerNode,
-                a(nodesToBrowse, BrowseDescription.class));
+                a(nodesToBrowse, BrowseDescription.class)
+            );
 
             return sendRequest(request);
         });
@@ -417,7 +422,8 @@ public class OpcUaClient implements UaClient {
             BrowseNextRequest request = new BrowseNextRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 releaseContinuationPoints,
-                a(continuationPoints, ByteString.class));
+                a(continuationPoints, ByteString.class)
+            );
 
             return sendRequest(request);
         });
@@ -428,7 +434,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             TranslateBrowsePathsToNodeIdsRequest request = new TranslateBrowsePathsToNodeIdsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(browsePaths, BrowsePath.class));
+                a(browsePaths, BrowsePath.class)
+            );
 
             return sendRequest(request);
         });
@@ -439,7 +446,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             RegisterNodesRequest request = new RegisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToRegister, NodeId.class));
+                a(nodesToRegister, NodeId.class)
+            );
 
             return sendRequest(request);
         });
@@ -450,7 +458,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             UnregisterNodesRequest request = new UnregisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToUnregister, NodeId.class));
+                a(nodesToUnregister, NodeId.class)
+            );
 
             return sendRequest(request);
         });
@@ -461,19 +470,21 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             CallRequest request = new CallRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(methodsToCall, CallMethodRequest.class));
+                a(methodsToCall, CallMethodRequest.class)
+            );
 
             return sendRequest(request);
         });
     }
 
     @Override
-    public CompletableFuture<CreateSubscriptionResponse> createSubscription(double requestedPublishingInterval,
-                                                                            UInteger requestedLifetimeCount,
-                                                                            UInteger requestedMaxKeepAliveCount,
-                                                                            UInteger maxNotificationsPerPublish,
-                                                                            boolean publishingEnabled,
-                                                                            UByte priority) {
+    public CompletableFuture<CreateSubscriptionResponse> createSubscription(
+        double requestedPublishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority) {
 
         return getSession().thenCompose(session -> {
             CreateSubscriptionRequest request = new CreateSubscriptionRequest(
@@ -483,19 +494,21 @@ public class OpcUaClient implements UaClient {
                 requestedMaxKeepAliveCount,
                 maxNotificationsPerPublish,
                 publishingEnabled,
-                priority);
+                priority
+            );
 
             return sendRequest(request);
         });
     }
 
     @Override
-    public CompletableFuture<ModifySubscriptionResponse> modifySubscription(UInteger subscriptionId,
-                                                                            double requestedPublishingInterval,
-                                                                            UInteger requestedLifetimeCount,
-                                                                            UInteger requestedMaxKeepAliveCount,
-                                                                            UInteger maxNotificationsPerPublish,
-                                                                            UByte priority) {
+    public CompletableFuture<ModifySubscriptionResponse> modifySubscription(
+        UInteger subscriptionId,
+        double requestedPublishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        UByte priority) {
 
         return getSession().thenCompose(session -> {
             ModifySubscriptionRequest request = new ModifySubscriptionRequest(
@@ -505,7 +518,8 @@ public class OpcUaClient implements UaClient {
                 requestedLifetimeCount,
                 requestedMaxKeepAliveCount,
                 maxNotificationsPerPublish,
-                priority);
+                priority
+            );
 
             return sendRequest(request);
         });
@@ -516,7 +530,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionIds, UInteger.class));
+                a(subscriptionIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -530,7 +545,8 @@ public class OpcUaClient implements UaClient {
             TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 a(subscriptionIds, UInteger.class),
-                sendInitialValues);
+                sendInitialValues
+            );
 
             return sendRequest(request);
         });
@@ -544,7 +560,8 @@ public class OpcUaClient implements UaClient {
             SetPublishingModeRequest request = new SetPublishingModeRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 publishingEnabled,
-                a(subscriptionIds, UInteger.class));
+                a(subscriptionIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -555,7 +572,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             PublishRequest request = new PublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionAcknowledgements, SubscriptionAcknowledgement.class));
+                a(subscriptionAcknowledgements, SubscriptionAcknowledgement.class)
+            );
 
             return sendRequest(request);
         });
@@ -567,7 +585,8 @@ public class OpcUaClient implements UaClient {
             RepublishRequest request = new RepublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
-                retransmitSequenceNumber);
+                retransmitSequenceNumber
+            );
 
             return sendRequest(request);
         });
@@ -584,7 +603,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 timestampsToReturn,
-                a(itemsToCreate, MonitoredItemCreateRequest.class));
+                a(itemsToCreate, MonitoredItemCreateRequest.class)
+            );
 
             return sendRequest(request);
         });
@@ -601,7 +621,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 timestampsToReturn,
-                a(itemsToModify, MonitoredItemModifyRequest.class));
+                a(itemsToModify, MonitoredItemModifyRequest.class)
+            );
 
             return sendRequest(request);
         });
@@ -615,7 +636,8 @@ public class OpcUaClient implements UaClient {
             DeleteMonitoredItemsRequest request = new DeleteMonitoredItemsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
-                a(monitoredItemIds, UInteger.class));
+                a(monitoredItemIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -631,7 +653,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 monitoringMode,
-                a(monitoredItemIds, UInteger.class));
+                a(monitoredItemIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -649,7 +672,8 @@ public class OpcUaClient implements UaClient {
                 subscriptionId,
                 triggeringItemId,
                 a(linksToAdd, UInteger.class),
-                a(linksToRemove, UInteger.class));
+                a(linksToRemove, UInteger.class)
+            );
 
             return sendRequest(request);
         });

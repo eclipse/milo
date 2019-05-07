@@ -10,86 +10,82 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class GetEndpointsResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class GetEndpointsResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=429");
 
-    public static final NodeId TypeId = Identifiers.GetEndpointsResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.GetEndpointsResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.GetEndpointsResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=431");
 
-    protected final ResponseHeader responseHeader;
-    protected final EndpointDescription[] endpoints;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=430");
 
-    public GetEndpointsResponse() {
-        this.responseHeader = null;
-        this.endpoints = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15101");
+
+    private final ResponseHeader responseHeader;
+
+    private final EndpointDescription[] endpoints;
 
     public GetEndpointsResponse(ResponseHeader responseHeader, EndpointDescription[] endpoints) {
         this.responseHeader = responseHeader;
         this.endpoints = endpoints;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    @Nullable
-    public EndpointDescription[] getEndpoints() { return endpoints; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("Endpoints", endpoints)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<GetEndpointsResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public EndpointDescription[] getEndpoints() {
+        return endpoints;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<GetEndpointsResponse> {
         @Override
         public Class<GetEndpointsResponse> getType() {
             return GetEndpointsResponse.class;
         }
 
         @Override
-        public GetEndpointsResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-            EndpointDescription[] endpoints =
-                decoder.readBuiltinStructArray(
-                    "Endpoints",
-                    EndpointDescription.class
-                );
-
+        public GetEndpointsResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            EndpointDescription[] endpoints = (EndpointDescription[]) decoder.readStructArray("Endpoints", EndpointDescription.TYPE_ID);
             return new GetEndpointsResponse(responseHeader, endpoints);
         }
 
         @Override
-        public void encode(GetEndpointsResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeBuiltinStructArray(
-                "Endpoints",
-                value.endpoints,
-                EndpointDescription.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           GetEndpointsResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeStructArray("Endpoints", value.getEndpoints(), EndpointDescription.TYPE_ID);
         }
     }
-
 }

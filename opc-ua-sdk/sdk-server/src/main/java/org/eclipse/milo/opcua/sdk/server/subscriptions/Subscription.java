@@ -338,7 +338,8 @@ public class Subscription {
         UInteger sequenceNumber = uint(currentSequenceNumber());
 
         NotificationMessage notificationMessage = new NotificationMessage(
-            sequenceNumber, DateTime.now(), new ExtensionObject[0]);
+            sequenceNumber, DateTime.now(), new ExtensionObject[0]
+        );
 
         UInteger[] available = getAvailableSequenceNumbers();
 
@@ -348,7 +349,8 @@ public class Subscription {
         PublishResponse response = new PublishResponse(
             header, subscriptionId, available,
             moreNotifications, notificationMessage,
-            acknowledgeResults, new DiagnosticInfo[0]);
+            acknowledgeResults, new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
 
@@ -358,7 +360,8 @@ public class Subscription {
 
     void returnStatusChangeNotification(ServiceRequest service) {
         StatusChangeNotification statusChange = new StatusChangeNotification(
-            new StatusCode(StatusCodes.Bad_Timeout), null);
+            new StatusCode(StatusCodes.Bad_Timeout), null
+        );
 
         UInteger sequenceNumber = uint(nextSequenceNumber());
 
@@ -373,7 +376,8 @@ public class Subscription {
         PublishResponse response = new PublishResponse(
             header, subscriptionId,
             new UInteger[0], false, notificationMessage,
-            new StatusCode[0], new DiagnosticInfo[0]);
+            new StatusCode[0], new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
 

@@ -1061,7 +1061,7 @@ public class SessionFsmFactory {
         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
 
         if (securityPolicy == SecurityPolicy.None) {
-            return new SignatureData();
+            return new SignatureData(null, null);
         } else {
             SecurityAlgorithm signatureAlgorithm = securityPolicy.getAsymmetricSignatureAlgorithm();
             PrivateKey privateKey = config.getKeyPair().map(KeyPair::getPrivate).orElse(null);

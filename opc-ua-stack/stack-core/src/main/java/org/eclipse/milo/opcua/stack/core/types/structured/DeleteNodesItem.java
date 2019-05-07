@@ -10,75 +10,82 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class DeleteNodesItem implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DeleteNodesItem extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=382");
 
-    public static final NodeId TypeId = Identifiers.DeleteNodesItem;
-    public static final NodeId BinaryEncodingId = Identifiers.DeleteNodesItem_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DeleteNodesItem_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=383");
 
-    protected final NodeId nodeId;
-    protected final Boolean deleteTargetReferences;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=384");
 
-    public DeleteNodesItem() {
-        this.nodeId = null;
-        this.deleteTargetReferences = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15172");
+
+    private final NodeId nodeId;
+
+    private final Boolean deleteTargetReferences;
 
     public DeleteNodesItem(NodeId nodeId, Boolean deleteTargetReferences) {
         this.nodeId = nodeId;
         this.deleteTargetReferences = deleteTargetReferences;
     }
 
-    public NodeId getNodeId() { return nodeId; }
-
-    public Boolean getDeleteTargetReferences() { return deleteTargetReferences; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("DeleteTargetReferences", deleteTargetReferences)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DeleteNodesItem> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public NodeId getNodeId() {
+        return nodeId;
+    }
+
+    public Boolean getDeleteTargetReferences() {
+        return deleteTargetReferences;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DeleteNodesItem> {
         @Override
         public Class<DeleteNodesItem> getType() {
             return DeleteNodesItem.class;
         }
 
         @Override
-        public DeleteNodesItem decode(UaDecoder decoder) throws UaSerializationException {
+        public DeleteNodesItem decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             Boolean deleteTargetReferences = decoder.readBoolean("DeleteTargetReferences");
-
             return new DeleteNodesItem(nodeId, deleteTargetReferences);
         }
 
         @Override
-        public void encode(DeleteNodesItem value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeBoolean("DeleteTargetReferences", value.deleteTargetReferences);
+        public void encode(SerializationContext context, UaEncoder encoder, DeleteNodesItem value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeBoolean("DeleteTargetReferences", value.getDeleteTargetReferences());
         }
     }
-
 }

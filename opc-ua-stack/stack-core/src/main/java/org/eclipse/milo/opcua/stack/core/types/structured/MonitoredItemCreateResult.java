@@ -10,39 +10,47 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class MonitoredItemCreateResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class MonitoredItemCreateResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=746");
 
-    public static final NodeId TypeId = Identifiers.MonitoredItemCreateResult;
-    public static final NodeId BinaryEncodingId = Identifiers.MonitoredItemCreateResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.MonitoredItemCreateResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=748");
 
-    protected final StatusCode statusCode;
-    protected final UInteger monitoredItemId;
-    protected final Double revisedSamplingInterval;
-    protected final UInteger revisedQueueSize;
-    protected final ExtensionObject filterResult;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=747");
 
-    public MonitoredItemCreateResult() {
-        this.statusCode = null;
-        this.monitoredItemId = null;
-        this.revisedSamplingInterval = null;
-        this.revisedQueueSize = null;
-        this.filterResult = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15322");
 
-    public MonitoredItemCreateResult(StatusCode statusCode, UInteger monitoredItemId, Double revisedSamplingInterval, UInteger revisedQueueSize, ExtensionObject filterResult) {
+    private final StatusCode statusCode;
+
+    private final UInteger monitoredItemId;
+
+    private final Double revisedSamplingInterval;
+
+    private final UInteger revisedQueueSize;
+
+    private final ExtensionObject filterResult;
+
+    public MonitoredItemCreateResult(StatusCode statusCode, UInteger monitoredItemId,
+                                     Double revisedSamplingInterval, UInteger revisedQueueSize, ExtensionObject filterResult) {
         this.statusCode = statusCode;
         this.monitoredItemId = monitoredItemId;
         this.revisedSamplingInterval = revisedSamplingInterval;
@@ -50,62 +58,65 @@ public class MonitoredItemCreateResult implements UaStructure {
         this.filterResult = filterResult;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    public UInteger getMonitoredItemId() { return monitoredItemId; }
-
-    public Double getRevisedSamplingInterval() { return revisedSamplingInterval; }
-
-    public UInteger getRevisedQueueSize() { return revisedQueueSize; }
-
-    public ExtensionObject getFilterResult() { return filterResult; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("MonitoredItemId", monitoredItemId)
-            .add("RevisedSamplingInterval", revisedSamplingInterval)
-            .add("RevisedQueueSize", revisedQueueSize)
-            .add("FilterResult", filterResult)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<MonitoredItemCreateResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public UInteger getMonitoredItemId() {
+        return monitoredItemId;
+    }
+
+    public Double getRevisedSamplingInterval() {
+        return revisedSamplingInterval;
+    }
+
+    public UInteger getRevisedQueueSize() {
+        return revisedQueueSize;
+    }
+
+    public ExtensionObject getFilterResult() {
+        return filterResult;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<MonitoredItemCreateResult> {
         @Override
         public Class<MonitoredItemCreateResult> getType() {
             return MonitoredItemCreateResult.class;
         }
 
         @Override
-        public MonitoredItemCreateResult decode(UaDecoder decoder) throws UaSerializationException {
+        public MonitoredItemCreateResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             UInteger monitoredItemId = decoder.readUInt32("MonitoredItemId");
             Double revisedSamplingInterval = decoder.readDouble("RevisedSamplingInterval");
             UInteger revisedQueueSize = decoder.readUInt32("RevisedQueueSize");
             ExtensionObject filterResult = decoder.readExtensionObject("FilterResult");
-
             return new MonitoredItemCreateResult(statusCode, monitoredItemId, revisedSamplingInterval, revisedQueueSize, filterResult);
         }
 
         @Override
-        public void encode(MonitoredItemCreateResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeUInt32("MonitoredItemId", value.monitoredItemId);
-            encoder.writeDouble("RevisedSamplingInterval", value.revisedSamplingInterval);
-            encoder.writeUInt32("RevisedQueueSize", value.revisedQueueSize);
-            encoder.writeExtensionObject("FilterResult", value.filterResult);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           MonitoredItemCreateResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeUInt32("MonitoredItemId", value.getMonitoredItemId());
+            encoder.writeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
+            encoder.writeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
+            encoder.writeExtensionObject("FilterResult", value.getFilterResult());
         }
     }
-
 }

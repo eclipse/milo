@@ -10,89 +10,93 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class HistoryUpdateResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class HistoryUpdateResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=695");
 
-    public static final NodeId TypeId = Identifiers.HistoryUpdateResult;
-    public static final NodeId BinaryEncodingId = Identifiers.HistoryUpdateResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.HistoryUpdateResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=697");
 
-    protected final StatusCode statusCode;
-    protected final StatusCode[] operationResults;
-    protected final DiagnosticInfo[] diagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=696");
 
-    public HistoryUpdateResult() {
-        this.statusCode = null;
-        this.operationResults = null;
-        this.diagnosticInfos = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15286");
 
-    public HistoryUpdateResult(StatusCode statusCode, StatusCode[] operationResults, DiagnosticInfo[] diagnosticInfos) {
+    private final StatusCode statusCode;
+
+    private final StatusCode[] operationResults;
+
+    private final DiagnosticInfo[] diagnosticInfos;
+
+    public HistoryUpdateResult(StatusCode statusCode, StatusCode[] operationResults,
+                               DiagnosticInfo[] diagnosticInfos) {
         this.statusCode = statusCode;
         this.operationResults = operationResults;
         this.diagnosticInfos = diagnosticInfos;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    @Nullable
-    public StatusCode[] getOperationResults() { return operationResults; }
-
-    @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("OperationResults", operationResults)
-            .add("DiagnosticInfos", diagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<HistoryUpdateResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public StatusCode[] getOperationResults() {
+        return operationResults;
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos() {
+        return diagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<HistoryUpdateResult> {
         @Override
         public Class<HistoryUpdateResult> getType() {
             return HistoryUpdateResult.class;
         }
 
         @Override
-        public HistoryUpdateResult decode(UaDecoder decoder) throws UaSerializationException {
+        public HistoryUpdateResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] operationResults = decoder.readArray("OperationResults", decoder::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+            StatusCode[] operationResults = decoder.readStatusCodeArray("OperationResults");
+            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new HistoryUpdateResult(statusCode, operationResults, diagnosticInfos);
         }
 
         @Override
-        public void encode(HistoryUpdateResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeArray("OperationResults", value.operationResults, encoder::writeStatusCode);
-            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder, HistoryUpdateResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeStatusCodeArray("OperationResults", value.getOperationResults());
+            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
-
 }

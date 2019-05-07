@@ -10,89 +10,94 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class ContentFilterElementResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ContentFilterElementResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=604");
 
-    public static final NodeId TypeId = Identifiers.ContentFilterElementResult;
-    public static final NodeId BinaryEncodingId = Identifiers.ContentFilterElementResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ContentFilterElementResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=606");
 
-    protected final StatusCode statusCode;
-    protected final StatusCode[] operandStatusCodes;
-    protected final DiagnosticInfo[] operandDiagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=605");
 
-    public ContentFilterElementResult() {
-        this.statusCode = null;
-        this.operandStatusCodes = null;
-        this.operandDiagnosticInfos = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15211");
 
-    public ContentFilterElementResult(StatusCode statusCode, StatusCode[] operandStatusCodes, DiagnosticInfo[] operandDiagnosticInfos) {
+    private final StatusCode statusCode;
+
+    private final StatusCode[] operandStatusCodes;
+
+    private final DiagnosticInfo[] operandDiagnosticInfos;
+
+    public ContentFilterElementResult(StatusCode statusCode, StatusCode[] operandStatusCodes,
+                                      DiagnosticInfo[] operandDiagnosticInfos) {
         this.statusCode = statusCode;
         this.operandStatusCodes = operandStatusCodes;
         this.operandDiagnosticInfos = operandDiagnosticInfos;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    @Nullable
-    public StatusCode[] getOperandStatusCodes() { return operandStatusCodes; }
-
-    @Nullable
-    public DiagnosticInfo[] getOperandDiagnosticInfos() { return operandDiagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("OperandStatusCodes", operandStatusCodes)
-            .add("OperandDiagnosticInfos", operandDiagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ContentFilterElementResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public StatusCode[] getOperandStatusCodes() {
+        return operandStatusCodes;
+    }
+
+    public DiagnosticInfo[] getOperandDiagnosticInfos() {
+        return operandDiagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ContentFilterElementResult> {
         @Override
         public Class<ContentFilterElementResult> getType() {
             return ContentFilterElementResult.class;
         }
 
         @Override
-        public ContentFilterElementResult decode(UaDecoder decoder) throws UaSerializationException {
+        public ContentFilterElementResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] operandStatusCodes = decoder.readArray("OperandStatusCodes", decoder::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] operandDiagnosticInfos = decoder.readArray("OperandDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+            StatusCode[] operandStatusCodes = decoder.readStatusCodeArray("OperandStatusCodes");
+            DiagnosticInfo[] operandDiagnosticInfos = decoder.readDiagnosticInfoArray("OperandDiagnosticInfos");
             return new ContentFilterElementResult(statusCode, operandStatusCodes, operandDiagnosticInfos);
         }
 
         @Override
-        public void encode(ContentFilterElementResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeArray("OperandStatusCodes", value.operandStatusCodes, encoder::writeStatusCode);
-            encoder.writeArray("OperandDiagnosticInfos", value.operandDiagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ContentFilterElementResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeStatusCodeArray("OperandStatusCodes", value.getOperandStatusCodes());
+            encoder.writeDiagnosticInfoArray("OperandDiagnosticInfos", value.getOperandDiagnosticInfos());
         }
     }
-
 }

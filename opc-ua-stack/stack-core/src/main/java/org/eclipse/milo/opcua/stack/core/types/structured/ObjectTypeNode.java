@@ -10,71 +10,73 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-public class ObjectTypeNode extends TypeNode {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ObjectTypeNode extends TypeNode implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=264");
 
-    public static final NodeId TypeId = Identifiers.ObjectTypeNode;
-    public static final NodeId BinaryEncodingId = Identifiers.ObjectTypeNode_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ObjectTypeNode_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=266");
 
-    protected final Boolean isAbstract;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=265");
 
-    public ObjectTypeNode() {
-        super(null, null, null, null, null, null, null, null);
-        this.isAbstract = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15073");
 
-    public ObjectTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Boolean isAbstract) {
+    private final Boolean isAbstract;
+
+    public ObjectTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask, ReferenceNode[] references, Boolean isAbstract) {
         super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
         this.isAbstract = isAbstract;
     }
 
-    public Boolean getIsAbstract() { return isAbstract; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("NodeClass", nodeClass)
-            .add("BrowseName", browseName)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .add("WriteMask", writeMask)
-            .add("UserWriteMask", userWriteMask)
-            .add("References", references)
-            .add("IsAbstract", isAbstract)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ObjectTypeNode> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public Boolean getIsAbstract() {
+        return isAbstract;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ObjectTypeNode> {
         @Override
         public Class<ObjectTypeNode> getType() {
             return ObjectTypeNode.class;
         }
 
         @Override
-        public ObjectTypeNode decode(UaDecoder decoder) throws UaSerializationException {
+        public ObjectTypeNode decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -82,32 +84,22 @@ public class ObjectTypeNode extends TypeNode {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            ReferenceNode[] references =
-                decoder.readBuiltinStructArray(
-                    "References",
-                    ReferenceNode.class
-                );
+            ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
             Boolean isAbstract = decoder.readBoolean("IsAbstract");
-
             return new ObjectTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, isAbstract);
         }
 
         @Override
-        public void encode(ObjectTypeNode value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
-            encoder.writeQualifiedName("BrowseName", value.browseName);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
-            encoder.writeUInt32("WriteMask", value.writeMask);
-            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
-            encoder.writeBuiltinStructArray(
-                "References",
-                value.references,
-                ReferenceNode.class
-            );
-            encoder.writeBoolean("IsAbstract", value.isAbstract);
+        public void encode(SerializationContext context, UaEncoder encoder, ObjectTypeNode value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeInt32("NodeClass", value.getNodeClass().getValue());
+            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.writeUInt32("WriteMask", value.getWriteMask());
+            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
+            encoder.writeBoolean("IsAbstract", value.getIsAbstract());
         }
     }
-
 }

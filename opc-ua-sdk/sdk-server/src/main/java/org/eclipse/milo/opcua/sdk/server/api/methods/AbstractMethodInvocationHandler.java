@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -74,6 +75,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 //  extract subtype logic from AttributeWriter...
                 boolean dataTypeMatch = variant.getValue() == null ||
                     variant.getDataType()
+                        .flatMap(ExpandedNodeId::local)
                         .map(type -> type.equals(argument.getDataType()))
                         .orElse(false);
 

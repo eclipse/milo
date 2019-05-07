@@ -10,46 +10,53 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 
-public class RegisteredServer implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class RegisteredServer extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=432");
 
-    public static final NodeId TypeId = Identifiers.RegisteredServer;
-    public static final NodeId BinaryEncodingId = Identifiers.RegisteredServer_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.RegisteredServer_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=433");
 
-    protected final String serverUri;
-    protected final String productUri;
-    protected final LocalizedText[] serverNames;
-    protected final ApplicationType serverType;
-    protected final String gatewayServerUri;
-    protected final String[] discoveryUrls;
-    protected final String semaphoreFilePath;
-    protected final Boolean isOnline;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=434");
 
-    public RegisteredServer() {
-        this.serverUri = null;
-        this.productUri = null;
-        this.serverNames = null;
-        this.serverType = null;
-        this.gatewayServerUri = null;
-        this.discoveryUrls = null;
-        this.semaphoreFilePath = null;
-        this.isOnline = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15102");
 
-    public RegisteredServer(String serverUri, String productUri, LocalizedText[] serverNames, ApplicationType serverType, String gatewayServerUri, String[] discoveryUrls, String semaphoreFilePath, Boolean isOnline) {
+    private final String serverUri;
+
+    private final String productUri;
+
+    private final LocalizedText[] serverNames;
+
+    private final ApplicationType serverType;
+
+    private final String gatewayServerUri;
+
+    private final String[] discoveryUrls;
+
+    private final String semaphoreFilePath;
+
+    private final Boolean isOnline;
+
+    public RegisteredServer(String serverUri, String productUri, LocalizedText[] serverNames,
+                            ApplicationType serverType, String gatewayServerUri, String[] discoveryUrls,
+                            String semaphoreFilePath, Boolean isOnline) {
         this.serverUri = serverUri;
         this.productUri = productUri;
         this.serverNames = serverNames;
@@ -60,79 +67,82 @@ public class RegisteredServer implements UaStructure {
         this.isOnline = isOnline;
     }
 
-    public String getServerUri() { return serverUri; }
-
-    public String getProductUri() { return productUri; }
-
-    @Nullable
-    public LocalizedText[] getServerNames() { return serverNames; }
-
-    public ApplicationType getServerType() { return serverType; }
-
-    public String getGatewayServerUri() { return gatewayServerUri; }
-
-    @Nullable
-    public String[] getDiscoveryUrls() { return discoveryUrls; }
-
-    public String getSemaphoreFilePath() { return semaphoreFilePath; }
-
-    public Boolean getIsOnline() { return isOnline; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ServerUri", serverUri)
-            .add("ProductUri", productUri)
-            .add("ServerNames", serverNames)
-            .add("ServerType", serverType)
-            .add("GatewayServerUri", gatewayServerUri)
-            .add("DiscoveryUrls", discoveryUrls)
-            .add("SemaphoreFilePath", semaphoreFilePath)
-            .add("IsOnline", isOnline)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<RegisteredServer> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getServerUri() {
+        return serverUri;
+    }
+
+    public String getProductUri() {
+        return productUri;
+    }
+
+    public LocalizedText[] getServerNames() {
+        return serverNames;
+    }
+
+    public ApplicationType getServerType() {
+        return serverType;
+    }
+
+    public String getGatewayServerUri() {
+        return gatewayServerUri;
+    }
+
+    public String[] getDiscoveryUrls() {
+        return discoveryUrls;
+    }
+
+    public String getSemaphoreFilePath() {
+        return semaphoreFilePath;
+    }
+
+    public Boolean getIsOnline() {
+        return isOnline;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<RegisteredServer> {
         @Override
         public Class<RegisteredServer> getType() {
             return RegisteredServer.class;
         }
 
         @Override
-        public RegisteredServer decode(UaDecoder decoder) throws UaSerializationException {
+        public RegisteredServer decode(SerializationContext context, UaDecoder decoder) {
             String serverUri = decoder.readString("ServerUri");
             String productUri = decoder.readString("ProductUri");
-            LocalizedText[] serverNames = decoder.readArray("ServerNames", decoder::readLocalizedText, LocalizedText.class);
+            LocalizedText[] serverNames = decoder.readLocalizedTextArray("ServerNames");
             ApplicationType serverType = ApplicationType.from(decoder.readInt32("ServerType"));
             String gatewayServerUri = decoder.readString("GatewayServerUri");
-            String[] discoveryUrls = decoder.readArray("DiscoveryUrls", decoder::readString, String.class);
+            String[] discoveryUrls = decoder.readStringArray("DiscoveryUrls");
             String semaphoreFilePath = decoder.readString("SemaphoreFilePath");
             Boolean isOnline = decoder.readBoolean("IsOnline");
-
             return new RegisteredServer(serverUri, productUri, serverNames, serverType, gatewayServerUri, discoveryUrls, semaphoreFilePath, isOnline);
         }
 
         @Override
-        public void encode(RegisteredServer value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("ServerUri", value.serverUri);
-            encoder.writeString("ProductUri", value.productUri);
-            encoder.writeArray("ServerNames", value.serverNames, encoder::writeLocalizedText);
-            encoder.writeInt32("ServerType", value.serverType != null ? value.serverType.getValue() : 0);
-            encoder.writeString("GatewayServerUri", value.gatewayServerUri);
-            encoder.writeArray("DiscoveryUrls", value.discoveryUrls, encoder::writeString);
-            encoder.writeString("SemaphoreFilePath", value.semaphoreFilePath);
-            encoder.writeBoolean("IsOnline", value.isOnline);
+        public void encode(SerializationContext context, UaEncoder encoder, RegisteredServer value) {
+            encoder.writeString("ServerUri", value.getServerUri());
+            encoder.writeString("ProductUri", value.getProductUri());
+            encoder.writeLocalizedTextArray("ServerNames", value.getServerNames());
+            encoder.writeInt32("ServerType", value.getServerType().getValue());
+            encoder.writeString("GatewayServerUri", value.getGatewayServerUri());
+            encoder.writeStringArray("DiscoveryUrls", value.getDiscoveryUrls());
+            encoder.writeString("SemaphoreFilePath", value.getSemaphoreFilePath());
+            encoder.writeBoolean("IsOnline", value.getIsOnline());
         }
     }
-
 }

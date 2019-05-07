@@ -86,7 +86,10 @@ public class DefaultViewServiceSet implements ViewServiceSet {
                 diagnosticsContext.getDiagnosticInfos(nodesToBrowse);
 
             BrowseResponse response = new BrowseResponse(
-                header, a(results, BrowseResult.class), diagnosticInfos);
+                header,
+                a(results, BrowseResult.class),
+                diagnosticInfos
+            );
 
             service.setResponse(response);
         });

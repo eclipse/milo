@@ -90,12 +90,18 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
             Subscription subscription = server.getSubscriptions().get(subscriptionId);
 
             if (subscription == null) {
-                results.add(new TransferResult(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid), new UInteger[0]));
+                results.add(new TransferResult(
+                    new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid),
+                    new UInteger[0]
+                ));
             } else {
                 Session otherSession = subscription.getSession();
 
                 if (!sessionsHaveSameUser(session, otherSession)) {
-                    results.add(new TransferResult(new StatusCode(StatusCodes.Bad_UserAccessDenied), new UInteger[0]));
+                    results.add(new TransferResult(
+                        new StatusCode(StatusCodes.Bad_UserAccessDenied),
+                        new UInteger[0]
+                    ));
                 } else {
                     UInteger[] availableSequenceNumbers;
 

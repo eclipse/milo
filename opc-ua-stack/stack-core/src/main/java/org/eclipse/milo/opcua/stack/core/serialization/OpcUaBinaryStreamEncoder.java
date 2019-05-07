@@ -21,12 +21,10 @@ import javax.annotation.Nonnull;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -900,7 +898,16 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     @Override
     public void writeMessage(String field, UaMessage message) throws UaSerializationException {
-        NodeId encodingId = message.getBinaryEncodingId();
+        ExpandedNodeId xBinaryEncodingId = message.getBinaryEncodingId();
+
+        NodeId encodingId = xBinaryEncodingId
+            .local(context.getNamespaceTable())
+            .orElseThrow(
+                () ->
+                    new UaSerializationException(
+                        StatusCodes.Bad_EncodingError,
+                        "namespace not registered: " + xBinaryEncodingId.getNamespaceUri())
+            );
 
         @SuppressWarnings("unchecked")
         OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec = (OpcUaBinaryDataTypeCodec<UaMessage>)
@@ -927,7 +934,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             OpcUaBinaryDataTypeCodec<Object> codec = (OpcUaBinaryDataTypeCodec<Object>)
                 OpcUaDataTypeManager
                     .getInstance()
-                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+                    .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -1138,35 +1145,6 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 encoder.accept(field, t);
             }
         }
-    }
-
-    @Override
-    public <T extends UaStructure> void writeBuiltinStruct(
-        String field, T value, Class<T> clazz) throws UaSerializationException {
-
-        try {
-            @SuppressWarnings("unchecked")
-            BuiltinDataTypeCodec<UaStructure> codec =
-                (BuiltinDataTypeCodec<UaStructure>) BuiltinDataTypeDictionary.getBuiltinCodec(clazz);
-
-            if (codec == null) {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_EncodingError,
-                    "no codec registered:" + clazz
-                );
-            }
-
-            codec.encode(context, this, value);
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
-        }
-    }
-
-    @Override
-    public <T extends UaStructure> void writeBuiltinStructArray(
-        String field, T[] values, Class<T> clazz) throws UaSerializationException {
-
-        writeArray(values, v -> writeBuiltinStruct(field, v, clazz));
     }
 
 }

@@ -57,7 +57,8 @@ public class SubscriptionExample implements ClientExample {
         // subscribe to the Value attribute of the server's CurrentTime node
         ReadValueId readValueId = new ReadValueId(
             Identifiers.Server_ServerStatus_CurrentTime,
-            AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
+            AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE
+        );
 
         // important: client handle must be unique per item
         UInteger clientHandle = uint(clientHandles.getAndIncrement());
@@ -71,7 +72,8 @@ public class SubscriptionExample implements ClientExample {
         );
 
         MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
-            readValueId, MonitoringMode.Reporting, parameters);
+            readValueId, MonitoringMode.Reporting, parameters
+        );
 
         // when creating items in MonitoringMode.Reporting this callback is where each item needs to have its
         // value/event consumer hooked up. The alternative is to create the item in sampling mode, hook up the

@@ -91,7 +91,7 @@ public interface UaDecoder {
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException;
-    
+
     Boolean[] readBooleanArray(String field) throws UaSerializationException;
 
     Byte[] readSByteArray(String field) throws UaSerializationException;
@@ -147,14 +147,5 @@ public interface UaDecoder {
     Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> T[] readArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> T readBuiltinStruct(String field, Class<T> typeClass) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> T[] readBuiltinStructArray(
-        String field,
-        Class<T> clazz
-    ) throws UaSerializationException;
 
 }

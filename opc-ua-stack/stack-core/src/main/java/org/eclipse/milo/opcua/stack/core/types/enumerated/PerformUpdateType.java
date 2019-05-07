@@ -10,17 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum PerformUpdateType implements UaEnumeration {
-
     Insert(1),
+
     Replace(2),
+
     Update(3),
+
     Remove(4);
 
     private final int value;
@@ -34,29 +39,40 @@ public enum PerformUpdateType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, PerformUpdateType> VALUES;
-
-    static {
-        Builder<Integer, PerformUpdateType> builder = ImmutableMap.builder();
-        for (PerformUpdateType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static PerformUpdateType from(int value) {
+        switch (value) {
+            case 1:
+                return Insert;
+            case 2:
+                return Replace;
+            case 3:
+                return Update;
+            case 4:
+                return Remove;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static PerformUpdateType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11293");
     }
 
-    public static void encode(PerformUpdateType performUpdateType, UaEncoder encoder) {
-        encoder.writeInt32(null, performUpdateType.getValue());
+    public static class Codec extends GenericDataTypeCodec<PerformUpdateType> {
+        @Override
+        public Class<PerformUpdateType> getType() {
+            return PerformUpdateType.class;
+        }
+
+        @Override
+        public PerformUpdateType decode(SerializationContext context, UaDecoder decoder) {
+            return PerformUpdateType.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, PerformUpdateType value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static PerformUpdateType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

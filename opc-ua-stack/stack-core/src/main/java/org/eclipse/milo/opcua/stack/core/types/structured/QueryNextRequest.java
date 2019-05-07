@@ -10,84 +10,92 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class QueryNextRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class QueryNextRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=619");
 
-    public static final NodeId TypeId = Identifiers.QueryNextRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.QueryNextRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.QueryNextRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=621");
 
-    protected final RequestHeader requestHeader;
-    protected final Boolean releaseContinuationPoint;
-    protected final ByteString continuationPoint;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=620");
 
-    public QueryNextRequest() {
-        this.requestHeader = null;
-        this.releaseContinuationPoint = null;
-        this.continuationPoint = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15254");
 
-    public QueryNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoint, ByteString continuationPoint) {
+    private final RequestHeader requestHeader;
+
+    private final Boolean releaseContinuationPoint;
+
+    private final ByteString continuationPoint;
+
+    public QueryNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoint,
+                            ByteString continuationPoint) {
         this.requestHeader = requestHeader;
         this.releaseContinuationPoint = releaseContinuationPoint;
         this.continuationPoint = continuationPoint;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public Boolean getReleaseContinuationPoint() { return releaseContinuationPoint; }
-
-    public ByteString getContinuationPoint() { return continuationPoint; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("ReleaseContinuationPoint", releaseContinuationPoint)
-            .add("ContinuationPoint", continuationPoint)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<QueryNextRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public Boolean getReleaseContinuationPoint() {
+        return releaseContinuationPoint;
+    }
+
+    public ByteString getContinuationPoint() {
+        return continuationPoint;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<QueryNextRequest> {
         @Override
         public Class<QueryNextRequest> getType() {
             return QueryNextRequest.class;
         }
 
         @Override
-        public QueryNextRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public QueryNextRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean releaseContinuationPoint = decoder.readBoolean("ReleaseContinuationPoint");
             ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
-
             return new QueryNextRequest(requestHeader, releaseContinuationPoint, continuationPoint);
         }
 
         @Override
-        public void encode(QueryNextRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBoolean("ReleaseContinuationPoint", value.releaseContinuationPoint);
-            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
+        public void encode(SerializationContext context, UaEncoder encoder, QueryNextRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeBoolean("ReleaseContinuationPoint", value.getReleaseContinuationPoint());
+            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
         }
     }
-
 }

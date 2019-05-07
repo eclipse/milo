@@ -18,9 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -382,35 +380,6 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         String field,
         T[] values,
         BiConsumer<String, T> encoder) throws UaSerializationException {
-
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends UaStructure> void writeBuiltinStruct(
-        String field,
-        T value,
-        Class<T> clazz) throws UaSerializationException {
-
-        Node node = currentNode;
-
-        BuiltinDataTypeCodec<T> codec = (BuiltinDataTypeCodec<T>) BuiltinDataTypeDictionary.getBuiltinCodec(clazz);
-
-        if (codec == null) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, "no codec found: " + clazz);
-        }
-
-        currentNode = document.createElementNS(Namespaces.OPC_UA_XSD, field);
-        codec.encode(context, this, value);
-
-        currentNode = node;
-    }
-
-    @Override
-    public <T extends UaStructure> void writeBuiltinStructArray(
-        String field,
-        T[] values,
-        Class<T> clazz) throws UaSerializationException {
 
     }
 

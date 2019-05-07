@@ -18,12 +18,12 @@ import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -40,8 +40,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
             {new Variant(new Integer[][]{{0, 1}, {2, 3}})},
             {new Variant(new Long[]{0L, 1L, 2L, 3L})},
             {new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})},
-            {new Variant(new UInteger[]{Unsigned.uint(0), Unsigned.uint(1), Unsigned.uint(2), Unsigned.uint(3)})},
-            {new Variant(new UInteger[][]{{Unsigned.uint(0), Unsigned.uint(1)}, {Unsigned.uint(2), Unsigned.uint(3)}})},
+            {new Variant(new UInteger[]{uint(0), uint(1), uint(2), uint(3)})},
+            {new Variant(new UInteger[][]{{uint(0), uint(1)}, {uint(2), uint(3)}})},
             {new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)})}
         };
     }
@@ -56,7 +56,10 @@ public class VariantSerializationTest extends BinarySerializationFixture {
 
     @Test
     public void testVariant_UaStructure() {
-        ServiceCounterDataType sc1 = new ServiceCounterDataType(Unsigned.uint(1), Unsigned.uint(2));
+        ServiceCounterDataType sc1 = new ServiceCounterDataType(
+            uint(1),
+            uint(2)
+        );
 
         Variant v = new Variant(sc1);
         writer.writeVariant(v);

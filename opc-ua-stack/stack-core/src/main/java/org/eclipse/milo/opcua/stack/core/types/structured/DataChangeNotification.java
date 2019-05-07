@@ -10,89 +10,84 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class DataChangeNotification extends NotificationData {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DataChangeNotification extends NotificationData implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=809");
 
-    public static final NodeId TypeId = Identifiers.DataChangeNotification;
-    public static final NodeId BinaryEncodingId = Identifiers.DataChangeNotification_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DataChangeNotification_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=811");
 
-    protected final MonitoredItemNotification[] monitoredItems;
-    protected final DiagnosticInfo[] diagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=810");
 
-    public DataChangeNotification() {
-        super();
-        this.monitoredItems = null;
-        this.diagnosticInfos = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15345");
 
-    public DataChangeNotification(MonitoredItemNotification[] monitoredItems, DiagnosticInfo[] diagnosticInfos) {
-        super();
+    private final MonitoredItemNotification[] monitoredItems;
+
+    private final DiagnosticInfo[] diagnosticInfos;
+
+    public DataChangeNotification(MonitoredItemNotification[] monitoredItems,
+                                  DiagnosticInfo[] diagnosticInfos) {
         this.monitoredItems = monitoredItems;
         this.diagnosticInfos = diagnosticInfos;
     }
 
-    @Nullable
-    public MonitoredItemNotification[] getMonitoredItems() { return monitoredItems; }
-
-    @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("MonitoredItems", monitoredItems)
-            .add("DiagnosticInfos", diagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DataChangeNotification> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public MonitoredItemNotification[] getMonitoredItems() {
+        return monitoredItems;
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos() {
+        return diagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DataChangeNotification> {
         @Override
         public Class<DataChangeNotification> getType() {
             return DataChangeNotification.class;
         }
 
         @Override
-        public DataChangeNotification decode(UaDecoder decoder) throws UaSerializationException {
-            MonitoredItemNotification[] monitoredItems =
-                decoder.readBuiltinStructArray(
-                    "MonitoredItems",
-                    MonitoredItemNotification.class
-                );
-            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public DataChangeNotification decode(SerializationContext context, UaDecoder decoder) {
+            MonitoredItemNotification[] monitoredItems = (MonitoredItemNotification[]) decoder.readStructArray("MonitoredItems", MonitoredItemNotification.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new DataChangeNotification(monitoredItems, diagnosticInfos);
         }
 
         @Override
-        public void encode(DataChangeNotification value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStructArray(
-                "MonitoredItems",
-                value.monitoredItems,
-                MonitoredItemNotification.class
-            );
-            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           DataChangeNotification value) {
+            encoder.writeStructArray("MonitoredItems", value.getMonitoredItems(), MonitoredItemNotification.TYPE_ID);
+            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
-
 }

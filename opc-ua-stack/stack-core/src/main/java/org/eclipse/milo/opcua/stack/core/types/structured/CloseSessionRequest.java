@@ -10,75 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class CloseSessionRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class CloseSessionRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=471");
 
-    public static final NodeId TypeId = Identifiers.CloseSessionRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.CloseSessionRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.CloseSessionRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=473");
 
-    protected final RequestHeader requestHeader;
-    protected final Boolean deleteSubscriptions;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=472");
 
-    public CloseSessionRequest() {
-        this.requestHeader = null;
-        this.deleteSubscriptions = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15147");
+
+    private final RequestHeader requestHeader;
+
+    private final Boolean deleteSubscriptions;
 
     public CloseSessionRequest(RequestHeader requestHeader, Boolean deleteSubscriptions) {
         this.requestHeader = requestHeader;
         this.deleteSubscriptions = deleteSubscriptions;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public Boolean getDeleteSubscriptions() { return deleteSubscriptions; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("DeleteSubscriptions", deleteSubscriptions)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<CloseSessionRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public Boolean getDeleteSubscriptions() {
+        return deleteSubscriptions;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<CloseSessionRequest> {
         @Override
         public Class<CloseSessionRequest> getType() {
             return CloseSessionRequest.class;
         }
 
         @Override
-        public CloseSessionRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public CloseSessionRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean deleteSubscriptions = decoder.readBoolean("DeleteSubscriptions");
-
             return new CloseSessionRequest(requestHeader, deleteSubscriptions);
         }
 
         @Override
-        public void encode(CloseSessionRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBoolean("DeleteSubscriptions", value.deleteSubscriptions);
+        public void encode(SerializationContext context, UaEncoder encoder, CloseSessionRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeBoolean("DeleteSubscriptions", value.getDeleteSubscriptions());
         }
     }
-
 }

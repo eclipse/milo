@@ -23,10 +23,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.util.ByteProcessor;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -1175,13 +1173,25 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId
+        NodeId dataTypeNodeId = dataTypeId
             .local(context.getNamespaceTable())
-            .map(id -> readStructArray(field, id))
-            .orElseThrow(() -> new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
-            ));
+            .orElse(null);
+
+        if (dataTypeNodeId != null) {
+            return readStructArray(field, dataTypeNodeId);
+        } else {
+            if (dataTypeId.isLocal()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "namespace not registered: " + dataTypeId.getNamespaceUri()
+                );
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "ExpandedNodeId not local: " + dataTypeId
+                );
+            }
+        }
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {
@@ -1215,33 +1225,6 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
             return array;
         }
-    }
-
-    @Override
-    public <T extends UaStructure> T readBuiltinStruct(String field, Class<T> clazz) throws UaSerializationException {
-        try {
-            @SuppressWarnings("unchecked")
-            BuiltinDataTypeCodec<UaStructure> codec =
-                (BuiltinDataTypeCodec<UaStructure>) BuiltinDataTypeDictionary.getBuiltinCodec(clazz);
-
-            if (codec == null) {
-                throw new UaSerializationException(StatusCodes.Bad_DecodingError, "No codec registered:" + clazz);
-            } else {
-                @SuppressWarnings("unchecked")
-                T value = (T) codec.decode(context, this);
-
-                return value;
-            }
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-        }
-    }
-
-    @Override
-    public <T extends UaStructure> T[] readBuiltinStructArray(
-        String field, Class<T> clazz) throws UaSerializationException {
-
-        return readArray(field, s -> readBuiltinStruct(s, clazz), clazz);
     }
 
 }

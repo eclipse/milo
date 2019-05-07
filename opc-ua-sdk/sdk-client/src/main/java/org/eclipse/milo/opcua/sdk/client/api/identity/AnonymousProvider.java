@@ -27,7 +27,7 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
  */
 public class AnonymousProvider implements IdentityProvider {
 
-    public static final IdentityProvider INSTANCE = new AnonymousProvider(); 
+    public static final IdentityProvider INSTANCE = new AnonymousProvider();
 
     @Override
     public SignedIdentityToken getIdentityToken(
@@ -42,7 +42,7 @@ public class AnonymousProvider implements IdentityProvider {
             .map(policy -> {
                 UserIdentityToken token = new AnonymousIdentityToken(policy.getPolicyId());
 
-                return new SignedIdentityToken(token, new SignatureData());
+                return new SignedIdentityToken(token, new SignatureData(null, null));
             })
             .orElseThrow(() -> new Exception("no anonymous token policy found"));
     }
