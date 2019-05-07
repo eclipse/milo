@@ -468,8 +468,6 @@ public class UaStackServer {
                 )
                 .collect(toSet());
 
-            matchingEndpoints.forEach(System.out::println);
-
             GetEndpointsResponse response = new GetEndpointsResponse(
                 serviceRequest.createResponseHeader(),
                 matchingEndpoints.isEmpty() ?
