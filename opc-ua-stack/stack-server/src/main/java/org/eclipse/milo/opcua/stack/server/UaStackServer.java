@@ -15,7 +15,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -104,7 +103,6 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
@@ -269,13 +267,13 @@ public class UaStackServer {
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
-                .collect(Collectors.toList());
+                .collect(toList());
 
             if (discoveryUrls.isEmpty()) {
                 discoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
-                    .collect(Collectors.toList());
+                    .collect(toList());
             }
 
             return new ApplicationDescription(
@@ -452,13 +450,14 @@ public class UaStackServer {
                 newArrayList(request.getProfileUris()) :
                 new ArrayList<>();
 
-            Set<EndpointDescription> allEndpoints = getEndpointDescriptions()
+            List<EndpointDescription> allEndpoints = getEndpointDescriptions()
                 .stream()
                 .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> filterProfileUris(ed, profileUris))
-                .collect(toSet());
+                .distinct()
+                .collect(Collectors.toList());
 
-            Set<EndpointDescription> matchingEndpoints = allEndpoints.stream()
+            List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
                 .filter(endpoint -> filterEndpointUrls(endpoint, request.getEndpointUrl()))
                 .map(endpoint ->
                     replaceApplicationDescription(
@@ -466,7 +465,8 @@ public class UaStackServer {
                         getFilteredApplicationDescription(request.getEndpointUrl())
                     )
                 )
-                .collect(toSet());
+                .distinct()
+                .collect(toList());
 
             GetEndpointsResponse response = new GetEndpointsResponse(
                 serviceRequest.createResponseHeader(),
@@ -534,20 +534,22 @@ public class UaStackServer {
         }
 
         private ApplicationDescription getFilteredApplicationDescription(String endpointUrl) {
-            Set<String> allDiscoveryUrls = config.getEndpoints()
+            List<String> allDiscoveryUrls = config.getEndpoints()
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
-                .collect(toSet());
+                .distinct()
+                .collect(toList());
 
             if (allDiscoveryUrls.isEmpty()) {
                 allDiscoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
-                    .collect(toSet());
+                    .distinct()
+                    .collect(toList());
             }
 
-            Set<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
+            List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
                 .filter(discoveryUrl -> {
                     try {
 
@@ -562,7 +564,8 @@ public class UaStackServer {
                         return false;
                     }
                 })
-                .collect(toSet());
+                .distinct()
+                .collect(toList());
 
 
             logger.debug("Matching discovery URLs: {}", matchingDiscoveryUrls);
