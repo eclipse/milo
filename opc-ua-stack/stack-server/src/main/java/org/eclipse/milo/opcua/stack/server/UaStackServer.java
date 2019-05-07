@@ -464,7 +464,7 @@ public class UaStackServer {
                         getFilteredApplicationDescription(request.getEndpointUrl())
                     )
                 )
-                .distinct() // TODO this will work once structs implement equals/hashcode
+                .distinct()
                 .collect(toList());
 
             GetEndpointsResponse response = new GetEndpointsResponse(
