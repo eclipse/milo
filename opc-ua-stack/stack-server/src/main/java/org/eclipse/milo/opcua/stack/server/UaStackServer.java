@@ -267,13 +267,15 @@ public class UaStackServer {
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
-                .collect(Collectors.toList());
+                .distinct()
+                .collect(toList());
 
             if (discoveryUrls.isEmpty()) {
                 discoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
-                    .collect(Collectors.toList());
+                    .distinct()
+                    .collect(toList());
             }
 
             return new ApplicationDescription(
@@ -454,7 +456,8 @@ public class UaStackServer {
                 .stream()
                 .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> filterProfileUris(ed, profileUris))
-                .collect(toList());
+                .distinct()
+                .collect(Collectors.toList());
 
             List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
                 .filter(endpoint -> filterEndpointUrls(endpoint, request.getEndpointUrl()))
@@ -464,13 +467,14 @@ public class UaStackServer {
                         getFilteredApplicationDescription(request.getEndpointUrl())
                     )
                 )
+                .distinct()
                 .collect(toList());
 
             GetEndpointsResponse response = new GetEndpointsResponse(
                 serviceRequest.createResponseHeader(),
                 matchingEndpoints.isEmpty() ?
-                    a(allEndpoints, EndpointDescription.class) :
-                    a(matchingEndpoints, EndpointDescription.class)
+                    allEndpoints.toArray(new EndpointDescription[0]) :
+                    matchingEndpoints.toArray(new EndpointDescription[0])
             );
 
             serviceRequest.setResponse(response);
@@ -536,13 +540,15 @@ public class UaStackServer {
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
-                .collect(Collectors.toList());
+                .distinct()
+                .collect(toList());
 
             if (allDiscoveryUrls.isEmpty()) {
                 allDiscoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
-                    .collect(Collectors.toList());
+                    .distinct()
+                    .collect(toList());
             }
 
             List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
@@ -560,6 +566,7 @@ public class UaStackServer {
                         return false;
                     }
                 })
+                .distinct()
                 .collect(toList());
 
 
@@ -573,8 +580,8 @@ public class UaStackServer {
                 null,
                 null,
                 matchingDiscoveryUrls.isEmpty() ?
-                    a(allDiscoveryUrls, String.class) :
-                    a(matchingDiscoveryUrls, String.class)
+                    allDiscoveryUrls.toArray(new String[0]) :
+                    matchingDiscoveryUrls.toArray(new String[0])
             );
         }
 
