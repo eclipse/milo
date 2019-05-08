@@ -14,14 +14,14 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 
 public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Stepped",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -29,7 +29,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Definition",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -37,7 +37,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<Double> MAX_TIME_INTERVAL = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxTimeInterval",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );
@@ -45,7 +45,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<Double> MIN_TIME_INTERVAL = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MinTimeInterval",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );
@@ -53,7 +53,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<Double> EXCEPTION_DEVIATION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ExceptionDeviation",
-        NodeId.parse("ns=0;i=11"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11"),
         ValueRanks.Scalar,
         Double.class
     );
@@ -61,7 +61,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<ExceptionDeviationFormat> EXCEPTION_DEVIATION_FORMAT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ExceptionDeviationFormat",
-        NodeId.parse("ns=0;i=890"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=890"),
         ValueRanks.Scalar,
         ExceptionDeviationFormat.class
     );
@@ -69,7 +69,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "StartOfArchive",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -77,7 +77,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<DateTime> START_OF_ONLINE_ARCHIVE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "StartOfOnlineArchive",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );

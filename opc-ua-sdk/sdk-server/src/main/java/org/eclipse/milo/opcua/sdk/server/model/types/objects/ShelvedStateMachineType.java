@@ -14,13 +14,13 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public interface ShelvedStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<Double> UNSHELVE_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "UnshelveTime",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );

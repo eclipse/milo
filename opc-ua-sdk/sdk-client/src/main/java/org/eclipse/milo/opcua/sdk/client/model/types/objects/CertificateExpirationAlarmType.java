@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
@@ -24,7 +25,7 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
     QualifiedProperty<DateTime> EXPIRATION_DATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ExpirationDate",
-        NodeId.parse("ns=0;i=13"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=13"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -32,7 +33,7 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
     QualifiedProperty<Double> EXPIRATION_LIMIT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ExpirationLimit",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );
@@ -40,7 +41,7 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
     QualifiedProperty<NodeId> CERTIFICATE_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CertificateType",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -48,7 +49,7 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
     QualifiedProperty<ByteString> CERTIFICATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Certificate",
-        NodeId.parse("ns=0;i=15"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15"),
         ValueRanks.Scalar,
         ByteString.class
     );

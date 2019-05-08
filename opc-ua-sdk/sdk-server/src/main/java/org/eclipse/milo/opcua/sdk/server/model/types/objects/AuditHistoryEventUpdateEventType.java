@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
@@ -22,7 +23,7 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "UpdatedNode",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -30,7 +31,7 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
     QualifiedProperty<PerformUpdateType> PERFORM_INSERT_REPLACE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "PerformInsertReplace",
-        NodeId.parse("ns=0;i=11293"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11293"),
         ValueRanks.Scalar,
         PerformUpdateType.class
     );
@@ -38,7 +39,7 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
     QualifiedProperty<EventFilter> FILTER = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Filter",
-        NodeId.parse("ns=0;i=725"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=725"),
         ValueRanks.Scalar,
         EventFilter.class
     );
@@ -46,7 +47,7 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
     QualifiedProperty<HistoryEventFieldList[]> NEW_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "NewValues",
-        NodeId.parse("ns=0;i=920"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=920"),
         ValueRanks.OneDimension,
         HistoryEventFieldList[].class
     );
@@ -54,7 +55,7 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
     QualifiedProperty<HistoryEventFieldList[]> OLD_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldValues",
-        NodeId.parse("ns=0;i=920"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=920"),
         ValueRanks.OneDimension,
         HistoryEventFieldList[].class
     );

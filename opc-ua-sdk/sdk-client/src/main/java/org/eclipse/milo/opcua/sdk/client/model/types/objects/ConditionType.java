@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -26,7 +27,7 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConditionClassId",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -34,7 +35,7 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<LocalizedText> CONDITION_CLASS_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConditionClassName",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );
@@ -42,7 +43,7 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConditionName",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -50,7 +51,7 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<NodeId> BRANCH_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "BranchId",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -58,7 +59,7 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Retain",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -66,7 +67,7 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );

@@ -14,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 
@@ -23,7 +23,7 @@ public interface MultiStateValueDiscreteType extends DiscreteItemType {
     QualifiedProperty<EnumValueType[]> ENUM_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EnumValues",
-        NodeId.parse("ns=0;i=7594"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7594"),
         ValueRanks.OneDimension,
         EnumValueType[].class
     );
@@ -31,7 +31,7 @@ public interface MultiStateValueDiscreteType extends DiscreteItemType {
     QualifiedProperty<LocalizedText> VALUE_AS_TEXT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ValueAsText",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );

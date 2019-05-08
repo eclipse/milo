@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
@@ -22,7 +22,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_PROFILE_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerProfileArray",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.OneDimension,
         String[].class
     );
@@ -30,7 +30,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<String[]> LOCALE_ID_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LocaleIdArray",
-        NodeId.parse("ns=0;i=295"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=295"),
         ValueRanks.OneDimension,
         String[].class
     );
@@ -38,7 +38,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<Double> MIN_SUPPORTED_SAMPLE_RATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MinSupportedSampleRate",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );
@@ -46,7 +46,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<UShort> MAX_BROWSE_CONTINUATION_POINTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxBrowseContinuationPoints",
-        NodeId.parse("ns=0;i=5"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
         ValueRanks.Scalar,
         UShort.class
     );
@@ -54,7 +54,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<UShort> MAX_QUERY_CONTINUATION_POINTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxQueryContinuationPoints",
-        NodeId.parse("ns=0;i=5"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
         ValueRanks.Scalar,
         UShort.class
     );
@@ -62,7 +62,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<UShort> MAX_HISTORY_CONTINUATION_POINTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxHistoryContinuationPoints",
-        NodeId.parse("ns=0;i=5"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
         ValueRanks.Scalar,
         UShort.class
     );
@@ -70,7 +70,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<SignedSoftwareCertificate[]> SOFTWARE_CERTIFICATES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SoftwareCertificates",
-        NodeId.parse("ns=0;i=344"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=344"),
         ValueRanks.OneDimension,
         SignedSoftwareCertificate[].class
     );
@@ -78,7 +78,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<UInteger> MAX_ARRAY_LENGTH = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxArrayLength",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -86,7 +86,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<UInteger> MAX_STRING_LENGTH = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxStringLength",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -94,7 +94,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<UInteger> MAX_BYTE_STRING_LENGTH = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxByteStringLength",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );

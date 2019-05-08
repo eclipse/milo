@@ -16,14 +16,14 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditEventType extends BaseEventType {
     QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ActionTimeStamp",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -31,7 +31,7 @@ public interface AuditEventType extends BaseEventType {
     QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Status",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -39,7 +39,7 @@ public interface AuditEventType extends BaseEventType {
     QualifiedProperty<String> SERVER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -47,7 +47,7 @@ public interface AuditEventType extends BaseEventType {
     QualifiedProperty<String> CLIENT_AUDIT_ENTRY_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientAuditEntryId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -55,7 +55,7 @@ public interface AuditEventType extends BaseEventType {
     QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );

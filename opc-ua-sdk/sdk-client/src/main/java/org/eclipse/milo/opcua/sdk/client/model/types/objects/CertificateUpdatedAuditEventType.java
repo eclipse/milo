@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
@@ -22,7 +23,7 @@ public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEvent
     QualifiedProperty<NodeId> CERTIFICATE_GROUP = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CertificateGroup",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -30,7 +31,7 @@ public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEvent
     QualifiedProperty<NodeId> CERTIFICATE_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CertificateType",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );

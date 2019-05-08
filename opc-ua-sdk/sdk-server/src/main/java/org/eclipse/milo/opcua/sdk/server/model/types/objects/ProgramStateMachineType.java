@@ -17,8 +17,8 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteTransitionV
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.ProgramDiagnosticType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
 
@@ -26,7 +26,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<Boolean> CREATABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Creatable",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -34,7 +34,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<Boolean> DELETABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Deletable",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -42,7 +42,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<Boolean> AUTO_DELETE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AutoDelete",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -50,7 +50,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<Integer> RECYCLE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RecycleCount",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
@@ -58,7 +58,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<UInteger> INSTANCE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InstanceCount",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -66,7 +66,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<UInteger> MAX_INSTANCE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxInstanceCount",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -74,7 +74,7 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<UInteger> MAX_RECYCLE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxRecycleCount",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );

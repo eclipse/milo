@@ -14,14 +14,14 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface DataTypeDictionaryType extends BaseDataVariableType {
     QualifiedProperty<String> DATA_TYPE_VERSION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "DataTypeVersion",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -29,7 +29,7 @@ public interface DataTypeDictionaryType extends BaseDataVariableType {
     QualifiedProperty<String> NAMESPACE_URI = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "NamespaceUri",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );

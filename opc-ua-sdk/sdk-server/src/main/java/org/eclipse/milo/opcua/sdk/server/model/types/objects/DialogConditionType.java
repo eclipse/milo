@@ -15,14 +15,14 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface DialogConditionType extends ConditionType {
     QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Prompt",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );
@@ -30,7 +30,7 @@ public interface DialogConditionType extends ConditionType {
     QualifiedProperty<LocalizedText[]> RESPONSE_OPTION_SET = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ResponseOptionSet",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.OneDimension,
         LocalizedText[].class
     );
@@ -38,7 +38,7 @@ public interface DialogConditionType extends ConditionType {
     QualifiedProperty<Integer> DEFAULT_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "DefaultResponse",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
@@ -46,7 +46,7 @@ public interface DialogConditionType extends ConditionType {
     QualifiedProperty<Integer> OK_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OkResponse",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
@@ -54,7 +54,7 @@ public interface DialogConditionType extends ConditionType {
     QualifiedProperty<Integer> CANCEL_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CancelResponse",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
@@ -62,7 +62,7 @@ public interface DialogConditionType extends ConditionType {
     QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastResponse",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );

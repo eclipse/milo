@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
@@ -24,7 +24,7 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<SignedSoftwareCertificate[]> CLIENT_SOFTWARE_CERTIFICATES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientSoftwareCertificates",
-        NodeId.parse("ns=0;i=344"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=344"),
         ValueRanks.OneDimension,
         SignedSoftwareCertificate[].class
     );
@@ -32,7 +32,7 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<UserIdentityToken> USER_IDENTITY_TOKEN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "UserIdentityToken",
-        NodeId.parse("ns=0;i=316"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=316"),
         ValueRanks.Scalar,
         UserIdentityToken.class
     );
@@ -40,7 +40,7 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<String> SECURE_CHANNEL_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );

@@ -16,6 +16,7 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -24,7 +25,7 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
     QualifiedProperty<NodeId> INPUT_NODE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InputNode",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -32,7 +33,7 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
     QualifiedProperty<Boolean> SUPPRESSED_OR_SHELVED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SuppressedOrShelved",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -40,7 +41,7 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
     QualifiedProperty<Double> MAX_TIME_SHELVED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxTimeShelved",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );

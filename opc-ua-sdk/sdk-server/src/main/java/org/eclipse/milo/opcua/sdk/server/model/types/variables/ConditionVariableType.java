@@ -13,13 +13,13 @@ package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public interface ConditionVariableType extends BaseDataVariableType {
     QualifiedProperty<DateTime> SOURCE_TIMESTAMP = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SourceTimestamp",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
