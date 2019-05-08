@@ -11,19 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 public interface ExclusiveLimitStateMachineType extends FiniteStateMachineType {
-    TransitionType getHighHighToHighNode();
+    StateType getHighHighNode();
 
-    TransitionType getHighToHighHighNode();
+    StateType getHighNode();
+
+    StateType getLowNode();
+
+    StateType getLowLowNode();
 
     TransitionType getLowLowToLowNode();
 
     TransitionType getLowToLowLowNode();
 
-    StateType getHighNode();
+    TransitionType getHighHighToHighNode();
 
-    StateType getHighHighNode();
-
-    StateType getLowNode();
-
-    StateType getLowLowNode();
+    TransitionType getHighToHighHighNode();
 }

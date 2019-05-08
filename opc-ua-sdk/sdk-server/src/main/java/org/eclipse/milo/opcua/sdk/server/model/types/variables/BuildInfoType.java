@@ -13,12 +13,6 @@ package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 
 public interface BuildInfoType extends BaseDataVariableType {
-    BaseDataVariableType getSoftwareVersionNode();
-
-    String getSoftwareVersion();
-
-    void setSoftwareVersion(String value);
-
     BaseDataVariableType getProductUriNode();
 
     String getProductUri();
@@ -36,6 +30,12 @@ public interface BuildInfoType extends BaseDataVariableType {
     String getProductName();
 
     void setProductName(String value);
+
+    BaseDataVariableType getSoftwareVersionNode();
+
+    String getSoftwareVersion();
+
+    void setSoftwareVersion(String value);
 
     BaseDataVariableType getBuildNumberNode();
 

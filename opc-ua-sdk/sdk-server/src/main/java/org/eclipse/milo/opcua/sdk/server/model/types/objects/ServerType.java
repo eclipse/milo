@@ -21,12 +21,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 
 public interface ServerType extends BaseObjectType {
-    QualifiedProperty<DateTime> ESTIMATED_RETURN_TIME = new QualifiedProperty<>(
+    QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "EstimatedReturnTime",
-        NodeId.parse("ns=0;i=13"),
-        ValueRanks.Scalar,
-        DateTime.class
+        "ServerArray",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.OneDimension,
+        String[].class
+    );
+
+    QualifiedProperty<String[]> NAMESPACE_ARRAY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespaceArray",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.OneDimension,
+        String[].class
     );
 
     QualifiedProperty<UByte> SERVICE_LEVEL = new QualifiedProperty<>(
@@ -45,39 +53,13 @@ public interface ServerType extends BaseObjectType {
         Boolean.class
     );
 
-    QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
+    QualifiedProperty<DateTime> ESTIMATED_RETURN_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ServerArray",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.OneDimension,
-        String[].class
+        "EstimatedReturnTime",
+        NodeId.parse("ns=0;i=13"),
+        ValueRanks.Scalar,
+        DateTime.class
     );
-
-    QualifiedProperty<String[]> NAMESPACE_ARRAY = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NamespaceArray",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.OneDimension,
-        String[].class
-    );
-
-    PropertyType getEstimatedReturnTimeNode();
-
-    DateTime getEstimatedReturnTime();
-
-    void setEstimatedReturnTime(DateTime value);
-
-    PropertyType getServiceLevelNode();
-
-    UByte getServiceLevel();
-
-    void setServiceLevel(UByte value);
-
-    PropertyType getAuditingNode();
-
-    Boolean getAuditing();
-
-    void setAuditing(Boolean value);
 
     PropertyType getServerArrayNode();
 
@@ -91,21 +73,23 @@ public interface ServerType extends BaseObjectType {
 
     void setNamespaceArray(String[] value);
 
-    ServerRedundancyType getServerRedundancyNode();
+    PropertyType getServiceLevelNode();
 
-    VendorServerInfoType getVendorServerInfoNode();
+    UByte getServiceLevel();
 
-    UaMethodNode getRequestServerStateChangeMethodNode();
+    void setServiceLevel(UByte value);
 
-    ServerCapabilitiesType getServerCapabilitiesNode();
+    PropertyType getAuditingNode();
 
-    ServerDiagnosticsType getServerDiagnosticsNode();
+    Boolean getAuditing();
 
-    UaMethodNode getSetSubscriptionDurableMethodNode();
+    void setAuditing(Boolean value);
 
-    UaMethodNode getGetMonitoredItemsMethodNode();
+    PropertyType getEstimatedReturnTimeNode();
 
-    NamespacesType getNamespacesNode();
+    DateTime getEstimatedReturnTime();
+
+    void setEstimatedReturnTime(DateTime value);
 
     ServerStatusType getServerStatusNode();
 
@@ -113,5 +97,21 @@ public interface ServerType extends BaseObjectType {
 
     void setServerStatus(ServerStatusDataType value);
 
+    ServerCapabilitiesType getServerCapabilitiesNode();
+
+    ServerDiagnosticsType getServerDiagnosticsNode();
+
+    VendorServerInfoType getVendorServerInfoNode();
+
+    ServerRedundancyType getServerRedundancyNode();
+
+    NamespacesType getNamespacesNode();
+
+    UaMethodNode getGetMonitoredItemsMethodNode();
+
     UaMethodNode getResendDataMethodNode();
+
+    UaMethodNode getSetSubscriptionDurableMethodNode();
+
+    UaMethodNode getRequestServerStateChangeMethodNode();
 }

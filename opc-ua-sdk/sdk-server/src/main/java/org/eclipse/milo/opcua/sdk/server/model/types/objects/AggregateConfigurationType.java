@@ -25,17 +25,17 @@ public interface AggregateConfigurationType extends BaseObjectType {
         Boolean.class
     );
 
-    QualifiedProperty<UByte> PERCENT_DATA_GOOD = new QualifiedProperty<>(
+    QualifiedProperty<UByte> PERCENT_DATA_BAD = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "PercentDataGood",
+        "PercentDataBad",
         NodeId.parse("ns=0;i=3"),
         ValueRanks.Scalar,
         UByte.class
     );
 
-    QualifiedProperty<UByte> PERCENT_DATA_BAD = new QualifiedProperty<>(
+    QualifiedProperty<UByte> PERCENT_DATA_GOOD = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "PercentDataBad",
+        "PercentDataGood",
         NodeId.parse("ns=0;i=3"),
         ValueRanks.Scalar,
         UByte.class
@@ -55,17 +55,17 @@ public interface AggregateConfigurationType extends BaseObjectType {
 
     void setTreatUncertainAsBad(Boolean value);
 
-    PropertyType getPercentDataGoodNode();
-
-    UByte getPercentDataGood();
-
-    void setPercentDataGood(UByte value);
-
     PropertyType getPercentDataBadNode();
 
     UByte getPercentDataBad();
 
     void setPercentDataBad(UByte value);
+
+    PropertyType getPercentDataGoodNode();
+
+    UByte getPercentDataGood();
+
+    void setPercentDataGood(UByte value);
 
     PropertyType getUseSlopedExtrapolationNode();
 

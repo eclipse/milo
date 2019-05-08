@@ -16,6 +16,14 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface LimitAlarmType extends AlarmConditionType {
+    QualifiedProperty<Double> HIGH_HIGH_LIMIT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "HighHighLimit",
+        NodeId.parse("ns=0;i=11"),
+        ValueRanks.Scalar,
+        Double.class
+    );
+
     QualifiedProperty<Double> HIGH_LIMIT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "HighLimit",
@@ -32,14 +40,6 @@ public interface LimitAlarmType extends AlarmConditionType {
         Double.class
     );
 
-    QualifiedProperty<Double> HIGH_HIGH_LIMIT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "HighHighLimit",
-        NodeId.parse("ns=0;i=11"),
-        ValueRanks.Scalar,
-        Double.class
-    );
-
     QualifiedProperty<Double> LOW_LOW_LIMIT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LowLowLimit",
@@ -47,6 +47,12 @@ public interface LimitAlarmType extends AlarmConditionType {
         ValueRanks.Scalar,
         Double.class
     );
+
+    PropertyType getHighHighLimitNode();
+
+    Double getHighHighLimit();
+
+    void setHighHighLimit(Double value);
 
     PropertyType getHighLimitNode();
 
@@ -59,12 +65,6 @@ public interface LimitAlarmType extends AlarmConditionType {
     Double getLowLimit();
 
     void setLowLimit(Double value);
-
-    PropertyType getHighHighLimitNode();
-
-    Double getHighHighLimit();
-
-    void setHighHighLimit(Double value);
 
     PropertyType getLowLowLimitNode();
 

@@ -26,6 +26,14 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
         Boolean.class
     );
 
+    QualifiedProperty<DateTime> START_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StartTime",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
+
     QualifiedProperty<DateTime> END_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EndTime",
@@ -42,19 +50,17 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
         DataValue[].class
     );
 
-    QualifiedProperty<DateTime> START_TIME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "StartTime",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
     PropertyType getIsDeleteModifiedNode();
 
     Boolean getIsDeleteModified();
 
     void setIsDeleteModified(Boolean value);
+
+    PropertyType getStartTimeNode();
+
+    DateTime getStartTime();
+
+    void setStartTime(DateTime value);
 
     PropertyType getEndTimeNode();
 
@@ -67,10 +73,4 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
     DataValue[] getOldValues();
 
     void setOldValues(DataValue[] value);
-
-    PropertyType getStartTimeNode();
-
-    DateTime getStartTime();
-
-    void setStartTime(DateTime value);
 }

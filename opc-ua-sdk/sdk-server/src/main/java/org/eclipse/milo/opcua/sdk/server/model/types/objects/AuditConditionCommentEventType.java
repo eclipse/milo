@@ -18,14 +18,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditConditionCommentEventType extends AuditConditionEventType {
-    QualifiedProperty<LocalizedText> COMMENT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Comment",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.Scalar,
-        LocalizedText.class
-    );
-
     QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EventId",
@@ -34,15 +26,23 @@ public interface AuditConditionCommentEventType extends AuditConditionEventType 
         ByteString.class
     );
 
-    PropertyType getCommentNode();
-
-    LocalizedText getComment();
-
-    void setComment(LocalizedText value);
+    QualifiedProperty<LocalizedText> COMMENT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Comment",
+        NodeId.parse("ns=0;i=21"),
+        ValueRanks.Scalar,
+        LocalizedText.class
+    );
 
     PropertyType getEventIdNode();
 
     ByteString getEventId();
 
     void setEventId(ByteString value);
+
+    PropertyType getCommentNode();
+
+    LocalizedText getComment();
+
+    void setComment(LocalizedText value);
 }

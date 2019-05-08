@@ -25,14 +25,6 @@ public interface AuditEventType extends BaseEventType {
         DateTime.class
     );
 
-    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Status",
@@ -57,17 +49,19 @@ public interface AuditEventType extends BaseEventType {
         String.class
     );
 
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientUserId",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
+
     PropertyType getActionTimeStampNode();
 
     DateTime getActionTimeStamp();
 
     void setActionTimeStamp(DateTime value);
-
-    PropertyType getClientUserIdNode();
-
-    String getClientUserId();
-
-    void setClientUserId(String value);
 
     PropertyType getStatusNode();
 
@@ -86,4 +80,10 @@ public interface AuditEventType extends BaseEventType {
     String getClientAuditEntryId();
 
     void setClientAuditEntryId(String value);
+
+    PropertyType getClientUserIdNode();
+
+    String getClientUserId();
+
+    void setClientUserId(String value);
 }

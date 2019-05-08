@@ -17,22 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
-    QualifiedProperty<Object> OLD_VALUE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "OldValue",
-        NodeId.parse("ns=0;i=24"),
-        ValueRanks.Scalar,
-        Object.class
-    );
-
-    QualifiedProperty<Object> NEW_VALUE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NewValue",
-        NodeId.parse("ns=0;i=24"),
-        ValueRanks.Scalar,
-        Object.class
-    );
-
     QualifiedProperty<UInteger> ATTRIBUTE_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AttributeId",
@@ -49,17 +33,21 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
         String.class
     );
 
-    PropertyType getOldValueNode();
+    QualifiedProperty<Object> OLD_VALUE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OldValue",
+        NodeId.parse("ns=0;i=24"),
+        ValueRanks.Scalar,
+        Object.class
+    );
 
-    Object getOldValue();
-
-    void setOldValue(Object value);
-
-    PropertyType getNewValueNode();
-
-    Object getNewValue();
-
-    void setNewValue(Object value);
+    QualifiedProperty<Object> NEW_VALUE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NewValue",
+        NodeId.parse("ns=0;i=24"),
+        ValueRanks.Scalar,
+        Object.class
+    );
 
     PropertyType getAttributeIdNode();
 
@@ -72,4 +60,16 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
     String getIndexRange();
 
     void setIndexRange(String value);
+
+    PropertyType getOldValueNode();
+
+    Object getOldValue();
+
+    void setOldValue(Object value);
+
+    PropertyType getNewValueNode();
+
+    Object getNewValue();
+
+    void setNewValue(Object value);
 }

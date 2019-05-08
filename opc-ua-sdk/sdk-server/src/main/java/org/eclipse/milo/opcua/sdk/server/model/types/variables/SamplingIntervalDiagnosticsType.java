@@ -13,17 +13,17 @@ package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
+    BaseDataVariableType getSamplingIntervalNode();
+
+    Double getSamplingInterval();
+
+    void setSamplingInterval(Double value);
+
     BaseDataVariableType getSampledMonitoredItemsCountNode();
 
     UInteger getSampledMonitoredItemsCount();
 
     void setSampledMonitoredItemsCount(UInteger value);
-
-    BaseDataVariableType getDisabledMonitoredItemsSamplingCountNode();
-
-    UInteger getDisabledMonitoredItemsSamplingCount();
-
-    void setDisabledMonitoredItemsSamplingCount(UInteger value);
 
     BaseDataVariableType getMaxSampledMonitoredItemsCountNode();
 
@@ -31,9 +31,9 @@ public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
 
     void setMaxSampledMonitoredItemsCount(UInteger value);
 
-    BaseDataVariableType getSamplingIntervalNode();
+    BaseDataVariableType getDisabledMonitoredItemsSamplingCountNode();
 
-    Double getSamplingInterval();
+    UInteger getDisabledMonitoredItemsSamplingCount();
 
-    void setSamplingInterval(Double value);
+    void setDisabledMonitoredItemsSamplingCount(UInteger value);
 }

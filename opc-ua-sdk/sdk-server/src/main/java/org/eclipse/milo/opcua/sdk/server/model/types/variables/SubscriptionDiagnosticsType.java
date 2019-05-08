@@ -15,101 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
-    BaseDataVariableType getMaxNotificationsPerPublishNode();
-
-    UInteger getMaxNotificationsPerPublish();
-
-    void setMaxNotificationsPerPublish(UInteger value);
-
-    BaseDataVariableType getModifyCountNode();
-
-    UInteger getModifyCount();
-
-    void setModifyCount(UInteger value);
-
-    BaseDataVariableType getMaxKeepAliveCountNode();
-
-    UInteger getMaxKeepAliveCount();
-
-    void setMaxKeepAliveCount(UInteger value);
-
     BaseDataVariableType getSessionIdNode();
 
     NodeId getSessionId();
 
     void setSessionId(NodeId value);
-
-    BaseDataVariableType getEventNotificationsCountNode();
-
-    UInteger getEventNotificationsCount();
-
-    void setEventNotificationsCount(UInteger value);
-
-    BaseDataVariableType getPriorityNode();
-
-    UByte getPriority();
-
-    void setPriority(UByte value);
-
-    BaseDataVariableType getRepublishMessageCountNode();
-
-    UInteger getRepublishMessageCount();
-
-    void setRepublishMessageCount(UInteger value);
-
-    BaseDataVariableType getMonitoringQueueOverflowCountNode();
-
-    UInteger getMonitoringQueueOverflowCount();
-
-    void setMonitoringQueueOverflowCount(UInteger value);
-
-    BaseDataVariableType getRepublishRequestCountNode();
-
-    UInteger getRepublishRequestCount();
-
-    void setRepublishRequestCount(UInteger value);
-
-    BaseDataVariableType getTransferredToAltClientCountNode();
-
-    UInteger getTransferredToAltClientCount();
-
-    void setTransferredToAltClientCount(UInteger value);
-
-    BaseDataVariableType getPublishRequestCountNode();
-
-    UInteger getPublishRequestCount();
-
-    void setPublishRequestCount(UInteger value);
-
-    BaseDataVariableType getCurrentKeepAliveCountNode();
-
-    UInteger getCurrentKeepAliveCount();
-
-    void setCurrentKeepAliveCount(UInteger value);
-
-    BaseDataVariableType getMaxLifetimeCountNode();
-
-    UInteger getMaxLifetimeCount();
-
-    void setMaxLifetimeCount(UInteger value);
-
-    BaseDataVariableType getEventQueueOverFlowCountNode();
-
-    UInteger getEventQueueOverFlowCount();
-
-    void setEventQueueOverFlowCount(UInteger value);
-
-    BaseDataVariableType getMonitoredItemCountNode();
-
-    UInteger getMonitoredItemCount();
-
-    void setMonitoredItemCount(UInteger value);
-
-    BaseDataVariableType getUnacknowledgedMessageCountNode();
-
-    UInteger getUnacknowledgedMessageCount();
-
-    void setUnacknowledgedMessageCount(UInteger value);
 
     BaseDataVariableType getSubscriptionIdNode();
 
@@ -117,23 +27,11 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setSubscriptionId(UInteger value);
 
-    BaseDataVariableType getNotificationsCountNode();
+    BaseDataVariableType getPriorityNode();
 
-    UInteger getNotificationsCount();
+    UByte getPriority();
 
-    void setNotificationsCount(UInteger value);
-
-    BaseDataVariableType getPublishingEnabledNode();
-
-    Boolean getPublishingEnabled();
-
-    void setPublishingEnabled(Boolean value);
-
-    BaseDataVariableType getEnableCountNode();
-
-    UInteger getEnableCount();
-
-    void setEnableCount(UInteger value);
+    void setPriority(UByte value);
 
     BaseDataVariableType getPublishingIntervalNode();
 
@@ -141,17 +39,41 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setPublishingInterval(Double value);
 
-    BaseDataVariableType getRepublishMessageRequestCountNode();
+    BaseDataVariableType getMaxKeepAliveCountNode();
 
-    UInteger getRepublishMessageRequestCount();
+    UInteger getMaxKeepAliveCount();
 
-    void setRepublishMessageRequestCount(UInteger value);
+    void setMaxKeepAliveCount(UInteger value);
 
-    BaseDataVariableType getDisabledMonitoredItemCountNode();
+    BaseDataVariableType getMaxLifetimeCountNode();
 
-    UInteger getDisabledMonitoredItemCount();
+    UInteger getMaxLifetimeCount();
 
-    void setDisabledMonitoredItemCount(UInteger value);
+    void setMaxLifetimeCount(UInteger value);
+
+    BaseDataVariableType getMaxNotificationsPerPublishNode();
+
+    UInteger getMaxNotificationsPerPublish();
+
+    void setMaxNotificationsPerPublish(UInteger value);
+
+    BaseDataVariableType getPublishingEnabledNode();
+
+    Boolean getPublishingEnabled();
+
+    void setPublishingEnabled(Boolean value);
+
+    BaseDataVariableType getModifyCountNode();
+
+    UInteger getModifyCount();
+
+    void setModifyCount(UInteger value);
+
+    BaseDataVariableType getEnableCountNode();
+
+    UInteger getEnableCount();
+
+    void setEnableCount(UInteger value);
 
     BaseDataVariableType getDisableCountNode();
 
@@ -159,11 +81,35 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setDisableCount(UInteger value);
 
+    BaseDataVariableType getRepublishRequestCountNode();
+
+    UInteger getRepublishRequestCount();
+
+    void setRepublishRequestCount(UInteger value);
+
+    BaseDataVariableType getRepublishMessageRequestCountNode();
+
+    UInteger getRepublishMessageRequestCount();
+
+    void setRepublishMessageRequestCount(UInteger value);
+
+    BaseDataVariableType getRepublishMessageCountNode();
+
+    UInteger getRepublishMessageCount();
+
+    void setRepublishMessageCount(UInteger value);
+
     BaseDataVariableType getTransferRequestCountNode();
 
     UInteger getTransferRequestCount();
 
     void setTransferRequestCount(UInteger value);
+
+    BaseDataVariableType getTransferredToAltClientCountNode();
+
+    UInteger getTransferredToAltClientCount();
+
+    void setTransferredToAltClientCount(UInteger value);
 
     BaseDataVariableType getTransferredToSameClientCountNode();
 
@@ -171,11 +117,29 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setTransferredToSameClientCount(UInteger value);
 
+    BaseDataVariableType getPublishRequestCountNode();
+
+    UInteger getPublishRequestCount();
+
+    void setPublishRequestCount(UInteger value);
+
     BaseDataVariableType getDataChangeNotificationsCountNode();
 
     UInteger getDataChangeNotificationsCount();
 
     void setDataChangeNotificationsCount(UInteger value);
+
+    BaseDataVariableType getEventNotificationsCountNode();
+
+    UInteger getEventNotificationsCount();
+
+    void setEventNotificationsCount(UInteger value);
+
+    BaseDataVariableType getNotificationsCountNode();
+
+    UInteger getNotificationsCount();
+
+    void setNotificationsCount(UInteger value);
 
     BaseDataVariableType getLatePublishRequestCountNode();
 
@@ -183,11 +147,11 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setLatePublishRequestCount(UInteger value);
 
-    BaseDataVariableType getNextSequenceNumberNode();
+    BaseDataVariableType getCurrentKeepAliveCountNode();
 
-    UInteger getNextSequenceNumber();
+    UInteger getCurrentKeepAliveCount();
 
-    void setNextSequenceNumber(UInteger value);
+    void setCurrentKeepAliveCount(UInteger value);
 
     BaseDataVariableType getCurrentLifetimeCountNode();
 
@@ -195,9 +159,45 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setCurrentLifetimeCount(UInteger value);
 
+    BaseDataVariableType getUnacknowledgedMessageCountNode();
+
+    UInteger getUnacknowledgedMessageCount();
+
+    void setUnacknowledgedMessageCount(UInteger value);
+
     BaseDataVariableType getDiscardedMessageCountNode();
 
     UInteger getDiscardedMessageCount();
 
     void setDiscardedMessageCount(UInteger value);
+
+    BaseDataVariableType getMonitoredItemCountNode();
+
+    UInteger getMonitoredItemCount();
+
+    void setMonitoredItemCount(UInteger value);
+
+    BaseDataVariableType getDisabledMonitoredItemCountNode();
+
+    UInteger getDisabledMonitoredItemCount();
+
+    void setDisabledMonitoredItemCount(UInteger value);
+
+    BaseDataVariableType getMonitoringQueueOverflowCountNode();
+
+    UInteger getMonitoringQueueOverflowCount();
+
+    void setMonitoringQueueOverflowCount(UInteger value);
+
+    BaseDataVariableType getNextSequenceNumberNode();
+
+    UInteger getNextSequenceNumber();
+
+    void setNextSequenceNumber(UInteger value);
+
+    BaseDataVariableType getEventQueueOverFlowCountNode();
+
+    UInteger getEventQueueOverFlowCount();
+
+    void setEventQueueOverFlowCount(UInteger value);
 }

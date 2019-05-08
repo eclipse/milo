@@ -18,17 +18,17 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnos
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
 public interface SessionDiagnosticsObjectType extends BaseObjectType {
-    SessionSecurityDiagnosticsType getSessionSecurityDiagnosticsNode();
-
-    SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics();
-
-    void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value);
-
     SessionDiagnosticsVariableType getSessionDiagnosticsNode();
 
     SessionDiagnosticsDataType getSessionDiagnostics();
 
     void setSessionDiagnostics(SessionDiagnosticsDataType value);
+
+    SessionSecurityDiagnosticsType getSessionSecurityDiagnosticsNode();
+
+    SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics();
+
+    void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value);
 
     SubscriptionDiagnosticsArrayType getSubscriptionDiagnosticsArrayNode();
 

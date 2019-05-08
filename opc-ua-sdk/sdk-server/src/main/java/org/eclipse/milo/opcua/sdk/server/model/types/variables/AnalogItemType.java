@@ -17,6 +17,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 
 public interface AnalogItemType extends DataItemType {
+    QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InstrumentRange",
+        NodeId.parse("ns=0;i=884"),
+        ValueRanks.Scalar,
+        Range.class
+    );
+
     QualifiedProperty<Range> E_U_RANGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EURange",
@@ -33,13 +41,11 @@ public interface AnalogItemType extends DataItemType {
         EUInformation.class
     );
 
-    QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "InstrumentRange",
-        NodeId.parse("ns=0;i=884"),
-        ValueRanks.Scalar,
-        Range.class
-    );
+    PropertyType getInstrumentRangeNode();
+
+    Range getInstrumentRange();
+
+    void setInstrumentRange(Range value);
 
     PropertyType getEURangeNode();
 
@@ -52,10 +58,4 @@ public interface AnalogItemType extends DataItemType {
     EUInformation getEngineeringUnits();
 
     void setEngineeringUnits(EUInformation value);
-
-    PropertyType getInstrumentRangeNode();
-
-    Range getInstrumentRange();
-
-    void setInstrumentRange(Range value);
 }

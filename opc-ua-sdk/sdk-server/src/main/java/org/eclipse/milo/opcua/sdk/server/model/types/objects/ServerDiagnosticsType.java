@@ -36,8 +36,6 @@ public interface ServerDiagnosticsType extends BaseObjectType {
 
     void setEnabledFlag(Boolean value);
 
-    SessionsDiagnosticsSummaryType getSessionsDiagnosticsSummaryNode();
-
     ServerDiagnosticsSummaryType getServerDiagnosticsSummaryNode();
 
     ServerDiagnosticsSummaryDataType getServerDiagnosticsSummary();
@@ -55,4 +53,6 @@ public interface ServerDiagnosticsType extends BaseObjectType {
     SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray();
 
     void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
+
+    SessionsDiagnosticsSummaryType getSessionsDiagnosticsSummaryNode();
 }

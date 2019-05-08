@@ -17,14 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface ProgressEventType extends BaseEventType {
-    QualifiedProperty<UShort> PROGRESS = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Progress",
-        NodeId.parse("ns=0;i=5"),
-        ValueRanks.Scalar,
-        UShort.class
-    );
-
     QualifiedProperty<Object> CONTEXT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Context",
@@ -33,15 +25,23 @@ public interface ProgressEventType extends BaseEventType {
         Object.class
     );
 
-    PropertyType getProgressNode();
-
-    UShort getProgress();
-
-    void setProgress(UShort value);
+    QualifiedProperty<UShort> PROGRESS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Progress",
+        NodeId.parse("ns=0;i=5"),
+        ValueRanks.Scalar,
+        UShort.class
+    );
 
     PropertyType getContextNode();
 
     Object getContext();
 
     void setContext(Object value);
+
+    PropertyType getProgressNode();
+
+    UShort getProgress();
+
+    void setProgress(UShort value);
 }

@@ -25,6 +25,14 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
         String.class
     );
 
+    QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientCertificate",
+        NodeId.parse("ns=0;i=15"),
+        ValueRanks.Scalar,
+        ByteString.class
+    );
+
     QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientCertificateThumbprint",
@@ -41,19 +49,17 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
         Double.class
     );
 
-    QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientCertificate",
-        NodeId.parse("ns=0;i=15"),
-        ValueRanks.Scalar,
-        ByteString.class
-    );
-
     PropertyType getSecureChannelIdNode();
 
     String getSecureChannelId();
 
     void setSecureChannelId(String value);
+
+    PropertyType getClientCertificateNode();
+
+    ByteString getClientCertificate();
+
+    void setClientCertificate(ByteString value);
 
     PropertyType getClientCertificateThumbprintNode();
 
@@ -66,10 +72,4 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     Double getRevisedSessionTimeout();
 
     void setRevisedSessionTimeout(Double value);
-
-    PropertyType getClientCertificateNode();
-
-    ByteString getClientCertificate();
-
-    void setClientCertificate(ByteString value);
 }

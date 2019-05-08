@@ -18,6 +18,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 
 public interface HistoricalDataConfigurationType extends BaseObjectType {
+    QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Stepped",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
+
     QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Definition",
@@ -34,18 +42,18 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
         Double.class
     );
 
-    QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "StartOfArchive",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
     QualifiedProperty<Double> MIN_TIME_INTERVAL = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MinTimeInterval",
         NodeId.parse("ns=0;i=290"),
+        ValueRanks.Scalar,
+        Double.class
+    );
+
+    QualifiedProperty<Double> EXCEPTION_DEVIATION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExceptionDeviation",
+        NodeId.parse("ns=0;i=11"),
         ValueRanks.Scalar,
         Double.class
     );
@@ -58,20 +66,12 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
         ExceptionDeviationFormat.class
     );
 
-    QualifiedProperty<Double> EXCEPTION_DEVIATION = new QualifiedProperty<>(
+    QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ExceptionDeviation",
-        NodeId.parse("ns=0;i=11"),
+        "StartOfArchive",
+        NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
-        Double.class
-    );
-
-    QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Stepped",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
+        DateTime.class
     );
 
     QualifiedProperty<DateTime> START_OF_ONLINE_ARCHIVE = new QualifiedProperty<>(
@@ -81,6 +81,12 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
         ValueRanks.Scalar,
         DateTime.class
     );
+
+    PropertyType getSteppedNode();
+
+    Boolean getStepped();
+
+    void setStepped(Boolean value);
 
     PropertyType getDefinitionNode();
 
@@ -94,23 +100,11 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
 
     void setMaxTimeInterval(Double value);
 
-    PropertyType getStartOfArchiveNode();
-
-    DateTime getStartOfArchive();
-
-    void setStartOfArchive(DateTime value);
-
     PropertyType getMinTimeIntervalNode();
 
     Double getMinTimeInterval();
 
     void setMinTimeInterval(Double value);
-
-    PropertyType getExceptionDeviationFormatNode();
-
-    ExceptionDeviationFormat getExceptionDeviationFormat();
-
-    void setExceptionDeviationFormat(ExceptionDeviationFormat value);
 
     PropertyType getExceptionDeviationNode();
 
@@ -118,11 +112,17 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
 
     void setExceptionDeviation(Double value);
 
-    PropertyType getSteppedNode();
+    PropertyType getExceptionDeviationFormatNode();
 
-    Boolean getStepped();
+    ExceptionDeviationFormat getExceptionDeviationFormat();
 
-    void setStepped(Boolean value);
+    void setExceptionDeviationFormat(ExceptionDeviationFormat value);
+
+    PropertyType getStartOfArchiveNode();
+
+    DateTime getStartOfArchive();
+
+    void setStartOfArchive(DateTime value);
 
     PropertyType getStartOfOnlineArchiveNode();
 
@@ -130,7 +130,7 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
 
     void setStartOfOnlineArchive(DateTime value);
 
-    FolderType getAggregateFunctionsNode();
-
     AggregateConfigurationType getAggregateConfigurationNode();
+
+    FolderType getAggregateFunctionsNode();
 }

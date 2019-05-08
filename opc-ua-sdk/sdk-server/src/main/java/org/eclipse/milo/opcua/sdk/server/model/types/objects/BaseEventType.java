@@ -21,52 +21,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
 public interface BaseEventType extends BaseObjectType {
-    QualifiedProperty<TimeZoneDataType> LOCAL_TIME = new QualifiedProperty<>(
+    QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "LocalTime",
-        NodeId.parse("ns=0;i=8912"),
+        "EventId",
+        NodeId.parse("ns=0;i=15"),
         ValueRanks.Scalar,
-        TimeZoneDataType.class
-    );
-
-    QualifiedProperty<UShort> SEVERITY = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Severity",
-        NodeId.parse("ns=0;i=5"),
-        ValueRanks.Scalar,
-        UShort.class
-    );
-
-    QualifiedProperty<LocalizedText> MESSAGE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Message",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.Scalar,
-        LocalizedText.class
-    );
-
-    QualifiedProperty<DateTime> TIME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Time",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
-    QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "SourceName",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
-    QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ReceiveTime",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
+        ByteString.class
     );
 
     QualifiedProperty<NodeId> EVENT_TYPE = new QualifiedProperty<>(
@@ -85,49 +45,59 @@ public interface BaseEventType extends BaseObjectType {
         NodeId.class
     );
 
-    QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
+    QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "EventId",
-        NodeId.parse("ns=0;i=15"),
+        "SourceName",
+        NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
-        ByteString.class
+        String.class
     );
 
-    PropertyType getLocalTimeNode();
+    QualifiedProperty<DateTime> TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Time",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
-    TimeZoneDataType getLocalTime();
+    QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReceiveTime",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
-    void setLocalTime(TimeZoneDataType value);
+    QualifiedProperty<TimeZoneDataType> LOCAL_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LocalTime",
+        NodeId.parse("ns=0;i=8912"),
+        ValueRanks.Scalar,
+        TimeZoneDataType.class
+    );
 
-    PropertyType getSeverityNode();
+    QualifiedProperty<LocalizedText> MESSAGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Message",
+        NodeId.parse("ns=0;i=21"),
+        ValueRanks.Scalar,
+        LocalizedText.class
+    );
 
-    UShort getSeverity();
+    QualifiedProperty<UShort> SEVERITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Severity",
+        NodeId.parse("ns=0;i=5"),
+        ValueRanks.Scalar,
+        UShort.class
+    );
 
-    void setSeverity(UShort value);
+    PropertyType getEventIdNode();
 
-    PropertyType getMessageNode();
+    ByteString getEventId();
 
-    LocalizedText getMessage();
-
-    void setMessage(LocalizedText value);
-
-    PropertyType getTimeNode();
-
-    DateTime getTime();
-
-    void setTime(DateTime value);
-
-    PropertyType getSourceNameNode();
-
-    String getSourceName();
-
-    void setSourceName(String value);
-
-    PropertyType getReceiveTimeNode();
-
-    DateTime getReceiveTime();
-
-    void setReceiveTime(DateTime value);
+    void setEventId(ByteString value);
 
     PropertyType getEventTypeNode();
 
@@ -141,9 +111,39 @@ public interface BaseEventType extends BaseObjectType {
 
     void setSourceNode(NodeId value);
 
-    PropertyType getEventIdNode();
+    PropertyType getSourceNameNode();
 
-    ByteString getEventId();
+    String getSourceName();
 
-    void setEventId(ByteString value);
+    void setSourceName(String value);
+
+    PropertyType getTimeNode();
+
+    DateTime getTime();
+
+    void setTime(DateTime value);
+
+    PropertyType getReceiveTimeNode();
+
+    DateTime getReceiveTime();
+
+    void setReceiveTime(DateTime value);
+
+    PropertyType getLocalTimeNode();
+
+    TimeZoneDataType getLocalTime();
+
+    void setLocalTime(TimeZoneDataType value);
+
+    PropertyType getMessageNode();
+
+    LocalizedText getMessage();
+
+    void setMessage(LocalizedText value);
+
+    PropertyType getSeverityNode();
+
+    UShort getSeverity();
+
+    void setSeverity(UShort value);
 }

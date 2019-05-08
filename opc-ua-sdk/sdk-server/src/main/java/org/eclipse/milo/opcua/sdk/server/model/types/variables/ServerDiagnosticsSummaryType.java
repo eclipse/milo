@@ -13,29 +13,17 @@ package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
-    BaseDataVariableType getCurrentSessionCountNode();
-
-    UInteger getCurrentSessionCount();
-
-    void setCurrentSessionCount(UInteger value);
-
-    BaseDataVariableType getRejectedSessionCountNode();
-
-    UInteger getRejectedSessionCount();
-
-    void setRejectedSessionCount(UInteger value);
-
-    BaseDataVariableType getSessionTimeoutCountNode();
-
-    UInteger getSessionTimeoutCount();
-
-    void setSessionTimeoutCount(UInteger value);
-
     BaseDataVariableType getServerViewCountNode();
 
     UInteger getServerViewCount();
 
     void setServerViewCount(UInteger value);
+
+    BaseDataVariableType getCurrentSessionCountNode();
+
+    UInteger getCurrentSessionCount();
+
+    void setCurrentSessionCount(UInteger value);
 
     BaseDataVariableType getCumulatedSessionCountNode();
 
@@ -49,23 +37,17 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
 
     void setSecurityRejectedSessionCount(UInteger value);
 
-    BaseDataVariableType getRejectedRequestsCountNode();
+    BaseDataVariableType getRejectedSessionCountNode();
 
-    UInteger getRejectedRequestsCount();
+    UInteger getRejectedSessionCount();
 
-    void setRejectedRequestsCount(UInteger value);
+    void setRejectedSessionCount(UInteger value);
 
-    BaseDataVariableType getSecurityRejectedRequestsCountNode();
+    BaseDataVariableType getSessionTimeoutCountNode();
 
-    UInteger getSecurityRejectedRequestsCount();
+    UInteger getSessionTimeoutCount();
 
-    void setSecurityRejectedRequestsCount(UInteger value);
-
-    BaseDataVariableType getCumulatedSubscriptionCountNode();
-
-    UInteger getCumulatedSubscriptionCount();
-
-    void setCumulatedSubscriptionCount(UInteger value);
+    void setSessionTimeoutCount(UInteger value);
 
     BaseDataVariableType getSessionAbortCountNode();
 
@@ -84,4 +66,22 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
     UInteger getCurrentSubscriptionCount();
 
     void setCurrentSubscriptionCount(UInteger value);
+
+    BaseDataVariableType getCumulatedSubscriptionCountNode();
+
+    UInteger getCumulatedSubscriptionCount();
+
+    void setCumulatedSubscriptionCount(UInteger value);
+
+    BaseDataVariableType getSecurityRejectedRequestsCountNode();
+
+    UInteger getSecurityRejectedRequestsCount();
+
+    void setSecurityRejectedRequestsCount(UInteger value);
+
+    BaseDataVariableType getRejectedRequestsCountNode();
+
+    UInteger getRejectedRequestsCount();
+
+    void setRejectedRequestsCount(UInteger value);
 }

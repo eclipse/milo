@@ -18,14 +18,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface StateVariableType extends BaseDataVariableType {
-    QualifiedProperty<UInteger> NUMBER = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Number",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
-    );
-
     QualifiedProperty<Object> ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Id",
@@ -42,6 +34,14 @@ public interface StateVariableType extends BaseDataVariableType {
         QualifiedName.class
     );
 
+    QualifiedProperty<UInteger> NUMBER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Number",
+        NodeId.parse("ns=0;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
+    );
+
     QualifiedProperty<LocalizedText> EFFECTIVE_DISPLAY_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EffectiveDisplayName",
@@ -49,12 +49,6 @@ public interface StateVariableType extends BaseDataVariableType {
         ValueRanks.Scalar,
         LocalizedText.class
     );
-
-    PropertyType getNumberNode();
-
-    UInteger getNumber();
-
-    void setNumber(UInteger value);
 
     PropertyType getIdNode();
 
@@ -67,6 +61,12 @@ public interface StateVariableType extends BaseDataVariableType {
     QualifiedName getName();
 
     void setName(QualifiedName value);
+
+    PropertyType getNumberNode();
+
+    UInteger getNumber();
+
+    void setNumber(UInteger value);
 
     PropertyType getEffectiveDisplayNameNode();
 

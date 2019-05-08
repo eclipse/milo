@@ -18,6 +18,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface TransitionVariableType extends BaseDataVariableType {
+    QualifiedProperty<Object> ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Id",
+        NodeId.parse("ns=0;i=24"),
+        ValueRanks.Scalar,
+        Object.class
+    );
+
+    QualifiedProperty<QualifiedName> NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Name",
+        NodeId.parse("ns=0;i=20"),
+        ValueRanks.Scalar,
+        QualifiedName.class
+    );
+
+    QualifiedProperty<UInteger> NUMBER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Number",
+        NodeId.parse("ns=0;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
+    );
+
     QualifiedProperty<DateTime> TRANSITION_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "TransitionTime",
@@ -34,29 +58,23 @@ public interface TransitionVariableType extends BaseDataVariableType {
         DateTime.class
     );
 
-    QualifiedProperty<UInteger> NUMBER = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Number",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
-    );
+    PropertyType getIdNode();
 
-    QualifiedProperty<QualifiedName> NAME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Name",
-        NodeId.parse("ns=0;i=20"),
-        ValueRanks.Scalar,
-        QualifiedName.class
-    );
+    Object getId();
 
-    QualifiedProperty<Object> ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Id",
-        NodeId.parse("ns=0;i=24"),
-        ValueRanks.Scalar,
-        Object.class
-    );
+    void setId(Object value);
+
+    PropertyType getNameNode();
+
+    QualifiedName getName();
+
+    void setName(QualifiedName value);
+
+    PropertyType getNumberNode();
+
+    UInteger getNumber();
+
+    void setNumber(UInteger value);
 
     PropertyType getTransitionTimeNode();
 
@@ -69,22 +87,4 @@ public interface TransitionVariableType extends BaseDataVariableType {
     DateTime getEffectiveTransitionTime();
 
     void setEffectiveTransitionTime(DateTime value);
-
-    PropertyType getNumberNode();
-
-    UInteger getNumber();
-
-    void setNumber(UInteger value);
-
-    PropertyType getNameNode();
-
-    QualifiedName getName();
-
-    void setName(QualifiedName value);
-
-    PropertyType getIdNode();
-
-    Object getId();
-
-    void setId(Object value);
 }

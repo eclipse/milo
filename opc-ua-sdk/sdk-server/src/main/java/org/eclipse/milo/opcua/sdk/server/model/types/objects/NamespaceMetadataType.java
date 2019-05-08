@@ -26,12 +26,12 @@ public interface NamespaceMetadataType extends BaseObjectType {
         String.class
     );
 
-    QualifiedProperty<String[]> STATIC_NUMERIC_NODE_ID_RANGE = new QualifiedProperty<>(
+    QualifiedProperty<String> NAMESPACE_VERSION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "StaticNumericNodeIdRange",
-        NodeId.parse("ns=0;i=291"),
-        ValueRanks.OneDimension,
-        String[].class
+        "NamespaceVersion",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
     );
 
     QualifiedProperty<DateTime> NAMESPACE_PUBLICATION_DATE = new QualifiedProperty<>(
@@ -42,28 +42,12 @@ public interface NamespaceMetadataType extends BaseObjectType {
         DateTime.class
     );
 
-    QualifiedProperty<String> NAMESPACE_VERSION = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NamespaceVersion",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<Boolean> IS_NAMESPACE_SUBSET = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "IsNamespaceSubset",
         NodeId.parse("ns=0;i=1"),
         ValueRanks.Scalar,
         Boolean.class
-    );
-
-    QualifiedProperty<String> STATIC_STRING_NODE_ID_PATTERN = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "StaticStringNodeIdPattern",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
     );
 
     QualifiedProperty<IdType[]> STATIC_NODE_ID_TYPES = new QualifiedProperty<>(
@@ -74,23 +58,27 @@ public interface NamespaceMetadataType extends BaseObjectType {
         IdType[].class
     );
 
+    QualifiedProperty<String[]> STATIC_NUMERIC_NODE_ID_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StaticNumericNodeIdRange",
+        NodeId.parse("ns=0;i=291"),
+        ValueRanks.OneDimension,
+        String[].class
+    );
+
+    QualifiedProperty<String> STATIC_STRING_NODE_ID_PATTERN = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StaticStringNodeIdPattern",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
+
     PropertyType getNamespaceUriNode();
 
     String getNamespaceUri();
 
     void setNamespaceUri(String value);
-
-    PropertyType getStaticNumericNodeIdRangeNode();
-
-    String[] getStaticNumericNodeIdRange();
-
-    void setStaticNumericNodeIdRange(String[] value);
-
-    PropertyType getNamespacePublicationDateNode();
-
-    DateTime getNamespacePublicationDate();
-
-    void setNamespacePublicationDate(DateTime value);
 
     PropertyType getNamespaceVersionNode();
 
@@ -98,23 +86,35 @@ public interface NamespaceMetadataType extends BaseObjectType {
 
     void setNamespaceVersion(String value);
 
+    PropertyType getNamespacePublicationDateNode();
+
+    DateTime getNamespacePublicationDate();
+
+    void setNamespacePublicationDate(DateTime value);
+
     PropertyType getIsNamespaceSubsetNode();
 
     Boolean getIsNamespaceSubset();
 
     void setIsNamespaceSubset(Boolean value);
 
-    PropertyType getStaticStringNodeIdPatternNode();
-
-    String getStaticStringNodeIdPattern();
-
-    void setStaticStringNodeIdPattern(String value);
-
     PropertyType getStaticNodeIdTypesNode();
 
     IdType[] getStaticNodeIdTypes();
 
     void setStaticNodeIdTypes(IdType[] value);
+
+    PropertyType getStaticNumericNodeIdRangeNode();
+
+    String[] getStaticNumericNodeIdRange();
+
+    void setStaticNumericNodeIdRange(String[] value);
+
+    PropertyType getStaticStringNodeIdPatternNode();
+
+    String getStaticStringNodeIdPattern();
+
+    void setStaticStringNodeIdPattern(String value);
 
     AddressSpaceFileType getNamespaceFileNode();
 }

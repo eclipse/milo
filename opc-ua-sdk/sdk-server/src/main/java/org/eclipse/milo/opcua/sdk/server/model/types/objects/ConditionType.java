@@ -22,12 +22,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface ConditionType extends BaseEventType {
-    QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
+    QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Retain",
-        NodeId.parse("ns=0;i=1"),
+        "ConditionClassId",
+        NodeId.parse("ns=0;i=17"),
         ValueRanks.Scalar,
-        Boolean.class
+        NodeId.class
     );
 
     QualifiedProperty<LocalizedText> CONDITION_CLASS_NAME = new QualifiedProperty<>(
@@ -38,17 +38,9 @@ public interface ConditionType extends BaseEventType {
         LocalizedText.class
     );
 
-    QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
+    QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ConditionClassId",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
-    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientUserId",
+        "ConditionName",
         NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
         String.class
@@ -62,25 +54,21 @@ public interface ConditionType extends BaseEventType {
         NodeId.class
     );
 
-    QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ConditionName",
+        "Retain",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
+
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientUserId",
         NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
         String.class
     );
-
-    PropertyType getRetainNode();
-
-    Boolean getRetain();
-
-    void setRetain(Boolean value);
-
-    PropertyType getConditionClassNameNode();
-
-    LocalizedText getConditionClassName();
-
-    void setConditionClassName(LocalizedText value);
 
     PropertyType getConditionClassIdNode();
 
@@ -88,11 +76,17 @@ public interface ConditionType extends BaseEventType {
 
     void setConditionClassId(NodeId value);
 
-    PropertyType getClientUserIdNode();
+    PropertyType getConditionClassNameNode();
 
-    String getClientUserId();
+    LocalizedText getConditionClassName();
 
-    void setClientUserId(String value);
+    void setConditionClassName(LocalizedText value);
+
+    PropertyType getConditionNameNode();
+
+    String getConditionName();
+
+    void setConditionName(String value);
 
     PropertyType getBranchIdNode();
 
@@ -100,11 +94,29 @@ public interface ConditionType extends BaseEventType {
 
     void setBranchId(NodeId value);
 
-    PropertyType getConditionNameNode();
+    PropertyType getRetainNode();
 
-    String getConditionName();
+    Boolean getRetain();
 
-    void setConditionName(String value);
+    void setRetain(Boolean value);
+
+    PropertyType getClientUserIdNode();
+
+    String getClientUserId();
+
+    void setClientUserId(String value);
+
+    TwoStateVariableType getEnabledStateNode();
+
+    LocalizedText getEnabledState();
+
+    void setEnabledState(LocalizedText value);
+
+    ConditionVariableType getQualityNode();
+
+    StatusCode getQuality();
+
+    void setQuality(StatusCode value);
 
     ConditionVariableType getLastSeverityNode();
 
@@ -118,25 +130,13 @@ public interface ConditionType extends BaseEventType {
 
     void setComment(LocalizedText value);
 
-    UaMethodNode getConditionRefreshMethodNode();
-
     UaMethodNode getDisableMethodNode();
 
     UaMethodNode getEnableMethodNode();
 
-    ConditionVariableType getQualityNode();
-
-    StatusCode getQuality();
-
-    void setQuality(StatusCode value);
-
-    TwoStateVariableType getEnabledStateNode();
-
-    LocalizedText getEnabledState();
-
-    void setEnabledState(LocalizedText value);
-
     UaMethodNode getAddCommentMethodNode();
+
+    UaMethodNode getConditionRefreshMethodNode();
 
     UaMethodNode getConditionRefresh2MethodNode();
 }

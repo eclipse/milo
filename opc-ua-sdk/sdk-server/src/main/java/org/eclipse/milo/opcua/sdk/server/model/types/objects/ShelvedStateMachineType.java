@@ -31,27 +31,27 @@ public interface ShelvedStateMachineType extends FiniteStateMachineType {
 
     void setUnshelveTime(Double value);
 
-    TransitionType getUnshelvedToTimedShelvedNode();
-
-    TransitionType getUnshelvedToOneShotShelvedNode();
+    StateType getUnshelvedNode();
 
     StateType getTimedShelvedNode();
 
     StateType getOneShotShelvedNode();
 
-    StateType getUnshelvedNode();
+    TransitionType getUnshelvedToTimedShelvedNode();
+
+    TransitionType getUnshelvedToOneShotShelvedNode();
 
     TransitionType getTimedShelvedToUnshelvedNode();
 
-    UaMethodNode getTimedShelveMethodNode();
-
-    UaMethodNode getOneShotShelveMethodNode();
-
     TransitionType getTimedShelvedToOneShotShelvedNode();
-
-    TransitionType getOneShotShelvedToTimedShelvedNode();
 
     TransitionType getOneShotShelvedToUnshelvedNode();
 
+    TransitionType getOneShotShelvedToTimedShelvedNode();
+
     UaMethodNode getUnshelveMethodNode();
+
+    UaMethodNode getOneShotShelveMethodNode();
+
+    UaMethodNode getTimedShelveMethodNode();
 }

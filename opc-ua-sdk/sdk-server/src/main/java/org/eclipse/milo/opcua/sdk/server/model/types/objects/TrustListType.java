@@ -32,11 +32,11 @@ public interface TrustListType extends FileType {
 
     void setLastUpdateTime(DateTime value);
 
-    UaMethodNode getAddCertificateMethodNode();
+    UaMethodNode getOpenWithMasksMethodNode();
 
     UaMethodNode getCloseAndUpdateMethodNode();
 
-    UaMethodNode getRemoveCertificateMethodNode();
+    UaMethodNode getAddCertificateMethodNode();
 
-    UaMethodNode getOpenWithMasksMethodNode();
+    UaMethodNode getRemoveCertificateMethodNode();
 }

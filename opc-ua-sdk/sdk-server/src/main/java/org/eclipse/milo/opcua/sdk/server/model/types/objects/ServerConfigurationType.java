@@ -26,14 +26,6 @@ public interface ServerConfigurationType extends BaseObjectType {
         String[].class
     );
 
-    QualifiedProperty<Boolean> MULTICAST_DNS_ENABLED = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MulticastDnsEnabled",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
-
     QualifiedProperty<String[]> SUPPORTED_PRIVATE_KEY_FORMATS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SupportedPrivateKeyFormats",
@@ -50,17 +42,19 @@ public interface ServerConfigurationType extends BaseObjectType {
         UInteger.class
     );
 
+    QualifiedProperty<Boolean> MULTICAST_DNS_ENABLED = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MulticastDnsEnabled",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
+
     PropertyType getServerCapabilitiesNode();
 
     String[] getServerCapabilities();
 
     void setServerCapabilities(String[] value);
-
-    PropertyType getMulticastDnsEnabledNode();
-
-    Boolean getMulticastDnsEnabled();
-
-    void setMulticastDnsEnabled(Boolean value);
 
     PropertyType getSupportedPrivateKeyFormatsNode();
 
@@ -74,13 +68,19 @@ public interface ServerConfigurationType extends BaseObjectType {
 
     void setMaxTrustListSize(UInteger value);
 
-    UaMethodNode getCreateSigningRequestMethodNode();
+    PropertyType getMulticastDnsEnabledNode();
 
-    UaMethodNode getGetRejectedListMethodNode();
+    Boolean getMulticastDnsEnabled();
+
+    void setMulticastDnsEnabled(Boolean value);
 
     CertificateGroupFolderType getCertificateGroupsNode();
 
     UaMethodNode getUpdateCertificateMethodNode();
 
     UaMethodNode getApplyChangesMethodNode();
+
+    UaMethodNode getCreateSigningRequestMethodNode();
+
+    UaMethodNode getGetRejectedListMethodNode();
 }

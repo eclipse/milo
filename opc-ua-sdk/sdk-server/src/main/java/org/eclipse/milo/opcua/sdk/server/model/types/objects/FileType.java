@@ -19,6 +19,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface FileType extends BaseObjectType {
+    QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Size",
+        NodeId.parse("ns=0;i=9"),
+        ValueRanks.Scalar,
+        ULong.class
+    );
+
+    QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Writable",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
+
+    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UserWritable",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
+
     QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OpenCount",
@@ -35,29 +59,23 @@ public interface FileType extends BaseObjectType {
         String.class
     );
 
-    QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Writable",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
+    PropertyType getSizeNode();
 
-    QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Size",
-        NodeId.parse("ns=0;i=9"),
-        ValueRanks.Scalar,
-        ULong.class
-    );
+    ULong getSize();
 
-    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "UserWritable",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
+    void setSize(ULong value);
+
+    PropertyType getWritableNode();
+
+    Boolean getWritable();
+
+    void setWritable(Boolean value);
+
+    PropertyType getUserWritableNode();
+
+    Boolean getUserWritable();
+
+    void setUserWritable(Boolean value);
 
     PropertyType getOpenCountNode();
 
@@ -71,33 +89,15 @@ public interface FileType extends BaseObjectType {
 
     void setMimeType(String value);
 
-    PropertyType getWritableNode();
-
-    Boolean getWritable();
-
-    void setWritable(Boolean value);
-
-    PropertyType getSizeNode();
-
-    ULong getSize();
-
-    void setSize(ULong value);
-
-    PropertyType getUserWritableNode();
-
-    Boolean getUserWritable();
-
-    void setUserWritable(Boolean value);
-
     UaMethodNode getOpenMethodNode();
 
     UaMethodNode getCloseMethodNode();
 
-    UaMethodNode getWriteMethodNode();
+    UaMethodNode getReadMethodNode();
 
-    UaMethodNode getSetPositionMethodNode();
+    UaMethodNode getWriteMethodNode();
 
     UaMethodNode getGetPositionMethodNode();
 
-    UaMethodNode getReadMethodNode();
+    UaMethodNode getSetPositionMethodNode();
 }

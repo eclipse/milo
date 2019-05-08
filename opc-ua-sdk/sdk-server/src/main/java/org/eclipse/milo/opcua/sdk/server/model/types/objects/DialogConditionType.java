@@ -19,6 +19,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface DialogConditionType extends ConditionType {
+    QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Prompt",
+        NodeId.parse("ns=0;i=21"),
+        ValueRanks.Scalar,
+        LocalizedText.class
+    );
+
     QualifiedProperty<LocalizedText[]> RESPONSE_OPTION_SET = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ResponseOptionSet",
@@ -35,9 +43,9 @@ public interface DialogConditionType extends ConditionType {
         Integer.class
     );
 
-    QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
+    QualifiedProperty<Integer> OK_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "LastResponse",
+        "OkResponse",
         NodeId.parse("ns=0;i=6"),
         ValueRanks.Scalar,
         Integer.class
@@ -51,21 +59,19 @@ public interface DialogConditionType extends ConditionType {
         Integer.class
     );
 
-    QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
+    QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Prompt",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.Scalar,
-        LocalizedText.class
-    );
-
-    QualifiedProperty<Integer> OK_RESPONSE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "OkResponse",
+        "LastResponse",
         NodeId.parse("ns=0;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
+
+    PropertyType getPromptNode();
+
+    LocalizedText getPrompt();
+
+    void setPrompt(LocalizedText value);
 
     PropertyType getResponseOptionSetNode();
 
@@ -79,11 +85,11 @@ public interface DialogConditionType extends ConditionType {
 
     void setDefaultResponse(Integer value);
 
-    PropertyType getLastResponseNode();
+    PropertyType getOkResponseNode();
 
-    Integer getLastResponse();
+    Integer getOkResponse();
 
-    void setLastResponse(Integer value);
+    void setOkResponse(Integer value);
 
     PropertyType getCancelResponseNode();
 
@@ -91,19 +97,11 @@ public interface DialogConditionType extends ConditionType {
 
     void setCancelResponse(Integer value);
 
-    PropertyType getPromptNode();
+    PropertyType getLastResponseNode();
 
-    LocalizedText getPrompt();
+    Integer getLastResponse();
 
-    void setPrompt(LocalizedText value);
-
-    PropertyType getOkResponseNode();
-
-    Integer getOkResponse();
-
-    void setOkResponse(Integer value);
-
-    UaMethodNode getRespondMethodNode();
+    void setLastResponse(Integer value);
 
     TwoStateVariableType getEnabledStateNode();
 
@@ -116,4 +114,6 @@ public interface DialogConditionType extends ConditionType {
     LocalizedText getDialogState();
 
     void setDialogState(LocalizedText value);
+
+    UaMethodNode getRespondMethodNode();
 }

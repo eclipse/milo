@@ -14,18 +14,6 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.TwoStateVariableT
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
-    TwoStateVariableType getLowStateNode();
-
-    LocalizedText getLowState();
-
-    void setLowState(LocalizedText value);
-
-    TwoStateVariableType getHighStateNode();
-
-    LocalizedText getHighState();
-
-    void setHighState(LocalizedText value);
-
     TwoStateVariableType getActiveStateNode();
 
     LocalizedText getActiveState();
@@ -37,6 +25,18 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
     LocalizedText getHighHighState();
 
     void setHighHighState(LocalizedText value);
+
+    TwoStateVariableType getHighStateNode();
+
+    LocalizedText getHighState();
+
+    void setHighState(LocalizedText value);
+
+    TwoStateVariableType getLowStateNode();
+
+    LocalizedText getLowState();
+
+    void setLowState(LocalizedText value);
 
     TwoStateVariableType getLowLowStateNode();
 
