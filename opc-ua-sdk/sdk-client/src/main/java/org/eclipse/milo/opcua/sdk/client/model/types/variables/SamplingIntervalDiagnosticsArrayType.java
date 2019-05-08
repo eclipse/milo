@@ -20,5 +20,6 @@ public interface SamplingIntervalDiagnosticsArrayType extends BaseDataVariableTy
 
     CompletableFuture<SamplingIntervalDiagnosticsDataType> getSamplingIntervalDiagnostics();
 
-    CompletableFuture<StatusCode> setSamplingIntervalDiagnostics(SamplingIntervalDiagnosticsDataType value);
+    CompletableFuture<StatusCode> setSamplingIntervalDiagnostics(
+        SamplingIntervalDiagnosticsDataType value);
 }

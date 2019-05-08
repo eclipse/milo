@@ -45,17 +45,21 @@ public interface ServerDiagnosticsType extends BaseObjectType {
 
     CompletableFuture<StatusCode> setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType value);
 
-    CompletableFuture<? extends SamplingIntervalDiagnosticsArrayType> getSamplingIntervalDiagnosticsArrayNode();
+    CompletableFuture<? extends SamplingIntervalDiagnosticsArrayType> getSamplingIntervalDiagnosticsArrayNode(
+    );
 
     CompletableFuture<SamplingIntervalDiagnosticsDataType[]> getSamplingIntervalDiagnosticsArray();
 
-    CompletableFuture<StatusCode> setSamplingIntervalDiagnosticsArray(SamplingIntervalDiagnosticsDataType[] value);
+    CompletableFuture<StatusCode> setSamplingIntervalDiagnosticsArray(
+        SamplingIntervalDiagnosticsDataType[] value);
 
-    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode();
+    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode(
+    );
 
     CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray();
 
-    CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
+    CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(
+        SubscriptionDiagnosticsDataType[] value);
 
     CompletableFuture<? extends SessionsDiagnosticsSummaryType> getSessionsDiagnosticsSummaryNode();
 }

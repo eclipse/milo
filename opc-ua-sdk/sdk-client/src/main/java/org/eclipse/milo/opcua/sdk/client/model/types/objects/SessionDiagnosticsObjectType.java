@@ -31,11 +31,14 @@ public interface SessionDiagnosticsObjectType extends BaseObjectType {
 
     CompletableFuture<SessionSecurityDiagnosticsDataType> getSessionSecurityDiagnostics();
 
-    CompletableFuture<StatusCode> setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value);
+    CompletableFuture<StatusCode> setSessionSecurityDiagnostics(
+        SessionSecurityDiagnosticsDataType value);
 
-    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode();
+    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode(
+    );
 
     CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray();
 
-    CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
+    CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(
+        SubscriptionDiagnosticsDataType[] value);
 }
