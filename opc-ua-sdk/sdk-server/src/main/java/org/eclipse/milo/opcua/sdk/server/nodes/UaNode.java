@@ -298,7 +298,11 @@ public abstract class UaNode implements UaServerNode {
                 LocalizedText.english(browseName)
             );
 
-            propertyNode.setDataType(property.getDataType());
+            NodeId dataType = property.getDataType()
+                .local(context.getNamespaceTable())
+                .orElse(NodeId.NULL_VALUE);
+            
+            propertyNode.setDataType(dataType);
             propertyNode.setValueRank(property.getValueRank());
             propertyNode.setArrayDimensions(property.getArrayDimensions());
 
