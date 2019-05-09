@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -24,7 +24,7 @@ public interface FileType extends BaseObjectType {
     QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Size",
-        NodeId.parse("ns=0;i=9"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=9"),
         ValueRanks.Scalar,
         ULong.class
     );
@@ -32,7 +32,7 @@ public interface FileType extends BaseObjectType {
     QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Writable",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -40,7 +40,7 @@ public interface FileType extends BaseObjectType {
     QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "UserWritable",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -48,7 +48,7 @@ public interface FileType extends BaseObjectType {
     QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OpenCount",
-        NodeId.parse("ns=0;i=5"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
         ValueRanks.Scalar,
         UShort.class
     );
@@ -56,7 +56,7 @@ public interface FileType extends BaseObjectType {
     QualifiedProperty<String> MIME_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MimeType",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );

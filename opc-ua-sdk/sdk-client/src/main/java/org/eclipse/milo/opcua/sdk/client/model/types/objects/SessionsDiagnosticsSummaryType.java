@@ -25,9 +25,11 @@ public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
 
     CompletableFuture<StatusCode> setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value);
 
-    CompletableFuture<? extends SessionSecurityDiagnosticsArrayType> getSessionSecurityDiagnosticsArrayNode();
+    CompletableFuture<? extends SessionSecurityDiagnosticsArrayType> getSessionSecurityDiagnosticsArrayNode(
+    );
 
     CompletableFuture<SessionSecurityDiagnosticsDataType[]> getSessionSecurityDiagnosticsArray();
 
-    CompletableFuture<StatusCode> setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value);
+    CompletableFuture<StatusCode> setSessionSecurityDiagnosticsArray(
+        SessionSecurityDiagnosticsDataType[] value);
 }

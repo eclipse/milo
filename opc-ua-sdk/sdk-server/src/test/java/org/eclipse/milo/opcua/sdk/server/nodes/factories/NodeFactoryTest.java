@@ -22,10 +22,10 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -105,7 +105,10 @@ public class NodeFactoryTest {
         );
 
         VariableTypeManager variableTypeManager = new VariableTypeManager();
-        VariableTypeManagerInitializer.initialize(variableTypeManager);
+        VariableTypeManagerInitializer.initialize(
+            server.getNamespaceTable(),
+            variableTypeManager
+        );
 
         nodeFactory = new NodeFactory(
             context,
@@ -116,7 +119,7 @@ public class NodeFactoryTest {
 
     @Test
     public void testCreateAnalogItemType() throws Exception {
-        AnalogItemNode analogItem = (AnalogItemNode) nodeFactory.createNode(
+        AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             new NodeId(1, "TestAnalog"),
             Identifiers.AnalogItemType,
             true
@@ -132,7 +135,7 @@ public class NodeFactoryTest {
         final AtomicBoolean objectAdded = new AtomicBoolean(false);
         final AtomicBoolean variableAdded = new AtomicBoolean(false);
 
-        ServerNode serverNode = (ServerNode) nodeFactory.createNode(
+        ServerTypeNode serverNode = (ServerTypeNode) nodeFactory.createNode(
             new NodeId(0, "Server"),
             Identifiers.ServerType,
             true,

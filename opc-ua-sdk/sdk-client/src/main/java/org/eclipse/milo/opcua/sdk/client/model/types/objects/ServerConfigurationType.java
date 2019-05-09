@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -23,7 +23,7 @@ public interface ServerConfigurationType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_CAPABILITIES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerCapabilities",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.OneDimension,
         String[].class
     );
@@ -31,7 +31,7 @@ public interface ServerConfigurationType extends BaseObjectType {
     QualifiedProperty<String[]> SUPPORTED_PRIVATE_KEY_FORMATS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SupportedPrivateKeyFormats",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.OneDimension,
         String[].class
     );
@@ -39,7 +39,7 @@ public interface ServerConfigurationType extends BaseObjectType {
     QualifiedProperty<UInteger> MAX_TRUST_LIST_SIZE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxTrustListSize",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -47,7 +47,7 @@ public interface ServerConfigurationType extends BaseObjectType {
     QualifiedProperty<Boolean> MULTICAST_DNS_ENABLED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MulticastDnsEnabled",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );

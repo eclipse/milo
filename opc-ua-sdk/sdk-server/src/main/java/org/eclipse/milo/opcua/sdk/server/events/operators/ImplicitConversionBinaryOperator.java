@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
 import org.eclipse.milo.opcua.sdk.server.events.ValidationException;
 import org.eclipse.milo.opcua.sdk.server.events.conversions.ImplicitConversions;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -42,7 +42,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
     @Override
     public T apply(
         OperatorContext context,
-        BaseEventNode eventNode,
+        BaseEventTypeNode eventNode,
         FilterOperand[] operands) throws UaException {
 
         validate(context, operands);
@@ -87,7 +87,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
     @Nullable
     protected abstract T apply(
         OperatorContext context,
-        BaseEventNode eventNode,
+        BaseEventTypeNode eventNode,
         BuiltinDataType dataType,
         @Nullable Object operand0,
         @Nullable Object operand1) throws UaException;

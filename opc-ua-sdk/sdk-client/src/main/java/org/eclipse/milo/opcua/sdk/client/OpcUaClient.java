@@ -19,7 +19,8 @@ import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
@@ -148,7 +149,8 @@ public class OpcUaClient implements UaClient {
     private final AddressSpace addressSpace;
     private final NodeCache nodeCache = new DefaultNodeCache();
 
-    private final TypeRegistry typeRegistry = new TypeRegistry();
+    private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
+    private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
     private final OpcUaSubscriptionManager subscriptionManager;
 
@@ -230,7 +232,15 @@ public class OpcUaClient implements UaClient {
         addressSpace = new DefaultAddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
-        TypeRegistryInitializer.initialize(typeRegistry);
+        ObjectTypeManagerInitializer.initialize(
+            stackClient.getNamespaceTable(),
+            objectTypeManager
+        );
+
+        VariableTypeManagerInitializer.initialize(
+            stackClient.getNamespaceTable(),
+            variableTypeManager
+        );
     }
 
     @Override
@@ -256,8 +266,12 @@ public class OpcUaClient implements UaClient {
         return stackClient.getDataTypeManager();
     }
 
-    public TypeRegistry getTypeRegistry() {
-        return typeRegistry;
+    public ObjectTypeManager getObjectTypeManager() {
+        return objectTypeManager;
+    }
+
+    public VariableTypeManager getVariableTypeManager() {
+        return variableTypeManager;
     }
 
     public NamespaceTable getNamespaceTable() {

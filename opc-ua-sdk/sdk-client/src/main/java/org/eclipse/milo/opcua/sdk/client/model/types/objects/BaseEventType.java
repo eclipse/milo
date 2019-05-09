@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -27,7 +28,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EventId",
-        NodeId.parse("ns=0;i=15"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15"),
         ValueRanks.Scalar,
         ByteString.class
     );
@@ -35,7 +36,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<NodeId> EVENT_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EventType",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -43,7 +44,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<NodeId> SOURCE_NODE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SourceNode",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -51,7 +52,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SourceName",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -59,7 +60,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<DateTime> TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Time",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -67,7 +68,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ReceiveTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -75,7 +76,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<TimeZoneDataType> LOCAL_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LocalTime",
-        NodeId.parse("ns=0;i=8912"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8912"),
         ValueRanks.Scalar,
         TimeZoneDataType.class
     );
@@ -83,7 +84,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<LocalizedText> MESSAGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Message",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );
@@ -91,7 +92,7 @@ public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<UShort> SEVERITY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Severity",
-        NodeId.parse("ns=0;i=5"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
         ValueRanks.Scalar,
         UShort.class
     );

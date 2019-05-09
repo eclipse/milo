@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 
@@ -23,7 +23,7 @@ public interface AuditAddNodesEventType extends AuditNodeManagementEventType {
     QualifiedProperty<AddNodesItem[]> NODES_TO_ADD = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "NodesToAdd",
-        NodeId.parse("ns=0;i=376"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=376"),
         ValueRanks.OneDimension,
         AddNodesItem[].class
     );

@@ -52,7 +52,7 @@ public abstract class ConditionRefresh2Method extends AbstractMethodInvocationHa
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger subscriptionId = (UInteger) inputValues[0].getValue();
         UInteger monitoredItemId = (UInteger) inputValues[1].getValue();
@@ -60,6 +60,6 @@ public abstract class ConditionRefresh2Method extends AbstractMethodInvocationHa
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger subscriptionId, UInteger monitoredItemId) throws UaException;
 }

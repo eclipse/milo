@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -68,13 +68,13 @@ public abstract class UaNode implements Node {
         nodeCache = client.getNodeCache();
     }
 
-    protected CompletableFuture<PropertyNode> getPropertyNode(QualifiedProperty<?> property) {
+    protected CompletableFuture<PropertyTypeNode> getPropertyNode(QualifiedProperty<?> property) {
         return property.getQualifiedName(client.getNamespaceTable())
             .map(this::getPropertyNode)
             .orElse(failedUaFuture(StatusCodes.Bad_NotFound));
     }
 
-    protected CompletableFuture<PropertyNode> getPropertyNode(QualifiedName browseName) {
+    protected CompletableFuture<PropertyTypeNode> getPropertyNode(QualifiedName browseName) {
         UInteger nodeClassMask = uint(NodeClass.Variable.getValue());
         UInteger resultMask = uint(BrowseResultMask.BrowseName.getValue());
 
@@ -92,12 +92,12 @@ public abstract class UaNode implements Node {
         return future.thenCompose(result -> {
             List<ReferenceDescription> references = l(result.getReferences());
 
-            Optional<PropertyNode> node = references.stream()
+            Optional<PropertyTypeNode> node = references.stream()
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
-                    Optional<PropertyNode> opt = r.getNodeId()
+                    Optional<PropertyTypeNode> opt = r.getNodeId()
                         .local(client.getNamespaceTable())
-                        .map(id -> new PropertyNode(client, id));
+                        .map(id -> new PropertyTypeNode(client, id));
 
                     return opt2stream(opt);
                 })

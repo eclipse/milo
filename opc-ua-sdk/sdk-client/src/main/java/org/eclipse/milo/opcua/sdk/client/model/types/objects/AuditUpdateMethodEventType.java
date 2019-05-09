@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
@@ -22,7 +23,7 @@ public interface AuditUpdateMethodEventType extends AuditEventType {
     QualifiedProperty<NodeId> METHOD_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MethodId",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -30,7 +31,7 @@ public interface AuditUpdateMethodEventType extends AuditEventType {
     QualifiedProperty<Object[]> INPUT_ARGUMENTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InputArguments",
-        NodeId.parse("ns=0;i=24"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
         ValueRanks.OneDimension,
         Object[].class
     );

@@ -44,13 +44,13 @@ public abstract class ConditionRefreshMethod extends AbstractMethodInvocationHan
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger subscriptionId = (UInteger) inputValues[0].getValue();
         invoke(context, subscriptionId);
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger subscriptionId) throws UaException;
 }

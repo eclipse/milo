@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.RedundantServerDataType;
 
@@ -23,7 +23,7 @@ public interface TransparentRedundancyType extends ServerRedundancyType {
     QualifiedProperty<String> CURRENT_SERVER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CurrentServerId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -31,7 +31,7 @@ public interface TransparentRedundancyType extends ServerRedundancyType {
     QualifiedProperty<RedundantServerDataType[]> REDUNDANT_SERVER_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RedundantServerArray",
-        NodeId.parse("ns=0;i=853"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=853"),
         ValueRanks.OneDimension,
         RedundantServerDataType[].class
     );

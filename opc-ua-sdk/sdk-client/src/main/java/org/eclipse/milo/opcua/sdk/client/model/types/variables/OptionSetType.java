@@ -14,15 +14,15 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface OptionSetType extends BaseDataVariableType {
     QualifiedProperty<LocalizedText[]> OPTION_SET_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OptionSetValues",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.OneDimension,
         LocalizedText[].class
     );
@@ -30,7 +30,7 @@ public interface OptionSetType extends BaseDataVariableType {
     QualifiedProperty<Boolean[]> BIT_MASK = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "BitMask",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.OneDimension,
         Boolean[].class
     );

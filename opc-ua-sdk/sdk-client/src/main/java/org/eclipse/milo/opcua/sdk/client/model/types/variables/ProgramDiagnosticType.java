@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
@@ -24,7 +25,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<NodeId> CREATE_SESSION_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CreateSessionId",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -32,7 +33,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<String> CREATE_CLIENT_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CreateClientName",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -40,7 +41,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<DateTime> INVOCATION_CREATION_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InvocationCreationTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -48,7 +49,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<DateTime> LAST_TRANSITION_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastTransitionTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -56,7 +57,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<String> LAST_METHOD_CALL = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodCall",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -64,7 +65,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<NodeId> LAST_METHOD_SESSION_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodSessionId",
-        NodeId.parse("ns=0;i=17"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -72,7 +73,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<Argument[]> LAST_METHOD_INPUT_ARGUMENTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodInputArguments",
-        NodeId.parse("ns=0;i=296"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=296"),
         ValueRanks.OneDimension,
         Argument[].class
     );
@@ -80,7 +81,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<Argument[]> LAST_METHOD_OUTPUT_ARGUMENTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodOutputArguments",
-        NodeId.parse("ns=0;i=296"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=296"),
         ValueRanks.OneDimension,
         Argument[].class
     );
@@ -88,7 +89,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<DateTime> LAST_METHOD_CALL_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodCallTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -96,7 +97,7 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<StatusResult> LAST_METHOD_RETURN_STATUS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodReturnStatus",
-        NodeId.parse("ns=0;i=299"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=299"),
         ValueRanks.Scalar,
         StatusResult.class
     );

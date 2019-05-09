@@ -12,8 +12,8 @@ package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
@@ -22,7 +22,7 @@ public interface ArrayItemType extends DataItemType {
     QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InstrumentRange",
-        NodeId.parse("ns=0;i=884"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=884"),
         ValueRanks.Scalar,
         Range.class
     );
@@ -30,7 +30,7 @@ public interface ArrayItemType extends DataItemType {
     QualifiedProperty<Range> E_U_RANGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EURange",
-        NodeId.parse("ns=0;i=884"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=884"),
         ValueRanks.Scalar,
         Range.class
     );
@@ -38,7 +38,7 @@ public interface ArrayItemType extends DataItemType {
     QualifiedProperty<EUInformation> ENGINEERING_UNITS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EngineeringUnits",
-        NodeId.parse("ns=0;i=887"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=887"),
         ValueRanks.Scalar,
         EUInformation.class
     );
@@ -46,7 +46,7 @@ public interface ArrayItemType extends DataItemType {
     QualifiedProperty<LocalizedText> TITLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Title",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );
@@ -54,7 +54,7 @@ public interface ArrayItemType extends DataItemType {
     QualifiedProperty<AxisScaleEnumeration> AXIS_SCALE_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AxisScaleType",
-        NodeId.parse("ns=0;i=12077"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12077"),
         ValueRanks.Scalar,
         AxisScaleEnumeration.class
     );

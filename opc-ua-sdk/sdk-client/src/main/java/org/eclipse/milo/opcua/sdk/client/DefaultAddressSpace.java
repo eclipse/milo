@@ -114,10 +114,11 @@ public class DefaultAddressSpace implements AddressSpace {
             .thenCompose(Node::getNodeId)
             .thenCompose(
                 typeDefinition ->
-                    client.getTypeRegistry().getNodeFactory(typeDefinition)
+                    client.getObjectTypeManager().getNodeFactory(typeDefinition)
                         .map(f -> completedFuture(f.apply(client, nodeId)))
                         .orElse(completedFuture(node))
-            );
+            )
+            .thenApply(UaNode.class::cast);
     }
 
     private CompletableFuture<UaNode> getVariableNodeInstance(NodeId nodeId, UaVariableNode node) {
@@ -125,10 +126,11 @@ public class DefaultAddressSpace implements AddressSpace {
             .thenCompose(Node::getNodeId)
             .thenCompose(
                 typeDefinition ->
-                    client.getTypeRegistry().getNodeFactory(typeDefinition)
+                    client.getVariableTypeManager().getNodeFactory(typeDefinition)
                         .map(f -> completedFuture(f.apply(client, nodeId)))
                         .orElse(completedFuture(node))
-            );
+            )
+            .thenApply(UaNode.class::cast);
     }
 
     @Override

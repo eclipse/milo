@@ -20,5 +20,6 @@ public interface SessionSecurityDiagnosticsArrayType extends BaseDataVariableTyp
 
     CompletableFuture<SessionSecurityDiagnosticsDataType> getSessionSecurityDiagnostics();
 
-    CompletableFuture<StatusCode> setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value);
+    CompletableFuture<StatusCode> setSessionSecurityDiagnostics(
+        SessionSecurityDiagnosticsDataType value);
 }

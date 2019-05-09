@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.events.operators;
 
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
@@ -28,7 +28,7 @@ public class IsNullTest {
     @Test
     public void testNullValue() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(null));
 
@@ -47,7 +47,7 @@ public class IsNullTest {
     @Test
     public void testNonNullValue() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(42));
 

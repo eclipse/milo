@@ -62,7 +62,7 @@ public abstract class GetMonitoredItemsMethod extends AbstractMethodInvocationHa
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger subscriptionId = (UInteger) inputValues[0].getValue();
         Out<UInteger[]> serverHandles = new Out<UInteger[]>();
@@ -71,7 +71,7 @@ public abstract class GetMonitoredItemsMethod extends AbstractMethodInvocationHa
         return new Variant[]{new Variant(serverHandles.get()), new Variant(clientHandles.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger subscriptionId, Out<UInteger[]> serverHandles, Out<UInteger[]> clientHandles) throws
         UaException;
 }

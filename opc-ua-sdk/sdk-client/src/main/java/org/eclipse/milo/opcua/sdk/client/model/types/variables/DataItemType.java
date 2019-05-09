@@ -14,14 +14,14 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface DataItemType extends BaseDataVariableType {
     QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Definition",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -29,7 +29,7 @@ public interface DataItemType extends BaseDataVariableType {
     QualifiedProperty<Double> VALUE_PRECISION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ValuePrecision",
-        NodeId.parse("ns=0;i=11"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11"),
         ValueRanks.Scalar,
         Double.class
     );

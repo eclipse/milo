@@ -53,7 +53,7 @@ public abstract class SetPositionMethod extends AbstractMethodInvocationHandler 
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger fileHandle = (UInteger) inputValues[0].getValue();
         ULong position = (ULong) inputValues[1].getValue();
@@ -61,6 +61,6 @@ public abstract class SetPositionMethod extends AbstractMethodInvocationHandler 
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger fileHandle, ULong position) throws UaException;
 }

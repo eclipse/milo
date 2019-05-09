@@ -17,14 +17,14 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<DateTime[]> REQ_TIMES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ReqTimes",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.OneDimension,
         DateTime[].class
     );
@@ -32,7 +32,7 @@ public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEve
     QualifiedProperty<DataValue[]> OLD_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldValues",
-        NodeId.parse("ns=0;i=23"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23"),
         ValueRanks.OneDimension,
         DataValue[].class
     );

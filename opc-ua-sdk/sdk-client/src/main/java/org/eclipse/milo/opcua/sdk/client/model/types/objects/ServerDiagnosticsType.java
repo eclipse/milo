@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.ServerDiagnostics
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SubscriptionDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
@@ -28,7 +28,7 @@ public interface ServerDiagnosticsType extends BaseObjectType {
     QualifiedProperty<Boolean> ENABLED_FLAG = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EnabledFlag",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -45,17 +45,21 @@ public interface ServerDiagnosticsType extends BaseObjectType {
 
     CompletableFuture<StatusCode> setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType value);
 
-    CompletableFuture<? extends SamplingIntervalDiagnosticsArrayType> getSamplingIntervalDiagnosticsArrayNode();
+    CompletableFuture<? extends SamplingIntervalDiagnosticsArrayType> getSamplingIntervalDiagnosticsArrayNode(
+    );
 
     CompletableFuture<SamplingIntervalDiagnosticsDataType[]> getSamplingIntervalDiagnosticsArray();
 
-    CompletableFuture<StatusCode> setSamplingIntervalDiagnosticsArray(SamplingIntervalDiagnosticsDataType[] value);
+    CompletableFuture<StatusCode> setSamplingIntervalDiagnosticsArray(
+        SamplingIntervalDiagnosticsDataType[] value);
 
-    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode();
+    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode(
+    );
 
     CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray();
 
-    CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
+    CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(
+        SubscriptionDiagnosticsDataType[] value);
 
     CompletableFuture<? extends SessionsDiagnosticsSummaryType> getSessionsDiagnosticsSummaryNode();
 }

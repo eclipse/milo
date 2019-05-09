@@ -16,14 +16,14 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<String> SECURE_CHANNEL_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -31,7 +31,7 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientCertificate",
-        NodeId.parse("ns=0;i=15"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15"),
         ValueRanks.Scalar,
         ByteString.class
     );
@@ -39,7 +39,7 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientCertificateThumbprint",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -47,7 +47,7 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<Double> REVISED_SESSION_TIMEOUT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RevisedSessionTimeout",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );

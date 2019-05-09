@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
@@ -23,7 +23,7 @@ public interface AnalogItemType extends DataItemType {
     QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InstrumentRange",
-        NodeId.parse("ns=0;i=884"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=884"),
         ValueRanks.Scalar,
         Range.class
     );
@@ -31,7 +31,7 @@ public interface AnalogItemType extends DataItemType {
     QualifiedProperty<Range> E_U_RANGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EURange",
-        NodeId.parse("ns=0;i=884"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=884"),
         ValueRanks.Scalar,
         Range.class
     );
@@ -39,7 +39,7 @@ public interface AnalogItemType extends DataItemType {
     QualifiedProperty<EUInformation> ENGINEERING_UNITS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EngineeringUnits",
-        NodeId.parse("ns=0;i=887"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=887"),
         ValueRanks.Scalar,
         EUInformation.class
     );

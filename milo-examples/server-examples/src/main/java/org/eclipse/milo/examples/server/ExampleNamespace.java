@@ -28,9 +28,9 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
@@ -170,13 +170,13 @@ public class ExampleNamespace extends ManagedNamespace {
             .getManagedNode(Identifiers.Server)
             .orElse(null);
 
-        if (serverNode instanceof ServerNode) {
-            ((ServerNode) serverNode).setEventNotifier(ubyte(1));
+        if (serverNode instanceof ServerTypeNode) {
+            ((ServerTypeNode) serverNode).setEventNotifier(ubyte(1));
 
             // Post a bogus Event every couple seconds
             getServer().getScheduledExecutorService().scheduleAtFixedRate(() -> {
                 try {
-                    BaseEventNode eventNode = getServer().getEventFactory().createEvent(
+                    BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
                         newNodeId(UUID.randomUUID()),
                         Identifiers.BaseEventType
                     );
@@ -510,9 +510,8 @@ public class ExampleNamespace extends ManagedNamespace {
         getNodeManager().addNode(dataAccessFolder);
         rootNode.addOrganizes(dataAccessFolder);
 
-        // AnalogItemType node
         try {
-            AnalogItemNode node = (AnalogItemNode) getNodeFactory().createNode(
+            AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
                 newNodeId("HelloWorld/DataAccess/AnalogValue"),
                 Identifiers.AnalogItemType,
                 true

@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.ServerStatusType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
@@ -26,7 +26,7 @@ public interface ServerType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerArray",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.OneDimension,
         String[].class
     );
@@ -34,7 +34,7 @@ public interface ServerType extends BaseObjectType {
     QualifiedProperty<String[]> NAMESPACE_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "NamespaceArray",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.OneDimension,
         String[].class
     );
@@ -42,7 +42,7 @@ public interface ServerType extends BaseObjectType {
     QualifiedProperty<UByte> SERVICE_LEVEL = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServiceLevel",
-        NodeId.parse("ns=0;i=3"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=3"),
         ValueRanks.Scalar,
         UByte.class
     );
@@ -50,7 +50,7 @@ public interface ServerType extends BaseObjectType {
     QualifiedProperty<Boolean> AUDITING = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Auditing",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -58,7 +58,7 @@ public interface ServerType extends BaseObjectType {
     QualifiedProperty<DateTime> ESTIMATED_RETURN_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EstimatedReturnTime",
-        NodeId.parse("ns=0;i=13"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=13"),
         ValueRanks.Scalar,
         DateTime.class
     );

@@ -15,15 +15,15 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<Boolean> ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Id",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -31,7 +31,7 @@ public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<DateTime> TRANSITION_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "TransitionTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -39,7 +39,7 @@ public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<DateTime> EFFECTIVE_TRANSITION_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EffectiveTransitionTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -47,7 +47,7 @@ public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<LocalizedText> TRUE_STATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "TrueState",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );
@@ -55,7 +55,7 @@ public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<LocalizedText> FALSE_STATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "FalseState",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );

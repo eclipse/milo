@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -40,9 +40,9 @@ public class ReadNodeExample implements ClientExample {
         client.connect().get();
 
         // Get a typed reference to the Server object: ServerNode
-        ServerNode serverNode = client.getAddressSpace().getObjectNode(
+        ServerTypeNode serverNode = client.getAddressSpace().getObjectNode(
             Identifiers.Server,
-            ServerNode.class
+            ServerTypeNode.class
         ).get();
 
         // Read properties of the Server object...
@@ -59,7 +59,7 @@ public class ReadNodeExample implements ClientExample {
 
         // Get a typed reference to the ServerStatus variable
         // component and read value attributes individually
-        ServerStatusNode serverStatusNode = serverNode.getServerStatusNode().get();
+        ServerStatusTypeNode serverStatusNode = serverNode.getServerStatusNode().get();
         BuildInfo buildInfo = serverStatusNode.getBuildInfo().get();
         DateTime startTime = serverStatusNode.getStartTime().get();
         DateTime currentTime = serverStatusNode.getCurrentTime().get();

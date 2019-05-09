@@ -17,9 +17,9 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -76,7 +76,10 @@ public class UaNodeTest {
             objectTypeManager
         );
 
-        VariableTypeManagerInitializer.initialize(variableTypeManager);
+        VariableTypeManagerInitializer.initialize(
+            server.getNamespaceTable(),
+            variableTypeManager
+        );
     }
 
     @Test
@@ -152,7 +155,7 @@ public class UaNodeTest {
             }
         );
 
-        AnalogItemNode analogItem = (AnalogItemNode) nodeFactory.createNode(
+        AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             nodeId,
             Identifiers.AnalogItemType,
             true

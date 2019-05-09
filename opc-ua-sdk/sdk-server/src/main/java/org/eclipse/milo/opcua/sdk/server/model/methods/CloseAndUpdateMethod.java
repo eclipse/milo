@@ -53,7 +53,7 @@ public abstract class CloseAndUpdateMethod extends AbstractMethodInvocationHandl
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger fileHandle = (UInteger) inputValues[0].getValue();
         Out<Boolean> applyChangesRequired = new Out<Boolean>();
@@ -61,6 +61,6 @@ public abstract class CloseAndUpdateMethod extends AbstractMethodInvocationHandl
         return new Variant[]{new Variant(applyChangesRequired.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger fileHandle, Out<Boolean> applyChangesRequired) throws UaException;
 }

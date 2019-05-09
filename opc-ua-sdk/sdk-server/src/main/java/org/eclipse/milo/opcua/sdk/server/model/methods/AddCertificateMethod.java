@@ -52,7 +52,7 @@ public abstract class AddCertificateMethod extends AbstractMethodInvocationHandl
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         ByteString certificate = (ByteString) inputValues[0].getValue();
         Boolean isTrustedCertificate = (Boolean) inputValues[1].getValue();
@@ -60,6 +60,6 @@ public abstract class AddCertificateMethod extends AbstractMethodInvocationHandl
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    ByteString certificate, Boolean isTrustedCertificate) throws UaException;
 }

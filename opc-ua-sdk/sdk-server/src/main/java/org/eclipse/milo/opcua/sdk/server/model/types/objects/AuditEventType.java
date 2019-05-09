@@ -14,21 +14,29 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public interface AuditEventType extends BaseEventType {
-    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
+        "ActionTimeStamp",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
-        String.class
+        DateTime.class
+    );
+
+    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Status",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
     );
 
     QualifiedProperty<String> SERVER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -36,32 +44,30 @@ public interface AuditEventType extends BaseEventType {
     QualifiedProperty<String> CLIENT_AUDIT_ENTRY_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientAuditEntryId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
 
-    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Status",
-        NodeId.parse("ns=0;i=1"),
+        "ClientUserId",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
-        Boolean.class
+        String.class
     );
 
-    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ActionTimeStamp",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
+    PropertyType getActionTimeStampNode();
 
-    PropertyType getClientUserIdNode();
+    DateTime getActionTimeStamp();
 
-    String getClientUserId();
+    void setActionTimeStamp(DateTime value);
 
-    void setClientUserId(String value);
+    PropertyType getStatusNode();
+
+    Boolean getStatus();
+
+    void setStatus(Boolean value);
 
     PropertyType getServerIdNode();
 
@@ -75,15 +81,9 @@ public interface AuditEventType extends BaseEventType {
 
     void setClientAuditEntryId(String value);
 
-    PropertyType getStatusNode();
+    PropertyType getClientUserIdNode();
 
-    Boolean getStatus();
+    String getClientUserId();
 
-    void setStatus(Boolean value);
-
-    PropertyType getActionTimeStampNode();
-
-    DateTime getActionTimeStamp();
-
-    void setActionTimeStamp(DateTime value);
+    void setClientUserId(String value);
 }

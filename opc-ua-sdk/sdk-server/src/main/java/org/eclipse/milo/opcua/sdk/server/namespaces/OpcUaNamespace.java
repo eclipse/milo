@@ -32,11 +32,11 @@ import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
 import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItemsMethod;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ResendDataMethod;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -154,27 +154,27 @@ public class OpcUaNamespace extends ManagedNamespace {
     }
 
     private void configureServerObject() {
-        ServerNode serverNode = (ServerNode) getNodeManager().get(Identifiers.Server);
+        ServerTypeNode serverTypeNode = (ServerTypeNode) getNodeManager().get(Identifiers.Server);
 
-        assert serverNode != null;
+        assert serverTypeNode != null;
 
-        serverNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
+        serverTypeNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
                 return new DataValue(new Variant(server.getNamespaceTable().toArray()));
             }
         });
-        serverNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
+        serverTypeNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
                 return new DataValue(new Variant(server.getServerTable().toArray()));
             }
         });
-        serverNode.setAuditing(false);
-        serverNode.getServerDiagnosticsNode().setEnabledFlag(false);
-        serverNode.setServiceLevel(ubyte(255));
+        serverTypeNode.setAuditing(false);
+        serverTypeNode.getServerDiagnosticsNode().setEnabledFlag(false);
+        serverTypeNode.setServiceLevel(ubyte(255));
 
-        ServerStatusNode serverStatus = serverNode.getServerStatusNode();
+        ServerStatusTypeNode serverStatus = serverTypeNode.getServerStatusNode();
 
         BuildInfo buildInfo = server.getConfig().getBuildInfo();
         serverStatus.setBuildInfo(buildInfo);
@@ -204,7 +204,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         serverStatus.setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                ServerStatusNode serverStatusNode = (ServerStatusNode) node;
+                ServerStatusTypeNode serverStatusNode = (ServerStatusTypeNode) node;
 
                 ServerStatusDataType serverStatus = new ServerStatusDataType(
                     serverStatusNode.getStartTime(),
@@ -230,7 +230,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         });
 
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
-        ServerCapabilitiesNode serverCapabilities = serverNode.getServerCapabilitiesNode();
+        ServerCapabilitiesTypeNode serverCapabilities = serverTypeNode.getServerCapabilitiesNode();
         serverCapabilities.setLocaleIdArray(new String[]{Locale.ENGLISH.getLanguage()});
         serverCapabilities.setServerProfileArray(new String[]{});
         serverCapabilities.setMaxArrayLength(limits.getMaxArrayLength());
@@ -241,7 +241,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         serverCapabilities.setMaxQueryContinuationPoints(limits.getMaxQueryContinuationPoints());
         serverCapabilities.setMinSupportedSampleRate(limits.getMinSupportedSampleRate());
 
-        OperationLimitsNode limitsNode = serverCapabilities.getOperationLimitsNode();
+        OperationLimitsTypeNode limitsNode = serverCapabilities.getOperationLimitsNode();
         limitsNode.setMaxMonitoredItemsPerCall(limits.getMaxMonitoredItemsPerCall());
         limitsNode.setMaxNodesPerBrowse(limits.getMaxNodesPerBrowse());
         limitsNode.setMaxNodesPerHistoryReadData(limits.getMaxNodesPerHistoryReadData());
@@ -255,7 +255,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         limitsNode.setMaxNodesPerTranslateBrowsePathsToNodeIds(limits.getMaxNodesPerTranslateBrowsePathsToNodeIds());
         limitsNode.setMaxNodesPerWrite(limits.getMaxNodesPerWrite());
 
-        serverNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
+        serverTypeNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
 
         configureGetMonitoredItems();
         configureResendData();
@@ -327,7 +327,7 @@ public class OpcUaNamespace extends ManagedNamespace {
                 Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
 
                 if (subscription != null) {
-                    BaseEventNode refreshStart = server.getEventFactory().createEvent(
+                    BaseEventTypeNode refreshStart = server.getEventFactory().createEvent(
                         new NodeId(1, UUID.randomUUID()),
                         Identifiers.RefreshStartEventType
                     );
@@ -343,7 +343,7 @@ public class OpcUaNamespace extends ManagedNamespace {
                     refreshStart.setMessage(LocalizedText.english("RefreshStart"));
                     refreshStart.setSeverity(ushort(0));
 
-                    BaseEventNode refreshEnd = server.getEventFactory().createEvent(
+                    BaseEventTypeNode refreshEnd = server.getEventFactory().createEvent(
                         new NodeId(1, UUID.randomUUID()),
                         Identifiers.RefreshEndEventType
                     );

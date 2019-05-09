@@ -44,13 +44,13 @@ public abstract class CloseMethod extends AbstractMethodInvocationHandler {
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger fileHandle = (UInteger) inputValues[0].getValue();
         invoke(context, fileHandle);
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger fileHandle) throws UaException;
 }

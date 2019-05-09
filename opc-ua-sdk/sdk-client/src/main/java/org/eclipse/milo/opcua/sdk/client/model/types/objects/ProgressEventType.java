@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
@@ -23,7 +23,7 @@ public interface ProgressEventType extends BaseEventType {
     QualifiedProperty<Object> CONTEXT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Context",
-        NodeId.parse("ns=0;i=24"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
         ValueRanks.Scalar,
         Object.class
     );
@@ -31,7 +31,7 @@ public interface ProgressEventType extends BaseEventType {
     QualifiedProperty<UShort> PROGRESS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Progress",
-        NodeId.parse("ns=0;i=5"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
         ValueRanks.Scalar,
         UShort.class
     );
