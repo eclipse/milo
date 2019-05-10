@@ -133,6 +133,10 @@ public class SubscriptionManager {
         return subscriptions.get(subscriptionId);
     }
 
+    public List<Subscription> getSubscriptions() {
+        return new ArrayList<>(subscriptions.values());
+    }
+
     public void createSubscription(ServiceRequest service) {
         CreateSubscriptionRequest request = (CreateSubscriptionRequest) service.getRequest();
 
@@ -1098,12 +1102,11 @@ public class SubscriptionManager {
         }
     }
 
-    public Subscription removeSubscription(UInteger subscriptionId) {
-        Subscription subscription = subscriptions.remove(subscriptionId);
-        if (subscription != null) subscription.setStateListener(null);
-        return subscription;
-    }
-
+    /**
+     * Add (transfer) {@code subscription} to this {@link SubscriptionManager}.
+     *
+     * @param subscription the {@link Subscription} to add.
+     */
     public void addSubscription(Subscription subscription) {
         subscriptions.put(subscription.getId(), subscription);
 
@@ -1113,6 +1116,22 @@ public class SubscriptionManager {
                 server.getSubscriptions().remove(s.getId());
             }
         });
+    }
+
+    /**
+     * Remove (transfer from) the Subscription by {@code subscriptionId} from this {@link SubscriptionManager}.
+     *
+     * @param subscriptionId the id of the {@link Subscription} to remove.
+     * @return the removed {@link Subscription}.
+     */
+    public Subscription removeSubscription(UInteger subscriptionId) {
+        Subscription subscription = subscriptions.remove(subscriptionId);
+
+        if (subscription != null) {
+            subscription.setStateListener(null);
+        }
+
+        return subscription;
     }
 
     StatusCode[] getAcknowledgeResults(UInteger requestHandle) {

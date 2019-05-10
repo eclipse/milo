@@ -33,6 +33,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
@@ -57,7 +59,7 @@ public class Session implements SessionServiceSet {
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
 
-    private volatile long lastActivity = System.nanoTime();
+    private volatile long lastActivityNanos = System.nanoTime();
     private volatile ScheduledFuture<?> checkTimeoutFuture;
 
     private final DefaultAttributeServiceSet attributeServiceSet;
@@ -98,19 +100,7 @@ public class Session implements SessionServiceSet {
         this.securityConfiguration = securityConfiguration;
         this.endpoint = endpoint;
 
-        // TODO diagnostics: missing values
-        sessionDiagnostics = new SessionDiagnostics(
-            sessionId,
-            sessionName,
-            null,
-            null,
-            endpoint.getEndpointUrl(),
-            null,
-            (double) sessionTimeout.toMillis(),
-            null,
-            DateTime.now()
-        );
-
+        sessionDiagnostics = new SessionDiagnostics(this);
         subscriptionManager = new SubscriptionManager(this, server);
 
         attributeServiceSet = new DefaultAttributeServiceSet();
@@ -187,9 +177,31 @@ public class Session implements SessionServiceSet {
     }
 
     void updateLastActivity() {
-        lastActivity = System.nanoTime();
+        lastActivityNanos = System.nanoTime();
+    }
 
-        sessionDiagnostics.getClientLastContactTime().set(DateTime.now());
+    public ApplicationDescription getClientDescription() {
+        return null; // TODO diagnostics
+    }
+
+    public String getServerUri() {
+        return null; // TODO diagnostics
+    }
+
+    public Double getSessionTimeout() {
+        return (double) sessionTimeout.toMillis();
+    }
+
+    public UInteger getMaxResponseMessageSize() {
+        return null; // TODO diagnostics
+    }
+
+    public DateTime getConnectionTime() {
+        return null; // TODO diagnostics
+    }
+
+    public DateTime getLastContactTime() {
+        return null; // TODO diagnostics
     }
 
     void setLastNonce(ByteString lastNonce) {
@@ -201,7 +213,7 @@ public class Session implements SessionServiceSet {
     }
 
     private void checkTimeout() {
-        long elapsed = Math.abs(System.nanoTime() - lastActivity);
+        long elapsed = Math.abs(System.nanoTime() - lastActivityNanos);
 
         if (elapsed > sessionTimeout.toNanos()) {
             logger.debug("Session id={} lifetime expired ({}ms).", sessionId, sessionTimeout.toMillis());

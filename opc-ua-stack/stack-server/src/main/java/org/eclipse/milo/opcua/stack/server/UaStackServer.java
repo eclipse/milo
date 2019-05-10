@@ -153,7 +153,8 @@ public class UaStackServer {
 
         config.getEndpoints().forEach(endpoint -> {
             String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
-            addServiceSet(path, new DefaultDiscoveryServiceSet());
+            
+            addServiceSet(path, new DefaultDiscoveryServiceSet(UaStackServer.this));
         });
     }
 
@@ -449,7 +450,20 @@ public class UaStackServer {
         addServiceHandler(path, UnregisterNodesRequest.TYPE_ID, serviceSet::onUnregisterNodes);
     }
 
-    private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
+    private static class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final UaStackServerConfig config;
+
+        private final UaStackServer stackServer;
+
+        public DefaultDiscoveryServiceSet(UaStackServer stackServer) {
+            this.stackServer = stackServer;
+
+            this.config = stackServer.getConfig();
+        }
+
         @Override
         public void onGetEndpoints(ServiceRequest serviceRequest) {
             GetEndpointsRequest request = (GetEndpointsRequest) serviceRequest.getRequest();
@@ -458,7 +472,7 @@ public class UaStackServer {
                 newArrayList(request.getProfileUris()) :
                 new ArrayList<>();
 
-            List<EndpointDescription> allEndpoints = getEndpointDescriptions()
+            List<EndpointDescription> allEndpoints = stackServer.getEndpointDescriptions()
                 .stream()
                 .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> filterProfileUris(ed, profileUris))

@@ -698,12 +698,18 @@ public class SessionManager implements
     public void onRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getReadCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getAttributeServiceSet().onRead(service);
     }
 
     @Override
     public void onWrite(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getWriteCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getAttributeServiceSet().onWrite(service);
     }
@@ -712,12 +718,18 @@ public class SessionManager implements
     public void onHistoryRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getHistoryReadCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getAttributeHistoryServiceSet().onHistoryRead(service);
     }
 
     @Override
     public void onHistoryUpdate(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getHistoryUpdateCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getAttributeHistoryServiceSet().onHistoryUpdate(service);
     }
@@ -728,12 +740,18 @@ public class SessionManager implements
     public void onBrowse(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getBrowseCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getViewServiceSet().onBrowse(service);
     }
 
     @Override
     public void onBrowseNext(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getBrowseNextCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getViewServiceSet().onBrowseNext(service);
     }
@@ -742,6 +760,9 @@ public class SessionManager implements
     public void onTranslateBrowsePaths(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getViewServiceSet().onTranslateBrowsePaths(service);
     }
 
@@ -749,12 +770,18 @@ public class SessionManager implements
     public void onRegisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getRegisterNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getViewServiceSet().onRegisterNodes(service);
     }
 
     @Override
     public void onUnregisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getUnregisterNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getViewServiceSet().onUnregisterNodes(service);
     }
@@ -765,13 +792,18 @@ public class SessionManager implements
     public void onAddNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getAddNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getNodeManagementServiceSet().onAddNodes(service);
     }
 
     @Override
     public void onAddReferences(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getAddReferencesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getNodeManagementServiceSet().onAddReferences(service);
     }
@@ -780,12 +812,18 @@ public class SessionManager implements
     public void onDeleteNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getDeleteNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getNodeManagementServiceSet().onDeleteNodes(service);
     }
 
     @Override
     public void onDeleteReferences(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getDeleteReferencesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getNodeManagementServiceSet().onDeleteReferences(service);
     }
@@ -796,12 +834,18 @@ public class SessionManager implements
     public void onCreateSubscription(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getCreateSubscriptionCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getSubscriptionServiceSet().onCreateSubscription(service);
     }
 
     @Override
     public void onModifySubscription(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getModifySubscriptionCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onModifySubscription(service);
     }
@@ -810,12 +854,18 @@ public class SessionManager implements
     public void onSetPublishingMode(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getSetPublishingModeCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getSubscriptionServiceSet().onSetPublishingMode(service);
     }
 
     @Override
     public void onPublish(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getPublishCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onPublish(service);
     }
@@ -824,6 +874,9 @@ public class SessionManager implements
     public void onRepublish(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getRepublishCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getSubscriptionServiceSet().onRepublish(service);
     }
 
@@ -831,12 +884,18 @@ public class SessionManager implements
     public void onTransferSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getTransferSubscriptionsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getSubscriptionServiceSet().onTransferSubscriptions(service);
     }
 
     @Override
     public void onDeleteSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getDeleteSubscriptionsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onDeleteSubscriptions(service);
     }
@@ -847,12 +906,18 @@ public class SessionManager implements
     public void onCreateMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getCreateMonitoredItemsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMonitoredItemServiceSet().onCreateMonitoredItems(service);
     }
 
     @Override
     public void onModifyMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getModifyMonitoredItemsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getMonitoredItemServiceSet().onModifyMonitoredItems(service);
     }
@@ -861,6 +926,9 @@ public class SessionManager implements
     public void onSetMonitoringMode(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getSetMonitoringModeCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMonitoredItemServiceSet().onSetMonitoringMode(service);
     }
 
@@ -868,13 +936,18 @@ public class SessionManager implements
     public void onSetTriggering(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getSetTriggeringCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMonitoredItemServiceSet().onSetTriggering(service);
     }
 
     @Override
     public void onDeleteMonitoredItems(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getDeleteMonitoredItemsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getMonitoredItemServiceSet().onDeleteMonitoredItems(service);
     }
@@ -885,6 +958,9 @@ public class SessionManager implements
     public void onCall(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getCallCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMethodServiceSet().onCall(service);
     }
     //endregion
@@ -894,12 +970,18 @@ public class SessionManager implements
     public void onQueryFirst(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getQueryFirstCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getQueryServiceSet().onQueryFirst(service);
     }
 
     @Override
     public void onQueryNext(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getQueryNextCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getQueryServiceSet().onQueryNext(service);
     }

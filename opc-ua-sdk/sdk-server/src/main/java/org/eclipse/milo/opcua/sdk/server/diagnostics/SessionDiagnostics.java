@@ -10,20 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
 public class SessionDiagnostics {
 
-    private final AtomicReference<DateTime> clientLastContactTime = new AtomicReference<>(DateTime.MIN_VALUE);
-    private final LongAdder currentSubscriptionsCount = new LongAdder();
-    private final LongAdder currentMonitoredItemsCount = new LongAdder();
-    private final LongAdder currentPublishRequestsInQueue = new LongAdder();
     private final ServiceCounter totalRequestCount = new ServiceCounter();
     private final LongAdder unauthorizedRequestCount = new LongAdder();
     private final ServiceCounter readCount = new ServiceCounter();
@@ -55,54 +53,68 @@ public class SessionDiagnostics {
     private final ServiceCounter registerNodesCount = new ServiceCounter();
     private final ServiceCounter unregisterNodesCount = new ServiceCounter();
 
-    private final NodeId sessionId;
-    private final String sessionName;
-    private final ApplicationDescription clientDescription;
-    private final String serverUri;
-    private final String endpointUrl;
-    private final String[] localeIds;
-    private final Double actualSessionTimeout;
-    private final UInteger maxResponseMessageSize;
-    private final DateTime clientConnectionTime;
+    private final Session session;
 
-    public SessionDiagnostics(
-        NodeId sessionId,
-        String sessionName,
-        ApplicationDescription clientDescription,
-        String serverUri, String endpointUrl,
-        String[] localeIds,
-        Double actualSessionTimeout,
-        UInteger maxResponseMessageSize,
-        DateTime clientConnectionTime
-    ) {
-
-        this.sessionId = sessionId;
-        this.sessionName = sessionName;
-        this.clientDescription = clientDescription;
-        this.serverUri = serverUri;
-        this.endpointUrl = endpointUrl;
-        this.localeIds = localeIds;
-        this.actualSessionTimeout = actualSessionTimeout;
-        this.maxResponseMessageSize = maxResponseMessageSize;
-        this.clientConnectionTime = clientConnectionTime;
-
-        this.clientLastContactTime.set(clientConnectionTime);
+    public SessionDiagnostics(Session session) {
+        this.session = session;
     }
 
-    public AtomicReference<DateTime> getClientLastContactTime() {
-        return clientLastContactTime;
+    public NodeId getSessionId() {
+        return session.getSessionId();
     }
 
-    public LongAdder getCurrentSubscriptionsCount() {
-        return currentSubscriptionsCount;
+    public String getSessionName() {
+        return session.getSessionName();
     }
 
-    public LongAdder getCurrentMonitoredItemsCount() {
-        return currentMonitoredItemsCount;
+    public ApplicationDescription getClientDescription() {
+        return session.getClientDescription();
     }
 
-    public LongAdder getCurrentPublishRequestsInQueue() {
-        return currentPublishRequestsInQueue;
+    public String getServerUri() {
+        return session.getServerUri();
+    }
+
+    public String getEndpointUrl() {
+        return session.getEndpoint().getEndpointUrl();
+    }
+
+    public String[] getLocaleIds() {
+        return session.getLocaleIds();
+    }
+
+    public Double getActualSessionTimeout() {
+        return session.getSessionTimeout();
+    }
+
+    public UInteger getMaxResponseMessageSize() {
+        return session.getMaxResponseMessageSize();
+    }
+
+    public DateTime getClientConnectionTime() {
+        return session.getConnectionTime();
+    }
+
+    public DateTime getClientLastContactTime() {
+        return session.getLastContactTime();
+    }
+
+    public UInteger getCurrentSubscriptionsCount() {
+        return uint(session.getSubscriptionManager().getSubscriptions().size());
+    }
+
+    public UInteger getCurrentMonitoredItemsCount() {
+        return uint(
+            session.getSubscriptionManager().getSubscriptions()
+                .stream()
+                .map(s -> s.getMonitoredItems().size())
+                .reduce(Integer::sum)
+                .orElse(0)
+        );
+    }
+
+    public UInteger getCurrentPublishRequestsInQueue() {
+        return uint(session.getSubscriptionManager().getPublishQueue().size());
     }
 
     public ServiceCounter getTotalRequestCount() {
@@ -223,42 +235,6 @@ public class SessionDiagnostics {
 
     public ServiceCounter getUnregisterNodesCount() {
         return unregisterNodesCount;
-    }
-
-    public NodeId getSessionId() {
-        return sessionId;
-    }
-
-    public String getSessionName() {
-        return sessionName;
-    }
-
-    public ApplicationDescription getClientDescription() {
-        return clientDescription;
-    }
-
-    public String getServerUri() {
-        return serverUri;
-    }
-
-    public String getEndpointUrl() {
-        return endpointUrl;
-    }
-
-    public String[] getLocaleIds() {
-        return localeIds;
-    }
-
-    public Double getActualSessionTimeout() {
-        return actualSessionTimeout;
-    }
-
-    public UInteger getMaxResponseMessageSize() {
-        return maxResponseMessageSize;
-    }
-
-    public DateTime getClientConnectionTime() {
-        return clientConnectionTime;
     }
 
 }

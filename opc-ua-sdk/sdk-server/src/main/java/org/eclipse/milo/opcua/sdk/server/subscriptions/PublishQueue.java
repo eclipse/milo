@@ -155,6 +155,15 @@ public class PublishQueue {
         }
     }
 
+    /**
+     * Get the number of queued Publish ServiceRequests.
+     *
+     * @return the number of queued Publish ServiceRequests.
+     */
+    public synchronized int size() {
+        return serviceQueue.size();
+    }
+
     public static class WaitingSubscription {
 
         private final Date waitingSince = new Date();
