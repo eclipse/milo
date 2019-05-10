@@ -16,6 +16,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnostics;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -52,6 +54,8 @@ public class ServiceRequest extends DefaultAttributeMap {
         this.secureChannelId = secureChannelId;
         this.clientAddress = clientAddress;
         this.clientCertificateBytes = clientCertificateBytes;
+
+        future.whenComplete(this::updateDiagnosticCounters);
     }
 
     public UaStackServer getServer() {
@@ -153,6 +157,25 @@ public class ServiceRequest extends DefaultAttributeMap {
         return MoreObjects.toStringHelper(this)
             .add("request", request.getClass().getSimpleName())
             .toString();
+    }
+
+    private void updateDiagnosticCounters(
+        @SuppressWarnings("unused") @Nullable UaResponseMessage r,
+        @Nullable Throwable ex
+    ) {
+
+        ServerDiagnostics serverDiagnostics = server.getDiagnosticsManager().getServerDiagnostics();
+
+        if (ex != null) {
+            StatusCode statusCode = UaException.extractStatusCode(ex)
+                .orElse(new StatusCode(StatusCodes.Bad_InternalError));
+
+            if (server.getDiagnosticsManager().isSecurityError(statusCode)) {
+                serverDiagnostics.getSecurityRejectedRequestCount().increment();
+            }
+
+            serverDiagnostics.getRejectedRequestCount().increment();
+        }
     }
 
 }

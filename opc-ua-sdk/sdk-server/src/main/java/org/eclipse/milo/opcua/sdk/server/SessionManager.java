@@ -27,6 +27,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -42,6 +44,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -89,7 +93,6 @@ public class SessionManager implements
 
     private final Map<NodeId, Session> createdSessions = Maps.newConcurrentMap();
     private final Map<NodeId, Session> activeSessions = Maps.newConcurrentMap();
-    private final Map<NodeId, Session> inactiveSessions = Maps.newConcurrentMap();
 
     /**
      * Store the last N client nonces and to make sure they aren't re-used.
@@ -100,18 +103,16 @@ public class SessionManager implements
 
     private final OpcUaServer server;
 
-    public SessionManager(OpcUaServer server) {
+    SessionManager(OpcUaServer server) {
         this.server = server;
     }
 
-    public List<Session> getActiveSessions() {
-        return Lists.newArrayList(activeSessions.values());
-    }
-
-    public List<Session> getInactiveSessions() {
-        return Lists.newArrayList(inactiveSessions.values());
-    }
-
+    /**
+     * Kill the session identified by {@code nodeId} and optionally delete all its subscriptions.
+     *
+     * @param nodeId              the {@link NodeId} identifying the session to kill.
+     * @param deleteSubscriptions {@code true} if all its subscriptions should be deleted as well.
+     */
     public void killSession(NodeId nodeId, boolean deleteSubscriptions) {
         activeSessions.values().stream()
             .filter(s -> s.getSessionId().equals(nodeId))
@@ -125,41 +126,61 @@ public class SessionManager implements
         Session session = activeSessions.get(authToken);
 
         if (session == null) {
-            session = createdSessions.remove(authToken);
+            // session is either not activated or doesn't exist
+            session = createdSessions.get(authToken);
 
-            if (session == null) {
-                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
+            if (session != null) {
+                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                throw new UaException(StatusCodes.Bad_SessionNotActivated);
             } else {
-                if (session.getSecureChannelId() != secureChannelId) {
-                    createdSessions.put(authToken, session);
-                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
-                } else {
-                    throw new UaException(StatusCodes.Bad_SessionNotActivated);
-                }
+                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
             }
+        } else {
+            // session exists and is activated
+            if (session.getSecureChannelId() != secureChannelId) {
+                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
+            }
+
+            session.updateLastActivity();
+
+            service.attr(ServiceAttributes.SERVER_KEY).set(server);
+            service.attr(ServiceAttributes.SESSION_KEY).set(session);
+
+            return session;
         }
-
-        if (session.getSecureChannelId() != secureChannelId) {
-            throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
-        }
-
-        session.updateLastActivity();
-
-        service.attr(ServiceAttributes.SERVER_KEY).set(server);
-        service.attr(ServiceAttributes.SESSION_KEY).set(session);
-
-        return session;
     }
 
     //region Session Services
     @Override
-    public void onCreateSession(ServiceRequest serviceRequest) throws UaException {
+    public void onCreateSession(ServiceRequest serviceRequest) {
+        DiagnosticsManager diagnosticsManager = server.getDiagnosticsManager();
+        ServerDiagnostics serverDiagnostics = diagnosticsManager.getServerDiagnostics();
+
+        try {
+            CreateSessionResponse response = createSession(serviceRequest);
+
+            serverDiagnostics.getCurrentSessionCount().increment();
+            serverDiagnostics.getCumulativeSessionCount().increment();
+
+            serviceRequest.setResponse(response);
+        } catch (UaException e) {
+            serverDiagnostics.getRejectedSessionCount().increment();
+
+            if (diagnosticsManager.isSecurityError(e.getStatusCode())) {
+                serverDiagnostics.getSecurityRejectedSessionCount().increment();
+            }
+
+            serviceRequest.setServiceFault(e);
+        }
+    }
+
+    private CreateSessionResponse createSession(ServiceRequest serviceRequest) throws UaException {
         CreateSessionRequest request = (CreateSessionRequest) serviceRequest.getRequest();
 
         long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
         if (createdSessions.size() + activeSessions.size() >= maxSessionCount) {
-            serviceRequest.setServiceFault(StatusCodes.Bad_TooManySessions);
-            return;
+            throw new UaException(StatusCodes.Bad_TooManySessions);
         }
 
         ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -272,7 +293,7 @@ public class SessionManager implements
 
         createdSessions.put(authenticationToken, session);
 
-        CreateSessionResponse response = new CreateSessionResponse(
+        return new CreateSessionResponse(
             serviceRequest.createResponseHeader(),
             sessionId,
             authenticationToken,
@@ -284,8 +305,6 @@ public class SessionManager implements
             serverSignature,
             uint(maxRequestMessageSize)
         );
-
-        serviceRequest.setResponse(response);
     }
 
     private SecurityConfiguration createSecurityConfiguration(
@@ -356,11 +375,18 @@ public class SessionManager implements
     }
 
     @Override
-    public void onActivateSession(ServiceRequest serviceRequest) throws UaException {
+    public void onActivateSession(ServiceRequest serviceRequest) {
+        try {
+            ActivateSessionResponse response = activateSession(serviceRequest);
 
+            serviceRequest.setResponse(response);
+        } catch (UaException e) {
+            serviceRequest.setServiceFault(e);
+        }
+    }
+
+    private ActivateSessionResponse activateSession(ServiceRequest serviceRequest) throws UaException {
         ActivateSessionRequest request = (ActivateSessionRequest) serviceRequest.getRequest();
-
-        // ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
 
         long secureChannelId = serviceRequest.getSecureChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
@@ -402,14 +428,12 @@ public class SessionManager implements
                     session.setLastNonce(serverNonce);
                     session.setLocaleIds(request.getLocaleIds());
 
-                    ActivateSessionResponse response = new ActivateSessionResponse(
+                    return new ActivateSessionResponse(
                         serviceRequest.createResponseHeader(),
                         serverNonce,
                         results,
                         new DiagnosticInfo[0]
                     );
-
-                    serviceRequest.setResponse(response);
                 } else {
                     /*
                      * Associate session with new secure channel if client certificate and identity token match.
@@ -464,14 +488,12 @@ public class SessionManager implements
                         session.setLastNonce(serverNonce);
                         session.setLocaleIds(request.getLocaleIds());
 
-                        ActivateSessionResponse response = new ActivateSessionResponse(
+                        return new ActivateSessionResponse(
                             serviceRequest.createResponseHeader(),
                             serverNonce,
                             results,
                             new DiagnosticInfo[0]
                         );
-
-                        serviceRequest.setResponse(response);
                     } else {
                         throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
                     }
@@ -513,14 +535,12 @@ public class SessionManager implements
             session.setLocaleIds(request.getLocaleIds());
             session.setLastNonce(serverNonce);
 
-            ActivateSessionResponse response = new ActivateSessionResponse(
+            return new ActivateSessionResponse(
                 serviceRequest.createResponseHeader(),
                 serverNonce,
                 results,
                 new DiagnosticInfo[0]
             );
-
-            serviceRequest.setResponse(response);
         }
     }
 
@@ -599,7 +619,19 @@ public class SessionManager implements
     }
 
     @Override
-    public void onCloseSession(ServiceRequest service) throws UaException {
+    public void onCloseSession(ServiceRequest service) {
+        try {
+            CloseSessionResponse response = closeSession(service);
+
+            service.setResponse(response);
+        } catch (UaException e) {
+            service.setServiceFault(e);
+        }
+    }
+
+    private CloseSessionResponse closeSession(ServiceRequest service) throws UaException {
+        CloseSessionRequest request = (CloseSessionRequest) service.getRequest();
+
         long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
@@ -610,7 +642,8 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
             } else {
                 activeSessions.remove(authToken);
-                session.onCloseSession(service);
+                session.close(request.getDeleteSubscriptions());
+                return new CloseSessionResponse(service.createResponseHeader());
             }
         } else {
             session = createdSessions.get(authToken);
@@ -621,7 +654,8 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
             } else {
                 createdSessions.remove(authToken);
-                session.onCloseSession(service);
+                session.close(request.getDeleteSubscriptions());
+                return new CloseSessionResponse(service.createResponseHeader());
             }
         }
     }
@@ -683,7 +717,6 @@ public class SessionManager implements
 
     @Override
     public void onHistoryUpdate(ServiceRequest service) throws UaException {
-
         Session session = session(service);
 
         session.getAttributeHistoryServiceSet().onHistoryUpdate(service);
@@ -752,7 +785,6 @@ public class SessionManager implements
 
     @Override
     public void onDeleteReferences(ServiceRequest service) throws UaException {
-
         Session session = session(service);
 
         session.getNodeManagementServiceSet().onDeleteReferences(service);
@@ -762,7 +794,6 @@ public class SessionManager implements
     //region Subscription Services
     @Override
     public void onCreateSubscription(ServiceRequest service) throws UaException {
-
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onCreateSubscription(service);
@@ -770,7 +801,6 @@ public class SessionManager implements
 
     @Override
     public void onModifySubscription(ServiceRequest service) throws UaException {
-
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onModifySubscription(service);
@@ -778,7 +808,6 @@ public class SessionManager implements
 
     @Override
     public void onSetPublishingMode(ServiceRequest service) throws UaException {
-
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onSetPublishingMode(service);

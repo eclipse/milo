@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultMethodServiceSet;
@@ -30,10 +31,9 @@ import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
@@ -74,6 +74,8 @@ public class Session implements SessionServiceSet {
     private volatile InetAddress clientAddress;
     private volatile String[] localeIds;
 
+    private final SessionDiagnostics sessionDiagnostics;
+
     private final OpcUaServer server;
     private final NodeId sessionId;
     private final String sessionName;
@@ -95,6 +97,19 @@ public class Session implements SessionServiceSet {
         this.secureChannelId = secureChannelId;
         this.securityConfiguration = securityConfiguration;
         this.endpoint = endpoint;
+
+        // TODO diagnostics: missing values
+        sessionDiagnostics = new SessionDiagnostics(
+            sessionId,
+            sessionName,
+            null,
+            null,
+            endpoint.getEndpointUrl(),
+            null,
+            (double) sessionTimeout.toMillis(),
+            null,
+            DateTime.now()
+        );
 
         subscriptionManager = new SubscriptionManager(this, server);
 
@@ -163,12 +178,18 @@ public class Session implements SessionServiceSet {
         return clientAddress;
     }
 
+    public SessionDiagnostics getSessionDiagnostics() {
+        return sessionDiagnostics;
+    }
+
     void addLifecycleListener(LifecycleListener listener) {
         listeners.add(listener);
     }
 
     void updateLastActivity() {
         lastActivity = System.nanoTime();
+
+        sessionDiagnostics.getClientLastContactTime().set(DateTime.now());
     }
 
     void setLastNonce(ByteString lastNonce) {
@@ -185,9 +206,7 @@ public class Session implements SessionServiceSet {
         if (elapsed > sessionTimeout.toNanos()) {
             logger.debug("Session id={} lifetime expired ({}ms).", sessionId, sessionTimeout.toMillis());
 
-            subscriptionManager.sessionClosed(true);
-
-            listeners.forEach(listener -> listener.onSessionClosed(this, true));
+            close(true);
         } else {
             long remaining = sessionTimeout.toNanos() - elapsed;
             logger.trace("Session id={} timeout scheduled for +{}s.",
@@ -264,11 +283,7 @@ public class Session implements SessionServiceSet {
 
     @Override
     public void onCloseSession(ServiceRequest serviceRequest) {
-        CloseSessionRequest request = (CloseSessionRequest) serviceRequest.getRequest();
-
-        close(request.getDeleteSubscriptions());
-
-        serviceRequest.setResponse(new CloseSessionResponse(serviceRequest.createResponseHeader()));
+        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     void close(boolean deleteSubscriptions) {
