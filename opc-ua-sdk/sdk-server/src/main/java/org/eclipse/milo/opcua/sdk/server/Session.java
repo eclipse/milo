@@ -53,8 +53,6 @@ public class Session implements SessionServiceSet {
 
     private final SubscriptionManager subscriptionManager;
 
-    private volatile long secureChannelId;
-
     private volatile Object identityObject;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
@@ -72,30 +70,43 @@ public class Session implements SessionServiceSet {
     private final DefaultViewServiceSet viewServiceSet;
 
     private volatile EndpointDescription endpoint;
+    private volatile long secureChannelId;
     private volatile SecurityConfiguration securityConfiguration;
     private volatile InetAddress clientAddress;
     private volatile String[] localeIds;
+    private volatile DateTime lastContactTime;
 
+    private final DateTime connectTime = DateTime.now();
     private final SessionDiagnostics sessionDiagnostics;
 
     private final OpcUaServer server;
     private final NodeId sessionId;
     private final String sessionName;
     private final Duration sessionTimeout;
+    private final ApplicationDescription clientDescription;
+    private final String serverUri;
+    private final UInteger maxResponseMessageSize;
 
     public Session(
         OpcUaServer server,
         NodeId sessionId,
         String sessionName,
         Duration sessionTimeout,
-        long secureChannelId,
+        ApplicationDescription clientDescription,
+        String serverUri,
+        UInteger maxResponseMessageSize,
         EndpointDescription endpoint,
-        SecurityConfiguration securityConfiguration) {
+        long secureChannelId,
+        SecurityConfiguration securityConfiguration
+    ) {
 
         this.server = server;
         this.sessionId = sessionId;
         this.sessionName = sessionName;
         this.sessionTimeout = sessionTimeout;
+        this.clientDescription = clientDescription;
+        this.serverUri = serverUri;
+        this.maxResponseMessageSize = maxResponseMessageSize;
         this.secureChannelId = secureChannelId;
         this.securityConfiguration = securityConfiguration;
         this.endpoint = endpoint;
@@ -178,14 +189,15 @@ public class Session implements SessionServiceSet {
 
     void updateLastActivity() {
         lastActivityNanos = System.nanoTime();
+        lastContactTime = DateTime.now();
     }
 
     public ApplicationDescription getClientDescription() {
-        return null; // TODO diagnostics
+        return clientDescription;
     }
 
     public String getServerUri() {
-        return null; // TODO diagnostics
+        return serverUri;
     }
 
     public Double getSessionTimeout() {
@@ -193,15 +205,15 @@ public class Session implements SessionServiceSet {
     }
 
     public UInteger getMaxResponseMessageSize() {
-        return null; // TODO diagnostics
+        return maxResponseMessageSize;
     }
 
     public DateTime getConnectionTime() {
-        return null; // TODO diagnostics
+        return connectTime;
     }
 
     public DateTime getLastContactTime() {
-        return null; // TODO diagnostics
+        return lastContactTime;
     }
 
     void setLastNonce(ByteString lastNonce) {

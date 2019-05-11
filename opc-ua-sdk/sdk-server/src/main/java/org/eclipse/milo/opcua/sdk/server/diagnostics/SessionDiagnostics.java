@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -235,6 +236,54 @@ public class SessionDiagnostics {
 
     public ServiceCounter getUnregisterNodesCount() {
         return unregisterNodesCount;
+    }
+
+    public SessionDiagnosticsDataType getSessionDiagnosticsDataType() {
+        return new SessionDiagnosticsDataType(
+            getSessionId(),
+            getSessionName(),
+            getClientDescription(),
+            getServerUri(),
+            getEndpointUrl(),
+            getLocaleIds(),
+            getActualSessionTimeout(),
+            getMaxResponseMessageSize(),
+            getClientConnectionTime(),
+            getClientLastContactTime(),
+            getCurrentSubscriptionsCount(),
+            getCurrentMonitoredItemsCount(),
+            getCurrentPublishRequestsInQueue(),
+            getTotalRequestCount().getServiceCounter(),
+            uint(getUnauthorizedRequestCount().sum()),
+            getReadCount().getServiceCounter(),
+            getHistoryReadCount().getServiceCounter(),
+            getWriteCount().getServiceCounter(),
+            getHistoryUpdateCount().getServiceCounter(),
+            getCallCount().getServiceCounter(),
+            getCreateMonitoredItemsCount().getServiceCounter(),
+            getModifyMonitoredItemsCount().getServiceCounter(),
+            getSetMonitoringModeCount().getServiceCounter(),
+            getSetTriggeringCount().getServiceCounter(),
+            getDeleteMonitoredItemsCount().getServiceCounter(),
+            getCreateSubscriptionCount().getServiceCounter(),
+            getModifySubscriptionCount().getServiceCounter(),
+            getSetPublishingModeCount().getServiceCounter(),
+            getPublishCount().getServiceCounter(),
+            getRepublishCount().getServiceCounter(),
+            getTransferSubscriptionsCount().getServiceCounter(),
+            getDeleteSubscriptionsCount().getServiceCounter(),
+            getAddNodesCount().getServiceCounter(),
+            getAddReferencesCount().getServiceCounter(),
+            getDeleteNodesCount().getServiceCounter(),
+            getDeleteReferencesCount().getServiceCounter(),
+            getBrowseCount().getServiceCounter(),
+            getBrowseNextCount().getServiceCounter(),
+            getTranslateBrowsePathsToNodeIdsCount().getServiceCounter(),
+            getQueryFirstCount().getServiceCounter(),
+            getQueryNextCount().getServiceCounter(),
+            getRegisterNodesCount().getServiceCounter(),
+            getUnregisterNodesCount().getServiceCounter()
+        );
     }
 
 }

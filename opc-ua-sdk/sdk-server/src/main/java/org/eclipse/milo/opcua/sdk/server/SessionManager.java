@@ -44,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
@@ -191,6 +192,8 @@ public class SessionManager implements
             Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
         );
 
+        ApplicationDescription clientDescription = request.getClientDescription();
+
         long secureChannelId = serviceRequest.getSecureChannelId();
         EndpointDescription endpoint = serviceRequest.getEndpoint();
 
@@ -250,9 +253,10 @@ public class SessionManager implements
                     "client certificate must be non-null");
             }
 
-            String applicationUri = request.getClientDescription().getApplicationUri();
-
-            CertificateValidationUtil.validateApplicationUri(clientCertificate, applicationUri);
+            CertificateValidationUtil.validateApplicationUri(
+                clientCertificate,
+                clientDescription.getApplicationUri()
+            );
 
             CertificateValidator certificateValidator =
                 server.getConfig().getCertificateValidator();
@@ -279,8 +283,11 @@ public class SessionManager implements
             sessionId,
             sessionName,
             sessionTimeout,
-            secureChannelId,
+            clientDescription,
+            request.getServerUri(),
+            request.getMaxResponseMessageSize(),
             endpoint,
+            secureChannelId,
             securityConfiguration
         );
 
