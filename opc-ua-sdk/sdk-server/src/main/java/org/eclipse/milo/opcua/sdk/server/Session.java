@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultMethodServiceSet;
@@ -78,6 +79,7 @@ public class Session implements SessionServiceSet {
 
     private final DateTime connectTime = DateTime.now();
     private final SessionDiagnostics sessionDiagnostics;
+    private final SessionSecurityDiagnostics sessionSecurityDiagnostics;
 
     private final OpcUaServer server;
     private final NodeId sessionId;
@@ -112,6 +114,8 @@ public class Session implements SessionServiceSet {
         this.endpoint = endpoint;
 
         sessionDiagnostics = new SessionDiagnostics(this);
+        sessionSecurityDiagnostics = new SessionSecurityDiagnostics(this);
+
         subscriptionManager = new SubscriptionManager(this, server);
 
         attributeServiceSet = new DefaultAttributeServiceSet();
@@ -181,6 +185,10 @@ public class Session implements SessionServiceSet {
 
     public SessionDiagnostics getSessionDiagnostics() {
         return sessionDiagnostics;
+    }
+
+    public SessionSecurityDiagnostics getSessionSecurityDiagnostics() {
+        return sessionSecurityDiagnostics;
     }
 
     void addLifecycleListener(LifecycleListener listener) {

@@ -148,7 +148,6 @@ public class SubscriptionDiagnostics {
     }
 
     public LongAdder getDiscardedMessageCount() {
-        // TODO diagnostics
         return discardedMessageCount;
     }
 

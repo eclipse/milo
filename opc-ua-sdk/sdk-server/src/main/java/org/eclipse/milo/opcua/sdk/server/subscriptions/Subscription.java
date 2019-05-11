@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -62,7 +63,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class Subscription {
 
-    private static final int MAX_NOTIFICATIONS = 0xFFFF;
+    /**
+     * Maximum number of NotificationMessages to store for republishing.
+     */
+    private static final int MAX_AVAILABLE_MESSAGES = 1024;
+
+    /**
+     * Maximum number of notifications that can be returned in a single PublishResponse.
+     */
+    private static final int MAX_NOTIFICATIONS_PER_PUBLISH = 65535;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -76,7 +85,8 @@ public class Subscription {
 
     private final AtomicLong sequenceNumber = new AtomicLong(1L);
 
-    private final Map<UInteger, NotificationMessage> availableMessages = Maps.newConcurrentMap();
+    private final ConcurrentSkipListMap<UInteger, NotificationMessage> availableMessages =
+        new ConcurrentSkipListMap<>(UInteger::compareTo);
 
     private final PublishHandler publishHandler = new PublishHandler();
     private final TimerHandler timerHandler = new TimerHandler();
@@ -321,8 +331,8 @@ public class Subscription {
     }
 
     private void setMaxNotificationsPerPublish(long maxNotificationsPerPublish) {
-        if (maxNotificationsPerPublish <= 0 || maxNotificationsPerPublish > MAX_NOTIFICATIONS) {
-            maxNotificationsPerPublish = MAX_NOTIFICATIONS;
+        if (maxNotificationsPerPublish <= 0 || maxNotificationsPerPublish > MAX_NOTIFICATIONS_PER_PUBLISH) {
+            maxNotificationsPerPublish = MAX_NOTIFICATIONS_PER_PUBLISH;
         }
         this.maxNotificationsPerPublish = Ints.saturatedCast(maxNotificationsPerPublish);
     }
@@ -523,6 +533,15 @@ public class Subscription {
         );
 
         availableMessages.put(notificationMessage.getSequenceNumber(), notificationMessage);
+
+        while (availableMessages.size() > MAX_AVAILABLE_MESSAGES) {
+            Map.Entry<UInteger, NotificationMessage> entry = availableMessages.pollFirstEntry();
+            if (entry != null) {
+                subscriptionDiagnostics.getDiscardedMessageCount().increment();
+                logger.debug("Discarded cached NotificationMessage with sequenceNumber={}", entry.getKey());
+            }
+        }
+
         UInteger[] available = getAvailableSequenceNumbers();
 
         UInteger requestHandle = service.getRequest().getRequestHeader().getRequestHandle();
