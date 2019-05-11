@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import io.netty.channel.Channel;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -116,7 +115,6 @@ public class UaStackServer {
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
     private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
-    private final DiagnosticsManager diagnosticsManager = new DiagnosticsManager();
     private final NamespaceTable namespaceTable = new NamespaceTable();
 
     private final AtomicLong channelIds = new AtomicLong();
@@ -153,7 +151,7 @@ public class UaStackServer {
 
         config.getEndpoints().forEach(endpoint -> {
             String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
-            
+
             addServiceSet(path, new DefaultDiscoveryServiceSet(UaStackServer.this));
         });
     }
@@ -217,10 +215,6 @@ public class UaStackServer {
 
     public DataTypeManager getDataTypeManager() {
         return dataTypeManager;
-    }
-
-    public DiagnosticsManager getDiagnosticsManager() {
-        return diagnosticsManager;
     }
 
     public SerializationContext getSerializationContext() {

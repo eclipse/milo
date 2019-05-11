@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnostics;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
@@ -164,17 +164,17 @@ public class ServiceRequest extends DefaultAttributeMap {
         @Nullable Throwable ex
     ) {
 
-        ServerDiagnostics serverDiagnostics = server.getDiagnosticsManager().getServerDiagnostics();
+        ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsManager().getServerDiagnostics();
 
         if (ex != null) {
             StatusCode statusCode = UaException.extractStatusCode(ex)
                 .orElse(new StatusCode(StatusCodes.Bad_InternalError));
 
             if (server.getDiagnosticsManager().isSecurityError(statusCode)) {
-                serverDiagnostics.getSecurityRejectedRequestCount().increment();
+                serverDiagnosticsSummary.getSecurityRejectedRequestCount().increment();
             }
 
-            serverDiagnostics.getRejectedRequestCount().increment();
+            serverDiagnosticsSummary.getRejectedRequestCount().increment();
         }
     }
 

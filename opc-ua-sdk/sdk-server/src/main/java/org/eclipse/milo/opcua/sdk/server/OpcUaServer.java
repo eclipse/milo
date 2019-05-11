@@ -25,7 +25,7 @@ import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
@@ -84,6 +84,8 @@ public class OpcUaServer {
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary();
 
 
     private final EventBus eventBus = new EventBus("server");
@@ -163,10 +165,6 @@ public class OpcUaServer {
         return addressSpaceManager;
     }
 
-    public DiagnosticsManager getDiagnosticsManager() {
-        return stackServer.getDiagnosticsManager();
-    }
-
     public SessionManager getSessionManager() {
         return sessionManager;
     }
@@ -193,6 +191,10 @@ public class OpcUaServer {
 
     public SerializationContext getSerializationContext() {
         return stackServer.getSerializationContext();
+    }
+
+    public ServerDiagnosticsSummary getDiagnosticsSummary() {
+        return diagnosticsSummary;
     }
 
     /**

@@ -27,8 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnostics;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -155,21 +154,20 @@ public class SessionManager implements
     //region Session Services
     @Override
     public void onCreateSession(ServiceRequest serviceRequest) {
-        DiagnosticsManager diagnosticsManager = server.getDiagnosticsManager();
-        ServerDiagnostics serverDiagnostics = diagnosticsManager.getServerDiagnostics();
+        ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
 
         try {
             CreateSessionResponse response = createSession(serviceRequest);
 
-            serverDiagnostics.getCurrentSessionCount().increment();
-            serverDiagnostics.getCumulativeSessionCount().increment();
+            serverDiagnosticsSummary.getCurrentSessionCount().increment();
+            serverDiagnosticsSummary.getCumulativeSessionCount().increment();
 
             serviceRequest.setResponse(response);
         } catch (UaException e) {
-            serverDiagnostics.getRejectedSessionCount().increment();
+            serverDiagnosticsSummary.getRejectedSessionCount().increment();
 
-            if (diagnosticsManager.isSecurityError(e.getStatusCode())) {
-                serverDiagnostics.getSecurityRejectedSessionCount().increment();
+            if (e.getStatusCode().isSecurityError()) {
+                serverDiagnosticsSummary.getSecurityRejectedSessionCount().increment();
             }
 
             serviceRequest.setServiceFault(e);

@@ -81,6 +81,13 @@ public final class StatusCode {
         return (value & 0x480) == 0x480;
     }
 
+    /**
+     * @return {@code true} if the StatusCode is security-related.
+     */
+    public boolean isSecurityError() {
+        return false; // TODO diagnostics
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -12,7 +12,11 @@ package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
 import java.util.concurrent.atomic.LongAdder;
 
-public class ServerDiagnostics {
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
+public class ServerDiagnosticsSummary {
 
     private final LongAdder currentSessionCount = new LongAdder();
     private final LongAdder cumulativeSessionCount = new LongAdder();
@@ -67,6 +71,24 @@ public class ServerDiagnostics {
 
     public LongAdder getRejectedRequestCount() {
         return rejectedRequestCount;
+    }
+
+    public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummaryDataType() {
+        // TODO diagnostics: missing values
+        return new ServerDiagnosticsSummaryDataType(
+            uint(0),
+            uint(getCurrentSessionCount().sum()),
+            uint(getCumulativeSessionCount().sum()),
+            uint(getSecurityRejectedSessionCount().sum()),
+            uint(getRejectedSessionCount().sum()),
+            uint(getSessionTimeoutCount().sum()),
+            uint(0),
+            uint(0),
+            uint(0),
+            uint(0),
+            uint(getSecurityRejectedRequestCount().sum()),
+            uint(getRejectedRequestCount().sum())
+        );
     }
 
 }
