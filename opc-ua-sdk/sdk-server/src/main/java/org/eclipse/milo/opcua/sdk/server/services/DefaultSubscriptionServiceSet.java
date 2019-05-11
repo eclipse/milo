@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
@@ -120,6 +121,17 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
                                 .map(item -> (MonitoredDataItem) item)
                                 .forEach(MonitoredDataItem::clearLastValue);
                         }
+                    }
+
+                    subscription.getSubscriptionDiagnostics().getTransferRequestCount().increment();
+
+                    ApplicationDescription toClient = session.getClientDescription();
+                    ApplicationDescription fromClient = otherSession.getClientDescription();
+
+                    if (Objects.equals(toClient, fromClient)) {
+                        subscription.getSubscriptionDiagnostics().getTransferredToSameClientCount().increment();
+                    } else {
+                        subscription.getSubscriptionDiagnostics().getTransferredToAltClientCount().increment();
                     }
 
                     results.add(new TransferResult(StatusCode.GOOD, availableSequenceNumbers));

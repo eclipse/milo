@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.items;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.DataChangeMonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -92,6 +93,9 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
             if (getQueueSize() > 1) {
                 /* Set overflow if queueSize > 1... */
                 value = value.withStatus(value.getStatusCode().withOverflow());
+
+                Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
+                subscription.getSubscriptionDiagnostics().getMonitoringQueueOverflowCount().increment();
             } else if (value.getStatusCode().isOverflowSet()) {
                 /* But make sure it's clear otherwise. */
                 value = value.withStatus(value.getStatusCode().withoutOverflow());

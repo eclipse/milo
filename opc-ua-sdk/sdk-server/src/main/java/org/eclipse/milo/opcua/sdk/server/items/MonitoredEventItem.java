@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.events.EventContentFilter;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -140,6 +141,9 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         } else {
             if (getQueueSize() > 1) {
                 eventOverflow.set(true);
+
+                Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
+                subscription.getSubscriptionDiagnostics().getEventQueueOverFlowCount().increment();
             }
 
             if (discardOldest) {
