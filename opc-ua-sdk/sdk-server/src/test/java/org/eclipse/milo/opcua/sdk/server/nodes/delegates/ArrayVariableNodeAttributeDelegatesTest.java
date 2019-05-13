@@ -8,14 +8,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.nodes.factories;
+package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -24,31 +24,34 @@ import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
-public class NodeFactoryTest {
+public class ArrayVariableNodeAttributeDelegatesTest {
 
     private OpcUaServer server;
+    private UaNodeContext nodeContext;
     private UaNodeManager nodeManager;
-    private NodeFactory nodeFactory;
 
     @BeforeTest
     public void setup() throws Exception {
@@ -84,7 +87,7 @@ public class NodeFactoryTest {
 
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
 
-        UaNodeContext context = new UaNodeContext() {
+        nodeContext = new UaNodeContext() {
             @Override
             public OpcUaServer getServer() {
                 return server;
@@ -96,7 +99,7 @@ public class NodeFactoryTest {
             }
         };
 
-        new UaNodeLoader(context, nodeManager).loadNodes();
+        new UaNodeLoader(nodeContext, nodeManager).loadNodes();
 
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
         ObjectTypeManagerInitializer.initialize(
@@ -109,63 +112,42 @@ public class NodeFactoryTest {
             server.getNamespaceTable(),
             variableTypeManager
         );
-
-        nodeFactory = new NodeFactory(
-            context,
-            objectTypeManager,
-            variableTypeManager
-        );
     }
 
     @Test
-    public void testCreateAnalogItemType() throws Exception {
-        AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
-            new NodeId(1, "TestAnalog"),
-            Identifiers.AnalogItemType,
-            true
-        );
+    public void testGet() {
+        UaVariableNode arrayNode = UaVariableNode.builder(nodeContext)
+            .setNodeId(new NodeId(0, "Test"))
+            .setBrowseName(new QualifiedName(0, "Test"))
+            .setDisplayName(LocalizedText.english("Test"))
+            .setDataType(Identifiers.Int32)
+            .setArrayDimensions(new UInteger[]{uint(0)})
+            .setValueRank(ValueRanks.OneDimension)
+            .build();
 
-        assertNotNull(analogItem);
-        assertTrue(nodeManager.containsNode(analogItem));
-    }
+        nodeManager.addNode(arrayNode);
 
-    @Test
-    public void testInstanceListener() throws Exception {
-        final AtomicBoolean methodAdded = new AtomicBoolean(false);
-        final AtomicBoolean objectAdded = new AtomicBoolean(false);
-        final AtomicBoolean variableAdded = new AtomicBoolean(false);
+        ArrayVariableNodeAttributeDelegates.install(arrayNode);
 
-        ServerTypeNode serverNode = (ServerTypeNode) nodeFactory.createNode(
-            new NodeId(0, "Server"),
-            Identifiers.ServerType,
-            true,
-            new NodeFactory.InstanceListener() {
-                @Override
-                public void onMethodAdded(@Nullable UaObjectNode parent, UaMethodNode instance) {
-                    String pbn = parent != null ? parent.getBrowseName().getName() : null;
-                    System.out.println("onMethodAdded parent=" + pbn + " instance=" + instance.getBrowseName().getName());
-                    methodAdded.set(true);
-                }
+        arrayNode.setValue(new DataValue(new Variant(new int[]{0, 1, 2, 3})));
 
-                @Override
-                public void onObjectAdded(@Nullable UaObjectNode parent, UaObjectNode instance, NodeId typeDefinitionId) {
-                    String pbn = parent != null ? parent.getBrowseName().getName() : null;
-                    System.out.println("onObjectAdded parent=" + pbn + " instance=" + instance.getBrowseName().getName());
-                    objectAdded.set(true);
-                }
+        for (int i = 0; i < 4; i++) {
+            QualifiedName browseName = new QualifiedName(0, String.format("0:Test[%d]", i));
 
-                @Override
-                public void onVariableAdded(@Nullable UaNode parent, UaVariableNode instance, NodeId typeDefinitionId) {
-                    String pbn = parent != null ? parent.getBrowseName().getName() : null;
-                    System.out.println("onVariableAdded parent=" + pbn + " instance=" + instance.getBrowseName().getName());
-                    variableAdded.set(true);
-                }
-            }
-        );
+            UaVariableNode elementNode = (UaVariableNode) arrayNode.findNode(browseName).get();
 
-        assertTrue(methodAdded.get());
-        assertTrue(objectAdded.get());
-        assertTrue(variableAdded.get());
+            assertNotNull(elementNode);
+
+            assertEquals(elementNode.getValue().getValue().getValue(), i);
+
+            elementNode.setValue(new DataValue(new Variant(i + 1)));
+        }
+
+        int[] arrayValue = (int[]) arrayNode.getValue().getValue().getValue();
+        for (int i = 0; i < arrayValue.length; i++) {
+            System.out.println(arrayValue[i]);
+        }
+        assertTrue(Objects.deepEquals(arrayValue, new int[]{1, 2, 3, 4}));
     }
 
 }

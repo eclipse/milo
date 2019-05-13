@@ -16,8 +16,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -55,7 +53,8 @@ public class ServiceRequest extends DefaultAttributeMap {
         this.clientAddress = clientAddress;
         this.clientCertificateBytes = clientCertificateBytes;
 
-        future.whenComplete(this::updateDiagnosticCounters);
+        // TODO diagnostics
+        // future.whenComplete(this::updateDiagnosticCounters);
     }
 
     public UaStackServer getServer() {
@@ -159,23 +158,24 @@ public class ServiceRequest extends DefaultAttributeMap {
             .toString();
     }
 
-    private void updateDiagnosticCounters(
-        @SuppressWarnings("unused") @Nullable UaResponseMessage r,
-        @Nullable Throwable ex
-    ) {
-
-        ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsManager().getServerDiagnostics();
-
-        if (ex != null) {
-            StatusCode statusCode = UaException.extractStatusCode(ex)
-                .orElse(new StatusCode(StatusCodes.Bad_InternalError));
-
-            if (server.getDiagnosticsManager().isSecurityError(statusCode)) {
-                serverDiagnosticsSummary.getSecurityRejectedRequestCount().increment();
-            }
-
-            serverDiagnosticsSummary.getRejectedRequestCount().increment();
-        }
-    }
+    // TODO diagnostics
+    // private void updateDiagnosticCounters(
+    //     @SuppressWarnings("unused") @Nullable UaResponseMessage r,
+    //     @Nullable Throwable ex
+    // ) {
+    //
+    //     ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsManager().getServerDiagnostics();
+    //
+    //     if (ex != null) {
+    //         StatusCode statusCode = UaException.extractStatusCode(ex)
+    //             .orElse(new StatusCode(StatusCodes.Bad_InternalError));
+    //
+    //         if (server.getDiagnosticsManager().isSecurityError(statusCode)) {
+    //             serverDiagnosticsSummary.getSecurityRejectedRequestCount().increment();
+    //         }
+    //
+    //         serverDiagnosticsSummary.getRejectedRequestCount().increment();
+    //     }
+    // }
 
 }

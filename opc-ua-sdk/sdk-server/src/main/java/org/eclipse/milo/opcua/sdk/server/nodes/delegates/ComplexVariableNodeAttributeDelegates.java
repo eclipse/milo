@@ -101,7 +101,7 @@ public class ComplexVariableNodeAttributeDelegates {
                             return node.getValue();
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             LoggerFactory.getLogger(ComplexVariableNodeAttributeDelegates.class)
-                                .error("error getting value for field '{}' of '{}'", name, value, e);
+                                .error("error getting value for field '{}' of {}", name, value, e);
                             return new DataValue(new StatusCode(StatusCodes.Bad_InternalError));
                         }
                     }
