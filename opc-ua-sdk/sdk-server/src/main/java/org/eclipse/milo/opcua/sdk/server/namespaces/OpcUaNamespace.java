@@ -26,6 +26,8 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
@@ -71,6 +73,7 @@ public class OpcUaNamespace extends ManagedNamespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final DiagnosticsManager diagnosticsManager;
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -80,6 +83,7 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         this.server = server;
 
+        diagnosticsManager = new DiagnosticsManager(server, getNodeFactory(), getNodeManager());
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
@@ -90,6 +94,15 @@ public class OpcUaNamespace extends ManagedNamespace {
         loadNodes();
         configureServerObject();
         configureConditionRefresh();
+
+        diagnosticsManager.startup();
+    }
+
+    @Override
+    protected void onShutdown() {
+        super.onShutdown();
+
+        diagnosticsManager.shutdown();
     }
 
     @Override

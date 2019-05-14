@@ -14,8 +14,6 @@ public interface SessionListener {
 
     default void onSessionCreated(Session session) {}
 
-    default void onSessionActivated(Session session) {}
-
     default void onSessionClosed(Session session) {}
 
 }

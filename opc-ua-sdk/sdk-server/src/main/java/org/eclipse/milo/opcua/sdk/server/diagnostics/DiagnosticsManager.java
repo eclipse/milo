@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -20,19 +19,14 @@ import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.SessionListener;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFilter;
-import org.eclipse.milo.opcua.sdk.server.api.DataItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedAddressSpace;
-import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.SimpleAddressSpaceFilter;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionDiagnosticsObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionsDiagnosticsSummaryTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerDiagnosticsSummaryTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.ComplexVariableNodeAttributeDelegates;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -41,22 +35,29 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DiagnosticsManager extends ManagedAddressSpace {
+public class DiagnosticsManager extends AbstractLifecycle {
 
     private ServerDiagnosticsObject serverDiagnosticsObject;
 
-    public DiagnosticsManager(OpcUaServer server) {
-        super(server);
+    private final OpcUaServer server;
+    private final NodeFactory nodeFactory;
+    private final UaNodeManager nodeManager;
+
+    public DiagnosticsManager(OpcUaServer server, NodeFactory nodeFactory, UaNodeManager nodeManager) {
+        this.server = server;
+        this.nodeFactory = nodeFactory;
+        this.nodeManager = nodeManager;
+    }
+
+    public OpcUaServer getServer() {
+        return server;
     }
 
     @Override
     protected void onStartup() {
-        super.onStartup();
-
         ServerDiagnosticsTypeNode serverDiagnosticsTypeNode = (ServerDiagnosticsTypeNode) getServer()
             .getAddressSpaceManager()
             .getManagedNode(Identifiers.Server_ServerDiagnostics)
@@ -68,67 +69,79 @@ public class DiagnosticsManager extends ManagedAddressSpace {
 
     @Override
     protected void onShutdown() {
-        super.onShutdown();
-
         if (serverDiagnosticsObject != null) {
             serverDiagnosticsObject.shutdown();
             serverDiagnosticsObject = null;
         }
     }
 
-    @Override
-    public AddressSpaceFilter getFilter() {
-        return SimpleAddressSpaceFilter.create(
-            nodeId ->
-                getNodeManager().containsNode(nodeId)
-        );
-    }
-
-    @Override
-    public void onDataItemsCreated(List<DataItem> dataItems) {
-
-    }
-
-    @Override
-    public void onDataItemsModified(List<DataItem> dataItems) {
-
-    }
-
-    @Override
-    public void onDataItemsDeleted(List<DataItem> dataItems) {
-
-    }
-
-    @Override
-    public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
-
-    }
-
     class ServerDiagnosticsObject extends AbstractLifecycle {
 
-        private ServerDiagnosticsSummaryVariable serverDiagnosticsSummaryVariable;
+        private SessionsDiagnosticsSummaryObject sessionsDiagnosticsSummaryObject;
 
         private final ServerDiagnosticsTypeNode node;
 
-        public ServerDiagnosticsObject(ServerDiagnosticsTypeNode node) {
+        ServerDiagnosticsObject(ServerDiagnosticsTypeNode node) {
             this.node = node;
         }
 
         @Override
         protected void onStartup() {
-            serverDiagnosticsSummaryVariable = new ServerDiagnosticsSummaryVariable(
-                node.getServerDiagnosticsSummaryNode()
+            node.getServerDiagnosticsSummaryNode().setAttributeDelegate(new AttributeDelegate() {
+                @Override
+                public DataValue getValue(AttributeContext context, VariableNode node) {
+                    ExtensionObject encodedValue = ExtensionObject.encode(
+                        getServer().getSerializationContext(),
+                        getServer().getDiagnosticsSummary()
+                            .getServerDiagnosticsSummaryDataType()
+                    );
+
+                    return new DataValue(new Variant(encodedValue));
+                }
+            });
+
+            node.getSubscriptionDiagnosticsArrayNode().setAttributeDelegate(new AttributeDelegate() {
+                @Override
+                public DataValue getValue(AttributeContext context, VariableNode node) {
+                    ExtensionObject[] encodedValues = getServer().getSubscriptions()
+                        .values()
+                        .stream()
+                        .map(s ->
+                            ExtensionObject.encode(
+                                getServer().getSerializationContext(),
+                                s.getSubscriptionDiagnostics()
+                                    .getSubscriptionDiagnosticsDataType()
+                            )
+                        )
+                        .toArray(ExtensionObject[]::new);
+
+                    return new DataValue(new Variant(encodedValues));
+                }
+            });
+
+            node.getEnabledFlagNode().setAttributeDelegate(new AttributeDelegate() {
+                @Override
+                public DataValue getValue(AttributeContext context, VariableNode node) {
+                    return null;
+                }
+
+                @Override
+                public void setValue(AttributeContext context, VariableNode node, DataValue value) {
+
+                }
+            });
+
+            sessionsDiagnosticsSummaryObject = new SessionsDiagnosticsSummaryObject(
+                node.getSessionsDiagnosticsSummaryNode()
             );
-
-            serverDiagnosticsSummaryVariable.startup();
-
+            sessionsDiagnosticsSummaryObject.startup();
         }
 
         @Override
         protected void onShutdown() {
-            if (serverDiagnosticsSummaryVariable != null) {
-                serverDiagnosticsSummaryVariable.shutdown();
-                serverDiagnosticsSummaryVariable = null;
+            if (sessionsDiagnosticsSummaryObject != null) {
+                sessionsDiagnosticsSummaryObject.shutdown();
+                sessionsDiagnosticsSummaryObject = null;
             }
         }
 
@@ -136,21 +149,58 @@ public class DiagnosticsManager extends ManagedAddressSpace {
 
     class SessionsDiagnosticsSummaryObject extends AbstractLifecycle {
 
-        // HasComponent SessionDiagnosticsArray
-        // HasComponent SessionSecurityDiagnosticsArray
-        // HasComponent SessionDiagnosticsObjectType (per Session)
-
         private final Map<NodeId, SessionDiagnosticsObject> sessionDiagnosticsObjects = Maps.newConcurrentMap();
 
         private SessionListener sessionListener;
 
+        private final SessionsDiagnosticsSummaryTypeNode node;
+
+        SessionsDiagnosticsSummaryObject(SessionsDiagnosticsSummaryTypeNode node) {
+            this.node = node;
+        }
+
         @Override
         protected void onStartup() {
+            node.getSessionDiagnosticsArrayNode().setAttributeDelegate(new AttributeDelegate() {
+                @Override
+                public DataValue getValue(AttributeContext context, VariableNode node) {
+                    ExtensionObject[] encodedValues = sessionDiagnosticsObjects.values()
+                        .stream()
+                        .map(sdo ->
+                            ExtensionObject.encode(
+                                getServer().getSerializationContext(),
+                                sdo.session.getSessionDiagnostics()
+                                    .getSessionDiagnosticsDataType()
+                            )
+                        )
+                        .toArray(ExtensionObject[]::new);
+
+                    return new DataValue(new Variant(encodedValues));
+                }
+            });
+
+            node.getSessionSecurityDiagnosticsArrayNode().setAttributeDelegate(new AttributeDelegate() {
+                @Override
+                public DataValue getValue(AttributeContext context, VariableNode node) {
+                    ExtensionObject[] encodedValues = sessionDiagnosticsObjects.values()
+                        .stream()
+                        .map(sdo ->
+                            ExtensionObject.encode(
+                                getServer().getSerializationContext(),
+                                sdo.session.getSessionSecurityDiagnostics()
+                                    .getSessionSecurityDiagnosticsDataType()
+                            )
+                        )
+                        .toArray(ExtensionObject[]::new);
+
+                    return new DataValue(new Variant(encodedValues));
+                }
+            });
+
             getServer().getSessionManager().addSessionListener(sessionListener = new SessionListener() {
                 @Override
                 public void onSessionCreated(Session session) {
-                    // TODO diagnostics: pass summaryNode
-                    SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(session, null);
+                    SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(session, node);
 
                     sessionDiagnosticsObjects.put(session.getSessionId(), sdo);
 
@@ -185,7 +235,7 @@ public class DiagnosticsManager extends ManagedAddressSpace {
         private final Session session;
         private final SessionsDiagnosticsSummaryTypeNode summaryNode;
 
-        public SessionDiagnosticsObject(Session session, SessionsDiagnosticsSummaryTypeNode summaryNode) {
+        SessionDiagnosticsObject(Session session, SessionsDiagnosticsSummaryTypeNode summaryNode) {
             this.session = session;
             this.summaryNode = summaryNode;
         }
@@ -199,15 +249,15 @@ public class DiagnosticsManager extends ManagedAddressSpace {
                     session.getSessionId()
                 );
 
-                node = (SessionDiagnosticsObjectTypeNode) getNodeFactory().createNode(
-                    new NodeId(1, UUID.randomUUID()),
+                node = (SessionDiagnosticsObjectTypeNode) nodeFactory.createNode(
+                    new NodeId(0, UUID.randomUUID()),
                     Identifiers.SessionDiagnosticsObjectType,
                     false
                 );
                 node.setBrowseName(new QualifiedName(1, name));
                 node.setDisplayName(LocalizedText.english(name));
 
-                getNodeManager().addNode(node);
+                nodeManager.addNode(node);
                 summaryNode.addComponent(node);
 
                 node.getSessionDiagnosticsNode().setAttributeDelegate(new AttributeDelegate() {
@@ -247,7 +297,8 @@ public class DiagnosticsManager extends ManagedAddressSpace {
                                     getServer().getSerializationContext(),
                                     s.getSubscriptionDiagnostics()
                                         .getSubscriptionDiagnosticsDataType()
-                                ))
+                                )
+                            )
                             .toArray(ExtensionObject[]::new);
 
                         return new DataValue(new Variant(encodedValues));
@@ -263,34 +314,6 @@ public class DiagnosticsManager extends ManagedAddressSpace {
             if (node != null) {
                 node.delete();
             }
-        }
-
-    }
-
-    class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
-
-        private final ServerDiagnosticsSummaryTypeNode node;
-
-        ServerDiagnosticsSummaryVariable(ServerDiagnosticsSummaryTypeNode node) {
-            this.node = node;
-        }
-
-        @Override
-        protected void onStartup() {
-            ComplexVariableNodeAttributeDelegates.install(
-                node,
-                ServerDiagnosticsSummaryDataType.class,
-                this::getValue
-            );
-        }
-
-        @Override
-        protected void onShutdown() {
-            node.setAttributeDelegate(AttributeDelegate.DEFAULT);
-        }
-
-        private ServerDiagnosticsSummaryDataType getValue() {
-            return getServer().getDiagnosticsSummary().getServerDiagnosticsSummaryDataType();
         }
 
     }

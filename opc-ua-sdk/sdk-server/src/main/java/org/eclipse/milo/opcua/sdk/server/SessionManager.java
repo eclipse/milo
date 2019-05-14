@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -94,6 +95,8 @@ public class SessionManager implements
     private final Map<NodeId, Session> createdSessions = Maps.newConcurrentMap();
     private final Map<NodeId, Session> activeSessions = Maps.newConcurrentMap();
 
+    private final List<SessionListener> sessionListeners = new CopyOnWriteArrayList<>();
+
     /**
      * Store the last N client nonces and to make sure they aren't re-used.
      * <p>
@@ -119,12 +122,14 @@ public class SessionManager implements
             .findFirst().ifPresent(s -> s.close(deleteSubscriptions));
     }
 
+    // TODO diagnostics: javadoc
     public void addSessionListener(SessionListener listener) {
-        // TODO diagnostics
+        sessionListeners.add(listener);
     }
 
+    // TODO diagnostics: javadoc
     public void removeSessionListener(SessionListener listener) {
-        // TODO diagnostics
+        sessionListeners.remove(listener);
     }
 
     private Session session(ServiceRequest service) throws UaException {
@@ -302,9 +307,13 @@ public class SessionManager implements
         session.addLifecycleListener((s, remove) -> {
             createdSessions.remove(authenticationToken);
             activeSessions.remove(authenticationToken);
+
+            sessionListeners.forEach(l -> l.onSessionClosed(session));
         });
 
         createdSessions.put(authenticationToken, session);
+
+        sessionListeners.forEach(l -> l.onSessionCreated(session));
 
         return new CreateSessionResponse(
             serviceRequest.createResponseHeader(),
