@@ -41,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
@@ -132,6 +133,15 @@ public class SessionManager implements
         sessionListeners.remove(listener);
     }
 
+    /**
+     * Get the current session count, including session that have been created but not yet activated.
+     *
+     * @return the current session count, including session that have been created but not yet activated.
+     */
+    public UInteger getCurrentSessionCount() {
+        return uint(createdSessions.size() + activeSessions.size());
+    }
+
     private Session session(ServiceRequest service) throws UaException {
         long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
@@ -172,7 +182,6 @@ public class SessionManager implements
         try {
             CreateSessionResponse response = createSession(serviceRequest);
 
-            serverDiagnosticsSummary.getCurrentSessionCount().increment();
             serverDiagnosticsSummary.getCumulativeSessionCount().increment();
 
             serviceRequest.setResponse(response);

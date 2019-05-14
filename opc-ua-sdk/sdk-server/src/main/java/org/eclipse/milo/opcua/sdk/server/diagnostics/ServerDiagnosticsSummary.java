@@ -12,13 +12,14 @@ package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
 import java.util.concurrent.atomic.LongAdder;
 
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class ServerDiagnosticsSummary {
 
-    private final LongAdder currentSessionCount = new LongAdder();
     private final LongAdder cumulativeSessionCount = new LongAdder();
     private final LongAdder securityRejectedSessionCount = new LongAdder();
     private final LongAdder rejectedSessionCount = new LongAdder();
@@ -26,11 +27,17 @@ public class ServerDiagnosticsSummary {
     private final LongAdder securityRejectedRequestCount = new LongAdder();
     private final LongAdder rejectedRequestCount = new LongAdder();
 
+    private final OpcUaServer server;
+
+    public ServerDiagnosticsSummary(OpcUaServer server) {
+        this.server = server;
+    }
+
     /**
      * @return the number of sessions currently established in the server.
      */
-    public LongAdder getCurrentSessionCount() {
-        return currentSessionCount;
+    public UInteger getCurrentSessionCount() {
+        return server.getSessionManager().getCurrentSessionCount();
     }
 
     /**
@@ -77,7 +84,7 @@ public class ServerDiagnosticsSummary {
         // TODO diagnostics: missing values
         return new ServerDiagnosticsSummaryDataType(
             uint(0),
-            uint(getCurrentSessionCount().sum()),
+            getCurrentSessionCount(),
             uint(getCumulativeSessionCount().sum()),
             uint(getSecurityRejectedSessionCount().sum()),
             uint(getRejectedSessionCount().sum()),

@@ -122,7 +122,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
             node.getEnabledFlagNode().setAttributeDelegate(new AttributeDelegate() {
                 @Override
                 public DataValue getValue(AttributeContext context, VariableNode node) {
-                    return null;
+                    return new DataValue(new Variant(true));
                 }
 
                 @Override
@@ -211,7 +211,9 @@ public class DiagnosticsManager extends AbstractLifecycle {
                 public void onSessionClosed(Session session) {
                     SessionDiagnosticsObject sdo = sessionDiagnosticsObjects.remove(session.getSessionId());
 
-                    if (sdo != null) { sdo.shutdown(); }
+                    if (sdo != null) {
+                        sdo.shutdown();
+                    }
                 }
             });
         }

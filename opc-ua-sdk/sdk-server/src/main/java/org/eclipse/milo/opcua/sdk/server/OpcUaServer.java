@@ -85,8 +85,7 @@ public class OpcUaServer {
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
-    private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary();
-
+    private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
