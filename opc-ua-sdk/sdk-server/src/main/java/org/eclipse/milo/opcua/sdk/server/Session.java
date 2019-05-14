@@ -239,6 +239,8 @@ public class Session implements SessionServiceSet {
             logger.debug("Session id={} lifetime expired ({}ms).", sessionId, sessionTimeout.toMillis());
 
             close(true);
+
+            server.getDiagnosticsSummary().getSessionTimeoutCount().increment();
         } else {
             long remaining = sessionTimeout.toNanos() - elapsed;
             logger.trace("Session id={} timeout scheduled for +{}s.",

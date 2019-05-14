@@ -155,6 +155,7 @@ public class SubscriptionManager {
 
         subscriptions.put(subscriptionId, subscription);
         server.getSubscriptions().put(subscriptionId, subscription);
+        server.getDiagnosticsSummary().getCumulatedSubscriptionCount().increment();
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {

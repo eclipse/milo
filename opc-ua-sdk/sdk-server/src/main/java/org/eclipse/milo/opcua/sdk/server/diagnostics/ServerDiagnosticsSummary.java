@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.diagnostics;
 import java.util.concurrent.atomic.LongAdder;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 
@@ -20,10 +21,12 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class ServerDiagnosticsSummary {
 
-    private final LongAdder cumulativeSessionCount = new LongAdder();
+    private final LongAdder cumulatedSessionCount = new LongAdder();
     private final LongAdder securityRejectedSessionCount = new LongAdder();
     private final LongAdder rejectedSessionCount = new LongAdder();
     private final LongAdder sessionTimeoutCount = new LongAdder();
+    private final LongAdder sessionAbortCount = new LongAdder();
+    private final LongAdder cumulatedSubscriptionCount = new LongAdder();
     private final LongAdder securityRejectedRequestCount = new LongAdder();
     private final LongAdder rejectedRequestCount = new LongAdder();
 
@@ -31,6 +34,10 @@ public class ServerDiagnosticsSummary {
 
     public ServerDiagnosticsSummary(OpcUaServer server) {
         this.server = server;
+    }
+
+    public UInteger getCurrentViewCount() {
+        return server.getAddressSpaceManager().getViewCount();
     }
 
     /**
@@ -44,8 +51,8 @@ public class ServerDiagnosticsSummary {
      * @return the cumulative number of client sessions that have been established in the server since the server was
      * started (or restarted). This includes the current session count.
      */
-    public LongAdder getCumulativeSessionCount() {
-        return cumulativeSessionCount;
+    public LongAdder getCumulatedSessionCount() {
+        return cumulatedSessionCount;
     }
 
     /**
@@ -72,6 +79,29 @@ public class ServerDiagnosticsSummary {
         return sessionTimeoutCount;
     }
 
+    public LongAdder getSessionAbortCount() {
+        return sessionAbortCount;
+    }
+
+    public UInteger getCurrentSubscriptionCount() {
+        return uint(server.getSubscriptions().size());
+    }
+
+    public LongAdder getCumulatedSubscriptionCount() {
+        return cumulatedSubscriptionCount;
+    }
+
+    public UInteger getPublishingIntervalCount() {
+        return uint(
+            server.getSubscriptions()
+                .values()
+                .stream()
+                .map(Subscription::getPublishingInterval)
+                .distinct()
+                .count()
+        );
+    }
+
     public LongAdder getSecurityRejectedRequestCount() {
         return securityRejectedRequestCount;
     }
@@ -81,18 +111,17 @@ public class ServerDiagnosticsSummary {
     }
 
     public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummaryDataType() {
-        // TODO diagnostics: missing values
         return new ServerDiagnosticsSummaryDataType(
-            uint(0),
+            getCurrentViewCount(),
             getCurrentSessionCount(),
-            uint(getCumulativeSessionCount().sum()),
+            uint(getCumulatedSessionCount().sum()),
             uint(getSecurityRejectedSessionCount().sum()),
             uint(getRejectedSessionCount().sum()),
             uint(getSessionTimeoutCount().sum()),
-            uint(0),
-            uint(0),
-            uint(0),
-            uint(0),
+            uint(getSessionAbortCount().sum()),
+            getCurrentSubscriptionCount(),
+            uint(getCumulatedSubscriptionCount().sum()),
+            getPublishingIntervalCount(),
             uint(getSecurityRejectedRequestCount().sum()),
             uint(getRejectedRequestCount().sum())
         );

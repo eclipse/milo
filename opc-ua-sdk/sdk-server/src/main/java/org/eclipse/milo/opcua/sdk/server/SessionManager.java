@@ -182,7 +182,7 @@ public class SessionManager implements
         try {
             CreateSessionResponse response = createSession(serviceRequest);
 
-            serverDiagnosticsSummary.getCumulativeSessionCount().increment();
+            serverDiagnosticsSummary.getCumulatedSessionCount().increment();
 
             serviceRequest.setResponse(response);
         } catch (UaException e) {
