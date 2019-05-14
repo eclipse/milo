@@ -191,7 +191,7 @@ public class Session implements SessionServiceSet {
         return sessionSecurityDiagnostics;
     }
 
-    void addLifecycleListener(LifecycleListener listener) {
+    public void addLifecycleListener(LifecycleListener listener) {
         listeners.add(listener);
     }
 

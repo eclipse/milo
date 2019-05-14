@@ -119,6 +119,14 @@ public class SessionManager implements
             .findFirst().ifPresent(s -> s.close(deleteSubscriptions));
     }
 
+    public void addSessionListener(SessionListener listener) {
+        // TODO diagnostics
+    }
+
+    public void removeSessionListener(SessionListener listener) {
+        // TODO diagnostics
+    }
+
     private Session session(ServiceRequest service) throws UaException {
         long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
