@@ -50,6 +50,12 @@ public class AttributeFilterContext {
         return Optional.ofNullable(session);
     }
 
+    /**
+     * Get the value for the attribute identified by {@code attributeId} using the next filter in the chain.
+     *
+     * @param attributeId the {@link AttributeId} of the attribute to get the value of.
+     * @return the value for the attribute identified by {@code attributeId} from the next filter in the chain.
+     */
     public Object getAttribute(AttributeId attributeId) {
         AttributeFilter next = filterIterator.hasNext() ?
             filterIterator.next() :
@@ -58,6 +64,12 @@ public class AttributeFilterContext {
         return next.getAttribute(this, attributeId);
     }
 
+    /**
+     * Set the value for the attribute identified by {@code attributeId} using the next filter in the chain.
+     *
+     * @param attributeId the {@link AttributeId} of the attribute to set the value of.
+     * @param value       the value to set.
+     */
     public void setAttribute(AttributeId attributeId, Object value) {
         AttributeFilter next = filterIterator.hasNext() ?
             filterIterator.next() :
