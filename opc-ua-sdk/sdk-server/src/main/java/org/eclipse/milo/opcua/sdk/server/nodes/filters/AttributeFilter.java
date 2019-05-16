@@ -8,8 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.nodes;
+package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
+import org.eclipse.milo.opcua.sdk.server.nodes.DefaultAttributeFilter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 public interface AttributeFilter {

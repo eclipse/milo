@@ -37,7 +37,7 @@ import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
-    private volatile Boolean isAbstract;
+    private Boolean isAbstract;
 
     public UaObjectTypeNode(
         UaNodeContext context,

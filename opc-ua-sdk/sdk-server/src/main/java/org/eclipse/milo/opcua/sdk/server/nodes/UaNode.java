@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -55,17 +56,17 @@ public abstract class UaNode implements UaServerNode {
 
     private List<WeakReference<AttributeObserver>> observers;
 
-    protected final AttributeFilterChain filterChain = new AttributeFilterChain();
+    final AttributeFilterChain filterChain = new AttributeFilterChain();
 
-    protected final UaNodeContext context;
+    private final UaNodeContext context;
 
-    protected volatile NodeId nodeId;
-    protected volatile NodeClass nodeClass;
-    protected volatile QualifiedName browseName;
-    protected volatile LocalizedText displayName;
-    protected volatile LocalizedText description;
-    protected volatile UInteger writeMask;
-    protected volatile UInteger userWriteMask;
+    private NodeId nodeId;
+    private NodeClass nodeClass;
+    private QualifiedName browseName;
+    private LocalizedText displayName;
+    private LocalizedText description;
+    private UInteger writeMask;
+    private UInteger userWriteMask;
 
     protected UaNode(
         UaNodeContext context,
@@ -461,7 +462,6 @@ public abstract class UaNode implements UaServerNode {
         return findNode(browseName, uaNode -> true, reference -> true);
     }
 
-
     /**
      * Find a {@link UaNode} with the specified {@code browseName} referenced by this node.
      *
@@ -614,8 +614,13 @@ public abstract class UaNode implements UaServerNode {
             }
         }
     }
-    
-    public synchronized AttributeFilterChain getFilterChain() {
+
+    /**
+     * Get the {@link AttributeFilterChain} for this Node.
+     *
+     * @return the {@link AttributeFilterChain} for this Node.
+     */
+    public AttributeFilterChain getFilterChain() {
         return filterChain;
     }
 
@@ -638,9 +643,11 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public void setAttribute(AttributeContext context,
-                             AttributeId attributeId,
-                             DataValue value) throws UaException {
+    public void setAttribute(
+        AttributeContext context,
+        AttributeId attributeId,
+        DataValue value
+    ) throws UaException {
 
         attributeDelegate.get().setAttribute(context, this, attributeId, value);
     }

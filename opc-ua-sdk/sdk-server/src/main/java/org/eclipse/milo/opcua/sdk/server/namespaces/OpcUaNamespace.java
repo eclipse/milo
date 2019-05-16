@@ -37,10 +37,10 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesT
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilterContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;

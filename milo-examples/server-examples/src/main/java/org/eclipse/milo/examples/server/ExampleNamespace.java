@@ -30,8 +30,6 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilterContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -39,6 +37,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -416,16 +415,10 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.getFilterChain().addLast(
                 new AttributeLoggingFilter(),
-                new AttributeFilter() {
-                    @Override
-                    public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                        if (attributeId == AttributeId.Value) {
-                            return new DataValue(new Variant(random.nextBoolean()));
-                        } else {
-                            return ctx.getAttribute(attributeId);
-                        }
-                    }
-                }
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextBoolean()))
+                )
             );
 
             getNodeManager().addNode(node);
@@ -451,16 +444,10 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.getFilterChain().addLast(
                 new AttributeLoggingFilter(),
-                new AttributeFilter() {
-                    @Override
-                    public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                        if (attributeId == AttributeId.Value) {
-                            return new DataValue(new Variant(random.nextInt()));
-                        } else {
-                            return ctx.getAttribute(attributeId);
-                        }
-                    }
-                }
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextInt()))
+                )
             );
 
             getNodeManager().addNode(node);
@@ -486,16 +473,10 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.getFilterChain().addLast(
                 new AttributeLoggingFilter(),
-                new AttributeFilter() {
-                    @Override
-                    public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                        if (attributeId == AttributeId.Value) {
-                            return new DataValue(new Variant(random.nextDouble()));
-                        } else {
-                            return ctx.getAttribute(attributeId);
-                        }
-                    }
-                }
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextDouble()))
+                )
             );
 
             getNodeManager().addNode(node);

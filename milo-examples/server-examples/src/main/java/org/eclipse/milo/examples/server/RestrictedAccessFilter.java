@@ -16,8 +16,8 @@ import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilterContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;

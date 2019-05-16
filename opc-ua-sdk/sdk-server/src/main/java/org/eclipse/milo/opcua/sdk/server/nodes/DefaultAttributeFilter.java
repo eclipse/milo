@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 /**

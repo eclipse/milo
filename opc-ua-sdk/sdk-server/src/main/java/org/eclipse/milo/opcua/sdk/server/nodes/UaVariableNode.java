@@ -58,14 +58,14 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     private static final DataValue INITIAL_VALUE = new DataValue(new StatusCode(StatusCodes.Uncertain_InitialValue));
 
-    protected volatile DataValue value = INITIAL_VALUE;
-    protected volatile NodeId dataType = Identifiers.BaseDataType;
-    protected volatile Integer valueRank = ValueRanks.Scalar;
-    protected volatile UInteger[] arrayDimensions = null;
-    protected volatile UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    protected volatile UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    protected volatile Double minimumSamplingInterval = 0.0;
-    protected volatile Boolean historizing = false;
+    private DataValue value = INITIAL_VALUE;
+    private NodeId dataType = Identifiers.BaseDataType;
+    private Integer valueRank = ValueRanks.Scalar;
+    private UInteger[] arrayDimensions = null;
+    private UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+    private UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+    private Double minimumSamplingInterval = 0.0;
+    private Boolean historizing = false;
 
     public UaVariableNode(
         UaNodeContext context,

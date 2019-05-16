@@ -52,7 +52,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class UaObjectNode extends UaNode implements ObjectNode {
 
-    private volatile UByte eventNotifier = ubyte(0);
+    private UByte eventNotifier = ubyte(0);
 
     public UaObjectNode(
         UaNodeContext context,

@@ -12,8 +12,8 @@ package org.eclipse.milo.examples.server;
 
 import java.util.function.Predicate;
 
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilterContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

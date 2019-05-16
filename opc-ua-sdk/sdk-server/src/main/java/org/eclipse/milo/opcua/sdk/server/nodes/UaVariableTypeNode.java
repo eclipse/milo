@@ -27,11 +27,11 @@ import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
-    private volatile DataValue value;
-    private volatile NodeId dataType;
-    private volatile Integer valueRank;
-    private volatile UInteger[] arrayDimensions;
-    private volatile Boolean isAbstract;
+    private DataValue value;
+    private NodeId dataType;
+    private Integer valueRank;
+    private UInteger[] arrayDimensions;
+    private Boolean isAbstract;
 
     public UaVariableTypeNode(
         UaNodeContext context,

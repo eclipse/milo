@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.nodes;
+package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -16,23 +16,34 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 public class AttributeFilterChain {
 
     private final ConcurrentLinkedDeque<AttributeFilter> filters = new ConcurrentLinkedDeque<>();
 
+    /**
+     * Create an empty {@link AttributeFilterChain}.
+     */
     public AttributeFilterChain() {}
 
+    /**
+     * Create an {@link AttributeFilterChain} with {@code filter} added to it.
+     *
+     * @param filter the filter to add.
+     */
     public AttributeFilterChain(AttributeFilter filter) {
         filters.add(filter);
     }
 
+    /**
+     * Create an {@link AttributeFilterChain} with {@code filters} added to it.
+     *
+     * @param filters the filters to add.
+     */
     public AttributeFilterChain(List<AttributeFilter> filters) {
-        Preconditions.checkArgument(!filters.isEmpty(), "filters must be non-empty");
-
         this.filters.addAll(filters);
     }
 
@@ -98,24 +109,48 @@ public class AttributeFilterChain {
         filter.setAttribute(ctx, attributeId, value);
     }
 
+    /**
+     * Add {@code attributeFilter} to the front of this filter chain.
+     *
+     * @param attributeFilter the {@link AttributeFilter} to add.
+     * @return this {@link AttributeFilterChain}.
+     */
     public AttributeFilterChain addFirst(AttributeFilter attributeFilter) {
         filters.addFirst(attributeFilter);
 
         return this;
     }
 
+    /**
+     * Add {@code attributeFilters} (sequentially) to the front of this filter chain.
+     *
+     * @param attributeFilters the {@link AttributeFilter}s to add.
+     * @return this {@link AttributeFilterChain}.
+     */
     public AttributeFilterChain addFirst(AttributeFilter... attributeFilters) {
         Arrays.stream(attributeFilters).forEach(filters::addFirst);
 
         return this;
     }
 
+    /**
+     * Add {@code attributeFilter} to the end of this filter chain.
+     *
+     * @param attributeFilter the {@link AttributeFilter} to add.
+     * @return this {@link AttributeFilterChain}.
+     */
     public AttributeFilterChain addLast(AttributeFilter attributeFilter) {
         filters.addLast(attributeFilter);
 
         return this;
     }
 
+    /**
+     * Add {@code attributeFilters} (sequentially) to the end of this filter chain.
+     *
+     * @param attributeFilters the {@link AttributeFilter}s to add.
+     * @return this {@link AttributeFilterChain}.
+     */
     public AttributeFilterChain addLast(AttributeFilter... attributeFilters) {
         Arrays.stream(attributeFilters).forEach(filters::addLast);
 

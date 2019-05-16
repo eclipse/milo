@@ -26,9 +26,9 @@ import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
-    private volatile Boolean isAbstract;
-    private volatile Boolean symmetric;
-    private volatile LocalizedText inverseName;
+    private Boolean isAbstract;
+    private Boolean symmetric;
+    private LocalizedText inverseName;
 
     public UaReferenceTypeNode(
         UaNodeContext context,
