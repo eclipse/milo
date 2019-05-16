@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.examples.server;
 
+import java.util.function.Predicate;
+
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeFilterContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -20,12 +22,22 @@ public class AttributeLoggingFilter implements AttributeFilter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final Predicate<AttributeId> attributePredicate;
+
+    public AttributeLoggingFilter() {
+        this(attributeId -> true);
+    }
+
+    public AttributeLoggingFilter(Predicate<AttributeId> attributePredicate) {
+        this.attributePredicate = attributePredicate;
+    }
+
     @Override
     public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
         Object value = ctx.getAttribute(attributeId);
 
         // only log external reads
-        if (ctx.getSession().isPresent()) {
+        if (attributePredicate.test(attributeId) && ctx.getSession().isPresent()) {
             logger.info(
                 "get nodeId={} attributeId={} value={}",
                 ctx.getNode().getNodeId(), attributeId, value
@@ -38,7 +50,7 @@ public class AttributeLoggingFilter implements AttributeFilter {
     @Override
     public void setAttribute(AttributeFilterContext ctx, AttributeId attributeId, Object value) {
         // only log external writes
-        if (ctx.getSession().isPresent()) {
+        if (attributePredicate.test(attributeId) && ctx.getSession().isPresent()) {
             logger.info(
                 "set nodeId={} attributeId={} value={}",
                 ctx.getNode().getNodeId(), attributeId, value

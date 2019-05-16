@@ -246,7 +246,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new ValueLoggingDelegate());
+            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
 
             getNodeManager().addNode(node);
             arrayTypesFolder.addOrganizes(node);
@@ -281,7 +281,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new ValueLoggingDelegate());
+            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
 
             getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
@@ -339,7 +339,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
 
-        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+        node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
             if ("admin".equals(identity)) {
                 return AccessLevel.READ_WRITE;
             } else {
@@ -374,7 +374,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         node.setValue(new DataValue(new Variant("admin was here")));
 
-        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+        node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
             if ("admin".equals(identity)) {
                 return AccessLevel.READ_WRITE;
             } else {
