@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -23,8 +23,9 @@ public interface GetSetDataTypeNode extends GetSetBase {
 
     default DataValue getDataTypeAttribute(
         AttributeContext context,
-        DataTypeNode node,
-        AttributeId attributeId) throws UaException {
+        UaDataTypeNode node,
+        AttributeId attributeId
+    ) throws UaException {
 
         switch (attributeId) {
             case IsAbstract:
@@ -37,9 +38,10 @@ public interface GetSetDataTypeNode extends GetSetBase {
 
     default void setDataTypeAttribute(
         AttributeContext context,
-        DataTypeNode node,
+        UaDataTypeNode node,
         AttributeId attributeId,
-        DataValue value) throws UaException {
+        DataValue value
+    ) throws UaException {
 
         switch (attributeId) {
             case IsAbstract:
@@ -51,12 +53,21 @@ public interface GetSetDataTypeNode extends GetSetBase {
         }
     }
 
-    default Boolean getIsAbstract(AttributeContext context, DataTypeNode node) throws UaException {
-        return node.getIsAbstract();
+    default Boolean getIsAbstract(AttributeContext context, UaDataTypeNode node) throws UaException {
+        return (Boolean) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.IsAbstract
+        );
     }
 
-    default void setIsAbstract(AttributeContext context, DataTypeNode node, Boolean isAbstract) throws UaException {
-        node.setIsAbstract(isAbstract);
+    default void setIsAbstract(AttributeContext context, UaDataTypeNode node, Boolean isAbstract) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.IsAbstract,
+            isAbstract
+        );
     }
 
 }

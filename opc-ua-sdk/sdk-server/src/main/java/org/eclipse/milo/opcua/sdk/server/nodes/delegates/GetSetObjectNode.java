@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -24,8 +24,9 @@ public interface GetSetObjectNode extends GetSetBase {
 
     default DataValue getObjectAttribute(
         AttributeContext context,
-        ObjectNode node,
-        AttributeId attributeId) throws UaException {
+        UaObjectNode node,
+        AttributeId attributeId
+    ) throws UaException {
 
         switch (attributeId) {
             case EventNotifier:
@@ -38,9 +39,10 @@ public interface GetSetObjectNode extends GetSetBase {
 
     default void setObjectAttribute(
         AttributeContext context,
-        ObjectNode node,
+        UaObjectNode node,
         AttributeId attributeId,
-        DataValue value) throws UaException {
+        DataValue value
+    ) throws UaException {
 
         switch (attributeId) {
             case EventNotifier:
@@ -52,12 +54,21 @@ public interface GetSetObjectNode extends GetSetBase {
         }
     }
 
-    default UByte getEventNotifier(AttributeContext context, ObjectNode node) throws UaException {
-        return node.getEventNotifier();
+    default UByte getEventNotifier(AttributeContext context, UaObjectNode node) throws UaException {
+        return (UByte) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.EventNotifier
+        );
     }
 
-    default void setEventNotifier(AttributeContext context, ObjectNode node, UByte eventNotifier) throws UaException {
-        node.setEventNotifier(eventNotifier);
+    default void setEventNotifier(AttributeContext context, UaObjectNode node, UByte eventNotifier) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.EventNotifier,
+            eventNotifier
+        );
     }
 
 }

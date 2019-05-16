@@ -87,6 +87,39 @@ public class UaMethodNode extends UaNode implements MethodNode {
         fireAttributeChanged(AttributeId.UserExecutable, userExecutable);
     }
 
+    @Override
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case Executable:
+                return executable;
+
+            case UserExecutable:
+                return userExecutable;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case Executable:
+                executable = (Boolean) value;
+                break;
+
+            case UserExecutable:
+                userExecutable = (Boolean) value;
+                break;
+                
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)

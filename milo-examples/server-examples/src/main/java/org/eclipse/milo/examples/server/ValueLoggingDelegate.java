@@ -12,8 +12,8 @@ package org.eclipse.milo.examples.server;
 
 import javax.annotation.Nullable;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.DelegatingAttributeDelegate;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -32,7 +32,7 @@ public class ValueLoggingDelegate extends DelegatingAttributeDelegate {
     }
 
     @Override
-    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+    public DataValue getValue(AttributeContext context, UaVariableNode node) throws UaException {
         DataValue value = super.getValue(context, node);
 
         // only log external reads
@@ -46,7 +46,7 @@ public class ValueLoggingDelegate extends DelegatingAttributeDelegate {
     }
 
     @Override
-    public void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
+    public void setValue(AttributeContext context, UaVariableNode node, DataValue value) throws UaException {
         // only log external writes
         if (context.getSession().isPresent()) {
             logger.info(

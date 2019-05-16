@@ -117,6 +117,60 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
     }
 
+    @Override
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case Value:
+                return value;
+
+            case DataType:
+                return dataType;
+
+            case ValueRank:
+                return valueRank;
+
+            case ArrayDimensions:
+                return arrayDimensions;
+
+            case IsAbstract:
+                return isAbstract;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case Value:
+                this.value = (DataValue) value;
+                break;
+
+            case DataType:
+                dataType = (NodeId) value;
+                break;
+
+            case ValueRank:
+                valueRank = (Integer) value;
+                break;
+
+            case ArrayDimensions:
+                arrayDimensions = (UInteger[]) value;
+                break;
+
+            case IsAbstract:
+                isAbstract = (Boolean) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     @Nullable
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);

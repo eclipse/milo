@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -25,7 +25,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
 
     default DataValue getVariableTypeAttribute(
         AttributeContext context,
-        VariableTypeNode node,
+        UaVariableTypeNode node,
         AttributeId attributeId) throws UaException {
 
         switch (attributeId) {
@@ -51,7 +51,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
 
     default void setVariableTypeAttribute(
         AttributeContext context,
-        VariableTypeNode node,
+        UaVariableTypeNode node,
         AttributeId attributeId,
         DataValue value) throws UaException {
 
@@ -77,48 +77,99 @@ public interface GetSetVariableTypeNode extends GetSetBase {
         }
     }
 
-    default DataValue getValue(AttributeContext context, VariableTypeNode node) throws UaException {
-        return node.getValue();
+    default DataValue getValue(AttributeContext context, UaVariableTypeNode node) throws UaException {
+        return (DataValue) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.Value
+        );
     }
 
-    default NodeId getDataType(AttributeContext context, VariableTypeNode node) throws UaException {
-        return node.getDataType();
+    default NodeId getDataType(AttributeContext context, UaVariableTypeNode node) throws UaException {
+        return (NodeId) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.DataType
+        );
     }
 
-    default Integer getValueRank(AttributeContext context, VariableTypeNode node) throws UaException {
-        return node.getValueRank();
+    default Integer getValueRank(AttributeContext context, UaVariableTypeNode node) throws UaException {
+        return (Integer) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.ValueRank
+        );
     }
 
-    default UInteger[] getArrayDimensions(
-        AttributeContext context, VariableTypeNode node) throws UaException {
-
-        return node.getArrayDimensions();
+    default UInteger[] getArrayDimensions(AttributeContext context, UaVariableTypeNode node) throws UaException {
+        return (UInteger[]) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.ArrayDimensions
+        );
     }
 
-    default Boolean getIsAbstract(AttributeContext context, VariableTypeNode node) throws UaException {
-        return node.getIsAbstract();
+    default Boolean getIsAbstract(AttributeContext context, UaVariableTypeNode node) throws UaException {
+        return (Boolean) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.IsAbstract
+        );
     }
 
-    default void setValue(AttributeContext context, VariableTypeNode node, DataValue value) throws UaException {
-        node.setValue(value);
+    default void setValue(AttributeContext context, UaVariableTypeNode node, DataValue value) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.Value,
+            value
+        );
     }
 
-    default void setDataType(AttributeContext context, VariableTypeNode node, NodeId dataType) throws UaException {
-        node.setDataType(dataType);
+    default void setDataType(AttributeContext context, UaVariableTypeNode node, NodeId dataType) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.DataType,
+            dataType
+        );
     }
 
-    default void setValueRank(AttributeContext context, VariableTypeNode node, Integer valueRank) throws UaException {
-        node.setValueRank(valueRank);
+    default void setValueRank(AttributeContext context, UaVariableTypeNode node, Integer valueRank) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.ValueRank,
+            valueRank
+        );
     }
 
     default void setArrayDimensions(
-        AttributeContext context, VariableTypeNode node, UInteger[] arrayDimensions) throws UaException {
+        AttributeContext context,
+        UaVariableTypeNode node,
+        UInteger[] arrayDimensions
+    ) throws UaException {
 
-        node.setArrayDimensions(arrayDimensions);
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.ArrayDimensions,
+            arrayDimensions
+        );
     }
 
-    default void setIsAbstract(AttributeContext context, VariableTypeNode node, Boolean isAbstract) throws UaException {
-        node.setIsAbstract(isAbstract);
+    default void setIsAbstract(
+        AttributeContext context,
+        UaVariableTypeNode node,
+        Boolean isAbstract
+    ) throws UaException {
+
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.IsAbstract,
+            isAbstract
+        );
     }
 
 }

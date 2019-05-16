@@ -58,14 +58,14 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     private static final DataValue INITIAL_VALUE = new DataValue(new StatusCode(StatusCodes.Uncertain_InitialValue));
 
-    private volatile DataValue value = INITIAL_VALUE;
-    private volatile NodeId dataType = Identifiers.BaseDataType;
-    private volatile Integer valueRank = ValueRanks.Scalar;
-    private volatile UInteger[] arrayDimensions = null;
-    private volatile UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    private volatile UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    private volatile Double minimumSamplingInterval = 0.0;
-    private volatile Boolean historizing = false;
+    protected volatile DataValue value = INITIAL_VALUE;
+    protected volatile NodeId dataType = Identifiers.BaseDataType;
+    protected volatile Integer valueRank = ValueRanks.Scalar;
+    protected volatile UInteger[] arrayDimensions = null;
+    protected volatile UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+    protected volatile UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+    protected volatile Double minimumSamplingInterval = 0.0;
+    protected volatile Boolean historizing = false;
 
     public UaVariableNode(
         UaNodeContext context,
@@ -136,98 +136,157 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     @Override
     public DataValue getValue() {
-        return value;
+        return (DataValue) filterChain.getAttribute(this, AttributeId.Value);
     }
 
     @Override
     public NodeId getDataType() {
-        return dataType;
+        return (NodeId) filterChain.getAttribute(this, AttributeId.NodeId);
     }
 
     @Override
     public Integer getValueRank() {
-        return valueRank;
+        return (Integer) filterChain.getAttribute(this, AttributeId.ValueRank);
     }
 
     @Override
     public UInteger[] getArrayDimensions() {
-        return arrayDimensions;
+        return (UInteger[]) filterChain.getAttribute(this, AttributeId.ArrayDimensions);
     }
 
     @Override
     public UByte getAccessLevel() {
-        return accessLevel;
+        return (UByte) filterChain.getAttribute(this, AttributeId.AccessLevel);
     }
 
     @Override
     public UByte getUserAccessLevel() {
-        return userAccessLevel;
+        return (UByte) filterChain.getAttribute(this, AttributeId.UserAccessLevel);
     }
 
     @Override
     public Double getMinimumSamplingInterval() {
-        return minimumSamplingInterval;
+        return (Double) filterChain.getAttribute(this, AttributeId.MinimumSamplingInterval);
     }
 
     @Override
     public Boolean getHistorizing() {
-        return historizing;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.Historizing);
     }
 
     @Override
-    public synchronized void setValue(DataValue value) {
-        this.value = value;
-
-        fireAttributeChanged(AttributeId.Value, value);
+    public void setValue(DataValue value) {
+        filterChain.setAttribute(this, AttributeId.Value, value);
     }
 
     @Override
-    public synchronized void setDataType(NodeId dataType) {
-        this.dataType = dataType;
-
-        fireAttributeChanged(AttributeId.DataType, dataType);
+    public void setDataType(NodeId dataType) {
+        filterChain.setAttribute(this, AttributeId.DataType, dataType);
     }
 
     @Override
-    public synchronized void setValueRank(Integer valueRank) {
-        this.valueRank = valueRank;
-
-        fireAttributeChanged(AttributeId.ValueRank, valueRank);
+    public void setValueRank(Integer valueRank) {
+        filterChain.setAttribute(this, AttributeId.ValueRank, valueRank);
     }
 
     @Override
-    public synchronized void setArrayDimensions(UInteger[] arrayDimensions) {
-        this.arrayDimensions = arrayDimensions;
-
-        fireAttributeChanged(AttributeId.ArrayDimensions, arrayDimensions);
+    public void setArrayDimensions(UInteger[] arrayDimensions) {
+        filterChain.setAttribute(this, AttributeId.ArrayDimensions, arrayDimensions);
     }
 
     @Override
-    public synchronized void setAccessLevel(UByte accessLevel) {
-        this.accessLevel = accessLevel;
-
-        fireAttributeChanged(AttributeId.AccessLevel, accessLevel);
+    public void setAccessLevel(UByte accessLevel) {
+        filterChain.setAttribute(this, AttributeId.AccessLevel, accessLevel);
     }
 
     @Override
-    public synchronized void setUserAccessLevel(UByte userAccessLevel) {
-        this.userAccessLevel = userAccessLevel;
-
-        fireAttributeChanged(AttributeId.UserAccessLevel, userAccessLevel);
+    public void setUserAccessLevel(UByte userAccessLevel) {
+        filterChain.setAttribute(this, AttributeId.UserAccessLevel, userAccessLevel);
     }
 
     @Override
     public void setMinimumSamplingInterval(Double minimumSamplingInterval) {
-        this.minimumSamplingInterval = minimumSamplingInterval;
-
-        fireAttributeChanged(AttributeId.MinimumSamplingInterval, minimumSamplingInterval);
+        filterChain.setAttribute(this, AttributeId.MinimumSamplingInterval, minimumSamplingInterval);
     }
 
     @Override
     public void setHistorizing(Boolean historizing) {
-        this.historizing = historizing;
+        filterChain.setAttribute(this, AttributeId.Historizing, historizing);
+    }
 
-        fireAttributeChanged(AttributeId.Historizing, historizing);
+    @Override
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case Value:
+                return value;
+
+            case DataType:
+                return dataType;
+
+            case ValueRank:
+                return valueRank;
+
+            case ArrayDimensions:
+                return arrayDimensions;
+
+            case AccessLevel:
+                return accessLevel;
+
+            case UserAccessLevel:
+                return userAccessLevel;
+
+            case MinimumSamplingInterval:
+                return minimumSamplingInterval;
+
+            case Historizing:
+                return historizing;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case Value:
+                this.value = (DataValue) value;
+                break;
+
+            case DataType:
+                dataType = (NodeId) value;
+                break;
+
+            case ValueRank:
+                valueRank = (Integer) value;
+                break;
+
+            case ArrayDimensions:
+                arrayDimensions = (UInteger[]) value;
+                break;
+
+            case AccessLevel:
+                accessLevel = (UByte) value;
+                break;
+
+            case UserAccessLevel:
+                userAccessLevel = (UByte) value;
+                break;
+
+            case MinimumSamplingInterval:
+                minimumSamplingInterval = (Double) value;
+                break;
+
+            case Historizing:
+                historizing = (Boolean) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
     }
 
     public Optional<ObjectNode> getModellingRuleNode() {

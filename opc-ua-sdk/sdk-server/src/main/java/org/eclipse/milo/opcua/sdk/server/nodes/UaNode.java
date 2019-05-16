@@ -31,7 +31,9 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -53,15 +55,17 @@ public abstract class UaNode implements UaServerNode {
 
     private List<WeakReference<AttributeObserver>> observers;
 
-    private final UaNodeContext context;
+    protected final AttributeFilterChain filterChain = new AttributeFilterChain();
 
-    private volatile NodeId nodeId;
-    private volatile NodeClass nodeClass;
-    private volatile QualifiedName browseName;
-    private volatile LocalizedText displayName;
-    private volatile LocalizedText description;
-    private volatile UInteger writeMask;
-    private volatile UInteger userWriteMask;
+    protected final UaNodeContext context;
+
+    protected volatile NodeId nodeId;
+    protected volatile NodeClass nodeClass;
+    protected volatile QualifiedName browseName;
+    protected volatile LocalizedText displayName;
+    protected volatile LocalizedText description;
+    protected volatile UInteger writeMask;
+    protected volatile UInteger userWriteMask;
 
     protected UaNode(
         UaNodeContext context,
@@ -97,86 +101,158 @@ public abstract class UaNode implements UaServerNode {
 
     @Override
     public NodeId getNodeId() {
-        return nodeId;
+        return (NodeId) filterChain.getAttribute(this, AttributeId.NodeId);
     }
 
     @Override
     public NodeClass getNodeClass() {
-        return nodeClass;
+        return (NodeClass) filterChain.getAttribute(this, AttributeId.NodeClass);
     }
 
     @Override
     public QualifiedName getBrowseName() {
-        return browseName;
+        return (QualifiedName) filterChain.getAttribute(this, AttributeId.BrowseName);
     }
 
     @Override
     public LocalizedText getDisplayName() {
-        return displayName;
+        return (LocalizedText) filterChain.getAttribute(this, AttributeId.DisplayName);
     }
 
     @Override
     public LocalizedText getDescription() {
-        return description;
+        return (LocalizedText) filterChain.getAttribute(this, AttributeId.Description);
     }
 
     @Override
     public UInteger getWriteMask() {
-        return writeMask;
+        return (UInteger) filterChain.getAttribute(this, AttributeId.WriteMask);
     }
 
     @Override
     public UInteger getUserWriteMask() {
-        return userWriteMask;
+        return (UInteger) filterChain.getAttribute(this, AttributeId.UserWriteMask);
     }
 
     @Override
     public synchronized void setNodeId(NodeId nodeId) {
-        this.nodeId = nodeId;
-
-        fireAttributeChanged(AttributeId.NodeId, nodeId);
+        filterChain.setAttribute(this, AttributeId.NodeId, nodeId);
     }
 
     @Override
     public synchronized void setNodeClass(NodeClass nodeClass) {
-        this.nodeClass = nodeClass;
-
-        fireAttributeChanged(AttributeId.NodeClass, nodeClass);
+        filterChain.setAttribute(this, AttributeId.NodeClass, nodeClass);
     }
 
     @Override
     public synchronized void setBrowseName(QualifiedName browseName) {
-        this.browseName = browseName;
-
-        fireAttributeChanged(AttributeId.BrowseName, browseName);
+        filterChain.setAttribute(this, AttributeId.BrowseName, browseName);
     }
 
     @Override
     public synchronized void setDisplayName(LocalizedText displayName) {
-        this.displayName = displayName;
-
-        fireAttributeChanged(AttributeId.DisplayName, displayName);
+        filterChain.setAttribute(this, AttributeId.DisplayName, displayName);
     }
 
     @Override
     public synchronized void setDescription(LocalizedText description) {
-        this.description = description;
-
-        fireAttributeChanged(AttributeId.Description, description);
+        filterChain.setAttribute(this, AttributeId.Description, description);
     }
 
     @Override
     public synchronized void setWriteMask(UInteger writeMask) {
-        this.writeMask = writeMask;
-
-        fireAttributeChanged(AttributeId.WriteMask, writeMask);
+        filterChain.setAttribute(this, AttributeId.WriteMask, writeMask);
     }
 
     @Override
     public synchronized void setUserWriteMask(UInteger userWriteMask) {
-        this.userWriteMask = userWriteMask;
+        filterChain.setAttribute(this, AttributeId.UserWriteMask, userWriteMask);
+    }
 
-        fireAttributeChanged(AttributeId.UserWriteMask, userWriteMask);
+    /**
+     * Direct read access to the field for {@code attributeId}, bypassing the {@link AttributeFilterChain}.
+     *
+     * @param attributeId the {@link AttributeId} to get the value for.
+     * @return the value for {@code attributeId}.
+     */
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case NodeId:
+                return nodeId;
+
+            case NodeClass:
+                return nodeClass;
+
+            case BrowseName:
+                return browseName;
+
+            case DisplayName:
+                return displayName;
+
+            case Description:
+                return description;
+
+            case WriteMask:
+                return writeMask;
+
+            case UserWriteMask:
+                return userWriteMask;
+
+            default:
+                throw new UaRuntimeException(
+                    StatusCodes.Bad_AttributeIdInvalid,
+                    "AttributeId: " + attributeId
+                );
+        }
+    }
+
+    /**
+     * Direct write access to the field for {@code attributeId}, bypassing the {@link AttributeFilterChain}.
+     * <p>
+     * Setting an attribute value invokes {@link #fireAttributeChanged(AttributeId, Object)}, notifying any registered
+     * {@link AttributeObserver}s of the change.
+     *
+     * @param attributeId the {@link AttributeId} to set the value for.
+     * @param value       the value to set.
+     */
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case NodeId:
+                nodeId = (NodeId) value;
+                break;
+
+            case NodeClass:
+                nodeClass = (NodeClass) value;
+                break;
+
+            case BrowseName:
+                browseName = (QualifiedName) value;
+                break;
+
+            case DisplayName:
+                displayName = (LocalizedText) value;
+                break;
+
+            case Description:
+                description = (LocalizedText) value;
+                break;
+
+            case WriteMask:
+                writeMask = (UInteger) value;
+                break;
+
+            case UserWriteMask:
+                userWriteMask = (UInteger) value;
+                break;
+
+            default:
+                throw new UaRuntimeException(
+                    StatusCodes.Bad_AttributeIdInvalid,
+                    "AttributeId: " + attributeId
+                );
+        }
+
+        fireAttributeChanged(attributeId, value);
     }
 
     /**
@@ -301,7 +377,7 @@ public abstract class UaNode implements UaServerNode {
             NodeId dataType = property.getDataType()
                 .local(context.getNamespaceTable())
                 .orElse(NodeId.NULL_VALUE);
-            
+
             propertyNode.setDataType(dataType);
             propertyNode.setValueRank(property.getValueRank());
             propertyNode.setArrayDimensions(property.getArrayDimensions());
@@ -537,6 +613,10 @@ public abstract class UaNode implements UaServerNode {
                 iterator.remove();
             }
         }
+    }
+    
+    public synchronized AttributeFilterChain getFilterChain() {
+        return filterChain;
     }
 
     /**

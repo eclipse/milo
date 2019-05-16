@@ -67,6 +67,32 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
     }
 
+    @Override
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return isAbstract;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case IsAbstract:
+                isAbstract = (Boolean) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     @Nullable
     public UaMethodNode findMethodNode(NodeId methodId) {
         return getReferences().stream()

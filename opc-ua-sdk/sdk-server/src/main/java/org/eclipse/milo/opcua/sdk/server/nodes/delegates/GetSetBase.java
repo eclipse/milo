@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -29,8 +29,9 @@ public interface GetSetBase {
 
     default DataValue getBaseAttribute(
         AttributeContext context,
-        Node node,
-        AttributeId attributeId) throws UaException {
+        UaNode node,
+        AttributeId attributeId
+    ) throws UaException {
 
         switch (attributeId) {
             case NodeId:
@@ -61,9 +62,10 @@ public interface GetSetBase {
 
     default void setBaseAttribute(
         AttributeContext context,
-        Node node,
+        UaNode node,
         AttributeId attributeId,
-        DataValue value) throws UaException {
+        DataValue value
+    ) throws UaException {
 
         switch (attributeId) {
             case NodeId:
@@ -93,60 +95,123 @@ public interface GetSetBase {
         }
     }
 
-    default NodeId getNodeId(AttributeContext context, Node node) throws UaException {
-        return node.getNodeId();
+    default NodeId getNodeId(AttributeContext context, UaNode node) throws UaException {
+        return (NodeId) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.NodeId
+        );
     }
 
-    default NodeClass getNodeClass(AttributeContext context, Node node) throws UaException {
-        return node.getNodeClass();
+    default NodeClass getNodeClass(AttributeContext context, UaNode node) throws UaException {
+        return (NodeClass) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.NodeClass
+        );
     }
 
-    default QualifiedName getBrowseName(AttributeContext context, Node node) throws UaException {
-        return node.getBrowseName();
+    default QualifiedName getBrowseName(AttributeContext context, UaNode node) throws UaException {
+        return (QualifiedName) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.BrowseName
+        );
     }
 
-    default LocalizedText getDisplayName(AttributeContext context, Node node) throws UaException {
-        return node.getDisplayName();
+    default LocalizedText getDisplayName(AttributeContext context, UaNode node) throws UaException {
+        return (LocalizedText) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.DisplayName
+        );
     }
 
-    default LocalizedText getDescription(AttributeContext context, Node node) throws UaException {
-        return node.getDescription();
+    default LocalizedText getDescription(AttributeContext context, UaNode node) throws UaException {
+        return (LocalizedText) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.Description
+        );
     }
 
-    default UInteger getWriteMask(AttributeContext context, Node node) throws UaException {
-        return node.getWriteMask();
+    default UInteger getWriteMask(AttributeContext context, UaNode node) throws UaException {
+        return (UInteger) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.WriteMask
+        );
     }
 
-    default UInteger getUserWriteMask(AttributeContext context, Node node) throws UaException {
-        return node.getUserWriteMask();
+    default UInteger getUserWriteMask(AttributeContext context, UaNode node) throws UaException {
+        return (UInteger) node.getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.UserWriteMask
+        );
     }
 
-    default void setNodeId(AttributeContext context, Node node, NodeId nodeId) throws UaException {
-        node.setNodeId(nodeId);
+    default void setNodeId(AttributeContext context, UaNode node, NodeId nodeId) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.NodeId,
+            nodeId
+        );
     }
 
-    default void setNodeClass(AttributeContext context, Node node, NodeClass nodeClass) throws UaException {
-        node.setNodeClass(nodeClass);
+    default void setNodeClass(AttributeContext context, UaNode node, NodeClass nodeClass) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.NodeClass,
+            nodeClass
+        );
     }
 
-    default void setBrowseName(AttributeContext context, Node node, QualifiedName browseName) throws UaException {
-        node.setBrowseName(browseName);
+    default void setBrowseName(AttributeContext context, UaNode node, QualifiedName browseName) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.BrowseName,
+            browseName
+        );
     }
 
-    default void setDisplayName(AttributeContext context, Node node, LocalizedText displayName) throws UaException {
-        node.setDisplayName(displayName);
+    default void setDisplayName(AttributeContext context, UaNode node, LocalizedText displayName) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.DisplayName,
+            displayName
+        );
     }
 
-    default void setDescription(AttributeContext context, Node node, LocalizedText description) throws UaException {
-        node.setDescription(description);
+    default void setDescription(AttributeContext context, UaNode node, LocalizedText description) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.Description,
+            description
+        );
     }
 
-    default void setWriteMask(AttributeContext context, Node node, UInteger writeMask) throws UaException {
-        node.setWriteMask(writeMask);
+    default void setWriteMask(AttributeContext context, UaNode node, UInteger writeMask) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.WriteMask,
+            writeMask
+        );
     }
 
-    default void setUserWriteMask(AttributeContext context, Node node, UInteger userWriteMask) throws UaException {
-        node.setUserWriteMask(userWriteMask);
+    default void setUserWriteMask(AttributeContext context, UaNode node, UInteger userWriteMask) throws UaException {
+        node.getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            node,
+            AttributeId.UserWriteMask,
+            userWriteMask
+        );
     }
 
 }

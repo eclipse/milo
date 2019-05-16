@@ -115,6 +115,32 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
     }
 
+    @Override
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case EventNotifier:
+                return eventNotifier;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case EventNotifier:
+                eventNotifier = (UByte) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     @Nullable
     public UaMethodNode findMethodNode(NodeId methodId) {
         List<UaMethodNode> methodNodes = getMethodNodes();

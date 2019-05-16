@@ -87,6 +87,46 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         fireAttributeChanged(AttributeId.InverseName, inverseName);
     }
 
+    @Override
+    synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return isAbstract;
+
+            case Symmetric:
+                return symmetric;
+
+            case InverseName:
+                return inverseName;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case IsAbstract:
+                isAbstract = (Boolean) value;
+                break;
+
+            case Symmetric:
+                symmetric = (Boolean) value;
+                break;
+
+            case InverseName:
+                inverseName = (LocalizedText) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     @Nullable
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
