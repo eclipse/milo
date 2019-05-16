@@ -128,7 +128,7 @@ public class AttributeFilterChain {
      * @return this {@link AttributeFilterChain}.
      */
     public AttributeFilterChain addFirst(AttributeFilter... attributeFilters) {
-        Arrays.stream(attributeFilters).forEach(filters::addFirst);
+        Arrays.stream(attributeFilters).forEach(this::addFirst);
 
         return this;
     }
@@ -152,7 +152,7 @@ public class AttributeFilterChain {
      * @return this {@link AttributeFilterChain}.
      */
     public AttributeFilterChain addLast(AttributeFilter... attributeFilters) {
-        Arrays.stream(attributeFilters).forEach(filters::addLast);
+        Arrays.stream(attributeFilters).forEach(this::addLast);
 
         return this;
     }
