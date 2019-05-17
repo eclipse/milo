@@ -57,7 +57,7 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
             DataValue value = (DataValue) ctx.getAttribute(attributeId);
 
             if (ctx.getNode() instanceof UaVariableNode) {
-                doArrayStuff(
+                initializeArrayElements(
                     (UaVariableNode) ctx.getNode(),
                     value.getValue().getValue()
                 );
@@ -73,17 +73,19 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
     public void setAttribute(AttributeFilterContext ctx, AttributeId attributeId, Object value) {
         if (attributeId == AttributeId.Value) {
             if (ctx.getNode() instanceof UaVariableNode) {
-                doArrayStuff(
+                initializeArrayElements(
                     (UaVariableNode) ctx.getNode(),
                     ((DataValue) value).getValue().getValue()
                 );
             }
 
             ctx.setAttribute(attributeId, value);
+        } else {
+            ctx.setAttribute(attributeId, value);
         }
     }
 
-    private void doArrayStuff(UaVariableNode arrayNode, Object value) {
+    private void initializeArrayElements(UaVariableNode arrayNode, Object value) {
         if (value == null || !value.getClass().isArray()) {
             return;
         }
@@ -134,14 +136,12 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
                     arrayNode.addComponent(elementNode);
                     arrayNode.getNodeManager().addNode(elementNode);
 
-                    // NodeId elementDataType = elementNode.getDataType();
-                    // OpcUaServer server = elementNode.getNodeContext().getServer();
+                    NodeId elementDataType = elementNode.getDataType();
+                    OpcUaServer server = elementNode.getNodeContext().getServer();
 
-                    // if (subtypeOf(server, elementDataType, Identifiers.Structure)) {
-                    //     elementNode.addAttributeObserver(
-                    //         new ComplexVariableNodeAttributeObserver(elementNode)
-                    //     );
-                    // }
+                    if (subtypeOf(server, elementDataType, Identifiers.Structure)) {
+                        elementNode.getFilterChain().addLast(new ComplexValueAttributeFilter());
+                    }
                 } catch (UaException e) {
                     logger.error("Error creating element Node for {}", arrayNode.getNodeId(), e);
                 }
