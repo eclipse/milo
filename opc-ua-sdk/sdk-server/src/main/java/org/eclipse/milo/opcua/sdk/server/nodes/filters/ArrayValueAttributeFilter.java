@@ -124,10 +124,14 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
 
                     elementNode.getFilterChain().addLast(
                         AttributeFilters.getValue(ctx -> {
-                            Object array = arrayNode.getValue().getValue().getValue();
-                            Object elementValue = Array.get(array, index);
+                            try {
+                                Object array = arrayNode.getValue().getValue().getValue();
+                                Object elementValue = Array.get(array, index);
 
-                            return new DataValue(new Variant(elementValue));
+                                return new DataValue(new Variant(elementValue));
+                            } catch (Throwable t) {
+                                return new DataValue(Variant.NULL_VALUE);
+                            }
                         })
                     );
 
@@ -143,6 +147,8 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
                         // Add this in front of of the value filter added above
                         elementNode.getFilterChain().addFirst(new ComplexValueAttributeFilter());
                     }
+
+                    logger.debug("Added element: {}", elementNodeId);
                 } catch (UaException e) {
                     logger.error("Error creating element Node for {}", arrayNode.getNodeId(), e);
                 }
@@ -153,6 +159,8 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
 
                 arrayNode.removeComponent(elementNode);
                 arrayNode.getNodeManager().removeNode(elementNode);
+
+                logger.debug("Removed element: {}", elementNode.getNodeId());
             }
         }
     }
