@@ -121,7 +121,8 @@ public class ComplexValueAttributeFilter implements AttributeFilter {
                     OpcUaServer server = complexNode.getNodeContext().getServer();
 
                     if (subtypeOf(server, memberDataType, Identifiers.Structure)) {
-                        memberNode.getFilterChain().addLast(new ComplexValueAttributeFilter());
+                        // Add this in front of of the value filter added above
+                        memberNode.getFilterChain().addFirst(new ComplexValueAttributeFilter());
                     }
                 }
             }

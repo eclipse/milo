@@ -140,7 +140,8 @@ public class ArrayValueAttributeFilter implements AttributeFilter {
                     OpcUaServer server = elementNode.getNodeContext().getServer();
 
                     if (subtypeOf(server, elementDataType, Identifiers.Structure)) {
-                        elementNode.getFilterChain().addLast(new ComplexValueAttributeFilter());
+                        // Add this in front of of the value filter added above
+                        elementNode.getFilterChain().addFirst(new ComplexValueAttributeFilter());
                     }
                 } catch (UaException e) {
                     logger.error("Error creating element Node for {}", arrayNode.getNodeId(), e);
