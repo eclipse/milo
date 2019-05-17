@@ -141,7 +141,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     @Override
     public NodeId getDataType() {
-        return (NodeId) filterChain.getAttribute(this, AttributeId.NodeId);
+        return (NodeId) filterChain.getAttribute(this, AttributeId.DataType);
     }
 
     @Override

@@ -27,7 +27,9 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -47,9 +49,11 @@ public class ComplexValueAttributeFilter implements AttributeFilter {
             if (ctx.getNode() instanceof UaVariableNode &&
                 initialized.compareAndSet(false, true)) {
 
+                ExtensionObject xo = (ExtensionObject) value.getValue().getValue();
+
                 initializeStructMembers(
                     (UaVariableNode) ctx.getNode(),
-                    value.getValue().getValue()
+                    decodeValue(ctx, xo)
                 );
             }
 
@@ -65,9 +69,11 @@ public class ComplexValueAttributeFilter implements AttributeFilter {
             if (ctx.getNode() instanceof UaVariableNode &&
                 initialized.compareAndSet(false, true)) {
 
+                ExtensionObject xo = (ExtensionObject) ((DataValue) value).getValue().getValue();
+
                 initializeStructMembers(
                     (UaVariableNode) ctx.getNode(),
-                    ((DataValue) value).getValue().getValue()
+                    decodeValue(ctx, xo)
                 );
             }
 
@@ -101,12 +107,18 @@ public class ComplexValueAttributeFilter implements AttributeFilter {
 
                 memberNode.getFilterChain().addLast(
                     AttributeFilters.getValue(ctx -> {
-                        final Object complexValue = complexNode.getValue().getValue().getValue();
+                        ExtensionObject xo = (ExtensionObject) complexNode.getValue().getValue().getValue();
+                        Object complexValue = decodeValue(ctx, xo);
 
                         try {
                             Method m = getters.get(name);
                             Object o = m.invoke(complexValue);
-                            return new DataValue(new Variant(o));
+
+                            if (o instanceof UaStructure) {
+                                return new DataValue(new Variant(encodeValue(ctx, (UaStructure) o)));
+                            } else {
+                                return new DataValue(new Variant(o));
+                            }
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             LoggerFactory.getLogger(ComplexValueAttributeFilter.class)
                                 .error("error getting value for field '{}' of {}", name, complexValue, e);
@@ -127,6 +139,14 @@ public class ComplexValueAttributeFilter implements AttributeFilter {
                 }
             }
         });
+    }
+
+    private static Object decodeValue(AttributeFilterContext ctx, ExtensionObject xo) {
+        return xo.decode(ctx.getNode().getNodeContext().getServer().getSerializationContext());
+    }
+
+    private static ExtensionObject encodeValue(AttributeFilterContext ctx, UaStructure value) {
+        return ExtensionObject.encode(ctx.getNode().getNodeContext().getServer().getSerializationContext(), value);
     }
 
     /**
