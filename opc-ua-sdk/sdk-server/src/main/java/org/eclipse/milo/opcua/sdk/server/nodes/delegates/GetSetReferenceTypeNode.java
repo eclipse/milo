@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -64,39 +66,39 @@ public interface GetSetReferenceTypeNode extends GetSetBase {
         }
     }
 
-    default Boolean getIsAbstract(AttributeContext context, UaReferenceTypeNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean getIsAbstract(AttributeContext context, ReferenceTypeNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.IsAbstract
         );
     }
 
-    default Boolean getSymmetric(AttributeContext context, UaReferenceTypeNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean getSymmetric(AttributeContext context, ReferenceTypeNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Symmetric
         );
     }
 
-    default LocalizedText getInverseName(AttributeContext context, UaReferenceTypeNode node) throws UaException {
-        return (LocalizedText) node.getFilterChain().getAttribute(
+    default LocalizedText getInverseName(AttributeContext context, ReferenceTypeNode node) throws UaException {
+        return (LocalizedText) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.InverseName
         );
     }
 
     default void setIsAbstract(
         AttributeContext context,
-        UaReferenceTypeNode node,
+        ReferenceTypeNode node,
         Boolean isAbstract
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.IsAbstract,
             isAbstract
         );
@@ -104,13 +106,13 @@ public interface GetSetReferenceTypeNode extends GetSetBase {
 
     default void setSymmetric(
         AttributeContext context,
-        UaReferenceTypeNode node,
+        ReferenceTypeNode node,
         Boolean symmetric
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Symmetric,
             symmetric
         );
@@ -118,13 +120,13 @@ public interface GetSetReferenceTypeNode extends GetSetBase {
 
     default void setInverseName(
         AttributeContext context,
-        UaReferenceTypeNode node,
+        ReferenceTypeNode node,
         LocalizedText inverseName
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.InverseName,
             inverseName
         );

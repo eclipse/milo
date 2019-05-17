@@ -10,8 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -59,26 +61,26 @@ public interface GetSetMethodNode extends GetSetBase {
         }
     }
 
-    default Boolean isExecutable(AttributeContext context, UaMethodNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean isExecutable(AttributeContext context, MethodNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Executable
         );
     }
 
-    default Boolean isUserExecutable(AttributeContext context, UaMethodNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean isUserExecutable(AttributeContext context, MethodNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.UserExecutable
         );
     }
 
-    default void setExecutable(AttributeContext context, UaMethodNode node, Boolean executable) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setExecutable(AttributeContext context, MethodNode node, Boolean executable) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Executable,
             executable
         );
@@ -86,13 +88,13 @@ public interface GetSetMethodNode extends GetSetBase {
 
     default void setUserExecutable(
         AttributeContext context,
-        UaMethodNode node,
+        MethodNode node,
         Boolean userExecutable
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.UserExecutable,
             userExecutable
         );

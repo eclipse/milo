@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaViewNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -58,40 +60,40 @@ public interface GetSetViewNode extends GetSetBase {
         }
     }
 
-    default Boolean getContainsNoLoops(AttributeContext context, UaViewNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean getContainsNoLoops(AttributeContext context, ViewNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.ContainsNoLoops
         );
     }
 
-    default UByte getEventNotifier(AttributeContext context, UaViewNode node) throws UaException {
-        return (UByte) node.getFilterChain().getAttribute(
+    default UByte getEventNotifier(AttributeContext context, ViewNode node) throws UaException {
+        return (UByte) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.EventNotifier
         );
     }
 
     default void setContainsNoLoops(
         AttributeContext context,
-        UaViewNode node,
+        ViewNode node,
         Boolean containsNoLoops
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.ContainsNoLoops,
             containsNoLoops
         );
     }
 
-    default void setEventNotifier(AttributeContext context, UaViewNode node, UByte eventNotifier) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setEventNotifier(AttributeContext context, ViewNode node, UByte eventNotifier) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.EventNotifier,
             eventNotifier
         );

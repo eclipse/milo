@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -39,7 +41,7 @@ public interface GetSetObjectNode extends GetSetBase {
 
     default void setObjectAttribute(
         AttributeContext context,
-        UaObjectNode node,
+        ObjectNode node,
         AttributeId attributeId,
         DataValue value
     ) throws UaException {
@@ -54,18 +56,18 @@ public interface GetSetObjectNode extends GetSetBase {
         }
     }
 
-    default UByte getEventNotifier(AttributeContext context, UaObjectNode node) throws UaException {
-        return (UByte) node.getFilterChain().getAttribute(
+    default UByte getEventNotifier(AttributeContext context, ObjectNode node) throws UaException {
+        return (UByte) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.EventNotifier
         );
     }
 
-    default void setEventNotifier(AttributeContext context, UaObjectNode node, UByte eventNotifier) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setEventNotifier(AttributeContext context, ObjectNode node, UByte eventNotifier) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.EventNotifier,
             eventNotifier
         );

@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -99,92 +101,92 @@ public interface GetSetVariableNode extends GetSetBase {
         }
     }
 
-    default DataValue getValue(AttributeContext context, UaVariableNode node) throws UaException {
-        return (DataValue) node.getFilterChain().getAttribute(
+    default DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+        return (DataValue) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Value
         );
     }
 
-    default NodeId getDataType(AttributeContext context, UaVariableNode node) throws UaException {
-        return (NodeId) node.getFilterChain().getAttribute(
+    default NodeId getDataType(AttributeContext context, VariableNode node) throws UaException {
+        return (NodeId) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.DataType
         );
     }
 
-    default Integer getValueRank(AttributeContext context, UaVariableNode node) throws UaException {
-        return (Integer) node.getFilterChain().getAttribute(
+    default Integer getValueRank(AttributeContext context, VariableNode node) throws UaException {
+        return (Integer) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.ValueRank
         );
     }
 
-    default UInteger[] getArrayDimensions(AttributeContext context, UaVariableNode node) throws UaException {
-        return (UInteger[]) node.getFilterChain().getAttribute(
+    default UInteger[] getArrayDimensions(AttributeContext context, VariableNode node) throws UaException {
+        return (UInteger[]) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.ArrayDimensions
         );
     }
 
-    default UByte getAccessLevel(AttributeContext context, UaVariableNode node) throws UaException {
-        return (UByte) node.getFilterChain().getAttribute(
+    default UByte getAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+        return (UByte) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.AccessLevel
         );
     }
 
-    default UByte getUserAccessLevel(AttributeContext context, UaVariableNode node) throws UaException {
-        return (UByte) node.getFilterChain().getAttribute(
+    default UByte getUserAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+        return (UByte) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.UserAccessLevel
         );
     }
 
-    default Double getMinimumSamplingInterval(AttributeContext context, UaVariableNode node) throws UaException {
-        return (Double) node.getFilterChain().getAttribute(
+    default Double getMinimumSamplingInterval(AttributeContext context, VariableNode node) throws UaException {
+        return (Double) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.MinimumSamplingInterval
         );
     }
 
-    default Boolean getHistorizing(AttributeContext context, UaVariableNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean getHistorizing(AttributeContext context, VariableNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Historizing
         );
     }
 
-    default void setValue(AttributeContext context, UaVariableNode node, DataValue value) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Value,
             value
         );
     }
 
-    default void setDataType(AttributeContext context, UaVariableNode node, NodeId dataType) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setDataType(AttributeContext context, VariableNode node, NodeId dataType) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.DataType,
             dataType
         );
     }
 
-    default void setValueRank(AttributeContext context, UaVariableNode node, Integer valueRank) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setValueRank(AttributeContext context, VariableNode node, Integer valueRank) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.ValueRank,
             valueRank
         );
@@ -192,22 +194,22 @@ public interface GetSetVariableNode extends GetSetBase {
 
     default void setArrayDimensions(
         AttributeContext context,
-        UaVariableNode node,
+        VariableNode node,
         UInteger[] arrayDimensions
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.ArrayDimensions,
             arrayDimensions
         );
     }
 
-    default void setAccessLevel(AttributeContext context, UaVariableNode node, UByte accessLevel) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setAccessLevel(AttributeContext context, VariableNode node, UByte accessLevel) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.AccessLevel,
             accessLevel
         );
@@ -215,13 +217,13 @@ public interface GetSetVariableNode extends GetSetBase {
 
     default void setUserAccessLevel(
         AttributeContext context,
-        UaVariableNode node,
+        VariableNode node,
         UByte userAccessLevel
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.UserAccessLevel,
             userAccessLevel
         );
@@ -229,22 +231,22 @@ public interface GetSetVariableNode extends GetSetBase {
 
     default void setMinimumSamplingInterval(
         AttributeContext context,
-        UaVariableNode node,
+        VariableNode node,
         Double minimumSamplingInterval
     ) throws UaException {
 
-        node.getFilterChain().setAttribute(
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.MinimumSamplingInterval,
             minimumSamplingInterval
         );
     }
 
-    default void setHistorizing(AttributeContext context, UaVariableNode node, Boolean historizing) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setHistorizing(AttributeContext context, VariableNode node, Boolean historizing) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.Historizing,
             historizing
         );

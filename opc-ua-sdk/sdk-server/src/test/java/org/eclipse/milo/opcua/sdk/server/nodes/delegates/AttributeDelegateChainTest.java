@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -43,28 +44,28 @@ public class AttributeDelegateChainTest {
         AttributeDelegate delegate = AttributeDelegateChain.create(
             new AttributeDelegate() {
                 @Override
-                public DataValue getValue(AttributeContext context, UaVariableNode node) throws UaException {
+                public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
                     list.add("root");
                     return node.getValue();
                 }
             },
             parent -> new DelegatingAttributeDelegate(parent) {
                 @Override
-                public DataValue getValue(AttributeContext context, UaVariableNode node) throws UaException {
+                public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
                     list.add("child1");
                     return super.getValue(context, node);
                 }
             },
             parent -> new DelegatingAttributeDelegate(parent) {
                 @Override
-                public DataValue getValue(AttributeContext context, UaVariableNode node) throws UaException {
+                public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
                     list.add("child2");
                     return super.getValue(context, node);
                 }
             },
             parent -> new DelegatingAttributeDelegate(parent) {
                 @Override
-                public DataValue getValue(AttributeContext context, UaVariableNode node) throws UaException {
+                public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
                     list.add("child3");
                     return super.getValue(context, node);
                 }

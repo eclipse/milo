@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -53,18 +55,18 @@ public interface GetSetObjectTypeNode extends GetSetBase {
         }
     }
 
-    default Boolean getIsAbstract(AttributeContext context, UaObjectTypeNode node) throws UaException {
-        return (Boolean) node.getFilterChain().getAttribute(
+    default Boolean getIsAbstract(AttributeContext context, ObjectTypeNode node) throws UaException {
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.IsAbstract
         );
     }
 
-    default void setIsAbstract(AttributeContext context, UaObjectTypeNode node, Boolean isAbstract) throws UaException {
-        node.getFilterChain().setAttribute(
+    default void setIsAbstract(AttributeContext context, ObjectTypeNode node, Boolean isAbstract) throws UaException {
+        ((UaNode) node).getFilterChain().setAttribute(
             context.getSession().orElse(null),
-            node,
+            (UaNode) node,
             AttributeId.IsAbstract,
             isAbstract
         );
