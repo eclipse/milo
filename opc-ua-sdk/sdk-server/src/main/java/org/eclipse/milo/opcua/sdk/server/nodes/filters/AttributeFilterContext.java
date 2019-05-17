@@ -19,6 +19,8 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 public class AttributeFilterContext {
 
+    private volatile boolean observable = false;
+
     private Iterator<AttributeFilter> filterIterator;
 
     private final UaNode node;
@@ -48,6 +50,14 @@ public class AttributeFilterContext {
      */
     public Optional<Session> getSession() {
         return Optional.ofNullable(session);
+    }
+
+    public void setObservable(boolean observable) {
+        this.observable = observable;
+    }
+
+    public boolean isObservable() {
+        return observable;
     }
 
     /**
