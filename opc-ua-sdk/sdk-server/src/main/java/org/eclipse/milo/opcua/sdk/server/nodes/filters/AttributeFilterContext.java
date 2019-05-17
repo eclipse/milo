@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
@@ -52,10 +53,18 @@ public class AttributeFilterContext {
         return Optional.ofNullable(session);
     }
 
+    /**
+     * Indicate that an attribute get should be observed by {@link AttributeObserver}s.
+     *
+     * @param observable {@code true} if the attribute get should be observed by {@link AttributeObserver}s.
+     */
     public void setObservable(boolean observable) {
         this.observable = observable;
     }
 
+    /**
+     * @return {@code true} if the attribute get should be observed by {@link AttributeObserver}s.
+     */
     public boolean isObservable() {
         return observable;
     }

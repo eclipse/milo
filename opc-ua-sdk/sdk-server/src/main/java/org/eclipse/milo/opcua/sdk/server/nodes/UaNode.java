@@ -599,7 +599,7 @@ public abstract class UaNode implements UaServerNode {
         if (observers.isEmpty()) observers = null;
     }
 
-    protected synchronized void fireAttributeChanged(AttributeId attributeId, Object attributeValue) {
+    public synchronized void fireAttributeChanged(AttributeId attributeId, Object attributeValue) {
         if (observers == null) return;
 
         Iterator<WeakReference<AttributeObserver>> iterator = observers.iterator();

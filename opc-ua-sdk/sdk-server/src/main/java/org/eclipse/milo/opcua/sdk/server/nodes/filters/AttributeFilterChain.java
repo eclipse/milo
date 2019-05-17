@@ -75,7 +75,13 @@ public class AttributeFilterChain {
 
         AttributeFilterContext ctx = new AttributeFilterContext(session, node, filterIterator);
 
-        return filter.getAttribute(ctx, attributeId);
+        Object value = filter.getAttribute(ctx, attributeId);
+
+        if (ctx.isObservable()) {
+            node.fireAttributeChanged(attributeId, value);
+        }
+
+        return value;
     }
 
     /**

@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -29,6 +31,7 @@ import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class AttributeFilterChainTest {
 
@@ -93,5 +96,38 @@ public class AttributeFilterChainTest {
         DataValue value = (DataValue) node.getFilterChain().getAttribute(node, AttributeId.Value);
         assertEquals(value.getValue().getValue(), "foo");
     }
+
+    @Test
+    public void testObservable() {
+        final AtomicBoolean observed = new AtomicBoolean(false);
+
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
+            .setNodeId(NodeId.NULL_VALUE)
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(QualifiedName.NULL_VALUE)
+            .setDisplayName(LocalizedText.NULL_VALUE)
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.addAttributeObserver((node1, attributeId, value) -> {
+            observed.set(true);
+        });
+
+        node.getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx -> {
+                    ctx.setObservable(true);
+                    
+                    return new DataValue(new Variant("foo"));
+                }
+            )
+        );
+
+        assertEquals(node.getValue().getValue().getValue(), "foo");
+
+        assertTrue(observed.get());
+    }
+
 
 }
