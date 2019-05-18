@@ -37,7 +37,9 @@ public class SessionSecurityDiagnostics {
     }
 
     public String[] getClientUserIdHistory() {
-        return null; // TODO diagnostics
+        return session.getIdentityHistory().stream()
+            .map(Objects::toString)
+            .toArray(String[]::new);
     }
 
     public String getAuthenticationMechanism() {

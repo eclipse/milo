@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.net.InetAddress;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,12 +50,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class Session implements SessionServiceSet {
 
+    private static final int IDENTITY_HISTORY_MAX_SIZE = 10;
+    
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<LifecycleListener> listeners = Lists.newCopyOnWriteArrayList();
 
     private final SubscriptionManager subscriptionManager;
 
+    private final LinkedList<Object> identityHistory = new LinkedList<>();
     private volatile Object identityObject;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
@@ -152,12 +157,25 @@ public class Session implements SessionServiceSet {
         return identityObject;
     }
 
+    public List<Object> getIdentityHistory() {
+        synchronized (identityHistory) {
+            return new ArrayList<>(identityHistory);
+        }
+    }
+
     public void setSecureChannelId(long secureChannelId) {
         this.secureChannelId = secureChannelId;
     }
 
     public void setIdentityObject(Object identityObject) {
         this.identityObject = identityObject;
+
+        synchronized (identityHistory) {
+            identityHistory.addFirst(identityObject);
+            while (identityHistory.size() > IDENTITY_HISTORY_MAX_SIZE) {
+                identityHistory.removeLast();
+            }
+        }
     }
 
     public void setEndpoint(EndpointDescription endpoint) {
