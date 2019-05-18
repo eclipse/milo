@@ -124,17 +124,30 @@ public class SessionManager implements
             .findFirst().ifPresent(s -> s.close(deleteSubscriptions));
     }
 
-    // TODO diagnostics: javadoc
+    /**
+     * Add {@code listener} to be notified when sessions are created.
+     *
+     * @param listener the {@link SessionListener} to add.
+     */
     public void addSessionListener(SessionListener listener) {
         sessionListeners.add(listener);
     }
 
-    // TODO diagnostics: javadoc
+    /**
+     * Remove {@code listener} from the {@link SessionListener} list.
+     *
+     * @param listener the {@link SessionListener} to remove.
+     */
     public void removeSessionListener(SessionListener listener) {
         sessionListeners.remove(listener);
     }
 
-    // TODO diagnostics: javadoc
+    /**
+     * Get a list of all the current {@link Session}s. This includes sessions that have been created but not yet
+     * activated.
+     *
+     * @return a list of all the current {@link Session}s.
+     */
     public List<Session> getAllSessions() {
         List<Session> sessions = new ArrayList<>();
         sessions.addAll(createdSessions.values());

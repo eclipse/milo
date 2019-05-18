@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics;
 
+import java.util.Objects;
+
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -31,7 +33,7 @@ public class SessionSecurityDiagnostics {
     }
 
     public String getClientUserIdOfSession() {
-        return null; // TODO diagnostics
+        return Objects.toString(session.getIdentityObject());
     }
 
     public String[] getClientUserIdHistory() {
