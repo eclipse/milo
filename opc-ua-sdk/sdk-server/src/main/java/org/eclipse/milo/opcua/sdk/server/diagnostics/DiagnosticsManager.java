@@ -111,6 +111,10 @@ public class DiagnosticsManager extends AbstractLifecycle {
                 synchronized (DiagnosticsManager.this) {
                     if (enabled) {
                         if (updateTasksFuture == null) {
+                            if (serverDiagnosticsObject != null) {
+                                serverDiagnosticsObject.shutdown();
+                            }
+
                             serverDiagnosticsObject = new ServerDiagnosticsObject(serverDiagnosticsTypeNode);
                             serverDiagnosticsObject.startup();
 
@@ -122,14 +126,12 @@ public class DiagnosticsManager extends AbstractLifecycle {
                             );
                         }
                     } else {
+                        // Cancel the updates but don't shut down ServerDiagnosticsObject so the nodes
+                        // remain in the address space. When diagnostics are enabled again it will be
+                        // cleaned up and started again.
                         if (updateTasksFuture != null) {
                             updateTasksFuture.cancel(false);
                             updateTasksFuture = null;
-
-                            if (serverDiagnosticsObject != null) {
-                                serverDiagnosticsObject.shutdown();
-                                serverDiagnosticsObject = null;
-                            }
                         }
                     }
                 }
