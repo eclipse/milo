@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
