@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,14 @@ public class SessionManager implements
     // TODO diagnostics: javadoc
     public void removeSessionListener(SessionListener listener) {
         sessionListeners.remove(listener);
+    }
+
+    // TODO diagnostics: javadoc
+    public List<Session> getAllSessions() {
+        List<Session> sessions = new ArrayList<>();
+        sessions.addAll(createdSessions.values());
+        sessions.addAll(activeSessions.values());
+        return sessions;
     }
 
     /**
