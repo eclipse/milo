@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -51,7 +52,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 public class Session implements SessionServiceSet {
 
     private static final int IDENTITY_HISTORY_MAX_SIZE = 10;
-    
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<LifecycleListener> listeners = Lists.newCopyOnWriteArrayList();
@@ -60,6 +61,7 @@ public class Session implements SessionServiceSet {
 
     private final LinkedList<Object> identityHistory = new LinkedList<>();
     private volatile Object identityObject;
+    private volatile UserTokenType identityType;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
 
@@ -157,6 +159,11 @@ public class Session implements SessionServiceSet {
         return identityObject;
     }
 
+    @Nullable
+    public UserTokenType getIdentityType() {
+        return identityType;
+    }
+
     public List<Object> getIdentityHistory() {
         synchronized (identityHistory) {
             return new ArrayList<>(identityHistory);
@@ -167,13 +174,14 @@ public class Session implements SessionServiceSet {
         this.secureChannelId = secureChannelId;
     }
 
-    public void setIdentityObject(Object identityObject) {
+    public void setIdentityObject(Object identityObject, UserTokenType identityType) {
         this.identityObject = identityObject;
+        this.identityType = identityType;
 
         synchronized (identityHistory) {
-            identityHistory.addFirst(identityObject);
+            identityHistory.addLast(identityObject);
             while (identityHistory.size() > IDENTITY_HISTORY_MAX_SIZE) {
-                identityHistory.removeLast();
+                identityHistory.removeFirst();
             }
         }
     }

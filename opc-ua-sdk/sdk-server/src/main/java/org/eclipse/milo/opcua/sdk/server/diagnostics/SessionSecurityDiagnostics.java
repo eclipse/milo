@@ -43,11 +43,11 @@ public class SessionSecurityDiagnostics {
     }
 
     public String getAuthenticationMechanism() {
-        return null; // TODO diagnostics
+        return Objects.toString(session.getIdentityType());
     }
 
     public String getEncoding() {
-        return null;
+        return "UA Binary";
     }
 
     public String getTransportProtocol() {
