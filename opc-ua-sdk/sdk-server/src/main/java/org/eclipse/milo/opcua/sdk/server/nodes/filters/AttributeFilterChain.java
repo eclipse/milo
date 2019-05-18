@@ -18,6 +18,8 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 public class AttributeFilterChain {
@@ -73,7 +75,7 @@ public class AttributeFilterChain {
             filterIterator.next() :
             AttributeFilter.DEFAULT_INSTANCE;
 
-        AttributeFilterContext ctx = new AttributeFilterContext(session, node, filterIterator);
+        GetAttributeContext ctx = new GetAttributeContext(session, node, filterIterator);
 
         Object value = filter.getAttribute(ctx, attributeId);
 
@@ -110,7 +112,7 @@ public class AttributeFilterChain {
             filterIterator.next() :
             AttributeFilter.DEFAULT_INSTANCE;
 
-        AttributeFilterContext ctx = new AttributeFilterContext(session, node, filterIterator);
+        SetAttributeContext ctx = new SetAttributeContext(session, node, filterIterator);
 
         filter.setAttribute(ctx, attributeId, value);
     }

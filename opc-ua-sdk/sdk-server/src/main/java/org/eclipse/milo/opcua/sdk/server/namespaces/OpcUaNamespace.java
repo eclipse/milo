@@ -39,11 +39,9 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusTypeN
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
-import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -157,27 +155,19 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         assert serverTypeNode != null;
 
-        serverTypeNode.getNamespaceArrayNode().getFilterChain().addLast(new AttributeFilter() {
-            @Override
-            public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                if (attributeId == AttributeId.Value) {
-                    return new DataValue(new Variant(server.getNamespaceTable().toArray()));
-                } else {
-                    return ctx.getAttribute(attributeId);
-                }
-            }
-        });
+        serverTypeNode.getNamespaceArrayNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(server.getNamespaceTable().toArray()))
+            )
+        );
 
-        serverTypeNode.getServerArrayNode().getFilterChain().addLast(new AttributeFilter() {
-            @Override
-            public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                if (attributeId == AttributeId.Value) {
-                    return new DataValue(new Variant(server.getServerTable().toArray()));
-                } else {
-                    return ctx.getAttribute(attributeId);
-                }
-            }
-        });
+        serverTypeNode.getServerArrayNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(server.getServerTable().toArray()))
+            )
+        );
 
         serverTypeNode.setAuditing(false);
         serverTypeNode.getServerDiagnosticsNode().setEnabledFlag(false);
@@ -200,40 +190,32 @@ public class OpcUaNamespace extends ManagedNamespace {
         serverStatus.setState(ServerState.Running);
         serverStatus.setStartTime(DateTime.now());
 
-        serverStatus.getCurrentTimeNode().getFilterChain().addLast(new AttributeFilter() {
-            @Override
-            public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                if (attributeId == AttributeId.Value) {
-                    return new DataValue(new Variant(DateTime.now()));
-                } else {
-                    return ctx.getAttribute(attributeId);
-                }
-            }
-        });
+        serverStatus.getCurrentTimeNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(DateTime.now()))
+            )
+        );
 
-        serverStatus.getFilterChain().addLast(new AttributeFilter() {
-            @Override
-            public Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
-                if (attributeId == AttributeId.Value) {
-                    ServerStatusTypeNode serverStatusNode = (ServerStatusTypeNode) ctx.getNode();
+        serverStatus.getFilterChain().addLast(
+            AttributeFilters.getValue(ctx -> {
+                ServerStatusTypeNode serverStatusNode = (ServerStatusTypeNode) ctx.getNode();
 
-                    ServerStatusDataType serverStatus = new ServerStatusDataType(
+                ExtensionObject xo = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    new ServerStatusDataType(
                         serverStatusNode.getStartTime(),
                         DateTime.now(),
                         serverStatusNode.getState(),
                         serverStatusNode.getBuildInfo(),
                         serverStatusNode.getSecondsTillShutdown(),
                         serverStatusNode.getShutdownReason()
-                    );
+                    )
+                );
 
-                    ExtensionObject xo = ExtensionObject.encode(server.getSerializationContext(), serverStatus);
-
-                    return new DataValue(new Variant(xo));
-                } else {
-                    return ctx.getAttribute(attributeId);
-                }
-            }
-        });
+                return new DataValue(new Variant(xo));
+            })
+        );
 
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
         ServerCapabilitiesTypeNode serverCapabilities = serverTypeNode.getServerCapabilitiesNode();

@@ -18,19 +18,16 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
-public class AttributeFilterContext {
+public abstract class AttributeFilterContext {
 
     private volatile boolean observable = false;
-
-    private Iterator<AttributeFilter> filterIterator;
 
     private final UaNode node;
     private final Session session;
 
-    AttributeFilterContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
+    private AttributeFilterContext(Session session, UaNode node) {
         this.session = session;
         this.node = node;
-        this.filterIterator = filterIterator;
     }
 
     /**
@@ -69,32 +66,56 @@ public class AttributeFilterContext {
         return observable;
     }
 
-    /**
-     * Get the value for the attribute identified by {@code attributeId} using the next filter in the chain.
-     *
-     * @param attributeId the {@link AttributeId} of the attribute to get the value of.
-     * @return the value for the attribute identified by {@code attributeId} from the next filter in the chain.
-     */
-    public Object getAttribute(AttributeId attributeId) {
-        AttributeFilter next = filterIterator.hasNext() ?
-            filterIterator.next() :
-            AttributeFilter.DEFAULT_INSTANCE;
 
-        return next.getAttribute(this, attributeId);
+    public static final class GetAttributeContext extends AttributeFilterContext {
+
+        private final Iterator<AttributeFilter> filterIterator;
+
+        GetAttributeContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
+            super(session, node);
+            this.filterIterator = filterIterator;
+        }
+
+        /**
+         * Get the value for the attribute identified by {@code attributeId} using the next filter in the chain.
+         *
+         * @param attributeId the {@link AttributeId} of the attribute to get the value of.
+         * @return the value for the attribute identified by {@code attributeId} from the next filter in the chain.
+         */
+        public Object getAttribute(AttributeId attributeId) {
+            AttributeFilter next = filterIterator.hasNext() ?
+                filterIterator.next() :
+                AttributeFilter.DEFAULT_INSTANCE;
+
+            return next.getAttribute(this, attributeId);
+        }
+
     }
 
-    /**
-     * Set the value for the attribute identified by {@code attributeId} using the next filter in the chain.
-     *
-     * @param attributeId the {@link AttributeId} of the attribute to set the value of.
-     * @param value       the value to set.
-     */
-    public void setAttribute(AttributeId attributeId, Object value) {
-        AttributeFilter next = filterIterator.hasNext() ?
-            filterIterator.next() :
-            AttributeFilter.DEFAULT_INSTANCE;
+    public static final class SetAttributeContext extends AttributeFilterContext {
 
-        next.setAttribute(this, attributeId, value);
+        private final Iterator<AttributeFilter> filterIterator;
+
+        SetAttributeContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
+            super(session, node);
+
+            this.filterIterator = filterIterator;
+        }
+
+        /**
+         * Set the value for the attribute identified by {@code attributeId} using the next filter in the chain.
+         *
+         * @param attributeId the {@link AttributeId} of the attribute to set the value of.
+         * @param value       the value to set.
+         */
+        public void setAttribute(AttributeId attributeId, Object value) {
+            AttributeFilter next = filterIterator.hasNext() ?
+                filterIterator.next() :
+                AttributeFilter.DEFAULT_INSTANCE;
+
+            next.setAttribute(this, attributeId, value);
+        }
+
     }
 
 }

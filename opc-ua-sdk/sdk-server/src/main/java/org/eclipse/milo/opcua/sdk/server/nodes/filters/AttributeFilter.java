@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
 import org.eclipse.milo.opcua.sdk.server.nodes.DefaultAttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
 public interface AttributeFilter {
@@ -26,9 +28,9 @@ public interface AttributeFilter {
      * @param ctx         the {@link AttributeFilterContext}.
      * @param attributeId the {@link AttributeId} of the attribute to get the value of.
      * @return the value for the attribute identified by {@code attributeId}.
-     * @see AttributeFilterContext#getAttribute(AttributeId)
+     * @see GetAttributeContext#getAttribute(AttributeId)
      */
-    default Object getAttribute(AttributeFilterContext ctx, AttributeId attributeId) {
+    default Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
         return ctx.getAttribute(attributeId);
     }
 
@@ -38,9 +40,9 @@ public interface AttributeFilter {
      * @param ctx         the {@link AttributeFilterContext}.
      * @param attributeId the {@link AttributeId} of the attribute to set the value of.
      * @param value       the value to set.
-     * @see AttributeFilterContext#setAttribute(AttributeId, Object)
+     * @see SetAttributeContext#setAttribute(AttributeId, Object)
      */
-    default void setAttribute(AttributeFilterContext ctx, AttributeId attributeId, Object value) {
+    default void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
         ctx.setAttribute(attributeId, value);
     }
 
