@@ -27,4 +27,8 @@ public interface DiscoveryServiceSet {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
+    default void onRegisterServer2(ServiceRequest serviceRequest) throws UaException {
+        serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+    }
+
 }

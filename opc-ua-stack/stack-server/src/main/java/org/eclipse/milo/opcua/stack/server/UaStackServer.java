@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -70,6 +71,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
@@ -111,6 +113,9 @@ public class UaStackServer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
+
+    private final LongAdder rejectedRequestCount = new LongAdder();
+    private final LongAdder securityRejectedRequestCount = new LongAdder();
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
@@ -236,9 +241,7 @@ public class UaStackServer {
     public void onServiceRequest(String path, ServiceRequest serviceRequest) {
         logger.trace("onServiceRequest(path={}, request={})", path, serviceRequest);
 
-        Class<? extends UaRequestMessage> requestClass = serviceRequest.getRequest().getClass();
-
-        ServiceRequestHandler serviceHandler = serviceHandlerTable.get(path, serviceRequest.getRequest().getTypeId());
+        ServiceRequestHandler serviceHandler = getServiceHandler(path, serviceRequest.getRequest().getTypeId());
 
         try {
             if (serviceHandler != null) {
@@ -363,6 +366,14 @@ public class UaStackServer {
         return securityLevel;
     }
 
+    public LongAdder getRejectedRequestCount() {
+        return rejectedRequestCount;
+    }
+
+    public LongAdder getSecurityRejectedRequestCount() {
+        return securityRejectedRequestCount;
+    }
+
     public <T extends UaRequestMessage> void addServiceHandler(
         String path,
         ExpandedNodeId dataTypeId,
@@ -379,6 +390,11 @@ public class UaStackServer {
         serviceHandlerTable.remove(path, dataTypeId);
     }
 
+    @Nullable
+    public ServiceRequestHandler getServiceHandler(String path, ExpandedNodeId dataTypeId) {
+        return serviceHandlerTable.get(path, dataTypeId);
+    }
+
     public void addServiceSet(String path, AttributeServiceSet serviceSet) {
         addServiceHandler(path, ReadRequest.TYPE_ID, serviceSet::onRead);
         addServiceHandler(path, WriteRequest.TYPE_ID, serviceSet::onWrite);
@@ -393,6 +409,7 @@ public class UaStackServer {
         addServiceHandler(path, GetEndpointsRequest.TYPE_ID, serviceSet::onGetEndpoints);
         addServiceHandler(path, FindServersRequest.TYPE_ID, serviceSet::onFindServers);
         addServiceHandler(path, RegisterServerRequest.TYPE_ID, serviceSet::onRegisterServer);
+        addServiceHandler(path, RegisterServer2Request.TYPE_ID, serviceSet::onRegisterServer2);
     }
 
     public void addServiceSet(String path, QueryServiceSet serviceSet) {

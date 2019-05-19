@@ -27,8 +27,6 @@ public class ServerDiagnosticsSummary {
     private final LongAdder sessionTimeoutCount = new LongAdder();
     private final LongAdder sessionAbortCount = new LongAdder();
     private final LongAdder cumulatedSubscriptionCount = new LongAdder();
-    private final LongAdder securityRejectedRequestCount = new LongAdder();
-    private final LongAdder rejectedRequestCount = new LongAdder();
 
     private final OpcUaServer server;
 
@@ -102,12 +100,12 @@ public class ServerDiagnosticsSummary {
         );
     }
 
-    public LongAdder getSecurityRejectedRequestCount() {
-        return securityRejectedRequestCount;
+    public UInteger getSecurityRejectedRequestCount() {
+        return uint(server.getStackServer().getSecurityRejectedRequestCount().sum());
     }
 
-    public LongAdder getRejectedRequestCount() {
-        return rejectedRequestCount;
+    public UInteger getRejectedRequestCount() {
+        return uint(server.getStackServer().getRejectedRequestCount().sum());
     }
 
     public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummaryDataType() {
@@ -122,8 +120,8 @@ public class ServerDiagnosticsSummary {
             getCurrentSubscriptionCount(),
             uint(getCumulatedSubscriptionCount().sum()),
             getPublishingIntervalCount(),
-            uint(getSecurityRejectedRequestCount().sum()),
-            uint(getRejectedRequestCount().sum())
+            getSecurityRejectedRequestCount(),
+            getRejectedRequestCount()
         );
     }
 
