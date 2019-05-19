@@ -16,11 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import javax.annotation.Nonnull;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -40,20 +37,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
+import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 
 public abstract class UaNode implements UaServerNode {
 
-    private static final AttributeDelegate DEFAULT_ATTRIBUTE_DELEGATE = AttributeDelegate.DEFAULT;
-
-    private final AtomicReference<AttributeDelegate> attributeDelegate =
-        new AtomicReference<>(DEFAULT_ATTRIBUTE_DELEGATE);
-
+    private AttributeDelegate attributeDelegate;
     private List<WeakReference<AttributeObserver>> observers;
 
     final AttributeFilterChain filterChain = new AttributeFilterChain();
@@ -626,20 +621,43 @@ public abstract class UaNode implements UaServerNode {
 
     /**
      * Set the {@link AttributeDelegate} for this node.
-     * <p>
-     * Shall be non-null. To revert from a custom delegate to default behavior set {@link AttributeDelegate#DEFAULT}.
      *
      * @param attributeDelegate the {@link AttributeDelegate}.
      */
-    public void setAttributeDelegate(@Nonnull AttributeDelegate attributeDelegate) {
-        Preconditions.checkNotNull(attributeDelegate);
+    public synchronized void setAttributeDelegate(AttributeDelegate attributeDelegate) {
+        this.attributeDelegate = attributeDelegate;
+    }
 
-        this.attributeDelegate.set(attributeDelegate);
+    public synchronized AttributeDelegate getAttributeDelegate() {
+        return attributeDelegate;
     }
 
     @Override
     public DataValue getAttribute(AttributeContext context, AttributeId attributeId) {
-        return attributeDelegate.get().getAttribute(context, this, attributeId);
+        AttributeDelegate delegate = getAttributeDelegate();
+
+        if (delegate == null) {
+            try {
+                Object attributeValue = getFilterChain().getAttribute(
+                    context.getSession().orElse(null),
+                    this,
+                    attributeId
+                );
+
+                if (attributeId == AttributeId.Value) {
+                    return (DataValue) attributeValue;
+                } else {
+                    return dv(attributeValue);
+                }
+            } catch (Throwable t) {
+                StatusCode statusCode = UaException.extractStatusCode(t)
+                    .orElse(new StatusCode(StatusCodes.Bad_InternalError));
+
+                return new DataValue(statusCode);
+            }
+        } else {
+            return delegate.getAttribute(context, this, attributeId);
+        }
     }
 
     @Override
@@ -649,7 +667,26 @@ public abstract class UaNode implements UaServerNode {
         DataValue value
     ) throws UaException {
 
-        attributeDelegate.get().setAttribute(context, this, attributeId, value);
+        AttributeDelegate delegate = getAttributeDelegate();
+
+        if (delegate == null) {
+            try {
+                getFilterChain().setAttribute(
+                    context.getSession().orElse(null),
+                    this,
+                    attributeId,
+                    attributeId == AttributeId.Value ? value : value.getValue().getValue()
+                );
+            } catch (Throwable t) {
+                long statusCode = UaException.extractStatusCode(t)
+                    .map(StatusCode::getValue)
+                    .orElse(StatusCodes.Bad_InternalError);
+
+                throw new UaException(statusCode, t);
+            }
+        } else {
+            delegate.setAttribute(context, this, attributeId, value);
+        }
     }
 
 }
