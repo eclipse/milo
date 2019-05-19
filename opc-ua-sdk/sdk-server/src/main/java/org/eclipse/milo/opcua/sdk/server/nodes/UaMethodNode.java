@@ -88,7 +88,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     }
 
     @Override
-    synchronized Object getAttribute(AttributeId attributeId) {
+    public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case Executable:
                 return executable;
@@ -102,7 +102,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     }
 
     @Override
-    synchronized void setAttribute(AttributeId attributeId, Object value) {
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
             case Executable:
                 executable = (Boolean) value;

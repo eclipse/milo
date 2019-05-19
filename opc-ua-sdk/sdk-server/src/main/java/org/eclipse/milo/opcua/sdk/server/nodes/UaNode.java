@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
@@ -171,7 +172,7 @@ public abstract class UaNode implements UaServerNode {
      * @param attributeId the {@link AttributeId} to get the value for.
      * @return the value for {@code attributeId}.
      */
-    synchronized Object getAttribute(AttributeId attributeId) {
+    public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case NodeId:
                 return nodeId;
@@ -211,7 +212,7 @@ public abstract class UaNode implements UaServerNode {
      * @param attributeId the {@link AttributeId} to set the value for.
      * @param value       the value to set.
      */
-    synchronized void setAttribute(AttributeId attributeId, Object value) {
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
             case NodeId:
                 nodeId = (NodeId) value;
@@ -628,6 +629,12 @@ public abstract class UaNode implements UaServerNode {
         this.attributeDelegate = attributeDelegate;
     }
 
+    /**
+     * Get the current {@link AttributeDelegate} for this node.
+     *
+     * @return the current {@link AttributeDelegate} for this node.
+     */
+    @Nullable
     public synchronized AttributeDelegate getAttributeDelegate() {
         return attributeDelegate;
     }

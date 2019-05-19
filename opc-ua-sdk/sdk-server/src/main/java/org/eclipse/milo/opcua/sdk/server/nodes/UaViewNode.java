@@ -73,7 +73,7 @@ public class UaViewNode extends UaNode implements ViewNode {
     }
 
     @Override
-    synchronized Object getAttribute(AttributeId attributeId) {
+    public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case ContainsNoLoops:
                 return containsNoLoops;
@@ -87,7 +87,7 @@ public class UaViewNode extends UaNode implements ViewNode {
     }
 
     @Override
-    synchronized void setAttribute(AttributeId attributeId, Object value) {
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
             case ContainsNoLoops:
                 containsNoLoops = (Boolean) value;

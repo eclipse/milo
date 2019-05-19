@@ -215,7 +215,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    synchronized Object getAttribute(AttributeId attributeId) {
+    public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case Value:
                 return value;
@@ -247,7 +247,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    synchronized void setAttribute(AttributeId attributeId, Object value) {
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
             case Value:
                 this.value = (DataValue) value;

@@ -116,7 +116,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     @Override
-    synchronized Object getAttribute(AttributeId attributeId) {
+    public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case EventNotifier:
                 return eventNotifier;
@@ -127,7 +127,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     @Override
-    synchronized void setAttribute(AttributeId attributeId, Object value) {
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
             case EventNotifier:
                 eventNotifier = (UByte) value;

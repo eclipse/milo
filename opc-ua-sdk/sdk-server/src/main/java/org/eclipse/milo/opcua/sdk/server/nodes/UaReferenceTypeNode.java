@@ -88,7 +88,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    synchronized Object getAttribute(AttributeId attributeId) {
+    public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case IsAbstract:
                 return isAbstract;
@@ -105,7 +105,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    synchronized void setAttribute(AttributeId attributeId, Object value) {
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
         switch (attributeId) {
             case IsAbstract:
                 isAbstract = (Boolean) value;
