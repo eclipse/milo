@@ -95,6 +95,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         configureConditionRefresh();
 
         diagnosticsManager.startup();
+        diagnosticsManager.setDiagnosticsEnabled(true);
     }
 
     @Override

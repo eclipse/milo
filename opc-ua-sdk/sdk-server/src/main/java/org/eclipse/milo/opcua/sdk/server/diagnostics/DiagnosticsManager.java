@@ -73,6 +73,88 @@ public class DiagnosticsManager extends AbstractLifecycle {
         return server;
     }
 
+    @Override
+    protected void onStartup() {
+        ServerDiagnosticsTypeNode serverDiagnosticsNode = (ServerDiagnosticsTypeNode) getServer()
+            .getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        serverDiagnosticsNode.getEnabledFlagNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(isDiagnosticsEnabled()))
+            ),
+            AttributeFilters.setValue(
+                (ctx, value) ->
+                    setDiagnosticsEnabled((boolean) value.getValue().getValue())
+            )
+        );
+    }
+
+    @Override
+    protected void onShutdown() {
+        if (updateTasksFuture != null) {
+            updateTasksFuture.cancel(false);
+            updateTasksFuture = null;
+        }
+
+        if (serverDiagnosticsObject != null) {
+            serverDiagnosticsObject.shutdown();
+            serverDiagnosticsObject = null;
+        }
+    }
+
+    /**
+     * Enable or disable periodic diagnostics collection and updating.
+     *
+     * @param diagnosticsEnabled {@code true} if diagnostics collection and updating should be enabled.
+     */
+    public synchronized void setDiagnosticsEnabled(boolean diagnosticsEnabled) {
+        if (diagnosticsEnabled) {
+            if (updateTasksFuture == null) {
+                if (serverDiagnosticsObject != null) {
+                    serverDiagnosticsObject.shutdown();
+                }
+
+                ServerDiagnosticsTypeNode serverDiagnosticsNode = (ServerDiagnosticsTypeNode) getServer()
+                    .getAddressSpaceManager()
+                    .getManagedNode(Identifiers.Server_ServerDiagnostics)
+                    .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+                serverDiagnosticsObject = new ServerDiagnosticsObject(serverDiagnosticsNode);
+                serverDiagnosticsObject.startup();
+
+                updateTasksFuture = Stack.sharedScheduledExecutor().scheduleWithFixedDelay(
+                    this::runUpdateTasks,
+                    0L,
+                    getUpdateRate(),
+                    TimeUnit.MILLISECONDS
+                );
+            }
+        } else {
+            // Cancel the updates but don't shut down ServerDiagnosticsObject so the nodes
+            // remain in the address space. When diagnostics are enabled again it will be
+            // cleaned up and started again.
+            if (updateTasksFuture != null) {
+                updateTasksFuture.cancel(false);
+                updateTasksFuture = null;
+            }
+        }
+    }
+
+    /**
+     * @return {@code true} if diagnostics collection and updating is enabled.
+     */
+    public synchronized boolean isDiagnosticsEnabled() {
+        return updateTasksFuture != null;
+    }
+
+    /**
+     * Set rate at which the diagnostics nodes are updated with the latest diagnostic information.
+     *
+     * @param updateRateMillis the update rate, in milliseconds.
+     */
     public synchronized void setUpdateRate(long updateRateMillis) {
         this.updateRateMillis = updateRateMillis;
 
@@ -88,67 +170,13 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
     }
 
+    /**
+     * Get the rate which the diagnostics nodes are currently being updated.
+     *
+     * @return the update rate, in milliseconds.
+     */
     public synchronized long getUpdateRate() {
         return updateRateMillis;
-    }
-
-    @Override
-    protected void onStartup() {
-        ServerDiagnosticsTypeNode serverDiagnosticsTypeNode = (ServerDiagnosticsTypeNode) getServer()
-            .getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server_ServerDiagnostics)
-            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
-
-        serverDiagnosticsTypeNode.getEnabledFlagNode().getFilterChain().addLast(
-            AttributeFilters.getValue(ctx -> {
-                synchronized (DiagnosticsManager.this) {
-                    return new DataValue(new Variant(updateTasksFuture != null));
-                }
-            }),
-            AttributeFilters.setValue((ctx, value) -> {
-                boolean enabled = (boolean) value.getValue().getValue();
-
-                synchronized (DiagnosticsManager.this) {
-                    if (enabled) {
-                        if (updateTasksFuture == null) {
-                            if (serverDiagnosticsObject != null) {
-                                serverDiagnosticsObject.shutdown();
-                            }
-
-                            serverDiagnosticsObject = new ServerDiagnosticsObject(serverDiagnosticsTypeNode);
-                            serverDiagnosticsObject.startup();
-
-                            updateTasksFuture = Stack.sharedScheduledExecutor().scheduleWithFixedDelay(
-                                this::runUpdateTasks,
-                                0L,
-                                getUpdateRate(),
-                                TimeUnit.MILLISECONDS
-                            );
-                        }
-                    } else {
-                        // Cancel the updates but don't shut down ServerDiagnosticsObject so the nodes
-                        // remain in the address space. When diagnostics are enabled again it will be
-                        // cleaned up and started again.
-                        if (updateTasksFuture != null) {
-                            updateTasksFuture.cancel(false);
-                            updateTasksFuture = null;
-                        }
-                    }
-                }
-            })
-        );
-    }
-
-    @Override
-    protected void onShutdown() {
-        if (updateTasksFuture != null) {
-            updateTasksFuture.cancel(false);
-        }
-
-        if (serverDiagnosticsObject != null) {
-            serverDiagnosticsObject.shutdown();
-            serverDiagnosticsObject = null;
-        }
     }
 
     private void runUpdateTasks() {
