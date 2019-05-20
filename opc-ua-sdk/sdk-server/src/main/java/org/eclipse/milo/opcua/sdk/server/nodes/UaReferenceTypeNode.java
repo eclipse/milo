@@ -26,9 +26,9 @@ import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
-    private volatile Boolean isAbstract;
-    private volatile Boolean symmetric;
-    private volatile LocalizedText inverseName;
+    private Boolean isAbstract;
+    private Boolean symmetric;
+    private LocalizedText inverseName;
 
     public UaReferenceTypeNode(
         UaNodeContext context,
@@ -85,6 +85,46 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         this.inverseName = inverseName;
 
         fireAttributeChanged(AttributeId.InverseName, inverseName);
+    }
+
+    @Override
+    public synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return isAbstract;
+
+            case Symmetric:
+                return symmetric;
+
+            case InverseName:
+                return inverseName;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case IsAbstract:
+                isAbstract = (Boolean) value;
+                break;
+
+            case Symmetric:
+                symmetric = (Boolean) value;
+                break;
+
+            case InverseName:
+                inverseName = (LocalizedText) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
     }
 
     @Nullable

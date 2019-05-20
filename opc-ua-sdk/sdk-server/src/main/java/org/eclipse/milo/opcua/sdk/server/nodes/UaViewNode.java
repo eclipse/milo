@@ -72,6 +72,39 @@ public class UaViewNode extends UaNode implements ViewNode {
         fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
     }
 
+    @Override
+    public synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case ContainsNoLoops:
+                return containsNoLoops;
+
+            case EventNotifier:
+                return eventNotifier;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case ContainsNoLoops:
+                containsNoLoops = (Boolean) value;
+                break;
+
+            case EventNotifier:
+                eventNotifier = (UByte) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     @Nullable
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);

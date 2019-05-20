@@ -27,11 +27,11 @@ import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
-    private volatile DataValue value;
-    private volatile NodeId dataType;
-    private volatile Integer valueRank;
-    private volatile UInteger[] arrayDimensions;
-    private volatile Boolean isAbstract;
+    private DataValue value;
+    private NodeId dataType;
+    private Integer valueRank;
+    private UInteger[] arrayDimensions;
+    private Boolean isAbstract;
 
     public UaVariableTypeNode(
         UaNodeContext context,
@@ -115,6 +115,60 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
+    }
+
+    @Override
+    public synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case Value:
+                return value;
+
+            case DataType:
+                return dataType;
+
+            case ValueRank:
+                return valueRank;
+
+            case ArrayDimensions:
+                return arrayDimensions;
+
+            case IsAbstract:
+                return isAbstract;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case Value:
+                this.value = (DataValue) value;
+                break;
+
+            case DataType:
+                dataType = (NodeId) value;
+                break;
+
+            case ValueRank:
+                valueRank = (Integer) value;
+                break;
+
+            case ArrayDimensions:
+                arrayDimensions = (UInteger[]) value;
+                break;
+
+            case IsAbstract:
+                isAbstract = (Boolean) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
     }
 
     @Nullable

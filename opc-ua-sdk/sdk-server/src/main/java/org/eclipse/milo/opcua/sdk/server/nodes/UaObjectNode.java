@@ -52,7 +52,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class UaObjectNode extends UaNode implements ObjectNode {
 
-    private volatile UByte eventNotifier = ubyte(0);
+    private UByte eventNotifier = ubyte(0);
 
     public UaObjectNode(
         UaNodeContext context,
@@ -113,6 +113,32 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         this.eventNotifier = eventNotifier;
 
         fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
+    }
+
+    @Override
+    public synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case EventNotifier:
+                return eventNotifier;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case EventNotifier:
+                eventNotifier = (UByte) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
     }
 
     @Nullable

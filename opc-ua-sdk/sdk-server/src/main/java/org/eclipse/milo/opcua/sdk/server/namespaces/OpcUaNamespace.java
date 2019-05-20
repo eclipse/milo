@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
@@ -38,16 +37,14 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesT
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -158,18 +155,20 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         assert serverTypeNode != null;
 
-        serverTypeNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
-            @Override
-            public DataValue getValue(AttributeContext context, VariableNode node) {
-                return new DataValue(new Variant(server.getNamespaceTable().toArray()));
-            }
-        });
-        serverTypeNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
-            @Override
-            public DataValue getValue(AttributeContext context, VariableNode node) {
-                return new DataValue(new Variant(server.getServerTable().toArray()));
-            }
-        });
+        serverTypeNode.getNamespaceArrayNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(server.getNamespaceTable().toArray()))
+            )
+        );
+
+        serverTypeNode.getServerArrayNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(server.getServerTable().toArray()))
+            )
+        );
+
         serverTypeNode.setAuditing(false);
         serverTypeNode.getServerDiagnosticsNode().setEnabledFlag(false);
         serverTypeNode.setServiceLevel(ubyte(255));
@@ -190,44 +189,33 @@ public class OpcUaNamespace extends ManagedNamespace {
         serverStatus.setShutdownReason(LocalizedText.NULL_VALUE);
         serverStatus.setState(ServerState.Running);
         serverStatus.setStartTime(DateTime.now());
-        serverStatus.getCurrentTimeNode().setAttributeDelegate(new AttributeDelegate() {
-            @Override
-            public DataValue getValue(AttributeContext context, VariableNode node) {
-                DataValue value = new DataValue(new Variant(DateTime.now()));
 
-                node.setValue(value);
+        serverStatus.getCurrentTimeNode().getFilterChain().addLast(
+            AttributeFilters.getValue(
+                ctx ->
+                    new DataValue(new Variant(DateTime.now()))
+            )
+        );
 
-                return value;
-            }
-        });
+        serverStatus.getFilterChain().addLast(
+            AttributeFilters.getValue(ctx -> {
+                ServerStatusTypeNode serverStatusNode = (ServerStatusTypeNode) ctx.getNode();
 
-        serverStatus.setAttributeDelegate(new AttributeDelegate() {
-            @Override
-            public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                ServerStatusTypeNode serverStatusNode = (ServerStatusTypeNode) node;
-
-                ServerStatusDataType serverStatus = new ServerStatusDataType(
-                    serverStatusNode.getStartTime(),
-                    DateTime.now(),
-                    serverStatusNode.getState(),
-                    serverStatusNode.getBuildInfo(),
-                    serverStatusNode.getSecondsTillShutdown(),
-                    serverStatusNode.getShutdownReason()
+                ExtensionObject xo = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    new ServerStatusDataType(
+                        serverStatusNode.getStartTime(),
+                        DateTime.now(),
+                        serverStatusNode.getState(),
+                        serverStatusNode.getBuildInfo(),
+                        serverStatusNode.getSecondsTillShutdown(),
+                        serverStatusNode.getShutdownReason()
+                    )
                 );
 
-                try {
-                    ExtensionObject xo = ExtensionObject.encode(server.getSerializationContext(), serverStatus);
-
-                    DataValue value = new DataValue(new Variant(xo));
-
-                    node.setValue(value);
-
-                    return value;
-                } catch (UaSerializationException e) {
-                    throw new UaException(e);
-                }
-            }
-        });
+                return new DataValue(new Variant(xo));
+            })
+        );
 
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
         ServerCapabilitiesTypeNode serverCapabilities = serverTypeNode.getServerCapabilitiesNode();

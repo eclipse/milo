@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -23,8 +25,9 @@ public interface GetSetObjectTypeNode extends GetSetBase {
 
     default DataValue getObjectTypeAttribute(
         AttributeContext context,
-        ObjectTypeNode node,
-        AttributeId attributeId) throws UaException {
+        UaObjectTypeNode node,
+        AttributeId attributeId
+    ) throws UaException {
 
         switch (attributeId) {
             case IsAbstract:
@@ -37,9 +40,10 @@ public interface GetSetObjectTypeNode extends GetSetBase {
 
     default void setObjectTypeAttribute(
         AttributeContext context,
-        ObjectTypeNode node,
+        UaObjectTypeNode node,
         AttributeId attributeId,
-        DataValue value) throws UaException {
+        DataValue value
+    ) throws UaException {
 
         switch (attributeId) {
             case IsAbstract:
@@ -52,11 +56,20 @@ public interface GetSetObjectTypeNode extends GetSetBase {
     }
 
     default Boolean getIsAbstract(AttributeContext context, ObjectTypeNode node) throws UaException {
-        return node.getIsAbstract();
+        return (Boolean) ((UaNode) node).getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            (UaNode) node,
+            AttributeId.IsAbstract
+        );
     }
 
     default void setIsAbstract(AttributeContext context, ObjectTypeNode node, Boolean isAbstract) throws UaException {
-        node.setIsAbstract(isAbstract);
+        ((UaNode) node).getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            (UaNode) node,
+            AttributeId.IsAbstract,
+            isAbstract
+        );
     }
 
 }

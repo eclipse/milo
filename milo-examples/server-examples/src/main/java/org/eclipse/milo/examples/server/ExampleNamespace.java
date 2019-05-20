@@ -27,11 +27,9 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -39,9 +37,9 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -247,7 +245,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new ValueLoggingDelegate());
+            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
 
             getNodeManager().addNode(node);
             arrayTypesFolder.addOrganizes(node);
@@ -282,7 +280,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new ValueLoggingDelegate());
+            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
 
             getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
@@ -340,7 +338,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
 
-        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+        node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
             if ("admin".equals(identity)) {
                 return AccessLevel.READ_WRITE;
             } else {
@@ -375,7 +373,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         node.setValue(new DataValue(new Variant("admin was here")));
 
-        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+        node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
             if ("admin".equals(identity)) {
                 return AccessLevel.READ_WRITE;
             } else {
@@ -415,17 +413,13 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            AttributeDelegate delegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                        return new DataValue(new Variant(random.nextBoolean()));
-                    }
-                },
-                ValueLoggingDelegate::new
+            node.getFilterChain().addLast(
+                new AttributeLoggingFilter(),
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextBoolean()))
+                )
             );
-
-            node.setAttributeDelegate(delegate);
 
             getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -448,17 +442,13 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            AttributeDelegate delegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                        return new DataValue(new Variant(random.nextInt()));
-                    }
-                },
-                ValueLoggingDelegate::new
+            node.getFilterChain().addLast(
+                new AttributeLoggingFilter(),
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextInt()))
+                )
             );
-
-            node.setAttributeDelegate(delegate);
 
             getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -481,17 +471,13 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            AttributeDelegate delegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                        return new DataValue(new Variant(random.nextDouble()));
-                    }
-                },
-                ValueLoggingDelegate::new
+            node.getFilterChain().addLast(
+                new AttributeLoggingFilter(),
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextDouble()))
+                )
             );
-
-            node.setAttributeDelegate(delegate);
 
             getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
