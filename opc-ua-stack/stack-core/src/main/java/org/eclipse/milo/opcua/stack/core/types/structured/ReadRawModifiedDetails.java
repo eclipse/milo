@@ -26,11 +26,17 @@ public class ReadRawModifiedDetails extends HistoryReadDetails {
     public static final NodeId BinaryEncodingId = Identifiers.ReadRawModifiedDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadRawModifiedDetails_Encoding_DefaultXml;
 
+    // FOO
+    // BAR
+
     protected final Boolean isReadModified;
     protected final DateTime startTime;
     protected final DateTime endTime;
     protected final UInteger numValuesPerNode;
     protected final Boolean returnBounds;
+
+    // HELLO
+    // WORLD
 
     public ReadRawModifiedDetails() {
         super();
