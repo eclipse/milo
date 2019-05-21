@@ -34,6 +34,9 @@ public class ServerDiagnosticsSummary {
         this.server = server;
     }
 
+    /**
+     * @return the number of server-created views in the server.
+     */
     public UInteger getCurrentViewCount() {
         return server.getAddressSpaceManager().getViewCount();
     }
@@ -77,18 +80,32 @@ public class ServerDiagnosticsSummary {
         return sessionTimeoutCount;
     }
 
+    /**
+     * @return the number of client sessions that were closed due to errors since the server was started (or restarted).
+     */
     public LongAdder getSessionAbortCount() {
         return sessionAbortCount;
     }
 
+    /**
+     * @return the number of subscriptions currently established in the server.
+     */
     public UInteger getCurrentSubscriptionCount() {
         return uint(server.getSubscriptions().size());
     }
 
+    /**
+     * @return the cumulative number of subscriptions that have been established in the server since the server was
+     * started (or restarted). This includes the current subscription count.
+     * @see #getCurrentSubscriptionCount()
+     */
     public LongAdder getCumulatedSubscriptionCount() {
         return cumulatedSubscriptionCount;
     }
 
+    /**
+     * @return the number of publishing intervals currently supported in the server.
+     */
     public UInteger getPublishingIntervalCount() {
         return uint(
             server.getSubscriptions()
@@ -100,14 +117,27 @@ public class ServerDiagnosticsSummary {
         );
     }
 
+    /**
+     * @return the number of requests that were rejected due to security constraints since the server was started (or
+     * restarted). The requests include all Services defined in Part 4, and also requests to create sessions.
+     */
     public UInteger getSecurityRejectedRequestCount() {
         return uint(server.getStackServer().getSecurityRejectedRequestCount().sum());
     }
 
+    /**
+     * @return the number of requests that were rejected since the server was started (or restarted). The requests
+     * include all Services defined in Part 4, and also requests to create sessions. This number includes the
+     * security rejected requests count.
+     * @see #getSecurityRejectedRequestCount()
+     */
     public UInteger getRejectedRequestCount() {
         return uint(server.getStackServer().getRejectedRequestCount().sum());
     }
 
+    /**
+     * @return a {@link ServerDiagnosticsSummaryDataType} containing the most current values.
+     */
     public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummaryDataType() {
         return new ServerDiagnosticsSummaryDataType(
             getCurrentViewCount(),
