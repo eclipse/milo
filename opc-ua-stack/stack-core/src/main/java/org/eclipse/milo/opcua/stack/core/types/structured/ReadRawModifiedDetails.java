@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 /**
  * Specifies the details used to perform a “raw” or “modified” history read. (see Spec. 1.04 Part 11 Page 32)
  * This structure selects a set of (modified) values from the history database by specifying a time domain for one or more Variables. (see Spec. 1.04 Part 11 Page 31)
+ * @author kevinherron
  * @author m.gattinger
  *
  */

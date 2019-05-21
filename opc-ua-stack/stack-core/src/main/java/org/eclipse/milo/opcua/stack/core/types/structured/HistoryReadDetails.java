@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
  * <br><br>Possible Extensible Parameters are: {@link ReadEventDetails}, {@link ReadRawModifiedDetails}, {@link ReadProcessedDetails}, {@link ReadAtTimeDetails}, {@link ReadAnnotationDataDetails} (see Spec. 1.04 Part 11 Page 31)
  * <br><br>##ReadAnnotationDataDetails is new to Spec 1.04 and will not be supported by Milo before Milo Version 2.0##
  * <br><br>If the Client specifies a ContinuationPoint, then the HistoryReadDetails parameter and the TimestampsToReturn parameter are ignored. (see Spec. 1.04 Part 11 Page 30)
+ * @author kevinherron
  * @author m.gattinger
  *
  */
