@@ -20,23 +20,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+
+/**
+ * Specifies the details used to perform a “raw” or “modified” history read. (see Spec. 1.04 Part 11 Page 32)
+ * This structure selects a set of (modified) values from the history database by specifying a time domain for one or more Variables. (see Spec. 1.04 Part 11 Page 31)
+ * @author m.gattinger
+ *
+ */
 public class ReadRawModifiedDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadRawModifiedDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadRawModifiedDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadRawModifiedDetails_Encoding_DefaultXml;
 
-    // FOO
-    // BAR
-
     protected final Boolean isReadModified;
     protected final DateTime startTime;
     protected final DateTime endTime;
     protected final UInteger numValuesPerNode;
     protected final Boolean returnBounds;
-
-    // HELLO
-    // WORLD
 
     public ReadRawModifiedDetails() {
         super();
@@ -47,6 +48,19 @@ public class ReadRawModifiedDetails extends HistoryReadDetails {
         this.returnBounds = null;
     }
 
+    /**
+     * Constructor for {@link ReadRawModifiedDetails}. Just saves parameters to this new object.
+     *
+     * @param isReadModified    TRUE: the Server returns a HistoryData structure for each operation
+     *                          FALSE: the Server returns a HistoryModifiedData structure for each operation  (see Spec. 1.04 Part 11 Page 31)
+     * @param startTime Beginning of period to read. Set to default value of DateTime.MinValue if no specific start time is specified. (see Spec. 1.04 Part 11 Page 32)
+     * @param endTime End of period to read. Set to default value of DateTime.MinValue if no specific end time is specified. (see Spec. 1.04 Part 11 Page 33)
+     * @param numValuesPerNode The maximum number of values returned for any Node over the time range. If only one time is specified, the time range shall extend to return this number of values. The default value 0 indicates that there is no maximum. (see Spec. 1.04 Part 11 Page 33)
+     * @param returnBounds      A Boolean parameter with the following values:
+                                TRUE Bounding Values should be returned
+                                FALSE All other cases (see Spec. 1.04 Part 11 Page 33)
+     * @see ReadRawModifiedDetails
+     */
     public ReadRawModifiedDetails(Boolean isReadModified, DateTime startTime, DateTime endTime, UInteger numValuesPerNode, Boolean returnBounds) {
         super();
         this.isReadModified = isReadModified;
