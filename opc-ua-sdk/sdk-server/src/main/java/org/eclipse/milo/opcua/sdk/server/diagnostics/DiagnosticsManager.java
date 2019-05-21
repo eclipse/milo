@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -154,8 +155,11 @@ public class DiagnosticsManager extends AbstractLifecycle {
      * Set rate at which the diagnostics nodes are updated with the latest diagnostic information.
      *
      * @param updateRateMillis the update rate, in milliseconds.
+     * @throws IllegalArgumentException if update rate is <= 0.
      */
     public synchronized void setUpdateRate(long updateRateMillis) {
+        Preconditions.checkArgument(updateRateMillis > 0, "update rate must be > 0");
+
         this.updateRateMillis = updateRateMillis;
 
         if (updateTasksFuture != null) {

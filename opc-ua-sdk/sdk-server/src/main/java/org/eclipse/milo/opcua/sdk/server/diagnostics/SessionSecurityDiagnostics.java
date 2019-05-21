@@ -28,22 +28,31 @@ public class SessionSecurityDiagnostics {
         this.session = session;
     }
 
+    /**
+     * @return server-assigned identifier of the session.
+     */
     public NodeId getSessionId() {
         return session.getSessionId();
     }
 
+    /**
+     * @return name of authenticated user when creating the session.
+     */
     public String getClientUserIdOfSession() {
-        return Objects.toString(session.getIdentityObject());
+        return session.getClientUserId();
     }
 
+    /**
+     * @return array containing the name of the authenticated user currently active (either from creating the session or
+     * from calling the ActivateSession Service) and the history of those names. Each time the active user changes, an
+     * entry shall be made at the end of the array. The active user is always at the end of the array.
+     */
     public String[] getClientUserIdHistory() {
-        return session.getIdentityHistory().stream()
-            .map(Objects::toString)
-            .toArray(String[]::new);
+        return session.getClientUserIdHistory().toArray(new String[0]);
     }
 
     public String getAuthenticationMechanism() {
-        return Objects.toString(session.getIdentityType());
+        return Objects.toString(session.getTokenType());
     }
 
     public String getEncoding() {

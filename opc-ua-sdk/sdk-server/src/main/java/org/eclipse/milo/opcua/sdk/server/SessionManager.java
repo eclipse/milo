@@ -44,23 +44,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.IssuedIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
@@ -466,17 +461,15 @@ public class SessionManager implements
                     /*
                      * Identity change
                      */
-                    Object tokenObject = request.getUserIdentityToken().decode(
+                    UserIdentityToken identityToken = (UserIdentityToken) request.getUserIdentityToken().decode(
                         server.getSerializationContext()
                     );
 
                     Object identityObject = validateIdentityToken(
                         session,
-                        tokenObject,
+                        identityToken,
                         request.getUserTokenSignature()
                     );
-
-                    UserTokenType identityType = getIdentityType(tokenObject);
 
                     StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
                     Arrays.fill(results, StatusCode.GOOD);
@@ -484,7 +477,7 @@ public class SessionManager implements
                     ByteString serverNonce = NonceUtil.generateNonce(32);
 
                     session.setClientAddress(serviceRequest.getClientAddress());
-                    session.setIdentityObject(identityObject, identityType);
+                    session.setIdentityObject(identityObject, identityToken);
                     session.setLastNonce(serverNonce);
                     session.setLocaleIds(request.getLocaleIds());
 
@@ -572,17 +565,15 @@ public class SessionManager implements
 
             verifyClientSignature(session, request);
 
-            Object tokenObject = request.getUserIdentityToken().decode(
+            UserIdentityToken identityToken = (UserIdentityToken) request.getUserIdentityToken().decode(
                 server.getSerializationContext()
             );
 
             Object identityObject = validateIdentityToken(
                 session,
-                tokenObject,
+                identityToken,
                 request.getUserTokenSignature()
             );
-
-            UserTokenType identityType = getIdentityType(tokenObject);
 
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
@@ -593,7 +584,7 @@ public class SessionManager implements
             ByteString serverNonce = NonceUtil.generateNonce(32);
 
             session.setClientAddress(serviceRequest.getClientAddress());
-            session.setIdentityObject(identityObject, identityType);
+            session.setIdentityObject(identityObject, identityToken);
             session.setLocaleIds(request.getLocaleIds());
             session.setLastNonce(serverNonce);
 
@@ -604,20 +595,6 @@ public class SessionManager implements
                 new DiagnosticInfo[0]
             );
         }
-    }
-
-    private static UserTokenType getIdentityType(Object tokenObject) {
-        UserTokenType identityType = null;
-        if (tokenObject instanceof AnonymousIdentityToken) {
-            identityType = UserTokenType.Anonymous;
-        } else if (tokenObject instanceof UserNameIdentityToken) {
-            identityType = UserTokenType.UserName;
-        } else if (tokenObject instanceof X509IdentityToken) {
-            identityType = UserTokenType.Certificate;
-        } else if (tokenObject instanceof IssuedIdentityToken) {
-            identityType = UserTokenType.IssuedToken;
-        }
-        return identityType;
     }
 
     private static void verifyClientSignature(Session session, ActivateSessionRequest request) throws UaException {
