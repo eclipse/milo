@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
@@ -577,6 +578,18 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             references.forEach(node::addReference);
 
+            return node;
+        }
+
+        /**
+         * Build the {@link UaVariableNode} using the configured values and add it to the {@link NodeManager} from the
+         * {@link UaNodeContext}.
+         *
+         * @return a {@link UaVariableNode} built from the configured values.
+         */
+        public UaVariableNode buildAndAdd() {
+            UaVariableNode node = build();
+            node.getNodeContext().getNodeManager().addNode(node);
             return node;
         }
 
