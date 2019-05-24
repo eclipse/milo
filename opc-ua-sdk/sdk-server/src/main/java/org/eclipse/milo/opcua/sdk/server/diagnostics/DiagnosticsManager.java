@@ -51,6 +51,8 @@ import org.slf4j.LoggerFactory;
 
 public class DiagnosticsManager extends AbstractLifecycle {
 
+    private final Logger logger = LoggerFactory.getLogger(DiagnosticsManager.class);
+
     private final List<Runnable> diagnosticTasks =
         Collections.synchronizedList(new ArrayList<>());
 
@@ -166,7 +168,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
             updateTasksFuture.cancel(false);
 
             updateTasksFuture = Stack.sharedScheduledExecutor().scheduleWithFixedDelay(
-                this::runUpdateTasks,
+                () -> Stack.sharedExecutor().execute(this::runUpdateTasks),
                 0L,
                 updateRateMillis,
                 TimeUnit.MILLISECONDS
@@ -185,7 +187,13 @@ public class DiagnosticsManager extends AbstractLifecycle {
 
     private void runUpdateTasks() {
         synchronized (diagnosticTasks) {
-            diagnosticTasks.forEach(Runnable::run);
+            diagnosticTasks.forEach(r -> {
+                try {
+                    r.run();
+                } catch (Throwable t) {
+                    logger.warn("Uncaught exception running diagnostic task", t);
+                }
+            });
         }
     }
 
