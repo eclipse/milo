@@ -217,7 +217,19 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
                     .collect(toList())
         );
 
-        future.thenAccept(context::success);
+        // If the first AddressSpace match completed exceptionally the whole
+        // browse is a failure, regardless of whether other AddressSpaces have
+        // references pointing to a NodeId that doesn't actually exist.
+        future.whenComplete((references, ex) -> {
+            if (references != null) {
+                context.success(references);
+            } else {
+                context.failure(
+                    UaException.extract(ex)
+                        .orElse(new UaException(ex))
+                );
+            }
+        });
     }
 
     @Override

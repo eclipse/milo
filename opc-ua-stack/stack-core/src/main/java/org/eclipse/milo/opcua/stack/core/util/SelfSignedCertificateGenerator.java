@@ -20,6 +20,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 import org.bouncycastle.asn1.x500.X500Name;
@@ -122,6 +123,7 @@ public class SelfSignedCertificateGenerator {
             certSerialNumber,
             notBefore,
             notAfter,
+            Locale.ENGLISH,
             name,
             subjectPublicKeyInfo
         );
