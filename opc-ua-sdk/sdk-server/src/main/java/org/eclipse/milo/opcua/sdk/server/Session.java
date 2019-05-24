@@ -404,8 +404,13 @@ public class Session implements SessionServiceSet {
     }
     //endregion
 
+    @Nullable
     private static String getClientUserId(UserIdentityToken identityToken) {
         UserTokenType tokenType = getTokenType(identityToken);
+
+        if (tokenType == null) {
+            return null;
+        }
 
         switch (tokenType) {
             case Anonymous:
