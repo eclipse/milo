@@ -390,14 +390,15 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
             int messageLength = getMessageLength(buffer, maxChunkSize);
 
             if (buffer.readableBytes() >= messageLength) {
-                decodeMessage(ctx, buffer);
+                decodeMessage(ctx, buffer, messageLength);
             }
         }
     }
 
-    private void decodeMessage(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
-        int messageLength = getMessageLength(buffer, maxChunkSize);
-        MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
+    private void decodeMessage(ChannelHandlerContext ctx, ByteBuf buffer, int messageLength) throws UaException {
+        MessageType messageType = MessageType.fromMediumInt(
+            buffer.getMediumLE(buffer.readerIndex())
+        );
 
         switch (messageType) {
             case OpenSecureChannel:
@@ -415,7 +416,8 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
             default:
                 throw new UaException(
                     StatusCodes.Bad_TcpMessageTypeInvalid,
-                    "unexpected MessageType: " + messageType);
+                    "unexpected MessageType: " + messageType
+                );
         }
     }
 

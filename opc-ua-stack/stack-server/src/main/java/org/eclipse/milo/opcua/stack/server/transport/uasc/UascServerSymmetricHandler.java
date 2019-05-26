@@ -77,22 +77,19 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        while (buffer.readableBytes() >= HEADER_LENGTH) {
+        if (buffer.readableBytes() >= HEADER_LENGTH) {
             int messageLength = getMessageLength(buffer, maxChunkSize);
 
-            if (buffer.readableBytes() < messageLength) {
-                break;
-            }
+            if (buffer.readableBytes() >= messageLength) {
+                MessageType messageType = MessageType.fromMediumInt(
+                    buffer.getMediumLE(buffer.readerIndex())
+                );
 
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
-
-            switch (messageType) {
-                case SecureMessage:
+                if (messageType == MessageType.SecureMessage) {
                     onSecureMessage(ctx, buffer.readSlice(messageLength));
-                    break;
-
-                default:
-                    out.add(buffer.readSlice(messageLength).retain());
+                } else {
+                    ctx.fireChannelRead(buffer.readRetainedSlice(messageLength));
+                }
             }
         }
     }
