@@ -238,6 +238,9 @@ public class SessionDiagnostics {
         return unregisterNodesCount;
     }
 
+    /**
+     * @return a {@link SessionDiagnosticsDataType} containing the most current values.
+     */
     public SessionDiagnosticsDataType getSessionDiagnosticsDataType() {
         return new SessionDiagnosticsDataType(
             getSessionId(),

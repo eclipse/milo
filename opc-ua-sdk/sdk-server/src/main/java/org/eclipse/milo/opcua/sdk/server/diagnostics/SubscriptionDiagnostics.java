@@ -171,6 +171,9 @@ public class SubscriptionDiagnostics {
         return eventQueueOverFlowCount;
     }
 
+    /**
+     * @return a {@link SubscriptionDiagnosticsDataType} containing the most current values.
+     */
     public SubscriptionDiagnosticsDataType getSubscriptionDiagnosticsDataType() {
         return new SubscriptionDiagnosticsDataType(
             getSessionId(),
