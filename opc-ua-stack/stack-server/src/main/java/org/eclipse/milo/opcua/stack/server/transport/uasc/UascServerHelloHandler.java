@@ -98,23 +98,22 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        while (buffer.readableBytes() >= HEADER_LENGTH) {
+        if (buffer.readableBytes() >= HEADER_LENGTH) {
             int messageLength = getMessageLength(buffer, MAX_HELLO_MESSAGE_SIZE);
 
-            if (buffer.readableBytes() < messageLength) {
-                break;
-            }
+            if (buffer.readableBytes() >= messageLength) {
+                MessageType messageType = MessageType.fromMediumInt(
+                    buffer.getMediumLE(buffer.readerIndex())
+                );
 
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
-
-            switch (messageType) {
-                case Hello:
+                if (messageType == MessageType.Hello) {
                     onHello(ctx, buffer.readSlice(messageLength));
-                    break;
-
-                default:
-                    throw new UaException(StatusCodes.Bad_TcpMessageTypeInvalid,
-                        "unexpected MessageType: " + messageType);
+                } else {
+                    throw new UaException(
+                        StatusCodes.Bad_TcpMessageTypeInvalid,
+                        "unexpected MessageType: " + messageType
+                    );
+                }
             }
         }
     }

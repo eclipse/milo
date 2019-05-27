@@ -150,26 +150,26 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
         int maxChunkSize = config.getMessageLimits().getMaxChunkSize();
 
-        while (buffer.readableBytes() >= HEADER_LENGTH) {
+        if (buffer.readableBytes() >= HEADER_LENGTH) {
             int messageLength = getMessageLength(buffer, maxChunkSize);
 
-            if (buffer.readableBytes() < messageLength) {
-                break;
-            }
+            if (buffer.readableBytes() >= messageLength) {
+                MessageType messageType = MessageType.fromMediumInt(
+                    buffer.getMediumLE(buffer.readerIndex())
+                );
 
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
+                switch (messageType) {
+                    case Acknowledge:
+                        onAcknowledge(ctx, buffer.readSlice(messageLength));
+                        break;
 
-            switch (messageType) {
-                case Acknowledge:
-                    onAcknowledge(ctx, buffer.readSlice(messageLength));
-                    break;
+                    case Error:
+                        onError(ctx, buffer.readSlice(messageLength));
+                        break;
 
-                case Error:
-                    onError(ctx, buffer.readSlice(messageLength));
-                    break;
-
-                default:
-                    out.add(buffer.readSlice(messageLength).retain());
+                    default:
+                        ctx.fireChannelRead(buffer.readRetainedSlice(messageLength));
+                }
             }
         }
     }
