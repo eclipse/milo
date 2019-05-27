@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
@@ -79,6 +80,8 @@ public class ClientServerTest extends SecurityFixture {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
+
+        Stack.ConnectionLimits.RATE_LIMIT_ENABLED = false;
     }
 
     private static final UInteger DEFAULT_TIMEOUT_HINT = uint(60000);
