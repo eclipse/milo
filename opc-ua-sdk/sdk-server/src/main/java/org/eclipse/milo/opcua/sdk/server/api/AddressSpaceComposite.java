@@ -55,6 +55,7 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCollate;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
  * An {@link AddressSpace} that is composed of one or more registered sub-AddressSpaces.
@@ -158,6 +159,13 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             .filter(filter)
             .findFirst()
             .orElse(new EmptyAddressSpace(server));
+    }
+
+    @Override
+    public UInteger getViewCount() {
+        return addressSpaces.stream()
+            .map(AddressSpace::getViewCount)
+            .reduce(uint(0), UInteger::add);
     }
 
     //region ViewServices

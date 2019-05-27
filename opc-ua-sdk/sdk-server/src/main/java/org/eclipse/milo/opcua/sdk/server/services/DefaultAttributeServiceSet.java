@@ -35,13 +35,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
-    private final ServiceCounter readMetric = new ServiceCounter();
-    private final ServiceCounter writeMetric = new ServiceCounter();
-
     @Override
     public void onRead(ServiceRequest service) {
-        readMetric.record(service);
-
         ReadRequest request = (ReadRequest) service.getRequest();
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
@@ -98,8 +93,6 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
     @Override
     public void onWrite(ServiceRequest service) {
-        writeMetric.record(service);
-
         WriteRequest request = (WriteRequest) service.getRequest();
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();

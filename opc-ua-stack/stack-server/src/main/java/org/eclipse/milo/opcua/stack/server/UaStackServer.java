@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -70,6 +71,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
@@ -112,6 +114,9 @@ public class UaStackServer {
 
     private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
 
+    private final LongAdder rejectedRequestCount = new LongAdder();
+    private final LongAdder securityRejectedRequestCount = new LongAdder();
+
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
     private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
@@ -151,7 +156,8 @@ public class UaStackServer {
 
         config.getEndpoints().forEach(endpoint -> {
             String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
-            addServiceSet(path, new DefaultDiscoveryServiceSet());
+
+            addServiceSet(path, new DefaultDiscoveryServiceSet(UaStackServer.this));
         });
     }
 
@@ -235,9 +241,7 @@ public class UaStackServer {
     public void onServiceRequest(String path, ServiceRequest serviceRequest) {
         logger.trace("onServiceRequest(path={}, request={})", path, serviceRequest);
 
-        Class<? extends UaRequestMessage> requestClass = serviceRequest.getRequest().getClass();
-
-        ServiceRequestHandler serviceHandler = serviceHandlerTable.get(path, serviceRequest.getRequest().getTypeId());
+        ServiceRequestHandler serviceHandler = getServiceHandler(path, serviceRequest.getRequest().getTypeId());
 
         try {
             if (serviceHandler != null) {
@@ -362,6 +366,14 @@ public class UaStackServer {
         return securityLevel;
     }
 
+    public LongAdder getRejectedRequestCount() {
+        return rejectedRequestCount;
+    }
+
+    public LongAdder getSecurityRejectedRequestCount() {
+        return securityRejectedRequestCount;
+    }
+
     public <T extends UaRequestMessage> void addServiceHandler(
         String path,
         ExpandedNodeId dataTypeId,
@@ -378,6 +390,11 @@ public class UaStackServer {
         serviceHandlerTable.remove(path, dataTypeId);
     }
 
+    @Nullable
+    public ServiceRequestHandler getServiceHandler(String path, ExpandedNodeId dataTypeId) {
+        return serviceHandlerTable.get(path, dataTypeId);
+    }
+
     public void addServiceSet(String path, AttributeServiceSet serviceSet) {
         addServiceHandler(path, ReadRequest.TYPE_ID, serviceSet::onRead);
         addServiceHandler(path, WriteRequest.TYPE_ID, serviceSet::onWrite);
@@ -392,6 +409,7 @@ public class UaStackServer {
         addServiceHandler(path, GetEndpointsRequest.TYPE_ID, serviceSet::onGetEndpoints);
         addServiceHandler(path, FindServersRequest.TYPE_ID, serviceSet::onFindServers);
         addServiceHandler(path, RegisterServerRequest.TYPE_ID, serviceSet::onRegisterServer);
+        addServiceHandler(path, RegisterServer2Request.TYPE_ID, serviceSet::onRegisterServer2);
     }
 
     public void addServiceSet(String path, QueryServiceSet serviceSet) {
@@ -443,7 +461,20 @@ public class UaStackServer {
         addServiceHandler(path, UnregisterNodesRequest.TYPE_ID, serviceSet::onUnregisterNodes);
     }
 
-    private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
+    private static class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final UaStackServerConfig config;
+
+        private final UaStackServer stackServer;
+
+        public DefaultDiscoveryServiceSet(UaStackServer stackServer) {
+            this.stackServer = stackServer;
+
+            this.config = stackServer.getConfig();
+        }
+
         @Override
         public void onGetEndpoints(ServiceRequest serviceRequest) {
             GetEndpointsRequest request = (GetEndpointsRequest) serviceRequest.getRequest();
@@ -452,7 +483,7 @@ public class UaStackServer {
                 newArrayList(request.getProfileUris()) :
                 new ArrayList<>();
 
-            List<EndpointDescription> allEndpoints = getEndpointDescriptions()
+            List<EndpointDescription> allEndpoints = stackServer.getEndpointDescriptions()
                 .stream()
                 .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> filterProfileUris(ed, profileUris))

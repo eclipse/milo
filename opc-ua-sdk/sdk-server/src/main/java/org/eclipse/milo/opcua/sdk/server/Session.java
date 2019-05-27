@@ -11,13 +11,18 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.net.InetAddress;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultMethodServiceSet;
@@ -30,11 +35,19 @@ import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.IssuedIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
@@ -45,19 +58,22 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class Session implements SessionServiceSet {
 
+    private static final int IDENTITY_HISTORY_MAX_SIZE = 10;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<LifecycleListener> listeners = Lists.newCopyOnWriteArrayList();
 
     private final SubscriptionManager subscriptionManager;
 
-    private volatile long secureChannelId;
+    private final LinkedList<String> clientUserIdHistory = new LinkedList<>();
 
     private volatile Object identityObject;
+    private volatile UserIdentityToken identityToken;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
 
-    private volatile long lastActivity = System.nanoTime();
+    private volatile long lastActivityNanos = System.nanoTime();
     private volatile ScheduledFuture<?> checkTimeoutFuture;
 
     private final DefaultAttributeServiceSet attributeServiceSet;
@@ -70,31 +86,50 @@ public class Session implements SessionServiceSet {
     private final DefaultViewServiceSet viewServiceSet;
 
     private volatile EndpointDescription endpoint;
+    private volatile long secureChannelId;
     private volatile SecurityConfiguration securityConfiguration;
     private volatile InetAddress clientAddress;
     private volatile String[] localeIds;
+    private volatile DateTime lastContactTime;
+
+    private final DateTime connectTime = DateTime.now();
+    private final SessionDiagnostics sessionDiagnostics;
+    private final SessionSecurityDiagnostics sessionSecurityDiagnostics;
 
     private final OpcUaServer server;
     private final NodeId sessionId;
     private final String sessionName;
     private final Duration sessionTimeout;
+    private final ApplicationDescription clientDescription;
+    private final String serverUri;
+    private final UInteger maxResponseMessageSize;
 
     public Session(
         OpcUaServer server,
         NodeId sessionId,
         String sessionName,
         Duration sessionTimeout,
-        long secureChannelId,
+        ApplicationDescription clientDescription,
+        String serverUri,
+        UInteger maxResponseMessageSize,
         EndpointDescription endpoint,
-        SecurityConfiguration securityConfiguration) {
+        long secureChannelId,
+        SecurityConfiguration securityConfiguration
+    ) {
 
         this.server = server;
         this.sessionId = sessionId;
         this.sessionName = sessionName;
         this.sessionTimeout = sessionTimeout;
+        this.clientDescription = clientDescription;
+        this.serverUri = serverUri;
+        this.maxResponseMessageSize = maxResponseMessageSize;
         this.secureChannelId = secureChannelId;
         this.securityConfiguration = securityConfiguration;
         this.endpoint = endpoint;
+
+        sessionDiagnostics = new SessionDiagnostics(this);
+        sessionSecurityDiagnostics = new SessionSecurityDiagnostics(this);
 
         subscriptionManager = new SubscriptionManager(this, server);
 
@@ -132,12 +167,65 @@ public class Session implements SessionServiceSet {
         return identityObject;
     }
 
+    @Nullable
+    public UserIdentityToken getIdentityToken() {
+        return identityToken;
+    }
+
+    @Nullable
+    public UserTokenType getTokenType() {
+        UserIdentityToken token = identityToken;
+
+        return token != null ? getTokenType(token) : null;
+    }
+
+    /**
+     * The client user id identifies the user of the client requesting an action. The client user id is obtained from
+     * the UserIdentityToken passed in the ActivateSession call.
+     * <p>
+     * If the UserIdentityToken is a UserNameIdentityToken then the ClientUserId is the UserName.
+     * <p>
+     * If the UserIdentityToken is an X509IdentityToken then the ClientUserId is the X509 Subject Name of the
+     * Certificate.
+     * <p>
+     * If the UserIdentityToken is an IssuedIdentityToken then the ClientUserId shall be a string that represents the
+     * owner of the token. The best choice for the string depends on the type of IssuedIdentityToken.
+     * <p>
+     * If an AnonymousIdentityToken was used, the value is null.
+     *
+     * @return the clientUserId of this {@link Session}.
+     */
+    @Nullable
+    public String getClientUserId() {
+        return getClientUserId(identityToken);
+    }
+
+    /**
+     * @return a list containing the (possibly abbreviated) history of client user ids. This list may contain null
+     * entries.
+     * @see #getClientUserId()
+     */
+    public List<String> getClientUserIdHistory() {
+        synchronized (clientUserIdHistory) {
+            return new ArrayList<>(clientUserIdHistory);
+        }
+    }
+
     public void setSecureChannelId(long secureChannelId) {
         this.secureChannelId = secureChannelId;
     }
 
-    public void setIdentityObject(Object identityObject) {
+    public void setIdentityObject(Object identityObject, UserIdentityToken identityToken) {
         this.identityObject = identityObject;
+        this.identityToken = identityToken;
+
+        synchronized (clientUserIdHistory) {
+            clientUserIdHistory.addLast(getClientUserId(identityToken));
+
+            while (clientUserIdHistory.size() > IDENTITY_HISTORY_MAX_SIZE) {
+                clientUserIdHistory.removeFirst();
+            }
+        }
     }
 
     public void setEndpoint(EndpointDescription endpoint) {
@@ -163,12 +251,45 @@ public class Session implements SessionServiceSet {
         return clientAddress;
     }
 
-    void addLifecycleListener(LifecycleListener listener) {
+    public SessionDiagnostics getSessionDiagnostics() {
+        return sessionDiagnostics;
+    }
+
+    public SessionSecurityDiagnostics getSessionSecurityDiagnostics() {
+        return sessionSecurityDiagnostics;
+    }
+
+    public void addLifecycleListener(LifecycleListener listener) {
         listeners.add(listener);
     }
 
     void updateLastActivity() {
-        lastActivity = System.nanoTime();
+        lastActivityNanos = System.nanoTime();
+        lastContactTime = DateTime.now();
+    }
+
+    public ApplicationDescription getClientDescription() {
+        return clientDescription;
+    }
+
+    public String getServerUri() {
+        return serverUri;
+    }
+
+    public Double getSessionTimeout() {
+        return (double) sessionTimeout.toMillis();
+    }
+
+    public UInteger getMaxResponseMessageSize() {
+        return maxResponseMessageSize;
+    }
+
+    public DateTime getConnectionTime() {
+        return connectTime;
+    }
+
+    public DateTime getLastContactTime() {
+        return lastContactTime;
     }
 
     void setLastNonce(ByteString lastNonce) {
@@ -180,14 +301,14 @@ public class Session implements SessionServiceSet {
     }
 
     private void checkTimeout() {
-        long elapsed = Math.abs(System.nanoTime() - lastActivity);
+        long elapsed = Math.abs(System.nanoTime() - lastActivityNanos);
 
         if (elapsed > sessionTimeout.toNanos()) {
             logger.debug("Session id={} lifetime expired ({}ms).", sessionId, sessionTimeout.toMillis());
 
-            subscriptionManager.sessionClosed(true);
+            close(true);
 
-            listeners.forEach(listener -> listener.onSessionClosed(this, true));
+            server.getDiagnosticsSummary().getSessionTimeoutCount().increment();
         } else {
             long remaining = sessionTimeout.toNanos() - elapsed;
             logger.trace("Session id={} timeout scheduled for +{}s.",
@@ -264,11 +385,7 @@ public class Session implements SessionServiceSet {
 
     @Override
     public void onCloseSession(ServiceRequest serviceRequest) {
-        CloseSessionRequest request = (CloseSessionRequest) serviceRequest.getRequest();
-
-        close(request.getDeleteSubscriptions());
-
-        serviceRequest.setResponse(new CloseSessionResponse(serviceRequest.createResponseHeader()));
+        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     void close(boolean deleteSubscriptions) {
@@ -286,6 +403,52 @@ public class Session implements SessionServiceSet {
         serviceRequest.setResponse(new CancelResponse(serviceRequest.createResponseHeader(), uint(0)));
     }
     //endregion
+
+    @Nullable
+    private static String getClientUserId(UserIdentityToken identityToken) {
+        UserTokenType tokenType = getTokenType(identityToken);
+
+        if (tokenType == null) {
+            return null;
+        }
+
+        switch (tokenType) {
+            case Anonymous:
+                return null;
+
+            case UserName:
+                return ((UserNameIdentityToken) identityToken).getUserName();
+
+            case Certificate: {
+                try {
+                    ByteString bs = ((X509IdentityToken) identityToken).getCertificateData();
+                    X509Certificate certificate = CertificateUtil.decodeCertificate(bs.bytesOrEmpty());
+                    return certificate.getSubjectX500Principal().getName();
+                } catch (Throwable t) {
+                    return null;
+                }
+            }
+            case IssuedToken:
+                return "IssuedToken";
+
+            default:
+                throw new IllegalStateException("unhandled UserIdentityToken: " + identityToken);
+        }
+    }
+
+    private static UserTokenType getTokenType(UserIdentityToken identityToken) {
+        UserTokenType identityType = null;
+        if (identityToken instanceof AnonymousIdentityToken) {
+            identityType = UserTokenType.Anonymous;
+        } else if (identityToken instanceof UserNameIdentityToken) {
+            identityType = UserTokenType.UserName;
+        } else if (identityToken instanceof X509IdentityToken) {
+            identityType = UserTokenType.Certificate;
+        } else if (identityToken instanceof IssuedIdentityToken) {
+            identityType = UserTokenType.IssuedToken;
+        }
+        return identityType;
+    }
 
     public interface LifecycleListener {
         void onSessionClosed(Session session, boolean subscriptionsDeleted);

@@ -82,6 +82,8 @@ public class NodeFactoryTest {
                     nodeManager.getReferences(invocationOnMock.getArgument(0))
             );
 
+        Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
+
         UaNodeContext context = new UaNodeContext() {
             @Override
             public OpcUaServer getServer() {
@@ -93,8 +95,6 @@ public class NodeFactoryTest {
                 return nodeManager;
             }
         };
-
-        Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
 
         new UaNodeLoader(context, nodeManager).loadNodes();
 

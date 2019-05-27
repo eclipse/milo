@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.lang.ref.WeakReference;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +48,7 @@ import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 public abstract class UaNode implements UaServerNode {
 
     private AttributeDelegate attributeDelegate;
-    private List<WeakReference<AttributeObserver>> observers;
+    private List<AttributeObserver> observers;
 
     final AttributeFilterChain filterChain = new AttributeFilterChain();
 
@@ -577,20 +575,13 @@ public abstract class UaNode implements UaServerNode {
             observers = new LinkedList<>();
         }
 
-        observers.add(new WeakReference<>(observer));
+        observers.add(observer);
     }
 
     public synchronized void removeAttributeObserver(AttributeObserver observer) {
         if (observers == null) return;
 
-        Iterator<WeakReference<AttributeObserver>> iterator = observers.iterator();
-
-        while (iterator.hasNext()) {
-            WeakReference<AttributeObserver> ref = iterator.next();
-            if (ref.get() == null || ref.get() == observer) {
-                iterator.remove();
-            }
-        }
+        observers.remove(observer);
 
         if (observers.isEmpty()) observers = null;
     }
@@ -598,17 +589,7 @@ public abstract class UaNode implements UaServerNode {
     public synchronized void fireAttributeChanged(AttributeId attributeId, Object attributeValue) {
         if (observers == null) return;
 
-        Iterator<WeakReference<AttributeObserver>> iterator = observers.iterator();
-
-        while (iterator.hasNext()) {
-            WeakReference<AttributeObserver> ref = iterator.next();
-            AttributeObserver observer = ref.get();
-            if (observer != null) {
-                observer.attributeChanged(this, attributeId, attributeValue);
-            } else {
-                iterator.remove();
-            }
-        }
+        observers.forEach(o -> o.attributeChanged(this, attributeId, attributeValue));
     }
 
     /**

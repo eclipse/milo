@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -21,6 +22,42 @@ public final class StatusCode {
     private static final long SEVERITY_GOOD = 0x00000000L;
     private static final long SEVERITY_UNCERTAIN = 0x40000000L;
     private static final long SEVERITY_BAD = 0x80000000L;
+
+    /**
+     * StatusCodes that are considered security-related errors for the purpose of diagnostics.
+     */
+    private static final ImmutableSet<Long> SECURITY_ERRORS;
+
+    static {
+        SECURITY_ERRORS = ImmutableSet.<Long>builder()
+            .add(
+                StatusCodes.Bad_UserSignatureInvalid,
+                StatusCodes.Bad_UserAccessDenied,
+                StatusCodes.Bad_SecurityPolicyRejected,
+                StatusCodes.Bad_SecurityModeRejected,
+                StatusCodes.Bad_SecurityChecksFailed,
+                StatusCodes.Bad_SecureChannelTokenUnknown,
+                StatusCodes.Bad_SecureChannelIdInvalid,
+                StatusCodes.Bad_NoValidCertificates,
+                StatusCodes.Bad_IdentityTokenInvalid,
+                StatusCodes.Bad_IdentityTokenRejected,
+                StatusCodes.Bad_IdentityChangeNotSupported,
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                StatusCodes.Bad_CertificateUriInvalid,
+                StatusCodes.Bad_CertificateUntrusted,
+                StatusCodes.Bad_CertificateTimeInvalid,
+                StatusCodes.Bad_CertificateRevoked,
+                StatusCodes.Bad_CertificateRevocationUnknown,
+                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
+                StatusCodes.Bad_CertificateIssuerTimeInvalid,
+                StatusCodes.Bad_CertificateIssuerRevoked,
+                StatusCodes.Bad_CertificateIssuerRevocationUnknown,
+                StatusCodes.Bad_CertificateInvalid,
+                StatusCodes.Bad_CertificateHostNameInvalid,
+                StatusCodes.Bad_ApplicationSignatureInvalid
+            )
+            .build();
+    }
 
     public static final StatusCode GOOD = new StatusCode(SEVERITY_GOOD);
     public static final StatusCode BAD = new StatusCode(SEVERITY_BAD);
@@ -79,6 +116,13 @@ public final class StatusCode {
      */
     public boolean isOverflowSet() {
         return (value & 0x480) == 0x480;
+    }
+
+    /**
+     * @return {@code true} if the StatusCode is considered security-related for the purpose of diagnostics.
+     */
+    public boolean isSecurityError() {
+        return SECURITY_ERRORS.contains(value);
     }
 
     @Override

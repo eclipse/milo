@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -31,6 +32,7 @@ import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.SubscriptionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -41,6 +43,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventNotificationList;
@@ -60,7 +63,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class Subscription {
 
-    private static final int MAX_NOTIFICATIONS = 0xFFFF;
+    /**
+     * Maximum number of NotificationMessages to store for republishing.
+     */
+    private static final int MAX_AVAILABLE_MESSAGES = 1024;
+
+    /**
+     * Maximum number of notifications that can be returned in a single PublishResponse.
+     */
+    private static final int MAX_NOTIFICATIONS_PER_PUBLISH = 65535;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -74,7 +85,8 @@ public class Subscription {
 
     private final AtomicLong sequenceNumber = new AtomicLong(1L);
 
-    private final Map<UInteger, NotificationMessage> availableMessages = Maps.newConcurrentMap();
+    private final ConcurrentSkipListMap<UInteger, NotificationMessage> availableMessages =
+        new ConcurrentSkipListMap<>(UInteger::compareTo);
 
     private final PublishHandler publishHandler = new PublishHandler();
     private final TimerHandler timerHandler = new TimerHandler();
@@ -95,20 +107,26 @@ public class Subscription {
 
     private volatile SubscriptionManager subscriptionManager;
 
+    private final SubscriptionDiagnostics subscriptionDiagnostics;
+
     private final SerializationContext serializationContext;
     private final UInteger subscriptionId;
 
-    public Subscription(SubscriptionManager subscriptionManager,
-                        UInteger subscriptionId,
-                        double publishingInterval,
-                        long maxKeepAliveCount,
-                        long lifetimeCount,
-                        long maxNotificationsPerPublish,
-                        boolean publishingEnabled,
-                        int priority) {
+    public Subscription(
+        SubscriptionManager subscriptionManager,
+        UInteger subscriptionId,
+        double publishingInterval,
+        long maxKeepAliveCount,
+        long lifetimeCount,
+        long maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        int priority
+    ) {
 
         this.subscriptionManager = subscriptionManager;
         this.subscriptionId = subscriptionId;
+
+        subscriptionDiagnostics = new SubscriptionDiagnostics(this);
 
         serializationContext = subscriptionManager.getServer().getSerializationContext();
 
@@ -137,6 +155,8 @@ public class Subscription {
 
         resetLifetimeCounter();
 
+        subscriptionDiagnostics.getModifyCount().increment();
+
         logger.debug("[id={}] subscription modified, interval={}, keep-alive={}, lifetime={}",
             subscriptionId, publishingInterval, maxKeepAliveCount, lifetimeCount);
     }
@@ -154,9 +174,18 @@ public class Subscription {
     }
 
     public synchronized void setPublishingMode(SetPublishingModeRequest request) {
-        this.publishingEnabled = request.getPublishingEnabled();
+        boolean previouslyEnabled = publishingEnabled;
+        publishingEnabled = request.getPublishingEnabled();
 
         resetLifetimeCounter();
+
+        if (previouslyEnabled != publishingEnabled) {
+            if (publishingEnabled) {
+                subscriptionDiagnostics.getEnableCount().increment();
+            } else {
+                subscriptionDiagnostics.getDisableCount().increment();
+            }
+        }
 
         logger.debug("[id={}] {}.", subscriptionId, publishingEnabled ? "publishing enabled." : "publishing disabled.");
     }
@@ -302,8 +331,8 @@ public class Subscription {
     }
 
     private void setMaxNotificationsPerPublish(long maxNotificationsPerPublish) {
-        if (maxNotificationsPerPublish <= 0 || maxNotificationsPerPublish > MAX_NOTIFICATIONS) {
-            maxNotificationsPerPublish = MAX_NOTIFICATIONS;
+        if (maxNotificationsPerPublish <= 0 || maxNotificationsPerPublish > MAX_NOTIFICATIONS_PER_PUBLISH) {
+            maxNotificationsPerPublish = MAX_NOTIFICATIONS_PER_PUBLISH;
         }
         this.maxNotificationsPerPublish = Ints.saturatedCast(maxNotificationsPerPublish);
     }
@@ -474,6 +503,8 @@ public class Subscription {
                 dataChange.getBinaryEncodingId(),
                 OpcUaDefaultBinaryEncoding.getInstance()
             ));
+
+            subscriptionDiagnostics.getDataChangeNotificationsCount().add(dataNotifications.size());
         }
 
         if (eventNotifications.size() > 0) {
@@ -487,7 +518,11 @@ public class Subscription {
                 eventChange.getBinaryEncodingId(),
                 OpcUaDefaultBinaryEncoding.getInstance()
             ));
+
+            subscriptionDiagnostics.getEventNotificationsCount().add(eventNotifications.size());
         }
+
+        subscriptionDiagnostics.getNotificationsCount().add(notificationData.size());
 
         UInteger sequenceNumber = uint(nextSequenceNumber());
 
@@ -498,6 +533,15 @@ public class Subscription {
         );
 
         availableMessages.put(notificationMessage.getSequenceNumber(), notificationMessage);
+
+        while (availableMessages.size() > MAX_AVAILABLE_MESSAGES) {
+            Map.Entry<UInteger, NotificationMessage> entry = availableMessages.pollFirstEntry();
+            if (entry != null) {
+                subscriptionDiagnostics.getDiscardedMessageCount().increment();
+                logger.debug("Discarded cached NotificationMessage with sequenceNumber={}", entry.getKey());
+            }
+        }
+
         UInteger[] available = getAvailableSequenceNumbers();
 
         UInteger requestHandle = service.getRequest().getRequestHeader().getRequestHandle();
@@ -539,6 +583,10 @@ public class Subscription {
         if (listener != null) {
             listener.onStateChange(this, previousState, state);
         }
+
+        if (state == State.Late) {
+            subscriptionDiagnostics.getLatePublishRequestCount().increment();
+        }
     }
 
     public UInteger getId() {
@@ -569,11 +617,54 @@ public class Subscription {
         return priority;
     }
 
+    /**
+     * Get the current value of the keep alive counter.
+     *
+     * @return the current value of the keep alive counter.
+     */
+    public long getKeepAliveCounter() {
+        return keepAliveCounter;
+    }
+
+    /**
+     * Get the current value of the lifetime counter.
+     *
+     * @return the current value of the lifetime counter.
+     */
+    public long getLifetimeCounter() {
+        return lifetimeCounter;
+    }
+
+    public synchronized UInteger getMonitoredItemCount() {
+        return uint(itemsById.size());
+    }
+
+    public synchronized UInteger getDisabledMonitoredItemCount() {
+        return uint(
+            itemsById.values().stream()
+                .filter(m -> m.getMonitoringMode() == MonitoringMode.Disabled)
+                .count()
+        );
+    }
+
+    /**
+     * Get the sequence number of the next notification message.
+     *
+     * @return the sequence number of the next notification message.
+     */
+    public UInteger getNextSequenceNumber() {
+        return uint(sequenceNumber.get());
+    }
+
     public synchronized UInteger[] getAvailableSequenceNumbers() {
         Set<UInteger> uIntegers = availableMessages.keySet();
         UInteger[] available = uIntegers.toArray(new UInteger[0]);
         Arrays.sort(available);
         return available;
+    }
+
+    public synchronized UInteger getUnacknowledgeMessageCount() {
+        return uint(availableMessages.size());
     }
 
     public synchronized SubscriptionManager getSubscriptionManager() {
@@ -602,6 +693,8 @@ public class Subscription {
      * @param service The service request that contains the {@link PublishRequest}.
      */
     synchronized void onPublish(ServiceRequest service) {
+        subscriptionDiagnostics.getPublishRequestCount().increment();
+
         State state = this.state.get();
 
         if (logger.isTraceEnabled()) {
@@ -705,7 +798,20 @@ public class Subscription {
     public synchronized NotificationMessage republish(UInteger sequenceNumber) {
         resetLifetimeCounter();
 
-        return availableMessages.get(sequenceNumber);
+        subscriptionDiagnostics.getRepublishRequestCount().increment();
+        subscriptionDiagnostics.getRepublishMessageRequestCount().increment();
+
+        NotificationMessage notificationMessage = availableMessages.get(sequenceNumber);
+
+        if (notificationMessage != null) {
+            subscriptionDiagnostics.getRepublishMessageCount().increment();
+        }
+
+        return notificationMessage;
+    }
+
+    public SubscriptionDiagnostics getSubscriptionDiagnostics() {
+        return subscriptionDiagnostics;
     }
 
     private class PublishHandler {
@@ -817,6 +923,8 @@ public class Subscription {
             // Ensure this subscription is in the PublishQueue wait list.
             // Publishing timer will be started after this method returns.
             publishQueue().addSubscription(Subscription.this);
+
+            subscriptionDiagnostics.getLatePublishRequestCount().increment();
         }
 
         private void whenKeepAlive() {

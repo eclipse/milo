@@ -15,11 +15,13 @@ import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -27,6 +29,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -39,9 +42,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -89,7 +96,8 @@ public class SessionManager implements
 
     private final Map<NodeId, Session> createdSessions = Maps.newConcurrentMap();
     private final Map<NodeId, Session> activeSessions = Maps.newConcurrentMap();
-    private final Map<NodeId, Session> inactiveSessions = Maps.newConcurrentMap();
+
+    private final List<SessionListener> sessionListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Store the last N client nonces and to make sure they aren't re-used.
@@ -100,22 +108,60 @@ public class SessionManager implements
 
     private final OpcUaServer server;
 
-    public SessionManager(OpcUaServer server) {
+    SessionManager(OpcUaServer server) {
         this.server = server;
     }
 
-    public List<Session> getActiveSessions() {
-        return Lists.newArrayList(activeSessions.values());
-    }
-
-    public List<Session> getInactiveSessions() {
-        return Lists.newArrayList(inactiveSessions.values());
-    }
-
+    /**
+     * Kill the session identified by {@code nodeId} and optionally delete all its subscriptions.
+     *
+     * @param nodeId              the {@link NodeId} identifying the session to kill.
+     * @param deleteSubscriptions {@code true} if all its subscriptions should be deleted as well.
+     */
     public void killSession(NodeId nodeId, boolean deleteSubscriptions) {
         activeSessions.values().stream()
             .filter(s -> s.getSessionId().equals(nodeId))
             .findFirst().ifPresent(s -> s.close(deleteSubscriptions));
+    }
+
+    /**
+     * Add {@code listener} to be notified when sessions are created.
+     *
+     * @param listener the {@link SessionListener} to add.
+     */
+    public void addSessionListener(SessionListener listener) {
+        sessionListeners.add(listener);
+    }
+
+    /**
+     * Remove {@code listener} from the {@link SessionListener} list.
+     *
+     * @param listener the {@link SessionListener} to remove.
+     */
+    public void removeSessionListener(SessionListener listener) {
+        sessionListeners.remove(listener);
+    }
+
+    /**
+     * Get a list of all the current {@link Session}s. This includes sessions that have been created but not yet
+     * activated.
+     *
+     * @return a list of all the current {@link Session}s.
+     */
+    public List<Session> getAllSessions() {
+        List<Session> sessions = new ArrayList<>();
+        sessions.addAll(createdSessions.values());
+        sessions.addAll(activeSessions.values());
+        return sessions;
+    }
+
+    /**
+     * Get the current session count, including session that have been created but not yet activated.
+     *
+     * @return the current session count, including session that have been created but not yet activated.
+     */
+    public UInteger getCurrentSessionCount() {
+        return uint(createdSessions.size() + activeSessions.size());
     }
 
     private Session session(ServiceRequest service) throws UaException {
@@ -125,41 +171,59 @@ public class SessionManager implements
         Session session = activeSessions.get(authToken);
 
         if (session == null) {
-            session = createdSessions.remove(authToken);
+            // session is either not activated or doesn't exist
+            session = createdSessions.get(authToken);
 
-            if (session == null) {
-                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
+            if (session != null) {
+                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                throw new UaException(StatusCodes.Bad_SessionNotActivated);
             } else {
-                if (session.getSecureChannelId() != secureChannelId) {
-                    createdSessions.put(authToken, session);
-                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
-                } else {
-                    throw new UaException(StatusCodes.Bad_SessionNotActivated);
-                }
+                throw new UaException(StatusCodes.Bad_SessionIdInvalid);
             }
+        } else {
+            // session exists and is activated
+            if (session.getSecureChannelId() != secureChannelId) {
+                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
+            }
+
+            session.updateLastActivity();
+
+            service.attr(ServiceAttributes.SERVER_KEY).set(server);
+            service.attr(ServiceAttributes.SESSION_KEY).set(session);
+
+            return session;
         }
-
-        if (session.getSecureChannelId() != secureChannelId) {
-            throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
-        }
-
-        session.updateLastActivity();
-
-        service.attr(ServiceAttributes.SERVER_KEY).set(server);
-        service.attr(ServiceAttributes.SESSION_KEY).set(session);
-
-        return session;
     }
 
     //region Session Services
     @Override
-    public void onCreateSession(ServiceRequest serviceRequest) throws UaException {
+    public void onCreateSession(ServiceRequest serviceRequest) {
+        ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
+
+        try {
+            CreateSessionResponse response = createSession(serviceRequest);
+
+            serverDiagnosticsSummary.getCumulatedSessionCount().increment();
+
+            serviceRequest.setResponse(response);
+        } catch (UaException e) {
+            serverDiagnosticsSummary.getRejectedSessionCount().increment();
+
+            if (e.getStatusCode().isSecurityError()) {
+                serverDiagnosticsSummary.getSecurityRejectedSessionCount().increment();
+            }
+
+            serviceRequest.setServiceFault(e);
+        }
+    }
+
+    private CreateSessionResponse createSession(ServiceRequest serviceRequest) throws UaException {
         CreateSessionRequest request = (CreateSessionRequest) serviceRequest.getRequest();
 
         long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
         if (createdSessions.size() + activeSessions.size() >= maxSessionCount) {
-            serviceRequest.setServiceFault(StatusCodes.Bad_TooManySessions);
-            return;
+            throw new UaException(StatusCodes.Bad_TooManySessions);
         }
 
         ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -169,6 +233,8 @@ public class SessionManager implements
             5000,
             Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
         );
+
+        ApplicationDescription clientDescription = request.getClientDescription();
 
         long secureChannelId = serviceRequest.getSecureChannelId();
         EndpointDescription endpoint = serviceRequest.getEndpoint();
@@ -229,9 +295,10 @@ public class SessionManager implements
                     "client certificate must be non-null");
             }
 
-            String applicationUri = request.getClientDescription().getApplicationUri();
-
-            CertificateValidationUtil.validateApplicationUri(clientCertificate, applicationUri);
+            CertificateValidationUtil.validateApplicationUri(
+                clientCertificate,
+                clientDescription.getApplicationUri()
+            );
 
             CertificateValidator certificateValidator =
                 server.getConfig().getCertificateValidator();
@@ -258,8 +325,11 @@ public class SessionManager implements
             sessionId,
             sessionName,
             sessionTimeout,
-            secureChannelId,
+            clientDescription,
+            request.getServerUri(),
+            request.getMaxResponseMessageSize(),
             endpoint,
+            secureChannelId,
             securityConfiguration
         );
 
@@ -268,11 +338,15 @@ public class SessionManager implements
         session.addLifecycleListener((s, remove) -> {
             createdSessions.remove(authenticationToken);
             activeSessions.remove(authenticationToken);
+
+            sessionListeners.forEach(l -> l.onSessionClosed(session));
         });
 
         createdSessions.put(authenticationToken, session);
 
-        CreateSessionResponse response = new CreateSessionResponse(
+        sessionListeners.forEach(l -> l.onSessionCreated(session));
+
+        return new CreateSessionResponse(
             serviceRequest.createResponseHeader(),
             sessionId,
             authenticationToken,
@@ -284,8 +358,6 @@ public class SessionManager implements
             serverSignature,
             uint(maxRequestMessageSize)
         );
-
-        serviceRequest.setResponse(response);
     }
 
     private SecurityConfiguration createSecurityConfiguration(
@@ -356,11 +428,18 @@ public class SessionManager implements
     }
 
     @Override
-    public void onActivateSession(ServiceRequest serviceRequest) throws UaException {
+    public void onActivateSession(ServiceRequest serviceRequest) {
+        try {
+            ActivateSessionResponse response = activateSession(serviceRequest);
 
+            serviceRequest.setResponse(response);
+        } catch (UaException e) {
+            serviceRequest.setServiceFault(e);
+        }
+    }
+
+    private ActivateSessionResponse activateSession(ServiceRequest serviceRequest) throws UaException {
         ActivateSessionRequest request = (ActivateSessionRequest) serviceRequest.getRequest();
-
-        // ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
 
         long secureChannelId = serviceRequest.getSecureChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
@@ -382,13 +461,13 @@ public class SessionManager implements
                     /*
                      * Identity change
                      */
-                    Object tokenObject = request.getUserIdentityToken().decode(
+                    UserIdentityToken identityToken = (UserIdentityToken) request.getUserIdentityToken().decode(
                         server.getSerializationContext()
                     );
 
                     Object identityObject = validateIdentityToken(
                         session,
-                        tokenObject,
+                        identityToken,
                         request.getUserTokenSignature()
                     );
 
@@ -398,18 +477,16 @@ public class SessionManager implements
                     ByteString serverNonce = NonceUtil.generateNonce(32);
 
                     session.setClientAddress(serviceRequest.getClientAddress());
-                    session.setIdentityObject(identityObject);
+                    session.setIdentityObject(identityObject, identityToken);
                     session.setLastNonce(serverNonce);
                     session.setLocaleIds(request.getLocaleIds());
 
-                    ActivateSessionResponse response = new ActivateSessionResponse(
+                    return new ActivateSessionResponse(
                         serviceRequest.createResponseHeader(),
                         serverNonce,
                         results,
                         new DiagnosticInfo[0]
                     );
-
-                    serviceRequest.setResponse(response);
                 } else {
                     /*
                      * Associate session with new secure channel if client certificate and identity token match.
@@ -464,14 +541,12 @@ public class SessionManager implements
                         session.setLastNonce(serverNonce);
                         session.setLocaleIds(request.getLocaleIds());
 
-                        ActivateSessionResponse response = new ActivateSessionResponse(
+                        return new ActivateSessionResponse(
                             serviceRequest.createResponseHeader(),
                             serverNonce,
                             results,
                             new DiagnosticInfo[0]
                         );
-
-                        serviceRequest.setResponse(response);
                     } else {
                         throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
                     }
@@ -490,13 +565,13 @@ public class SessionManager implements
 
             verifyClientSignature(session, request);
 
-            Object tokenObject = request.getUserIdentityToken().decode(
+            UserIdentityToken identityToken = (UserIdentityToken) request.getUserIdentityToken().decode(
                 server.getSerializationContext()
             );
 
             Object identityObject = validateIdentityToken(
                 session,
-                tokenObject,
+                identityToken,
                 request.getUserTokenSignature()
             );
 
@@ -509,18 +584,16 @@ public class SessionManager implements
             ByteString serverNonce = NonceUtil.generateNonce(32);
 
             session.setClientAddress(serviceRequest.getClientAddress());
-            session.setIdentityObject(identityObject);
+            session.setIdentityObject(identityObject, identityToken);
             session.setLocaleIds(request.getLocaleIds());
             session.setLastNonce(serverNonce);
 
-            ActivateSessionResponse response = new ActivateSessionResponse(
+            return new ActivateSessionResponse(
                 serviceRequest.createResponseHeader(),
                 serverNonce,
                 results,
                 new DiagnosticInfo[0]
             );
-
-            serviceRequest.setResponse(response);
         }
     }
 
@@ -599,7 +672,19 @@ public class SessionManager implements
     }
 
     @Override
-    public void onCloseSession(ServiceRequest service) throws UaException {
+    public void onCloseSession(ServiceRequest service) {
+        try {
+            CloseSessionResponse response = closeSession(service);
+
+            service.setResponse(response);
+        } catch (UaException e) {
+            service.setServiceFault(e);
+        }
+    }
+
+    private CloseSessionResponse closeSession(ServiceRequest service) throws UaException {
+        CloseSessionRequest request = (CloseSessionRequest) service.getRequest();
+
         long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
@@ -610,7 +695,8 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
             } else {
                 activeSessions.remove(authToken);
-                session.onCloseSession(service);
+                session.close(request.getDeleteSubscriptions());
+                return new CloseSessionResponse(service.createResponseHeader());
             }
         } else {
             session = createdSessions.get(authToken);
@@ -621,7 +707,8 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid);
             } else {
                 createdSessions.remove(authToken);
-                session.onCloseSession(service);
+                session.close(request.getDeleteSubscriptions());
+                return new CloseSessionResponse(service.createResponseHeader());
             }
         }
     }
@@ -664,12 +751,18 @@ public class SessionManager implements
     public void onRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getReadCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getAttributeServiceSet().onRead(service);
     }
 
     @Override
     public void onWrite(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getWriteCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getAttributeServiceSet().onWrite(service);
     }
@@ -678,13 +771,18 @@ public class SessionManager implements
     public void onHistoryRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getHistoryReadCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getAttributeHistoryServiceSet().onHistoryRead(service);
     }
 
     @Override
     public void onHistoryUpdate(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getHistoryUpdateCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getAttributeHistoryServiceSet().onHistoryUpdate(service);
     }
@@ -695,12 +793,18 @@ public class SessionManager implements
     public void onBrowse(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getBrowseCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getViewServiceSet().onBrowse(service);
     }
 
     @Override
     public void onBrowseNext(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getBrowseNextCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getViewServiceSet().onBrowseNext(service);
     }
@@ -709,6 +813,9 @@ public class SessionManager implements
     public void onTranslateBrowsePaths(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getViewServiceSet().onTranslateBrowsePaths(service);
     }
 
@@ -716,12 +823,18 @@ public class SessionManager implements
     public void onRegisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getRegisterNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getViewServiceSet().onRegisterNodes(service);
     }
 
     @Override
     public void onUnregisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getUnregisterNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getViewServiceSet().onUnregisterNodes(service);
     }
@@ -732,13 +845,18 @@ public class SessionManager implements
     public void onAddNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getAddNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getNodeManagementServiceSet().onAddNodes(service);
     }
 
     @Override
     public void onAddReferences(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getAddReferencesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getNodeManagementServiceSet().onAddReferences(service);
     }
@@ -747,13 +865,18 @@ public class SessionManager implements
     public void onDeleteNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getDeleteNodesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getNodeManagementServiceSet().onDeleteNodes(service);
     }
 
     @Override
     public void onDeleteReferences(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getDeleteReferencesCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getNodeManagementServiceSet().onDeleteReferences(service);
     }
@@ -762,24 +885,30 @@ public class SessionManager implements
     //region Subscription Services
     @Override
     public void onCreateSubscription(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getCreateSubscriptionCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onCreateSubscription(service);
     }
 
     @Override
     public void onModifySubscription(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getModifySubscriptionCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onModifySubscription(service);
     }
 
     @Override
     public void onSetPublishingMode(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getSetPublishingModeCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onSetPublishingMode(service);
     }
@@ -788,12 +917,18 @@ public class SessionManager implements
     public void onPublish(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getPublishCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getSubscriptionServiceSet().onPublish(service);
     }
 
     @Override
     public void onRepublish(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getRepublishCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onRepublish(service);
     }
@@ -802,12 +937,18 @@ public class SessionManager implements
     public void onTransferSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getTransferSubscriptionsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getSubscriptionServiceSet().onTransferSubscriptions(service);
     }
 
     @Override
     public void onDeleteSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getDeleteSubscriptionsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getSubscriptionServiceSet().onDeleteSubscriptions(service);
     }
@@ -818,12 +959,18 @@ public class SessionManager implements
     public void onCreateMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getCreateMonitoredItemsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMonitoredItemServiceSet().onCreateMonitoredItems(service);
     }
 
     @Override
     public void onModifyMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getModifyMonitoredItemsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getMonitoredItemServiceSet().onModifyMonitoredItems(service);
     }
@@ -832,6 +979,9 @@ public class SessionManager implements
     public void onSetMonitoringMode(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getSetMonitoringModeCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMonitoredItemServiceSet().onSetMonitoringMode(service);
     }
 
@@ -839,13 +989,18 @@ public class SessionManager implements
     public void onSetTriggering(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getSetTriggeringCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMonitoredItemServiceSet().onSetTriggering(service);
     }
 
     @Override
     public void onDeleteMonitoredItems(ServiceRequest service) throws UaException {
-
         Session session = session(service);
+
+        session.getSessionDiagnostics().getDeleteMonitoredItemsCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getMonitoredItemServiceSet().onDeleteMonitoredItems(service);
     }
@@ -856,6 +1011,9 @@ public class SessionManager implements
     public void onCall(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getCallCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getMethodServiceSet().onCall(service);
     }
     //endregion
@@ -865,12 +1023,18 @@ public class SessionManager implements
     public void onQueryFirst(ServiceRequest service) throws UaException {
         Session session = session(service);
 
+        session.getSessionDiagnostics().getQueryFirstCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
+
         session.getQueryServiceSet().onQueryFirst(service);
     }
 
     @Override
     public void onQueryNext(ServiceRequest service) throws UaException {
         Session session = session(service);
+
+        session.getSessionDiagnostics().getQueryNextCount().record(service);
+        session.getSessionDiagnostics().getTotalRequestCount().record(service);
 
         session.getQueryServiceSet().onQueryNext(service);
     }
