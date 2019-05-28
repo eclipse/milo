@@ -548,6 +548,7 @@ public class SessionManager implements
      * Null or empty tokens are interpreted as {@link AnonymousIdentityToken}, as per the spec.
      *
      * @param identityTokenXo the {@link ExtensionObject} to decode.
+     * @param tokenPolicies   the {@link UserTokenPolicy}s from the Session's Endpoint.
      * @return a {@link UserIdentityToken} object.
      */
     @Nonnull
@@ -556,7 +557,7 @@ public class SessionManager implements
         @Nullable UserTokenPolicy[] tokenPolicies
     ) {
 
-        if (identityTokenXo != null) {
+        if (identityTokenXo != null && !identityTokenXo.isNull()) {
             Object tokenObject = identityTokenXo.decodeOrNull(
                 server.getSerializationContext()
             );
