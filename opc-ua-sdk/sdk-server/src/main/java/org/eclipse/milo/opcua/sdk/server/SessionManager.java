@@ -558,12 +558,12 @@ public class SessionManager implements
     ) {
 
         if (identityTokenXo != null && !identityTokenXo.isNull()) {
-            Object tokenObject = identityTokenXo.decodeOrNull(
+            Object identityToken = identityTokenXo.decodeOrNull(
                 server.getSerializationContext()
             );
 
-            if (tokenObject instanceof UserIdentityToken) {
-                return (UserIdentityToken) tokenObject;
+            if (identityToken instanceof UserIdentityToken) {
+                return (UserIdentityToken) identityToken;
             }
         }
 
