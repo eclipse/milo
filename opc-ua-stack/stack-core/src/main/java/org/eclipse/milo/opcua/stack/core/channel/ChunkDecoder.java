@@ -34,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.SequenceHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.SymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
@@ -162,13 +163,7 @@ public final class ChunkDecoder {
                 if (lastSequenceNumber == -1) {
                     lastSequenceNumber = sequenceNumber;
                 } else {
-                    if (lastSequenceNumber + 1 != sequenceNumber) {
-                        String message = String.format(
-                            "expected sequence number %s but received %s",
-                            lastSequenceNumber + 1, sequenceNumber);
-
-                        throw new UaException(StatusCodes.Bad_SequenceNumberInvalid, message);
-                    }
+                    validateSequenceNumber(sequenceNumber);
 
                     lastSequenceNumber = sequenceNumber;
                 }
@@ -196,6 +191,40 @@ public final class ChunkDecoder {
             }
 
             callback.onMessageDecoded(composite, requestId);
+        }
+
+        private void validateSequenceNumber(long sequenceNumber) throws UaException {
+            if (sequenceNumber != lastSequenceNumber + 1) {
+                // not what we expected, did it wrap?
+                if (lastSequenceNumber == UInteger.MAX_VALUE - 1024) {
+                    if (sequenceNumber < 1023) {
+                        logger.warn("chunk sequence number to wrapped to {} instead of 1023", sequenceNumber);
+                    }
+                    if (sequenceNumber > 1023) {
+                        throw new UaException(
+                            StatusCodes.Bad_SequenceNumberInvalid,
+                            "expected chunk sequence rollover to <= 1023, but got " + sequenceNumber
+                        );
+                    }
+                } else if (lastSequenceNumber == UInteger.MAX_VALUE) {
+                    if (sequenceNumber < 1023) {
+                        logger.warn("chunk sequence number to wrapped to {} instead of 1023", sequenceNumber);
+                    }
+                    if (sequenceNumber > 1023) {
+                        throw new UaException(
+                            StatusCodes.Bad_SequenceNumberInvalid,
+                            "expected chunk sequence rollover to <= 1023, but got " + sequenceNumber
+                        );
+                    }
+                } else {
+                    String message = String.format(
+                        "expected sequence number %s but received %s",
+                        lastSequenceNumber + 1, sequenceNumber
+                    );
+
+                    throw new UaException(StatusCodes.Bad_SequenceNumberInvalid, message);
+                }
+            }
         }
 
         private void decryptChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {

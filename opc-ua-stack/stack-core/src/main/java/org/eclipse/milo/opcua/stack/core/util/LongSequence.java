@@ -46,4 +46,13 @@ public class LongSequence {
         return atomic.get();
     }
 
+    /**
+     * Atomically set the current value to {@code newValue}.
+     *
+     * @param newValue the new value.
+     */
+    public void set(long newValue) {
+        atomic.set(newValue);
+    }
+
 }

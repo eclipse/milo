@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.SequenceHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.SymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -42,8 +43,7 @@ public final class ChunkEncoder {
     private final AsymmetricEncoder asymmetricEncoder = new AsymmetricEncoder();
     private final SymmetricEncoder symmetricEncoder = new SymmetricEncoder();
 
-    // Wrap after UInt32.MAX - 1024
-    private final LongSequence sequenceNumber = new LongSequence(1L, 4294966271L);
+    private final LongSequence sequenceNumber = new LongSequence(1023L, UInteger.MAX_VALUE - 1024L);
 
     private final ChannelParameters parameters;
 
