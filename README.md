@@ -51,32 +51,13 @@ Referencing a `SNAPSHOT` release requires the Sonatype snapshot repository be ad
 </repository>
 ```
 
-## High Level Roadmap
-### Version 0.4
-#### Server
-- Diagnostic Nodes
+## Public Demo Server
 
+An internet-facing demo server is accessible at `opc.tcp://milo.digitalpetri.com:62541/milo`.
 
-### Version 1.0
-- Auditing Support?
-- ???
+It accepts both unsecured and secured connections. Before connecting with security you must upload your client's DER-encoded X509 certificate using the form at http://milo.digitalpetri.com.
 
-
-### Version 2.0
-#### General
-- Java 9 + Modularization
-
-#### Stack
-- UA 1.04
-
-#### Client
-- UA 1.04
-
-#### Server
-- UA 1.04
-
-
-### Future
-- Javascript/NodeJS Bindings for GraalVM?
-- Python Bindings for GraalVM?
-- History "Connectors"?
+Authenticate anonymously or with one of the following credential pairs:
+- `user1` / `password`
+- `user2` / `password`
+- `admin` / `password`
