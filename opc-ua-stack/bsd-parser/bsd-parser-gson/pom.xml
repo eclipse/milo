@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>bsd-parser</artifactId>
-        <version>0.3.1-SNAPSHOT</version>
+        <version>0.3.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>bsd-parser-gson</artifactId>
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>bsd-parser-core</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>bsd-parser-core</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.2-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
