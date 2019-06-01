@@ -25,10 +25,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
-public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdentityValidator {
+public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdentityValidator<T> {
 
     @Override
-    protected Object validateAnonymousToken(
+    protected T validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -39,7 +39,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
     }
 
     @Override
-    protected Object validateUsernameToken(
+    protected T validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy tokenPolicy,

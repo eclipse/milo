@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
-public interface IdentityValidator {
+public interface IdentityValidator<T> {
 
     /**
      * Validate the provided {@link UserIdentityToken} and return an identity Object that represents the user.
@@ -29,13 +29,14 @@ public interface IdentityValidator {
      * @param token          the {@link UserIdentityToken}.
      * @param tokenPolicy    the {@link UserTokenPolicy} specified by the policyId in {@code token}.
      * @param tokenSignature the {@link SignatureData} sent in the {@link ActivateSessionRequest}
-     * @return an identity Object that represents the user.
+     * @return an identity object of type {@code T} that represents the authenticated user.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    Object validateIdentityToken(
+    T validateIdentityToken(
         Session session,
         UserIdentityToken token,
         UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException;
+        SignatureData tokenSignature
+    ) throws UaException;
 
 }
