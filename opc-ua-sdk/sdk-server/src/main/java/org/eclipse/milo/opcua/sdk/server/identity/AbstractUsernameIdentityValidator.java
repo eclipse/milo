@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -34,7 +35,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         SignatureData tokenSignature
     ) throws UaException {
 
-        return authenticateAnonymous(session);
+        return authenticateAnonymousOrThrow(session);
     }
 
     @Override
@@ -43,20 +44,6 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         UserNameIdentityToken token,
         UserTokenPolicy tokenPolicy,
         SignatureData tokenSignature
-    ) throws UaException {
-
-        try {
-            return authenticateUserNameIdentityToken(session, token);
-        } catch (UaException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new UaException(StatusCodes.Bad_InternalError, t);
-        }
-    }
-
-    private T authenticateUserNameIdentityToken(
-        Session session,
-        UserNameIdentityToken token
     ) throws UaException {
 
         String username = token.getUserName();
@@ -124,6 +111,16 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         }
     }
 
+    private T authenticateAnonymousOrThrow(Session session) throws UaException {
+        T identityObject = authenticateAnonymous(session);
+
+        if (identityObject != null) {
+            return identityObject;
+        } else {
+            throw new UaException(StatusCodes.Bad_UserAccessDenied);
+        }
+    }
+
     private T authenticateUsernameOrThrow(Session session, String username, String password) throws UaException {
         T identityObject = authenticateUsernamePassword(session, username, password);
 
@@ -138,8 +135,10 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
      * Create and return an identity object for an anonymous user.
      *
      * @param session the {@link Session} being activated.
-     * @return an identity object for an anonymous user.
+     * @return an identity object of type {@code T} representig an anonymous user, or {@code null} if anonymous
+     * authentication is not allowed.
      */
+    @Nullable
     protected abstract T authenticateAnonymous(Session session);
 
     /**
@@ -151,6 +150,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
      * @param password the password to authenticate the user with.
      * @return an identity object of type {@code T} if the authentication succeeded, {@code null} if it failed.
      */
+    @Nullable
     protected abstract T authenticateUsernamePassword(Session session, String username, String password);
 
 }

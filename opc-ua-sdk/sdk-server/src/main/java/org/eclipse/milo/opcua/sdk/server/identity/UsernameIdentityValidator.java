@@ -14,11 +14,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
-import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
 public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator<String> {
 
@@ -34,28 +29,18 @@ public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator
         this.predicate = predicate;
     }
 
-    @Override
-    public Object validateAnonymousToken(
-        Session session,
-        AnonymousIdentityToken token,
-        UserTokenPolicy tokenPolicy,
-        SignatureData tokenSignature) throws UaException {
-
-        if (anonymousAccessAllowed) {
-            return String.format("anonymous_%s_%s",
-                session.getSessionName(), session.getSessionId().toParseableString());
-        } else {
-            throw new UaException(StatusCodes.Bad_UserAccessDenied);
-        }
-    }
-
+    @Nullable
     @Override
     protected String authenticateAnonymous(Session session) {
-        return String.format(
-            "anonymous_%s_%s",
-            session.getSessionName(),
-            session.getSessionId().toParseableString()
-        );
+        if (anonymousAccessAllowed) {
+            return String.format(
+                "anonymous_%s_%s",
+                session.getSessionName(),
+                session.getSessionId().toParseableString()
+            );
+        } else {
+            return null;
+        }
     }
 
     @Nullable
