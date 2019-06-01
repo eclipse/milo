@@ -59,9 +59,6 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         UserNameIdentityToken token
     ) throws UaException {
 
-        SecurityPolicy securityPolicy = session
-            .getSecurityConfiguration().getSecurityPolicy();
-
         String username = token.getUserName();
         ByteString lastNonce = session.getLastNonce();
         int lastNonceLength = lastNonce.length();
@@ -75,6 +72,9 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         String algorithmUri = token.getEncryptionAlgorithm();
 
         if (algorithmUri == null || algorithmUri.isEmpty()) {
+            SecurityPolicy securityPolicy = session
+                .getSecurityConfiguration().getSecurityPolicy();
+
             algorithm = securityPolicy.getAsymmetricEncryptionAlgorithm();
         } else {
             try {
@@ -91,16 +91,18 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
             }
         }
 
-        byte[] tokenBytes = token.getPassword().bytes();
-        if (tokenBytes == null) tokenBytes = new byte[0];
+        byte[] tokenBytes = token.getPassword().bytesOrEmpty();
 
         if (algorithm != SecurityAlgorithm.None) {
             byte[] plainTextBytes = decryptTokenData(session, algorithm, tokenBytes);
 
-            int length = ((plainTextBytes[3] & 0xFF) << 24) |
+            //@formatter:off
+            int length =
+                ((plainTextBytes[3] & 0xFF) << 24) |
                 ((plainTextBytes[2] & 0xFF) << 16) |
-                ((plainTextBytes[1] & 0xFF) << 8) |
-                (plainTextBytes[0] & 0xFF);
+                ((plainTextBytes[1] & 0xFF) << 8 ) |
+                ( plainTextBytes[0] & 0xFF       );
+            //@formatter:on
 
             byte[] passwordBytes = new byte[length - lastNonceLength];
             byte[] nonceBytes = new byte[lastNonceLength];
