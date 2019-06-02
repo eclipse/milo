@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.security.MessageDigest;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -97,7 +97,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
             System.arraycopy(plainTextBytes, 4, passwordBytes, 0, passwordBytes.length);
             System.arraycopy(plainTextBytes, 4 + passwordBytes.length, nonceBytes, 0, lastNonceLength);
 
-            if (Arrays.equals(lastNonce.bytes(), nonceBytes)) {
+            if (MessageDigest.isEqual(lastNonce.bytes(), nonceBytes)) {
                 String password = new String(passwordBytes, Charset.forName("UTF-8"));
 
                 return authenticateUsernameOrThrow(session, username, password);
