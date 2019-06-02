@@ -84,6 +84,15 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
         }
     }
 
+    /**
+     * Create and return an identity object for the user identified by {@code identityCertificate}.
+     * <p>
+     * Possession of the private key associated with this certificate has been verified prior to this call.
+     *
+     * @param session             the {@link Session} being activated.
+     * @param identityCertificate the {@link X509Certificate} identifying the user.
+     * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
+     */
     @Nullable
     protected abstract T authenticateIdentityCertificate(Session session, X509Certificate identityCertificate);
 

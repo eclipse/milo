@@ -148,7 +148,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
      * @param session  the {@link Session} being activated.
      * @param username the username to authenticate.
      * @param password the password to authenticate the user with.
-     * @return an identity object of type {@code T} if the authentication succeeded, {@code null} if it failed.
+     * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if it failed.
      */
     @Nullable
     protected abstract T authenticateUsernamePassword(Session session, String username, String password);
