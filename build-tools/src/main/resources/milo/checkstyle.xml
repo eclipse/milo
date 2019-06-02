@@ -18,7 +18,7 @@
 
     <module name="RegexpHeader">
         <property name="header"
-                  value="/*\n * Copyright \(c\) \d\d\d\d the Eclipse Milo Authors\n *\n * This program and the accompanying materials are made\n * available under the terms of the Eclipse Public License 2.0\n * which is available at https://www.eclipse.org/legal/epl-2.0/\n *\n * SPDX-License-Identifier: EPL-2.0\n */\n" />
+                  value="/*\n * Copyright \(c\) \d\d\d\d the Eclipse Milo Authors\n *\n * This program and the accompanying materials are made\n * available under the terms of the Eclipse Public License 2.0\n * which is available at https://www.eclipse.org/legal/epl-2.0/\n *\n * SPDX-License-Identifier: EPL-2.0\n */\n"/>
         <property name="fileExtensions" value="java"/>
     </module>
 
@@ -215,5 +215,9 @@
             <property name="exceptionVariableName" value="expected"/>
         </module>
         <module name="CommentsIndentation"/>
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="@formatter\:off"/>
+            <property name="onCommentFormat" value="@formatter\:on"/>
+        </module>
     </module>
 </module>
