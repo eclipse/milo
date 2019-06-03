@@ -72,7 +72,10 @@ public class ClientExampleRunner {
 
         return OpcUaClient.create(
             clientExample.getEndpointUrl(),
-            clientExample.endpointFilter(),
+            endpoints ->
+                endpoints.stream()
+                    .filter(clientExample.endpointFilter())
+                    .findFirst(),
             configBuilder ->
                 configBuilder
                     .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
@@ -81,6 +84,7 @@ public class ClientExampleRunner {
                     .setKeyPair(loader.getClientKeyPair())
                     .setIdentityProvider(clientExample.getIdentityProvider())
                     .setRequestTimeout(uint(5000))
+                    .build()
         );
     }
 
