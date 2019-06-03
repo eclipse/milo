@@ -12,10 +12,10 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
@@ -156,44 +156,39 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * Create and configured an {@link OpcUaClient} by retrieving and selecting an {@link EndpointDescription} from
-     * the server at {@code endpointUrl} and building a configuration using that endpoint.
-     * <p>
-     * The first endpoint matched by {@code endpointFilter} will be used in the configuration.
+     * Create and configure an {@link OpcUaClient} by selecting an {@link EndpointDescription} from a list of endpoints
+     * retrieved via the GetEndpoints service from the server at {@code endpointUrl} and building an
+     * {@link OpcUaClientConfig} using that endpoint.
      *
-     * @param endpointUrl           the endpoint URL of the server to connect to and retrieve endpoints from.
-     * @param endpointFilter        a {@link Predicate} used to select the {@link EndpointDescription} to connect to.
-     * @param configBuilderConsumer a {@link Consumer} that receives an {@link OpcUaClientConfigBuilder} used to
-     *                              configure the {@link OpcUaClientConfig} for the returned {@link OpcUaClient}.
+     * @param endpointUrl    the endpoint URL of the server to connect to and retrieve endpoints from.
+     * @param selectEndpoint a function that selects the {@link EndpointDescription} to connect to from the list of
+     *                       endpoints from the server.
+     * @param buildConfig    a function that configures an {@link OpcUaClientConfigBuilder} and then builds and returns
+     *                       an {@link OpcUaClientConfig}.
      * @return a configured {@link OpcUaClient}.
      * @throws UaException if the endpoints could not be retrieved or the client could not be created.
      */
     public static OpcUaClient create(
         String endpointUrl,
-        Predicate<EndpointDescription> endpointFilter,
-        Consumer<OpcUaClientConfigBuilder> configBuilderConsumer
+        Function<List<EndpointDescription>, Optional<EndpointDescription>> selectEndpoint,
+        Function<OpcUaClientConfigBuilder, OpcUaClientConfig> buildConfig
     ) throws UaException {
 
         try {
-            List<EndpointDescription> endpointDescriptions =
+            List<EndpointDescription> endpoints =
                 DiscoveryClient.getEndpoints(endpointUrl).get();
 
-            EndpointDescription endpoint = endpointDescriptions.stream()
-                .filter(endpointFilter)
-                .findFirst()
-                .orElseThrow(() ->
-                    new UaException(
-                        StatusCodes.Bad_ConfigurationError,
-                        "no matching endpoints found"
-                    )
-                );
+            EndpointDescription endpoint = selectEndpoint.apply(endpoints).orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no endpoint selected"
+                )
+            );
 
             OpcUaClientConfigBuilder builder = OpcUaClientConfig.builder()
                 .setEndpoint(endpoint);
 
-            configBuilderConsumer.accept(builder);
-
-            return create(builder.build());
+            return create(buildConfig.apply(builder));
         } catch (InterruptedException | ExecutionException e) {
             if (!endpointUrl.endsWith("/discovery")) {
                 StringBuilder discoveryUrl = new StringBuilder(endpointUrl);
@@ -202,7 +197,7 @@ public class OpcUaClient implements UaClient {
                 }
                 discoveryUrl.append("discovery");
 
-                return create(discoveryUrl.toString(), endpointFilter, configBuilderConsumer);
+                return create(discoveryUrl.toString(), selectEndpoint, buildConfig);
             } else {
                 throw UaException.extract(e)
                     .orElseGet(() -> new UaException(e));
