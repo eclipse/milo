@@ -13,22 +13,28 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
+import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
 import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.client.model.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -72,6 +78,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesReques
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
@@ -135,10 +142,72 @@ public class OpcUaClient implements UaClient {
         logger.info("Eclipse Milo OPC UA Client SDK version: {}", SDK_VERSION);
     }
 
+    /**
+     * Create an {@link OpcUaClient} configured with {@code config}.
+     *
+     * @param config the {@link OpcUaClientConfig}.
+     * @return an {@link OpcUaClient} configured with {@code config}.
+     * @throws UaException if the client could not be created (e.g. transport/encoding not supported).
+     */
     public static OpcUaClient create(OpcUaClientConfig config) throws UaException {
         UaStackClient stackClient = UaStackClient.create(config);
 
         return new OpcUaClient(config, stackClient);
+    }
+
+    /**
+     * Create and configured an {@link OpcUaClient} by retrieving and selecting an {@link EndpointDescription} from
+     * the server at {@code endpointUrl} and building a configuration using that endpoint.
+     * <p>
+     * The first endpoint matched by {@code endpointFilter} will be used in the configuration.
+     *
+     * @param endpointUrl           the endpoint URL of the server to connect to and retrieve endpoints from.
+     * @param endpointFilter        a {@link Predicate} used to select the {@link EndpointDescription} to connect to.
+     * @param configBuilderConsumer a {@link Consumer} that receives an {@link OpcUaClientConfigBuilder} used to
+     *                              configure the {@link OpcUaClientConfig} for the returned {@link OpcUaClient}.
+     * @return a configured {@link OpcUaClient}.
+     * @throws UaException if the endpoints could not be retrieved or the client could not be created.
+     */
+    public static OpcUaClient create(
+        String endpointUrl,
+        Predicate<EndpointDescription> endpointFilter,
+        Consumer<OpcUaClientConfigBuilder> configBuilderConsumer
+    ) throws UaException {
+
+        try {
+            List<EndpointDescription> endpointDescriptions =
+                DiscoveryClient.getEndpoints(endpointUrl).get();
+
+            EndpointDescription endpoint = endpointDescriptions.stream()
+                .filter(endpointFilter)
+                .findFirst()
+                .orElseThrow(() ->
+                    new UaException(
+                        StatusCodes.Bad_ConfigurationError,
+                        "no matching endpoints found"
+                    )
+                );
+
+            OpcUaClientConfigBuilder builder = OpcUaClientConfig.builder()
+                .setEndpoint(endpoint);
+
+            configBuilderConsumer.accept(builder);
+
+            return create(builder.build());
+        } catch (InterruptedException | ExecutionException e) {
+            if (!endpointUrl.endsWith("/discovery")) {
+                StringBuilder discoveryUrl = new StringBuilder(endpointUrl);
+                if (!endpointUrl.endsWith("/")) {
+                    discoveryUrl.append("/");
+                }
+                discoveryUrl.append("discovery");
+
+                return create(discoveryUrl.toString(), endpointFilter, configBuilderConsumer);
+            } else {
+                throw UaException.extract(e)
+                    .orElseGet(() -> new UaException(e));
+            }
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
