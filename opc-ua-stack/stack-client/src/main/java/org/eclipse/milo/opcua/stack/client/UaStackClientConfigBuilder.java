@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -118,6 +119,8 @@ public class UaStackClientConfigBuilder {
     }
 
     public UaStackClientConfig build() {
+        Preconditions.checkNotNull(endpoint, "endpoint must be non-null");
+
         if (executor == null) {
             executor = Stack.sharedExecutor();
         }

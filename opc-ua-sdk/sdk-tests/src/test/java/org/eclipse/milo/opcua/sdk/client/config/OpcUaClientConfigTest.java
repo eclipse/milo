@@ -14,6 +14,9 @@ import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -22,9 +25,26 @@ import static org.testng.Assert.assertNotEquals;
 
 public class OpcUaClientConfigTest {
 
+    private final EndpointDescription endpoint = new EndpointDescription(
+        "opc.tcp://localhost:62541",
+        null,
+        null,
+        null,
+        null,
+        new UserTokenPolicy[]{
+            new UserTokenPolicy(
+                "anonymous",
+                UserTokenType.Anonymous,
+                null, null, null)
+        },
+        null,
+        null
+    );
+
     @Test
     public void testCopy() {
         OpcUaClientConfig original = OpcUaClientConfig.builder()
+            .setEndpoint(endpoint)
             .setSessionName(() -> "testSessionName")
             .setSessionTimeout(uint(60000 * 60))
             .setRequestTimeout(uint(120000))
@@ -53,6 +73,7 @@ public class OpcUaClientConfigTest {
     @Test
     public void testCopyAndModify() {
         OpcUaClientConfig original = OpcUaClientConfig.builder()
+            .setEndpoint(endpoint)
             .setSessionName(() -> "testSessionName")
             .setSessionTimeout(uint(60000 * 60))
             .setRequestTimeout(uint(120000))
