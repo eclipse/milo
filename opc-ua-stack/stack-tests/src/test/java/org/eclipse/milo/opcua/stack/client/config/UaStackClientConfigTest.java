@@ -20,12 +20,31 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.testng.Assert.assertEquals;
 
 public class UaStackClientConfigTest extends SecurityFixture {
+
+    private final EndpointDescription endpoint = new EndpointDescription(
+        "opc.tcp://localhost:62541",
+        null,
+        null,
+        null,
+        null,
+        new UserTokenPolicy[]{
+            new UserTokenPolicy(
+                "anonymous",
+                UserTokenType.Anonymous,
+                null, null, null)
+        },
+        null,
+        null
+    );
 
     private final CertificateValidator validator = new CertificateValidator() {
         @Override
@@ -38,6 +57,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
     @Test
     public void testCopy() {
         UaStackClientConfig original = UaStackClientConfig.builder()
+            .setEndpoint(endpoint)
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
             .setCertificateChain(new X509Certificate[]{clientCertificate})
@@ -67,6 +87,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
     @Test
     public void testCopyAndModify() {
         UaStackClientConfig original = UaStackClientConfig.builder()
+            .setEndpoint(endpoint)
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
             .setCertificateValidator(validator)
