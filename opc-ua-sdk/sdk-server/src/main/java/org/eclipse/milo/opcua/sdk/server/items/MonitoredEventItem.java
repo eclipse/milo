@@ -143,7 +143,10 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
                 eventOverflow.set(true);
 
                 Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
-                subscription.getSubscriptionDiagnostics().getEventQueueOverFlowCount().increment();
+
+                if (subscription != null) {
+                    subscription.getSubscriptionDiagnostics().getEventQueueOverFlowCount().increment();
+                }
             }
 
             if (discardOldest) {
