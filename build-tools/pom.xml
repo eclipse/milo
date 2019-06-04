@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.eclipse.milo</groupId>
@@ -27,13 +28,8 @@
 
     <licenses>
         <license>
-            <name>Eclipse Public License 1.0</name>
-            <url>https://eclipse.org/org/documents/epl-v10.php</url>
-            <distribution>repo</distribution>
-        </license>
-        <license>
-            <name>Eclipse Distribution License 1.0</name>
-            <url>https://eclipse.org/org/documents/edl-v10.php</url>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
