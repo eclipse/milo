@@ -18,6 +18,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -42,6 +43,16 @@ public class NodeIdTest {
         assertNull(NodeId.parseOrNull("ns=0"));
         assertNull(NodeId.parseOrNull("ns=0;"));
         assertNull(NodeId.parseOrNull("ns=0;s"));
+    }
+
+    @Test
+    public void testParseNamespaceIndex() {
+        for (int i = 0; i < UShort.MAX_VALUE; i++) {
+            NodeId nodeId = NodeId.parseOrNull("ns=" + i + ";i=" + i);
+            assertNotNull(nodeId);
+            assertEquals(nodeId.getNamespaceIndex(), ushort(i));
+            assertEquals(nodeId.getIdentifier(), uint(i));
+        }
     }
 
     @Test
