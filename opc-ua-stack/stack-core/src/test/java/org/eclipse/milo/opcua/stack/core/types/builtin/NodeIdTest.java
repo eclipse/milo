@@ -14,6 +14,9 @@ import java.util.Random;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.testng.annotations.Test;
 
@@ -22,6 +25,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertThrows;
 
 public class NodeIdTest {
 
@@ -46,6 +50,12 @@ public class NodeIdTest {
     }
 
     @Test
+    public void testParseInvalidInt() {
+        assertThrows(UaRuntimeException.class, () -> NodeId.parse("ns=0;i=" + UInteger.MAX_VALUE + 1));
+        assertThrows(UaRuntimeException.class, () -> NodeId.parse("ns=0;i=" + -1));
+    }
+
+    @Test
     public void testParseNamespaceIndex() {
         for (int i = 0; i < UShort.MAX_VALUE; i++) {
             NodeId nodeId = NodeId.parseOrNull("ns=" + i + ";i=" + i);
@@ -57,7 +67,9 @@ public class NodeIdTest {
 
     @Test
     public void testParseInt() {
-        for (int i = 0; i < UShort.MAX_VALUE; i++) {
+        long[] is = new long[]{0, UByte.MAX_VALUE, UShort.MAX_VALUE, UInteger.MAX_VALUE};
+
+        for (long i : is) {
             assertNotNull(NodeId.parseOrNull("i=" + i));
             assertNotNull(NodeId.parseOrNull("ns=0;i=" + i));
         }

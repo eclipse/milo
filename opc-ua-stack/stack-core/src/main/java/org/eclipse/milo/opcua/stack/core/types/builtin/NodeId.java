@@ -337,13 +337,25 @@ public final class NodeId {
 
         switch (type) {
             case "i=":
-                return new NodeId(namespaceIndex, uint(Long.valueOf(id)));
+                try {
+                    return new NodeId(namespaceIndex, uint(Long.valueOf(id)));
+                } catch (NumberFormatException e) {
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                }
             case "s=":
                 return new NodeId(namespaceIndex, id);
             case "g=":
-                return new NodeId(namespaceIndex, UUID.fromString(id));
+                try {
+                    return new NodeId(namespaceIndex, UUID.fromString(id));
+                } catch (IllegalArgumentException e) {
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                }
             case "b=":
-                return new NodeId(namespaceIndex, ByteString.of(DatatypeConverter.parseBase64Binary(id)));
+                try {
+                    return new NodeId(namespaceIndex, ByteString.of(DatatypeConverter.parseBase64Binary(id)));
+                } catch (IllegalArgumentException e) {
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                }
             default:
                 throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
         }
