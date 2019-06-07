@@ -10,6 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Random;
+import java.util.UUID;
+import javax.xml.bind.DatatypeConverter;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.testng.annotations.Test;
 
@@ -54,6 +58,45 @@ public class NodeIdTest {
         assertNotNull(NodeId.parseOrNull("s=foo"));
         assertNotNull(NodeId.parseOrNull("ns=0;s="));
         assertNotNull(NodeId.parseOrNull("ns=0;s=foo"));
+    }
+
+    @Test
+    public void testParseGuid() {
+        for (int i = 0; i < 100; i++) {
+            UUID uuid = UUID.randomUUID();
+            {
+                NodeId nodeId = NodeId.parseOrNull("g=" + uuid.toString());
+                assertNotNull(nodeId);
+                assertEquals(nodeId.getIdentifier(), uuid);
+            }
+            {
+                NodeId nodeId = NodeId.parseOrNull("ns=0;g=" + uuid.toString());
+                assertNotNull(nodeId);
+                assertEquals(nodeId.getIdentifier(), uuid);
+            }
+        }
+    }
+
+    @Test
+    public void testParseByteString() {
+        Random r = new Random();
+
+        for (int i = 0; i < 100; i++) {
+            byte[] bs = new byte[r.nextInt(64) + 1];
+            r.nextBytes(bs);
+            String bss = DatatypeConverter.printBase64Binary(bs);
+
+            {
+                NodeId nodeId = NodeId.parseOrNull("b=" + bss);
+                assertNotNull(nodeId);
+                assertEquals(nodeId.getIdentifier(), ByteString.of(bs));
+            }
+            {
+                NodeId nodeId = NodeId.parseOrNull("ns=0;b=" + bss);
+                assertNotNull(nodeId);
+                assertEquals(nodeId.getIdentifier(), ByteString.of(bs));
+            }
+        }
     }
 
 }
