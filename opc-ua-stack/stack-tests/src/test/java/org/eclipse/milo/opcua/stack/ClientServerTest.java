@@ -265,43 +265,6 @@ public class ClientServerTest extends SecurityFixture {
 
         UaStackClient client = createClient(endpoint);
 
-        // Test some where we don't wait for disconnect to finish...
-        for (int i = 0; i < 1000; i++) {
-            logger.debug("connecting...");
-            client.connect().get();
-            logger.debug("...connected");
-
-            RequestHeader header = new RequestHeader(
-                NodeId.NULL_VALUE,
-                DateTime.now(),
-                uint(i),
-                uint(0),
-                null,
-                DEFAULT_TIMEOUT_HINT,
-                null
-            );
-
-            ReadRequest request = new ReadRequest(
-                header,
-                0.0,
-                TimestampsToReturn.Neither,
-                new ReadValueId[]{
-                    new ReadValueId(
-                        NodeId.NULL_VALUE,
-                        AttributeId.Value.uid(),
-                        null,
-                        null)
-                }
-            );
-
-            logger.debug("sending request: {}", request);
-            UaResponseMessage response = client.sendRequest(request).get();
-            logger.debug("got response: {}", response);
-
-            client.disconnect();
-        }
-
-        // and test some where we DO wait...
         for (int i = 0; i < 1000; i++) {
             client.connect().get();
 
