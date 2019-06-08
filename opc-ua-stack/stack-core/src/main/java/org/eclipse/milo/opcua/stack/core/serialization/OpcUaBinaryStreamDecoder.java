@@ -272,17 +272,19 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         NodeId nodeId = readNodeId();
 
         String namespaceUri = null;
-        long serverIndex = 0;
+        UInteger serverIndex = UInteger.MIN;
 
         if ((flags & 0x80) == 0x80) {
             namespaceUri = readString();
         }
 
         if ((flags & 0x40) == 0x40) {
-            serverIndex = readUInt32().longValue();
+            serverIndex = readUInt32();
         }
 
-        return new ExpandedNodeId(nodeId, namespaceUri, serverIndex);
+        UShort idx = namespaceUri != null ? nodeId.getNamespaceIndex() : null;
+
+        return new ExpandedNodeId(idx, namespaceUri, nodeId.getIdentifier(), serverIndex);
     }
 
     public ExtensionObject readExtensionObject() throws UaSerializationException {

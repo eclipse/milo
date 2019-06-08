@@ -12,17 +12,20 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -169,7 +172,7 @@ public final class NodeId {
     }
 
     public ExpandedNodeId expanded() {
-        return new ExpandedNodeId(this);
+        return new ExpandedNodeId(namespaceIndex, null, identifier, UInteger.MIN);
     }
 
     public boolean isNull() {

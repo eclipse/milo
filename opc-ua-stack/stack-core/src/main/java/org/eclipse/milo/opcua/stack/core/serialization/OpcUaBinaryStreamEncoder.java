@@ -46,8 +46,6 @@ import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-
 public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
@@ -386,17 +384,19 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
         int flags = 0;
         String namespaceUri = value.getNamespaceUri();
-        long serverIndex = value.getServerIndex();
+        UInteger serverIndex = value.getServerIndex();
 
         if (namespaceUri != null && namespaceUri.length() > 0) {
             flags |= 0x80;
         }
 
-        if (serverIndex > 0) {
+        if (serverIndex.longValue() > 0) {
             flags |= 0x40;
         }
 
-        int namespaceIndex = value.getNamespaceIndex().intValue();
+        UShort index = value.getNamespaceIndex();
+        if (index == null) index = UShort.MIN;
+        int namespaceIndex = index.intValue();
 
         if (value.getType() == IdType.Numeric) {
             UInteger identifier = (UInteger) value.getIdentifier();
@@ -445,8 +445,8 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             writeString(namespaceUri);
         }
 
-        if (serverIndex > 0) {
-            writeUInt32(uint(serverIndex));
+        if (serverIndex.longValue() > 0) {
+            writeUInt32(serverIndex);
         }
     }
 

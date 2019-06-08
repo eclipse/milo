@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -24,19 +25,19 @@ public class ExpandedNodeIdTest {
     public void testLocal() {
         namespaceTable.addUri("uri:test");
 
-        ExpandedNodeId xni0 = new ExpandedNodeId(new NodeId(0, "test"));
+        ExpandedNodeId xni0 = new ExpandedNodeId(ushort(0), null, "test");
         assertTrue(xni0.local(namespaceTable).isPresent());
 
-        ExpandedNodeId xni1 = new ExpandedNodeId(new NodeId(1, "test"));
+        ExpandedNodeId xni1 = new ExpandedNodeId(ushort(1), null, "test");
         assertTrue(xni1.local(namespaceTable).isPresent());
 
-        ExpandedNodeId xni2 = new ExpandedNodeId(new NodeId(99, "test"), namespaceTable.getUri(0));
+        ExpandedNodeId xni2 = new ExpandedNodeId(ushort(99), namespaceTable.getUri(0), "test");
         assertTrue(xni2.local(namespaceTable).isPresent());
 
-        ExpandedNodeId xni3 = new ExpandedNodeId(new NodeId(99, "test"), namespaceTable.getUri(1));
+        ExpandedNodeId xni3 = new ExpandedNodeId(ushort(99), namespaceTable.getUri(1), "test");
         assertTrue(xni3.local(namespaceTable).isPresent());
 
-        ExpandedNodeId xni4 = new ExpandedNodeId(new NodeId(99, "test"), "uri:notpresent");
+        ExpandedNodeId xni4 = new ExpandedNodeId(ushort(99), "uri:notpresent", "test");
         assertFalse(xni4.local(namespaceTable).isPresent());
     }
 
