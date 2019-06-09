@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.UUID;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -41,4 +44,14 @@ public class ExpandedNodeIdTest {
         assertFalse(xni4.local(namespaceTable).isPresent());
     }
 
+    @Test
+    public void testIsNull() {
+        assertTrue(ExpandedNodeId.newBuilder().setIdentifier(uint(0)).build().isNull());
+        assertTrue(ExpandedNodeId.newBuilder().setIdentifier((String) null).build().isNull());
+        assertTrue(ExpandedNodeId.newBuilder().setIdentifier("").build().isNull());
+        assertTrue(ExpandedNodeId.newBuilder().setIdentifier(new UUID(0, 0)).build().isNull());
+        assertTrue(ExpandedNodeId.newBuilder().setIdentifier(ByteString.NULL_VALUE).build().isNull());
+        assertTrue(ExpandedNodeId.newBuilder().setIdentifier(ByteString.of(new byte[0])).build().isNull());
+    }
+    
 }

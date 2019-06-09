@@ -67,7 +67,7 @@ public class StringConversionsTest extends AbstractConversionTest<String> {
 
             case ExpandedNodeId: {
                 ExpandedNodeId eni = new ExpandedNodeId(
-                    0, "foo", Namespaces.OPC_UA, 0);
+                    ushort(0), Namespaces.OPC_UA, "foo", uint(0));
 
                 String s = eni.toParseableString();
 

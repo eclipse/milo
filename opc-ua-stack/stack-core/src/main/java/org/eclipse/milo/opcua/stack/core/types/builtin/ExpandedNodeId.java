@@ -20,6 +20,7 @@ import javax.xml.bind.DatatypeConverter;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -35,7 +36,7 @@ public final class ExpandedNodeId {
     public static final ExpandedNodeId NULL_VALUE = new ExpandedNodeId(
         ushort(0),
         null,
-        (Object) null,
+        uint(0),
         uint(0)
     );
 
@@ -219,7 +220,26 @@ public final class ExpandedNodeId {
      * @return {@code true} if this {@link ExpandedNodeId} is null.
      */
     public boolean isNull() {
-        return identifier == null; // TODO idx == 0 && identifier is null (use ByteString#isNull() etc...)
+        if (namespaceIndex.intValue() > 0) {
+            return false;
+        }
+
+        switch (getType()) {
+            case Numeric:
+                return ((UInteger) identifier).intValue() == 0;
+            case String:
+                return Strings.isNullOrEmpty((String) identifier);
+            case Guid: {
+                UUID identifier = (UUID) this.identifier;
+                return identifier.getLeastSignificantBits() == 0 && identifier.getMostSignificantBits() == 0;
+            }
+            case Opaque: {
+                ByteString bs = (ByteString) identifier;
+                return bs == null || bs.isNullOrEmpty();
+            }
+        }
+
+        return true;
     }
 
     public boolean isNotNull() {
@@ -348,7 +368,7 @@ public final class ExpandedNodeId {
             NodeId nodeId = NodeId.parse(parts[parts.length - 1]);
 
             UInteger serverIndex = UInteger.MIN;
-            UShort namespaceIndex = null;
+            UShort namespaceIndex = UShort.MIN;
             String namespaceUri = null;
             Object identifier = nodeId.getIdentifier();
 
@@ -363,15 +383,75 @@ public final class ExpandedNodeId {
                 }
             }
 
-            return new ExpandedNodeId(
-                namespaceIndex,
-                namespaceUri,
-                identifier,
-                serverIndex
-            );
+            return new ExpandedNodeId(namespaceIndex, namespaceUri, identifier, serverIndex);
         } catch (Throwable t) {
             throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, t);
         }
+    }
+
+    /**
+     * Return a new {@link ExpandedNodeId.Builder}.
+     *
+     * @return a new {@link ExpandedNodeId.Builder}.
+     */
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private UShort namespaceIndex = UShort.MIN;
+        private String namespaceUri = null;
+        private Object identifier = null;
+        private UInteger serverIndex = UInteger.MIN;
+
+        public Builder setNamespaceIndex(int namespaceIndex) {
+            return setNamespaceIndex(ushort(namespaceIndex));
+        }
+
+        public Builder setNamespaceIndex(UShort namespaceIndex) {
+            this.namespaceIndex = namespaceIndex;
+            return this;
+        }
+
+        public Builder setNamespaceUri(String namespaceUri) {
+            this.namespaceUri = namespaceUri;
+            return this;
+        }
+
+        public Builder setIdentifier(UInteger identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
+        public Builder setIdentifier(String identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
+        public Builder setIdentifier(UUID identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
+        public Builder setIdentifier(ByteString identifier) {
+            this.identifier = identifier;
+            return this;
+        }
+
+        public Builder setServerIndex(long serverIndex) {
+            return setServerIndex(uint(serverIndex));
+        }
+
+        public Builder setServerIndex(UInteger serverIndex) {
+            this.serverIndex = serverIndex;
+            return this;
+        }
+
+        public ExpandedNodeId build() {
+            return new ExpandedNodeId(namespaceIndex, namespaceUri, identifier, serverIndex);
+        }
+
     }
 
 }
