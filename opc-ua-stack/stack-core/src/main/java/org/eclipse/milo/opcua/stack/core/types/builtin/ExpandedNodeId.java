@@ -306,6 +306,35 @@ public final class ExpandedNodeId {
             serverIndex.equals(that.serverIndex);
     }
 
+    /**
+     * Check if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     * <p>
+     * To be considered equal this ExpandedNodeId must be in serverIndex == 0, have the same namespace index as
+     * {@code nodeId} or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param nodeId the {@link NodeId} to check equality against.
+     * @return {@code true} if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     */
+    public boolean equals(NodeId nodeId) {
+        return nodeId.equals(this);
+    }
+
+    /**
+     * Check if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     * <p>
+     * To be considered equal this ExpandedNodeId must be in serverIndex == 0, have the same namespace index as
+     * {@code nodeId} or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param nodeId         the {@link NodeId} to check equality against.
+     * @param namespaceTable the {@link NamespaceTable} used to look up the index of a namespace URI.
+     * @return {@code true} if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     */
+    public boolean equals(NodeId nodeId, NamespaceTable namespaceTable) {
+        return nodeId.equals(this, namespaceTable);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(namespaceIndex, identifier, namespaceUri, serverIndex);
