@@ -111,7 +111,7 @@ public class NodeFactory {
             .filter(vn ->
                 vn.getReferences().stream().anyMatch(r ->
                     Identifiers.HasModellingRule.equals(r.getReferenceTypeId()) &&
-                        Identifiers.ModellingRule_Mandatory.expanded().equals(r.getTargetNodeId())))
+                        Identifiers.ModellingRule_Mandatory.equals(r.getTargetNodeId())))
             .collect(Collectors.toList());
 
         for (UaVariableNode declaration : propertyDeclarations) {
@@ -148,9 +148,9 @@ public class NodeFactory {
             boolean placeholder = declaration.getReferences().stream()
                 .anyMatch(r -> r.isForward() &&
                     r.getReferenceTypeId().equals(Identifiers.HasModellingRule) &&
-                    (Identifiers.ModellingRule_OptionalPlaceholder.expanded().equals(r.getTargetNodeId()) ||
-                        Identifiers.ModellingRule_MandatoryPlaceholder.expanded().equals(r.getTargetNodeId()) ||
-                        Identifiers.ModellingRule_ExposesItsArray.expanded().equals(r.getTargetNodeId()))
+                    (Identifiers.ModellingRule_OptionalPlaceholder.equals(r.getTargetNodeId()) ||
+                        Identifiers.ModellingRule_MandatoryPlaceholder.equals(r.getTargetNodeId()) ||
+                        Identifiers.ModellingRule_ExposesItsArray.equals(r.getTargetNodeId()))
                 );
 
             if (placeholder) continue;
@@ -189,9 +189,9 @@ public class NodeFactory {
                 boolean placeholder = declaration.getReferences().stream()
                     .anyMatch(r -> r.isForward() &&
                         r.getReferenceTypeId().equals(Identifiers.HasModellingRule) &&
-                        (Identifiers.ModellingRule_OptionalPlaceholder.expanded().equals(r.getTargetNodeId()) ||
-                            Identifiers.ModellingRule_MandatoryPlaceholder.expanded().equals(r.getTargetNodeId()) ||
-                            Identifiers.ModellingRule_ExposesItsArray.expanded().equals(r.getTargetNodeId()))
+                        (Identifiers.ModellingRule_OptionalPlaceholder.equals(r.getTargetNodeId()) ||
+                            Identifiers.ModellingRule_MandatoryPlaceholder.equals(r.getTargetNodeId()) ||
+                            Identifiers.ModellingRule_ExposesItsArray.equals(r.getTargetNodeId()))
                     );
 
                 if (placeholder) continue;

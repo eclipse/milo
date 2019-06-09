@@ -157,9 +157,9 @@ public class InstanceDeclarationHierarchy {
             return node.getReferences().stream()
                 .anyMatch(r -> {
                     boolean rule =
-                        Identifiers.ModellingRule_Mandatory.expanded().equals(r.getTargetNodeId()) ||
+                        Identifiers.ModellingRule_Mandatory.equals(r.getTargetNodeId()) ||
                             (includeOptionalNodes &&
-                                Identifiers.ModellingRule_Optional.expanded().equals(r.getTargetNodeId()));
+                                Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId()));
 
                     return Identifiers.HasModellingRule.equals(r.getReferenceTypeId()) && rule;
                 });

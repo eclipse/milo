@@ -111,7 +111,7 @@ public class DataTypeDictionaryReader {
             references ->
                 references.stream()
                     .filter(r -> r.getNodeId().getNamespaceIndex().intValue() != 0)
-                    .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType.expanded()))
+                    .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType))
                     .flatMap(r -> opt2stream(r.getNodeId().local()))
         );
 
@@ -346,7 +346,7 @@ public class DataTypeDictionaryReader {
 
         return browseResult.thenApply(references ->
             references.stream()
-                .filter(r -> Identifiers.DataTypeDescriptionType.expanded().equals(r.getTypeDefinition()))
+                .filter(r -> Identifiers.DataTypeDescriptionType.equals(r.getTypeDefinition()))
                 .flatMap(r -> opt2stream(r.getNodeId().local()))
                 .collect(Collectors.toList())
         );
@@ -407,7 +407,7 @@ public class DataTypeDictionaryReader {
             return browse.thenApply(references -> {
                 Optional<ReferenceDescription> ref = references.stream()
                     .filter(r -> QN_DEFAULT_BINARY.equals(r.getBrowseName()) &&
-                        Identifiers.DataTypeEncodingType.expanded().equals(r.getTypeDefinition()))
+                        Identifiers.DataTypeEncodingType.equals(r.getTypeDefinition()))
                     .findFirst();
 
                 return ref.map(r -> r.getNodeId().local().orElse(NodeId.NULL_VALUE)).orElse(NodeId.NULL_VALUE);
