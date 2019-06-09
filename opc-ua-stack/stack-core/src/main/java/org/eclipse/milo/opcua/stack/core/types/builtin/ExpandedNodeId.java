@@ -225,21 +225,26 @@ public final class ExpandedNodeId {
         }
 
         switch (getType()) {
-            case Numeric:
-                return ((UInteger) identifier).intValue() == 0;
-            case String:
-                return Strings.isNullOrEmpty((String) identifier);
+            case Numeric: {
+                UInteger id = (UInteger) this.identifier;
+                return id.intValue() == 0;
+            }
+            case String: {
+                String id = (String) this.identifier;
+                return Strings.isNullOrEmpty(id);
+            }
             case Guid: {
-                UUID identifier = (UUID) this.identifier;
-                return identifier.getLeastSignificantBits() == 0 && identifier.getMostSignificantBits() == 0;
+                UUID id = (UUID) this.identifier;
+                return id.getLeastSignificantBits() == 0 && id.getMostSignificantBits() == 0;
             }
             case Opaque: {
-                ByteString bs = (ByteString) identifier;
-                return bs == null || bs.isNullOrEmpty();
+                ByteString id = (ByteString) this.identifier;
+                return id == null || id.isNullOrEmpty();
             }
-        }
 
-        return true;
+            default:
+                return true;
+        }
     }
 
     public boolean isNotNull() {
