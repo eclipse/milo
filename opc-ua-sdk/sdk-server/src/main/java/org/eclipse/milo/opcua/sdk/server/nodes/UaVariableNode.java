@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -682,7 +681,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
             references.add(new Reference(
                 nodeId,
                 Identifiers.HasTypeDefinition,
-                new ExpandedNodeId(typeDefinition),
+                typeDefinition.expanded(),
                 true
             ));
 

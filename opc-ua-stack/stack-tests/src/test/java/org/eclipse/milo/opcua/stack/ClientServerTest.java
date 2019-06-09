@@ -106,7 +106,7 @@ public class ClientServerTest extends SecurityFixture {
             {new Variant(ByteString.of(new byte[]{1, 2, 3, 4}))},
             {new Variant(new XmlElement("<tag>hello</tag>"))},
             {new Variant(new NodeId(0, 42))},
-            {new Variant(new ExpandedNodeId(1, 42, "uri", 1))},
+            {new Variant(new ExpandedNodeId(ushort(1), "uri", uint(42), uint(1)))},
             {new Variant(StatusCode.GOOD)},
             {new Variant(new QualifiedName(0, "QualifiedName"))},
             {new Variant(LocalizedText.english("LocalizedText"))},

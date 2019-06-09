@@ -30,7 +30,6 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -476,7 +475,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             references.add(new Reference(
                 nodeId,
                 Identifiers.HasTypeDefinition,
-                new ExpandedNodeId(typeDefinition),
+                typeDefinition.expanded(),
                 true
             ));
 
