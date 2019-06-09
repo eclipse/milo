@@ -267,6 +267,53 @@ public final class NodeId {
             namespaceIndex.equals(nodeId.namespaceIndex);
     }
 
+    /**
+     * Check if this {@link NodeId} is equal to {@code xni}.
+     * <p>
+     * To be considered equal {@code xni} must be in serverIndex == 0, have a namespace index that is equal this
+     * namespace index, or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param xni the {@link ExpandedNodeId} to check equality against.
+     * @return {@code true} if this {@link NodeId} is equal to {@code xni}.
+     */
+    public boolean equals(ExpandedNodeId xni) {
+        return equals(xni, uri -> {
+            if (Namespaces.OPC_UA.equals(uri)) {
+                return UShort.MIN;
+            } else {
+                return null;
+            }
+        });
+    }
+
+    /**
+     * Check if this {@link NodeId} is equal to {@code xni}.
+     * <p>
+     * To be considered equal {@code xni} must be in serverIndex == 0, have a namespace index that is equal this
+     * namespace index, or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param xni            the {@link ExpandedNodeId} to check equality against.
+     * @param namespaceTable the {@link NamespaceTable} used to look up the index of a namespace URI.
+     * @return {@code true} if this {@link NodeId} is equal to {@code xni}.
+     */
+    public boolean equals(ExpandedNodeId xni, NamespaceTable namespaceTable) {
+        return equals(xni, namespaceTable::getIndex);
+    }
+
+    private boolean equals(ExpandedNodeId xni, Function<String, UShort> getIndex) {
+        if (!xni.isLocal()) {
+            return false;
+        }
+
+        UShort otherNamespaceIndex = xni.isAbsolute() ?
+            getIndex.apply(xni.getNamespaceUri()) :
+            xni.getNamespaceIndex();
+
+        return Objects.equal(namespaceIndex, otherNamespaceIndex) && Objects.equal(identifier, xni.getIdentifier());
+    }
+
     @Override
     public int hashCode() {
         int result = namespaceIndex.hashCode();

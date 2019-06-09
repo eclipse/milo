@@ -18,14 +18,17 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertThrows;
+import static org.testng.Assert.assertTrue;
 
 public class NodeIdTest {
 
@@ -119,6 +122,41 @@ public class NodeIdTest {
                 assertNotNull(nodeId);
                 assertEquals(nodeId.getIdentifier(), ByteString.of(bs));
             }
+        }
+    }
+
+    @Test
+    public void testEqualityWithExpandedNodeId() {
+        NodeId nodeId = new NodeId(0, "foo");
+
+        {
+            ExpandedNodeId xni = nodeId.expanded();
+
+            assertTrue(nodeId.equals(xni));
+        }
+
+        {
+            ExpandedNodeId xni = new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo");
+
+            assertTrue(nodeId.equals(xni));
+        }
+
+        {
+            ExpandedNodeId xni = new ExpandedNodeId(ushort(1), Namespaces.OPC_UA, "foo");
+
+            assertTrue(nodeId.equals(xni));
+        }
+
+        {
+            ExpandedNodeId xni = new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo", uint(1));
+
+            assertFalse(nodeId.equals(xni));
+        }
+
+        {
+            ExpandedNodeId xni = new ExpandedNodeId(ushort(0), "uri:foo:bar", "foo");
+
+            assertFalse(nodeId.equals(xni));
         }
     }
 

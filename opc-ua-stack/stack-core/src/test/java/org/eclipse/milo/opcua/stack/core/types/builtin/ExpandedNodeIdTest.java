@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -53,5 +54,64 @@ public class ExpandedNodeIdTest {
         assertTrue(ExpandedNodeId.newBuilder().setIdentifier(ByteString.NULL_VALUE).build().isNull());
         assertTrue(ExpandedNodeId.newBuilder().setIdentifier(ByteString.of(new byte[0])).build().isNull());
     }
-    
+
+    @Test
+    public void testEqualityWithNodeId() {
+        {
+            ExpandedNodeId xni = ExpandedNodeId.newBuilder()
+                .setNamespaceIndex(0)
+                .setIdentifier("foo")
+                .build();
+
+            NodeId nodeId = new NodeId(0, "foo");
+
+            assertTrue(xni.equals(nodeId));
+        }
+
+        {
+            ExpandedNodeId xni = ExpandedNodeId.newBuilder()
+                .setNamespaceUri(Namespaces.OPC_UA)
+                .setIdentifier("foo")
+                .build();
+
+            NodeId nodeId = new NodeId(0, "foo");
+
+            assertTrue(xni.equals(nodeId));
+        }
+
+        {
+            ExpandedNodeId xni = ExpandedNodeId.newBuilder()
+                .setNamespaceIndex(0)
+                .setIdentifier("foo")
+                .setServerIndex(1)
+                .build();
+
+            NodeId nodeId = new NodeId(0, "foo");
+
+            assertFalse(xni.equals(nodeId));
+        }
+
+        {
+            ExpandedNodeId xni = ExpandedNodeId.newBuilder()
+                .setNamespaceIndex(1)
+                .setIdentifier("foo")
+                .build();
+
+            NodeId nodeId = new NodeId(0, "foo");
+
+            assertFalse(xni.equals(nodeId));
+        }
+
+        {
+            ExpandedNodeId xni = ExpandedNodeId.newBuilder()
+                .setNamespaceUri("uri:not:found")
+                .setIdentifier("foo")
+                .build();
+
+            NodeId nodeId = new NodeId(0, "foo");
+
+            assertFalse(xni.equals(nodeId));
+        }
+    }
+
 }
