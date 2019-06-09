@@ -34,10 +34,10 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 public final class ExpandedNodeId {
 
     public static final ExpandedNodeId NULL_VALUE = new ExpandedNodeId(
-        ushort(0),
+        UShort.MIN,
         null,
-        uint(0),
-        uint(0)
+        UInteger.MIN,
+        UInteger.MIN
     );
 
     private final UShort namespaceIndex;
@@ -255,9 +255,7 @@ public final class ExpandedNodeId {
      */
     @Deprecated
     public Optional<NodeId> local() {
-        UShort idx = namespaceIndex != null ? namespaceIndex : ushort(0);
-
-        return isLocal() ? Optional.of(new NodeId(idx, identifier)) : Optional.empty();
+        return isLocal() ? Optional.of(new NodeId(namespaceIndex, identifier)) : Optional.empty();
     }
 
     /**
