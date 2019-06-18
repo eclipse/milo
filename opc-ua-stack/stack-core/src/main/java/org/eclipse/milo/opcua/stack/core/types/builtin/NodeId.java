@@ -312,9 +312,9 @@ public final class NodeId {
 
     private static final Pattern NONE_INT = Pattern.compile("i=(\\d*)");
 
-    private static final Pattern NS_STRING = Pattern.compile("ns=(\\d*);s=(.*)");
+    private static final Pattern NS_STRING = Pattern.compile("ns=(\\d*);s=(.*)", Pattern.DOTALL);
 
-    private static final Pattern NONE_STRING = Pattern.compile("s=(.*)");
+    private static final Pattern NONE_STRING = Pattern.compile("s=(.*)", Pattern.DOTALL);
 
     private static final Pattern NS_GUID = Pattern.compile(
         "ns=(\\d*);g=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
