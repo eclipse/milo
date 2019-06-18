@@ -160,4 +160,15 @@ public class NodeIdTest {
         }
     }
 
+    @Test
+    public void testStringWithNewlineCharacters() {
+        NodeId nodeId1 = NodeId.parse("s=foo\nbar\nbaz");
+        assertNotNull(nodeId1);
+        assertNotNull(NodeId.parse(nodeId1.toParseableString()));
+
+        NodeId nodeId2 = NodeId.parse("ns=2;s=foo\n\bar\nbaz");
+        assertNotNull(nodeId2);
+        assertNotNull(NodeId.parse(nodeId2.toParseableString()));
+    }
+
 }
