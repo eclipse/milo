@@ -490,12 +490,15 @@ public class UaStackServer {
                 .distinct()
                 .collect(Collectors.toList());
 
+            ApplicationDescription filteredApplicationDescription =
+                getFilteredApplicationDescription(request.getEndpointUrl());
+
             List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
                 .filter(endpoint -> filterEndpointUrls(endpoint, request.getEndpointUrl()))
                 .map(endpoint ->
                     replaceApplicationDescription(
                         endpoint,
-                        getFilteredApplicationDescription(request.getEndpointUrl())
+                        filteredApplicationDescription
                     )
                 )
                 .distinct()
