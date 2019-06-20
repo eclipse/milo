@@ -228,7 +228,7 @@ public class DataTypeDictionaryReader {
                     }
                 } else {
                     logger.warn("Read a null type dictionary " +
-                        "fragment at indexRange=\"%s\"", indexRange);
+                        "fragment at indexRange=\"{}\"", indexRange);
 
                     return completedFuture(fragmentBuffer);
                 }
