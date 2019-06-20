@@ -84,7 +84,9 @@ class ComplexValueAttributeFilter implements AttributeFilter {
 
             getters.keySet().removeIf(k -> !fieldNameIntersection.contains(k));
 
-            complexNode.getComponentNodes().forEach(node -> {
+            // TODO calling distinct() is a work-around for whatever bug
+            //  is causing duplicate HasComponent references on some nodes.
+            complexNode.getComponentNodes().stream().distinct().forEach(node -> {
                 if (node instanceof UaVariableNode) {
                     UaVariableNode memberNode = (UaVariableNode) node;
                     String memberName = node.getBrowseName().getName();
