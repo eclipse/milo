@@ -5,7 +5,7 @@
 
     <groupId>org.eclipse.milo</groupId>
     <artifactId>build-tools</artifactId>
-    <version>0.3.2-M1</version>
+    <version>0.3.2-SNAPSHOT</version>
 
     <name>Eclipse Milo Build Tools</name>
     <description>Build tools for the Eclipse Milo project.</description>
