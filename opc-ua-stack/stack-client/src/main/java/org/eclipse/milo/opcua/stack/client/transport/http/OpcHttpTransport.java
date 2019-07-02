@@ -118,7 +118,7 @@ public class OpcHttpTransport extends AbstractTransport {
         LOGGER.debug("createChannelPool() host={} port={}", host, port);
 
         Bootstrap bootstrap = new Bootstrap()
-            .channelFactory(NioSocketChannel::new)
+            .channel(NioSocketChannel.class)
             .group(client.getConfig().getEventLoop())
             .remoteAddress(host, port);
 

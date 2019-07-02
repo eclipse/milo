@@ -104,7 +104,7 @@ public class ClientChannelFsm {
             Bootstrap bootstrap = new Bootstrap();
 
             bootstrap.group(config.getEventLoop())
-                .channelFactory(NioSocketChannel::new)
+                .channel(NioSocketChannel.class)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config.getConnectTimeout().intValue())
                 .option(ChannelOption.TCP_NODELAY, true)
