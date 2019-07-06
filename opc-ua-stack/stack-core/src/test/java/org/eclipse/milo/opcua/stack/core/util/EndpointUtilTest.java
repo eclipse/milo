@@ -54,6 +54,25 @@ public class EndpointUtilTest {
         testReplaceUrlPortWithScheme("https");
     }
 
+    @Test
+    public void testIpv6() {
+        String withPath = "opc.tcp://[fe80::9289:e377:bacb:f608%enp0s31f6]:4840/foo";
+        String withoutPath = "opc.tcp://[fe80::9289:e377:bacb:f608%enp0s31f6]:4840";
+
+        assertEquals(EndpointUtil.getScheme(withPath), "opc.tcp");
+        assertEquals(EndpointUtil.getScheme(withoutPath), "opc.tcp");
+
+        assertEquals(EndpointUtil.getHost(withPath), "[fe80::9289:e377:bacb:f608%enp0s31f6]");
+        assertEquals(EndpointUtil.getHost(withoutPath), "[fe80::9289:e377:bacb:f608%enp0s31f6]");
+
+        assertEquals(EndpointUtil.getPort(withPath), 4840);
+        assertEquals(EndpointUtil.getPort(withoutPath), 4840);
+
+        assertEquals(EndpointUtil.getPath(withPath), "/foo");
+        assertEquals(EndpointUtil.getPath(withoutPath), "/");
+
+    }
+
     private void testReplaceUrlHostnameWithScheme(String scheme) {
         assertEquals(
             updateUrl(scheme + "://localhost:4840", "localhost2"),
