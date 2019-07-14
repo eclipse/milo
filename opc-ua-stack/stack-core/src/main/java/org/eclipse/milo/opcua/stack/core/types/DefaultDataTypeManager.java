@@ -75,4 +75,10 @@ public class DefaultDataTypeManager implements DataTypeManager {
         return dataTypeDictionary != null ? dataTypeDictionary.getCodec(description) : null;
     }
 
+    @Nullable
+    @Override
+    public DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri) {
+        return dictionaries.get(namespaceUri);
+    }
+
 }

@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -87,5 +88,20 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      * @return a Map of all codecs registered with this dictionary, keyed by datatype id.
      */
     Map<NodeId, T> getCodecsByDataTypeId();
+
+    @Nullable
+    default T getCodecByDescription(String description) {
+        return getCodecsByDescription().get(description);
+    }
+
+    @Nullable
+    default T getCodecByEncodingId(NodeId nodeId) {
+        return getCodecsByEncodingId().get(nodeId);
+    }
+
+    @Nullable
+    default T getCodecByDataTypeId(NodeId nodeId) {
+        return getCodecsByDataTypeId().get(nodeId);
+    }
 
 }

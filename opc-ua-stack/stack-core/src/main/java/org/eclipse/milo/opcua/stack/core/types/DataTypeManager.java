@@ -48,6 +48,15 @@ public interface DataTypeManager {
     DataTypeCodec getCodec(String namespaceUri, String description);
 
     /**
+     * Get a registered {@link DataTypeDictionary} by its namespace URI.
+     *
+     * @param namespaceUri the namespace URI the dictionary is registered under.
+     * @return the {@link DataTypeDictionary} registered under {@code namespaceUri}.
+     */
+    @Nullable
+    DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri);
+
+    /**
      * Register a {@link DataTypeCodec} by its encoding id.
      *
      * @param encodingId the encoding id.
