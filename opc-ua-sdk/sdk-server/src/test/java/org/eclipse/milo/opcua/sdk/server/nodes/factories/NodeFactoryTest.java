@@ -22,8 +22,8 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
@@ -99,13 +99,13 @@ public class NodeFactoryTest {
         new UaNodeLoader(context, nodeManager).loadNodes();
 
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
-        ObjectTypeManagerInitializer.initialize(
+        ObjectTypeInitializer.initialize(
             server.getNamespaceTable(),
             objectTypeManager
         );
 
         VariableTypeManager variableTypeManager = new VariableTypeManager();
-        VariableTypeManagerInitializer.initialize(
+        VariableTypeInitializer.initialize(
             server.getNamespaceTable(),
             variableTypeManager
         );

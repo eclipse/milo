@@ -135,7 +135,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.VendorServerInfoTyp
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class ObjectTypeManagerInitializer {
+public class ObjectTypeInitializer {
     public static void initialize(NamespaceTable namespaceTable,
                                   ObjectTypeManager objectTypeManager) {
         objectTypeManager.registerObjectType(

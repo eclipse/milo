@@ -17,8 +17,8 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -74,12 +74,12 @@ public class ArrayValueAttributeFilterTest {
 
         new UaNodeLoader(context, nodeManager).loadNodes();
 
-        ObjectTypeManagerInitializer.initialize(
+        ObjectTypeInitializer.initialize(
             server.getNamespaceTable(),
             objectTypeManager
         );
 
-        VariableTypeManagerInitializer.initialize(
+        VariableTypeInitializer.initialize(
             server.getNamespaceTable(),
             variableTypeManager
         );

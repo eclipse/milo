@@ -51,7 +51,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.YArrayItemTypeNod
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class VariableTypeManagerInitializer {
+public class VariableTypeInitializer {
     public static void initialize(NamespaceTable namespaceTable,
                                   VariableTypeManager variableTypeManager) {
         variableTypeManager.registerVariableType(
