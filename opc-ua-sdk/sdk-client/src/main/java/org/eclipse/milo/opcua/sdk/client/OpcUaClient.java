@@ -23,8 +23,8 @@ import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
-import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.client.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
@@ -302,12 +302,12 @@ public class OpcUaClient implements UaClient {
         addressSpace = new DefaultAddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
-        ObjectTypeManagerInitializer.initialize(
+        ObjectTypeInitializer.initialize(
             stackClient.getNamespaceTable(),
             objectTypeManager
         );
 
-        VariableTypeManagerInitializer.initialize(
+        VariableTypeInitializer.initialize(
             stackClient.getNamespaceTable(),
             variableTypeManager
         );
