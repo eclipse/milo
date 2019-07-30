@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -190,6 +191,66 @@ public interface UaSubscription {
      * @return a {@link CompletableFuture} containing a {@link StatusCode} representing the result of this operation.
      */
     CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled);
+
+    /**
+     * Add triggering links between the item identified by {@code triggerItemId} and the items identified by
+     * {@code linksToAdd}.
+     *
+     * @param triggeringItemId the id of the triggering item.
+     * @param linksToAdd       the ids of the triggered items.
+     * @return a list of {@link StatusCode}s corresponding to the items in {@code linksToAdd}.
+     */
+    CompletableFuture<List<StatusCode>> addTriggeringLinks(UInteger triggeringItemId, List<UInteger> linksToAdd);
+
+    /**
+     * Add triggering links between the {@code triggeringItem} and the items in {@code linksToAdd}.
+     *
+     * @param triggeringItem the triggering item.
+     * @param linksToAdd     the triggered items.
+     * @return a list of {@link StatusCode}s corresponding to the items in {@code linksToAdd}.
+     */
+    default CompletableFuture<List<StatusCode>> addTriggeringLinks(
+        UaMonitoredItem triggeringItem,
+        List<UaMonitoredItem> linksToAdd
+    ) {
+
+        return addTriggeringLinks(
+            triggeringItem.getMonitoredItemId(),
+            linksToAdd.stream()
+                .map(UaMonitoredItem::getMonitoredItemId)
+                .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Remove triggering links between the item identified by {@code triggeringItemId} and the items identified by
+     * {@code linksToRemove}.
+     *
+     * @param triggeringItemId the id of the triggering item.
+     * @param linksToRemove    the ids of the triggered items.
+     * @return a list of {@link StatusCode}s corresponding to the items in {@code linksToRemove}.
+     */
+    CompletableFuture<List<StatusCode>> removeTriggeringLinks(UInteger triggeringItemId, List<UInteger> linksToRemove);
+
+    /**
+     * Remove triggering links between {@code triggeringItem} and the items in {@code linksToRemove}.
+     *
+     * @param triggeringItem the triggering item.
+     * @param linksToRemove  the triggered items.
+     * @return a list of {@link StatusCode}s corresponding to the items in {@code linksToRemove}.
+     */
+    default CompletableFuture<List<StatusCode>> removeTriggeringLinks(
+        UaMonitoredItem triggeringItem,
+        List<UaMonitoredItem> linksToRemove
+    ) {
+
+        return removeTriggeringLinks(
+            triggeringItem.getMonitoredItemId(),
+            linksToRemove.stream()
+                .map(UaMonitoredItem::getMonitoredItemId)
+                .collect(Collectors.toList())
+        );
+    }
 
     /**
      * Add a {@link NotificationListener}.
