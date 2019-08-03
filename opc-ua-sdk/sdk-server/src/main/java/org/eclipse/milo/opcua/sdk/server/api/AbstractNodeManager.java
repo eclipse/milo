@@ -69,6 +69,24 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
         return referenceMultimap;
     }
 
+    /**
+     * Get a copied List of the Nodes being managed.
+     *
+     * @return a copied List of the Nodes being managed.
+     */
+    public List<T> getNodes() {
+        return new ArrayList<>(nodeMap.values());
+    }
+
+    /**
+     * Get a copied List of the {@link NodeId}s being managed.
+     *
+     * @return a copied List of the {@link NodeId}s being managed.
+     */
+    public List<NodeId> getNodeIds() {
+        return new ArrayList<>(nodeMap.keySet());
+    }
+
     @Override
     public boolean containsNode(NodeId nodeId) {
         return nodeMap.containsKey(nodeId);
