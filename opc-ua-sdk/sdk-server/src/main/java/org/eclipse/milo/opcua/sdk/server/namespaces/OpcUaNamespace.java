@@ -41,6 +41,7 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
@@ -72,6 +73,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaNamespace extends ManagedNamespace {
 
+    private static final double MIN_SAMPLING_INTERVAL = 100.0;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final SubscriptionModel subscriptionModel;
@@ -93,6 +96,14 @@ public class OpcUaNamespace extends ManagedNamespace {
         loadNodes();
         configureServerObject();
         configureConditionRefresh();
+
+        // Set a reasonable value for the MinimumSamplingInterval
+        // attribute on all VariableNodes, otherwise it defaults to 0.
+        getNodeManager().getNodes()
+            .stream()
+            .filter(node -> node instanceof UaVariableNode)
+            .map(UaVariableNode.class::cast)
+            .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
     }
 
     @Override
