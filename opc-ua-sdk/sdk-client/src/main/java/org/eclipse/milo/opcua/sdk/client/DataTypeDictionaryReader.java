@@ -228,7 +228,7 @@ public class DataTypeDictionaryReader {
                     }
                 } else {
                     logger.warn("Read a null type dictionary " +
-                        "fragment at indexRange=\"%s\"", indexRange);
+                        "fragment at indexRange=\"{}\"", indexRange);
 
                     return completedFuture(fragmentBuffer);
                 }
@@ -253,10 +253,12 @@ public class DataTypeDictionaryReader {
             String namespaceUri = dictionaryDescription.getNamespaceUri();
             OpcUaBinaryDataTypeDictionary dictionary = new OpcUaBinaryDataTypeDictionary(namespaceUri);
 
-            dictionaryDescription.getEnumCodecs()
-                .forEach(cd -> dictionary.registerEnumCodec(cd.getCodec(), cd.getDescription()));
+            List<CodecDescription> enumCodecs = dictionaryDescription.getEnumCodecs();
+            enumCodecs.forEach(cd -> dictionary.registerEnumCodec(cd.getCodec(), cd.getDescription()));
+            logger.debug("enumCodecs.size()={}", enumCodecs.size());
 
             List<CodecDescription> structCodecs = dictionaryDescription.getStructCodecs();
+            logger.debug("structCodecs.size()={}", structCodecs.size());
 
             CompletableFuture<List<NodeId>> descriptionNodeIds =
                 browseDataTypeDescriptionNodeIds(dictionaryNodeId);
@@ -292,6 +294,20 @@ public class DataTypeDictionaryReader {
                     descriptionValues.thenApply(descriptions -> {
                             Map<String, NodeId> encodingIdMap = new HashMap<>();
                             Map<String, NodeId> dataTypeIdMap = new HashMap<>();
+
+                            if (descriptions.size() != encodingIds.size()) {
+                                throw new IllegalStateException(String.format(
+                                    "descriptions.size() != encodingIds.size() (%s != %s)",
+                                    descriptions.size(), encodingIds.size()
+                                ));
+                            }
+
+                            if (encodingIds.size() != dataTypeIds.size()) {
+                                throw new IllegalStateException(String.format(
+                                    "encodingIds.size() != dataTypeIds.size() (%s != %s)",
+                                    encodingIds.size(), dataTypeIds.size()
+                                ));
+                            }
 
                             Iterator<String> descriptionIter = descriptions.iterator();
                             Iterator<NodeId> encodingIdIter = encodingIds.iterator();
