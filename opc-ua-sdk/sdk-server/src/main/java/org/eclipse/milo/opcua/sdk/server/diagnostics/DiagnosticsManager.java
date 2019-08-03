@@ -230,11 +230,15 @@ public class DiagnosticsManager extends AbstractLifecycle {
             logger.debug("ServerDiagnosticsNode onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
+            registeredTasks.clear();
 
             if (sessionsDiagnosticsSummaryObject != null) {
                 sessionsDiagnosticsSummaryObject.shutdown();
                 sessionsDiagnosticsSummaryObject = null;
             }
+
+            // The ServerDiagnosticsTypeNode is not deleted because it
+            // should be present whether or not diagnostics are enabled.
         }
 
         private void configureSubscriptionDiagnosticsArray() {
@@ -344,10 +348,17 @@ public class DiagnosticsManager extends AbstractLifecycle {
             logger.debug("SessionsDiagnosticsSummaryObject onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
+            registeredTasks.clear();
 
             if (sessionListener != null) {
                 getServer().getSessionManager().removeSessionListener(sessionListener);
             }
+
+            sessionDiagnosticsObjects.values()
+                .forEach(SessionDiagnosticsObject::shutdown);
+            sessionDiagnosticsObjects.clear();
+
+            node.delete();
         }
 
         private void configureSessionSecurityDiagnosticsArray() {
@@ -459,9 +470,11 @@ public class DiagnosticsManager extends AbstractLifecycle {
             logger.debug("SessionDiagnosticsObject onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
+            registeredTasks.clear();
 
             if (node != null) {
                 node.delete();
+                summaryNode.removeComponent(node);
             }
         }
 

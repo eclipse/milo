@@ -79,7 +79,7 @@ class ArrayValueAttributeFilter implements AttributeFilter {
                 UaVariableNode elementNode = elementNodes.removeLast();
 
                 arrayNode.removeComponent(elementNode);
-                arrayNode.getNodeManager().removeNode(elementNode);
+                elementNode.delete();
 
                 logger.debug("Removed element: {}", elementNode.getNodeId());
             }
@@ -138,7 +138,7 @@ class ArrayValueAttributeFilter implements AttributeFilter {
                 UaVariableNode elementNode = elementNodes.removeLast();
 
                 arrayNode.removeComponent(elementNode);
-                arrayNode.getNodeManager().removeNode(elementNode);
+                elementNode.delete();
 
                 logger.debug("Removed element: {}", elementNode.getNodeId());
             }
