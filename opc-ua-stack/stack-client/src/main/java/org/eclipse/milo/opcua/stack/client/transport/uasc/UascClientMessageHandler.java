@@ -661,14 +661,16 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                         UaTransportRequest request = pending.remove(requestId);
 
                         try {
-                            if (request != null) {
-                                UaResponseMessage response = (UaResponseMessage) binaryDecoder
-                                    .setBuffer(message)
-                                    .readMessage(null);
+                            UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                                .setBuffer(message)
+                                .readMessage(null);
 
+                            if (request != null) {
                                 request.getFuture().complete(response);
                             } else {
-                                logger.warn("No pending request for requestId={}", requestId);
+                                logger.warn(
+                                    "No pending request with requestId={} for {}",
+                                    requestId, response.getClass().getSimpleName());
                             }
                         } catch (Throwable t) {
                             logger.error("Error decoding UaResponseMessage", t);
