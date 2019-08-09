@@ -732,7 +732,7 @@ public class SubscriptionManager {
             })
             .collect(toList());
 
-        ReadContext context = new ReadContext(server, null);
+        ReadContext context = new ReadContext(server, session);
 
         server.getAddressSpaceManager().read(
             context,
