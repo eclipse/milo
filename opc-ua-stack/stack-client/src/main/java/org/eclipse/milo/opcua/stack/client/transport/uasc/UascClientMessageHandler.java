@@ -173,6 +173,11 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
         chunkBuffers.clear();
 
+        // If the handshake hasn't completed yet this cause will be more
+        // accurate than the generic "connection closed" exception that
+        // channelInactive() will use.
+        handshakeFuture.completeExceptionally(cause);
+
         ctx.close();
     }
 
