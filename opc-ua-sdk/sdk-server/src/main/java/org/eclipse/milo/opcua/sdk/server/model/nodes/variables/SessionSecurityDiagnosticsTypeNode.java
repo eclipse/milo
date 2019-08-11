@@ -48,13 +48,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public NodeId getSessionId() {
-        Optional<VariableNode> component = getVariableComponent("SessionId");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionId");
         return component.map(node -> (NodeId) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionId(NodeId value) {
-        getVariableComponent("SessionId").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionId").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -65,13 +65,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public String getClientUserIdOfSession() {
-        Optional<VariableNode> component = getVariableComponent("ClientUserIdOfSession");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdOfSession");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setClientUserIdOfSession(String value) {
-        getVariableComponent("ClientUserIdOfSession").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdOfSession").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -82,13 +82,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public String[] getClientUserIdHistory() {
-        Optional<VariableNode> component = getVariableComponent("ClientUserIdHistory");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdHistory");
         return component.map(node -> (String[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setClientUserIdHistory(String[] value) {
-        getVariableComponent("ClientUserIdHistory").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdHistory").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -99,13 +99,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public String getAuthenticationMechanism() {
-        Optional<VariableNode> component = getVariableComponent("AuthenticationMechanism");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AuthenticationMechanism");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setAuthenticationMechanism(String value) {
-        getVariableComponent("AuthenticationMechanism").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "AuthenticationMechanism").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -116,13 +116,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public String getEncoding() {
-        Optional<VariableNode> component = getVariableComponent("Encoding");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Encoding");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setEncoding(String value) {
-        getVariableComponent("Encoding").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "Encoding").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -133,13 +133,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public String getTransportProtocol() {
-        Optional<VariableNode> component = getVariableComponent("TransportProtocol");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "TransportProtocol");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setTransportProtocol(String value) {
-        getVariableComponent("TransportProtocol").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "TransportProtocol").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -150,13 +150,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public MessageSecurityMode getSecurityMode() {
-        Optional<VariableNode> component = getVariableComponent("SecurityMode");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecurityMode");
         return component.map(node -> (MessageSecurityMode) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSecurityMode(MessageSecurityMode value) {
-        getVariableComponent("SecurityMode").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SecurityMode").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -167,13 +167,13 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public String getSecurityPolicyUri() {
-        Optional<VariableNode> component = getVariableComponent("SecurityPolicyUri");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecurityPolicyUri");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSecurityPolicyUri(String value) {
-        getVariableComponent("SecurityPolicyUri").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SecurityPolicyUri").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -184,12 +184,12 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public ByteString getClientCertificate() {
-        Optional<VariableNode> component = getVariableComponent("ClientCertificate");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientCertificate");
         return component.map(node -> (ByteString) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setClientCertificate(ByteString value) {
-        getVariableComponent("ClientCertificate").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ClientCertificate").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

@@ -98,13 +98,13 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public LocalizedText getEnabledState() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setEnabledState(LocalizedText value) {
-        getVariableComponent("EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -115,13 +115,13 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public LocalizedText getActiveState() {
-        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setActiveState(LocalizedText value) {
-        getVariableComponent("ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -132,13 +132,13 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public LocalizedText getSuppressedState() {
-        Optional<VariableNode> component = getVariableComponent("SuppressedState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SuppressedState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSuppressedState(LocalizedText value) {
-        getVariableComponent("SuppressedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SuppressedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

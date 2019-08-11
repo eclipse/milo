@@ -46,13 +46,13 @@ public class ExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implements E
 
     @Override
     public LocalizedText getActiveState() {
-        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setActiveState(LocalizedText value) {
-        getVariableComponent("ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

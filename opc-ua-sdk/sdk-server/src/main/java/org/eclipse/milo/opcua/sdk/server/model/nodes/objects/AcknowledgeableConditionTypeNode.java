@@ -48,13 +48,13 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
 
     @Override
     public LocalizedText getEnabledState() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setEnabledState(LocalizedText value) {
-        getVariableComponent("EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -65,13 +65,13 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
 
     @Override
     public LocalizedText getAckedState() {
-        Optional<VariableNode> component = getVariableComponent("AckedState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AckedState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setAckedState(LocalizedText value) {
-        getVariableComponent("AckedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "AckedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -82,13 +82,13 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
 
     @Override
     public LocalizedText getConfirmedState() {
-        Optional<VariableNode> component = getVariableComponent("ConfirmedState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ConfirmedState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setConfirmedState(LocalizedText value) {
-        getVariableComponent("ConfirmedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ConfirmedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

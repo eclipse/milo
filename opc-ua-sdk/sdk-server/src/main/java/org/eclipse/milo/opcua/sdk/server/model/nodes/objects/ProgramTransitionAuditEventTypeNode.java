@@ -45,12 +45,12 @@ public class ProgramTransitionAuditEventTypeNode extends AuditUpdateStateEventTy
 
     @Override
     public LocalizedText getTransition() {
-        Optional<VariableNode> component = getVariableComponent("Transition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Transition");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setTransition(LocalizedText value) {
-        getVariableComponent("Transition").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "Transition").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

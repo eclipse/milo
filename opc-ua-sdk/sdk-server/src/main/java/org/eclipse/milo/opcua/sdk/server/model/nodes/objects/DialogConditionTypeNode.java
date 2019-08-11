@@ -151,13 +151,13 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public LocalizedText getEnabledState() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setEnabledState(LocalizedText value) {
-        getVariableComponent("EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -168,13 +168,13 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public LocalizedText getDialogState() {
-        Optional<VariableNode> component = getVariableComponent("DialogState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DialogState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setDialogState(LocalizedText value) {
-        getVariableComponent("DialogState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "DialogState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

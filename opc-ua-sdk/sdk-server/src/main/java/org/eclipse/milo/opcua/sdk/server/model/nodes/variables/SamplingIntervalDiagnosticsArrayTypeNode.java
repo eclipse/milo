@@ -47,12 +47,12 @@ public class SamplingIntervalDiagnosticsArrayTypeNode extends BaseDataVariableTy
 
     @Override
     public SamplingIntervalDiagnosticsDataType getSamplingIntervalDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnostics");
         return component.map(node -> (SamplingIntervalDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSamplingIntervalDiagnostics(SamplingIntervalDiagnosticsDataType value) {
-        getVariableComponent("SamplingIntervalDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

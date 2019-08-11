@@ -48,13 +48,13 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
 
     @Override
     public SessionDiagnosticsDataType[] getSessionDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SessionDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnosticsArray");
         return component.map(node -> (SessionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value) {
-        getVariableComponent("SessionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -65,12 +65,12 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
 
     @Override
     public SessionSecurityDiagnosticsDataType[] getSessionSecurityDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray");
         return component.map(node -> (SessionSecurityDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value) {
-        getVariableComponent("SessionSecurityDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

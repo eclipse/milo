@@ -137,13 +137,13 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public ServerStatusDataType getServerStatus() {
-        Optional<VariableNode> component = getVariableComponent("ServerStatus");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerStatus");
         return component.map(node -> (ServerStatusDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setServerStatus(ServerStatusDataType value) {
-        getVariableComponent("ServerStatus").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ServerStatus").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

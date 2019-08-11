@@ -47,12 +47,12 @@ public class SessionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNode im
 
     @Override
     public SessionDiagnosticsDataType getSessionDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SessionDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnostics");
         return component.map(node -> (SessionDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionDiagnostics(SessionDiagnosticsDataType value) {
-        getVariableComponent("SessionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }
