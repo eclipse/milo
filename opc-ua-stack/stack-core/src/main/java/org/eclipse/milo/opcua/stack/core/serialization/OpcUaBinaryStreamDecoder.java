@@ -53,8 +53,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
-    private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-    private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
+    private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
+    private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
 
     private volatile ByteBuf buffer;
 

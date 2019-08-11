@@ -10,9 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 
 public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
-    private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-    private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
+    private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
+    private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
 
     private volatile ByteBuf buffer;
 
@@ -277,11 +277,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         if (value == null || value.isNull()) {
             buffer.writeIntLE(-1);
         } else {
-            try {
-                writeByteString(new ByteString(value.getFragment().getBytes("UTF-8")));
-            } catch (UnsupportedEncodingException e) {
-                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-            }
+            writeByteString(new ByteString(value.getFragment().getBytes(StandardCharsets.UTF_8)));
         }
     }
 

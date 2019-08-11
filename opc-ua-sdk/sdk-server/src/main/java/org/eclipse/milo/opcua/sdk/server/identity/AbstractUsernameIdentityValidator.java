@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.identity;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import javax.annotation.Nullable;
 
@@ -98,14 +98,14 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
             System.arraycopy(plainTextBytes, 4 + passwordBytes.length, nonceBytes, 0, lastNonceLength);
 
             if (MessageDigest.isEqual(lastNonce.bytes(), nonceBytes)) {
-                String password = new String(passwordBytes, Charset.forName("UTF-8"));
+                String password = new String(passwordBytes, StandardCharsets.UTF_8);
 
                 return authenticateUsernameOrThrow(session, username, password);
             } else {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
         } else {
-            String password = new String(tokenBytes, Charset.forName("UTF-8"));
+            String password = new String(tokenBytes, StandardCharsets.UTF_8);
 
             return authenticateUsernameOrThrow(session, username, password);
         }

@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.headers;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 
 import com.google.common.base.MoreObjects;
@@ -40,7 +40,7 @@ public class AsymmetricSecurityHeader {
                                     @Nonnull ByteString receiverThumbprint) {
 
         Preconditions.checkNotNull(securityPolicyUri);
-        Preconditions.checkArgument(securityPolicyUri.getBytes(Charset.forName("UTF-8")).length <= 255,
+        Preconditions.checkArgument(securityPolicyUri.getBytes(StandardCharsets.UTF_8).length <= 255,
             "securityPolicyUri length cannot be greater than 255 bytes");
 
         Preconditions.checkArgument(receiverThumbprint.bytes() == null || receiverThumbprint.length() == 20,
@@ -98,7 +98,7 @@ public class AsymmetricSecurityHeader {
     public static void encode(AsymmetricSecurityHeader header, ByteBuf buffer) {
         String securityPolicy = header.getSecurityPolicyUri();
         buffer.writeIntLE(securityPolicy.length());
-        buffer.writeBytes(securityPolicy.getBytes(Charset.forName("UTF-8")));
+        buffer.writeBytes(securityPolicy.getBytes(StandardCharsets.UTF_8));
 
         ByteString senderCertificate = header.getSenderCertificate();
         if (senderCertificate.isNull()) {
@@ -131,7 +131,7 @@ public class AsymmetricSecurityHeader {
 
         String securityPolicyUri = new String(
             securityPolicyUriBytes,
-            Charset.forName("UTF-8")
+            StandardCharsets.UTF_8
         );
 
         /* SenderCertificate */
