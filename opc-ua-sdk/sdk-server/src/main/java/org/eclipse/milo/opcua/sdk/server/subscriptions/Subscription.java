@@ -367,7 +367,9 @@ public class Subscription {
         UInteger sequenceNumber = uint(currentSequenceNumber());
 
         NotificationMessage notificationMessage = new NotificationMessage(
-            sequenceNumber, DateTime.now(), new ExtensionObject[0]
+            sequenceNumber,
+            DateTime.now(),
+            new ExtensionObject[0]
         );
 
         UInteger[] available = getAvailableSequenceNumbers();
@@ -396,7 +398,7 @@ public class Subscription {
 
         NotificationMessage notificationMessage = new NotificationMessage(
             sequenceNumber,
-            new DateTime(),
+            DateTime.now(),
             new ExtensionObject[]{ExtensionObject.encode(serializationContext, statusChange)}
         );
 
@@ -528,7 +530,7 @@ public class Subscription {
 
         NotificationMessage notificationMessage = new NotificationMessage(
             sequenceNumber,
-            new DateTime(),
+            DateTime.now(),
             notificationData.toArray(new ExtensionObject[0])
         );
 
