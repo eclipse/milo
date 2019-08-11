@@ -223,7 +223,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 // a new timestamp to the value.
                 // This ensures that when static values are read they have a
                 // current value for serverTimestamp.
-                return value.copy(b -> b.setServerTime(DateTime.nowNanos()));
+                return value.copy(b -> b.setServerTime(DateTime.now()));
 
             case DataType:
                 return dataType;

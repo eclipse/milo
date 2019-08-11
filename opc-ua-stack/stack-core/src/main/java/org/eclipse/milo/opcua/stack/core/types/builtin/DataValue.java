@@ -284,7 +284,7 @@ public final class DataValue {
                 setServerPicoseconds(null);
             } else {
                 if (serverTime == null) {
-                    setServerTime(DateTime.nowNanos());
+                    setServerTime(DateTime.now());
                 }
             }
 
