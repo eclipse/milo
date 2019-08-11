@@ -218,7 +218,12 @@ public class UaVariableNode extends UaNode implements VariableNode {
     public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case Value:
-                return value;
+                // The value is being directly from the field/memory.
+                // We "know the value to be accurate" at this point, so apply
+                // a new timestamp to the value.
+                // This ensures that when static values are read they have a
+                // current value for serverTimestamp.
+                return value.copy(b -> b.setServerTime(DateTime.nowNanos()));
 
             case DataType:
                 return dataType;

@@ -279,11 +279,13 @@ public final class DataValue {
                 setSourcePicoseconds(null);
             }
 
-            if (includeServer) {
-                setServerTime(DateTime.now());
-            } else {
+            if (!includeServer) {
                 setServerTime(null);
                 setServerPicoseconds(null);
+            } else {
+                if (serverTime == null) {
+                    setServerTime(DateTime.nowNanos());
+                }
             }
 
             return this;

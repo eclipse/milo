@@ -93,11 +93,11 @@ public class AttributeReader {
                 }
             }
 
-            final DataValue.Builder value = node.getAttribute(context, attributeId).copy();
+            final DataValue.Builder dvb = node.getAttribute(context, attributeId).copy();
 
             // Maybe transcode the structure...
-            if (value.value.isNotNull()) {
-                final Object valueObject = value.value.getValue();
+            if (dvb.value.isNotNull()) {
+                final Object valueObject = dvb.value.getValue();
 
                 Class<?> valueClazz = valueObject.getClass();
 
@@ -109,29 +109,31 @@ public class AttributeReader {
                         ExtensionObject.class
                     );
 
-                    value.setValue(new Variant(newValue));
+                    dvb.setValue(new Variant(newValue));
                 } else if (valueClazz == ExtensionObject.class) {
                     ExtensionObject xo = (ExtensionObject) valueObject;
 
                     Object newValue = transcode(context, node, xo, encodingName);
 
-                    value.setValue(new Variant(newValue));
+                    dvb.setValue(new Variant(newValue));
                 }
             }
 
+            // Apply index range if provided...
             if (indexRange != null) {
                 NumericRange range = NumericRange.parse(indexRange);
 
-                Object valueAtRange = NumericRange.readFromValueAtRange(value.value, range);
+                Object valueAtRange = NumericRange.readFromValueAtRange(dvb.value, range);
 
-                value.setValue(new Variant(valueAtRange));
+                dvb.setValue(new Variant(valueAtRange));
             }
 
+            // Add or remove timestamps based on TimestampsToReturn...
             if (timestamps != null) {
-                value.applyTimestamps(attributeId, timestamps);
+                dvb.applyTimestamps(attributeId, timestamps);
             }
 
-            return value.build();
+            return dvb.build();
         } catch (UaException e) {
             return new DataValue(e.getStatusCode());
         }
