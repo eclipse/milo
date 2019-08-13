@@ -47,13 +47,13 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public String getProductUri() {
-        Optional<VariableNode> component = getVariableComponent("ProductUri");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProductUri");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setProductUri(String value) {
-        getVariableComponent("ProductUri").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ProductUri").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -64,13 +64,13 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public String getManufacturerName() {
-        Optional<VariableNode> component = getVariableComponent("ManufacturerName");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ManufacturerName");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setManufacturerName(String value) {
-        getVariableComponent("ManufacturerName").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ManufacturerName").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -81,13 +81,13 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public String getProductName() {
-        Optional<VariableNode> component = getVariableComponent("ProductName");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProductName");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setProductName(String value) {
-        getVariableComponent("ProductName").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ProductName").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -98,13 +98,13 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public String getSoftwareVersion() {
-        Optional<VariableNode> component = getVariableComponent("SoftwareVersion");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SoftwareVersion");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSoftwareVersion(String value) {
-        getVariableComponent("SoftwareVersion").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SoftwareVersion").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -115,13 +115,13 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public String getBuildNumber() {
-        Optional<VariableNode> component = getVariableComponent("BuildNumber");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BuildNumber");
         return component.map(node -> (String) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setBuildNumber(String value) {
-        getVariableComponent("BuildNumber").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "BuildNumber").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -132,12 +132,12 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public DateTime getBuildDate() {
-        Optional<VariableNode> component = getVariableComponent("BuildDate");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BuildDate");
         return component.map(node -> (DateTime) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setBuildDate(DateTime value) {
-        getVariableComponent("BuildDate").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "BuildDate").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

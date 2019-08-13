@@ -154,13 +154,13 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public LocalizedText getEnabledState() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setEnabledState(LocalizedText value) {
-        getVariableComponent("EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -171,13 +171,13 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public StatusCode getQuality() {
-        Optional<VariableNode> component = getVariableComponent("Quality");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Quality");
         return component.map(node -> (StatusCode) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setQuality(StatusCode value) {
-        getVariableComponent("Quality").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "Quality").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -188,13 +188,13 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public UShort getLastSeverity() {
-        Optional<VariableNode> component = getVariableComponent("LastSeverity");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LastSeverity");
         return component.map(node -> (UShort) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setLastSeverity(UShort value) {
-        getVariableComponent("LastSeverity").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "LastSeverity").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -205,13 +205,13 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public LocalizedText getComment() {
-        Optional<VariableNode> component = getVariableComponent("Comment");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Comment");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setComment(LocalizedText value) {
-        getVariableComponent("Comment").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "Comment").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

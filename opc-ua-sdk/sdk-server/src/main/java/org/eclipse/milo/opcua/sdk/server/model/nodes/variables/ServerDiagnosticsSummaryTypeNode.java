@@ -46,13 +46,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getServerViewCount() {
-        Optional<VariableNode> component = getVariableComponent("ServerViewCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerViewCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setServerViewCount(UInteger value) {
-        getVariableComponent("ServerViewCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ServerViewCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -63,13 +63,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getCurrentSessionCount() {
-        Optional<VariableNode> component = getVariableComponent("CurrentSessionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentSessionCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setCurrentSessionCount(UInteger value) {
-        getVariableComponent("CurrentSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "CurrentSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -80,13 +80,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getCumulatedSessionCount() {
-        Optional<VariableNode> component = getVariableComponent("CumulatedSessionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CumulatedSessionCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setCumulatedSessionCount(UInteger value) {
-        getVariableComponent("CumulatedSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "CumulatedSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -97,13 +97,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getSecurityRejectedSessionCount() {
-        Optional<VariableNode> component = getVariableComponent("SecurityRejectedSessionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecurityRejectedSessionCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSecurityRejectedSessionCount(UInteger value) {
-        getVariableComponent("SecurityRejectedSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SecurityRejectedSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -114,13 +114,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getRejectedSessionCount() {
-        Optional<VariableNode> component = getVariableComponent("RejectedSessionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "RejectedSessionCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setRejectedSessionCount(UInteger value) {
-        getVariableComponent("RejectedSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "RejectedSessionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -131,13 +131,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getSessionTimeoutCount() {
-        Optional<VariableNode> component = getVariableComponent("SessionTimeoutCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionTimeoutCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionTimeoutCount(UInteger value) {
-        getVariableComponent("SessionTimeoutCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionTimeoutCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -148,13 +148,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getSessionAbortCount() {
-        Optional<VariableNode> component = getVariableComponent("SessionAbortCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionAbortCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionAbortCount(UInteger value) {
-        getVariableComponent("SessionAbortCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionAbortCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -165,13 +165,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getPublishingIntervalCount() {
-        Optional<VariableNode> component = getVariableComponent("PublishingIntervalCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "PublishingIntervalCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setPublishingIntervalCount(UInteger value) {
-        getVariableComponent("PublishingIntervalCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "PublishingIntervalCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -182,13 +182,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getCurrentSubscriptionCount() {
-        Optional<VariableNode> component = getVariableComponent("CurrentSubscriptionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentSubscriptionCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setCurrentSubscriptionCount(UInteger value) {
-        getVariableComponent("CurrentSubscriptionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "CurrentSubscriptionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -199,13 +199,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getCumulatedSubscriptionCount() {
-        Optional<VariableNode> component = getVariableComponent("CumulatedSubscriptionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CumulatedSubscriptionCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setCumulatedSubscriptionCount(UInteger value) {
-        getVariableComponent("CumulatedSubscriptionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "CumulatedSubscriptionCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -216,13 +216,13 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getSecurityRejectedRequestsCount() {
-        Optional<VariableNode> component = getVariableComponent("SecurityRejectedRequestsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecurityRejectedRequestsCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSecurityRejectedRequestsCount(UInteger value) {
-        getVariableComponent("SecurityRejectedRequestsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SecurityRejectedRequestsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -233,12 +233,12 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public UInteger getRejectedRequestsCount() {
-        Optional<VariableNode> component = getVariableComponent("RejectedRequestsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "RejectedRequestsCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setRejectedRequestsCount(UInteger value) {
-        getVariableComponent("RejectedRequestsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "RejectedRequestsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

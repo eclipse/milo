@@ -45,13 +45,13 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public LocalizedText getActiveState() {
-        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setActiveState(LocalizedText value) {
-        getVariableComponent("ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -62,13 +62,13 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public LocalizedText getHighHighState() {
-        Optional<VariableNode> component = getVariableComponent("HighHighState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "HighHighState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setHighHighState(LocalizedText value) {
-        getVariableComponent("HighHighState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "HighHighState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -79,13 +79,13 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public LocalizedText getHighState() {
-        Optional<VariableNode> component = getVariableComponent("HighState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "HighState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setHighState(LocalizedText value) {
-        getVariableComponent("HighState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "HighState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -96,13 +96,13 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public LocalizedText getLowState() {
-        Optional<VariableNode> component = getVariableComponent("LowState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LowState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setLowState(LocalizedText value) {
-        getVariableComponent("LowState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "LowState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -113,12 +113,12 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public LocalizedText getLowLowState() {
-        Optional<VariableNode> component = getVariableComponent("LowLowState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LowLowState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setLowLowState(LocalizedText value) {
-        getVariableComponent("LowLowState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "LowLowState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

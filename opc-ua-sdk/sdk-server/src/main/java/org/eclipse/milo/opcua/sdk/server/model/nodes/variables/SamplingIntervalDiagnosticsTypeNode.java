@@ -46,13 +46,13 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
 
     @Override
     public Double getSamplingInterval() {
-        Optional<VariableNode> component = getVariableComponent("SamplingInterval");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingInterval");
         return component.map(node -> (Double) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSamplingInterval(Double value) {
-        getVariableComponent("SamplingInterval").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SamplingInterval").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -63,13 +63,13 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
 
     @Override
     public UInteger getSampledMonitoredItemsCount() {
-        Optional<VariableNode> component = getVariableComponent("SampledMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SampledMonitoredItemsCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSampledMonitoredItemsCount(UInteger value) {
-        getVariableComponent("SampledMonitoredItemsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SampledMonitoredItemsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -80,13 +80,13 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
 
     @Override
     public UInteger getMaxSampledMonitoredItemsCount() {
-        Optional<VariableNode> component = getVariableComponent("MaxSampledMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "MaxSampledMonitoredItemsCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setMaxSampledMonitoredItemsCount(UInteger value) {
-        getVariableComponent("MaxSampledMonitoredItemsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "MaxSampledMonitoredItemsCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -97,12 +97,12 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
 
     @Override
     public UInteger getDisabledMonitoredItemsSamplingCount() {
-        Optional<VariableNode> component = getVariableComponent("DisabledMonitoredItemsSamplingCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DisabledMonitoredItemsSamplingCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setDisabledMonitoredItemsSamplingCount(UInteger value) {
-        getVariableComponent("DisabledMonitoredItemsSamplingCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "DisabledMonitoredItemsSamplingCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

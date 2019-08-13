@@ -47,12 +47,12 @@ public class SessionSecurityDiagnosticsArrayTypeNode extends BaseDataVariableTyp
 
     @Override
     public SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics");
         return component.map(node -> (SessionSecurityDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value) {
-        getVariableComponent("SessionSecurityDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

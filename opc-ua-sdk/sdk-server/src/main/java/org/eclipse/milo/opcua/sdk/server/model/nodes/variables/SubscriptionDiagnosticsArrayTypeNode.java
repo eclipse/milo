@@ -47,12 +47,12 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
 
     @Override
     public SubscriptionDiagnosticsDataType getSubscriptionDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnostics");
         return component.map(node -> (SubscriptionDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSubscriptionDiagnostics(SubscriptionDiagnosticsDataType value) {
-        getVariableComponent("SubscriptionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

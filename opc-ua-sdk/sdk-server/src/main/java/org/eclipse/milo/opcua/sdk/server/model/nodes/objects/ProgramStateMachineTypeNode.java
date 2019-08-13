@@ -172,13 +172,13 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public LocalizedText getCurrentState() {
-        Optional<VariableNode> component = getVariableComponent("CurrentState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentState");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setCurrentState(LocalizedText value) {
-        getVariableComponent("CurrentState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "CurrentState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -189,13 +189,13 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public LocalizedText getLastTransition() {
-        Optional<VariableNode> component = getVariableComponent("LastTransition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LastTransition");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setLastTransition(LocalizedText value) {
-        getVariableComponent("LastTransition").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "LastTransition").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -206,13 +206,13 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public ProgramDiagnosticDataType getProgramDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("ProgramDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics");
         return component.map(node -> (ProgramDiagnosticDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setProgramDiagnostics(ProgramDiagnosticDataType value) {
-        getVariableComponent("ProgramDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override

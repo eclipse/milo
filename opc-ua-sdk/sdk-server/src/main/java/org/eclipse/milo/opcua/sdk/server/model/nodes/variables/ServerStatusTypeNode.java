@@ -49,13 +49,13 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public DateTime getStartTime() {
-        Optional<VariableNode> component = getVariableComponent("StartTime");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "StartTime");
         return component.map(node -> (DateTime) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setStartTime(DateTime value) {
-        getVariableComponent("StartTime").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "StartTime").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -66,13 +66,13 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public DateTime getCurrentTime() {
-        Optional<VariableNode> component = getVariableComponent("CurrentTime");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentTime");
         return component.map(node -> (DateTime) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setCurrentTime(DateTime value) {
-        getVariableComponent("CurrentTime").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "CurrentTime").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -83,13 +83,13 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public ServerState getState() {
-        Optional<VariableNode> component = getVariableComponent("State");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "State");
         return component.map(node -> (ServerState) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setState(ServerState value) {
-        getVariableComponent("State").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "State").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -100,13 +100,13 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public BuildInfo getBuildInfo() {
-        Optional<VariableNode> component = getVariableComponent("BuildInfo");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BuildInfo");
         return component.map(node -> (BuildInfo) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setBuildInfo(BuildInfo value) {
-        getVariableComponent("BuildInfo").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "BuildInfo").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -117,13 +117,13 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public UInteger getSecondsTillShutdown() {
-        Optional<VariableNode> component = getVariableComponent("SecondsTillShutdown");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecondsTillShutdown");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSecondsTillShutdown(UInteger value) {
-        getVariableComponent("SecondsTillShutdown").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SecondsTillShutdown").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -134,12 +134,12 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public LocalizedText getShutdownReason() {
-        Optional<VariableNode> component = getVariableComponent("ShutdownReason");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ShutdownReason");
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setShutdownReason(LocalizedText value) {
-        getVariableComponent("ShutdownReason").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ShutdownReason").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

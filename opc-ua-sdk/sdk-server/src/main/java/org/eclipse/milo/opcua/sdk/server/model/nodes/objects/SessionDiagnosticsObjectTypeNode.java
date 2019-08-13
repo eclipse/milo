@@ -50,13 +50,13 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
 
     @Override
     public SessionDiagnosticsDataType getSessionDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SessionDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnostics");
         return component.map(node -> (SessionDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionDiagnostics(SessionDiagnosticsDataType value) {
-        getVariableComponent("SessionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -67,13 +67,13 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
 
     @Override
     public SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics");
         return component.map(node -> (SessionSecurityDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value) {
-        getVariableComponent("SessionSecurityDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -84,12 +84,12 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
 
     @Override
     public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray");
         return component.map(node -> (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
-        getVariableComponent("SubscriptionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

@@ -69,13 +69,13 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
 
     @Override
     public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummary() {
-        Optional<VariableNode> component = getVariableComponent("ServerDiagnosticsSummary");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary");
         return component.map(node -> (ServerDiagnosticsSummaryDataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType value) {
-        getVariableComponent("ServerDiagnosticsSummary").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -86,13 +86,13 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
 
     @Override
     public SamplingIntervalDiagnosticsDataType[] getSamplingIntervalDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray");
         return component.map(node -> (SamplingIntervalDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSamplingIntervalDiagnosticsArray(SamplingIntervalDiagnosticsDataType[] value) {
-        getVariableComponent("SamplingIntervalDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
@@ -103,13 +103,13 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
 
     @Override
     public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray");
         return component.map(node -> (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
-        getVariableComponent("SubscriptionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
