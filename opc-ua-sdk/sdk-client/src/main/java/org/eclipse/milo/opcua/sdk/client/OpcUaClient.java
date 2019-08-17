@@ -211,7 +211,8 @@ public class OpcUaClient implements UaClient {
                     uriTable.clear();
 
                     if (uris.length > UShort.MAX_VALUE) {
-                        logger.warn("SessionInitializer: NamespaceTable returned by server contains " + uris.length + " entries");
+                        logger.warn("SessionInitializer: NamespaceTable returned by " +
+                            "server contains " + uris.length + " entries");
                     }
 
                     for (int i = 0; i < uris.length && i < UShort.MAX_VALUE; i++) {
