@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
@@ -203,7 +204,12 @@ public class OpcUaClient implements UaClient {
                 .thenAccept(uris -> namespaceTable.update(uriTable -> {
                     uriTable.clear();
 
-                    for (int i = 0; i < uris.length; i++) {
+                    if (uris.length > UShort.MAX_VALUE) {
+                        logger.warn("SessionInitializer: NamespaceTable returned by server contains " +
+                            uris.length + " entries");
+                    }
+
+                    for (int i = 0; i < uris.length && i < UShort.MAX_VALUE; i++) {
                         String uri = uris[i];
 
                         if (uri != null && !uriTable.containsValue(uri)) {
