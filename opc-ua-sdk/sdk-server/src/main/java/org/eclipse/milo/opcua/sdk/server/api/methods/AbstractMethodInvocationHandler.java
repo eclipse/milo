@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.api.methods;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
@@ -69,13 +70,30 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 Argument argument = getInputArguments()[i];
 
                 Variant variant = inputValues[i];
+                Object value = variant.getValue();
 
                 // TODO this needs to be able to match when argument DataType is an alias type
                 //  extract subtype logic from AttributeWriter...
-                boolean dataTypeMatch = variant.getValue() == null ||
+                boolean dataTypeMatch = value == null ||
                     variant.getDataType()
                         .map(type -> type.equals(argument.getDataType()))
                         .orElse(false);
+
+                switch (argument.getValueRank()) {
+                    case ValueRanks.Scalar:
+                        if (value != null && value.getClass().isArray()) {
+                            dataTypeMatch = false;
+                        }
+                        break;
+                    case ValueRanks.OneDimension:
+                    case ValueRanks.OneOrMoreDimensions:
+                        if (value != null && !value.getClass().isArray()) {
+                            dataTypeMatch = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
 
                 if (dataTypeMatch) {
                     inputArgumentResults[i] = StatusCode.GOOD;
