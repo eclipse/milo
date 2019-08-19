@@ -11,18 +11,20 @@
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -40,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
+import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -201,11 +204,65 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
+    public CompletableFuture<List<UaMonitoredItem>> transferMonitoredItems(
+        List<TransferMonitoredItemsRequest> itemsToTransfer) {
+        return notificationSemaphore.acquire().thenCompose(permit -> {
+            Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
+            List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
+
+            for (TransferMonitoredItemsRequest transferReq : itemsToTransfer) {
+                monitoredItemsByRequest.put(transferReq, newArrayList());
+
+                for (MonitoredItemTransferRequest monitoredItem : transferReq.getMonitoredItems()) {
+                    OpcUaMonitoredItem item = new OpcUaMonitoredItem(
+                        client,
+                        monitoredItem.getClientHandle(),
+                        monitoredItem.getItemToMonitor(),
+                        monitoredItem.getServerHandle(),
+                        new StatusCode(StatusCodes.Uncertain_InitialValue),
+                        monitoredItem.getRequestedParameters().getSamplingInterval(),
+                        monitoredItem.getRequestedParameters().getQueueSize(),
+                        monitoredItem.getRequestedParameters().getFilter(),
+                        monitoredItem.getMonitoringMode(),
+                        monitoredItem.getRequestedParameters().getFilter()
+                    );
+                    itemsByServerHandle.put(monitoredItem.getServerHandle(), item);
+                    itemsByClientHandle.put(monitoredItem.getClientHandle(), item);
+                    monitoredItemsByRequest.get(transferReq).add(item);
+                    modifyRequests.add(new MonitoredItemModifyRequest(
+                        monitoredItem.getServerHandle(),
+                        monitoredItem.getRequestedParameters()));
+                }
+            }
+            CompletableFuture<List<StatusCode>> future =
+                this.modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests);
+
+            return future.thenApply(modifyResponse -> {
+                try {
+                    monitoredItemsByRequest.forEach((req, items) -> {
+                        if (req.getItemTransferCallback().isPresent()) {
+                            ItemTransferredCallback callback = req.getItemTransferCallback().get();
+                            for (UaMonitoredItem item : items) {
+                                int clientHandle = item.getClientHandle().intValue();
+                                callback.onItemTransferred(client.getSerializationContext(), item, clientHandle);
+                            }
+                        }
+                    });
+                } finally {
+                    permit.release();
+                }
+
+                return monitoredItemsByRequest.values().stream().flatMap(Collection::stream).collect(toList());
+            });
+        });
+    }
+
+    @Override
     public CompletableFuture<List<StatusCode>> deleteMonitoredItems(List<UaMonitoredItem> itemsToDelete) {
 
         List<UInteger> monitoredItemIds = itemsToDelete.stream()
             .map(UaMonitoredItem::getMonitoredItemId)
-            .collect(Collectors.toList());
+            .collect(toList());
 
         return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
             List<StatusCode> results = l(response.getResults());
@@ -226,7 +283,7 @@ public class OpcUaSubscription implements UaSubscription {
 
         List<UInteger> monitoredItemIds = items.stream()
             .map(UaMonitoredItem::getMonitoredItemId)
-            .collect(Collectors.toList());
+            .collect(toList());
 
         CompletableFuture<SetMonitoringModeResponse> future =
             client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
@@ -283,7 +340,7 @@ public class OpcUaSubscription implements UaSubscription {
         UInteger triggeringItemId,
         List<UInteger> linksToRemove
     ) {
-        
+
         CompletableFuture<SetTriggeringResponse> future = client.setTriggering(
             subscriptionId,
             triggeringItemId,

@@ -16,6 +16,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -166,6 +167,16 @@ public interface UaSubscription {
                                                              List<MonitoredItemModifyRequest> itemsToModify);
 
     /**
+     * Reconstitutes the monitored items of a transferred subscription.
+     * To get all the state of the monitored items modify is called for each monitored item.
+     *
+     * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s
+     * @return a list of {@link UaMonitoredItem}s.
+     */
+    CompletableFuture<List<UaMonitoredItem>> transferMonitoredItems(
+        List<TransferMonitoredItemsRequest> itemsToTransfer);
+
+    /**
      * Delete on or more {@link UaMonitoredItem}s.
      *
      * @param itemsToDelete the items to delete.
@@ -269,6 +280,12 @@ public interface UaSubscription {
     interface ItemCreationCallback {
 
         void onItemCreated(SerializationContext serializationContext, UaMonitoredItem item, int index);
+
+    }
+
+    interface ItemTransferredCallback {
+
+        void onItemTransferred(SerializationContext serializationContext, UaMonitoredItem item, int clientHandle);
 
     }
 

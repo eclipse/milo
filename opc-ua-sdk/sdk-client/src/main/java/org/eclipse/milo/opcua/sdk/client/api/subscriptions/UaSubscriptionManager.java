@@ -10,12 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -127,6 +129,39 @@ public interface UaSubscriptionManager {
                                                          Function<Double, UInteger> getMaxKeepAliveCount,
                                                          UInteger maxNotificationsPerPublish,
                                                          UByte priority);
+
+    /**
+     * Transfer a {@link UaSubscription}.
+     * <p>
+     * This method reconstitutes the sdk client objects after a transfer from one client to another. It expects
+     * the current subscription information which can be found in the server diagnostics if they are enabled, but
+     * can be provided from any out of band source just so long as the information is accurate.
+     * @param subscriptionId                the server assigned id of the {@link UaSubscription} to transfer.
+     * @param requestedPublishingInterval   the publishing interval requested when the subscription was created.
+     * @param publishingInterval            the actual publishing interval of the subscription.
+     * @param requestedLifetimeCount        the lifetime count requested when the subscription was created.
+     * @param lifetimeCount                 the actual lifetime count of the subscription.
+     * @param requestedMaxKeepAliveCount    the max keep alive requested when the subscription was created.
+     * @param maxKeepAliveCount             the actual max keep alive of the subscription.
+     * @param maxNotificationsPerPublish    the maximum number of notifications allowed in a publish response.
+     * @param publishingEnabled             {@code true} if publishing is enabled for the subscription.
+     * @param priority                      the relative priority to assign to the subscription.
+     * @param itemsToTransfer               a collection of {@link TransferMonitoredItemsRequest} representing the
+     *                                      monitored items on the subscription to be reconstituted in the subscription.
+     * @return a {@link CompletableFuture} containing the {@link UaSubscription}
+     */
+    CompletableFuture<UaSubscription> transferSubscription(
+        UInteger subscriptionId,
+        double requestedPublishingInterval,
+        double publishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger lifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority,
+        List<TransferMonitoredItemsRequest> itemsToTransfer);
 
     /**
      * Delete a {@link UaSubscription}.
