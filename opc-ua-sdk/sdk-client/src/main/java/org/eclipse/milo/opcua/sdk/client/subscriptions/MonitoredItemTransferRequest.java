@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public class MonitoredItemTransferRequest {
     private final UInteger clientHandle;
-    private UInteger serverHandle;
+    private final UInteger serverHandle;
 
     private final ReadValueId itemToMonitor;
     private final MonitoringMode monitoringMode;
