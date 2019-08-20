@@ -16,6 +16,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
+import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -131,24 +132,27 @@ public interface UaSubscriptionManager {
                                                          UByte priority);
 
     /**
-     * Transfer a {@link UaSubscription}.
+     * This method reconstitutes a {@link UaSubscription} object and registers it with this
+     * {@link UaSubscriptionManager}. It operates under the assumption that the subscription has already been
+     * transferred to this client's session via the Transfer Subscription service.
      * <p>
-     * This method reconstitutes the sdk client objects after a transfer from one client to another. It expects
-     * the current subscription information which can be found in the server diagnostics if they are enabled, but
-     * can be provided from any out of band source just so long as the information is accurate.
-     * @param subscriptionId                the server assigned id of the {@link UaSubscription} to transfer.
-     * @param requestedPublishingInterval   the publishing interval requested when the subscription was created.
-     * @param publishingInterval            the actual publishing interval of the subscription.
-     * @param requestedLifetimeCount        the lifetime count requested when the subscription was created.
-     * @param lifetimeCount                 the actual lifetime count of the subscription.
-     * @param requestedMaxKeepAliveCount    the max keep alive requested when the subscription was created.
-     * @param maxKeepAliveCount             the actual max keep alive of the subscription.
-     * @param maxNotificationsPerPublish    the maximum number of notifications allowed in a publish response.
-     * @param publishingEnabled             {@code true} if publishing is enabled for the subscription.
-     * @param priority                      the relative priority to assign to the subscription.
-     * @param itemsToTransfer               a collection of {@link TransferMonitoredItemsRequest} representing the
-     *                                      monitored items on the subscription to be reconstituted in the subscription.
+     * If the original session resided on a remote machine then information about the subscription required by this call
+     * must be obtained either by interrogating the Server diagnostics, if enabled, or by some other out-of-band means.
+     *
+     * @param subscriptionId              the server assigned id of the {@link UaSubscription} to transfer.
+     * @param requestedPublishingInterval the publishing interval requested when the subscription was created.
+     * @param publishingInterval          the actual publishing interval of the subscription.
+     * @param requestedLifetimeCount      the lifetime count requested when the subscription was created.
+     * @param lifetimeCount               the actual lifetime count of the subscription.
+     * @param requestedMaxKeepAliveCount  the max keep alive requested when the subscription was created.
+     * @param maxKeepAliveCount           the actual max keep alive of the subscription.
+     * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
+     * @param publishingEnabled           {@code true} if publishing is enabled for the subscription.
+     * @param priority                    the relative priority to assign to the subscription.
+     * @param itemsToTransfer             a collection of {@link TransferMonitoredItemsRequest} representing the
+     *                                    monitored items on the subscription to be reconstituted in the subscription.
      * @return a {@link CompletableFuture} containing the {@link UaSubscription}
+     * @see UaClient#transferSubscriptions(List, boolean)
      */
     CompletableFuture<UaSubscription> transferSubscription(
         UInteger subscriptionId,
