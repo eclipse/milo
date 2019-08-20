@@ -204,7 +204,7 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
-    public CompletableFuture<List<UaMonitoredItem>> transferMonitoredItems(
+    public CompletableFuture<TransferMonitoredItemResponse> transferMonitoredItems(
         List<TransferMonitoredItemsRequest> itemsToTransfer) {
         return notificationSemaphore.acquire().thenCompose(permit -> {
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
@@ -222,7 +222,7 @@ public class OpcUaSubscription implements UaSubscription {
                         new StatusCode(StatusCodes.Uncertain_InitialValue),
                         monitoredItem.getRequestedParameters().getSamplingInterval(),
                         monitoredItem.getRequestedParameters().getQueueSize(),
-                        monitoredItem.getRequestedParameters().getFilter(),
+                        null,
                         monitoredItem.getMonitoringMode(),
                         monitoredItem.getRequestedParameters().getFilter()
                     );
@@ -234,11 +234,9 @@ public class OpcUaSubscription implements UaSubscription {
                         monitoredItem.getRequestedParameters()));
                 }
             }
-            CompletableFuture<List<StatusCode>> future =
-                this.modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests);
 
-            return future.thenApply(modifyResponse -> {
-                try {
+            return modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests)
+                .thenApply(modifyResponse -> {
                     monitoredItemsByRequest.forEach((req, items) -> {
                         if (req.getItemTransferCallback().isPresent()) {
                             ItemTransferredCallback callback = req.getItemTransferCallback().get();
@@ -248,12 +246,16 @@ public class OpcUaSubscription implements UaSubscription {
                             }
                         }
                     });
-                } finally {
-                    permit.release();
-                }
 
-                return monitoredItemsByRequest.values().stream().flatMap(Collection::stream).collect(toList());
-            });
+                    return new TransferMonitoredItemResponse(
+                        monitoredItemsByRequest.values()
+                            .stream()
+                            .flatMap(Collection::stream)
+                            .collect(toList()),
+                        modifyResponse
+                    );
+                })
+                .whenComplete((i, ex) -> permit.release());
         });
     }
 

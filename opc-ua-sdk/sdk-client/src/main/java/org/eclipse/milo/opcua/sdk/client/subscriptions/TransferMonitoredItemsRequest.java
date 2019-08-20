@@ -27,8 +27,8 @@ public class TransferMonitoredItemsRequest {
     }
 
     public TransferMonitoredItemsRequest(
-        List<MonitoredItemTransferRequest> monitoredItems, BiConsumer<UaMonitoredItem,
-        Integer> itemTransferCallback) {
+        List<MonitoredItemTransferRequest> monitoredItems,
+        BiConsumer<UaMonitoredItem, Integer> itemTransferCallback) {
         this.monitoredItems = monitoredItems;
         this.itemTransferCallback = itemTransferCallback;
     }
