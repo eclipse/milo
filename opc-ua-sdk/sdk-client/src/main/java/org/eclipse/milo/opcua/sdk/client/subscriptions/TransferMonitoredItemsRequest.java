@@ -18,17 +18,15 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 
 public class TransferMonitoredItemsRequest {
+
     private final List<MonitoredItemTransferRequest> monitoredItems;
     private final BiConsumer<UaMonitoredItem, Integer> itemTransferCallback;
 
-    public TransferMonitoredItemsRequest() {
-        this.monitoredItems = null;
-        this.itemTransferCallback = null;
-    }
-
     public TransferMonitoredItemsRequest(
         List<MonitoredItemTransferRequest> monitoredItems,
-        BiConsumer<UaMonitoredItem, Integer> itemTransferCallback) {
+        BiConsumer<UaMonitoredItem, Integer> itemTransferCallback
+    ) {
+
         this.monitoredItems = monitoredItems;
         this.itemTransferCallback = itemTransferCallback;
     }
@@ -47,6 +45,7 @@ public class TransferMonitoredItemsRequest {
             return Optional.of((serializationContext, item, index) -> itemTransferCallback.accept(item, index));
         }
     }
+
 }
 
 

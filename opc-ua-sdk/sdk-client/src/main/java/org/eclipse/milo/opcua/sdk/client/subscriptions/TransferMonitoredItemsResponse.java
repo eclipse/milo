@@ -20,14 +20,11 @@ public class TransferMonitoredItemsResponse {
     private final List<UaMonitoredItem> monitoredItems;
     private final List<StatusCode> statusCodes;
 
-    public TransferMonitoredItemsResponse() {
-        this.monitoredItems = null;
-        this.statusCodes = null;
-    }
-
     public TransferMonitoredItemsResponse(
         List<UaMonitoredItem> monitoredItems,
-        List<StatusCode> statusCodes) {
+        List<StatusCode> statusCodes
+    ) {
+
         this.monitoredItems = monitoredItems;
         this.statusCodes = statusCodes;
     }
@@ -39,4 +36,5 @@ public class TransferMonitoredItemsResponse {
     List<StatusCode> getStatusCodes() {
         return statusCodes;
     }
+    
 }
