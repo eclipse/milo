@@ -15,17 +15,17 @@ import java.util.List;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class TransferMonitoredItemResponse {
+public class TransferMonitoredItemsResponse {
 
     private final List<UaMonitoredItem> monitoredItems;
     private final List<StatusCode> statusCodes;
 
-    public TransferMonitoredItemResponse() {
+    public TransferMonitoredItemsResponse() {
         this.monitoredItems = null;
         this.statusCodes = null;
     }
 
-    public TransferMonitoredItemResponse(
+    public TransferMonitoredItemsResponse(
         List<UaMonitoredItem> monitoredItems,
         List<StatusCode> statusCodes) {
         this.monitoredItems = monitoredItems;

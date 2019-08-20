@@ -204,7 +204,7 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
-    public CompletableFuture<TransferMonitoredItemResponse> transferMonitoredItems(
+    public CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
         List<TransferMonitoredItemsRequest> itemsToTransfer) {
         return notificationSemaphore.acquire().thenCompose(permit -> {
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
@@ -247,7 +247,7 @@ public class OpcUaSubscription implements UaSubscription {
                         }
                     });
 
-                    return new TransferMonitoredItemResponse(
+                    return new TransferMonitoredItemsResponse(
                         monitoredItemsByRequest.values()
                             .stream()
                             .flatMap(Collection::stream)

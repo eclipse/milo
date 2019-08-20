@@ -16,8 +16,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemResponse;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -172,10 +172,10 @@ public interface UaSubscription {
      * To get all the state of the monitored items modify is called for each monitored item.
      *
      * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s
-     * @return a {@link TransferMonitoredItemResponse} that includes a list of the {@link UaMonitoredItem}s
+     * @return a {@link TransferMonitoredItemsResponse} that includes a list of the {@link UaMonitoredItem}s
      * and a list of the {@link StatusCode}s for each modify result.
      */
-    CompletableFuture<TransferMonitoredItemResponse> transferMonitoredItems(
+    CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
         List<TransferMonitoredItemsRequest> itemsToTransfer);
 
     /**
