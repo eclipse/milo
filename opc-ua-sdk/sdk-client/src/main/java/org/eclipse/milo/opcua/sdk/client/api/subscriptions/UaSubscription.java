@@ -168,15 +168,31 @@ public interface UaSubscription {
                                                              List<MonitoredItemModifyRequest> itemsToModify);
 
     /**
+     * Transfer the monitored items from {@code subscription} to this {@link UaSubscription}.
+     * <p>
+     * This subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     *
+     * @param subscription the {@link UaSubscription} to transfer items from.
+     * @return a {@link CompletableFuture} that completes when the transfer is done.
+     */
+    CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription);
+
+    /**
      * Reconstitutes the monitored items of a transferred subscription.
-     * To get all the state of the monitored items modify is called for each monitored item.
+     * <p>
+     * The Modify Monitored Items service will be called to synchronize the state of each monitored item.
+     * <p>
+     * This subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
      *
      * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s
      * @return a {@link TransferMonitoredItemsResponse} that includes a list of the {@link UaMonitoredItem}s
      * and a list of the {@link StatusCode}s for each modify result.
      */
     CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
-        List<TransferMonitoredItemsRequest> itemsToTransfer);
+        List<TransferMonitoredItemsRequest> itemsToTransfer
+    );
 
     /**
      * Delete on or more {@link UaMonitoredItem}s.

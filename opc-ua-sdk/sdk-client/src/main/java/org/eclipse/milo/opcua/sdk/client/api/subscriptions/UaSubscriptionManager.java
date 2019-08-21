@@ -132,9 +132,21 @@ public interface UaSubscriptionManager {
                                                          UByte priority);
 
     /**
-     * This method reconstitutes a {@link UaSubscription} object and registers it with this
-     * {@link UaSubscriptionManager}. It operates under the assumption that the subscription has already been
-     * transferred to this client's session via the Transfer Subscription service.
+     * Complete the transfer of {@code subscription} and its monitored items to this {@link UaSubscriptionManager}.
+     * <p>
+     * The subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     *
+     * @param subscription the {@link UaSubscription} to transfer to this {@link UaSubscriptionManager}.
+     * @return a {@link CompletableFuture} containing the new {@link UaSubscription}.
+     */
+    CompletableFuture<UaSubscription> transferSubscription(UaSubscription subscription);
+
+    /**
+     * Complete the transfer of a subscription and its monitored items to this {@link UaSubscriptionManager}.
+     * <p>
+     * The subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
      * <p>
      * If the original session resided on a remote machine then information about the subscription required by this call
      * must be obtained either by interrogating the Server diagnostics, if enabled, or by some other out-of-band means.
@@ -165,7 +177,8 @@ public interface UaSubscriptionManager {
         UInteger maxNotificationsPerPublish,
         boolean publishingEnabled,
         UByte priority,
-        List<TransferMonitoredItemsRequest> itemsToTransfer);
+        List<TransferMonitoredItemsRequest> itemsToTransfer
+    );
 
     /**
      * Delete a {@link UaSubscription}.

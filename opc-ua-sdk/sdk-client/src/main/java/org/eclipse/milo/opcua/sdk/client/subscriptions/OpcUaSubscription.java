@@ -204,8 +204,40 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
+    public CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription) {
+        return notificationSemaphore.acquire().thenAccept(permit -> {
+            try {
+                subscription.getMonitoredItems().forEach(item -> {
+                    OpcUaMonitoredItem newItem = new OpcUaMonitoredItem(
+                        client,
+                        item.getClientHandle(),
+                        item.getReadValueId(),
+                        item.getMonitoredItemId(),
+                        item.getStatusCode(),
+                        item.getRevisedSamplingInterval(),
+                        item.getRevisedQueueSize(),
+                        item.getFilterResult(),
+                        item.getMonitoringMode(),
+                        item.getMonitoringFilter()
+                    );
+
+                    newItem.setRequestedQueueSize(item.getRequestedQueueSize());
+                    newItem.setRequestedSamplingInterval(item.getRequestedSamplingInterval());
+
+                    itemsByServerHandle.put(newItem.getMonitoredItemId(), newItem);
+                    itemsByClientHandle.put(newItem.getClientHandle(), newItem);
+                });
+            } finally {
+                permit.release();
+            }
+        });
+    }
+
+    @Override
     public CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
-        List<TransferMonitoredItemsRequest> itemsToTransfer) {
+        List<TransferMonitoredItemsRequest> itemsToTransfer
+    ) {
+
         return notificationSemaphore.acquire().thenCompose(permit -> {
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
             List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
@@ -226,12 +258,16 @@ public class OpcUaSubscription implements UaSubscription {
                         monitoredItem.getMonitoringMode(),
                         monitoredItem.getRequestedParameters().getFilter()
                     );
+
                     itemsByServerHandle.put(monitoredItem.getServerHandle(), item);
                     itemsByClientHandle.put(monitoredItem.getClientHandle(), item);
+
                     monitoredItemsByRequest.get(transferReq).add(item);
+
                     modifyRequests.add(new MonitoredItemModifyRequest(
                         monitoredItem.getServerHandle(),
-                        monitoredItem.getRequestedParameters()));
+                        monitoredItem.getRequestedParameters()
+                    ));
                 }
             }
 
