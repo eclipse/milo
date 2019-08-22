@@ -204,99 +204,6 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
-    public CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription) {
-        return notificationSemaphore.acquire().thenAccept(permit -> {
-            try {
-                subscription.getMonitoredItems().forEach(item -> {
-                    OpcUaMonitoredItem newItem = new OpcUaMonitoredItem(
-                        client,
-                        item.getClientHandle(),
-                        item.getReadValueId(),
-                        item.getMonitoredItemId(),
-                        item.getStatusCode(),
-                        item.getRevisedSamplingInterval(),
-                        item.getRevisedQueueSize(),
-                        item.getFilterResult(),
-                        item.getMonitoringMode(),
-                        item.getMonitoringFilter()
-                    );
-
-                    newItem.setRequestedQueueSize(item.getRequestedQueueSize());
-                    newItem.setRequestedSamplingInterval(item.getRequestedSamplingInterval());
-
-                    itemsByServerHandle.put(newItem.getMonitoredItemId(), newItem);
-                    itemsByClientHandle.put(newItem.getClientHandle(), newItem);
-                });
-            } finally {
-                permit.release();
-            }
-        });
-    }
-
-    @Override
-    public CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
-        List<TransferMonitoredItemsRequest> itemsToTransfer
-    ) {
-
-        return notificationSemaphore.acquire().thenCompose(permit -> {
-            Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
-            List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
-
-            for (TransferMonitoredItemsRequest transferReq : itemsToTransfer) {
-                monitoredItemsByRequest.put(transferReq, newArrayList());
-
-                for (MonitoredItemTransferRequest monitoredItem : transferReq.getMonitoredItems()) {
-                    OpcUaMonitoredItem item = new OpcUaMonitoredItem(
-                        client,
-                        monitoredItem.getClientHandle(),
-                        monitoredItem.getItemToMonitor(),
-                        monitoredItem.getServerHandle(),
-                        new StatusCode(StatusCodes.Uncertain_InitialValue),
-                        monitoredItem.getRequestedParameters().getSamplingInterval(),
-                        monitoredItem.getRequestedParameters().getQueueSize(),
-                        null,
-                        monitoredItem.getMonitoringMode(),
-                        monitoredItem.getRequestedParameters().getFilter()
-                    );
-
-                    itemsByServerHandle.put(monitoredItem.getServerHandle(), item);
-                    itemsByClientHandle.put(monitoredItem.getClientHandle(), item);
-
-                    monitoredItemsByRequest.get(transferReq).add(item);
-
-                    modifyRequests.add(new MonitoredItemModifyRequest(
-                        monitoredItem.getServerHandle(),
-                        monitoredItem.getRequestedParameters()
-                    ));
-                }
-            }
-
-            return modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests)
-                .thenApply(modifyResponse -> {
-                    monitoredItemsByRequest.forEach((req, items) -> {
-                        if (req.getItemTransferCallback().isPresent()) {
-                            ItemTransferredCallback callback = req.getItemTransferCallback().get();
-
-                            for (int i = 0; i < items.size(); i++) {
-                                UaMonitoredItem item = items.get(i);
-                                callback.onItemTransferred(client.getSerializationContext(), item, i);
-                            }
-                        }
-                    });
-
-                    return new TransferMonitoredItemsResponse(
-                        monitoredItemsByRequest.values()
-                            .stream()
-                            .flatMap(Collection::stream)
-                            .collect(toList()),
-                        modifyResponse
-                    );
-                })
-                .whenComplete((i, ex) -> permit.release());
-        });
-    }
-
-    @Override
     public CompletableFuture<List<StatusCode>> deleteMonitoredItems(List<UaMonitoredItem> itemsToDelete) {
 
         List<UInteger> monitoredItemIds = itemsToDelete.stream()
@@ -314,7 +221,6 @@ public class OpcUaSubscription implements UaSubscription {
             return results;
         });
     }
-
 
     @Override
     public CompletableFuture<List<StatusCode>> setMonitoringMode(MonitoringMode monitoringMode,
@@ -388,6 +294,119 @@ public class OpcUaSubscription implements UaSubscription {
         );
 
         return future.thenApply(r -> Arrays.asList(r.getRemoveResults()));
+    }
+
+
+    /**
+     * Transfer the monitored items from {@code subscription} to this {@link UaSubscription}.
+     * <p>
+     * This subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     *
+     * @param subscription the {@link UaSubscription} to transfer items from.
+     * @return a {@link CompletableFuture} that completes when the transfer is done.
+     */
+    CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription) {
+        return notificationSemaphore.acquire().thenAccept(permit -> {
+            try {
+                subscription.getMonitoredItems().forEach(item -> {
+                    OpcUaMonitoredItem newItem = new OpcUaMonitoredItem(
+                        client,
+                        item.getClientHandle(),
+                        item.getReadValueId(),
+                        item.getMonitoredItemId(),
+                        item.getStatusCode(),
+                        item.getRevisedSamplingInterval(),
+                        item.getRevisedQueueSize(),
+                        item.getFilterResult(),
+                        item.getMonitoringMode(),
+                        item.getMonitoringFilter()
+                    );
+
+                    newItem.setRequestedQueueSize(item.getRequestedQueueSize());
+                    newItem.setRequestedSamplingInterval(item.getRequestedSamplingInterval());
+
+                    itemsByServerHandle.put(newItem.getMonitoredItemId(), newItem);
+                    itemsByClientHandle.put(newItem.getClientHandle(), newItem);
+                });
+            } finally {
+                permit.release();
+            }
+        });
+    }
+
+    /**
+     * Reconstitutes the monitored items of a transferred subscription.
+     * <p>
+     * The Modify Monitored Items service will be called to synchronize the state of each monitored item.
+     * <p>
+     * This subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     *
+     * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s
+     * @return a {@link TransferMonitoredItemsResponse} that includes a list of the {@link UaMonitoredItem}s
+     * and a list of the {@link StatusCode}s for each modify result.
+     */
+    CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
+        List<TransferMonitoredItemsRequest> itemsToTransfer
+    ) {
+
+        return notificationSemaphore.acquire().thenCompose(permit -> {
+            Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
+            List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
+
+            for (TransferMonitoredItemsRequest transferReq : itemsToTransfer) {
+                monitoredItemsByRequest.put(transferReq, newArrayList());
+
+                for (MonitoredItemTransferRequest monitoredItem : transferReq.getMonitoredItems()) {
+                    OpcUaMonitoredItem item = new OpcUaMonitoredItem(
+                        client,
+                        monitoredItem.getClientHandle(),
+                        monitoredItem.getItemToMonitor(),
+                        monitoredItem.getServerHandle(),
+                        new StatusCode(StatusCodes.Uncertain_InitialValue),
+                        monitoredItem.getRequestedParameters().getSamplingInterval(),
+                        monitoredItem.getRequestedParameters().getQueueSize(),
+                        null,
+                        monitoredItem.getMonitoringMode(),
+                        monitoredItem.getRequestedParameters().getFilter()
+                    );
+
+                    itemsByServerHandle.put(monitoredItem.getServerHandle(), item);
+                    itemsByClientHandle.put(monitoredItem.getClientHandle(), item);
+
+                    monitoredItemsByRequest.get(transferReq).add(item);
+
+                    modifyRequests.add(new MonitoredItemModifyRequest(
+                        monitoredItem.getServerHandle(),
+                        monitoredItem.getRequestedParameters()
+                    ));
+                }
+            }
+
+            return modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests)
+                .thenApply(modifyResponse -> {
+                    monitoredItemsByRequest.forEach((req, items) -> {
+                        if (req.getItemTransferCallback().isPresent()) {
+                            ItemTransferredCallback callback = req.getItemTransferCallback().get();
+
+                            for (int i = 0; i < items.size(); i++) {
+                                UaMonitoredItem item = items.get(i);
+                                callback.onItemTransferred(client.getSerializationContext(), item, i);
+                            }
+                        }
+                    });
+
+                    return new TransferMonitoredItemsResponse(
+                        monitoredItemsByRequest.values()
+                            .stream()
+                            .flatMap(Collection::stream)
+                            .collect(toList()),
+                        modifyResponse
+                    );
+                })
+                .whenComplete((i, ex) -> permit.release());
+        });
     }
 
     @Override
