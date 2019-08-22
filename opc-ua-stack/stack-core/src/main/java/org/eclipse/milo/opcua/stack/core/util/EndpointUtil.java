@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 public class EndpointUtil {
 
     private static final Pattern ENDPOINT_URL_PATTERN =
-        Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+)(:\\d+)?(/.*)?");
+        Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+|\\[.*])(:\\d+)?(/.*)?");
 
     @Nullable
     public static String getScheme(@Nonnull String endpointUrl) {

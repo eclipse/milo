@@ -66,6 +66,11 @@ public class MethodExample implements ClientExample {
                 Double value = (Double) l(result.getOutputArguments()).get(0).getValue();
                 return CompletableFuture.completedFuture(value);
             } else {
+                StatusCode[] inputArgumentResults = result.getInputArgumentResults();
+                for (int i = 0; i < inputArgumentResults.length; i++) {
+                    logger.error("inputArgumentResults[{}]={}", i, inputArgumentResults[i]);
+                }
+                
                 CompletableFuture<Double> f = new CompletableFuture<>();
                 f.completeExceptionally(new UaException(statusCode));
                 return f;

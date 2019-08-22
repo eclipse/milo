@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.stack.core.security;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,14 @@ public class DefaultTrustListManagerTest {
         DefaultTrustListManager trustListManager = new DefaultTrustListManager(securityTestDir);
 
         File rejectedDir = trustListManager.getRejectedDir();
+
+        Files.list(rejectedDir.toPath()).forEach(p -> {
+            try {
+                Files.delete(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         for (int i = 0; i < DefaultTrustListManager.MAX_REJECTED_CERTIFICATES; i++) {
             File tmp = File.createTempFile("foo", "bar", rejectedDir);

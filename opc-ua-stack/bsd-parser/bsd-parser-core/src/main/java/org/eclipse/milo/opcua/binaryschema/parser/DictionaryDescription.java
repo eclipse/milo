@@ -10,13 +10,19 @@
 
 package org.eclipse.milo.opcua.binaryschema.parser;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DictionaryDescription {
 
+    private final List<CodecDescription> enumCodecs =
+        Collections.synchronizedList(new ArrayList<>());
+
+    private final List<CodecDescription> structCodecs =
+        Collections.synchronizedList(new ArrayList<>());
+
     private final String namespaceUri;
-    private final List<CodecDescription> enumCodecs;
-    private final List<CodecDescription> structCodecs;
 
     public DictionaryDescription(
         String namespaceUri,
@@ -24,8 +30,8 @@ public class DictionaryDescription {
         List<CodecDescription> structCodecs) {
 
         this.namespaceUri = namespaceUri;
-        this.enumCodecs = enumCodecs;
-        this.structCodecs = structCodecs;
+        this.enumCodecs.addAll(enumCodecs);
+        this.structCodecs.addAll(structCodecs);
     }
 
     public String getNamespaceUri() {

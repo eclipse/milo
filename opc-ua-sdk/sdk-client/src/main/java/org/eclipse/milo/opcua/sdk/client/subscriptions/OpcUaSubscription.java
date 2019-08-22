@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRes
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -257,6 +260,38 @@ public class OpcUaSubscription implements UaSubscription {
 
                 return statusCode;
             });
+    }
+
+    @Override
+    public CompletableFuture<List<StatusCode>> addTriggeringLinks(
+        UInteger triggeringItemId,
+        List<UInteger> linksToAdd
+    ) {
+
+        CompletableFuture<SetTriggeringResponse> future = client.setTriggering(
+            subscriptionId,
+            triggeringItemId,
+            linksToAdd,
+            Collections.emptyList()
+        );
+
+        return future.thenApply(r -> Arrays.asList(r.getAddResults()));
+    }
+
+    @Override
+    public CompletableFuture<List<StatusCode>> removeTriggeringLinks(
+        UInteger triggeringItemId,
+        List<UInteger> linksToRemove
+    ) {
+        
+        CompletableFuture<SetTriggeringResponse> future = client.setTriggering(
+            subscriptionId,
+            triggeringItemId,
+            Collections.emptyList(),
+            linksToRemove
+        );
+
+        return future.thenApply(r -> Arrays.asList(r.getRemoveResults()));
     }
 
     @Override

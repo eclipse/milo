@@ -51,8 +51,8 @@ public class DefaultCertificateValidator implements CertificateValidator {
             );
         } catch (UaException e) {
             X509Certificate certificate = certificateChain.get(0);
-            logger.debug("validation failed: {}", certificate.getSubjectX500Principal());
-            trustListManager.addRejectedCertificate(certificate);
+            logger.debug("verification failed: {}", certificate.getSubjectX500Principal());
+            certificateChain.forEach(trustListManager::addRejectedCertificate);
             throw e;
         }
     }
