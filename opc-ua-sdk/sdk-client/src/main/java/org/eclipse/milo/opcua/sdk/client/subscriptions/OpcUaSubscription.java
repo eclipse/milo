@@ -276,9 +276,10 @@ public class OpcUaSubscription implements UaSubscription {
                     monitoredItemsByRequest.forEach((req, items) -> {
                         if (req.getItemTransferCallback().isPresent()) {
                             ItemTransferredCallback callback = req.getItemTransferCallback().get();
-                            for (UaMonitoredItem item : items) {
-                                int clientHandle = item.getClientHandle().intValue();
-                                callback.onItemTransferred(client.getSerializationContext(), item, clientHandle);
+
+                            for (int i = 0; i < items.size(); i++) {
+                                UaMonitoredItem item = items.get(i);
+                                callback.onItemTransferred(client.getSerializationContext(), item, i);
                             }
                         }
                     });
