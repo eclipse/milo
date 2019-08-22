@@ -127,12 +127,12 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     @Override
     public void setValueConsumer(Consumer<DataValue> consumer) {
-        this.valueConsumer = (dataTypeManager, item, value) -> consumer.accept(value);
+        this.valueConsumer = (context, item, value) -> consumer.accept(value);
     }
 
     @Override
     public void setValueConsumer(BiConsumer<UaMonitoredItem, DataValue> valueBiConsumer) {
-        this.valueConsumer = (dataTypeManager, item, value) -> valueBiConsumer.accept(item, value);
+        this.valueConsumer = (context, item, value) -> valueBiConsumer.accept(item, value);
     }
 
     @Override
@@ -185,12 +185,12 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     void onValueArrived(DataValue value) {
         ValueConsumer c = valueConsumer;
-        if (c != null) c.onValueArrived(client.getDataTypeManager(), this, value);
+        if (c != null) c.onValueArrived(client.getSerializationContext(), this, value);
     }
 
     void onEventArrived(Variant[] values) {
         EventConsumer c = eventConsumer;
-        if (c != null) c.onEventArrived(client.getDataTypeManager(), this, values);
+        if (c != null) c.onEventArrived(client.getSerializationContext(), this, values);
     }
 
 }

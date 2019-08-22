@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -159,11 +159,11 @@ public interface UaMonitoredItem {
         /**
          * A new value has arrived for the {@link UaMonitoredItem} {@code item}.
          *
-         * @param dataTypeManager the {@link DataTypeManager} from {@link OpcUaClient#getDataTypeManager()}.
-         * @param item            the {@link UaMonitoredItem} this value is for.
-         * @param value           the new {@link DataValue}.
+         * @param context the {@link SerializationContext} from {@link OpcUaClient#getSerializationContext()}.
+         * @param item    the {@link UaMonitoredItem} this value is for.
+         * @param value   the new {@link DataValue}.
          */
-        void onValueArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, DataValue value);
+        void onValueArrived(SerializationContext context, UaMonitoredItem item, DataValue value);
 
     }
 
@@ -172,11 +172,11 @@ public interface UaMonitoredItem {
         /**
          * A new event has arrived for the {@link UaMonitoredItem} {@code item}.
          *
-         * @param dataTypeManager the {@link DataTypeManager} from {@link OpcUaClient#getDataTypeManager()}.
-         * @param item            the {@link UaMonitoredItem} this event is for.
-         * @param eventValues     the event values.
+         * @param context     the {@link SerializationContext} from {@link OpcUaClient#getSerializationContext()}.
+         * @param item        the {@link UaMonitoredItem} this event is for.
+         * @param eventValues the event values.
          */
-        void onEventArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, Variant[] eventValues);
+        void onEventArrived(SerializationContext context, UaMonitoredItem item, Variant[] eventValues);
 
     }
 
