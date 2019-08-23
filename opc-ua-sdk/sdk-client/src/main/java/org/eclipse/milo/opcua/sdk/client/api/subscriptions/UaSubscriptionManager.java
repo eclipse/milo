@@ -18,6 +18,9 @@ import java.util.function.Function;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem.EventConsumer;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem.ValueConsumer;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ItemTransferredCallback;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -136,11 +139,19 @@ public interface UaSubscriptionManager {
      * <p>
      * The subscription shall already have been transferred to this client's session via the Transfer Subscription
      * service.
+     * <p>
+     * The {@code callback} provides a chance to configure a new a {@link ValueConsumer} or {@link EventConsumer} to
+     * each item belonging to the transferred subscription.
      *
      * @param subscription the {@link UaSubscription} to transfer to this {@link UaSubscriptionManager}.
+     * @param callback     the {@link ItemTransferredCallback} that will be invoked for each item belonging to the
+     *                     transferred subscription.
      * @return a {@link CompletableFuture} containing the new {@link UaSubscription}.
      */
-    CompletableFuture<UaSubscription> transferSubscription(UaSubscription subscription);
+    CompletableFuture<UaSubscription> transferSubscription(
+        UaSubscription subscription,
+        ItemTransferredCallback callback
+    );
 
     /**
      * Complete the transfer of a subscription and its monitored items to this {@link UaSubscriptionManager}.

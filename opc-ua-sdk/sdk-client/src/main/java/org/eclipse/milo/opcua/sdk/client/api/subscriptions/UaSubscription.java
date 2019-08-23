@@ -16,8 +16,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.MonitoredItemTransferRequest;
-import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -273,21 +271,6 @@ public interface UaSubscription {
         void onItemCreated(SerializationContext serializationContext, UaMonitoredItem item, int index);
 
     }
-
-    interface ItemTransferredCallback {
-
-        /**
-         * {@code item} was successfully "transferred" to its destination {@link UaSubscription}.
-         *
-         * @param serializationContext the current {@link SerializationContext}.
-         * @param item                 the {@link UaMonitoredItem} that was "transferred".
-         * @param index                the index of {@link MonitoredItemTransferRequest} for this item inside the
-         *                             {@link TransferMonitoredItemsRequest}.
-         */
-        void onItemTransferred(SerializationContext serializationContext, UaMonitoredItem item, int index);
-
-    }
-
 
     interface NotificationListener {
 

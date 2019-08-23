@@ -352,7 +352,11 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     }
 
     @Override
-    public CompletableFuture<UaSubscription> transferSubscription(UaSubscription subscription) {
+    public CompletableFuture<UaSubscription> transferSubscription(
+        UaSubscription subscription,
+        ItemTransferredCallback callback
+    ) {
+
         OpcUaSubscription newSubscription = new OpcUaSubscription(
             client,
             subscription.getSubscriptionId(),
@@ -371,7 +375,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         subscriptions.put(newSubscription.getSubscriptionId(), newSubscription);
 
         return newSubscription
-            .transferMonitoredItems(subscription)
+            .transferMonitoredItems(subscription, callback)
             .thenApply(v -> newSubscription);
     }
 

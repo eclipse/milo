@@ -306,10 +306,14 @@ public class OpcUaSubscription implements UaSubscription {
      * @param subscription the {@link UaSubscription} to transfer items from.
      * @return a {@link CompletableFuture} that completes when the transfer is done.
      */
-    CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription) {
+    CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription, ItemTransferredCallback callback) {
         return notificationSemaphore.acquire().thenAccept(permit -> {
             try {
-                subscription.getMonitoredItems().forEach(item -> {
+                ImmutableList<UaMonitoredItem> monitoredItems = subscription.getMonitoredItems();
+
+                for (int i = 0, monitoredItemsSize = monitoredItems.size(); i < monitoredItemsSize; i++) {
+                    UaMonitoredItem item = monitoredItems.get(i);
+
                     OpcUaMonitoredItem newItem = new OpcUaMonitoredItem(
                         client,
                         item.getClientHandle(),
@@ -328,7 +332,9 @@ public class OpcUaSubscription implements UaSubscription {
 
                     itemsByServerHandle.put(newItem.getMonitoredItemId(), newItem);
                     itemsByClientHandle.put(newItem.getClientHandle(), newItem);
-                });
+
+                    callback.onItemTransferred(client.getSerializationContext(), newItem, i);
+                }
             } finally {
                 permit.release();
             }
@@ -386,16 +392,15 @@ public class OpcUaSubscription implements UaSubscription {
 
             return modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests)
                 .thenApply(modifyResponse -> {
-                    monitoredItemsByRequest.forEach((req, items) -> {
-                        if (req.getItemTransferCallback().isPresent()) {
-                            ItemTransferredCallback callback = req.getItemTransferCallback().get();
-
+                    monitoredItemsByRequest.forEach((req, items) ->
+                        req.getItemTransferCallback().ifPresent(callback -> {
                             for (int i = 0; i < items.size(); i++) {
-                                UaMonitoredItem item = items.get(i);
-                                callback.onItemTransferred(client.getSerializationContext(), item, i);
+                                callback.onItemTransferred(
+                                    client.getSerializationContext(), items.get(i), i
+                                );
                             }
-                        }
-                    });
+                        })
+                    );
 
                     return new TransferMonitoredItemsResponse(
                         monitoredItemsByRequest.values()
