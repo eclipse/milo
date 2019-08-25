@@ -364,8 +364,6 @@ public class SessionManager implements
 
         ActivateSessionRequest request = (ActivateSessionRequest) serviceRequest.getRequest();
 
-        // ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
-
         long secureChannelId = serviceRequest.getSecureChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
         List<SignedSoftwareCertificate> clientSoftwareCertificates = l(request.getClientSoftwareCertificates());
