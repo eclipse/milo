@@ -32,6 +32,7 @@ public class Operators {
     public static final LessThanOrEqual LESS_THAN_OR_EQUAL = new LessThanOrEqual();
     public static final Not NOT = new Not();
     public static final Cast CAST = new Cast();
+    public static final OfType OF_TYPE = new OfType();
 
     public static final Operator<Object> UNSUPPORTED = new Operator<Object>() {
         @Nullable
@@ -59,6 +60,7 @@ public class Operators {
         .add(FilterOperator.LessThanOrEqual)
         .add(FilterOperator.Not)
         .add(FilterOperator.Cast)
+        .add(FilterOperator.OfType)
         .build();
 
 }

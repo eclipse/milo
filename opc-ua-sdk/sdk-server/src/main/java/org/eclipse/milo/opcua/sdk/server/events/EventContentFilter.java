@@ -400,7 +400,7 @@ public class EventContentFilter {
             case InView:
                 return Operators.UNSUPPORTED;
             case OfType:
-                return Operators.UNSUPPORTED;
+                return Operators.OF_TYPE;
             case RelatedTo:
                 return Operators.UNSUPPORTED;
             default:
@@ -488,7 +488,7 @@ public class EventContentFilter {
         }
     }
 
-    private static boolean subtypeOf(NodeId typeId, NodeId superTypeId, OpcUaServer server) {
+    public static boolean subtypeOf(NodeId typeId, NodeId superTypeId, OpcUaServer server) {
         UaNode node = server.getAddressSpaceManager().getManagedNode(typeId).orElse(null);
 
         if (node instanceof ObjectTypeNode) {
