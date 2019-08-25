@@ -10,13 +10,16 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public final class AttributeFilters {
 
@@ -25,11 +28,34 @@ public final class AttributeFilters {
     public static AttributeFilter getValue(Function<GetAttributeContext, DataValue> get) {
         return new AttributeFilter() {
             @Override
-            public Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
+            public void getAttributeAsync(
+                GetAttributeContext ctx,
+                AttributeId attributeId,
+                Pending<Unit, Object> pending
+            ) {
+
                 if (attributeId == AttributeId.Value) {
-                    return get.apply(ctx);
+                    pending.getOutputFuture().complete(get.apply(ctx));
                 } else {
-                    return ctx.getAttribute(attributeId);
+                    ctx.getAttributeAsync(attributeId, pending);
+                }
+            }
+        };
+    }
+
+    public static AttributeFilter getValueAsync(Function<GetAttributeContext, CompletableFuture<DataValue>> get) {
+        return new AttributeFilter() {
+            @Override
+            public void getAttributeAsync(
+                GetAttributeContext ctx,
+                AttributeId attributeId,
+                Pending<Unit, Object> pending
+            ) {
+
+                if (attributeId == AttributeId.Value) {
+                    get.apply(ctx).thenAccept(pending.getOutputFuture()::complete);
+                } else {
+                    ctx.getAttributeAsync(attributeId, pending);
                 }
             }
         };

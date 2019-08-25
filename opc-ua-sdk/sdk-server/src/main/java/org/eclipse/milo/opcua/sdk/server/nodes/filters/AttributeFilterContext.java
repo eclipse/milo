@@ -15,8 +15,11 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
+import org.eclipse.milo.opcua.sdk.server.nodes.DefaultAttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public abstract class AttributeFilterContext {
 
@@ -73,6 +76,7 @@ public abstract class AttributeFilterContext {
 
         GetAttributeContext(Session session, UaNode node, Iterator<AttributeFilter> filterIterator) {
             super(session, node);
+
             this.filterIterator = filterIterator;
         }
 
@@ -85,9 +89,17 @@ public abstract class AttributeFilterContext {
         public Object getAttribute(AttributeId attributeId) {
             AttributeFilter next = filterIterator.hasNext() ?
                 filterIterator.next() :
-                AttributeFilter.DEFAULT_INSTANCE;
+                DefaultAttributeFilter.INSTANCE;
 
             return next.getAttribute(this, attributeId);
+        }
+
+        public void getAttributeAsync(AttributeId attributeId, Pending<Unit, Object> pending) {
+            AttributeFilter next = filterIterator.hasNext() ?
+                filterIterator.next() :
+                DefaultAttributeFilter.INSTANCE;
+
+            next.getAttributeAsync(this, attributeId, pending);
         }
 
     }
@@ -111,9 +123,17 @@ public abstract class AttributeFilterContext {
         public void setAttribute(AttributeId attributeId, Object value) {
             AttributeFilter next = filterIterator.hasNext() ?
                 filterIterator.next() :
-                AttributeFilter.DEFAULT_INSTANCE;
+                DefaultAttributeFilter.INSTANCE;
 
             next.setAttribute(this, attributeId, value);
+        }
+
+        public void setAttributeAsync(AttributeId attributeId, Pending<Object, Unit> pending) {
+            AttributeFilter next = filterIterator.hasNext() ?
+                filterIterator.next() :
+                DefaultAttributeFilter.INSTANCE;
+
+            next.setAttributeAsync(this, attributeId, pending);
         }
 
     }

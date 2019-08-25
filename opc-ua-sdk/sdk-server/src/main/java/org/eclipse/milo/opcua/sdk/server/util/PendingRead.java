@@ -31,7 +31,7 @@ public class PendingRead implements Pending<ReadValueId, DataValue> {
     }
 
     @Override
-    public CompletableFuture<DataValue> getFuture() {
+    public CompletableFuture<DataValue> getOutputFuture() {
         return future;
     }
 }

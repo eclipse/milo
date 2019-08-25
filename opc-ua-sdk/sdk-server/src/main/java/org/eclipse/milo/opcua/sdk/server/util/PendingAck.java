@@ -26,7 +26,7 @@ public class PendingAck implements Pending<SubscriptionAcknowledgement, StatusCo
     }
 
     @Override
-    public CompletableFuture<StatusCode> getFuture() {
+    public CompletableFuture<StatusCode> getOutputFuture() {
         return future;
     }
 

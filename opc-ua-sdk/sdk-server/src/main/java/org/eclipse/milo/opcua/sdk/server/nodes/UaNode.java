@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
@@ -26,6 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -41,6 +43,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
@@ -618,6 +621,48 @@ public abstract class UaNode implements UaServerNode {
     @Nullable
     public synchronized AttributeDelegate getAttributeDelegate() {
         return attributeDelegate;
+    }
+
+    @Override
+    public CompletableFuture<DataValue> getAttributeAsync(AttributeContext context, AttributeId attributeId) {
+        AttributeDelegate delegate = getAttributeDelegate();
+
+        if (delegate == null) {
+            try {
+                Pending<Unit, Object> pending = null; // TODO
+
+                getFilterChain().getAttributeAsync(
+                    context.getSession().orElse(null),
+                    this,
+                    attributeId,
+                    pending
+                );
+
+                return pending.getOutputFuture().thenApply(value -> {
+                    if (attributeId == AttributeId.Value) {
+                        return (DataValue) value;
+                    } else {
+                        return dv(value);
+                    }
+                });
+            } catch (Throwable t) {
+                StatusCode statusCode = UaException.extractStatusCode(t)
+                    .orElse(new StatusCode(StatusCodes.Bad_InternalError));
+
+                return CompletableFuture.completedFuture(
+                    new DataValue(statusCode)
+                );
+            }
+        } else {
+            return CompletableFuture.completedFuture(
+                delegate.getAttribute(context, this, attributeId)
+            );
+        }
+    }
+
+    @Override
+    public CompletableFuture<Unit> setAttributeAsync(AttributeContext context, AttributeId attributeId, DataValue value) {
+        return null;
     }
 
     @Override

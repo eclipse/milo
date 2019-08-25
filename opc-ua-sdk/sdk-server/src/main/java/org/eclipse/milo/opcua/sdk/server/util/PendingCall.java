@@ -26,7 +26,7 @@ public class PendingCall implements Pending<CallMethodRequest, CallMethodResult>
     }
 
     @Override
-    public CompletableFuture<CallMethodResult> getFuture() {
+    public CompletableFuture<CallMethodResult> getOutputFuture() {
         return future;
     }
 

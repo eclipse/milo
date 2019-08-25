@@ -26,7 +26,7 @@ public class PendingWrite implements Pending<WriteValue, StatusCode> {
     }
 
     @Override
-    public CompletableFuture<StatusCode> getFuture() {
+    public CompletableFuture<StatusCode> getOutputFuture() {
         return future;
     }
 

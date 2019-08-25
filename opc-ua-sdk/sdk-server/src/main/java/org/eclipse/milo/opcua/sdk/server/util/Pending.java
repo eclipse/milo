@@ -10,21 +10,20 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface Pending<I, O> {
 
     /**
-     * @return The {@link CompletableFuture} to complete when the result is ready.
-     */
-    CompletableFuture<O> getFuture();
-
-    /**
      * @return The input parameter to the pending operation.
      */
     I getInput();
+
+    /**
+     * @return The {@link CompletableFuture} to complete when the result is ready.
+     */
+    CompletableFuture<O> getOutputFuture();
 
     /**
      * Builds a {@link CompletableFuture} suitable for use as a completion callback. When completed, each of the
@@ -50,11 +49,8 @@ public interface Pending<I, O> {
                 throw new RuntimeException(message);
             }
 
-            Iterator<? extends Pending<I, O>> pi = pending.iterator();
-            Iterator<O> ri = results.iterator();
-
-            while (pi.hasNext() && ri.hasNext()) {
-                pi.next().getFuture().complete(ri.next());
+            for (int i = 0; i < pending.size(); i++) {
+                pending.get(i).getOutputFuture().complete(results.get(i));
             }
         });
 

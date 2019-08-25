@@ -31,7 +31,7 @@ public class PendingHistoryRead implements Pending<HistoryReadValueId, HistoryRe
     }
 
     @Override
-    public CompletableFuture<HistoryReadResult> getFuture() {
+    public CompletableFuture<HistoryReadResult> getOutputFuture() {
         return future;
     }
 }

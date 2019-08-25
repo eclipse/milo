@@ -31,7 +31,7 @@ public class PendingHistoryUpdate implements Pending<HistoryUpdateDetails, Histo
     }
 
     @Override
-    public CompletableFuture<HistoryUpdateResult> getFuture() {
+    public CompletableFuture<HistoryUpdateResult> getOutputFuture() {
         return future;
     }
 }

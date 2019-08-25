@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface UaServerNode extends Node {
 
@@ -176,5 +178,22 @@ public interface UaServerNode extends Node {
      * @throws UaException if setting the attribute failed for any reason.
      */
     void setAttribute(AttributeContext context, AttributeId attributeId, DataValue value) throws UaException;
+
+    default CompletableFuture<DataValue> getAttributeAsync(
+        AttributeContext context,
+        AttributeId attributeId
+    ) {
+
+        return null; // TODO
+    }
+
+    default CompletableFuture<Unit> setAttributeAsync(
+        AttributeContext context,
+        AttributeId attributeId,
+        DataValue value
+    ) {
+
+        return null; // TODO
+    }
 
 }

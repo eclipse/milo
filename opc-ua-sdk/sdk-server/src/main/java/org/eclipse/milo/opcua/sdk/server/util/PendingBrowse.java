@@ -26,7 +26,7 @@ public class PendingBrowse implements Pending<BrowseDescription, BrowseResult> {
     }
 
     @Override
-    public CompletableFuture<BrowseResult> getFuture() {
+    public CompletableFuture<BrowseResult> getOutputFuture() {
         return future;
     }
 

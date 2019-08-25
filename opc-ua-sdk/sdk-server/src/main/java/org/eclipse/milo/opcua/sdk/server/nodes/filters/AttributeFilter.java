@@ -10,17 +10,31 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
-import org.eclipse.milo.opcua.sdk.server.nodes.DefaultAttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AttributeFilter {
 
-    /**
-     * A shared instance of {@link DefaultAttributeFilter}.
-     */
-    DefaultAttributeFilter DEFAULT_INSTANCE = new DefaultAttributeFilter();
+    default void getAttributeAsync(
+        GetAttributeContext ctx,
+        AttributeId attributeId,
+        Pending<Unit, Object> pending
+    ) {
+
+        ctx.getAttributeAsync(attributeId, pending);
+    }
+
+    default void setAttributeAsync(
+        SetAttributeContext ctx,
+        AttributeId attributeId,
+        Pending<Object, Unit> pending
+    ) {
+
+        ctx.setAttributeAsync(attributeId, pending);
+    }
 
     /**
      * Get the value for the attribute identified by {@code attributeId} or delegate to the next filter in the chain.
