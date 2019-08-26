@@ -21,6 +21,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 
+import static org.eclipse.milo.opcua.sdk.server.events.EventContentFilter.subtypeOf;
+
 public class OfType implements Operator<Boolean> {
 
     OfType() {}
@@ -37,19 +39,24 @@ public class OfType implements Operator<Boolean> {
     public Boolean apply(
         OperatorContext context,
         BaseEventTypeNode eventNode,
-        FilterOperand[] operands) throws UaException {
+        FilterOperand[] operands
+    ) throws UaException {
 
         validate(context, operands);
 
         Object value = context.resolve(operands[0], eventNode);
 
         if (value instanceof NodeId) {
-            NodeId nodeId = (NodeId) value;
+            NodeId eventTypeDefinitionId =
+                eventNode.getTypeDefinitionNode().getNodeId();
 
-            // TODO lookup Node
+            NodeId targetTypeDefinitionId = (NodeId) value;
+
+            return eventTypeDefinitionId.equals(targetTypeDefinitionId) ||
+                subtypeOf(eventTypeDefinitionId, targetTypeDefinitionId, context.getServer());
+        } else {
+            return false;
         }
-
-        return null;
     }
 
 }
