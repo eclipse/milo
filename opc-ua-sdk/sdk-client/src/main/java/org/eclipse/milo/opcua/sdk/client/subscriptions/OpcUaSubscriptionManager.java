@@ -649,7 +649,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         logger.debug("onPublishComplete(), subscriptionId={}, sequenceNumber={}, publishTime={}",
             subscriptionId, notificationMessage.getSequenceNumber(), publishTime);
 
-        deliverNotificationMessage(subscription, notificationMessage).thenRunAsync(
+        deliverNotificationMessageAsync(subscription, notificationMessage).thenRunAsync(
             () -> {
                 pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
 
@@ -720,137 +720,20 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         OpcUaSubscription subscription = subscriptions.get(subscriptionId);
 
         if (subscription != null) {
-            deliverNotificationMessage(subscription, notificationMessage);
+            deliverNotificationMessageAsync(subscription, notificationMessage);
         }
     }
 
-    private CompletableFuture<Unit> deliverNotificationMessage(
-        OpcUaSubscription subscription, NotificationMessage notificationMessage) {
+    private CompletableFuture<Unit> deliverNotificationMessageAsync(
+        OpcUaSubscription subscription,
+        NotificationMessage notificationMessage
+    ) {
 
         CompletableFuture<Unit> delivered = new CompletableFuture<>();
 
-        subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
+        deliveryQueue.submit(() -> subscription.getNotificationSemaphore().acquire().thenAccept(permit -> {
             try {
-                Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
-                List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
-
-                if (notificationData.isEmpty()) {
-                    subscriptionListeners.forEach(
-                        listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
-                    );
-
-                    subscription.getNotificationListeners().forEach(
-                        listener -> listener.onKeepAliveNotification(
-                            subscription, notificationMessage.getPublishTime())
-                    );
-                }
-
-                for (ExtensionObject xo : notificationData) {
-                    Object o = xo.decode(client.getSerializationContext());
-
-                    if (o instanceof DataChangeNotification) {
-                        DataChangeNotification dcn = (DataChangeNotification) o;
-                        List<MonitoredItemNotification> monitoredItemNotifications = l(dcn.getMonitoredItems());
-                        int notificationCount = monitoredItemNotifications.size();
-
-                        logger.debug("Received {} MonitoredItemNotifications", notificationCount);
-
-                        for (MonitoredItemNotification min : monitoredItemNotifications) {
-                            logger.trace("MonitoredItemNotification: clientHandle={}, value={}",
-                                min.getClientHandle(), min.getValue());
-
-                            OpcUaMonitoredItem item = items.get(min.getClientHandle());
-                            if (item != null) item.onValueArrived(min.getValue());
-                            else logger.warn("no item for clientHandle=" + min.getClientHandle());
-                        }
-
-                        if (notificationCount == 0) {
-                            subscriptionListeners.forEach(
-                                listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
-                            );
-
-                            subscription.getNotificationListeners().forEach(
-                                listener -> listener.onKeepAliveNotification(
-                                    subscription, notificationMessage.getPublishTime())
-                            );
-                        } else {
-                            if (!subscription.getNotificationListeners().isEmpty()) {
-                                List<UaMonitoredItem> monitoredItems = new ArrayList<>();
-                                List<DataValue> dataValues = new ArrayList<>();
-
-                                for (MonitoredItemNotification n : monitoredItemNotifications) {
-                                    UaMonitoredItem item = subscription
-                                        .getItemsByClientHandle().get(n.getClientHandle());
-
-                                    if (item != null) {
-                                        monitoredItems.add(item);
-                                        dataValues.add(n.getValue());
-                                    }
-                                }
-
-                                subscription.getNotificationListeners().forEach(
-                                    listener -> listener.onDataChangeNotification(
-                                        subscription,
-                                        monitoredItems,
-                                        dataValues,
-                                        notificationMessage.getPublishTime()
-                                    )
-                                );
-                            }
-                        }
-                    } else if (o instanceof EventNotificationList) {
-                        EventNotificationList enl = (EventNotificationList) o;
-                        List<EventFieldList> eventFieldLists = l(enl.getEvents());
-
-                        for (EventFieldList efl : eventFieldLists) {
-                            logger.trace("EventFieldList: clientHandle={}, values={}",
-                                efl.getClientHandle(), Arrays.toString(efl.getEventFields()));
-
-                            OpcUaMonitoredItem item = items.get(efl.getClientHandle());
-                            if (item != null) item.onEventArrived(efl.getEventFields());
-                        }
-
-                        if (!subscription.getNotificationListeners().isEmpty()) {
-                            List<UaMonitoredItem> monitoredItems = new ArrayList<>();
-                            List<Variant[]> eventFields = new ArrayList<>();
-
-                            for (EventFieldList efl : eventFieldLists) {
-                                UaMonitoredItem item = subscription
-                                    .getItemsByClientHandle().get(efl.getClientHandle());
-
-                                if (item != null) {
-                                    monitoredItems.add(item);
-                                    eventFields.add(efl.getEventFields());
-                                }
-                            }
-
-                            subscription.getNotificationListeners().forEach(
-                                listener -> listener.onEventNotification(
-                                    subscription,
-                                    monitoredItems,
-                                    eventFields,
-                                    notificationMessage.getPublishTime()
-                                )
-                            );
-                        }
-                    } else if (o instanceof StatusChangeNotification) {
-                        StatusChangeNotification scn = (StatusChangeNotification) o;
-
-                        logger.debug("StatusChangeNotification: {}", scn.getStatus());
-
-                        subscriptionListeners.forEach(
-                            listener -> listener.onStatusChanged(subscription, scn.getStatus())
-                        );
-
-                        subscription.getNotificationListeners().forEach(
-                            listener -> listener.onStatusChangedNotification(subscription, scn.getStatus())
-                        );
-
-                        if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
-                            subscriptions.remove(subscription.getSubscriptionId());
-                        }
-                    }
-                }
+                deliverNotificationMessage(subscription, notificationMessage);
             } finally {
                 permit.release();
 
@@ -861,20 +744,156 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         return delivered;
     }
 
-    public void startPublishing() {
-        maybeSendPublishRequests();
+    private void deliverNotificationMessage(
+        OpcUaSubscription subscription,
+        NotificationMessage notificationMessage
+    ) {
+
+        Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
+        List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
+
+        if (notificationData.isEmpty()) {
+            subscriptionListeners.forEach(
+                listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+            );
+
+            subscription.getNotificationListeners().forEach(
+                listener -> listener.onKeepAliveNotification(
+                    subscription, notificationMessage.getPublishTime())
+            );
+        }
+
+        for (ExtensionObject xo : notificationData) {
+            Object o = xo.decode(client.getSerializationContext());
+
+            if (o instanceof DataChangeNotification) {
+                DataChangeNotification dcn = (DataChangeNotification) o;
+                List<MonitoredItemNotification> monitoredItemNotifications = l(dcn.getMonitoredItems());
+                int notificationCount = monitoredItemNotifications.size();
+
+                logger.debug("Received {} MonitoredItemNotifications", notificationCount);
+
+                for (MonitoredItemNotification min : monitoredItemNotifications) {
+                    logger.trace("MonitoredItemNotification: clientHandle={}, value={}",
+                        min.getClientHandle(), min.getValue());
+
+                    OpcUaMonitoredItem item = items.get(min.getClientHandle());
+                    if (item != null) item.onValueArrived(min.getValue());
+                    else logger.warn("no item for clientHandle=" + min.getClientHandle());
+                }
+
+                if (notificationCount == 0) {
+                    subscriptionListeners.forEach(
+                        listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+                    );
+
+                    subscription.getNotificationListeners().forEach(
+                        listener -> listener.onKeepAliveNotification(
+                            subscription, notificationMessage.getPublishTime())
+                    );
+                } else {
+                    if (!subscription.getNotificationListeners().isEmpty()) {
+                        List<UaMonitoredItem> monitoredItems = new ArrayList<>();
+                        List<DataValue> dataValues = new ArrayList<>();
+
+                        for (MonitoredItemNotification n : monitoredItemNotifications) {
+                            UaMonitoredItem item = subscription
+                                .getItemsByClientHandle().get(n.getClientHandle());
+
+                            if (item != null) {
+                                monitoredItems.add(item);
+                                dataValues.add(n.getValue());
+                            }
+                        }
+
+                        subscription.getNotificationListeners().forEach(
+                            listener -> listener.onDataChangeNotification(
+                                subscription,
+                                monitoredItems,
+                                dataValues,
+                                notificationMessage.getPublishTime()
+                            )
+                        );
+                    }
+                }
+            } else if (o instanceof EventNotificationList) {
+                EventNotificationList enl = (EventNotificationList) o;
+                List<EventFieldList> eventFieldLists = l(enl.getEvents());
+
+                for (EventFieldList efl : eventFieldLists) {
+                    logger.trace("EventFieldList: clientHandle={}, values={}",
+                        efl.getClientHandle(), Arrays.toString(efl.getEventFields()));
+
+                    OpcUaMonitoredItem item = items.get(efl.getClientHandle());
+                    if (item != null) item.onEventArrived(efl.getEventFields());
+                }
+
+                if (!subscription.getNotificationListeners().isEmpty()) {
+                    List<UaMonitoredItem> monitoredItems = new ArrayList<>();
+                    List<Variant[]> eventFields = new ArrayList<>();
+
+                    for (EventFieldList efl : eventFieldLists) {
+                        UaMonitoredItem item = subscription
+                            .getItemsByClientHandle().get(efl.getClientHandle());
+
+                        if (item != null) {
+                            monitoredItems.add(item);
+                            eventFields.add(efl.getEventFields());
+                        }
+                    }
+
+                    subscription.getNotificationListeners().forEach(
+                        listener -> listener.onEventNotification(
+                            subscription,
+                            monitoredItems,
+                            eventFields,
+                            notificationMessage.getPublishTime()
+                        )
+                    );
+                }
+            } else if (o instanceof StatusChangeNotification) {
+                StatusChangeNotification scn = (StatusChangeNotification) o;
+
+                logger.debug("StatusChangeNotification: {}", scn.getStatus());
+
+                subscriptionListeners.forEach(
+                    listener -> listener.onStatusChanged(subscription, scn.getStatus())
+                );
+
+                subscription.getNotificationListeners().forEach(
+                    listener -> listener.onStatusChangedNotification(subscription, scn.getStatus())
+                );
+
+                if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
+                    subscriptions.remove(subscription.getSubscriptionId());
+                }
+            }
+        }
     }
 
     public void clearSubscriptions() {
         subscriptions.clear();
     }
 
+    /**
+     * Pause the delivery of {@link NotificationMessage}s from {@link PublishResponse}s.
+     */
     public void pauseDelivery() {
         deliveryQueue.pause();
     }
 
+    /**
+     * Resume the delivery of {@link NotificationMessage}s from {@link PublishResponse}s.
+     */
     public void resumeDelivery() {
         deliveryQueue.resume();
+    }
+
+    /**
+     * Start sending {@link PublishRequest}s if they aren't already being sent.
+     */
+    public void startPublishing() {
+        maybeSendPublishRequests();
     }
 
 }
