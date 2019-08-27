@@ -46,7 +46,7 @@ public class SessionFsmTest {
 
         SessionFsm sessionFsm = SessionFsmFactory.newSessionFsm(client);
 
-        assertNotNull(sessionFsm.closeSession().get());
+        assertNotNull(sessionFsm.closeSession(true).get());
     }
 
 }

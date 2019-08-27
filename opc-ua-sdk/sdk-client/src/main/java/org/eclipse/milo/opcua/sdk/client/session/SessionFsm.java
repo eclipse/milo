@@ -54,8 +54,8 @@ public class SessionFsm {
         return openSession.future;
     }
 
-    public CompletableFuture<Unit> closeSession() {
-        Event.CloseSession closeSession = new Event.CloseSession();
+    public CompletableFuture<Unit> closeSession(boolean deleteSubscriptions) {
+        Event.CloseSession closeSession = new Event.CloseSession(deleteSubscriptions);
 
         fsm.fireEvent(closeSession);
 

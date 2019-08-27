@@ -32,6 +32,12 @@ interface Event {
     class CloseSession implements Event {
         final CompletableFuture<Unit> future = new CompletableFuture<>();
 
+        final boolean deleteSubscriptions;
+
+        CloseSession(boolean deleteSubscriptions) {
+            this.deleteSubscriptions = deleteSubscriptions;
+        }
+
         @Override
         public String toString() {
             return getClass().getSimpleName();

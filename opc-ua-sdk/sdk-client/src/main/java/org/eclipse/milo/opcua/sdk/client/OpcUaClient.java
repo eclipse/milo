@@ -401,9 +401,9 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<OpcUaClient> disconnect() {
+    public CompletableFuture<OpcUaClient> disconnect(boolean deleteSubscriptions) {
         return sessionFsm
-            .closeSession()
+            .closeSession(deleteSubscriptions)
             .exceptionally(ex -> Unit.VALUE)
             .thenCompose(u ->
                 getStackClient()

@@ -40,11 +40,21 @@ public interface UaClient extends AttributeServices,
     CompletableFuture<? extends UaClient> connect();
 
     /**
-     * Disconnect from the configured endpoint.
+     * Disconnect from the configured endpoint, deleting subscriptions when the session is closed.
      *
      * @return a {@link CompletableFuture} holding this client instance.
      */
-    CompletableFuture<? extends UaClient> disconnect();
+    default CompletableFuture<? extends UaClient> disconnect() {
+        return disconnect(true);
+    }
+
+    /**
+     * Disconnect from the configured endpoint.
+     *
+     * @param deleteSubscriptions {@code true} if subscriptions should be deleted when the session is closed.
+     * @return a {@link CompletableFuture} holding this client instance.
+     */
+    CompletableFuture<? extends UaClient> disconnect(boolean deleteSubscriptions);
 
     /**
      * @return a {@link CompletableFuture} holding the {@link UaSession}.

@@ -639,7 +639,7 @@ public class SessionFsmFactory {
 
                 OpcUaSession session = KEY_SESSION.get(ctx);
 
-                closeSession(ctx, client, session).whenComplete((u, ex) -> {
+                closeSession(ctx, client, session, closeSession.deleteSubscriptions).whenComplete((u, ex) -> {
                     if (u != null) {
                         LOGGER.debug("[{}] Session closed: {}", ctx.getInstanceId(), session);
                     } else {
@@ -707,7 +707,9 @@ public class SessionFsmFactory {
     private static CompletableFuture<Unit> closeSession(
         FsmContext<State, Event> ctx,
         OpcUaClient client,
-        OpcUaSession session) {
+        OpcUaSession session,
+        boolean deleteSubscriptions
+    ) {
 
         CompletableFuture<Unit> closeFuture = new CompletableFuture<>();
 
@@ -718,7 +720,7 @@ public class SessionFsmFactory {
             uint(5000)
         );
 
-        CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
+        CloseSessionRequest request = new CloseSessionRequest(requestHeader, deleteSubscriptions);
 
         LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
 
