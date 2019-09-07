@@ -53,13 +53,13 @@ public interface MonitoredItemServices {
      * The sampling interval has already been revised to fit within the configured server limits and to be at least the
      * value of the Minimum Sampling Interval attribute for the Node if it was present.
      *
-     * @param itemToModify              the item that will be modified.
+     * @param dataItem                  the item that will be modified.
      * @param requestedQueueSize        the requested queue size.
      * @param requestedSamplingInterval the requested sampling interval.
      * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
      */
     default void onModifyDataItem(
-        @SuppressWarnings("unused") ReadValueId itemToModify,
+        @SuppressWarnings("unused") DataItem dataItem,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
         BiConsumer<Double, UInteger> revisionCallback) {
@@ -89,12 +89,12 @@ public interface MonitoredItemServices {
      * <p>
      * This is a chance to revise the requested queue size.
      *
-     * @param itemToModify       the item that will be modified.
+     * @param eventItem          the item that will be modified.
      * @param requestedQueueSize the requested queue size.
      * @param revisionCallback   the callback to invoke to revise the queue size.
      */
     default void onModifyEventItem(
-        @SuppressWarnings("unused") ReadValueId itemToModify,
+        @SuppressWarnings("unused") EventItem eventItem,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback) {
 

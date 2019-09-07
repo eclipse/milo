@@ -35,28 +35,61 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     /**
      * Create a new {@link SimpleAddressSpaceFilter} that uses a {@link Predicate} on {@link NodeId}.
      *
-     * @param filter a {@link Predicate} that tests a {@link NodeId}.
+     * @param nodeIdFilter a {@link Predicate} that tests a {@link NodeId}.
      * @return a new {@link SimpleAddressSpaceFilter} that uses a {@link Predicate} on {@link NodeId}.
      */
-    public static SimpleAddressSpaceFilter create(Predicate<NodeId> filter) {
+    public static SimpleAddressSpaceFilter create(Predicate<NodeId> nodeIdFilter) {
+        return create(nodeIdFilter, item -> nodeIdFilter.test(item.getReadValueId().getNodeId()));
+    }
+
+    /**
+     * Create a new {@link SimpleAddressSpaceFilter} that uses a separate {@link Predicate} for {@link NodeId}s and
+     * {@link MonitoredItem}s.
+     *
+     * @param nodeIdFilter        a {@link Predicate} that tests a {@link NodeId}.
+     * @param monitoredItemFilter a {@link Predicate} that tests a {@link MonitoredItem}.
+     * @return a new {@link SimpleAddressSpaceFilter} that uses a {@link Predicate} on {@link NodeId}.
+     */
+    public static SimpleAddressSpaceFilter create(
+        Predicate<NodeId> nodeIdFilter,
+        Predicate<MonitoredItem> monitoredItemFilter
+    ) {
+
         return new SimpleAddressSpaceFilter() {
             @Override
             protected boolean filter(NodeId nodeId) {
-                return filter.test(nodeId);
+                return nodeIdFilter.test(nodeId);
+            }
+
+            @Override
+            protected boolean filter(MonitoredItem monitoredItem) {
+                return monitoredItemFilter.test(monitoredItem);
             }
         };
     }
 
     /**
-     * Return {@code true} if the operation {@code nodeId} belongs to should be handled this {@link AddressSpace}.
+     * Return {@code true} if the operation {@code nodeId} belongs to should be handled this filter's
+     * {@link AddressSpace}.
      * <p>
      * This is not an indication that a Node for {@code nodeId} exists, rather, it's an indication that this
      * AddressSpace would be responsible for the Node *if it did* exist.
      *
      * @param nodeId a {@link NodeId}.
-     * @return {@code true} if the operation {@code nodeId} belongs to should be handled this {@link AddressSpace}.
+     * @return {@code true} if the operation {@code nodeId} belongs to should be handled this filter's
+     * {@link AddressSpace}.
      */
     protected abstract boolean filter(NodeId nodeId);
+
+    /**
+     * Return {@code true} if the operation {@code monitoredItem} belongs to should be handled by this filter's
+     * {@link AddressSpace}.
+     *
+     * @param monitoredItem the {@link MonitoredItem} being operated on.
+     * @return {@code true} if the operation {@code monitoredItem} belongs to should be handled by this filter's
+     * {@link AddressSpace}.
+     */
+    protected abstract boolean filter(MonitoredItem monitoredItem);
 
 
     //region ViewServices
@@ -119,8 +152,8 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     }
 
     @Override
-    public boolean filterOnModifyDataItem(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnModifyDataItem(OpcUaServer server, DataItem dataItem) {
+        return filter(dataItem);
     }
 
     @Override
@@ -129,8 +162,8 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     }
 
     @Override
-    public boolean filterOnModifyEventItem(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnModifyEventItem(OpcUaServer server, EventItem eventItem) {
+        return filter(eventItem);
     }
 
     @Override
@@ -139,13 +172,13 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     }
 
     @Override
-    public boolean filterOnDataItemsModified(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnDataItemsModified(OpcUaServer server, DataItem dataItem) {
+        return filter(dataItem);
     }
 
     @Override
-    public boolean filterOnDataItemsDeleted(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnDataItemsDeleted(OpcUaServer server, DataItem dataItem) {
+        return filter(dataItem);
     }
 
     @Override
@@ -154,18 +187,18 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     }
 
     @Override
-    public boolean filterOnEventItemsModified(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnEventItemsModified(OpcUaServer server, EventItem eventItem) {
+        return filter(eventItem);
     }
 
     @Override
-    public boolean filterOnEventItemsDeleted(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnEventItemsDeleted(OpcUaServer server, EventItem eventItem) {
+        return filter(eventItem);
     }
 
     @Override
-    public boolean filterOnMonitoringModeChanged(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
+    public boolean filterOnMonitoringModeChanged(OpcUaServer server, MonitoredItem monitoredItem) {
+        return filter(monitoredItem);
     }
 
     //endregion
