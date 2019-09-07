@@ -652,7 +652,11 @@ public class SubscriptionManager {
                     minimumSamplingInterval = server.getConfig().getLimits().getMinSupportedSampleRate();
                 }
             } catch (UaException e) {
-                if (e.getStatusCode().getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+                long statusCodeValue = e.getStatusCode().getValue();
+
+                if (statusCodeValue != StatusCodes.Bad_AttributeIdInvalid &&
+                    statusCodeValue != StatusCodes.Bad_NodeIdUnknown) {
+
                     throw e;
                 }
             }
