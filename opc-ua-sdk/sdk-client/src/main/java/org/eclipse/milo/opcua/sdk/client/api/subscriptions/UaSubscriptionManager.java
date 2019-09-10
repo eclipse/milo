@@ -163,6 +163,7 @@ public interface UaSubscriptionManager {
      * must be obtained either by interrogating the Server diagnostics, if enabled, or by some other out-of-band means.
      *
      * @param subscriptionId              the server assigned id of the {@link UaSubscription} to transfer.
+     * @param nextSequenceNumber          the sequence number to start processing publishing requests from.
      * @param requestedPublishingInterval the publishing interval requested when the subscription was created.
      * @param publishingInterval          the actual publishing interval of the subscription.
      * @param requestedLifetimeCount      the lifetime count requested when the subscription was created.
@@ -179,6 +180,7 @@ public interface UaSubscriptionManager {
      */
     CompletableFuture<UaSubscription> transferSubscription(
         UInteger subscriptionId,
+        UInteger nextSequenceNumber,
         double requestedPublishingInterval,
         double publishingInterval,
         UInteger requestedLifetimeCount,

@@ -354,10 +354,12 @@ public class OpcUaSubscription implements UaSubscription {
      * and a list of the {@link StatusCode}s for each modify result.
      */
     CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
-        List<TransferMonitoredItemsRequest> itemsToTransfer
+        List<TransferMonitoredItemsRequest> itemsToTransfer,
+        UInteger nextSequenceNumber
     ) {
 
         return notificationSemaphore.acquire().thenCompose(permit -> {
+            setLastSequenceNumber(nextSequenceNumber.longValue());
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
             List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
 

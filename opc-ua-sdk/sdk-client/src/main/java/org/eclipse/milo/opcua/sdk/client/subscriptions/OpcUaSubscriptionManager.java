@@ -382,6 +382,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     @Override
     public CompletableFuture<UaSubscription> transferSubscription(
         UInteger subscriptionId,
+        UInteger nextSequenceNumber,
         double requestedPublishingInterval,
         double publishingInterval,
         UInteger requestedLifetimeCount,
@@ -408,7 +409,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         subscription.setRequestedLifetimeCount(requestedLifetimeCount);
         subscription.setRequestedMaxKeepAliveCount(requestedMaxKeepAliveCount);
 
-        return subscription.transferMonitoredItems(itemsToTransfer)
+        return subscription
+            .transferMonitoredItems(itemsToTransfer, nextSequenceNumber)
             .thenApply(subResponse -> {
                 subscriptions.put(subscription.getSubscriptionId(), subscription);
                 maybeSendPublishRequests();
