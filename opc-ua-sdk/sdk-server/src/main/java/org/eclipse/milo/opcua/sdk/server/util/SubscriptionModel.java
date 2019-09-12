@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
+import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -36,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
-public class SubscriptionModel {
+public class SubscriptionModel extends AbstractLifecycle {
 
     private final Set<DataItem> itemSet = Collections.newSetFromMap(Maps.newConcurrentMap());
 
@@ -60,7 +61,23 @@ public class SubscriptionModel {
         executionQueue = new ExecutionQueue(executor);
     }
 
+    @Override
+    protected void onStartup() {}
+
+    @Override
+    protected void onShutdown() {
+        executionQueue.submit(() -> {
+            schedule.forEach(ScheduledUpdate::cancel);
+            schedule.clear();
+            itemSet.clear();
+        });
+    }
+
     public void onDataItemsCreated(List<DataItem> items) {
+        if (!isRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(() -> {
             itemSet.addAll(items);
             reschedule();
@@ -68,10 +85,18 @@ public class SubscriptionModel {
     }
 
     public void onDataItemsModified(List<DataItem> items) {
+        if (!isRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(this::reschedule);
     }
 
     public void onDataItemsDeleted(List<DataItem> items) {
+        if (!isRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(() -> {
             itemSet.removeAll(items);
             reschedule();
@@ -79,6 +104,10 @@ public class SubscriptionModel {
     }
 
     public void onMonitoringModeChanged(List<MonitoredItem> items) {
+        if (!isRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(this::reschedule);
     }
 
