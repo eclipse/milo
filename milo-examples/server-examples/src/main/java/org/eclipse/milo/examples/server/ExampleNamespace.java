@@ -131,6 +131,8 @@ public class ExampleNamespace extends ManagedNamespace {
     protected void onStartup() {
         super.onStartup();
 
+        subscriptionModel.startup();
+
         // Create a "HelloWorld" folder and add it to the node manager
         NodeId folderNodeId = newNodeId("HelloWorld");
 
@@ -198,6 +200,13 @@ public class ExampleNamespace extends ManagedNamespace {
                 }
             }, 0, 2, TimeUnit.SECONDS);
         }
+    }
+
+    @Override
+    protected void onShutdown() {
+        super.onShutdown();
+
+        subscriptionModel.shutdown();
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {
