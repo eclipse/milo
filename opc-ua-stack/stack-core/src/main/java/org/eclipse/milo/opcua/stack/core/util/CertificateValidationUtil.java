@@ -209,18 +209,23 @@ public class CertificateValidationUtil {
     }
 
     /**
-     * Check if {@code certificate}'s KeyUsage extension indicates it is a CA.
+     * Check if {@code certificate}'s KeyUsage and/or BasicConstraints extensions indicate it is a CA.
      *
      * @param certificate the {@link X509Certificate} to check.
-     * @return {@code true} if {@code certificate}'s KeyUsage extension indicates it is a CA.
+     * @return {@code true} if {@code certificate}'s KeyUsage and/or BasicConstraints extensions indicates it is a CA.
      */
-    private static boolean certificateIsCa(X509Certificate certificate) {
+    static boolean certificateIsCa(X509Certificate certificate) {
         boolean[] keyUsage = certificate.getKeyUsage();
+        int basicConstraints = certificate.getBasicConstraints();
 
-        try {
-            return keyUsage != null && keyUsage[5];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return false;
+        if (keyUsage == null) {
+            // no KeyUsage, just check if the cA BasicConstraint is set.
+            return basicConstraints >= 0;
+        } else {
+            // KeyUsage is present, so require the keyCertSign bit is set and
+            // that additionally the cA BasicConstraint is set. This is
+            // required by RFC 5280.
+            return keyUsage[5] && basicConstraints >= 0;
         }
     }
 
