@@ -203,6 +203,16 @@ public class UaStackServer {
             )
         );
 
+        channels.forEach(channel -> {
+            CompletableFuture<Unit> f = new CompletableFuture<>();
+
+            channel.close().addListener(fv -> f.complete(Unit.VALUE));
+
+            futures.add(f);
+        });
+
+        channels.clear();
+
         return FutureUtils.sequence(futures)
             .thenApply(u -> UaStackServer.this);
     }
