@@ -222,10 +222,18 @@ public class CertificateValidationUtil {
             // no KeyUsage, just check if the cA BasicConstraint is set.
             return basicConstraints >= 0;
         } else {
-            // KeyUsage is present, so require the keyCertSign bit is set and
-            // that additionally the cA BasicConstraint is set. This is
-            // required by RFC 5280.
-            return keyUsage[5] && basicConstraints >= 0;
+            if (keyUsage[5] && basicConstraints == -1) {
+                // KeyUsage is present and the keyCertSign bit is set.
+                // According to RFC 5280 the BasicConstraint cA bit must also
+                // be set, but it's not!
+                LOGGER.warn(
+                    "'{}' violates RFC 5280: KeyUsage keyCertSign " +
+                        "bit set without BasicConstraint cA bit set",
+                    certificate.getSubjectX500Principal().getName()
+                );
+            }
+
+            return keyUsage[5] || basicConstraints >= 0;
         }
     }
 
