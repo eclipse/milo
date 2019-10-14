@@ -373,7 +373,7 @@ public class CertificateValidationUtilTest {
     public void testCertificateIsCa() throws KeyStoreException {
         assertTrue(CertificateValidationUtil.certificateIsCa(getCertificate("yes-key-usage-yes-ca")));
         assertTrue(CertificateValidationUtil.certificateIsCa(getCertificate("no-key-usage-yes-ca")));
-        assertFalse(CertificateValidationUtil.certificateIsCa(getCertificate("yes-key-usage-no-ca")));
+        assertTrue(CertificateValidationUtil.certificateIsCa(getCertificate("yes-key-usage-no-ca")));
         assertFalse(CertificateValidationUtil.certificateIsCa(getCertificate("no-key-usage-no-ca")));
     }
 
