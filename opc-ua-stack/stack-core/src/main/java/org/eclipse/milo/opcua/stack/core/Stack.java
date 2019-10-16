@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -61,7 +60,6 @@ public final class Stack {
     private static ExecutorService EXECUTOR_SERVICE;
     private static ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE;
     private static HashedWheelTimer WHEEL_TIMER;
-    private static ClassLoader CUSTOM_CLASS_LOADER;
 
     /**
      * @return a shared {@link NioEventLoopGroup}.
@@ -161,22 +159,6 @@ public final class Stack {
         }
 
         return WHEEL_TIMER;
-    }
-
-    /**
-     * @return if configured, the {@link ClassLoader} to be used when reflectively loading classes.
-     */
-    public static synchronized Optional<ClassLoader> getCustomClassLoader() {
-        return Optional.ofNullable(CUSTOM_CLASS_LOADER);
-    }
-
-    /**
-     * Set the {@link ClassLoader} that will be used when reflectively loading classes.
-     *
-     * @param customClassLoader the {@link ClassLoader} that will used when reflectively loading classes.
-     */
-    public static synchronized void setCustomClassLoader(ClassLoader customClassLoader) {
-        CUSTOM_CLASS_LOADER = customClassLoader;
     }
 
     /**
