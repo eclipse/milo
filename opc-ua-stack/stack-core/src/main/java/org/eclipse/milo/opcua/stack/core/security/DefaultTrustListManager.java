@@ -57,7 +57,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
      */
     static final int MAX_REJECTED_CERTIFICATES = 128;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTrustListManager.class);
 
     private final Set<X509Certificate> issuerCertificates = Sets.newConcurrentHashSet();
     private final Set<X509CRL> issuerCrls = Sets.newConcurrentHashSet();
@@ -163,7 +163,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
      */
     @Override
     public synchronized void close() throws IOException {
-        logger.info("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
+        LOGGER.debug("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
 
         watchService.close();
 
@@ -334,7 +334,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
             if (matchesThumbprint) {
                 if (!file.delete()) {
-                    logger.warn("Failed to delete issuer certificate: {}", file);
+                    LOGGER.warn("Failed to delete issuer certificate: {}", file);
                 }
                 return true;
             }
@@ -378,13 +378,15 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                 .limit(excessCount + 1)
                 .forEach(file -> {
                     if (!file.delete()) {
-                        logger.warn("Unable to delete rejected certificate: {}", file);
+                        LOGGER.warn("Unable to delete rejected certificate: {}", file);
                     }
                 });
         }
     }
 
     private synchronized void synchronizeIssuerCerts() {
+        LOGGER.debug("Synchronizing issuer certs...");
+
         File[] files = issuerCertsDir.listFiles();
         if (files == null) files = new File[0];
 
@@ -398,6 +400,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     private synchronized void synchronizeIssuerCrls() {
+        LOGGER.debug("Synchronizing issuer CRLs...");
+
         File[] files = issuerCrlsDir.listFiles();
         if (files == null) files = new File[0];
 
@@ -412,6 +416,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     private synchronized void synchronizeTrustedCerts() {
+        LOGGER.debug("Synchronizing trusted certs...");
+
         File[] files = trustedCertsDir.listFiles();
         if (files == null) files = new File[0];
 
@@ -425,6 +431,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     private synchronized void synchronizeTrustedCrls() {
+        LOGGER.debug("Synchronizing trusted CRLs...");
+
         File[] files = trustedCrlsDir.listFiles();
         if (files == null) files = new File[0];
 
@@ -448,11 +456,9 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                 fos.flush();
             }
 
-            LoggerFactory.getLogger(DefaultTrustListManager.class)
-                .debug("Wrote CRL entry: {}", f.getAbsolutePath());
+            LOGGER.debug("Wrote CRL entry: {}", f.getAbsolutePath());
         } catch (Exception e) {
-            LoggerFactory.getLogger(DefaultTrustListManager.class)
-                .error("Error writing CRL", e);
+            LOGGER.error("Error writing CRL", e);
         }
     }
 
@@ -466,11 +472,9 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                 fos.flush();
             }
 
-            LoggerFactory.getLogger(DefaultTrustListManager.class)
-                .debug("Wrote certificate entry: {}", f.getAbsolutePath());
+            LOGGER.debug("Wrote certificate entry: {}", f.getAbsolutePath());
         } catch (Exception e) {
-            LoggerFactory.getLogger(DefaultTrustListManager.class)
-                .error("Error writing certificate", e);
+            LOGGER.error("Error writing certificate", e);
         }
     }
 
@@ -486,6 +490,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                     .collect(Collectors.toList())
             );
         } catch (CertificateException | FileNotFoundException | CRLException e) {
+            LOGGER.debug("Error decoding CRL file: {}", f.toString(), e);
+
             return Optional.empty();
         }
     }
@@ -495,7 +501,9 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             try (FileInputStream inputStream = new FileInputStream(f)) {
                 return Optional.of(CertificateUtil.decodeCertificate(inputStream));
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable t) {
+            LOGGER.debug("Error decoding certificate file: {}", f.toString(), t);
+
             return Optional.empty();
         }
     }
@@ -520,7 +528,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         }
     }
 
-    private class Watcher implements Runnable {
+    private static class Watcher implements Runnable {
 
         private final WatchService watchService;
         private final Map<WatchKey, Runnable> watchKeys;
@@ -544,14 +552,14 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                     }
 
                     if (!key.reset()) {
-                        logger.warn("Failed to reset watch key");
+                        LOGGER.warn("Failed to reset watch key");
                         break;
                     }
                 } catch (ClosedWatchServiceException e) {
-                    logger.info("Watcher got closed");
+                    LOGGER.info("Watcher got closed");
                     return;
                 } catch (InterruptedException e) {
-                    logger.error("Watcher interrupted.", e);
+                    LOGGER.error("Watcher interrupted.", e);
                 }
             }
         }

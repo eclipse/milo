@@ -117,6 +117,14 @@ public class CertificateValidationUtil {
 
         Preconditions.checkArgument(!certificateChain.isEmpty(), "certificateChain must not be empty");
 
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("certificateChain: {}", certificateChain);
+            LOGGER.trace("trustedCertificates: {}", trustedCertificates);
+            LOGGER.trace("trustedCrls: {}", trustedCrls);
+            LOGGER.trace("issuerCertificates: {}", issuerCertificates);
+            LOGGER.trace("issuerCrls: {}", issuerCrls);
+        }
+
         X509Certificate certificate = certificateChain.get(0);
 
         try {
