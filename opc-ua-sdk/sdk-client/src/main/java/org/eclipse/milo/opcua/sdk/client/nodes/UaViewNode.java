@@ -14,12 +14,14 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.ViewNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ViewNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.DataValue.valueOnly;
 
@@ -67,6 +69,48 @@ public class UaViewNode extends UaNode implements ViewNode {
     @Override
     public CompletableFuture<StatusCode> writeEventNotifier(DataValue value) {
         return writeAttribute(AttributeId.EventNotifier, value);
+    }
+
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ViewNodeProperties#NodeVersion
+     */
+    public CompletableFuture<String> getNodeVersion() {
+        return getProperty(ViewNodeProperties.NodeVersion);
+    }
+
+    /**
+     * Get the value of the ViewVersion Property, if it exists.
+     *
+     * @return the value of the ViewVersion Property, if it exists.
+     * @see ViewNodeProperties#ViewVersion
+     */
+    public CompletableFuture<UInteger> getViewVersion() {
+        return getProperty(ViewNodeProperties.ViewVersion);
+    }
+
+    /**
+     * Set the value of the NodeVersion Property, if it exists.
+     *
+     * @param nodeVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see ViewNodeProperties#NodeVersion
+     */
+    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+        return setProperty(ViewNodeProperties.NodeVersion, nodeVersion);
+    }
+
+    /**
+     * Set the value of the ViewVersion Property, if it exists.
+     *
+     * @param viewVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see ViewNodeProperties#NodeVersion
+     */
+    public CompletableFuture<StatusCode> setViewVersion(UInteger viewVersion) {
+        return setProperty(ViewNodeProperties.ViewVersion, viewVersion);
     }
 
 }

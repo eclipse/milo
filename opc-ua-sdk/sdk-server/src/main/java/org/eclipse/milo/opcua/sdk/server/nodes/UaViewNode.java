@@ -12,18 +12,15 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import javax.annotation.Nullable;
 
-import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.ViewNodeProperties;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaViewNode extends UaNode implements ViewNode {
 
@@ -105,38 +102,50 @@ public class UaViewNode extends UaNode implements ViewNode {
         fireAttributeChanged(attributeId, value);
     }
 
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ViewNodeProperties#NodeVersion
+     */
     @Nullable
     public String getNodeVersion() {
-        return getProperty(NodeVersion).orElse(null);
+        return getProperty(ViewNodeProperties.NodeVersion).orElse(null);
     }
 
+    /**
+     * Get the value of the ViewVersion Property, if it exists.
+     *
+     * @return the value of the ViewVersion Property, if it exists.
+     * @see ViewNodeProperties#ViewVersion
+     */
     @Nullable
     public UInteger getViewVersion() {
-        return getProperty(ViewVersion).orElse(null);
+        return getProperty(ViewNodeProperties.ViewVersion).orElse(null);
     }
 
+    /**
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param nodeVersion the value to set.
+     * @see ViewNodeProperties#NodeVersion
+     */
     public void setNodeVersion(String nodeVersion) {
-        setProperty(NodeVersion, nodeVersion);
+        setProperty(ViewNodeProperties.NodeVersion, nodeVersion);
     }
 
+    /**
+     * Set the value of the ViewVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param viewVersion the value to set.
+     * @see ViewNodeProperties#NodeVersion
+     */
     public void setViewVersion(UInteger viewVersion) {
-        setProperty(ViewVersion, viewVersion);
+        setProperty(ViewNodeProperties.ViewVersion, viewVersion);
     }
-
-    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NodeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
-
-    public static final QualifiedProperty<UInteger> ViewVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "ViewVersion",
-        Identifiers.UInt32,
-        ValueRanks.Scalar,
-        UInteger.class
-    );
 
 }
