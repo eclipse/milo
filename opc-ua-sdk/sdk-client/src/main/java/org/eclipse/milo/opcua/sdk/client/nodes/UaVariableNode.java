@@ -21,7 +21,9 @@ import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -34,7 +36,9 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
@@ -293,6 +297,185 @@ public class UaVariableNode extends UaNode implements VariableNode {
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(VariableNodeProperties.NodeVersion);
+    }
+
+    /**
+     * Get the value of the LocalTime Property, if it exists.
+     *
+     * @return the value of the LocalTime Property, if it exists.
+     * @see VariableNodeProperties#LocalTime
+     */
+    public CompletableFuture<TimeZoneDataType> getLocalTime() {
+        return getProperty(VariableNodeProperties.LocalTime);
+    }
+
+    /**
+     * Get the value of the DataTypeVersion Property, if it exists.
+     *
+     * @return the value of the DataTypeVersion Property, if it exists.
+     * @see VariableNodeProperties#DataTypeVersion
+     */
+    public CompletableFuture<String> getDataTypeVersion() {
+        return getProperty(VariableNodeProperties.DataTypeVersion);
+    }
+
+    /**
+     * Get the value of the DictionaryFragment Property, if it exists.
+     *
+     * @return the value of the DictionaryFragment Property, if it exists.
+     * @see VariableNodeProperties#DictionaryFragment
+     */
+    public CompletableFuture<ByteString> getDictionaryFragment() {
+        return getProperty(VariableNodeProperties.DictionaryFragment);
+    }
+
+    /**
+     * Get the value of the AllowNulls Property, if it exists.
+     *
+     * @return the value of the AllowNulls Property, if it exists.
+     * @see VariableNodeProperties#AllowNulls
+     */
+    public CompletableFuture<Boolean> getAllowNulls() {
+        return getProperty(VariableNodeProperties.AllowNulls);
+    }
+
+    /**
+     * Get the value of the ValueAsText Property, if it exists.
+     *
+     * @return the value of the ValueAsText Property, if it exists.
+     * @see VariableNodeProperties#ValueAsText
+     */
+    public CompletableFuture<LocalizedText> getValueAsText() {
+        return getProperty(VariableNodeProperties.ValueAsText);
+    }
+
+    /**
+     * Get the value of the MaxStringLength Property, if it exists.
+     *
+     * @return the value of the MaxStringLength Property, if it exists.
+     * @see VariableNodeProperties#MaxStringLength
+     */
+    public CompletableFuture<UInteger> getMaxStringLength() {
+        return getProperty(VariableNodeProperties.MaxStringLength);
+    }
+
+    /**
+     * Get the value of the MaxArrayLength Property, if it exists.
+     *
+     * @return the value of the MaxArrayLength Property, if it exists.
+     * @see VariableNodeProperties#MaxArrayLength
+     */
+    public CompletableFuture<UInteger> getMaxArrayLength() {
+        return getProperty(VariableNodeProperties.MaxArrayLength);
+    }
+
+    /**
+     * Get the value of the EngineeringUnits Property, if it exists.
+     *
+     * @return the value of the EngineeringUnits Property, if it exists.
+     * @see VariableNodeProperties#EngineeringUnits
+     */
+    public CompletableFuture<EUInformation> getEngineeringUnits() {
+        return getProperty(VariableNodeProperties.EngineeringUnits);
+    }
+
+    /**
+     * Set the value of the NodeVersion Property, if it exists.
+     *
+     * @param nodeVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#NodeVersion
+     */
+    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+        return setProperty(VariableNodeProperties.NodeVersion, nodeVersion);
+    }
+
+    /**
+     * Set the value of the LocalTime Property, if it exists.
+     *
+     * @param localTime the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#LocalTime
+     */
+    public CompletableFuture<StatusCode> setLocalTime(TimeZoneDataType localTime) {
+        return setProperty(VariableNodeProperties.LocalTime, localTime);
+    }
+
+    /**
+     * Set the value of the DataTypeVersion Property, if it exists.
+     *
+     * @param dataTypeVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#DataTypeVersion
+     */
+    public CompletableFuture<StatusCode> setDataTypeVersion(String dataTypeVersion) {
+        return setProperty(VariableNodeProperties.DataTypeVersion, dataTypeVersion);
+    }
+
+    /**
+     * Set the value of the DictionaryFragment Property, if it exists.
+     *
+     * @param dictionaryFragment the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#DictionaryFragment
+     */
+    public CompletableFuture<StatusCode> setDictionaryFragment(ByteString dictionaryFragment) {
+        return setProperty(VariableNodeProperties.DictionaryFragment, dictionaryFragment);
+    }
+
+    /**
+     * Set the value of the AllowNulls Property, if it exists.
+     *
+     * @param allowNulls the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#AllowNulls
+     */
+    public CompletableFuture<StatusCode> setAllowNulls(Boolean allowNulls) {
+        return setProperty(VariableNodeProperties.AllowNulls, allowNulls);
+    }
+
+    /**
+     * Set the value of the ValueAsText Property, if it exists.
+     *
+     * @param valueAsText the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#ValueAsText
+     */
+    public CompletableFuture<StatusCode> setValueAsText(LocalizedText valueAsText) {
+        return setProperty(VariableNodeProperties.ValueAsText, valueAsText);
+    }
+
+    /**
+     * Set the value of the MaxStringLength Property, if it exists.
+     *
+     * @param maxStringLength the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#MaxStringLength
+     */
+    public CompletableFuture<StatusCode> setMaxStringLength(UInteger maxStringLength) {
+        return setProperty(VariableNodeProperties.MaxStringLength, maxStringLength);
+    }
+
+    /**
+     * Set the value of the MaxArrayLength Property, if it exists.
+     *
+     * @param maxArrayLength the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#MaxArrayLength
+     */
+    public CompletableFuture<StatusCode> setMaxArrayLength(UInteger maxArrayLength) {
+        return setProperty(VariableNodeProperties.MaxArrayLength, maxArrayLength);
+    }
+
+    /**
+     * Set the value of the EngineeringUnits Property, if it exists.
+     *
+     * @param engineeringUnits the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableNodeProperties#EngineeringUnits
+     */
+    public CompletableFuture<StatusCode> setEngineeringUnits(EUInformation engineeringUnits) {
+        return setProperty(VariableNodeProperties.EngineeringUnits, engineeringUnits);
     }
 
 }
