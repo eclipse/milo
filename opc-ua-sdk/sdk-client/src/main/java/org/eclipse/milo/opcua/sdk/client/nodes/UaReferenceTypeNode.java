@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.ReferenceTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ReferenceTypeNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -87,6 +88,27 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     @Override
     public CompletableFuture<StatusCode> writeInverseName(DataValue value) {
         return writeAttribute(AttributeId.InverseName, value);
+    }
+
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ReferenceTypeNodeProperties#NodeVersion
+     */
+    public CompletableFuture<String> getNodeVersion() {
+        return getProperty(ReferenceTypeNodeProperties.NodeVersion);
+    }
+
+    /**
+     * Set the value of the NodeVersion Property, if it exists.
+     *
+     * @param nodeVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see ReferenceTypeNodeProperties#NodeVersion
+     */
+    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+        return setProperty(ReferenceTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
 }
