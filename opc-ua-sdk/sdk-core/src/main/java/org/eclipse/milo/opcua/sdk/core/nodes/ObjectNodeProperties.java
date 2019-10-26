@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
-public class ObjectNodeProperties {
+public final class ObjectNodeProperties {
 
     private ObjectNodeProperties() {}
 
@@ -30,7 +30,7 @@ public class ObjectNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String,
+        Identifiers.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -44,7 +44,7 @@ public class ObjectNodeProperties {
     public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "Icon",
-        Identifiers.Image,
+        Identifiers.Image.expanded(),
         ValueRanks.Scalar,
         ByteString.class
     );
@@ -57,7 +57,7 @@ public class ObjectNodeProperties {
     public static final QualifiedProperty<NamingRuleType> NamingRule = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NamingRule",
-        Identifiers.NamingRuleType,
+        Identifiers.NamingRuleType.expanded(),
         ValueRanks.Scalar,
         NamingRuleType.class
     );

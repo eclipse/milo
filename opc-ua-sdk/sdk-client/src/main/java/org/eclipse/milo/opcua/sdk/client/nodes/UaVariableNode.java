@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -282,6 +283,16 @@ public class UaVariableNode extends UaNode implements VariableNode {
     @Override
     public CompletableFuture<StatusCode> writeHistorizing(DataValue value) {
         return writeAttribute(AttributeId.Historizing, value);
+    }
+
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see VariableNodeProperties#NodeVersion
+     */
+    public CompletableFuture<String> getNodeVersion() {
+        return getProperty(VariableNodeProperties.NodeVersion);
     }
 
 }
