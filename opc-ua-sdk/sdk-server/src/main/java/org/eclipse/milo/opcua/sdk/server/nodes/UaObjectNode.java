@@ -19,9 +19,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -37,7 +36,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_DESCRIPTION_PREDICATE;
@@ -304,54 +302,30 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     @Nullable
     public String getNodeVersion() {
-        return getProperty(NodeVersion).orElse(null);
+        return getProperty(ObjectNodeProperties.NodeVersion).orElse(null);
     }
 
     @Nullable
     public ByteString getIcon() {
-        return getProperty(Icon).orElse(null);
+        return getProperty(ObjectNodeProperties.Icon).orElse(null);
     }
 
     @Nullable
     public NamingRuleType getNamingRule() {
-        return getProperty(NamingRule).orElse(null);
+        return getProperty(ObjectNodeProperties.NamingRule).orElse(null);
     }
 
     public void setNodeVersion(String nodeVersion) {
-        setProperty(NodeVersion, nodeVersion);
+        setProperty(ObjectNodeProperties.NodeVersion, nodeVersion);
     }
 
     public void setIcon(ByteString icon) {
-        setProperty(Icon, icon);
+        setProperty(ObjectNodeProperties.Icon, icon);
     }
 
     public void setNamingRule(NamingRuleType namingRule) {
-        setProperty(NamingRule, namingRule);
+        setProperty(ObjectNodeProperties.NamingRule, namingRule);
     }
-
-    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NodeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
-
-    public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "Icon",
-        Identifiers.Image,
-        ValueRanks.Scalar,
-        ByteString.class
-    );
-
-    public static final QualifiedProperty<NamingRuleType> NamingRule = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NamingRule",
-        Identifiers.NamingRuleType,
-        ValueRanks.Scalar,
-        NamingRuleType.class
-    );
 
     public static UaObjectNodeBuilder builder(UaNodeContext context) {
         return new UaObjectNodeBuilder(context);
