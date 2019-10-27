@@ -300,29 +300,71 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         ));
     }
 
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ObjectNodeProperties#NodeVersion
+     */
     @Nullable
     public String getNodeVersion() {
         return getProperty(ObjectNodeProperties.NodeVersion).orElse(null);
     }
 
+    /**
+     * Get the value of the Icon Property, if it exists.
+     *
+     * @return the value of the Icon Property, if it exists.
+     * @see ObjectNodeProperties#Icon
+     */
     @Nullable
     public ByteString getIcon() {
         return getProperty(ObjectNodeProperties.Icon).orElse(null);
     }
 
+    /**
+     * Get the value of the NamingRule Property, if it exists.
+     *
+     * @return the value of the NamingRule Property, if it exists.
+     * @see ObjectNodeProperties#NamingRule
+     */
     @Nullable
     public NamingRuleType getNamingRule() {
         return getProperty(ObjectNodeProperties.NamingRule).orElse(null);
     }
 
+    /**
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param nodeVersion the value to set.
+     * @see ObjectNodeProperties#NodeVersion
+     */
     public void setNodeVersion(String nodeVersion) {
         setProperty(ObjectNodeProperties.NodeVersion, nodeVersion);
     }
 
+    /**
+     * Set the value of the Icon Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param icon the value to set.
+     * @see ObjectNodeProperties#Icon
+     */
     public void setIcon(ByteString icon) {
         setProperty(ObjectNodeProperties.Icon, icon);
     }
 
+    /**
+     * Set the value of the NamingRule Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param namingRule the value to set.
+     * @see ObjectNodeProperties#NamingRule
+     */
     public void setNamingRule(NamingRuleType namingRule) {
         setProperty(ObjectNodeProperties.NamingRule, namingRule);
     }
