@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -127,6 +128,27 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     @Override
     public CompletableFuture<StatusCode> writeIsAbstract(DataValue value) {
         return writeAttribute(AttributeId.IsAbstract, value);
+    }
+
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see VariableTypeNodeProperties#NodeVersion
+     */
+    public CompletableFuture<String> getNodeVersion() {
+        return getProperty(VariableTypeNodeProperties.NodeVersion);
+    }
+
+    /**
+     * Set the value of the NodeVersion Property, if it exists.
+     *
+     * @param nodeVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see VariableTypeNodeProperties#NodeVersion
+     */
+    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+        return setProperty(VariableTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
 }
