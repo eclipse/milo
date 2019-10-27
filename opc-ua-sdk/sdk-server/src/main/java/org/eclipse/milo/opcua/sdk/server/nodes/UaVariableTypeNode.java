@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNodeProperties;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -180,10 +181,12 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
      *
-     * @return the value of the NodeVersion Property, if it exists.
-     * @see VariableTypeNodeProperties#NodeVersion
+     * @param nodeVersion the value to set.
+     * @see VariableNodeProperties#NodeVersion
      */
     public void setNodeVersion(String nodeVersion) {
         setProperty(VariableTypeNodeProperties.NodeVersion, nodeVersion);
