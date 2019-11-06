@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -442,6 +443,7 @@ public class OpcUaSubscription implements UaSubscription {
             this(handleInUse, 0L);
         }
 
+        @VisibleForTesting
         ClientHandleSequence(Predicate<UInteger> handleInUse, long initialValue) {
             this.handleInUse = handleInUse;
 
@@ -465,12 +467,13 @@ public class OpcUaSubscription implements UaSubscription {
         }
 
         private UInteger getAndIncrementWithRollover() {
-            long next = clientHandle.getAndIncrement();
-            if (next > UInteger.MAX_VALUE) {
-                next = 0;
-                clientHandle.set(0);
+            long current = clientHandle.get();
+
+            if (current > UInteger.MAX_VALUE) {
+                clientHandle.set(0L);
             }
-            return uint(next);
+
+            return uint(clientHandle.getAndIncrement());
         }
 
     }

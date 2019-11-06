@@ -22,10 +22,12 @@ public class ClientHandleSequenceTest {
 
     @Test
     public void testRollover() {
-        ClientHandleSequence sequence = new ClientHandleSequence(h -> false, UInteger.MAX_VALUE);
+        ClientHandleSequence sequence = new ClientHandleSequence(h -> false, UInteger.MAX_VALUE - 1);
 
+        assertEquals(uint(UInteger.MAX_VALUE - 1), sequence.nextClientHandle());
         assertEquals(UInteger.MAX, sequence.nextClientHandle());
         assertEquals(uint(0), sequence.nextClientHandle());
+        assertEquals(uint(1), sequence.nextClientHandle());
     }
 
     @Test
