@@ -86,6 +86,11 @@ public interface UaSubscription {
     ImmutableList<UaMonitoredItem> getMonitoredItems();
 
     /**
+     * @return the next available client handle, unique within the context of this {@link UaSubscription}.
+     */
+    UInteger nextClientHandle();
+
+    /**
      * Create one or more {@link UaMonitoredItem}s.
      * <p>
      * Callers must check the quality of each of the returned {@link UaMonitoredItem}s; it is not to be assumed that
