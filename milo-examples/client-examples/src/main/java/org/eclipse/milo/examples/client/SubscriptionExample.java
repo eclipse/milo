@@ -12,7 +12,6 @@ package org.eclipse.milo.examples.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -43,8 +42,6 @@ public class SubscriptionExample implements ClientExample {
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final AtomicLong clientHandles = new AtomicLong(1L);
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
