@@ -72,42 +72,42 @@ public class UaViewNode extends UaNode implements ViewNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Get the value of the {@link ViewNodeProperties#NodeVersion} Property, if it exists.
      *
      * @return the value of the NodeVersion Property, if it exists.
-     * @see ViewNodeProperties#NodeVersion
+     * @see ViewNodeProperties
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(ViewNodeProperties.NodeVersion);
     }
 
     /**
-     * Get the value of the ViewVersion Property, if it exists.
+     * Get the value of the {@link ViewNodeProperties#ViewVersion} Property, if it exists.
      *
      * @return the value of the ViewVersion Property, if it exists.
-     * @see ViewNodeProperties#ViewVersion
+     * @see ViewNodeProperties
      */
     public CompletableFuture<UInteger> getViewVersion() {
         return getProperty(ViewNodeProperties.ViewVersion);
     }
 
     /**
-     * Set the value of the NodeVersion Property, if it exists.
+     * Set the value of the {@link ViewNodeProperties#NodeVersion} Property, if it exists.
      *
      * @param nodeVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ViewNodeProperties#NodeVersion
+     * @see ViewNodeProperties
      */
     public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
         return setProperty(ViewNodeProperties.NodeVersion, nodeVersion);
     }
 
     /**
-     * Set the value of the ViewVersion Property, if it exists.
+     * Set the value of the {@link ViewNodeProperties#ViewVersion} Property, if it exists.
      *
      * @param viewVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ViewNodeProperties#NodeVersion
+     * @see ViewNodeProperties
      */
     public CompletableFuture<StatusCode> setViewVersion(UInteger viewVersion) {
         return setProperty(ViewNodeProperties.ViewVersion, viewVersion);

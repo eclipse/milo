@@ -225,63 +225,63 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Get the value of the {@link ObjectNodeProperties#NodeVersion} Property, if it exists.
      *
      * @return the value of the NodeVersion Property, if it exists.
-     * @see ObjectNodeProperties#NodeVersion
+     * @see ObjectNodeProperties
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(ObjectNodeProperties.NodeVersion);
     }
 
     /**
-     * Get the value of the Icon Property, if it exists.
+     * Get the value of the {@link ObjectNodeProperties#Icon} Property, if it exists.
      *
      * @return the value of the Icon Property, if it exists.
-     * @see ObjectNodeProperties#Icon
+     * @see ObjectNodeProperties
      */
     public CompletableFuture<ByteString> getIcon() {
         return getProperty(ObjectNodeProperties.Icon);
     }
 
     /**
-     * Get the value of the NamingRule Property, if it exists.
+     * Get the value of the {@link ObjectNodeProperties#NamingRule} Property, if it exists.
      *
      * @return the value of the NamingRule Property, if it exists.
-     * @see ObjectNodeProperties#NamingRule
+     * @see ObjectNodeProperties
      */
     public CompletableFuture<NamingRuleType> getNamingRule() {
         return getProperty(ObjectNodeProperties.NamingRule);
     }
 
     /**
-     * Set the value of the NodeVersion Property, if it exists.
+     * Set the value of the {@link ObjectNodeProperties#NodeVersion} Property, if it exists.
      *
      * @param nodeVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ObjectNodeProperties#NodeVersion
+     * @see ObjectNodeProperties
      */
     public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
         return setProperty(ObjectNodeProperties.NodeVersion, nodeVersion);
     }
 
     /**
-     * Set the value of the Icon Property, if it exists.
+     * Set the value of the {@link ObjectNodeProperties#Icon} Property, if it exists.
      *
      * @param icon the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ObjectNodeProperties#Icon
+     * @see ObjectNodeProperties
      */
     public CompletableFuture<StatusCode> setIcon(ByteString icon) {
         return setProperty(ObjectNodeProperties.Icon, icon);
     }
 
     /**
-     * Set the value of the NamingRule Property, if it exists.
+     * Set the value of the {@link ObjectNodeProperties#NamingRule} Property, if it exists.
      *
      * @param namingRule the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ObjectNodeProperties#NamingRule
+     * @see ObjectNodeProperties
      */
     public CompletableFuture<StatusCode> setNamingRule(NamingRuleType namingRule) {
         return setProperty(ObjectNodeProperties.NamingRule, namingRule);

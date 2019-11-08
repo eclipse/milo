@@ -131,21 +131,21 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Get the value of the {@link VariableTypeNodeProperties#NodeVersion} Property, if it exists.
      *
      * @return the value of the NodeVersion Property, if it exists.
-     * @see VariableTypeNodeProperties#NodeVersion
+     * @see VariableTypeNodeProperties
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(VariableTypeNodeProperties.NodeVersion);
     }
 
     /**
-     * Set the value of the NodeVersion Property, if it exists.
+     * Set the value of the {@link VariableTypeNodeProperties#NodeVersion} Property, if it exists.
      *
      * @param nodeVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see VariableTypeNodeProperties#NodeVersion
+     * @see VariableTypeNodeProperties
      */
     public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
         return setProperty(VariableTypeNodeProperties.NodeVersion, nodeVersion);

@@ -73,7 +73,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Get the value of the {@link MethodNodeProperties#NodeVersion} Property, if it exists.
      * <p>
      * The NodeVersion Property is used to indicate the version of a Node.
      * <p>
@@ -85,13 +85,14 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * indicating {@link StatusCodes#Bad_NotFound}.
      *
      * @return the value of the NodeVersion Property, if it exists.
+     * @see MethodNodeProperties
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(MethodNodeProperties.NodeVersion);
     }
 
     /**
-     * Get the value of the InputArguments Property, if it exists.
+     * Get the value of the {@link MethodNodeProperties#InputArguments} Property, if it exists.
      * <p>
      * The InputArguments Property is used to specify the arguments that shall be used by a client when calling the
      * Method.
@@ -100,13 +101,14 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * indicating {@link StatusCodes#Bad_NotFound}.
      *
      * @return the value of the InputArguments Property, if it exists.
+     * @see MethodNodeProperties
      */
     public CompletableFuture<Argument[]> getInputArguments() {
         return getProperty(MethodNodeProperties.InputArguments);
     }
 
     /**
-     * Get the value of the OutputArguments Property, if it exists.
+     * Get the value of the {@link MethodNodeProperties#OutputArguments} Property, if it exists.
      * <p>
      * The OutputArguments Property specifies the result returned from the Method call.
      * <p>
@@ -114,39 +116,40 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * indicating {@link StatusCodes#Bad_NotFound}.
      *
      * @return the value of the OutputArguments Property, if it exists.
+     * @see MethodNodeProperties
      */
     public CompletableFuture<Argument[]> getOutputArguments() {
         return getProperty(MethodNodeProperties.OutputArguments);
     }
 
     /**
-     * Set the value of the NodeVersion Property, if it exists.
+     * Set the value of the {@link MethodNodeProperties#NodeVersion} Property, if it exists.
      *
      * @param nodeVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see MethodNodeProperties#NodeVersion
+     * @see MethodNodeProperties
      */
     public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
         return setProperty(MethodNodeProperties.NodeVersion, nodeVersion);
     }
 
     /**
-     * Set the value of the InputArguments Property, if it exists.
+     * Set the value of the {@link MethodNodeProperties#InputArguments} Property, if it exists.
      *
      * @param inputArguments the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see MethodNodeProperties#InputArguments
+     * @see MethodNodeProperties
      */
     public CompletableFuture<StatusCode> setInputArguments(Argument[] inputArguments) {
         return setProperty(MethodNodeProperties.InputArguments, inputArguments);
     }
 
     /**
-     * Set the value of the OutputArguments Property, if it exists.
+     * Set the value of the {@link MethodNodeProperties#OutputArguments} Property, if it exists.
      *
      * @param outputArguments the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see MethodNodeProperties#OutputArguments
+     * @see MethodNodeProperties
      */
     public CompletableFuture<StatusCode> setOutputArguments(Argument[] outputArguments) {
         return setProperty(MethodNodeProperties.OutputArguments, outputArguments);

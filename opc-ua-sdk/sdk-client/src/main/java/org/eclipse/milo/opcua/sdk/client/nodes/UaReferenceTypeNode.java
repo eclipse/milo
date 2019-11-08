@@ -91,21 +91,21 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Get the value of the {@link ReferenceTypeNodeProperties#NodeVersion} Property, if it exists.
      *
      * @return the value of the NodeVersion Property, if it exists.
-     * @see ReferenceTypeNodeProperties#NodeVersion
+     * @see ReferenceTypeNodeProperties
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(ReferenceTypeNodeProperties.NodeVersion);
     }
 
     /**
-     * Set the value of the NodeVersion Property, if it exists.
+     * Set the value of the {@link ReferenceTypeNodeProperties#NodeVersion} Property, if it exists.
      *
      * @param nodeVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ReferenceTypeNodeProperties#NodeVersion
+     * @see ReferenceTypeNodeProperties
      */
     public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
         return setProperty(ReferenceTypeNodeProperties.NodeVersion, nodeVersion);

@@ -51,42 +51,42 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     }
 
     /**
-     * Get the value of the NodeVersion Property, if it exists.
+     * Get the value of the {@link ObjectTypeNodeProperties#NodeVersion} Property, if it exists.
      *
      * @return the value of the NodeVersion Property, if it exists.
-     * @see ObjectTypeNodeProperties#NodeVersion
+     * @see ObjectTypeNodeProperties
      */
     public CompletableFuture<String> getNodeVersion() {
         return getProperty(ObjectTypeNodeProperties.NodeVersion);
     }
 
     /**
-     * Get the value of the Icon Property, if it exists.
+     * Get the value of the {@link ObjectTypeNodeProperties#Icon} Property, if it exists.
      *
      * @return the value of the Icon Property, if it exists.
-     * @see ObjectTypeNodeProperties#Icon
+     * @see ObjectTypeNodeProperties
      */
     public CompletableFuture<ByteString> getIcon() {
         return getProperty(ObjectTypeNodeProperties.Icon);
     }
 
     /**
-     * Set the value of the NodeVersion Property, if it exists.
+     * Set the value of the {@link ObjectTypeNodeProperties#NodeVersion} Property, if it exists.
      *
      * @param nodeVersion the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ObjectTypeNodeProperties#NodeVersion
+     * @see ObjectTypeNodeProperties
      */
     public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
         return setProperty(ObjectTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
     /**
-     * Set the value of the Icon Property, if it exists.
+     * Set the value of the {@link ObjectTypeNodeProperties#Icon} Property, if it exists.
      *
      * @param icon the value to set.
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
-     * @see ObjectTypeNodeProperties#Icon
+     * @see ObjectTypeNodeProperties
      */
     public CompletableFuture<StatusCode> setIcon(ByteString icon) {
         return setProperty(ObjectTypeNodeProperties.Icon, icon);
