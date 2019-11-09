@@ -58,13 +58,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;
-import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.getNonceLength;
 
 public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
@@ -434,17 +434,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             // Validate the remote nonce; it must be non-null and the correct length for the security algorithm.
             ByteString remoteNonce = request.getClientNonce();
 
-            if (remoteNonce == null || remoteNonce.isNull()) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "remote nonce must be non-null");
-            }
-
-            if (remoteNonce.length() < getNonceLength(secureChannel.getSecurityPolicy())) {
-                String message = String.format(
-                    "remote nonce length must be at least %d bytes",
-                    getNonceLength(secureChannel.getSecurityPolicy()));
-
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
-            }
+            NonceUtil.validateNonce(remoteNonce, secureChannel.getSecurityPolicy());
 
             ByteString localNonce = generateNonce(secureChannel.getSecurityPolicy());
 

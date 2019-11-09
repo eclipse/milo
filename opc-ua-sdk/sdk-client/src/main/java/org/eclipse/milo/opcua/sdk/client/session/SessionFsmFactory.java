@@ -873,18 +873,20 @@ public class SessionFsmFactory {
         try {
             EndpointDescription endpoint = client.getConfig().getEndpoint();
 
-            ByteString serverNonce = csr.getServerNonce();
+            ByteString csrNonce = csr.getServerNonce();
+
+            NonceUtil.validateNonce(csrNonce);
 
             SignedIdentityToken signedIdentityToken =
                 client.getConfig().getIdentityProvider()
-                    .getIdentityToken(endpoint, serverNonce);
+                    .getIdentityToken(endpoint, csrNonce);
 
             UserIdentityToken userIdentityToken = signedIdentityToken.getToken();
             SignatureData userTokenSignature = signedIdentityToken.getSignature();
 
             ActivateSessionRequest request = new ActivateSessionRequest(
                 client.newRequestHeader(csr.getAuthenticationToken()),
-                buildClientSignature(client.getConfig(), serverNonce),
+                buildClientSignature(client.getConfig(), csrNonce),
                 new SignedSoftwareCertificate[0],
                 new String[0],
                 ExtensionObject.encode(client.getSerializationContext(), userIdentityToken),
@@ -896,19 +898,27 @@ public class SessionFsmFactory {
             return stackClient.sendRequest(request)
                 .thenApply(ActivateSessionResponse.class::cast)
                 .thenCompose(asr -> {
-                    OpcUaSession session = new OpcUaSession(
-                        csr.getAuthenticationToken(),
-                        csr.getSessionId(),
-                        client.getConfig().getSessionName().get(),
-                        csr.getRevisedSessionTimeout(),
-                        csr.getMaxRequestMessageSize(),
-                        csr.getServerCertificate(),
-                        csr.getServerSoftwareCertificates()
-                    );
+                    try {
+                        ByteString asrNonce = asr.getServerNonce();
 
-                    session.setServerNonce(asr.getServerNonce());
+                        NonceUtil.validateNonce(asrNonce);
 
-                    return completedFuture(session);
+                        OpcUaSession session = new OpcUaSession(
+                            csr.getAuthenticationToken(),
+                            csr.getSessionId(),
+                            client.getConfig().getSessionName().get(),
+                            csr.getRevisedSessionTimeout(),
+                            csr.getMaxRequestMessageSize(),
+                            csr.getServerCertificate(),
+                            csr.getServerSoftwareCertificates()
+                        );
+
+                        session.setServerNonce(asrNonce);
+
+                        return completedFuture(session);
+                    } catch (UaException e) {
+                        return failedFuture(e);
+                    }
                 });
         } catch (Exception ex) {
             return failedFuture(ex);

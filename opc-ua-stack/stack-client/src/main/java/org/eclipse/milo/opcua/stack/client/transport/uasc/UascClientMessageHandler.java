@@ -532,6 +532,8 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                                 secureChannel.setChannelId(oscr.getSecurityToken().getChannelId().longValue());
                                 logger.debug("Received OpenSecureChannelResponse.");
 
+                                NonceUtil.validateNonce(oscr.getServerNonce(), secureChannel.getSecurityPolicy());
+
                                 installSecurityToken(ctx, oscr);
 
                                 handshakeFuture.complete(secureChannel);
