@@ -186,6 +186,20 @@ interface Event {
         }
     }
 
+    class KeepAliveFailureCountExceeded implements Event {
+        @Override
+        public String toString() {
+            return getClass().getSimpleName();
+        }
+    }
+
+    class KeepAliveSuccess implements Event {
+        @Override
+        public String toString() {
+            return getClass().getSimpleName();
+        }
+    }
+
     class ServiceFault implements Event {
         final StatusCode statusCode;
 

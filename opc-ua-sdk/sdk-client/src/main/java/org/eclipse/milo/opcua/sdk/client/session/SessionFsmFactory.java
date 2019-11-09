@@ -488,7 +488,7 @@ public class SessionFsmFactory {
 
         fb.when(State.Active)
             .on(e ->
-                e.getClass() == Event.KeepAliveFailure.class ||
+                e.getClass() == Event.KeepAliveFailureCountExceeded.class ||
                     e.getClass() == Event.ServiceFault.class)
             .transitionTo(State.CreatingWait);
 
@@ -575,49 +575,66 @@ public class SessionFsmFactory {
         fb.onInternalTransition(State.Active)
             .via(Event.KeepAlive.class)
             .execute(ctx -> {
-                Event.KeepAlive event = (Event.KeepAlive) ctx.event();
+                LOGGER.debug("[{}] Sending Keep Alive...", ctx.getInstanceId());
 
-                sendKeepAlive(client, event.session).whenComplete((response, ex) -> {
-                    if (response != null) {
-                        DataValue[] results = response.getResults();
+                client.getConfig().getExecutor().execute(() -> {
+                    CompletableFuture<DataValue> future = client.readValue(
+                        0.0,
+                        TimestampsToReturn.Neither,
+                        Identifiers.Server_ServerStatus_State
+                    );
 
-                        if (results != null && results.length > 0) {
-                            Object value = results[0].getValue().getValue();
-                            if (value instanceof Integer) {
-                                ServerState state = ServerState.from((Integer) value);
+                    future.whenComplete((value, ex) -> {
+                        if (value != null) {
+                            Object o = value.getValue().getValue();
+                            if (o instanceof Integer) {
+                                ServerState state = ServerState.from((Integer) o);
                                 LOGGER.debug("[{}] ServerState: {}", ctx.getInstanceId(), state);
                             }
-                        }
-
-                        KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, 0L);
-                    } else {
-                        Long keepAliveFailureCount = KEY_KEEP_ALIVE_FAILURE_COUNT.get(ctx);
-
-                        if (keepAliveFailureCount == null) {
-                            keepAliveFailureCount = 1L;
+                            ctx.fireEvent(new Event.KeepAliveSuccess());
                         } else {
-                            keepAliveFailureCount += 1L;
-                        }
-
-                        KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, keepAliveFailureCount);
-
-                        long keepAliveFailuresAllowed = client.getConfig().getKeepAliveFailuresAllowed().longValue();
-
-                        if (keepAliveFailureCount > keepAliveFailuresAllowed) {
-                            LOGGER.warn(
-                                "[{}] Keep Alive failureCount={} exceeds failuresAllowed={}",
-                                ctx.getInstanceId(), keepAliveFailureCount, keepAliveFailuresAllowed
-                            );
-
                             ctx.fireEvent(new Event.KeepAliveFailure());
-                        } else {
-                            LOGGER.debug(
-                                "[{}] Keep Alive failureCount={}",
-                                ctx.getInstanceId(), keepAliveFailureCount, ex
-                            );
                         }
-                    }
+                    });
                 });
+            });
+
+        fb.onInternalTransition(State.Active)
+            .via(Event.KeepAliveSuccess.class)
+            .execute(ctx -> {
+                LOGGER.debug("[{}] Keep Alive success", ctx.getInstanceId());
+
+                KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, 0L);
+            });
+
+        fb.onInternalTransition(State.Active)
+            .via(Event.KeepAliveFailure.class)
+            .execute(ctx -> {
+                Long keepAliveFailureCount = KEY_KEEP_ALIVE_FAILURE_COUNT.get(ctx);
+
+                if (keepAliveFailureCount == null) {
+                    keepAliveFailureCount = 1L;
+                } else {
+                    keepAliveFailureCount += 1L;
+                }
+
+                KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, keepAliveFailureCount);
+
+                long keepAliveFailuresAllowed = client.getConfig().getKeepAliveFailuresAllowed().longValue();
+
+                if (keepAliveFailureCount > keepAliveFailuresAllowed) {
+                    LOGGER.warn(
+                        "[{}] Keep Alive failureCount={} exceeds failuresAllowed={}",
+                        ctx.getInstanceId(), keepAliveFailureCount, keepAliveFailuresAllowed
+                    );
+
+                    ctx.fireEvent(new Event.KeepAliveFailureCountExceeded());
+                } else {
+                    LOGGER.debug(
+                        "[{}] Keep Alive failureCount={}",
+                        ctx.getInstanceId(), keepAliveFailureCount
+                    );
+                }
             });
 
         fb.onInternalTransition(State.Active)
