@@ -575,28 +575,9 @@ public class SessionFsmFactory {
         fb.onInternalTransition(State.Active)
             .via(Event.KeepAlive.class)
             .execute(ctx -> {
-                LOGGER.debug("[{}] Sending Keep Alive...", ctx.getInstanceId());
+                LOGGER.debug("[{}] Sending Keep Alive", ctx.getInstanceId());
 
-                client.getConfig().getExecutor().execute(() -> {
-                    CompletableFuture<DataValue> future = client.readValue(
-                        0.0,
-                        TimestampsToReturn.Neither,
-                        Identifiers.Server_ServerStatus_State
-                    );
-
-                    future.whenComplete((value, ex) -> {
-                        if (value != null) {
-                            Object o = value.getValue().getValue();
-                            if (o instanceof Integer) {
-                                ServerState state = ServerState.from((Integer) o);
-                                LOGGER.debug("[{}] ServerState: {}", ctx.getInstanceId(), state);
-                            }
-                            ctx.fireEvent(new Event.KeepAliveSuccess());
-                        } else {
-                            ctx.fireEvent(new Event.KeepAliveFailure());
-                        }
-                    });
-                });
+                sendKeepAliveAsync(ctx, client);
             });
 
         fb.onInternalTransition(State.Active)
@@ -1064,12 +1045,40 @@ public class SessionFsmFactory {
         }
     }
 
-    private static CompletableFuture<ReadResponse> sendKeepAlive(OpcUaClient client, OpcUaSession session) {
-        ReadRequest keepAliveRequest = createKeepAliveRequest(client, session);
+    private static void sendKeepAliveAsync(FsmContext<State, Event> ctx, OpcUaClient client) {
+        client.getConfig().getExecutor()
+            .execute(() -> sendKeepAlive(ctx, client));
+    }
 
-        return client.getStackClient()
-            .sendRequest(keepAliveRequest)
-            .thenApply(ReadResponse.class::cast);
+    private static void sendKeepAlive(FsmContext<State, Event> ctx, OpcUaClient client) {
+        CompletableFuture<ReadResponse> future = client.getSession().thenCompose(session -> {
+            ReadRequest keepAliveRequest =
+                createKeepAliveRequest(client, session);
+
+            return client.getStackClient()
+                .sendRequest(keepAliveRequest)
+                .thenApply(ReadResponse.class::cast);
+        });
+
+        future.whenComplete((response, ex) -> {
+            if (response != null) {
+                if (response.getResponseHeader().getServiceResult().isGood()) {
+                    DataValue[] results = response.getResults();
+                    if (results != null && results.length > 0) {
+                        Object value = results[0].getValue().getValue();
+                        if (value instanceof Integer) {
+                            ServerState state = ServerState.from((Integer) value);
+                            LOGGER.debug("[{}] ServerState: {}", ctx.getInstanceId(), state);
+                        }
+                    }
+                    ctx.fireEvent(new Event.KeepAliveSuccess());
+                } else {
+                    ctx.fireEvent(new Event.KeepAliveFailure());
+                }
+            } else {
+                ctx.fireEvent(new Event.KeepAliveFailure());
+            }
+        });
     }
 
     private static ReadRequest createKeepAliveRequest(OpcUaClient client, OpcUaSession session) {
