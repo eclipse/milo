@@ -83,6 +83,10 @@ public interface OpcUaServerConfigLimits {
         return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
     }
 
+    default UInteger getMaxPasswordLength() {
+        return uint(1024);
+    }
+
     //region ServerCapabilities
 
     default Double getMinSupportedSampleRate() {
