@@ -97,6 +97,10 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
 
             int passwordLength = (int) length - lastNonceLength;
 
+            if (passwordLength < 0) {
+                throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "invalid password length");
+            }
+
             if (passwordLength > session.getServer().getConfig().getLimits().getMaxStringLength().longValue()) {
                 throw new UaException(StatusCodes.Bad_EncodingLimitsExceeded, "password length exceeds limits");
             }
