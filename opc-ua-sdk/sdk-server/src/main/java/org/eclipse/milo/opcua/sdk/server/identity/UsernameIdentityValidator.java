@@ -103,12 +103,29 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
         if (algorithm != SecurityAlgorithm.None) {
             byte[] plainTextBytes = decryptTokenData(session, algorithm, tokenBytes);
 
-            int length = ((plainTextBytes[3] & 0xFF) << 24) |
-                ((plainTextBytes[2] & 0xFF) << 16) |
-                ((plainTextBytes[1] & 0xFF) << 8) |
-                (plainTextBytes[0] & 0xFF);
+            //@formatter:off
+            long length =
+                ((plainTextBytes[3] & 0xFFL) << 24) |
+                ((plainTextBytes[2] & 0xFFL) << 16) |
+                ((plainTextBytes[1] & 0xFFL) <<  8) |
+                ( plainTextBytes[0] & 0xFFL       );
+            //@formatter:on
 
-            byte[] passwordBytes = new byte[length - lastNonceLength];
+            if (length != plainTextBytes.length - 4) {
+                throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "invalid token data");
+            }
+
+            int passwordLength = (int) length - lastNonceLength;
+
+            if (passwordLength < 0) {
+                throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "invalid password length");
+            }
+
+            if (passwordLength > session.getServer().getConfig().getLimits().getMaxPasswordLength().longValue()) {
+                throw new UaException(StatusCodes.Bad_EncodingLimitsExceeded, "password length exceeds limits");
+            }
+
+            byte[] passwordBytes = new byte[passwordLength];
             byte[] nonceBytes = new byte[lastNonceLength];
 
             System.arraycopy(plainTextBytes, 4, passwordBytes, 0, passwordBytes.length);
