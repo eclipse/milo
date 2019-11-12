@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
+import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,8 @@ public class X509IdentityProvider implements IdentityProvider {
         } catch (Throwable t) {
             logger.warn("Error parsing SecurityPolicy for uri={}", securityPolicyUri);
         }
+
+        NonceUtil.validateNonce(serverNonce);
 
         X509IdentityToken token = new X509IdentityToken(
             policyId,

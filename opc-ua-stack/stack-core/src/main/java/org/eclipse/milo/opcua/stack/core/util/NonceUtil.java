@@ -16,11 +16,21 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.bouncycastle.util.Arrays;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.slf4j.LoggerFactory;
 
 public class NonceUtil {
+
+    /**
+     * The minimum required nonce length for validation by {@link NonceUtil#validateNonce(ByteString)}.
+     * <p>
+     * This is specified by OPC UA Part 4 to be least 32 bytes in the CreateSession and ActivateSession services.
+     */
+    public static final int MINIMUM_NONCE_LENGTH = 32;
 
     private static volatile boolean SECURE_RANDOM_ENABLED = true;
 
@@ -94,6 +104,9 @@ public class NonceUtil {
      * <p>
      * The length is determined by the policy: see {@link #getNonceLength(SecurityPolicy)}.
      *
+     * <b>Important</b>: this should only be used to generate a nonce exchanged when establishing a secure channel.
+     * The nonce used by sessions has different length requirements.
+     *
      * @param securityPolicy the {@link SecurityPolicy} to use when determining the nonce length.
      * @return a nonce of the appropriate length for the given security policy.
      */
@@ -111,7 +124,7 @@ public class NonceUtil {
      * @param securityPolicy the {@link SecurityPolicy} in use.
      * @return the minimum nonce length for use with {@code securityPolicy}.
      */
-    public static int getNonceLength(SecurityPolicy securityPolicy) {
+    private static int getNonceLength(SecurityPolicy securityPolicy) {
         switch (securityPolicy) {
             case Basic128Rsa15:
                 return 16;
@@ -123,6 +136,52 @@ public class NonceUtil {
             case None:
             default:
                 return 0;
+        }
+    }
+
+    /**
+     * Validate that {@code nonce} meets the minimum length requirement for {@code securityPolicy} and is non-zeroes.
+     * <p>
+     * <b>Important</b>: this should only be used to validate the nonce exchanged when establishing a secure channel.
+     * The nonce used by sessions has different length requirements.
+     *
+     * @param nonce          the nonce to validate.
+     * @param securityPolicy the {@link SecurityPolicy} dictating the minimum nonce length.
+     * @throws UaException if nonce validation failed.
+     */
+    public static void validateNonce(ByteString nonce, SecurityPolicy securityPolicy) throws UaException {
+        validateNonce(nonce, getNonceLength(securityPolicy));
+    }
+
+    /**
+     * Validate that {@code nonce} is at least {@link NonceUtil#MINIMUM_NONCE_LENGTH} and is non-zeroes.
+     *
+     * @param nonce the nonce to validate.
+     * @throws UaException if nonce validation failed.
+     */
+    public static void validateNonce(ByteString nonce) throws UaException {
+        validateNonce(nonce, MINIMUM_NONCE_LENGTH);
+    }
+
+    /**
+     * Validate that {@code nonce} is at least {@code minimumLength} and is non-zeroes.
+     *
+     * @param nonce         the nonce to validate.
+     * @param minimumLength the minimum required nonce length
+     * @throws UaException if nonce validation failed.
+     */
+    public static void validateNonce(ByteString nonce, int minimumLength) throws UaException {
+        byte[] bs = nonce.bytesOrEmpty();
+
+        if (bs.length < minimumLength) {
+            throw new UaException(
+                StatusCodes.Bad_NonceInvalid,
+                "nonce must be at least " + minimumLength + " bytes"
+            );
+        }
+
+        if (bs.length > 0 && Arrays.areAllZeroes(bs, 0, bs.length)) {
+            throw new UaException(StatusCodes.Bad_NonceInvalid, "nonce must be non-zero");
         }
     }
 

@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.crypto.Cipher;
@@ -37,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,8 +134,10 @@ public class UsernameProvider implements IdentityProvider {
             logger.warn("Error parsing SecurityPolicy for uri={}, falling back to no security.", securityPolicyUri);
         }
 
+        NonceUtil.validateNonce(serverNonce);
+
         byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
-        byte[] nonceBytes = Optional.ofNullable(serverNonce.bytes()).orElse(new byte[0]);
+        byte[] nonceBytes = serverNonce.bytesOrEmpty();
 
         ByteBuf buffer = Unpooled.buffer();
 
