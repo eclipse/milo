@@ -111,7 +111,7 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
                 ( plainTextBytes[0] & 0xFFL       );
             //@formatter:on
 
-            if (length != plainTextBytes.length - 4) {
+            if (length > plainTextBytes.length - 4) {
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "invalid token data");
             }
 
