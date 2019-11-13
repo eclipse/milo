@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import java.util.Arrays;
-
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -52,15 +50,6 @@ public class NonceUtilTest {
     @Test
     public void testShortNonceThrows() {
         ByteString nonce = NonceUtil.generateNonce(NonceUtil.MINIMUM_NONCE_LENGTH - 1);
-
-        assertThrows(() -> NonceUtil.validateNonce(nonce));
-    }
-
-    @Test
-    public void testNonceOfZeroesThrows() {
-        byte[] bs = new byte[NonceUtil.MINIMUM_NONCE_LENGTH];
-        Arrays.fill(bs, (byte) 0);
-        ByteString nonce = ByteString.of(bs);
 
         assertThrows(() -> NonceUtil.validateNonce(nonce));
     }

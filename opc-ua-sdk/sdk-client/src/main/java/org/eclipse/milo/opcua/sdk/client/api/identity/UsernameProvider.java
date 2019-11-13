@@ -22,6 +22,7 @@ import javax.crypto.Cipher;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.bouncycastle.util.Arrays;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -135,6 +136,10 @@ public class UsernameProvider implements IdentityProvider {
         }
 
         NonceUtil.validateNonce(serverNonce);
+
+        if (serverNonce.length() > 0 && Arrays.areAllZeroes(serverNonce.bytesOrEmpty(), 0, serverNonce.length())) {
+            throw new UaException(StatusCodes.Bad_NonceInvalid, "nonce must be non-zero");
+        }
 
         byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
         byte[] nonceBytes = serverNonce.bytesOrEmpty();
