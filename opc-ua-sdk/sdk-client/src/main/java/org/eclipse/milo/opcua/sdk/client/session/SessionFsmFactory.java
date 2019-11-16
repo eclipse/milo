@@ -155,14 +155,21 @@ public class SessionFsmFactory {
             .via(Event.GetSession.class)
             .execute(ctx -> {
                 Event.GetSession event = (Event.GetSession) ctx.event();
-                event.future.completeExceptionally(new UaException(StatusCodes.Bad_SessionClosed));
+
+                client.getConfig().getExecutor().execute(() ->
+                    event.future.completeExceptionally(
+                        new UaException(StatusCodes.Bad_SessionClosed))
+                );
             });
 
         fb.onInternalTransition(State.Inactive)
             .via(Event.CloseSession.class)
             .execute(ctx -> {
                 Event.CloseSession event = (Event.CloseSession) ctx.event();
-                event.future.complete(Unit.VALUE);
+
+                client.getConfig().getExecutor().execute(() ->
+                    event.future.complete(Unit.VALUE)
+                );
             });
     }
 
@@ -222,7 +229,9 @@ public class SessionFsmFactory {
 
                 Event.CloseSession event = (Event.CloseSession) ctx.event();
 
-                event.future.complete(Unit.VALUE);
+                client.getConfig().getExecutor().execute(() ->
+                    event.future.complete(Unit.VALUE)
+                );
             });
 
 
@@ -270,7 +279,7 @@ public class SessionFsmFactory {
                     } else {
                         LOGGER.debug("[{}] CreateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
 
-                        handleFailureToOpenSession(ctx, ex);
+                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -290,7 +299,7 @@ public class SessionFsmFactory {
                     } else {
                         LOGGER.debug("[{}] CreateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
 
-                        handleFailureToOpenSession(ctx, ex);
+                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -341,7 +350,7 @@ public class SessionFsmFactory {
                     } else {
                         LOGGER.debug("[{}] ActivateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
 
-                        handleFailureToOpenSession(ctx, ex);
+                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.ActivateSessionFailure(ex));
                     }
@@ -394,7 +403,7 @@ public class SessionFsmFactory {
                             "[{}] TransferSubscriptions failed: {}",
                             ctx.getInstanceId(), ex.getMessage(), ex);
 
-                        handleFailureToOpenSession(ctx, ex);
+                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.TransferSubscriptionsFailure(ex));
                     }
@@ -447,7 +456,7 @@ public class SessionFsmFactory {
                     } else {
                         LOGGER.warn("[{}] Initialization failed: {}", ctx.getInstanceId(), session, ex);
 
-                        handleFailureToOpenSession(ctx, ex);
+                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.InitializeFailure(ex));
                     }
@@ -509,7 +518,10 @@ public class SessionFsmFactory {
                 KEY_SESSION.set(ctx, event.session);
 
                 SessionFuture sessionFuture = KEY_SESSION_FUTURE.get(ctx);
-                sessionFuture.future.complete(event.session);
+
+                client.getConfig().getExecutor().execute(() ->
+                    sessionFuture.future.complete(event.session)
+                );
             });
 
         fb.onTransitionTo(State.Active)
@@ -657,7 +669,9 @@ public class SessionFsmFactory {
                 SessionFsm.CloseFuture closeFuture = KEY_CLOSE_FUTURE.get(ctx);
 
                 if (closeFuture != null) {
-                    closeFuture.future.complete(Unit.VALUE);
+                    client.getConfig().getExecutor().execute(() ->
+                        closeFuture.future.complete(Unit.VALUE)
+                    );
                 }
             });
 
@@ -696,11 +710,18 @@ public class SessionFsmFactory {
         complete(event.future).with(sessionFuture);
     }
 
-    private static void handleFailureToOpenSession(ActionContext<State, Event> ctx, Throwable failure) {
+    private static void handleFailureToOpenSession(
+        OpcUaClient client,
+        ActionContext<State, Event> ctx,
+        Throwable failure
+    ) {
+
         SessionFuture sessionFuture = KEY_SESSION_FUTURE.remove(ctx);
 
         if (sessionFuture != null) {
-            sessionFuture.future.completeExceptionally(failure);
+            client.getConfig().getExecutor().execute(() ->
+                sessionFuture.future.completeExceptionally(failure)
+            );
         }
     }
 
@@ -722,9 +743,10 @@ public class SessionFsmFactory {
 
         LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
 
-        stackClient.sendRequest(request).whenComplete(
+        stackClient.sendRequest(request).whenCompleteAsync(
             (csr, ex2) ->
-                closeFuture.complete(Unit.VALUE)
+                closeFuture.complete(Unit.VALUE),
+            client.getConfig().getExecutor()
         );
 
         return closeFuture;
@@ -851,18 +873,20 @@ public class SessionFsmFactory {
         try {
             EndpointDescription endpoint = client.getConfig().getEndpoint();
 
-            ByteString serverNonce = csr.getServerNonce();
+            ByteString csrNonce = csr.getServerNonce();
+
+            NonceUtil.validateNonce(csrNonce);
 
             SignedIdentityToken signedIdentityToken =
                 client.getConfig().getIdentityProvider()
-                    .getIdentityToken(endpoint, serverNonce);
+                    .getIdentityToken(endpoint, csrNonce);
 
             UserIdentityToken userIdentityToken = signedIdentityToken.getToken();
             SignatureData userTokenSignature = signedIdentityToken.getSignature();
 
             ActivateSessionRequest request = new ActivateSessionRequest(
                 client.newRequestHeader(csr.getAuthenticationToken()),
-                buildClientSignature(client.getConfig(), serverNonce),
+                buildClientSignature(client.getConfig(), csrNonce),
                 new SignedSoftwareCertificate[0],
                 new String[0],
                 ExtensionObject.encode(client.getSerializationContext(), userIdentityToken),
@@ -874,19 +898,27 @@ public class SessionFsmFactory {
             return stackClient.sendRequest(request)
                 .thenApply(ActivateSessionResponse.class::cast)
                 .thenCompose(asr -> {
-                    OpcUaSession session = new OpcUaSession(
-                        csr.getAuthenticationToken(),
-                        csr.getSessionId(),
-                        client.getConfig().getSessionName().get(),
-                        csr.getRevisedSessionTimeout(),
-                        csr.getMaxRequestMessageSize(),
-                        csr.getServerCertificate(),
-                        csr.getServerSoftwareCertificates()
-                    );
+                    try {
+                        ByteString asrNonce = asr.getServerNonce();
 
-                    session.setServerNonce(asr.getServerNonce());
+                        NonceUtil.validateNonce(asrNonce);
 
-                    return completedFuture(session);
+                        OpcUaSession session = new OpcUaSession(
+                            csr.getAuthenticationToken(),
+                            csr.getSessionId(),
+                            client.getConfig().getSessionName().get(),
+                            csr.getRevisedSessionTimeout(),
+                            csr.getMaxRequestMessageSize(),
+                            csr.getServerCertificate(),
+                            csr.getServerSoftwareCertificates()
+                        );
+
+                        session.setServerNonce(asrNonce);
+
+                        return completedFuture(session);
+                    } catch (UaException e) {
+                        return failedFuture(e);
+                    }
                 });
         } catch (Exception ex) {
             return failedFuture(ex);

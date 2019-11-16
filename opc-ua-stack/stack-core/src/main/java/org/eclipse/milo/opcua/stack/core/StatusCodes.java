@@ -562,9 +562,9 @@ public class StatusCodes {
     public static final long Bad_NoContinuationPoints = 0x804B0000L;
 
     /**
-     * The operation could not be processed because all continuation points have been allocated.
+     * The reference type id does not refer to a valid reference type node.
      */
-    @Description("The operation could not be processed because all continuation points have been allocated.")
+    @Description("The reference type id does not refer to a valid reference type node.")
     public static final long Bad_ReferenceTypeIdInvalid = 0x804C0000L;
 
     /**

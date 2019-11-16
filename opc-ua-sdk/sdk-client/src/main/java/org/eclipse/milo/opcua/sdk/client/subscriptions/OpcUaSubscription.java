@@ -16,8 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -51,6 +54,10 @@ public class OpcUaSubscription implements UaSubscription {
     private final List<NotificationListener> notificationListeners = new CopyOnWriteArrayList<>();
 
     private final AsyncSemaphore notificationSemaphore = new AsyncSemaphore(1);
+
+    private final ClientHandleSequence clientHandleSequence = new ClientHandleSequence(
+        itemsByClientHandle::containsKey
+    );
 
     private volatile long lastSequenceNumber = 0L;
 
@@ -283,7 +290,7 @@ public class OpcUaSubscription implements UaSubscription {
         UInteger triggeringItemId,
         List<UInteger> linksToRemove
     ) {
-        
+
         CompletableFuture<SetTriggeringResponse> future = client.setTriggering(
             subscriptionId,
             triggeringItemId,
@@ -348,6 +355,11 @@ public class OpcUaSubscription implements UaSubscription {
     @Override
     public ImmutableList<UaMonitoredItem> getMonitoredItems() {
         return ImmutableList.copyOf(itemsByClientHandle.values());
+    }
+
+    @Override
+    public UInteger nextClientHandle() {
+        return clientHandleSequence.nextClientHandle();
     }
 
     @Override
@@ -418,6 +430,52 @@ public class OpcUaSubscription implements UaSubscription {
 
     void setLastSequenceNumber(long lastSequenceNumber) {
         this.lastSequenceNumber = lastSequenceNumber;
+    }
+
+
+    static class ClientHandleSequence {
+
+        private final AtomicLong clientHandle;
+
+        private final Predicate<UInteger> handleInUse;
+
+        ClientHandleSequence(Predicate<UInteger> handleInUse) {
+            this(handleInUse, 0L);
+        }
+
+        @VisibleForTesting
+        ClientHandleSequence(Predicate<UInteger> handleInUse, long initialValue) {
+            this.handleInUse = handleInUse;
+
+            clientHandle = new AtomicLong(initialValue);
+        }
+
+        synchronized UInteger nextClientHandle() {
+            UInteger original = getAndIncrementWithRollover();
+            UInteger next = original;
+
+            while (handleInUse.test(next)) {
+                next = getAndIncrementWithRollover();
+
+                if (next.equals(original)) {
+                    // All client handles are in use... unlikely!
+                    throw new IllegalStateException("no unused client handles");
+                }
+            }
+
+            return next;
+        }
+
+        private UInteger getAndIncrementWithRollover() {
+            long current = clientHandle.get();
+
+            if (current > UInteger.MAX_VALUE) {
+                clientHandle.set(0L);
+            }
+
+            return uint(clientHandle.getAndIncrement());
+        }
+
     }
 
 }

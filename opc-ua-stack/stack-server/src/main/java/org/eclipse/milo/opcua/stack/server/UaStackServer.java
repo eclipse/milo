@@ -15,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,6 +26,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ForwardingTable;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import io.netty.channel.Channel;
@@ -127,6 +129,8 @@ public class UaStackServer {
 
     private final List<Channel> channels = new CopyOnWriteArrayList<>();
 
+    private final Set<EndpointConfiguration> boundEndpoints = Sets.newConcurrentHashSet();
+
     private final ServerChannelManager channelManager;
     private final SerializationContext serializationContext;
 
@@ -181,13 +185,19 @@ public class UaStackServer {
                     endpoint.getSecurityMode());
 
                 futures.add(
-                    channelManager.bind(endpoint).exceptionally(ex -> {
-                        logger.warn(
-                            "Bind failed for endpoint {}",
-                            endpoint.getEndpointUrl(), ex);
+                    channelManager.bind(endpoint)
+                        .whenComplete((u, ex) -> {
+                            if (u != null) {
+                                boundEndpoints.add(endpoint);
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            logger.warn(
+                                "Bind failed for endpoint {}",
+                                endpoint.getEndpointUrl(), ex);
 
-                        return Unit.VALUE;
-                    })
+                            return Unit.VALUE;
+                        })
                 );
             });
 
@@ -209,6 +219,18 @@ public class UaStackServer {
                 })
             )
         );
+
+        channels.forEach(channel -> {
+            CompletableFuture<Unit> f = new CompletableFuture<>();
+
+            channel.close().addListener(fv -> f.complete(Unit.VALUE));
+
+            futures.add(f);
+        });
+
+        channels.clear();
+
+        boundEndpoints.clear();
 
         return FutureUtils.sequence(futures)
             .thenApply(u -> UaStackServer.this);
@@ -236,6 +258,15 @@ public class UaStackServer {
 
     public List<Channel> getConnectedChannels() {
         return channels;
+    }
+
+    /**
+     * Get the {@link EndpointConfiguration}s that were successfully bound during startup.
+     *
+     * @return the {@link EndpointConfiguration}s that were successfully bound during startup.
+     */
+    public Set<EndpointConfiguration> getBoundEndpoints() {
+        return boundEndpoints;
     }
 
     public void onServiceRequest(String path, ServiceRequest serviceRequest) {

@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
@@ -79,6 +78,7 @@ import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -253,9 +253,7 @@ public class SessionManager implements
 
         ByteString clientNonce = request.getClientNonce();
 
-        if (clientNonce.isNotNull() && (clientNonce.length() < 32)) {
-            throw new UaException(StatusCodes.Bad_NonceInvalid);
-        }
+        NonceUtil.validateNonce(clientNonce);
 
         if (securityPolicy != SecurityPolicy.None && clientNonces.contains(clientNonce)) {
             throw new UaException(StatusCodes.Bad_NonceInvalid);
@@ -419,17 +417,16 @@ public class SessionManager implements
         );
     }
 
-    private boolean endpointMatchesUrl(EndpointDescription endpoint, String requestedEndpointUrl) {
-        try {
-            String requestedHost = EndpointUtil.getHost(requestedEndpointUrl);
-            String endpointHost = EndpointUtil.getHost(endpoint.getEndpointUrl());
+    /**
+     * @param endpoint             an {@link EndpointDescription}.
+     * @param requestedEndpointUrl an endpoint URL.
+     * @return {@code true} if the host in {@code endpoint} matches the host in {@code requestedEndpointUrl}.
+     */
+    private static boolean endpointMatchesUrl(EndpointDescription endpoint, String requestedEndpointUrl) {
+        String endpointHost = EndpointUtil.getHost(nullToEmpty(endpoint.getEndpointUrl()));
+        String requestedHost = EndpointUtil.getHost(nullToEmpty(requestedEndpointUrl));
 
-            return Strings.nullToEmpty(requestedHost)
-                .equalsIgnoreCase(Strings.nullToEmpty(endpointHost));
-        } catch (Throwable e) {
-            logger.warn("Unable to create URI.", e);
-            return false;
-        }
+        return nullToEmpty(endpointHost).equalsIgnoreCase(nullToEmpty(requestedHost));
     }
 
     @Override
