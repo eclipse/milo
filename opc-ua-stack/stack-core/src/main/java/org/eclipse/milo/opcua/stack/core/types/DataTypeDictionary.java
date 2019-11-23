@@ -10,12 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import java.util.Map;
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-
-import javax.annotation.Nullable;
-import java.util.Map;
 
 public interface DataTypeDictionary<T extends DataTypeCodec> {
 
