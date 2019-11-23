@@ -109,7 +109,7 @@ public abstract class UaNode implements Node {
         });
     }
 
-    protected <T> CompletableFuture<T> getProperty(QualifiedProperty<T> property) {
+    public <T> CompletableFuture<T> getProperty(QualifiedProperty<T> property) {
         return getPropertyNode(property)
             .thenCompose(VariableNode::getValue)
             .thenApply(value -> cast(value, property.getJavaType()));

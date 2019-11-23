@@ -527,8 +527,8 @@ public class ExampleNamespace extends ManagedNamespace {
             .build();
 
         SqrtMethod sqrtMethod = new SqrtMethod(methodNode);
-        methodNode.setProperty(UaMethodNode.InputArguments, sqrtMethod.getInputArguments());
-        methodNode.setProperty(UaMethodNode.OutputArguments, sqrtMethod.getOutputArguments());
+        methodNode.setInputArguments(sqrtMethod.getInputArguments());
+        methodNode.setOutputArguments(sqrtMethod.getOutputArguments());
         methodNode.setInvocationHandler(sqrtMethod);
 
         getNodeManager().addNode(methodNode);
@@ -551,8 +551,8 @@ public class ExampleNamespace extends ManagedNamespace {
             .build();
 
         GenerateEventMethod generateEventMethod = new GenerateEventMethod(methodNode);
-        methodNode.setProperty(UaMethodNode.InputArguments, generateEventMethod.getInputArguments());
-        methodNode.setProperty(UaMethodNode.OutputArguments, generateEventMethod.getOutputArguments());
+        methodNode.setInputArguments(generateEventMethod.getInputArguments());
+        methodNode.setOutputArguments(generateEventMethod.getOutputArguments());
         methodNode.setInvocationHandler(generateEventMethod);
 
         getNodeManager().addNode(methodNode);

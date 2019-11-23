@@ -19,9 +19,11 @@ import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -32,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
@@ -219,6 +222,69 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     @Override
     public CompletableFuture<StatusCode> writeEventNotifier(DataValue value) {
         return writeAttribute(AttributeId.EventNotifier, value);
+    }
+
+    /**
+     * Get the value of the {@link ObjectNodeProperties#NodeVersion} Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ObjectNodeProperties
+     */
+    public CompletableFuture<String> getNodeVersion() {
+        return getProperty(ObjectNodeProperties.NodeVersion);
+    }
+
+    /**
+     * Get the value of the {@link ObjectNodeProperties#Icon} Property, if it exists.
+     *
+     * @return the value of the Icon Property, if it exists.
+     * @see ObjectNodeProperties
+     */
+    public CompletableFuture<ByteString> getIcon() {
+        return getProperty(ObjectNodeProperties.Icon);
+    }
+
+    /**
+     * Get the value of the {@link ObjectNodeProperties#NamingRule} Property, if it exists.
+     *
+     * @return the value of the NamingRule Property, if it exists.
+     * @see ObjectNodeProperties
+     */
+    public CompletableFuture<NamingRuleType> getNamingRule() {
+        return getProperty(ObjectNodeProperties.NamingRule);
+    }
+
+    /**
+     * Set the value of the {@link ObjectNodeProperties#NodeVersion} Property, if it exists.
+     *
+     * @param nodeVersion the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see ObjectNodeProperties
+     */
+    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+        return setProperty(ObjectNodeProperties.NodeVersion, nodeVersion);
+    }
+
+    /**
+     * Set the value of the {@link ObjectNodeProperties#Icon} Property, if it exists.
+     *
+     * @param icon the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see ObjectNodeProperties
+     */
+    public CompletableFuture<StatusCode> setIcon(ByteString icon) {
+        return setProperty(ObjectNodeProperties.Icon, icon);
+    }
+
+    /**
+     * Set the value of the {@link ObjectNodeProperties#NamingRule} Property, if it exists.
+     *
+     * @param namingRule the value to set.
+     * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
+     * @see ObjectNodeProperties
+     */
+    public CompletableFuture<StatusCode> setNamingRule(NamingRuleType namingRule) {
+        return setProperty(ObjectNodeProperties.NamingRule, namingRule);
     }
 
 }

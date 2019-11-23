@@ -20,9 +20,9 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
-import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -45,7 +45,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
-import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
@@ -360,149 +359,189 @@ public class UaVariableNode extends UaNode implements VariableNode {
         ));
     }
 
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see VariableNodeProperties#NodeVersion
+     */
     @Nullable
     public String getNodeVersion() {
-        return getProperty(NodeVersion).orElse(null);
+        return getProperty(VariableNodeProperties.NodeVersion).orElse(null);
     }
 
+    /**
+     * Get the value of the LocalTime Property, if it exists.
+     *
+     * @return the value of the LocalTime Property, if it exists.
+     * @see VariableNodeProperties#LocalTime
+     */
     @Nullable
     public TimeZoneDataType getLocalTime() {
-        return getProperty(LocalTime).orElse(null);
+        return getProperty(VariableNodeProperties.LocalTime).orElse(null);
     }
 
+    /**
+     * Get the value of the DataTypeVersion Property, if it exists.
+     *
+     * @return the value of the DataTypeVersion Property, if it exists.
+     * @see VariableNodeProperties#DataTypeVersion
+     */
     @Nullable
     public String getDataTypeVersion() {
-        return getProperty(DataTypeVersion).orElse(null);
+        return getProperty(VariableNodeProperties.DataTypeVersion).orElse(null);
     }
 
+    /**
+     * Get the value of the DictionaryFragment Property, if it exists.
+     *
+     * @return the value of the DictionaryFragment Property, if it exists.
+     * @see VariableNodeProperties#DictionaryFragment
+     */
     @Nullable
     public ByteString getDictionaryFragment() {
-        return getProperty(DictionaryFragment).orElse(null);
+        return getProperty(VariableNodeProperties.DictionaryFragment).orElse(null);
     }
 
+    /**
+     * Get the value of the AllowNulls Property, if it exists.
+     *
+     * @return the value of the AllowNulls Property, if it exists.
+     * @see VariableNodeProperties#AllowNulls
+     */
     @Nullable
     public Boolean getAllowNulls() {
-        return getProperty(AllowNulls).orElse(null);
+        return getProperty(VariableNodeProperties.AllowNulls).orElse(null);
     }
 
+    /**
+     * Get the value of the MaxStringLength Property, if it exists.
+     *
+     * @return the value of the MaxStringLength Property, if it exists.
+     * @see VariableNodeProperties#MaxStringLength
+     */
     @Nullable
     public UInteger getMaxStringLength() {
-        return getProperty(MaxStringLength).orElse(null);
+        return getProperty(VariableNodeProperties.MaxStringLength).orElse(null);
     }
 
+    /**
+     * Get the value of the MaxArrayLength Property, if it exists.
+     *
+     * @return the value of the MaxArrayLength Property, if it exists.
+     * @see VariableNodeProperties#MaxArrayLength
+     */
     @Nullable
     public UInteger getMaxArrayLength() {
-        return getProperty(MaxArrayLength).orElse(null);
+        return getProperty(VariableNodeProperties.MaxArrayLength).orElse(null);
     }
 
+    /**
+     * Get the value of the EngineeringUnits Property, if it exists.
+     *
+     * @return the value of the EngineeringUnits Property, if it exists.
+     * @see VariableNodeProperties#EngineeringUnits
+     */
     @Nullable
     public EUInformation getEngineeringUnits() {
-        return getProperty(EngineeringUnits).orElse(null);
+        return getProperty(VariableNodeProperties.EngineeringUnits).orElse(null);
     }
 
+    /**
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param nodeVersion the value to set.
+     * @see VariableNodeProperties#NodeVersion
+     */
     public void setNodeVersion(String nodeVersion) {
-        setProperty(NodeVersion, nodeVersion);
+        setProperty(VariableNodeProperties.NodeVersion, nodeVersion);
     }
 
+    /**
+     * Set the value of the LocalTime Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param localTime the value to set.
+     * @see VariableNodeProperties#LocalTime
+     */
     public void setLocalTime(TimeZoneDataType localTime) {
-        setProperty(LocalTime, localTime);
+        setProperty(VariableNodeProperties.LocalTime, localTime);
     }
 
+    /**
+     * Set the value of the DataTypeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param dataTypeVersion the value to set.
+     * @see VariableNodeProperties#DataTypeVersion
+     */
     public void setDataTypeVersion(String dataTypeVersion) {
-        setProperty(DataTypeVersion, dataTypeVersion);
+        setProperty(VariableNodeProperties.DataTypeVersion, dataTypeVersion);
     }
 
+    /**
+     * Set the value of the DictionaryFragment Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param dictionaryFragment the value to set.
+     * @see VariableNodeProperties#DictionaryFragment
+     */
     public void setDictionaryFragment(ByteString dictionaryFragment) {
-        setProperty(DictionaryFragment, dictionaryFragment);
+        setProperty(VariableNodeProperties.DictionaryFragment, dictionaryFragment);
     }
 
+    /**
+     * Set the value of the AllowNulls Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param allowNulls the value to set.
+     * @see VariableNodeProperties#AllowNulls
+     */
     public void setAllowNulls(Boolean allowNulls) {
-        setProperty(AllowNulls, allowNulls);
+        setProperty(VariableNodeProperties.AllowNulls, allowNulls);
     }
 
+    /**
+     * Set the value of the MaxStringLength Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param maxStringLength the value to set.
+     * @see VariableNodeProperties#MaxStringLength
+     */
     public void setMaxStringLength(UInteger maxStringLength) {
-        setProperty(MaxStringLength, maxStringLength);
+        setProperty(VariableNodeProperties.MaxStringLength, maxStringLength);
     }
 
+    /**
+     * Set the value of the MaxArrayLength Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param maxArrayLength the value to set.
+     * @see VariableNodeProperties#MaxArrayLength
+     */
     public void setMaxArrayLength(UInteger maxArrayLength) {
-        setProperty(MaxArrayLength, maxArrayLength);
+        setProperty(VariableNodeProperties.MaxArrayLength, maxArrayLength);
     }
 
+    /**
+     * Set the value of the EngineeringUnits Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param engineeringUnits the value to set.
+     * @see VariableNodeProperties#EngineeringUnits
+     */
     public void setEngineeringUnits(EUInformation engineeringUnits) {
-        setProperty(EngineeringUnits, engineeringUnits);
+        setProperty(VariableNodeProperties.EngineeringUnits, engineeringUnits);
     }
-
-    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NodeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
-
-    public static final QualifiedProperty<TimeZoneDataType> LocalTime = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "LocalTime",
-        Identifiers.TimeZoneDataType,
-        ValueRanks.Scalar,
-        TimeZoneDataType.class
-    );
-
-    public static final QualifiedProperty<String> DataTypeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "DataTypeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
-
-    public static final QualifiedProperty<ByteString> DictionaryFragment = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "DictionaryFragment",
-        Identifiers.ByteString,
-        ValueRanks.Scalar,
-        ByteString.class
-    );
-
-    public static final QualifiedProperty<Boolean> AllowNulls = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "AllowNulls",
-        Identifiers.Boolean,
-        ValueRanks.Scalar,
-        Boolean.class
-    );
-
-    public static final QualifiedProperty<LocalizedText> ValueAsText = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "ValueAsText",
-        Identifiers.LocalizedText,
-        ValueRanks.Scalar,
-        LocalizedText.class
-    );
-
-    public static final QualifiedProperty<UInteger> MaxStringLength = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "MaxStringLength",
-        Identifiers.UInt32,
-        ValueRanks.Scalar,
-        UInteger.class
-    );
-
-    public static final QualifiedProperty<UInteger> MaxArrayLength = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "MaxArrayLength",
-        Identifiers.UInt32,
-        ValueRanks.Scalar,
-        UInteger.class
-    );
-
-    public static final QualifiedProperty<EUInformation> EngineeringUnits = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "EngineeringUnits",
-        Identifiers.EUInformation,
-        ValueRanks.Scalar,
-        EUInformation.class
-    );
 
     public static UaVariableNodeBuilder builder(UaNodeContext context) {
         return new UaVariableNodeBuilder(context);

@@ -12,17 +12,14 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import javax.annotation.Nullable;
 
-import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.ReferenceTypeNodeProperties;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
@@ -127,21 +124,27 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         fireAttributeChanged(attributeId, value);
     }
 
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ReferenceTypeNodeProperties#NodeVersion
+     */
     @Nullable
     public String getNodeVersion() {
-        return getProperty(NodeVersion).orElse(null);
+        return getProperty(ReferenceTypeNodeProperties.NodeVersion).orElse(null);
     }
 
+    /**
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param nodeVersion the value to set.
+     * @see ReferenceTypeNodeProperties#NodeVersion
+     */
     public void setNodeVersion(String nodeVersion) {
-        setProperty(NodeVersion, nodeVersion);
+        setProperty(ReferenceTypeNodeProperties.NodeVersion, nodeVersion);
     }
-
-    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NodeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
 
 }
