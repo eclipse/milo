@@ -117,6 +117,14 @@ public class CertificateValidationUtil {
 
         Preconditions.checkArgument(!certificateChain.isEmpty(), "certificateChain must not be empty");
 
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("certificateChain: {}", certificateChain);
+            LOGGER.trace("trustedCertificates: {}", trustedCertificates);
+            LOGGER.trace("trustedCrls: {}", trustedCrls);
+            LOGGER.trace("issuerCertificates: {}", issuerCertificates);
+            LOGGER.trace("issuerCrls: {}", issuerCrls);
+        }
+
         X509Certificate certificate = certificateChain.get(0);
 
         try {
@@ -209,18 +217,31 @@ public class CertificateValidationUtil {
     }
 
     /**
-     * Check if {@code certificate}'s KeyUsage extension indicates it is a CA.
+     * Check if {@code certificate}'s KeyUsage and/or BasicConstraints extensions indicate it is a CA.
      *
      * @param certificate the {@link X509Certificate} to check.
-     * @return {@code true} if {@code certificate}'s KeyUsage extension indicates it is a CA.
+     * @return {@code true} if {@code certificate}'s KeyUsage and/or BasicConstraints extensions indicates it is a CA.
      */
-    private static boolean certificateIsCa(X509Certificate certificate) {
+    static boolean certificateIsCa(X509Certificate certificate) {
         boolean[] keyUsage = certificate.getKeyUsage();
+        int basicConstraints = certificate.getBasicConstraints();
 
-        try {
-            return keyUsage != null && keyUsage[5];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return false;
+        if (keyUsage == null) {
+            // no KeyUsage, just check if the cA BasicConstraint is set.
+            return basicConstraints >= 0;
+        } else {
+            if (keyUsage[5] && basicConstraints == -1) {
+                // KeyUsage is present and the keyCertSign bit is set.
+                // According to RFC 5280 the BasicConstraint cA bit must also
+                // be set, but it's not!
+                LOGGER.warn(
+                    "'{}' violates RFC 5280: KeyUsage keyCertSign " +
+                        "bit set without BasicConstraint cA bit set",
+                    certificate.getSubjectX500Principal().getName()
+                );
+            }
+
+            return keyUsage[5] || basicConstraints >= 0;
         }
     }
 

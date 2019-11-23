@@ -173,6 +173,11 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
         chunkBuffers.clear();
 
+        // If the handshake hasn't completed yet this cause will be more
+        // accurate than the generic "connection closed" exception that
+        // channelInactive() will use.
+        handshakeFuture.completeExceptionally(cause);
+
         ctx.close();
     }
 
@@ -527,6 +532,8 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                                 secureChannel.setChannelId(oscr.getSecurityToken().getChannelId().longValue());
                                 logger.debug("Received OpenSecureChannelResponse.");
 
+                                NonceUtil.validateNonce(oscr.getServerNonce(), secureChannel.getSecurityPolicy());
+
                                 installSecurityToken(ctx, oscr);
 
                                 handshakeFuture.complete(secureChannel);
@@ -661,14 +668,16 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                         UaTransportRequest request = pending.remove(requestId);
 
                         try {
-                            if (request != null) {
-                                UaResponseMessage response = (UaResponseMessage) binaryDecoder
-                                    .setBuffer(message)
-                                    .readMessage(null);
+                            UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                                .setBuffer(message)
+                                .readMessage(null);
 
+                            if (request != null) {
                                 request.getFuture().complete(response);
                             } else {
-                                logger.warn("No pending request for requestId={}", requestId);
+                                logger.warn(
+                                    "No pending request with requestId={} for {}",
+                                    requestId, response.getClass().getSimpleName());
                             }
                         } catch (Throwable t) {
                             logger.error("Error decoding UaResponseMessage", t);

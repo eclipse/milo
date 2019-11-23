@@ -215,5 +215,9 @@
             <property name="exceptionVariableName" value="expected"/>
         </module>
         <module name="CommentsIndentation"/>
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="@formatter\:off"/>
+            <property name="onCommentFormat" value="@formatter\:on"/>
+        </module>
     </module>
 </module>
