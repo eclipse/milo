@@ -41,6 +41,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     private volatile ExtensionObject filterResult;
     private volatile MonitoringMode monitoringMode = MonitoringMode.Disabled;
     private volatile ExtensionObject monitoringFilter;
+    private volatile boolean discardOldest;
 
     private final UInteger clientHandle;
     private final ReadValueId readValueId;
@@ -56,7 +57,9 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         UInteger revisedQueueSize,
         ExtensionObject filterResult,
         MonitoringMode monitoringMode,
-        ExtensionObject monitoringFilter) {
+        ExtensionObject monitoringFilter,
+        boolean discardOldest
+    ) {
 
         this.client = client;
         this.clientHandle = clientHandle;
@@ -68,6 +71,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.filterResult = filterResult;
         this.monitoringMode = monitoringMode;
         this.monitoringFilter = monitoringFilter;
+        this.discardOldest = discardOldest;
     }
 
     @Override
@@ -123,6 +127,11 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     @Override
     public ExtensionObject getMonitoringFilter() {
         return monitoringFilter;
+    }
+
+    @Override
+    public boolean getDiscardOldest() {
+        return discardOldest;
     }
 
     @Override

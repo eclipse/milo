@@ -107,6 +107,11 @@ public interface UaMonitoredItem {
     ExtensionObject getMonitoringFilter();
 
     /**
+     * @return {@code true} if the item is configured to discard oldest when the queue is full.
+     */
+    boolean getDiscardOldest();
+
+    /**
      * Set the {@link Consumer} that will receive values as they arrive from the server.
      *
      * @param valueConsumer the {@link Consumer} that will receive values as they arrive from the server.

@@ -39,9 +39,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
@@ -130,7 +132,8 @@ public class OpcUaSubscription implements UaSubscription {
                     result.getRevisedQueueSize(),
                     result.getFilterResult(),
                     request.getMonitoringMode(),
-                    request.getRequestedParameters().getFilter()
+                    request.getRequestedParameters().getFilter(),
+                    request.getRequestedParameters().getDiscardOldest()
                 );
 
                 item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
@@ -310,44 +313,40 @@ public class OpcUaSubscription implements UaSubscription {
      * This subscription shall already have been transferred to this client's session via the Transfer Subscription
      * service.
      *
-     * @param subscription the {@link UaSubscription} to transfer items from.
+     * @param fromSubscription the {@link UaSubscription} to transfer items from.
      * @return a {@link CompletableFuture} that completes when the transfer is done.
      */
-    CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription, ItemTransferredCallback callback) {
-        // TODO this should probably just create a list of TransferMonitoredItemsRequest and call the overload
+    CompletableFuture<Unit> transferMonitoredItems(
+        UaSubscription fromSubscription,
+        ItemTransferredCallback callback
+    ) {
 
-        return notificationSemaphore.acquire().thenAccept(permit -> {
-            try {
-                ImmutableList<UaMonitoredItem> monitoredItems = subscription.getMonitoredItems();
-
-                for (int i = 0, monitoredItemsSize = monitoredItems.size(); i < monitoredItemsSize; i++) {
-                    UaMonitoredItem item = monitoredItems.get(i);
-
-                    OpcUaMonitoredItem newItem = new OpcUaMonitoredItem(
-                        client,
-                        item.getClientHandle(),
+        List<MonitoredItemTransferRequest> monitoredItemTransfers = fromSubscription.getMonitoredItems()
+            .stream()
+            .map(
+                item ->
+                    new MonitoredItemTransferRequest(
                         item.getReadValueId(),
-                        item.getMonitoredItemId(),
-                        item.getStatusCode(),
-                        item.getRevisedSamplingInterval(),
-                        item.getRevisedQueueSize(),
-                        item.getFilterResult(),
                         item.getMonitoringMode(),
-                        item.getMonitoringFilter()
-                    );
+                        new MonitoringParameters(
+                            item.getClientHandle(),
+                            item.getRevisedSamplingInterval(),
+                            item.getMonitoringFilter(),
+                            item.getRevisedQueueSize(),
+                            item.getDiscardOldest()
+                        ),
+                        item.getClientHandle(),
+                        item.getMonitoredItemId()
+                    )
+            )
+            .collect(toList());
 
-                    newItem.setRequestedQueueSize(item.getRequestedQueueSize());
-                    newItem.setRequestedSamplingInterval(item.getRequestedSamplingInterval());
+        TransferMonitoredItemsRequest transferRequest = new TransferMonitoredItemsRequest(
+            monitoredItemTransfers,
+            callback
+        );
 
-                    itemsByServerHandle.put(newItem.getMonitoredItemId(), newItem);
-                    itemsByClientHandle.put(newItem.getClientHandle(), newItem);
-
-                    callback.onItemTransferred(client.getSerializationContext(), newItem, i);
-                }
-            } finally {
-                permit.release();
-            }
-        });
+        return transferMonitoredItems(newArrayList(transferRequest)).thenApply(r -> Unit.VALUE);
     }
 
     /**
@@ -358,19 +357,19 @@ public class OpcUaSubscription implements UaSubscription {
      * This subscription shall already have been transferred to this client's session via the Transfer Subscription
      * service.
      *
-     * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s.
+     * @param transferRequests a list of {@link TransferMonitoredItemsRequest}s.
      * @return a {@link TransferMonitoredItemsResponse} that includes a list of the {@link UaMonitoredItem}s
      * and a list of the {@link StatusCode}s for each modify result.
      */
     CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
-        List<TransferMonitoredItemsRequest> itemsToTransfer
+        List<TransferMonitoredItemsRequest> transferRequests
     ) {
 
         return notificationSemaphore.acquire().thenCompose(permit -> {
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
             List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
 
-            for (TransferMonitoredItemsRequest transferReq : itemsToTransfer) {
+            for (TransferMonitoredItemsRequest transferReq : transferRequests) {
                 monitoredItemsByRequest.put(transferReq, newArrayList());
 
                 for (MonitoredItemTransferRequest monitoredItem : transferReq.getMonitoredItems()) {
@@ -384,7 +383,8 @@ public class OpcUaSubscription implements UaSubscription {
                         monitoredItem.getRequestedParameters().getQueueSize(),
                         null,
                         monitoredItem.getMonitoringMode(),
-                        monitoredItem.getRequestedParameters().getFilter()
+                        monitoredItem.getRequestedParameters().getFilter(),
+                        monitoredItem.getRequestedParameters().getDiscardOldest()
                     );
 
                     itemsByServerHandle.put(monitoredItem.getServerHandle(), item);
