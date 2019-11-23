@@ -124,16 +124,16 @@ public class OpcUaSubscription implements UaSubscription {
 
                 OpcUaMonitoredItem item = new OpcUaMonitoredItem(
                     client,
-                    request.getRequestedParameters().getClientHandle(),
                     request.getItemToMonitor(),
-                    result.getMonitoredItemId(),
+                    request.getMonitoringMode(),
+                    request.getRequestedParameters().getDiscardOldest(),
+                    request.getRequestedParameters().getFilter(),
+                    request.getRequestedParameters().getClientHandle(),
                     result.getStatusCode(),
+                    result.getMonitoredItemId(),
                     result.getRevisedSamplingInterval(),
                     result.getRevisedQueueSize(),
-                    result.getFilterResult(),
-                    request.getMonitoringMode(),
-                    request.getRequestedParameters().getFilter(),
-                    request.getRequestedParameters().getDiscardOldest()
+                    result.getFilterResult()
                 );
 
                 item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
@@ -330,12 +330,11 @@ public class OpcUaSubscription implements UaSubscription {
                         item.getMonitoringMode(),
                         new MonitoringParameters(
                             item.getClientHandle(),
-                            item.getRevisedSamplingInterval(),
+                            item.getRequestedSamplingInterval(),
                             item.getMonitoringFilter(),
-                            item.getRevisedQueueSize(),
+                            item.getRequestedQueueSize(),
                             item.getDiscardOldest()
                         ),
-                        item.getClientHandle(),
                         item.getMonitoredItemId()
                     )
             )
@@ -369,32 +368,32 @@ public class OpcUaSubscription implements UaSubscription {
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
             List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
 
-            for (TransferMonitoredItemsRequest transferReq : transferRequests) {
-                monitoredItemsByRequest.put(transferReq, newArrayList());
+            for (TransferMonitoredItemsRequest transferRequest : transferRequests) {
+                monitoredItemsByRequest.put(transferRequest, newArrayList());
 
-                for (MonitoredItemTransferRequest monitoredItem : transferReq.getMonitoredItems()) {
+                for (MonitoredItemTransferRequest itemToTransfer : transferRequest.getMonitoredItems()) {
                     OpcUaMonitoredItem item = new OpcUaMonitoredItem(
                         client,
-                        monitoredItem.getClientHandle(),
-                        monitoredItem.getItemToMonitor(),
-                        monitoredItem.getServerHandle(),
+                        itemToTransfer.getItemToMonitor(),
+                        itemToTransfer.getMonitoringMode(),
+                        itemToTransfer.getRequestedParameters().getDiscardOldest(),
+                        itemToTransfer.getRequestedParameters().getFilter(),
+                        itemToTransfer.getRequestedParameters().getClientHandle(),
                         new StatusCode(StatusCodes.Uncertain_InitialValue),
-                        monitoredItem.getRequestedParameters().getSamplingInterval(),
-                        monitoredItem.getRequestedParameters().getQueueSize(),
-                        null,
-                        monitoredItem.getMonitoringMode(),
-                        monitoredItem.getRequestedParameters().getFilter(),
-                        monitoredItem.getRequestedParameters().getDiscardOldest()
+                        itemToTransfer.getMonitoredItemId(),
+                        itemToTransfer.getRequestedParameters().getSamplingInterval(),
+                        itemToTransfer.getRequestedParameters().getQueueSize(),
+                        null
                     );
 
-                    itemsByServerHandle.put(monitoredItem.getServerHandle(), item);
-                    itemsByClientHandle.put(monitoredItem.getClientHandle(), item);
+                    itemsByServerHandle.put(itemToTransfer.getMonitoredItemId(), item);
+                    itemsByClientHandle.put(itemToTransfer.getRequestedParameters().getClientHandle(), item);
 
-                    monitoredItemsByRequest.get(transferReq).add(item);
+                    monitoredItemsByRequest.get(transferRequest).add(item);
 
                     modifyRequests.add(new MonitoredItemModifyRequest(
-                        monitoredItem.getServerHandle(),
-                        monitoredItem.getRequestedParameters()
+                        itemToTransfer.getMonitoredItemId(),
+                        itemToTransfer.getRequestedParameters()
                     ));
                 }
             }

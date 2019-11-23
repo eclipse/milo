@@ -49,16 +49,16 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     public OpcUaMonitoredItem(
         OpcUaClient client,
-        UInteger clientHandle,
         ReadValueId readValueId,
-        UInteger monitoredItemId,
+        MonitoringMode monitoringMode,
+        boolean discardOldest,
+        ExtensionObject monitoringFilter,
+        UInteger clientHandle,
         StatusCode statusCode,
+        UInteger monitoredItemId,
         double revisedSamplingInterval,
         UInteger revisedQueueSize,
-        ExtensionObject filterResult,
-        MonitoringMode monitoringMode,
-        ExtensionObject monitoringFilter,
-        boolean discardOldest
+        ExtensionObject filterResult
     ) {
 
         this.client = client;

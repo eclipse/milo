@@ -17,35 +17,22 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public class MonitoredItemTransferRequest {
 
-    private final UInteger clientHandle;
-    private final UInteger serverHandle;
-
     private final ReadValueId itemToMonitor;
     private final MonitoringMode monitoringMode;
     private final MonitoringParameters requestedParameters;
+    private final UInteger monitoredItemId;
 
     public MonitoredItemTransferRequest(
         ReadValueId itemToMonitor,
         MonitoringMode monitoringMode,
         MonitoringParameters requestedParameters,
-        UInteger clientHandle,
-        UInteger serverHandle
+        UInteger monitoredItemId
     ) {
-
-        this.clientHandle = clientHandle;
-        this.serverHandle = serverHandle;
 
         this.itemToMonitor = itemToMonitor;
         this.monitoringMode = monitoringMode;
         this.requestedParameters = requestedParameters;
-    }
-
-    UInteger getClientHandle() {
-        return clientHandle;
-    }
-
-    UInteger getServerHandle() {
-        return serverHandle;
+        this.monitoredItemId = monitoredItemId;
     }
 
     ReadValueId getItemToMonitor() {
@@ -58,6 +45,10 @@ public class MonitoredItemTransferRequest {
 
     MonitoringParameters getRequestedParameters() {
         return requestedParameters;
+    }
+
+    UInteger getMonitoredItemId() {
+        return monitoredItemId;
     }
 
 }
