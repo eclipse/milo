@@ -314,6 +314,8 @@ public class OpcUaSubscription implements UaSubscription {
      * @return a {@link CompletableFuture} that completes when the transfer is done.
      */
     CompletableFuture<Void> transferMonitoredItems(UaSubscription subscription, ItemTransferredCallback callback) {
+        // TODO this should probably just create a list of TransferMonitoredItemsRequest and call the overload
+
         return notificationSemaphore.acquire().thenAccept(permit -> {
             try {
                 ImmutableList<UaMonitoredItem> monitoredItems = subscription.getMonitoredItems();
@@ -356,17 +358,15 @@ public class OpcUaSubscription implements UaSubscription {
      * This subscription shall already have been transferred to this client's session via the Transfer Subscription
      * service.
      *
-     * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s
+     * @param itemsToTransfer a list of {@link TransferMonitoredItemsRequest}s.
      * @return a {@link TransferMonitoredItemsResponse} that includes a list of the {@link UaMonitoredItem}s
      * and a list of the {@link StatusCode}s for each modify result.
      */
     CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
-        List<TransferMonitoredItemsRequest> itemsToTransfer,
-        UInteger nextSequenceNumber
+        List<TransferMonitoredItemsRequest> itemsToTransfer
     ) {
 
         return notificationSemaphore.acquire().thenCompose(permit -> {
-            setLastSequenceNumber(nextSequenceNumber.longValue());
             Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
             List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
 

@@ -392,7 +392,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         UInteger maxNotificationsPerPublish,
         boolean publishingEnabled,
         UByte priority,
-        List<TransferMonitoredItemsRequest> itemsToTransfer) {
+        List<TransferMonitoredItemsRequest> itemsToTransfer
+    ) {
 
         OpcUaSubscription subscription = new OpcUaSubscription(
             client,
@@ -405,12 +406,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             priority
         );
 
+        // Set the last sequence number so when the first PublishResponse is
+        // received we don't immediately try to call Republish for all past
+        // notifications.
+        subscription.setLastSequenceNumber(nextSequenceNumber.longValue() - 1L);
+
         subscription.setRequestedPublishingInterval(requestedPublishingInterval);
         subscription.setRequestedLifetimeCount(requestedLifetimeCount);
         subscription.setRequestedMaxKeepAliveCount(requestedMaxKeepAliveCount);
 
         return subscription
-            .transferMonitoredItems(itemsToTransfer, nextSequenceNumber)
+            .transferMonitoredItems(itemsToTransfer)
             .thenApply(subResponse -> {
                 subscriptions.put(subscription.getSubscriptionId(), subscription);
                 maybeSendPublishRequests();
