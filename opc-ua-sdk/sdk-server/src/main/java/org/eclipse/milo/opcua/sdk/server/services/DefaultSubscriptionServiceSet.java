@@ -113,6 +113,8 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
                         subscription.setSubscriptionManager(session.getSubscriptionManager());
                         subscriptionManager.addSubscription(subscription);
 
+                        subscription.getMonitoredItems().values().forEach(item -> item.setSession(session));
+
                         availableSequenceNumbers = subscription.getAvailableSequenceNumbers();
 
                         if (request.getSendInitialValues()) {

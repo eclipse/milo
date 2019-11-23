@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -148,17 +149,29 @@ public class SubscriptionModel extends AbstractLifecycle {
 
         @Override
         public void run() {
-            List<PendingRead> pending = items.stream()
-                .map(item -> new PendingRead(item.getReadValueId()))
-                .collect(Collectors.toList());
+            if (cancelled) return;
 
-            List<ReadValueId> ids = pending.stream()
-                .map(PendingRead::getInput)
-                .collect(Collectors.toList());
+            CompletableFuture<List<DataValue>> future = GroupMapCollate.groupMapCollate(
+                items,
+                MonitoredItem::getSession,
+                session -> sessionItems -> {
+                    List<PendingRead> pending = sessionItems.stream()
+                        .map(item -> new PendingRead(item.getReadValueId()))
+                        .collect(Collectors.toList());
 
-            ReadContext context = new ReadContext(server, null);
+                    List<ReadValueId> ids = pending.stream()
+                        .map(PendingRead::getInput)
+                        .collect(Collectors.toList());
 
-            context.getFuture().thenAcceptAsync(values -> {
+                    ReadContext context = new ReadContext(server, session);
+
+                    attributeServices.read(context, 0d, TimestampsToReturn.Both, ids);
+
+                    return context.getFuture();
+                }
+            );
+
+            future.thenAcceptAsync(values -> {
                 Iterator<DataItem> ii = items.iterator();
                 Iterator<DataValue> vi = values.iterator();
 
@@ -183,8 +196,6 @@ public class SubscriptionModel extends AbstractLifecycle {
                     scheduler.schedule(this, samplingInterval, TimeUnit.MILLISECONDS);
                 }
             }, executor);
-
-            executor.execute(() -> attributeServices.read(context, 0d, TimestampsToReturn.Both, ids));
         }
 
     }

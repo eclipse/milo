@@ -142,12 +142,13 @@ public abstract class BaseMonitoredItem<T> implements MonitoredItem {
         }
     }
 
-    public Session getSession() {
-        return session;
-    }
-
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    @Override
+    public Session getSession() {
+        return session;
     }
 
     @Override
