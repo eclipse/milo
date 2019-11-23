@@ -10,12 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
-import java.util.Map;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+
+import javax.annotation.Nullable;
+import java.util.Map;
 
 public interface DataTypeDictionary<T extends DataTypeCodec> {
 
@@ -89,19 +89,31 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      */
     Map<NodeId, T> getCodecsByDataTypeId();
 
+    /**
+     * @param description the codec description.
+     * @return the {@link DataTypeCodec} registered for {@code description}, or {@code null} if there isn't one.
+     */
     @Nullable
     default T getCodecByDescription(String description) {
         return getCodecsByDescription().get(description);
     }
 
+    /**
+     * @param nodeId the codec encoding {@link NodeId}.
+     * @return the {@link DataTypeCodec} registered for {@code nodeId}, or {@code null} if there isn't one.
+     */
     @Nullable
     default T getCodecByEncodingId(NodeId nodeId) {
         return getCodecsByEncodingId().get(nodeId);
     }
 
+    /**
+     * @param dataTypeId the codec datatype {@link NodeId}.
+     * @return the {@link DataTypeCodec} registered for {@code dataTypeId}, or {@code null} if there isn't one.
+     */
     @Nullable
-    default T getCodecByDataTypeId(NodeId nodeId) {
-        return getCodecsByDataTypeId().get(nodeId);
+    default T getCodecByDataTypeId(NodeId dataTypeId) {
+        return getCodecsByDataTypeId().get(dataTypeId);
     }
 
 }
