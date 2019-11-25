@@ -65,27 +65,27 @@ public class BsdGenerator {
     private static TypeDescription createTypeDescription() {
         StructuredType typeDescription = new StructuredType();
 
-        typeDescription.setName("MyStruct");
+        typeDescription.setName("CustomDataType");
 
         FieldType fooField = new FieldType();
         fooField.setName("foo");
         fooField.setTypeName(new QName(
             Namespaces.OPC_UA_BSD,
-            "Int32"
+            "String"
         ));
 
         FieldType barField = new FieldType();
         barField.setName("bar");
         barField.setTypeName(new QName(
             Namespaces.OPC_UA_BSD,
-            "String"
+            "UInt32"
         ));
 
         FieldType bazField = new FieldType();
         bazField.setName("baz");
         bazField.setTypeName(new QName(
-            Namespaces.OPC_UA,
-            "StatusCode"
+            Namespaces.OPC_UA_BSD,
+            "Boolean"
         ));
 
         typeDescription.getField().add(fooField);
