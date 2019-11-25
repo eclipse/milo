@@ -12,7 +12,6 @@ package org.eclipse.milo.examples.server;
 
 import java.lang.reflect.Array;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -23,14 +22,15 @@ import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.BinaryDataTypeDictionaryManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -52,7 +52,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.future.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,17 +123,23 @@ public class ExampleNamespace extends ManagedNamespace {
 
     private final Random random = new Random();
 
+    private final BinaryDataTypeDictionaryManager dictionaryManager;
+
     private final SubscriptionModel subscriptionModel;
 
     ExampleNamespace(OpcUaServer server) {
         super(server, NAMESPACE_URI);
 
         subscriptionModel = new SubscriptionModel(server, this);
+
+        dictionaryManager = new BinaryDataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
     }
 
     @Override
     protected void onStartup() {
         super.onStartup();
+
+        dictionaryManager.startup();
 
         // Create a "HelloWorld" folder and add it to the node manager
         NodeId folderNodeId = newNodeId("HelloWorld");
@@ -157,6 +167,8 @@ public class ExampleNamespace extends ManagedNamespace {
         addSqrtMethod(folderNode);
 
         addGenerateEventMethod(folderNode);
+
+        registerCustomDataType();
 
         addCustomDataTypeVariable(folderNode);
 
@@ -198,6 +210,13 @@ public class ExampleNamespace extends ManagedNamespace {
                 }
             }, 0, 2, TimeUnit.SECONDS);
         }
+    }
+
+    @Override
+    protected void onShutdown() {
+        dictionaryManager.shutdown();
+
+        super.onShutdown();
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {
@@ -660,53 +679,66 @@ public class ExampleNamespace extends ManagedNamespace {
         }
     }
 
-    private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
-        // add a custom DataTypeNode as a subtype of the built-in Structure DataTypeNode
+    private void registerCustomDataType() {
         NodeId dataTypeId = newNodeId("DataType.CustomDataType");
-
-        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
-            getNodeContext(),
-            dataTypeId,
-            newQualifiedName("CustomDataType"),
-            LocalizedText.english("CustomDataType"),
-            LocalizedText.english("CustomDataType"),
-            uint(0),
-            uint(0),
-            false
-        );
-
-        getNodeManager().addNode(dataTypeNode);
-
-        // Inverse ref to Structure
-        dataTypeNode.addReference(new Reference(
-            dataTypeId,
-            Identifiers.HasSubtype,
-            Identifiers.Structure.expanded(),
-            false
-        ));
-
-        // Forward ref from Structure
-        Optional<UaDataTypeNode> structureDataTypeNode = getNodeManager()
-            .getNode(Identifiers.Structure)
-            .map(UaDataTypeNode.class::cast);
-
-        structureDataTypeNode.ifPresent(node ->
-            node.addReference(new Reference(
-                node.getNodeId(),
-                Identifiers.HasSubtype,
-                dataTypeId.expanded(),
-                true
-            ))
-        );
-
-        // TODO this should probably get a node and a HasEncoding reference from dataTypeNode...
         NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
 
-        // Register codec with the server DataTypeManager instance
-        getServer().getDataTypeManager().registerCodec(
-            binaryEncodingId,
-            new CustomDataType.Codec().asBinaryCodec()
+        dictionaryManager.registerStructureCodec(
+            new CustomDataType.Codec().asBinaryCodec(),
+            "CustomDataType",
+            dataTypeId,
+            binaryEncodingId
         );
+
+        StructureField[] fields = new StructureField[]{
+            new StructureField(
+                "foo",
+                LocalizedText.NULL_VALUE,
+                Identifiers.String,
+                ValueRanks.Scalar,
+                null,
+                getServer().getConfig().getLimits().getMaxStringLength(),
+                false
+            ),
+            new StructureField(
+                "bar",
+                LocalizedText.NULL_VALUE,
+                Identifiers.UInt32,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            ),
+            new StructureField(
+                "baz",
+                LocalizedText.NULL_VALUE,
+                Identifiers.Boolean,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            )
+        };
+
+        StructureDefinition definition = new StructureDefinition(
+            binaryEncodingId,
+            Identifiers.Structure,
+            StructureType.Structure,
+            fields
+        );
+
+        StructureDescription description = new StructureDescription(
+            dataTypeId,
+            new QualifiedName(getNamespaceIndex(), "CustomDataType"),
+            definition
+        );
+
+        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+    }
+
+    private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
+        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
+        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
 
         UaVariableNode customDataTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomDataTypeVariable"))
