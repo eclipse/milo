@@ -10,14 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
+import javax.xml.bind.JAXBException;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
+import org.eclipse.milo.opcua.binaryschema.generator.BsdGenerator;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
@@ -41,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BinaryDataTypeDictionaryManager implements Lifecycle {
@@ -101,12 +106,22 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             // TODO generate BSD file / read from cached BSD file
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                FileInputStream fis = new FileInputStream(new File("/Users/kevin/Desktop/bsd-test.xml"));
 
-                ByteStreams.copy(fis, baos);
+                BsdGenerator.writeBsdXml(
+                    namespaceUri,
+                    newArrayList(structureDescriptions.values()),
+                    baos
+                );
+
+                Path tempFilePath = Files.createTempFile(namespaceUri, ".bsd.xml");
+
+                try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
+                    ByteStreams.copy(new ByteArrayInputStream(baos.toByteArray()), fos);
+                    System.out.println("temp file: " + tempFilePath);
+                }
 
                 return new DataValue(new Variant(ByteString.of(baos.toByteArray())));
-            } catch (IOException e) {
+            } catch (IOException | JAXBException e) {
                 return new DataValue(new Variant(ByteString.NULL_VALUE));
             }
         }));

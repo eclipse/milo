@@ -12,22 +12,40 @@ package org.eclipse.milo.opcua.binaryschema.generator;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.DataTypeDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureField;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.opcfoundation.opcua.binaryschema.ByteOrder;
+import org.opcfoundation.opcua.binaryschema.EnumeratedType;
 import org.opcfoundation.opcua.binaryschema.FieldType;
 import org.opcfoundation.opcua.binaryschema.ImportDirective;
 import org.opcfoundation.opcua.binaryschema.ObjectFactory;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
-import org.opcfoundation.opcua.binaryschema.TypeDescription;
 import org.opcfoundation.opcua.binaryschema.TypeDictionary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toMap;
 
 public class BsdGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BsdGenerator.class);
 
     public static void main(String[] args) throws Exception {
         FileOutputStream fos = new FileOutputStream(new File("/Users/kevin/Desktop/bsd-test.xml"));
@@ -49,7 +67,7 @@ public class BsdGenerator {
         uaImport.setLocation(Namespaces.OPC_UA);
         typeDictionary.getImport().add(uaImport);
 
-        typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(createTypeDescription());
+        typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(createStructuredType(null));
 
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -62,37 +80,127 @@ public class BsdGenerator {
         marshaller.marshal(typeDictionary, fos);
     }
 
-    private static TypeDescription createTypeDescription() {
-        StructuredType typeDescription = new StructuredType();
+    public static void writeBsdXml(
+        String namespaceUri,
+        List<DataTypeDescription> dataTypeDescriptions,
+        OutputStream outputStream
+    ) throws JAXBException {
 
-        typeDescription.setName("CustomDataType");
+        TypeDictionary typeDictionary = new TypeDictionary();
+        typeDictionary.setDefaultByteOrder(ByteOrder.LITTLE_ENDIAN);
+        typeDictionary.setTargetNamespace(namespaceUri);
 
-        FieldType fooField = new FieldType();
-        fooField.setName("foo");
-        fooField.setTypeName(new QName(
-            Namespaces.OPC_UA_BSD,
-            "String"
-        ));
+        Map<NodeId, DataTypeDescription> byDataTypeId = dataTypeDescriptions.stream()
+            .collect(toMap(DataTypeDescription::getDataTypeId, Function.identity()));
 
-        FieldType barField = new FieldType();
-        barField.setName("bar");
-        barField.setTypeName(new QName(
-            Namespaces.OPC_UA_BSD,
-            "UInt32"
-        ));
+        byDataTypeId.forEach((dataTypeId, description) -> {
+            if (description instanceof EnumDescription) {
+                try {
+                    EnumeratedType enumeratedType = createEnumeratedType((EnumDescription) description);
 
-        FieldType bazField = new FieldType();
-        bazField.setName("baz");
-        bazField.setTypeName(new QName(
-            Namespaces.OPC_UA_BSD,
-            "Boolean"
-        ));
+                    typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(enumeratedType);
+                } catch (Throwable t) {
+                    LOGGER.warn("Failed to create EnumeratedType for \"" + description.getName() + "\"", t);
+                }
+            } else if (description instanceof StructureDescription) {
+                try {
+                    StructuredType structuredType = createStructuredType((StructureDescription) description);
 
-        typeDescription.getField().add(fooField);
-        typeDescription.getField().add(barField);
-        typeDescription.getField().add(bazField);
+                    typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(structuredType);
+                } catch (Throwable t) {
+                    LOGGER.warn("Failed to create StructuredType for \"" + description.getName() + "\"", t);
+                }
+            }
+        });
 
-        return typeDescription;
+        JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
+
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        try {
+            marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new MyNamespacePrefixMapper());
+        } catch (PropertyException e) {
+            LOGGER.debug("NamespacePrefixMapper not supported", e);
+        }
+
+        marshaller.marshal(typeDictionary, outputStream);
+    }
+
+    private static StructuredType createStructuredType(StructureDescription description) {
+        QualifiedName name = description.getName();
+        NodeId dataTypeId = description.getDataTypeId();
+        StructureDefinition structureDefinition = description.getStructureDefinition();
+
+        StructuredType structuredType = new StructuredType();
+        structuredType.setName(name.getName());
+
+        for (StructureField field : structureDefinition.getFields()) {
+            String fieldName = field.getName();
+            NodeId fieldDataTypeId = field.getDataType();
+
+            // TODO Need to know the corresponding namespace URI for field datatype:
+            //  DataTypeNode --HasEncoding-> DataTypeEncodingNode --HasDescription->
+            //  DataTypeDescriptionNode --ComponentOf-> DataTypeDictionaryNode --HasProperty-> NamespaceUri
+
+            FieldType fieldType = new FieldType();
+            fieldType.setName(fieldName);
+            fieldType.setTypeName(new QName("TODO", "TODO")); // TODO
+
+            if (field.getValueRank() >= 1) {
+                // Possibly an array... specify a LengthField
+                FieldType lengthFieldType = new FieldType();
+                lengthFieldType.setName(fieldName + "Length");
+                lengthFieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "UInt32"));
+
+                structuredType.getField().add(lengthFieldType);
+
+                fieldType.setLengthField(fieldName + "Length");
+            } else if (field.getValueRank() != -1) {
+                throw new IllegalArgumentException(
+                    "cannot encode field \"" + fieldName + "\" " +
+                        "with ValueRank: %s" + field.getValueRank()
+                );
+            }
+
+            structuredType.getField().add(fieldType);
+        }
+
+        return structuredType;
+//        StructuredType typeDescription = new StructuredType();
+//
+//        typeDescription.setName("CustomDataType");
+//
+//        FieldType fooField = new FieldType();
+//        fooField.setName("foo");
+//        fooField.setTypeName(new QName(
+//            Namespaces.OPC_UA_BSD,
+//            "String"
+//        ));
+//
+//        FieldType barField = new FieldType();
+//        barField.setName("bar");
+//        barField.setTypeName(new QName(
+//            Namespaces.OPC_UA_BSD,
+//            "UInt32"
+//        ));
+//
+//        FieldType bazField = new FieldType();
+//        bazField.setName("baz");
+//        bazField.setTypeName(new QName(
+//            Namespaces.OPC_UA_BSD,
+//            "Boolean"
+//        ));
+//
+//        typeDescription.getField().add(fooField);
+//        typeDescription.getField().add(barField);
+//        typeDescription.getField().add(bazField);
+//
+//        return typeDescription;
+    }
+
+    private static EnumeratedType createEnumeratedType(EnumDescription description) {
+
+        return null;
     }
 
     private static class MyNamespacePrefixMapper extends NamespacePrefixMapper {
