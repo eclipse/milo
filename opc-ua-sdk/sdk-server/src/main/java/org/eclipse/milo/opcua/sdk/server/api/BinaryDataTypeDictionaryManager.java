@@ -10,10 +10,16 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.google.common.io.ByteStreams;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.DataTypeEncodingTypeNode;
@@ -21,9 +27,11 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.DataTypeDescripti
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.DataTypeDictionaryTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -47,6 +55,16 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
     private final UaNodeContext context;
     private final String namespaceUri;
 
+    /**
+     * Create a BinaryDataTypeDictionaryManager for an {@link OpcUaBinaryDataTypeDictionary} in {@code namespaceUri}.
+     * <p>
+     * Note that the namespace URI is that of the dictionary, and is not necessarily the same as the namespace the
+     * Nodes created by the manager will reside in, i.e. datatype dictionaries are namespaced independently from the
+     * namespaces server Nodes reside in.
+     *
+     * @param context      a {@link UaNodeContext}. Nodes will be created and added using this context.
+     * @param namespaceUri the namespace URI of the dictionary.
+     */
     public BinaryDataTypeDictionaryManager(UaNodeContext context, String namespaceUri) {
         this.context = context;
         this.namespaceUri = namespaceUri;
@@ -69,28 +87,42 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         // Add a DataTypeDictionary Node...
         dictionaryNode = new DataTypeDictionaryTypeNode(
             getNodeContext(),
-            newNodeId("DataTypeDictionary:" + namespaceUri),
-            newQualifiedName("DataTypeDictionary:" + namespaceUri),
-            LocalizedText.english("DataTypeDictionary:" + namespaceUri),
-            LocalizedText.NULL_VALUE,
+            newNodeId(namespaceUri),
+            newQualifiedName(namespaceUri),
+            LocalizedText.english(namespaceUri),
+            LocalizedText.english("DataTypeDictionary for " + namespaceUri),
             uint(0),
             uint(0)
         );
 
         dictionaryNode.setNamespaceUri(namespaceUri);
 
+        dictionaryNode.getFilterChain().addLast(AttributeFilters.getValue(context -> {
+            // TODO generate BSD file / read from cached BSD file
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                FileInputStream fis = new FileInputStream(new File("/Users/kevin/Desktop/bsd-test.xml"));
+
+                ByteStreams.copy(fis, baos);
+
+                return new DataValue(new Variant(ByteString.of(baos.toByteArray())));
+            } catch (IOException e) {
+                return new DataValue(new Variant(ByteString.NULL_VALUE));
+            }
+        }));
+
         dictionaryNode.addReference(new Reference(
             dictionaryNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             Identifiers.DataTypeDictionaryType.expanded(),
-            Reference.Direction.FORWARD
+            Direction.FORWARD
         ));
 
         dictionaryNode.addReference(new Reference(
             dictionaryNode.getNodeId(),
             Identifiers.HasComponent,
             Identifiers.OPCBinarySchema_TypeSystem.expanded(),
-            Reference.Direction.INVERSE
+            Direction.INVERSE
         ));
 
         getNodeManager().addNode(dictionaryNode);
@@ -133,7 +165,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             dataTypeId,
             Identifiers.HasSubtype,
             Identifiers.Structure.expanded(),
-            Reference.Direction.INVERSE
+            Direction.INVERSE
         ));
 
         getNodeManager().addNode(dataTypeNode);
@@ -165,14 +197,14 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             descriptionNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             Identifiers.DataTypeDescriptionType.expanded(),
-            Reference.Direction.FORWARD
+            Direction.FORWARD
         ));
 
         descriptionNode.addReference(new Reference(
             descriptionNode.getNodeId(),
             Identifiers.HasComponent,
             dictionaryNode.getNodeId().expanded(),
-            Reference.Direction.INVERSE
+            Direction.INVERSE
         ));
 
         getNodeManager().addNode(descriptionNode);
@@ -194,21 +226,21 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             dataTypeEncodingNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             Identifiers.DataTypeEncodingType.expanded(),
-            Reference.Direction.FORWARD
+            Direction.FORWARD
         ));
 
         dataTypeEncodingNode.addReference(new Reference(
             dataTypeEncodingNode.getNodeId(),
             Identifiers.HasDescription,
             descriptionNode.getNodeId().expanded(),
-            Reference.Direction.FORWARD
+            Direction.FORWARD
         ));
 
         dataTypeEncodingNode.addReference(new Reference(
             dataTypeEncodingNode.getNodeId(),
             Identifiers.HasEncoding,
             description.getDataTypeId().expanded(),
-            Reference.Direction.INVERSE
+            Direction.INVERSE
         ));
 
         getNodeManager().addNode(dataTypeEncodingNode);
