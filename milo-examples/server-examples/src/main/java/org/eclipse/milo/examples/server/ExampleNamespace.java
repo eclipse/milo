@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.examples.server.types.CustomDataType;
+import org.eclipse.milo.examples.server.types.CustomEnumType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
@@ -40,6 +41,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -54,6 +56,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.future.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumField;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureField;
@@ -168,9 +173,11 @@ public class ExampleNamespace extends ManagedNamespace {
 
         addGenerateEventMethod(folderNode);
 
-        registerCustomDataType();
+        registerCustomEnumType();
+        registerCustomStructType();
 
-        addCustomDataTypeVariable(folderNode);
+        addCustomEnumVariable(folderNode);
+        addCustomStructVariable(folderNode);
 
         addCustomObjectTypeAndInstance(folderNode);
 
@@ -679,9 +686,51 @@ public class ExampleNamespace extends ManagedNamespace {
         }
     }
 
-    private void registerCustomDataType() {
+    private void registerCustomEnumType() {
+        NodeId dataTypeId = newNodeId("DataType.CustomEnumType");
+
+        dictionaryManager.registerEnumCodec(
+            new CustomEnumType.Codec().asBinaryCodec(),
+            "CustomEnumType",
+            dataTypeId
+        );
+
+        EnumField[] fields = new EnumField[]{
+            new EnumField(
+                0L,
+                LocalizedText.english("Field0"),
+                LocalizedText.NULL_VALUE,
+                "Field0"
+            ),
+            new EnumField(
+                1L,
+                LocalizedText.english("Field1"),
+                LocalizedText.NULL_VALUE,
+                "Field1"
+            ),
+            new EnumField(
+                2L,
+                LocalizedText.english("Field2"),
+                LocalizedText.NULL_VALUE,
+                "Field2"
+            )
+        };
+
+        EnumDefinition definition = new EnumDefinition(fields);
+
+        EnumDescription description = new EnumDescription(
+            dataTypeId,
+            new QualifiedName(getNamespaceIndex(), "CustomEnumType"),
+            definition,
+            ubyte(BuiltinDataType.Int32.getTypeId())
+        );
+
+        dictionaryManager.registerEnumDescription(description);
+    }
+
+    private void registerCustomStructType() {
         // Assign a NodeId for the DataType and encoding Nodes.
-        
+
         NodeId dataTypeId = newNodeId("DataType.CustomDataType");
         NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
 
@@ -752,21 +801,44 @@ public class ExampleNamespace extends ManagedNamespace {
         dictionaryManager.registerStructureDescription(description, binaryEncodingId);
     }
 
-    private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
-        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
-        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
+    private void addCustomEnumVariable(UaFolderNode rootFolder) {
+        NodeId dataTypeId = newNodeId("DataType.CustomEnumType");
 
-        UaVariableNode customDataTypeVariable = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("HelloWorld/CustomDataTypeVariable"))
+        UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
             .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(newQualifiedName("CustomDataTypeVariable"))
-            .setDisplayName(LocalizedText.english("CustomDataTypeVariable"))
+            .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
             .setDataType(dataTypeId)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
 
-        getNodeManager().addNode(customDataTypeVariable);
+        customEnumTypeVariable.setValue(new DataValue(new Variant(CustomEnumType.Field1)));
+
+        getNodeManager().addNode(customEnumTypeVariable);
+
+        customEnumTypeVariable.addReference(new Reference(
+            customEnumTypeVariable.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            false
+        ));
+    }
+
+    private void addCustomStructVariable(UaFolderNode rootFolder) {
+        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
+        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
+
+        UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
+            .setDataType(dataTypeId)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
 
         CustomDataType value = new CustomDataType(
             "foo",
@@ -780,12 +852,12 @@ public class ExampleNamespace extends ManagedNamespace {
             binaryEncodingId
         );
 
-        customDataTypeVariable.setValue(new DataValue(new Variant(xo)));
+        customStructTypeVariable.setValue(new DataValue(new Variant(xo)));
 
-        rootFolder.addOrganizes(customDataTypeVariable);
+        getNodeManager().addNode(customStructTypeVariable);
 
-        customDataTypeVariable.addReference(new Reference(
-            customDataTypeVariable.getNodeId(),
+        customStructTypeVariable.addReference(new Reference(
+            customStructTypeVariable.getNodeId(),
             Identifiers.Organizes,
             rootFolder.getNodeId().expanded(),
             false

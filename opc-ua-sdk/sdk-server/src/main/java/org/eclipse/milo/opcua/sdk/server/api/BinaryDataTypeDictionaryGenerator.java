@@ -177,6 +177,7 @@ class BinaryDataTypeDictionaryGenerator {
 
         EnumeratedType enumeratedType = new EnumeratedType();
         enumeratedType.setName(name.getName());
+        enumeratedType.setLengthInBits(32);
 
         for (EnumField field : enumDefinition.getFields()) {
             EnumeratedValue enumeratedValue = new EnumeratedValue();
