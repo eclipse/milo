@@ -38,9 +38,6 @@ public class CustomDataType implements UaStructure {
         "DataType.CustomDataType.BinaryEncoding"
     ));
 
-    // XML encoding not supported
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.NULL_VALUE;
-
     private final String foo;
     private final UInteger bar;
     private final boolean baz;
@@ -79,7 +76,8 @@ public class CustomDataType implements UaStructure {
 
     @Override
     public ExpandedNodeId getXmlEncodingId() {
-        return XML_ENCODING_ID;
+        // XML encoding not supported
+        return ExpandedNodeId.NULL_VALUE;
     }
 
     @Override

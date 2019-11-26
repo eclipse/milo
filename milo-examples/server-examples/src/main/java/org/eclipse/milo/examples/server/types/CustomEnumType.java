@@ -57,10 +57,6 @@ public enum CustomEnumType implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return TYPE_ID;
-    }
-
     public static class Codec extends GenericDataTypeCodec<CustomEnumType> {
         @Override
         public Class<CustomEnumType> getType() {
