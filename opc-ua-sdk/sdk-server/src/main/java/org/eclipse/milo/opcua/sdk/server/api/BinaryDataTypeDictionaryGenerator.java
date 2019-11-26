@@ -22,19 +22,23 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataTypeDictionaryType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumField;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureField;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.opcfoundation.opcua.binaryschema.ByteOrder;
 import org.opcfoundation.opcua.binaryschema.EnumeratedType;
+import org.opcfoundation.opcua.binaryschema.EnumeratedValue;
 import org.opcfoundation.opcua.binaryschema.FieldType;
 import org.opcfoundation.opcua.binaryschema.ImportDirective;
 import org.opcfoundation.opcua.binaryschema.ObjectFactory;
@@ -117,6 +121,7 @@ class BinaryDataTypeDictionaryGenerator {
     private final String namespaceUri;
     private final Function<NodeId, FullyQualifiedDataType> dataTypeLookup;
 
+    @VisibleForTesting
     BinaryDataTypeDictionaryGenerator(
         String namespaceUri,
         Function<NodeId, FullyQualifiedDataType> dataTypeLookup
@@ -127,7 +132,9 @@ class BinaryDataTypeDictionaryGenerator {
     }
 
     void addEnumDescription(EnumDescription description) {
+        EnumeratedType enumeratedType = createEnumeratedType(description);
 
+        enumeratedTypes.add(enumeratedType);
     }
 
     void addStructureDescription(StructureDescription description) {
@@ -144,22 +151,44 @@ class BinaryDataTypeDictionaryGenerator {
         enumeratedTypes.forEach(t -> typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(t));
         structuredTypes.forEach(t -> typeDictionary.getOpaqueTypeOrEnumeratedTypeOrStructuredType().add(t));
 
-        ImportDirective opcImport = new ImportDirective();
-        opcImport.setNamespace("opc");
-        opcImport.setLocation("http://opcfoundation.org/BinarySchema/");
-        typeDictionary.getImport().add(opcImport);
+        namespaces.forEach(namespace -> {
+            ImportDirective importDirective = new ImportDirective();
+            importDirective.setNamespace(namespace);
+            typeDictionary.getImport().add(importDirective);
+        });
 
         JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
 
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         try {
-            marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new OpcUaNamespacePrefixMapper());
+            marshaller.setProperty(
+                "com.sun.xml.bind.namespacePrefixMapper",
+                new OpcUaNamespacePrefixMapper()
+            );
         } catch (PropertyException e) {
             logger.debug("NamespacePrefixMapper not supported", e);
         }
 
         marshaller.marshal(typeDictionary, outputStream);
+    }
+
+    private EnumeratedType createEnumeratedType(EnumDescription description) {
+        QualifiedName name = description.getName();
+        EnumDefinition enumDefinition = description.getEnumDefinition();
+
+        EnumeratedType enumeratedType = new EnumeratedType();
+        enumeratedType.setName(name.getName());
+
+        for (EnumField field : enumDefinition.getFields()) {
+            EnumeratedValue enumeratedValue = new EnumeratedValue();
+            enumeratedValue.setName(field.getName());
+            enumeratedValue.setValue(field.getValue().intValue());
+
+            enumeratedType.getEnumeratedValue().add(enumeratedValue);
+        }
+
+        return enumeratedType;
     }
 
     private StructuredType createStructuredType(StructureDescription description) {
