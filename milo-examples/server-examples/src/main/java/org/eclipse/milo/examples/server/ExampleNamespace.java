@@ -680,8 +680,17 @@ public class ExampleNamespace extends ManagedNamespace {
     }
 
     private void registerCustomDataType() {
+        // Assign a NodeId for the DataType and encoding Nodes.
+        
         NodeId dataTypeId = newNodeId("DataType.CustomDataType");
         NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
+
+        // At a minimum, custom types must have their codec registered.
+        // If clients don't need to dynamically discover types and will
+        // register the codecs on their own then this is all that is
+        // necessary.
+        // The dictionary manager will add a corresponding DataType Node to
+        // the AddressSpace.
 
         dictionaryManager.registerStructureCodec(
             new CustomDataType.Codec().asBinaryCodec(),
@@ -689,6 +698,13 @@ public class ExampleNamespace extends ManagedNamespace {
             dataTypeId,
             binaryEncodingId
         );
+
+        // If the custom type also needs to be discoverable by clients then it
+        // needs an entry in a DataTypeDictionary that can be read by those
+        // clients. We describe the type using StructureDefinition or
+        // EnumDefinition and register it with the dictionary manager.
+        // The dictionary manager will add all the necessary nodes to the
+        // AddressSpace and generate the required dictionary bsd.xml file.
 
         StructureField[] fields = new StructureField[]{
             new StructureField(

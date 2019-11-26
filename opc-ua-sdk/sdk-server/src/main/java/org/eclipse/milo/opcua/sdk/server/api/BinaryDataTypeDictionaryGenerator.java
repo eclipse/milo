@@ -22,7 +22,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataTypeDictionaryType;
@@ -121,8 +120,7 @@ class BinaryDataTypeDictionaryGenerator {
     private final String namespaceUri;
     private final Function<NodeId, FullyQualifiedDataType> dataTypeLookup;
 
-    @VisibleForTesting
-    BinaryDataTypeDictionaryGenerator(
+    private BinaryDataTypeDictionaryGenerator(
         String namespaceUri,
         Function<NodeId, FullyQualifiedDataType> dataTypeLookup
     ) {

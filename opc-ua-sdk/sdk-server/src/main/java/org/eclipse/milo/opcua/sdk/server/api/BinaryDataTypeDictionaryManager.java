@@ -156,6 +156,20 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         return dictionary;
     }
 
+    public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId dataTypeId) {
+        dictionary.registerEnumCodec(codec, description, dataTypeId);
+
+        // TODO
+    }
+
+    public void registerEnumDescription(EnumDescription description) {
+        enumDescriptions.put(description.getDataTypeId(), description);
+
+        // TODO
+
+        dictionaryFile.reset();
+    }
+
     public void registerStructureCodec(
         OpcUaBinaryDataTypeCodec<?> codec,
         String description,
@@ -296,8 +310,21 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             getNodeContext().getServer().getAddressSpaceManager()
         );
 
-        enumDescriptions.values().forEach(generator::addEnumDescription);
-        structureDescriptions.values().forEach(generator::addStructureDescription);
+        enumDescriptions.values().forEach(description -> {
+            try {
+                generator.addEnumDescription(description);
+            } catch (Throwable t) {
+                logger.warn("Failed to add EnumDescription: " + description.getName(), t);
+            }
+        });
+
+        structureDescriptions.values().forEach(description -> {
+            try {
+                generator.addStructureDescription(description);
+            } catch (Throwable t) {
+                logger.warn("Failed to add StructureDescription: " + description.getName(), t);
+            }
+        });
 
         generator.writeToOutputStream(outputStream);
     }
