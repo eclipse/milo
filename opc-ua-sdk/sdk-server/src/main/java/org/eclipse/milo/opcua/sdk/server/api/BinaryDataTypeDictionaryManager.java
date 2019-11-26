@@ -21,7 +21,6 @@ import javax.xml.bind.JAXBException;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
-import org.eclipse.milo.opcua.binaryschema.generator.BsdGenerator;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
@@ -45,7 +44,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BinaryDataTypeDictionaryManager implements Lifecycle {
@@ -107,11 +105,15 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                BsdGenerator.writeBsdXml(
+                BinaryDataTypeDictionaryGenerator generator = BinaryDataTypeDictionaryGenerator.newInstance(
                     namespaceUri,
-                    newArrayList(structureDescriptions.values()),
-                    baos
+                    getNodeContext().getServer().getAddressSpaceManager()
                 );
+
+                enumDescriptions.values().forEach(generator::addEnumDescription);
+                structureDescriptions.values().forEach(generator::addStructureDescription);
+
+                generator.writeToOutputStream(baos);
 
                 Path tempFilePath = Files.createTempFile(namespaceUri, ".bsd.xml");
 
