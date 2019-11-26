@@ -159,13 +159,36 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
     public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId dataTypeId) {
         dictionary.registerEnumCodec(codec, description, dataTypeId);
 
-        // TODO
+        // Add a custom DataTypeNode with a SubtypeOf reference to Enumeration
+
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
+            dataTypeId,
+            newQualifiedName(description),
+            LocalizedText.english(description),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
+        );
+
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            Identifiers.HasSubtype,
+            Identifiers.Enumeration.expanded(),
+            Direction.INVERSE
+        ));
+
+        getNodeManager().addNode(dataTypeNode);
+
+        // TODO figure out a way to not require re-registration every time...
+        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
     }
 
     public void registerEnumDescription(EnumDescription description) {
         enumDescriptions.put(description.getDataTypeId(), description);
 
-        // TODO
+        // Note: enumerations don't need DataTypeDescription or DataTypeEncoding nodes.
 
         dictionaryFile.reset();
     }
