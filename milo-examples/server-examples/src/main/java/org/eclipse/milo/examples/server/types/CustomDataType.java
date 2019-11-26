@@ -12,16 +12,34 @@ package org.eclipse.milo.examples.server.types;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class CustomDataType {
+public class CustomDataType implements UaStructure {
+
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse(String.format(
+        "nsu=%s;s=%s",
+        ExampleNamespace.NAMESPACE_URI,
+        "DataType.CustomDataType"
+    ));
+
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse(String.format(
+        "nsu=%s;s=%s",
+        ExampleNamespace.NAMESPACE_URI,
+        "DataType.CustomDataType.BinaryEncoding"
+    ));
+
+    // XML encoding not supported
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.NULL_VALUE;
 
     private final String foo;
     private final UInteger bar;
@@ -47,6 +65,21 @@ public class CustomDataType {
 
     public boolean isBaz() {
         return baz;
+    }
+
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
     }
 
     @Override

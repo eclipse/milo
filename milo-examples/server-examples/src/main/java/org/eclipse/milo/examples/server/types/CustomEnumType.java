@@ -12,17 +12,25 @@ package org.eclipse.milo.examples.server.types;
 
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum CustomEnumType implements UaEnumeration {
 
     Field0(0),
     Field1(1),
     Field2(2);
+
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse(String.format(
+        "nsu=%s;s=%s",
+        ExampleNamespace.NAMESPACE_URI,
+        "DataType.CustomEnumType"
+    ));
 
     private final int value;
 
@@ -47,6 +55,10 @@ public enum CustomEnumType implements UaEnumeration {
             default:
                 return null;
         }
+    }
+
+    public static ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
     public static class Codec extends GenericDataTypeCodec<CustomEnumType> {

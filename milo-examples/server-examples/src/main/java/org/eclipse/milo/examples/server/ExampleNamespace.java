@@ -72,7 +72,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class ExampleNamespace extends ManagedNamespace {
 
-    static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
+    public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
     private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
         {"Boolean", Identifiers.Boolean, new Variant(false)},
@@ -173,11 +173,19 @@ public class ExampleNamespace extends ManagedNamespace {
 
         addGenerateEventMethod(folderNode);
 
-        registerCustomEnumType();
-        registerCustomStructType();
+        try {
+            registerCustomEnumType();
+            addCustomEnumVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom enum type", e);
+        }
 
-        addCustomEnumVariable(folderNode);
-        addCustomStructVariable(folderNode);
+        try {
+            registerCustomStructType();
+            addCustomStructVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom struct type", e);
+        }
 
         addCustomObjectTypeAndInstance(folderNode);
 
@@ -686,8 +694,9 @@ public class ExampleNamespace extends ManagedNamespace {
         }
     }
 
-    private void registerCustomEnumType() {
-        NodeId dataTypeId = newNodeId("DataType.CustomEnumType");
+    private void registerCustomEnumType() throws Exception {
+        NodeId dataTypeId = CustomEnumType.TYPE_ID
+            .localOrThrow(getServer().getNamespaceTable());
 
         dictionaryManager.registerEnumCodec(
             new CustomEnumType.Codec().asBinaryCodec(),
@@ -728,11 +737,14 @@ public class ExampleNamespace extends ManagedNamespace {
         dictionaryManager.registerEnumDescription(description);
     }
 
-    private void registerCustomStructType() {
-        // Assign a NodeId for the DataType and encoding Nodes.
+    private void registerCustomStructType() throws Exception {
+        // Get the NodeId for the DataType and encoding Nodes.
 
-        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
-        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
+        NodeId dataTypeId = CustomDataType.TYPE_ID
+            .localOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomDataType.BINARY_ENCODING_ID
+            .localOrThrow(getServer().getNamespaceTable());
 
         // At a minimum, custom types must have their codec registered.
         // If clients don't need to dynamically discover types and will
@@ -801,8 +813,9 @@ public class ExampleNamespace extends ManagedNamespace {
         dictionaryManager.registerStructureDescription(description, binaryEncodingId);
     }
 
-    private void addCustomEnumVariable(UaFolderNode rootFolder) {
-        NodeId dataTypeId = newNodeId("DataType.CustomEnumType");
+    private void addCustomEnumVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomEnumType.TYPE_ID
+            .localOrThrow(getServer().getNamespaceTable());
 
         UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
@@ -826,9 +839,12 @@ public class ExampleNamespace extends ManagedNamespace {
         ));
     }
 
-    private void addCustomStructVariable(UaFolderNode rootFolder) {
-        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
-        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
+    private void addCustomStructVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomDataType.TYPE_ID
+            .localOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomDataType.BINARY_ENCODING_ID
+            .localOrThrow(getServer().getNamespaceTable());
 
         UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))

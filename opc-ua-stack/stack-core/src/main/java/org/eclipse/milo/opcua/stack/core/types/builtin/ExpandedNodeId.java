@@ -295,6 +295,22 @@ public final class ExpandedNodeId {
         }
     }
 
+    /**
+     * Like {@link #local(NamespaceTable)}, but throws if the node is not local or the namespace is not registered.
+     *
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return a local {@link NodeId}.
+     * @throws Exception if the node is not local or the namespace is not registered.
+     */
+    public NodeId localOrThrow(NamespaceTable namespaceTable) throws Exception {
+        if (isLocal()) {
+            return local(namespaceTable)
+                .orElseThrow(() -> new Exception("namespace not registered: " + namespaceUri));
+        } else {
+            throw new Exception("not a local node (serverIndex = " + serverIndex + ")");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
