@@ -217,7 +217,7 @@ class BinaryDataTypeDictionaryGenerator {
                 // Possibly an array... specify a LengthField
                 FieldType lengthFieldType = new FieldType();
                 lengthFieldType.setName(fieldName + "Length");
-                lengthFieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "UInt32"));
+                lengthFieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Int32"));
 
                 structuredType.getField().add(lengthFieldType);
 
