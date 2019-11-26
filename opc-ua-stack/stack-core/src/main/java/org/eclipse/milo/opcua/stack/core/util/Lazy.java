@@ -40,6 +40,10 @@ public final class Lazy<T> {
         }
     }
 
+    public synchronized void reset() {
+        value = null;
+    }
+
     private synchronized Object maybeCompute(Supplier<T> supplier) {
         if (value == null) {
             T supplied = supplier.get();

@@ -10,17 +10,19 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import com.google.common.collect.Maps;
-import com.google.common.io.ByteStreams;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
@@ -43,10 +45,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BinaryDataTypeDictionaryManager implements Lifecycle {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Lazy<File> dictionaryFile = new Lazy<>();
 
     private final Map<NodeId, EnumDescription> enumDescriptions = Maps.newConcurrentMap();
     private final Map<NodeId, StructureDescription> structureDescriptions = Maps.newConcurrentMap();
@@ -101,29 +110,20 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         dictionaryNode.setNamespaceUri(namespaceUri);
 
         dictionaryNode.getFilterChain().addLast(AttributeFilters.getValue(context -> {
-            // TODO generate BSD file / read from cached BSD file
             try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                File file = dictionaryFile.getOrCompute(this::writeDictionaryToFile);
+                assert file != null;
 
-                BinaryDataTypeDictionaryGenerator generator = BinaryDataTypeDictionaryGenerator.newInstance(
-                    namespaceUri,
-                    getNodeContext().getServer().getAddressSpaceManager()
-                );
+                try {
+                    byte[] bs = Files.readAllBytes(file.toPath());
+                    return new DataValue(new Variant(ByteString.of(bs)));
+                } catch (IOException e) {
+                    dictionaryFile.reset();
 
-                enumDescriptions.values().forEach(generator::addEnumDescription);
-                structureDescriptions.values().forEach(generator::addStructureDescription);
-
-                generator.writeToOutputStream(baos);
-
-                Path tempFilePath = Files.createTempFile(namespaceUri, ".bsd.xml");
-
-                try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
-                    ByteStreams.copy(new ByteArrayInputStream(baos.toByteArray()), fos);
-                    System.out.println("temp file: " + tempFilePath);
+                    byte[] bs = writeDictionaryToMemory();
+                    return new DataValue(new Variant(ByteString.of(bs)));
                 }
-
-                return new DataValue(new Variant(ByteString.of(baos.toByteArray())));
-            } catch (IOException | JAXBException e) {
+            } catch (Throwable t) {
                 return new DataValue(new Variant(ByteString.NULL_VALUE));
             }
         }));
@@ -261,6 +261,45 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         ));
 
         getNodeManager().addNode(dataTypeEncodingNode);
+
+        dictionaryFile.reset();
+    }
+
+    private File writeDictionaryToFile() {
+        try {
+            String encodedUri = URLEncoder.encode(namespaceUri, StandardCharsets.UTF_8.name());
+            Path tempFilePath = Files.createTempFile(encodedUri, ".bsd.xml");
+
+            try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
+                writeDictionaryToStream(fos);
+
+                logger.info("Wrote dictionary for '{}' to {}", namespaceUri, tempFilePath);
+            }
+
+            return tempFilePath.toFile();
+        } catch (IOException | JAXBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] writeDictionaryToMemory() throws JAXBException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        writeDictionaryToStream(baos);
+
+        return baos.toByteArray();
+    }
+
+    private void writeDictionaryToStream(OutputStream outputStream) throws JAXBException {
+        BinaryDataTypeDictionaryGenerator generator = BinaryDataTypeDictionaryGenerator.newInstance(
+            namespaceUri,
+            getNodeContext().getServer().getAddressSpaceManager()
+        );
+
+        enumDescriptions.values().forEach(generator::addEnumDescription);
+        structureDescriptions.values().forEach(generator::addStructureDescription);
+
+        generator.writeToOutputStream(outputStream);
     }
 
     private UShort getNamespaceIndex() {

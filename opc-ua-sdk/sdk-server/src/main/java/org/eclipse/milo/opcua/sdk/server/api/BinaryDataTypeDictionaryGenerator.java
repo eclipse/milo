@@ -214,7 +214,7 @@ class BinaryDataTypeDictionaryGenerator {
             fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
 
             if (field.getValueRank() >= 1) {
-                // Possibly an array... specify a LengthField
+                // Fixed-dimension array... specify a LengthField
                 FieldType lengthFieldType = new FieldType();
                 lengthFieldType.setName(fieldName + "Length");
                 lengthFieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Int32"));
@@ -223,6 +223,7 @@ class BinaryDataTypeDictionaryGenerator {
 
                 fieldType.setLengthField(fieldName + "Length");
             } else if (field.getValueRank() != -1) {
+                // Not scalar, not fixed-dimension, not supported
                 throw new IllegalArgumentException(
                     "cannot encode field \"" + fieldName + "\" " +
                         "with ValueRank: %s" + field.getValueRank()
