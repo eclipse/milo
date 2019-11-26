@@ -22,7 +22,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
-import com.google.common.base.Preconditions;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataTypeDictionaryType;
@@ -44,6 +43,7 @@ import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 class BinaryDataTypeDictionaryGenerator {
@@ -59,7 +59,7 @@ class BinaryDataTypeDictionaryGenerator {
 
             UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
 
-            Preconditions.checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
+            checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
 
             if (dataTypeId.getNamespaceIndex().intValue() == 0) {
                 return new FullyQualifiedDataType(
@@ -77,7 +77,7 @@ class BinaryDataTypeDictionaryGenerator {
                 .findFirst()
                 .orElse(null);
 
-            Preconditions.checkNotNull(dataTypeEncodingNode, "dataTypeEncodingNode for dataTypeId=" + dataTypeId);
+            checkNotNull(dataTypeEncodingNode, "dataTypeEncodingNode for dataTypeId=" + dataTypeId);
 
             UaNode dataTypeDescriptionNode = dataTypeEncodingNode.getReferences()
                 .stream()
@@ -86,7 +86,7 @@ class BinaryDataTypeDictionaryGenerator {
                 .findFirst()
                 .orElse(null);
 
-            Preconditions.checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
+            checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
 
             dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
 
@@ -96,11 +96,11 @@ class BinaryDataTypeDictionaryGenerator {
                 .findFirst()
                 .orElse(null);
 
-            Preconditions.checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
+            checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
 
             dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI).orElse(null);
 
-            Preconditions.checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
+            checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
 
             return new FullyQualifiedDataType(dataTypeId, dataTypeName, dictionaryNamespaceUri);
         };
@@ -173,10 +173,10 @@ class BinaryDataTypeDictionaryGenerator {
             String fieldName = field.getName();
             NodeId fieldDataTypeId = field.getDataType();
 
-            FullyQualifiedDataType fqdt = dataTypeLookup.apply(fieldDataTypeId);
+            FullyQualifiedDataType fullyQualifiedDataType = dataTypeLookup.apply(fieldDataTypeId);
 
-            String dataTypeName = fqdt.dataTypeName;
-            String dictionaryNamespaceUri = fqdt.dictionaryNamespaceUri;
+            String dataTypeName = fullyQualifiedDataType.dataTypeName;
+            String dictionaryNamespaceUri = fullyQualifiedDataType.dictionaryNamespaceUri;
 
             namespaces.add(dictionaryNamespaceUri);
 
