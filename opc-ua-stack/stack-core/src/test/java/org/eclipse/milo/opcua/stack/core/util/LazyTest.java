@@ -68,4 +68,35 @@ public class LazyTest {
         assertEquals(o2, instance);
     }
 
+    @Test
+    public void lazyIsResettable() {
+        Lazy<Object> lazy = new Lazy<>();
+
+        final Object instance1 = new Object();
+        final Object instance2 = new Object();
+
+        Supplier<Object> supplier = new Supplier<Object>() {
+            final AtomicInteger count = new AtomicInteger(0);
+
+            @Override
+            public Object get() {
+                switch (count.incrementAndGet()) {
+                    case 1:
+                        return instance1;
+                    case 2:
+                    default:
+                        return instance2;
+                }
+            }
+        };
+
+        Object o1 = lazy.getOrCompute(supplier);
+        assertEquals(o1, instance1);
+
+        lazy.reset();
+
+        Object o2 = lazy.getOrCompute(supplier);
+        assertEquals(o2, instance2);
+    }
+
 }
