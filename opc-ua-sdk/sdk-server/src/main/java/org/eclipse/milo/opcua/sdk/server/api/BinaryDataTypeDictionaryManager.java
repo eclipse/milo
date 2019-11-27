@@ -20,9 +20,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.function.Function;
 import javax.xml.bind.JAXBException;
 
 import com.google.common.collect.Maps;
+import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator;
+import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator.FullyQualifiedDataType;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
@@ -30,7 +33,9 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.DataTypeEncodingTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.DataTypeDescriptionTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.DataTypeDictionaryTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataTypeDictionaryType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -46,9 +51,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.StructureDescription;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BinaryDataTypeDictionaryManager implements Lifecycle {
@@ -328,7 +336,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
     }
 
     private void writeDictionaryToStream(OutputStream outputStream) throws JAXBException {
-        BinaryDataTypeDictionaryGenerator generator = BinaryDataTypeDictionaryGenerator.newInstance(
+        BinaryDataTypeDictionaryGenerator generator = newDictionaryGenerator(
             namespaceUri,
             getNodeContext().getServer().getAddressSpaceManager()
         );
@@ -362,6 +370,66 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
 
     private QualifiedName newQualifiedName(String name) {
         return new QualifiedName(getNamespaceIndex(), name);
+    }
+
+    private static BinaryDataTypeDictionaryGenerator newDictionaryGenerator(
+        String namespaceUri,
+        AddressSpaceManager addressSpaceManager
+    ) {
+
+        Function<NodeId, FullyQualifiedDataType> dataTypeLookup = dataTypeId -> {
+            String dataTypeName;
+            String dictionaryNamespaceUri;
+
+            UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
+
+            checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
+
+            if (dataTypeId.getNamespaceIndex().intValue() == 0) {
+                return new FullyQualifiedDataType(
+                    dataTypeId,
+                    dataTypeNode.getBrowseName().getName(),
+                    Namespaces.OPC_UA_BSD
+                );
+            }
+
+            UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
+                .stream()
+                .filter(Reference.HAS_ENCODING_PREDICATE)
+                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+                .filter(n -> n.getBrowseName().equals(new QualifiedName(0, "Default Binary")))
+                .findFirst()
+                .orElse(null);
+
+            checkNotNull(dataTypeEncodingNode, "dataTypeEncodingNode for dataTypeId=" + dataTypeId);
+
+            UaNode dataTypeDescriptionNode = dataTypeEncodingNode.getReferences()
+                .stream()
+                .filter(Reference.HAS_DESCRIPTION_PREDICATE)
+                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+                .findFirst()
+                .orElse(null);
+
+            checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
+
+            dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
+
+            UaNode dictionaryNode = dataTypeDescriptionNode.getReferences().stream()
+                .filter(Reference.COMPONENT_OF_PREDICATE)
+                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+                .findFirst()
+                .orElse(null);
+
+            checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
+
+            dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI).orElse(null);
+
+            checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
+
+            return new FullyQualifiedDataType(dataTypeId, dataTypeName, dictionaryNamespaceUri);
+        };
+
+        return new BinaryDataTypeDictionaryGenerator(namespaceUri, dataTypeLookup);
     }
 
 }

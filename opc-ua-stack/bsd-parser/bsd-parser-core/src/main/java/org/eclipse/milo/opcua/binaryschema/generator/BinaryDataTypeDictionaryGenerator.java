@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.api;
+package org.eclipse.milo.opcua.binaryschema.generator;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -23,9 +23,6 @@ import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataTypeDictionaryType;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.future.EnumDefinition;
@@ -46,70 +43,7 @@ import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
-
-class BinaryDataTypeDictionaryGenerator {
-
-    static BinaryDataTypeDictionaryGenerator newInstance(
-        String namespaceUri,
-        AddressSpaceManager addressSpaceManager
-    ) {
-
-        Function<NodeId, FullyQualifiedDataType> dataTypeLookup = dataTypeId -> {
-            String dataTypeName;
-            String dictionaryNamespaceUri;
-
-            UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
-
-            checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
-
-            if (dataTypeId.getNamespaceIndex().intValue() == 0) {
-                return new FullyQualifiedDataType(
-                    dataTypeId,
-                    dataTypeNode.getBrowseName().getName(),
-                    Namespaces.OPC_UA_BSD
-                );
-            }
-
-            UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
-                .stream()
-                .filter(Reference.HAS_ENCODING_PREDICATE)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .filter(n -> n.getBrowseName().equals(new QualifiedName(0, "Default Binary")))
-                .findFirst()
-                .orElse(null);
-
-            checkNotNull(dataTypeEncodingNode, "dataTypeEncodingNode for dataTypeId=" + dataTypeId);
-
-            UaNode dataTypeDescriptionNode = dataTypeEncodingNode.getReferences()
-                .stream()
-                .filter(Reference.HAS_DESCRIPTION_PREDICATE)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .findFirst()
-                .orElse(null);
-
-            checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
-
-            dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
-
-            UaNode dictionaryNode = dataTypeDescriptionNode.getReferences().stream()
-                .filter(Reference.COMPONENT_OF_PREDICATE)
-                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
-                .findFirst()
-                .orElse(null);
-
-            checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
-
-            dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI).orElse(null);
-
-            checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
-
-            return new FullyQualifiedDataType(dataTypeId, dataTypeName, dictionaryNamespaceUri);
-        };
-
-        return new BinaryDataTypeDictionaryGenerator(namespaceUri, dataTypeLookup);
-    }
+public class BinaryDataTypeDictionaryGenerator {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -120,7 +54,7 @@ class BinaryDataTypeDictionaryGenerator {
     private final String namespaceUri;
     private final Function<NodeId, FullyQualifiedDataType> dataTypeLookup;
 
-    private BinaryDataTypeDictionaryGenerator(
+    public BinaryDataTypeDictionaryGenerator(
         String namespaceUri,
         Function<NodeId, FullyQualifiedDataType> dataTypeLookup
     ) {
@@ -129,19 +63,19 @@ class BinaryDataTypeDictionaryGenerator {
         this.dataTypeLookup = dataTypeLookup;
     }
 
-    void addEnumDescription(EnumDescription description) {
+    public void addEnumDescription(EnumDescription description) {
         EnumeratedType enumeratedType = createEnumeratedType(description);
 
         enumeratedTypes.add(enumeratedType);
     }
 
-    void addStructureDescription(StructureDescription description) {
+    public void addStructureDescription(StructureDescription description) {
         StructuredType structuredType = createStructuredType(description);
 
         structuredTypes.add(structuredType);
     }
 
-    void writeToOutputStream(OutputStream outputStream) throws JAXBException {
+    public void writeToOutputStream(OutputStream outputStream) throws JAXBException {
         TypeDictionary typeDictionary = new TypeDictionary();
         typeDictionary.setDefaultByteOrder(ByteOrder.LITTLE_ENDIAN);
         typeDictionary.setTargetNamespace(namespaceUri);
@@ -240,7 +174,12 @@ class BinaryDataTypeDictionaryGenerator {
         final String dataTypeName;
         final String dictionaryNamespaceUri;
 
-        FullyQualifiedDataType(NodeId dataTypeId, String dataTypeName, String dictionaryNamespaceUri) {
+        public FullyQualifiedDataType(
+            NodeId dataTypeId,
+            String dataTypeName,
+            String dictionaryNamespaceUri
+        ) {
+
             this.dataTypeId = dataTypeId;
             this.dictionaryNamespaceUri = dictionaryNamespaceUri;
             this.dataTypeName = dataTypeName;
