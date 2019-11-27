@@ -80,7 +80,7 @@ public class BinaryDataTypeDictionaryGenerator {
     public void addStructureDescription(StructureDescription description) {
         StructureType structureType = description.getStructureDefinition().getStructureType();
 
-        if (structureType != StructureType.Structure) {
+        if (structureType == StructureType.Union) {
             throw new IllegalArgumentException("StructureType not supported: " + structureType);
         }
 
@@ -123,13 +123,13 @@ public class BinaryDataTypeDictionaryGenerator {
 
     private EnumeratedType createEnumeratedType(EnumDescription description) {
         QualifiedName name = description.getName();
-        EnumDefinition enumDefinition = description.getEnumDefinition();
+        EnumDefinition definition = description.getEnumDefinition();
 
         EnumeratedType enumeratedType = new EnumeratedType();
         enumeratedType.setName(name.getName());
         enumeratedType.setLengthInBits(32);
 
-        for (EnumField field : enumDefinition.getFields()) {
+        for (EnumField field : definition.getFields()) {
             EnumeratedValue enumeratedValue = new EnumeratedValue();
             enumeratedValue.setName(field.getName());
             enumeratedValue.setValue(field.getValue().intValue());
@@ -142,12 +142,36 @@ public class BinaryDataTypeDictionaryGenerator {
 
     private StructuredType createStructuredType(StructureDescription description) {
         QualifiedName name = description.getName();
-        StructureDefinition structureDefinition = description.getStructureDefinition();
+        StructureDefinition definition = description.getStructureDefinition();
 
         StructuredType structuredType = new StructuredType();
         structuredType.setName(name.getName());
 
-        for (StructureField field : structureDefinition.getFields()) {
+        int optionalFieldCount = 0;
+
+        for (StructureField field : definition.getFields()) {
+            if (field.getIsOptional()) {
+                FieldType fieldType = new FieldType();
+                fieldType.setName(field.getName() + "Present");
+                fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+
+                structuredType.getField().add(fieldType);
+
+                optionalFieldCount++;
+            }
+        }
+
+        if (optionalFieldCount > 0) {
+            // TODO handle more than 32 fields...
+            long reservedBits = 32 - optionalFieldCount;
+
+            FieldType fieldType = new FieldType();
+            fieldType.setLength(reservedBits);
+            fieldType.setName("Reserved1");
+            fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+        }
+
+        for (StructureField field : definition.getFields()) {
             String fieldName = field.getName();
             NodeId fieldDataTypeId = field.getDataType();
 
@@ -161,6 +185,10 @@ public class BinaryDataTypeDictionaryGenerator {
             FieldType fieldType = new FieldType();
             fieldType.setName(fieldName);
             fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+
+            if (field.getIsOptional()) {
+                fieldType.setSwitchField(fieldName + "Present");
+            }
 
             if (field.getValueRank() >= 1) {
                 // Fixed-dimension array... specify a LengthField
