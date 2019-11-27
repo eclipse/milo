@@ -24,8 +24,8 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.testng.annotations.BeforeSuite;
@@ -86,7 +86,14 @@ public abstract class BsdParserTest {
     };
 
     public BsdParserTest() {
-        BuiltinDataTypeDictionary.getBinaryInstance().getCodecsByDescription().forEach((d, c) ->
+        OpcUaDataTypeManager dataTypeManager = OpcUaDataTypeManager.getInstance();
+
+        OpcUaBinaryDataTypeDictionary dictionary =
+            (OpcUaBinaryDataTypeDictionary) dataTypeManager.getDataTypeDictionary(Namespaces.OPC_UA);
+
+        assert dictionary != null;
+
+        dictionary.getCodecsByDescription().forEach((d, c) ->
             codecTable.put(Namespaces.OPC_UA, d, c)
         );
     }
