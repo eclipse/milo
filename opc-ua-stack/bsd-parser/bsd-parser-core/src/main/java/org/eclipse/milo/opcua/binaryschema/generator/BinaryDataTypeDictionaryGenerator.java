@@ -142,34 +142,44 @@ public class BinaryDataTypeDictionaryGenerator {
 
     private StructuredType createStructuredType(StructureDescription description) {
         QualifiedName name = description.getName();
+
         StructureDefinition definition = description.getStructureDefinition();
+        StructureType structureType = definition.getStructureType();
 
         StructuredType structuredType = new StructuredType();
         structuredType.setName(name.getName());
 
-        int optionalFieldCount = 0;
+        if (structureType == StructureType.StructureWithOptionalFields) {
+            int optionalFieldCount = 0;
 
-        for (StructureField field : definition.getFields()) {
-            if (field.getIsOptional()) {
-                FieldType fieldType = new FieldType();
-                fieldType.setName(field.getName() + "Present");
-                fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+            for (StructureField field : definition.getFields()) {
+                if (field.getIsOptional()) {
+                    FieldType fieldType = new FieldType();
+                    fieldType.setName(field.getName() + "Present");
+                    fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
 
-                structuredType.getField().add(fieldType);
+                    structuredType.getField().add(fieldType);
 
-                optionalFieldCount++;
+                    optionalFieldCount++;
+                }
             }
-        }
 
-        if (optionalFieldCount > 0) {
-            // TODO handle more than 32 fields...
-            long reservedBits = 32 - optionalFieldCount;
+            if (optionalFieldCount > 0) {
+                // TODO handle more than 32 fields...
+                long reservedBits = 32 - optionalFieldCount;
 
+                FieldType fieldType = new FieldType();
+                fieldType.setLength(reservedBits);
+                fieldType.setName("Reserved1");
+                fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+            }
+        } else if (structureType == StructureType.Union) {
             FieldType fieldType = new FieldType();
-            fieldType.setLength(reservedBits);
-            fieldType.setName("Reserved1");
-            fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+            fieldType.setName("SwitchField");
+            fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "UInt32"));
         }
+
+        long switchValue = 0L;
 
         for (StructureField field : definition.getFields()) {
             String fieldName = field.getName();
@@ -186,8 +196,13 @@ public class BinaryDataTypeDictionaryGenerator {
             fieldType.setName(fieldName);
             fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
 
-            if (field.getIsOptional()) {
-                fieldType.setSwitchField(fieldName + "Present");
+            if (structureType == StructureType.StructureWithOptionalFields) {
+                if (field.getIsOptional()) {
+                    fieldType.setSwitchField(fieldName + "Present");
+                }
+            } else if (structureType == StructureType.Union) {
+                fieldType.setSwitchField("SwitchField");
+                fieldType.setSwitchValue(++switchValue);
             }
 
             if (field.getValueRank() >= 1) {
@@ -195,6 +210,15 @@ public class BinaryDataTypeDictionaryGenerator {
                 FieldType lengthFieldType = new FieldType();
                 lengthFieldType.setName(fieldName + "Length");
                 lengthFieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Int32"));
+
+                if (structureType == StructureType.StructureWithOptionalFields) {
+                    if (field.getIsOptional()) {
+                        lengthFieldType.setSwitchField(fieldName + "Present");
+                    }
+                } else if (structureType == StructureType.Union) {
+                    fieldType.setSwitchField("SwitchField");
+                    fieldType.setSwitchValue(switchValue);
+                }
 
                 structuredType.getField().add(lengthFieldType);
 
