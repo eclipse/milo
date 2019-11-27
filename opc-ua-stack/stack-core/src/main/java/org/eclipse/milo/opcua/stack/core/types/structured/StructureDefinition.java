@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.future.StructureType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
 @EqualsAndHashCode(
     callSuper = true
