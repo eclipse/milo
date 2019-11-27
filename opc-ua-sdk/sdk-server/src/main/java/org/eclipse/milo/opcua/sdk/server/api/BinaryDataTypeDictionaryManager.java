@@ -21,11 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Function;
-import javax.xml.bind.JAXBException;
 
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator;
-import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator.FullyQualifiedDataType;
+import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator.DataTypeLocation;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
@@ -119,7 +118,14 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
 
         dictionaryNode.getFilterChain().addLast(AttributeFilters.getValue(context -> {
             try {
-                File file = dictionaryFile.getOrCompute(this::writeDictionaryToFile);
+                File file = dictionaryFile.getOrCompute(() -> {
+                    try {
+                        return writeDictionaryToFile();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
                 assert file != null;
 
                 try {
@@ -310,24 +316,20 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         dictionaryFile.reset();
     }
 
-    private File writeDictionaryToFile() {
-        try {
-            String encodedUri = URLEncoder.encode(namespaceUri, StandardCharsets.UTF_8.name());
-            Path tempFilePath = Files.createTempFile(encodedUri, ".bsd.xml");
+    private File writeDictionaryToFile() throws IOException {
+        String encodedUri = URLEncoder.encode(namespaceUri, StandardCharsets.UTF_8.name());
+        Path tempFilePath = Files.createTempFile(encodedUri, ".bsd.xml");
 
-            try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
-                writeDictionaryToStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
+            writeDictionaryToStream(fos);
 
-                logger.info("Wrote dictionary for '{}' to {}", namespaceUri, tempFilePath);
-            }
-
-            return tempFilePath.toFile();
-        } catch (IOException | JAXBException e) {
-            throw new RuntimeException(e);
+            logger.info("Wrote dictionary for '{}' to {}", namespaceUri, tempFilePath);
         }
+
+        return tempFilePath.toFile();
     }
 
-    private byte[] writeDictionaryToMemory() throws JAXBException {
+    private byte[] writeDictionaryToMemory() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         writeDictionaryToStream(baos);
@@ -335,7 +337,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         return baos.toByteArray();
     }
 
-    private void writeDictionaryToStream(OutputStream outputStream) throws JAXBException {
+    private void writeDictionaryToStream(OutputStream outputStream) throws IOException {
         BinaryDataTypeDictionaryGenerator generator = newDictionaryGenerator(
             namespaceUri,
             getNodeContext().getServer().getAddressSpaceManager()
@@ -377,7 +379,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         AddressSpaceManager addressSpaceManager
     ) {
 
-        Function<NodeId, FullyQualifiedDataType> dataTypeLookup = dataTypeId -> {
+        Function<NodeId, DataTypeLocation> dataTypeLookup = dataTypeId -> {
             String dataTypeName;
             String dictionaryNamespaceUri;
 
@@ -386,8 +388,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
 
             if (dataTypeId.getNamespaceIndex().intValue() == 0) {
-                return new FullyQualifiedDataType(
-                    dataTypeId,
+                return new DataTypeLocation(
                     dataTypeNode.getBrowseName().getName(),
                     Namespaces.OPC_UA_BSD
                 );
@@ -426,7 +427,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
 
             checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
 
-            return new FullyQualifiedDataType(dataTypeId, dataTypeName, dictionaryNamespaceUri);
+            return new DataTypeLocation(dataTypeName, dictionaryNamespaceUri);
         };
 
         return new BinaryDataTypeDictionaryGenerator(namespaceUri, dataTypeLookup);

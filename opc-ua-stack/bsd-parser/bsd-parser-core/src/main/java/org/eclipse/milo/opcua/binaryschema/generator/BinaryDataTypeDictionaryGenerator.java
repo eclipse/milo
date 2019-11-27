@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.binaryschema.generator;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,8 +24,11 @@ import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
@@ -52,11 +56,11 @@ public class BinaryDataTypeDictionaryGenerator {
     private final List<StructuredType> structuredTypes = new ArrayList<>();
 
     private final String namespaceUri;
-    private final Function<NodeId, FullyQualifiedDataType> dataTypeLookup;
+    private final Function<NodeId, DataTypeLocation> dataTypeLookup;
 
     public BinaryDataTypeDictionaryGenerator(
         String namespaceUri,
-        Function<NodeId, FullyQualifiedDataType> dataTypeLookup
+        Function<NodeId, DataTypeLocation> dataTypeLookup
     ) {
 
         this.namespaceUri = namespaceUri;
@@ -64,18 +68,26 @@ public class BinaryDataTypeDictionaryGenerator {
     }
 
     public void addEnumDescription(EnumDescription description) {
-        EnumeratedType enumeratedType = createEnumeratedType(description);
+        UByte builtInType = description.getBuiltInType();
 
-        enumeratedTypes.add(enumeratedType);
+        if (builtInType.intValue() != BuiltinDataType.Int32.getTypeId()) {
+            throw new IllegalArgumentException("BuiltInType must be Int32");
+        }
+
+        enumeratedTypes.add(createEnumeratedType(description));
     }
 
     public void addStructureDescription(StructureDescription description) {
-        StructuredType structuredType = createStructuredType(description);
+        StructureType structureType = description.getStructureDefinition().getStructureType();
 
-        structuredTypes.add(structuredType);
+        if (structureType != StructureType.Structure) {
+            throw new IllegalArgumentException("StructureType not supported: " + structureType);
+        }
+
+        structuredTypes.add(createStructuredType(description));
     }
 
-    public void writeToOutputStream(OutputStream outputStream) throws JAXBException {
+    public void writeToOutputStream(OutputStream outputStream) throws IOException {
         TypeDictionary typeDictionary = new TypeDictionary();
         typeDictionary.setDefaultByteOrder(ByteOrder.LITTLE_ENDIAN);
         typeDictionary.setTargetNamespace(namespaceUri);
@@ -89,20 +101,24 @@ public class BinaryDataTypeDictionaryGenerator {
             typeDictionary.getImport().add(importDirective);
         });
 
-        JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
-
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         try {
-            marshaller.setProperty(
-                "com.sun.xml.bind.namespacePrefixMapper",
-                new OpcUaNamespacePrefixMapper()
-            );
-        } catch (PropertyException e) {
-            logger.debug("NamespacePrefixMapper not supported", e);
-        }
+            JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
 
-        marshaller.marshal(typeDictionary, outputStream);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            try {
+                marshaller.setProperty(
+                    "com.sun.xml.bind.namespacePrefixMapper",
+                    new OpcUaNamespacePrefixMapper()
+                );
+            } catch (PropertyException e) {
+                logger.debug("NamespacePrefixMapper not supported", e);
+            }
+
+            marshaller.marshal(typeDictionary, outputStream);
+        } catch (JAXBException e) {
+            throw new IOException("failed to write dictionary to OutputStream", e);
+        }
     }
 
     private EnumeratedType createEnumeratedType(EnumDescription description) {
@@ -135,10 +151,10 @@ public class BinaryDataTypeDictionaryGenerator {
             String fieldName = field.getName();
             NodeId fieldDataTypeId = field.getDataType();
 
-            FullyQualifiedDataType fullyQualifiedDataType = dataTypeLookup.apply(fieldDataTypeId);
+            DataTypeLocation dataTypeLocation = dataTypeLookup.apply(fieldDataTypeId);
 
-            String dataTypeName = fullyQualifiedDataType.dataTypeName;
-            String dictionaryNamespaceUri = fullyQualifiedDataType.dictionaryNamespaceUri;
+            String dataTypeName = dataTypeLocation.dataTypeName;
+            String dictionaryNamespaceUri = dataTypeLocation.dictionaryNamespaceUri;
 
             namespaces.add(dictionaryNamespaceUri);
 
@@ -169,18 +185,18 @@ public class BinaryDataTypeDictionaryGenerator {
         return structuredType;
     }
 
-    public static class FullyQualifiedDataType {
-        final NodeId dataTypeId;
+    /**
+     * Pair of DataType name and the namespace URI of the DataTypeDictionary it's defined in.
+     */
+    public static class DataTypeLocation {
         final String dataTypeName;
         final String dictionaryNamespaceUri;
 
-        public FullyQualifiedDataType(
-            NodeId dataTypeId,
+        public DataTypeLocation(
             String dataTypeName,
             String dictionaryNamespaceUri
         ) {
 
-            this.dataTypeId = dataTypeId;
             this.dictionaryNamespaceUri = dictionaryNamespaceUri;
             this.dataTypeName = dataTypeName;
         }
