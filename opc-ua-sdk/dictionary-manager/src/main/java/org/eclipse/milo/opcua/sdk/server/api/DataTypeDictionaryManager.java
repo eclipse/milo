@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.google.common.collect.Maps;
-import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator;
-import org.eclipse.milo.opcua.binaryschema.generator.BinaryDataTypeDictionaryGenerator.DataTypeLocation;
+import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator;
+import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator.DataTypeLocation;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
@@ -58,7 +58,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class BinaryDataTypeDictionaryManager implements Lifecycle {
+public class DataTypeDictionaryManager implements Lifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -84,7 +84,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
      * @param context      a {@link UaNodeContext}. Nodes will be created and added using this context.
      * @param namespaceUri the namespace URI of the dictionary.
      */
-    public BinaryDataTypeDictionaryManager(UaNodeContext context, String namespaceUri) {
+    public DataTypeDictionaryManager(UaNodeContext context, String namespaceUri) {
         this.context = context;
         this.namespaceUri = namespaceUri;
 
@@ -338,7 +338,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
     }
 
     private void writeDictionaryToStream(OutputStream outputStream) throws IOException {
-        BinaryDataTypeDictionaryGenerator generator = newDictionaryGenerator(
+        DataTypeDictionaryGenerator generator = newDictionaryGenerator(
             namespaceUri,
             getNodeContext().getServer().getAddressSpaceManager()
         );
@@ -374,7 +374,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
         return new QualifiedName(getNamespaceIndex(), name);
     }
 
-    private static BinaryDataTypeDictionaryGenerator newDictionaryGenerator(
+    private static DataTypeDictionaryGenerator newDictionaryGenerator(
         String namespaceUri,
         AddressSpaceManager addressSpaceManager
     ) {
@@ -430,7 +430,7 @@ public class BinaryDataTypeDictionaryManager implements Lifecycle {
             return new DataTypeLocation(dataTypeName, dictionaryNamespaceUri);
         };
 
-        return new BinaryDataTypeDictionaryGenerator(namespaceUri, dataTypeLookup);
+        return new DataTypeDictionaryGenerator(namespaceUri, dataTypeLookup);
     }
 
 }

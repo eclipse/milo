@@ -25,8 +25,8 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.BinaryDataTypeDictionaryManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.api.DataTypeDictionaryManager;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
@@ -128,7 +128,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
     private final Random random = new Random();
 
-    private final BinaryDataTypeDictionaryManager dictionaryManager;
+    private final DataTypeDictionaryManager dictionaryManager;
 
     private final SubscriptionModel subscriptionModel;
 
@@ -137,7 +137,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         subscriptionModel = new SubscriptionModel(server, this);
 
-        dictionaryManager = new BinaryDataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
+        dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
     }
 
     @Override

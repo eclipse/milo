@@ -52,7 +52,7 @@ import org.opcfoundation.opcua.binaryschema.TypeDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BinaryDataTypeDictionaryGenerator {
+public class DataTypeDictionaryGenerator {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -67,7 +67,7 @@ public class BinaryDataTypeDictionaryGenerator {
     private final String namespaceUri;
     private final Function<NodeId, DataTypeLocation> dataTypeLookup;
 
-    public BinaryDataTypeDictionaryGenerator(
+    public DataTypeDictionaryGenerator(
         String namespaceUri,
         Function<NodeId, DataTypeLocation> dataTypeLookup
     ) {
