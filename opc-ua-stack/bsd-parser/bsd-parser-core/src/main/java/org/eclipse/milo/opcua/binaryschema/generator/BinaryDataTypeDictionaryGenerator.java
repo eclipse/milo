@@ -154,24 +154,30 @@ public class BinaryDataTypeDictionaryGenerator {
 
             for (StructureField field : definition.getFields()) {
                 if (field.getIsOptional()) {
+                    optionalFieldCount++;
+
                     FieldType fieldType = new FieldType();
                     fieldType.setName(field.getName() + "Present");
                     fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
 
                     structuredType.getField().add(fieldType);
-
-                    optionalFieldCount++;
                 }
             }
 
             if (optionalFieldCount > 0) {
-                // TODO handle more than 32 fields...
-                long reservedBits = 32 - optionalFieldCount;
+                int reservedFieldCount = (optionalFieldCount + 31) / 32;
 
-                FieldType fieldType = new FieldType();
-                fieldType.setLength(reservedBits);
-                fieldType.setName("Reserved1");
-                fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+                for (int i = 0; i < reservedFieldCount; i++) {
+                    long reservedBits = 32 - optionalFieldCount;
+                    optionalFieldCount -= 32;
+
+                    FieldType fieldType = new FieldType();
+                    fieldType.setLength(reservedBits);
+                    fieldType.setName("Reserved" + i);
+                    fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "Bit"));
+
+                    structuredType.getField().add(fieldType);
+                }
             }
         } else if (structureType == StructureType.Union) {
             FieldType fieldType = new FieldType();
