@@ -13,8 +13,10 @@ package org.eclipse.milo.opcua.binaryschema.generator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import javax.xml.bind.JAXBContext;
@@ -52,8 +54,12 @@ public class BinaryDataTypeDictionaryGenerator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Set<String> namespaces = new HashSet<>();
+
     private final List<EnumeratedType> enumeratedTypes = new ArrayList<>();
     private final List<StructuredType> structuredTypes = new ArrayList<>();
+
+    private final Map<NodeId, EnumDescription> enumDescriptions = new HashMap<>();
+    private final Map<NodeId, StructureDescription> structureDescriptions = new HashMap<>();
 
     private final String namespaceUri;
     private final Function<NodeId, DataTypeLocation> dataTypeLookup;
@@ -75,6 +81,8 @@ public class BinaryDataTypeDictionaryGenerator {
         }
 
         enumeratedTypes.add(createEnumeratedType(description));
+
+        enumDescriptions.put(description.getDataTypeId(), description);
     }
 
     public void addStructureDescription(StructureDescription description) {
@@ -85,6 +93,8 @@ public class BinaryDataTypeDictionaryGenerator {
         }
 
         structuredTypes.add(createStructuredType(description));
+
+        structureDescriptions.put(description.getDataTypeId(), description);
     }
 
     public void writeToOutputStream(OutputStream outputStream) throws IOException {
@@ -183,6 +193,8 @@ public class BinaryDataTypeDictionaryGenerator {
             FieldType fieldType = new FieldType();
             fieldType.setName("SwitchField");
             fieldType.setTypeName(new QName(Namespaces.OPC_UA_BSD, "UInt32"));
+
+            structuredType.getField().add(fieldType);
         }
 
         long switchValue = 0L;
