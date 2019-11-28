@@ -165,9 +165,9 @@ public class DataTypeDictionaryGenerator {
 
         NodeId baseDataTypeId = definition.getBaseDataType();
 
-        while (baseDataTypeId != null && baseDataTypeId.isNotNull()
-            && !Identifiers.Structure.equals(baseDataTypeId)
-            && !Identifiers.Union.equals(baseDataTypeId)
+        while (baseDataTypeId != null && baseDataTypeId.isNotNull() &&
+            !Identifiers.Structure.equals(baseDataTypeId) &&
+            !Identifiers.Union.equals(baseDataTypeId)
         ) {
 
             StructureDescription baseDescription = structureDescriptions.get(baseDataTypeId);
