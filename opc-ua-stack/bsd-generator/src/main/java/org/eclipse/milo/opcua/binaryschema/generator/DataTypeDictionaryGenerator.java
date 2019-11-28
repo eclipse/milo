@@ -61,7 +61,6 @@ public class DataTypeDictionaryGenerator {
     private final List<EnumeratedType> enumeratedTypes = new ArrayList<>();
     private final List<StructuredType> structuredTypes = new ArrayList<>();
 
-    private final Map<NodeId, EnumDescription> enumDescriptions = new HashMap<>();
     private final Map<NodeId, StructureDescription> structureDescriptions = new HashMap<>();
 
     private final String namespaceUri;
@@ -84,8 +83,6 @@ public class DataTypeDictionaryGenerator {
         }
 
         enumeratedTypes.add(createEnumeratedType(description));
-
-        enumDescriptions.put(description.getDataTypeId(), description);
     }
 
     public void addStructureDescription(StructureDescription description) {
