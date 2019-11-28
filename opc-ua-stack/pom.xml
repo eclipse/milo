@@ -23,7 +23,10 @@
     </properties>
 
     <modules>
+        <module>bsd-core</module>
+        <module>bsd-generator</module>
         <module>bsd-parser</module>
+        <module>bsd-parser-gson</module>
         <module>stack-client</module>
         <module>stack-core</module>
         <module>stack-server</module>

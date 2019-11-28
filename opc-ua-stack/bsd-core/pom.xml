@@ -9,12 +9,12 @@
         <version>0.4.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>bsd-parser</artifactId>
+    <artifactId>bsd-core</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>bsd-core</artifactId>
+            <artifactId>stack-core</artifactId>
             <version>0.4.0-SNAPSHOT</version>
         </dependency>
 
@@ -29,40 +29,29 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.2</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>${jsr305.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- JAXB xjc plugin that invokes the xjc compiler to compile XML schema into Java classes.-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+
                 <executions>
                     <execution>
                         <goals>
-                            <goal>test-jar</goal>
+                            <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
+
+                <configuration>
+                    <generatePackage>org.opcfoundation.opcua.binaryschema</generatePackage>
+                    <schemaDirectory>${basedir}/src/main/resources/</schemaDirectory>
+                    <generateDirectory>${basedir}/target/generated-sources/jaxb2</generateDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </build>

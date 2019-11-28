@@ -231,26 +231,6 @@ public class OpcUaClient implements UaClient {
         sessionFsm = SessionFsmFactory.newSessionFsm(this);
 
         sessionFsm.addInitializer((client, session) -> {
-            logger.debug("SessionInitializer: DataTypeDictionary");
-
-            DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
-                client,
-                session,
-                config.getBsdParser()
-            );
-
-            return reader.readDataTypeDictionaries()
-                .thenAccept(dictionaries ->
-                    dictionaries.forEach(
-                        stackClient.getDataTypeManager()::registerTypeDictionary))
-                .thenApply(v -> Unit.VALUE)
-                .exceptionally(ex -> {
-                    logger.warn("SessionInitializer: DataTypeDictionary", ex);
-                    return Unit.VALUE;
-                });
-        });
-
-        sessionFsm.addInitializer((client, session) -> {
             logger.debug("SessionInitializer: NamespaceTable");
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 

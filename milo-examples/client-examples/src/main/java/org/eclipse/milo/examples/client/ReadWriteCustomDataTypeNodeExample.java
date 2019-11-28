@@ -45,7 +45,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
         // synchronous read request via VariableNode
         VariableNode node = client.getAddressSpace().createVariableNode(
-            new NodeId(2, "HelloWorld/CustomDataTypeVariable"));
+            new NodeId(2, "HelloWorld/CustomStructTypeVariable"));
 
         logger.info("DataType={}", node.getDataType().get());
 

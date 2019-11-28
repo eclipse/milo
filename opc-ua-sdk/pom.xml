@@ -20,6 +20,8 @@
     </properties>
 
     <modules>
+        <module>dictionary-manager</module>
+        <module>dictionary-reader</module>
         <module>sdk-client</module>
         <module>sdk-core</module>
         <module>sdk-server</module>

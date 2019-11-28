@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.config;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -51,7 +50,6 @@ public class OpcUaClientConfigTest {
             .setMaxResponseMessageSize(UInteger.MAX)
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
-            .setBsdParser(new GenericBsdParser())
             .setSessionLocaleIds(new String[]{"en", "es"})
             .build();
 
@@ -63,7 +61,6 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getMaxResponseMessageSize(), original.getMaxResponseMessageSize());
         assertEquals(copy.getMaxPendingPublishRequests(), original.getMaxPendingPublishRequests());
         assertEquals(copy.getIdentityProvider(), original.getIdentityProvider());
-        assertEquals(copy.getBsdParser(), original.getBsdParser());
         assertEquals(copy.getKeepAliveFailuresAllowed(), original.getKeepAliveFailuresAllowed());
         assertEquals(copy.getKeepAliveInterval(), original.getKeepAliveInterval());
         assertEquals(copy.getKeepAliveTimeout(), original.getKeepAliveTimeout());
@@ -90,7 +87,6 @@ public class OpcUaClientConfigTest {
                     .setMaxResponseMessageSize(uint(0))
                     .setMaxPendingPublishRequests(uint(0))
                     .setIdentityProvider(new AnonymousProvider())
-                    .setBsdParser(new GenericBsdParser())
                     .setKeepAliveFailuresAllowed(uint(2))
                     .setKeepAliveInterval(uint(10000))
                     .setKeepAliveTimeout(uint(15000))
@@ -99,7 +95,6 @@ public class OpcUaClientConfigTest {
 
         assertNotEquals(copy.getSessionName(), original.getSessionName());
         assertNotEquals(copy.getIdentityProvider(), original.getIdentityProvider());
-        assertNotEquals(copy.getBsdParser(), original.getBsdParser());
         assertNotEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
 
         assertEquals(copy.getSessionTimeout(), uint(0));

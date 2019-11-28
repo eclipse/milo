@@ -12,6 +12,8 @@ package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
+import org.eclipse.milo.opcua.sdk.client.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -38,6 +40,13 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
+        // Decoding a struct with custom DataType requires a DataTypeManager
+        // that has the codec registered with it.
+        // Add a SessionInitializer that will read any DataTypeDictionary
+        // nodes present in the server every time the session is activated
+        // and dynamically generate codecs for custom structures.
+        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(new GenericBsdParser()));
+
         client.connect().get();
 
         DataValue dataValue = client.readValue(
@@ -48,10 +57,6 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
 
-        // Decoding a struct with custom DataType requires a DataTypeManager
-        // that has the codec registered with it. OpcUaClient automatically
-        // reads any DataTypeDictionary nodes present in the server upon
-        // connecting and dynamically generates codecs for custom structures.
         Object value = xo.decode(client.getSerializationContext());
 
         logger.info("value: {}", value);
