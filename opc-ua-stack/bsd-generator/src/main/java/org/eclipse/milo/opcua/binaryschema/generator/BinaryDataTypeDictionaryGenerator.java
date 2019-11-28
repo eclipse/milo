@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +29,7 @@ import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -159,10 +162,39 @@ public class BinaryDataTypeDictionaryGenerator {
         StructuredType structuredType = new StructuredType();
         structuredType.setName(name.getName());
 
+        // Create a combined list of StructuredFields from all parent types
+        LinkedList<StructureDefinition> definitions = new LinkedList<>();
+        definitions.addFirst(definition);
+
+        NodeId baseDataTypeId = definition.getBaseDataType();
+
+        while (baseDataTypeId != null && baseDataTypeId.isNotNull()
+            && !Identifiers.Structure.equals(baseDataTypeId)
+            && !Identifiers.Union.equals(baseDataTypeId)
+        ) {
+
+            StructureDescription baseDescription = structureDescriptions.get(baseDataTypeId);
+            StructureDefinition baseDefinition = baseDescription.getStructureDefinition();
+
+            definitions.addFirst(baseDefinition);
+
+            baseDataTypeId = baseDefinition.getBaseDataType();
+        }
+
+        LinkedHashMap<String, StructureField> allFields = new LinkedHashMap<>();
+
+        for (StructureDefinition d : definitions) {
+            for (StructureField f : d.getFields()) {
+                allFields.put(f.getName(), f);
+            }
+        }
+
+        List<StructureField> fields = new ArrayList<>(allFields.values());
+
         if (structureType == StructureType.StructureWithOptionalFields) {
             int optionalFieldCount = 0;
 
-            for (StructureField field : definition.getFields()) {
+            for (StructureField field : fields) {
                 if (field.getIsOptional()) {
                     optionalFieldCount++;
 
@@ -199,7 +231,7 @@ public class BinaryDataTypeDictionaryGenerator {
 
         long switchValue = 0L;
 
-        for (StructureField field : definition.getFields()) {
+        for (StructureField field : fields) {
             String fieldName = field.getName();
             NodeId fieldDataTypeId = field.getDataType();
 
