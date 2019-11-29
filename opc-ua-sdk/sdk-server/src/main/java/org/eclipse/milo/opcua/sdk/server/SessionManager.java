@@ -604,12 +604,16 @@ public class SessionManager implements
 
             byte[] signatureBytes = clientSignature.getSignature().bytesOrEmpty();
 
-            SignatureUtil.verify(
-                SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
-                securityConfiguration.getClientCertificate(),
-                dataBytes,
-                signatureBytes
-            );
+            try {
+                SignatureUtil.verify(
+                    SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
+                    securityConfiguration.getClientCertificate(),
+                    dataBytes,
+                    signatureBytes
+                );
+            } catch (UaException e) {
+                throw new UaException(StatusCodes.Bad_ApplicationSignatureInvalid, e);
+            }
         }
     }
 
