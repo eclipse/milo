@@ -73,7 +73,7 @@ class ArrayValueAttributeFilter implements AttributeFilter {
         }
     }
 
-    private void synchronizeArrayElements(UaVariableNode arrayNode, Object arrayValue) {
+    private synchronized void synchronizeArrayElements(UaVariableNode arrayNode, Object arrayValue) {
         if (arrayValue == null || !arrayValue.getClass().isArray()) {
             while (elementNodes.size() > 0) {
                 UaVariableNode elementNode = elementNodes.removeLast();
@@ -102,13 +102,19 @@ class ArrayValueAttributeFilter implements AttributeFilter {
                         false
                     );
 
+                    String elementNodeName = getElementNodeName(
+                        arrayNode.getBrowseName().getName(),
+                        Array.get(arrayValue, i),
+                        i
+                    );
+
                     elementNode.setBrowseName(new QualifiedName(
                         arrayNode.getBrowseName().getNamespaceIndex(),
-                        arrayNode.getBrowseName().getName() + "[" + i + "]"
+                        elementNodeName
                     ));
                     elementNode.setDisplayName(new LocalizedText(
                         arrayNode.getDisplayName().getLocale(),
-                        arrayNode.getDisplayName().getText() + "[" + i + "]"
+                        elementNodeName
                     ));
                     elementNode.setArrayDimensions(null);
                     elementNode.setValueRank(ValueRanks.Scalar);
@@ -177,6 +183,10 @@ class ArrayValueAttributeFilter implements AttributeFilter {
             );
 
         return buildBrowseNamePath(parentNode.orElse(null), browseNames);
+    }
+
+    protected String getElementNodeName(String arrayNodeName, Object value, int index) {
+        return arrayNodeName + "[" + index + "]";
     }
 
     /**
