@@ -443,19 +443,14 @@ public class DiagnosticsManager extends AbstractLifecycle {
             logger.debug("SessionDiagnosticsObject onStartup()");
 
             try {
-                String name = String.format(
-                    "%s (%s)",
-                    session.getSessionName(),
-                    session.getSessionId()
-                );
-
                 node = (SessionDiagnosticsObjectTypeNode) nodeFactory.createNode(
                     new NodeId(0, UUID.randomUUID()),
                     Identifiers.SessionDiagnosticsObjectType,
                     false
                 );
-                node.setBrowseName(new QualifiedName(1, name));
-                node.setDisplayName(LocalizedText.english(name));
+
+                node.setBrowseName(new QualifiedName(1, session.getSessionName()));
+                node.setDisplayName(LocalizedText.english(session.getSessionName()));
 
                 nodeManager.addNode(node);
                 summaryNode.addComponent(node);
