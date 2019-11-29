@@ -154,6 +154,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         synchronizeIssuerCerts();
         synchronizeIssuerCrls();
         synchronizeTrustedCerts();
+        synchronizeTrustedCrls();
     }
 
     /**
