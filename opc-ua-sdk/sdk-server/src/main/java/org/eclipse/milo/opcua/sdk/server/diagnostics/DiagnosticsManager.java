@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnostic
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -46,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,27 +245,30 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         private void configureSubscriptionDiagnosticsArray() {
-            SubscriptionDiagnosticsArrayTypeNode subscriptionDiagnosticsArrayNode =
-                node.getSubscriptionDiagnosticsArrayNode();
-
-            subscriptionDiagnosticsArrayNode.getFilterChain().addLast(
-                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType)
+            node.getSubscriptionDiagnosticsArrayNode().getFilterChain().addLast(
+                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType) {
+                    @Override
+                    protected String getElementNodeName(String arrayNodeName, Object value, int index) {
+                        if (value instanceof SubscriptionDiagnosticsDataType) {
+                            return ((SubscriptionDiagnosticsDataType) value).getSubscriptionId().toString();
+                        } else {
+                            return super.getElementNodeName(arrayNodeName, value, index);
+                        }
+                    }
+                }
             );
 
             Runnable updateTask = () -> {
-                ExtensionObject[] xos = getServer().getSubscriptions()
+                SubscriptionDiagnosticsDataType[] value = server.getSubscriptions()
                     .values()
                     .stream()
                     .map(s ->
-                        ExtensionObject.encode(
-                            getServer().getSerializationContext(),
-                            s.getSubscriptionDiagnostics()
-                                .getSubscriptionDiagnosticsDataType()
-                        )
+                        s.getSubscriptionDiagnostics()
+                            .getSubscriptionDiagnosticsDataType()
                     )
-                    .toArray(ExtensionObject[]::new);
+                    .toArray(SubscriptionDiagnosticsDataType[]::new);
 
-                subscriptionDiagnosticsArrayNode.setValue(new DataValue(new Variant(xos)));
+                node.getSubscriptionDiagnosticsArrayNode().setValue(new DataValue(new Variant(value)));
             };
 
             diagnosticTasks.add(updateTask);
@@ -522,27 +525,30 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         private void configureSubscriptionDiagnosticsArray() {
-            SubscriptionDiagnosticsArrayTypeNode subscriptionDiagnosticsArrayNode =
-                node.getSubscriptionDiagnosticsArrayNode();
-
-            subscriptionDiagnosticsArrayNode.getFilterChain().addLast(
-                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType)
+            node.getSubscriptionDiagnosticsArrayNode().getFilterChain().addLast(
+                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType) {
+                    @Override
+                    protected String getElementNodeName(String arrayNodeName, Object value, int index) {
+                        if (value instanceof SubscriptionDiagnosticsDataType) {
+                            return ((SubscriptionDiagnosticsDataType) value).getSubscriptionId().toString();
+                        } else {
+                            return super.getElementNodeName(arrayNodeName, value, index);
+                        }
+                    }
+                }
             );
 
             Runnable updateTask = () -> {
-                ExtensionObject[] xos = session.getSubscriptionManager()
+                SubscriptionDiagnosticsDataType[] value = session.getSubscriptionManager()
                     .getSubscriptions()
                     .stream()
                     .map(s ->
-                        ExtensionObject.encode(
-                            getServer().getSerializationContext(),
-                            s.getSubscriptionDiagnostics()
-                                .getSubscriptionDiagnosticsDataType()
-                        )
+                        s.getSubscriptionDiagnostics()
+                            .getSubscriptionDiagnosticsDataType()
                     )
-                    .toArray(ExtensionObject[]::new);
+                    .toArray(SubscriptionDiagnosticsDataType[]::new);
 
-                subscriptionDiagnosticsArrayNode.setValue(new DataValue(new Variant(xos)));
+                node.getSubscriptionDiagnosticsArrayNode().setValue(new DataValue(new Variant(value)));
             };
 
             diagnosticTasks.add(updateTask);
