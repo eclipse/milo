@@ -180,7 +180,8 @@ public class SessionManager implements
             session = createdSessions.get(authToken);
 
             if (session != null) {
-                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                session.close(true);
+
                 throw new UaException(StatusCodes.Bad_SessionNotActivated);
             } else {
                 throw new UaException(StatusCodes.Bad_SessionIdInvalid);
@@ -342,7 +343,7 @@ public class SessionManager implements
             createdSessions.remove(authenticationToken);
             activeSessions.remove(authenticationToken);
 
-            sessionListeners.forEach(l -> l.onSessionClosed(session));
+            sessionListeners.forEach(l -> l.onSessionClosed(s));
         });
 
         createdSessions.put(authenticationToken, session);
