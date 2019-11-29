@@ -49,6 +49,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class DiagnosticsManager extends AbstractLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(DiagnosticsManager.class);
@@ -208,6 +210,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         private final ServerDiagnosticsTypeNode node;
 
         ServerDiagnosticsObject(ServerDiagnosticsTypeNode node) {
+            checkNotNull(node, "ServerDiagnosticsTypeNode");
             this.node = node;
         }
 
@@ -303,6 +306,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         private final SessionsDiagnosticsSummaryTypeNode node;
 
         SessionsDiagnosticsSummaryObject(SessionsDiagnosticsSummaryTypeNode node) {
+            checkNotNull(node, "SessionsDiagnosticsSummaryTypeNode");
             this.node = node;
         }
 
@@ -358,7 +362,8 @@ public class DiagnosticsManager extends AbstractLifecycle {
                 .forEach(SessionDiagnosticsObject::shutdown);
             sessionDiagnosticsObjects.clear();
 
-            node.delete();
+            // The SessionsDiagnosticsSummaryTypeNode is not deleted because it
+            // should be present whether or not diagnostics are enabled.
         }
 
         private void configureSessionSecurityDiagnosticsArray() {
