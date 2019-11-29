@@ -53,12 +53,13 @@ class ComplexValueAttributeFilter implements AttributeFilter {
     public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
         if (attributeId == AttributeId.Value) {
             if (ctx.getNode() instanceof UaVariableNode) {
-                ExtensionObject xo = (ExtensionObject) ((DataValue) value).getValue().getValue();
+                Object o = ((DataValue) value).getValue().getValue();
 
-                synchronizeStructMembers(
-                    (UaVariableNode) ctx.getNode(),
-                    decodeValue(ctx, xo)
-                );
+                if (o instanceof ExtensionObject) {
+                    o = decodeValue(ctx, (ExtensionObject) o);
+                }
+
+                synchronizeStructMembers((UaVariableNode) ctx.getNode(), o);
             }
 
             ctx.setAttribute(attributeId, value);
@@ -67,7 +68,7 @@ class ComplexValueAttributeFilter implements AttributeFilter {
         }
     }
 
-    private void synchronizeStructMembers(UaVariableNode complexNode, Object structValue) {
+    private synchronized void synchronizeStructMembers(UaVariableNode complexNode, Object structValue) {
         if (initialized.compareAndSet(false, true)) {
             for (Method m : structValue.getClass().getMethods()) {
                 String methodName = m.getName();
