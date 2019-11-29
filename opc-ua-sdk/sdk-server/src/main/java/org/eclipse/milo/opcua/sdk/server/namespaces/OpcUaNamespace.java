@@ -179,6 +179,9 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         assert serverTypeNode != null;
 
+        // This Node is optional and we don't support it, so delete it entirely.
+        serverTypeNode.getNamespacesNode().delete();
+
         serverTypeNode.getNamespaceArrayNode().getFilterChain().addLast(
             AttributeFilters.getValue(
                 ctx ->
