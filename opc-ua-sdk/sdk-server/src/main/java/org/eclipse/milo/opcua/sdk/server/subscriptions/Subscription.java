@@ -710,8 +710,6 @@ public class Subscription {
             publishHandler.whenKeepAlive(service);
         } else if (state == State.Late) {
             publishHandler.whenLate(service);
-        } else if (state == State.Closing) {
-            publishHandler.whenClosing(service);
         } else if (state == State.Closed) {
             publishHandler.whenClosed(service);
         } else {
@@ -730,6 +728,9 @@ public class Subscription {
                 "[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
                 subscriptionId, state, keepAliveCounter, lifetimeCounter);
         }
+
+        // lifetimeCounter is always accessed while synchronized on 'this'.
+        lifetimeCounter = lifetimeCounter - 1;
 
         long startNanos = System.nanoTime();
 
@@ -769,13 +770,10 @@ public class Subscription {
     private synchronized void startPublishingTimer(long delayNanos) {
         if (state.get() == State.Closed) return;
 
-        // lifetimeCounter is always accessed while synchronized on 'this'.
-        lifetimeCounter = lifetimeCounter - 1;
-
         if (lifetimeCounter < 1) {
             logger.debug("[id={}] lifetime expired.", subscriptionId);
 
-            setState(State.Closing);
+            setState(State.Closed);
         } else {
             publishingTimer = subscriptionManager.getServer().getScheduledExecutorService().schedule(
                 this::onPublishingTimer,
@@ -978,7 +976,6 @@ public class Subscription {
     }
 
     public enum State {
-        Closing,
         Closed,
         Normal,
         KeepAlive,
