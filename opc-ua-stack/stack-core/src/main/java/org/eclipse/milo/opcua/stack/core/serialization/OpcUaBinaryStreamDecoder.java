@@ -353,6 +353,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         UShort namespaceIndex = readUInt16();
         String name = readString();
 
+        // invalid QualifiedNames become "null" QualifiedNames
+        if (name != null && name.length() > 512) {
+            name = null;
+        }
+
         return new QualifiedName(namespaceIndex, name);
     }
 
