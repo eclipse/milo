@@ -177,6 +177,11 @@ public class BrowsePathsHelper {
             RelativePathElement e = elements.get(0);
 
             return next(nodeId, e).thenCompose(nextExId -> {
+                if (nextExId.isNull()) {
+                    // There was no match for the target name
+                    return failedUaFuture(StatusCodes.Bad_NoMatch);
+                }
+
                 List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
                 Optional<NodeId> nextId = nextExId.local(server.getNamespaceTable());
@@ -229,17 +234,21 @@ public class BrowsePathsHelper {
                 .map(Reference::getTargetNodeId)
                 .collect(toList());
 
-            return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                for (int i = 0; i < targetNodeIds.size(); i++) {
-                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                    QualifiedName browseName = browseNames.get(i);
-                    if (browseName.equals(targetName)) {
-                        return targetNodeId;
+            if (targetNodeIds.isEmpty()) {
+                return failedUaFuture(StatusCodes.Bad_NoMatch);
+            } else {
+                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
+                    for (int i = 0; i < targetNodeIds.size(); i++) {
+                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                        QualifiedName browseName = browseNames.get(i);
+                        if (browseName.equals(targetName)) {
+                            return targetNodeId;
+                        }
                     }
-                }
 
-                return ExpandedNodeId.NULL_VALUE;
-            });
+                    return ExpandedNodeId.NULL_VALUE;
+                });
+            }
         });
     }
 
@@ -275,19 +284,23 @@ public class BrowsePathsHelper {
                 .map(Reference::getTargetNodeId)
                 .collect(toList());
 
-            return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                List<ExpandedNodeId> targets = newArrayList();
+            if (targetNodeIds.isEmpty()) {
+                return failedUaFuture(StatusCodes.Bad_NoMatch);
+            } else {
+                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
+                    List<ExpandedNodeId> targets = newArrayList();
 
-                for (int i = 0; i < targetNodeIds.size(); i++) {
-                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                    QualifiedName browseName = browseNames.get(i);
-                    if (matchesTarget(browseName, targetName)) {
-                        targets.add(targetNodeId);
+                    for (int i = 0; i < targetNodeIds.size(); i++) {
+                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                        QualifiedName browseName = browseNames.get(i);
+                        if (matchesTarget(browseName, targetName)) {
+                            targets.add(targetNodeId);
+                        }
                     }
-                }
 
-                return targets;
-            });
+                    return targets;
+                });
+            }
         });
     }
 
