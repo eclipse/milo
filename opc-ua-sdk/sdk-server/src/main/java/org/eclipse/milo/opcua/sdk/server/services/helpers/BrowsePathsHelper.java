@@ -69,29 +69,35 @@ public class BrowsePathsHelper {
 
         List<BrowsePath> browsePaths = l(request.getBrowsePaths());
 
+        if (browsePaths.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NothingToDo);
+            return;
+        }
+
         if (browsePaths.size() >
             server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {
 
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
-        } else {
-            List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.size());
-
-            for (BrowsePath browsePath : browsePaths) {
-                futures.add(translate(browsePath));
-            }
-
-            sequence(futures).thenAcceptAsync(results -> {
-                ResponseHeader header = service.createResponseHeader();
-
-                TranslateBrowsePathsToNodeIdsResponse response = new TranslateBrowsePathsToNodeIdsResponse(
-                    header,
-                    a(results, BrowsePathResult.class),
-                    new DiagnosticInfo[0]
-                );
-
-                service.setResponse(response);
-            }, server.getExecutorService());
+            return;
         }
+
+        List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.size());
+
+        for (BrowsePath browsePath : browsePaths) {
+            futures.add(translate(browsePath));
+        }
+
+        sequence(futures).thenAcceptAsync(results -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            TranslateBrowsePathsToNodeIdsResponse response = new TranslateBrowsePathsToNodeIdsResponse(
+                header,
+                a(results, BrowsePathResult.class),
+                new DiagnosticInfo[0]
+            );
+
+            service.setResponse(response);
+        }, server.getExecutorService());
     }
 
     private CompletableFuture<BrowsePathResult> translate(BrowsePath browsePath) {
