@@ -260,18 +260,22 @@ public class BrowseHelper {
             NodeId referenceTypeId = masks.contains(BrowseResultMask.ReferenceTypeId) ?
                 reference.getReferenceTypeId() : NodeId.NULL_VALUE;
 
+            boolean forward = masks.contains(BrowseResultMask.IsForward) && reference.isForward();
+
             return targetNodeId.local(server.getNamespaceTable()).map(nodeId -> {
                 CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
 
                 CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {
-                    if (attributes.nodeClass == NodeClass.Object || attributes.nodeClass == NodeClass.Variable) {
+                    if (masks.contains(BrowseResultMask.TypeDefinition) &&
+                        (attributes.nodeClass == NodeClass.Object || attributes.nodeClass == NodeClass.Variable)) {
+
                         // If this is an Object or Variable then we
                         // need to browse for the TypeDefinitionId...
                         return getTypeDefinition(nodeId).thenApply(
                             typeDefinition ->
                                 new ReferenceDescription(
                                     referenceTypeId,
-                                    reference.isForward(),
+                                    forward,
                                     targetNodeId,
                                     attributes.getBrowseName(),
                                     attributes.getDisplayName(),
@@ -283,7 +287,7 @@ public class BrowseHelper {
                         // Not an Object or Variable; we're done.
                         return completedFuture(new ReferenceDescription(
                             referenceTypeId,
-                            reference.isForward(),
+                            forward,
                             targetNodeId,
                             attributes.getBrowseName(),
                             attributes.getDisplayName(),
@@ -311,7 +315,7 @@ public class BrowseHelper {
                 return completedFuture(
                     new ReferenceDescription(
                         referenceTypeId,
-                        reference.isForward(),
+                        forward,
                         targetNodeId,
                         QualifiedName.NULL_VALUE,
                         LocalizedText.NULL_VALUE,
