@@ -81,6 +81,11 @@ public class BrowseHelper {
         ByteString.NULL_VALUE, new ReferenceDescription[0]
     );
 
+    private static final BrowseResult REFERENCE_TYPE_ID_INVALID_RESULT = new BrowseResult(
+        new StatusCode(StatusCodes.Bad_ReferenceTypeIdInvalid),
+        ByteString.NULL_VALUE, new ReferenceDescription[0]
+    );
+
     public void browseNext(ServiceRequest service) {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
@@ -140,6 +145,12 @@ public class BrowseHelper {
 
         public CompletableFuture<BrowseResult> browse() {
             BROWSE_EXECUTION_QUEUE.submit(() -> {
+                NodeId referenceTypeId = browseDescription.getReferenceTypeId();
+
+                if (referenceTypeId.isNotNull() && !server.getReferenceTypes().containsKey(referenceTypeId)) {
+                    future.complete(REFERENCE_TYPE_ID_INVALID_RESULT);
+                    return;
+                }
 
                 BrowseContext browseContext = new BrowseContext(
                     server,
