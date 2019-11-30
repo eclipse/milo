@@ -106,7 +106,18 @@ public class BrowsePathsHelper {
         NodeId startingNode = browsePath.getStartingNode();
         RelativePath relativePath = browsePath.getRelativePath();
 
-        follow(startingNode, l(relativePath.getElements())).whenComplete((targets, ex) -> {
+        List<RelativePathElement> relativePathElements = l(relativePath.getElements());
+
+        if (relativePathElements.isEmpty()) {
+            future.complete(new BrowsePathResult(
+                new StatusCode(StatusCodes.Bad_NothingToDo),
+                new BrowsePathTarget[0]
+            ));
+
+            return future;
+        }
+
+        follow(startingNode, relativePathElements).whenComplete((targets, ex) -> {
             if (targets != null) {
                 BrowsePathResult result;
 
