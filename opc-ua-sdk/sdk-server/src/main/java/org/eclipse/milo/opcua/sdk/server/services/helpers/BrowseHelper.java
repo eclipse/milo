@@ -417,12 +417,16 @@ public class BrowseHelper {
         public void run() {
             BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
 
+            List<ByteString> continuationPoints = l(request.getContinuationPoints());
+
+            if (continuationPoints.isEmpty()) {
+                service.setServiceFault(StatusCodes.Bad_NothingToDo);
+                return;
+            }
+
             List<BrowseResult> results = Lists.newArrayList();
 
-            ByteString[] cs = request.getContinuationPoints() != null ?
-                request.getContinuationPoints() : new ByteString[0];
-
-            for (ByteString bs : cs) {
+            for (ByteString bs : continuationPoints) {
                 if (request.getReleaseContinuationPoints()) {
                     results.add(release(bs));
                 } else {
@@ -431,8 +435,11 @@ public class BrowseHelper {
             }
 
             ResponseHeader header = service.createResponseHeader();
+
             BrowseNextResponse response = new BrowseNextResponse(
-                header, results.toArray(new BrowseResult[0]), new DiagnosticInfo[0]
+                header,
+                results.toArray(new BrowseResult[0]),
+                new DiagnosticInfo[0]
             );
 
             service.setResponse(response);
