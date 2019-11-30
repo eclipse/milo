@@ -144,14 +144,13 @@ public class BrowsePathsHelper {
 
                 future.complete(result);
             } else {
-                StatusCode statusCode = new StatusCode(StatusCodes.Bad_NoMatch);
-
-                if (ex instanceof UaException) {
-                    statusCode = ((UaException) ex).getStatusCode();
-                }
+                StatusCode statusCode = UaException.extractStatusCode(ex)
+                    .orElse(new StatusCode(StatusCodes.Bad_NoMatch));
 
                 BrowsePathResult result = new BrowsePathResult(
-                    statusCode, new BrowsePathTarget[0]);
+                    statusCode,
+                    new BrowsePathTarget[0]
+                );
 
                 future.complete(result);
             }
