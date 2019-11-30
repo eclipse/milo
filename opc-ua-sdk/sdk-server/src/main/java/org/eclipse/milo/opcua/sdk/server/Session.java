@@ -16,11 +16,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
@@ -31,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.services.DefaultNodeManagementServiceSe
 import org.eclipse.milo.opcua.sdk.server.services.DefaultQueryServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultSubscriptionServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultViewServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -67,6 +70,8 @@ public class Session implements SessionServiceSet {
     private final SubscriptionManager subscriptionManager;
 
     private final LinkedList<String> clientUserIdHistory = new LinkedList<>();
+
+    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
 
     private volatile Object identityObject;
     private volatile UserIdentityToken identityToken;
@@ -209,6 +214,10 @@ public class Session implements SessionServiceSet {
         synchronized (clientUserIdHistory) {
             return new ArrayList<>(clientUserIdHistory);
         }
+    }
+
+    public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
+        return browseContinuationPoints;
     }
 
     public void setSecureChannelId(long secureChannelId) {

@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
@@ -124,23 +125,30 @@ public class BrowseHelper {
 
         private final CompletableFuture<BrowseResult> future = new CompletableFuture<>();
 
+        private final Session session;
+
         private final AccessContext context;
         private final OpcUaServer server;
         private final ViewDescription view;
         private final UInteger maxReferencesPerNode;
         private final BrowseDescription browseDescription;
 
-        private Browse(AccessContext context,
-                       OpcUaServer server,
-                       ViewDescription view,
-                       UInteger maxReferencesPerNode,
-                       BrowseDescription browseDescription) {
+        private Browse(
+            AccessContext context,
+            OpcUaServer server,
+            ViewDescription view,
+            UInteger maxReferencesPerNode,
+            BrowseDescription browseDescription
+        ) {
 
             this.context = context;
             this.server = server;
             this.view = view;
             this.browseDescription = browseDescription;
             this.maxReferencesPerNode = maxReferencesPerNode;
+
+            this.session = context.getSession()
+                .orElseThrow(() -> new IllegalArgumentException("AccessContext must have a session"));
         }
 
         public CompletableFuture<BrowseResult> browse() {
@@ -200,7 +208,7 @@ public class BrowseHelper {
 
         private BrowseResult browseResult(int max, List<ReferenceDescription> references) {
             if (references.size() > max) {
-                if (server.getBrowseContinuationPoints().size() >
+                if (session.getBrowseContinuationPoints().size() >
                     server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
 
                     return new BrowseResult(BAD_NO_CONTINUATION_POINTS, null, new ReferenceDescription[0]);
@@ -210,7 +218,7 @@ public class BrowseHelper {
                     subList.clear();
 
                     BrowseContinuationPoint c = new BrowseContinuationPoint(references, max);
-                    server.getBrowseContinuationPoints().put(c.identifier, c);
+                    session.getBrowseContinuationPoints().put(c.identifier, c);
 
                     return new BrowseResult(
                         StatusCode.GOOD, c.identifier, current.toArray(new ReferenceDescription[0]));
@@ -408,13 +416,16 @@ public class BrowseHelper {
 
     private static class BrowseNext implements Runnable {
 
+        private final Session session;
+
         private final OpcUaServer server;
         private final ServiceRequest service;
 
         private BrowseNext(OpcUaServer server, ServiceRequest service) {
-
             this.server = server;
             this.service = service;
+
+            session = service.attr(ServiceAttributes.SESSION_KEY).get();
         }
 
         @Override
@@ -450,7 +461,7 @@ public class BrowseHelper {
         }
 
         private BrowseResult release(ByteString bs) {
-            BrowseContinuationPoint c = server.getBrowseContinuationPoints().remove(bs);
+            BrowseContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
 
             return c != null ?
                 new BrowseResult(StatusCode.GOOD, null, null) :
@@ -458,7 +469,7 @@ public class BrowseHelper {
         }
 
         private BrowseResult references(ByteString bs) {
-            BrowseContinuationPoint c = server.getBrowseContinuationPoints().remove(bs);
+            BrowseContinuationPoint c = session.getBrowseContinuationPoints().remove(bs);
 
             if (c != null) {
                 int max = c.max;
@@ -469,7 +480,7 @@ public class BrowseHelper {
                     List<ReferenceDescription> current = Lists.newArrayList(subList);
                     subList.clear();
 
-                    server.getBrowseContinuationPoints().put(c.identifier, c);
+                    session.getBrowseContinuationPoints().put(c.identifier, c);
 
                     return new BrowseResult(
                         StatusCode.GOOD,
