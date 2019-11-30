@@ -50,6 +50,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class BrowsePathsHelper {
@@ -159,8 +160,10 @@ public class BrowsePathsHelper {
         return future;
     }
 
-    private CompletableFuture<List<BrowsePathTarget>> follow(NodeId nodeId,
-                                                             List<RelativePathElement> elements) {
+    private CompletableFuture<List<BrowsePathTarget>> follow(
+        NodeId nodeId,
+        List<RelativePathElement> elements
+    ) {
 
         if (elements.isEmpty()) {
             return completedFuture(Collections.emptyList());
@@ -168,7 +171,8 @@ public class BrowsePathsHelper {
             return target(nodeId, elements.get(0)).thenApply(targets ->
                 targets.stream()
                     .map(n -> new BrowsePathTarget(n, UInteger.MAX))
-                    .collect(toList()));
+                    .collect(toList())
+            );
         } else {
             RelativePathElement e = elements.get(0);
 
@@ -197,6 +201,10 @@ public class BrowsePathsHelper {
         NodeId referenceTypeId = element.getReferenceTypeId();
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
+
+        if (targetName.isNull()) {
+            return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
+        }
 
         BrowseContext browseContext = new BrowseContext(
             server,
@@ -239,6 +247,10 @@ public class BrowsePathsHelper {
         NodeId referenceTypeId = element.getReferenceTypeId();
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
+
+        if (targetName.isNull()) {
+            return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
+        }
 
         BrowseContext browseContext = new BrowseContext(
             server,
