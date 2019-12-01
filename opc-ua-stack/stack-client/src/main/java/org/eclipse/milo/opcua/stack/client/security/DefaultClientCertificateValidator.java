@@ -15,17 +15,30 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
+import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.ValidationCheck;
 
 public class DefaultClientCertificateValidator implements ClientCertificateValidator {
 
     private final TrustListManager trustListManager;
+    private final ImmutableSet<ValidationCheck> validationChecks;
 
     public DefaultClientCertificateValidator(TrustListManager trustListManager) {
+        this(trustListManager, ValidationCheck.NO_OPTIONAL_CHECKS);
+    }
+
+    public DefaultClientCertificateValidator(
+        TrustListManager trustListManager,
+        Set<ValidationCheck> validationChecks
+    ) {
+
         this.trustListManager = trustListManager;
+        this.validationChecks = ImmutableSet.copyOf(validationChecks);
     }
 
     @Override
@@ -44,7 +57,7 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
             certPathResult.getCertPath(),
             certPathResult.getTrustAnchor(),
             crls,
-            true
+            validationChecks
         );
     }
 

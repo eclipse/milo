@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +49,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
@@ -132,25 +134,36 @@ public class CertificateValidationUtil {
     public static void validateTrustedCertPath(
         CertPath certPath,
         TrustAnchor trustAnchor,
+        Collection<X509CRL> crls
+    ) throws UaException {
+
+        validateTrustedCertPath(certPath, trustAnchor, crls, ValidationCheck.ALL_OPTIONAL_CHECKS);
+    }
+
+    public static void validateTrustedCertPath(
+        CertPath certPath,
+        TrustAnchor trustAnchor,
         Collection<X509CRL> crls,
-        boolean revocationCheckingEnabled
+        Set<ValidationCheck> validationChecks
     ) throws UaException {
 
         X509Certificate anchorCert = trustAnchor.getTrustedCert();
 
         if (certPath.getCertificates().isEmpty()) {
             // self-signed; anchor is the end entity cert
-            checkValidity(anchorCert, true);
-            checkCertificateUsage(anchorCert);
-        } else {
-            checkValidity(anchorCert, false);
-            checkIssuerCertificateUsage(anchorCert);
 
-            // TODO add a CertPathChecker for keyUsage and extendedKeyUsage
+            // TODO suppressions
+            checkValidity(anchorCert, true);
+            checkEndEntityKeyUsage(anchorCert);
+        } else {
+            // TODO suppressions
+            checkValidity(anchorCert, false);
+            checkIssuerKeyUsage(anchorCert);
+
             try {
                 PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
 
-                if (revocationCheckingEnabled) {
+                if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
                     parameters.setRevocationEnabled(true);
 
                     if (!crls.isEmpty()) {
@@ -163,13 +176,13 @@ public class CertificateValidationUtil {
                     parameters.setRevocationEnabled(false);
                 }
 
-                parameters.addCertPathChecker(new OpcUaCertificateUsageChecker(certPath));
+                parameters.addCertPathChecker(new OpcUaCertificateUsageChecker(certPath, validationChecks));
 
                 PKIXCertPathValidator certPathValidator = new PKIXCertPathValidator();
 
                 CertPathChecker revocationChecker = certPathValidator.engineGetRevocationChecker();
 
-                if (revocationCheckingEnabled && revocationChecker instanceof PKIXRevocationChecker) {
+                if (parameters.isRevocationEnabled() && revocationChecker instanceof PKIXRevocationChecker) {
                     PKIXRevocationChecker pkixRevocationChecker = (PKIXRevocationChecker) revocationChecker;
 
                     pkixRevocationChecker.setOptions(newHashSet(
@@ -400,11 +413,7 @@ public class CertificateValidationUtil {
         }
     }
 
-    public static void checkCertificateUsage(X509Certificate certificate) throws UaException {
-        Set<String> criticalExtensions = certificate.getCriticalExtensionOIDs();
-        // TODO suppression
-        // TODO if keyUsage or extendedKeyUsage are critical they cannot be suppressed
-
+    public static void checkEndEntityKeyUsage(X509Certificate certificate) throws UaException {
         boolean[] keyUsage = certificate.getKeyUsage();
 
         if (keyUsage == null) {
@@ -447,6 +456,10 @@ public class CertificateValidationUtil {
             );
         }
 
+
+    }
+
+    public static void checkEndEntityExtendedKeyUsage(X509Certificate certificate) throws UaException {
         try {
             List<String> extendedKeyUsage = certificate.getExtendedKeyUsage();
 
@@ -475,6 +488,14 @@ public class CertificateValidationUtil {
         }
     }
 
+    public static void checkIssuerKeyUsage(X509Certificate certificate) throws UaException {
+        // TODO
+        LOGGER.info(
+            "TODO: check certificate usage for issuer: {}",
+            certificate.getSubjectX500Principal().getName()
+        );
+    }
+
     /**
      * Validate that the application URI matches the SubjectAltName URI in the given certificate.
      *
@@ -486,14 +507,6 @@ public class CertificateValidationUtil {
         if (!checkSubjectAltNameField(certificate, SUBJECT_ALT_NAME_URI, applicationUri::equals)) {
             throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
         }
-    }
-
-    public static void checkIssuerCertificateUsage(X509Certificate certificate) throws UaException {
-        // TODO
-        LOGGER.info(
-            "TODO: check certificate usage for issuer: {}",
-            certificate.getSubjectX500Principal().getName()
-        );
     }
 
     /**
@@ -551,11 +564,55 @@ public class CertificateValidationUtil {
         }
     }
 
-    enum ValidationCheck {
-        KEY_USAGE,
-        EXTENDED_KEY_USAGE,
-        REVOCATION_LIST,
-        REVOCATION_STATUS
+    /**
+     * Validation checks that are allowed to be suppressed (i.e. they are optional) according to the spec.
+     * <p>
+     * See OPC UA (v1.03) Part 4, Section 6.1.3.
+     */
+    public enum ValidationCheck {
+        /**
+         * Check that the end-entity certificate contains a particular hostname or IP address in its SANs.
+         * <p>
+         * This check is only done in clients, against the server they are connecting to.
+         */
+        HOSTNAME,
+        /**
+         * Certificate validity and expiration is checked.
+         */
+        VALIDITY,
+        /**
+         * The KeyUsage extension must be present and checked for end-entity certificates.
+         */
+        KEY_USAGE_END_ENTITY,
+        /**
+         * The ExtendedKeyUsage extension must be present and checked for end-entity certificates.
+         */
+        EXTENDED_KEY_USAGE_END_ENTITY,
+        /**
+         * The KeyUsage extension must be presented and checked for CA certificates.
+         * <p>
+         * This check does not apply to self-signed end-entity certificates.
+         */
+        KEY_USAGE_ISSUER,
+        /**
+         * Revocation checking must happen.
+         */
+        REVOCATION_CHECK,
+        /**
+         * CRLs for every non-end-entity must CA must be found.
+         */
+        REVOCATION_LIST_FOUND;
+
+        /**
+         * An empty set of {@link ValidationCheck}s.
+         */
+        public static final ImmutableSet<ValidationCheck> NO_OPTIONAL_CHECKS = ImmutableSet.of();
+
+        /**
+         * A set the includes all optional {@link ValidationCheck}s.
+         */
+        public static final ImmutableSet<ValidationCheck> ALL_OPTIONAL_CHECKS =
+            ImmutableSet.copyOf(EnumSet.allOf(ValidationCheck.class));
     }
 
     private static class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
@@ -563,9 +620,11 @@ public class CertificateValidationUtil {
         private final X509Certificate endEntityCert;
 
         private final CertPath certPath;
+        private final Set<ValidationCheck> validationChecks;
 
-        OpcUaCertificateUsageChecker(CertPath certPath) {
+        OpcUaCertificateUsageChecker(CertPath certPath, Set<ValidationCheck> validationChecks) {
             this.certPath = certPath;
+            this.validationChecks = validationChecks;
 
             endEntityCert = (X509Certificate) certPath.getCertificates().get(0);
         }
@@ -589,39 +648,89 @@ public class CertificateValidationUtil {
 
         @Override
         public void check(Certificate cert, Collection<String> unresolvedCritExts) throws CertPathValidatorException {
+            X509Certificate certificate = (X509Certificate) cert;
+
+            Set<String> criticalExtensions = certificate.getCriticalExtensionOIDs();
+
             if (endEntityCert.equals(cert)) {
                 try {
-                    checkCertificateUsage((X509Certificate) cert);
+                    checkEndEntityKeyUsage((X509Certificate) cert);
 
-                    LOGGER.info(
-                        "validated certificate usage for end entity: {}",
+                    LOGGER.debug(
+                        "validated KeyUsage for end entity: {}",
                         ((X509Certificate) cert).getSubjectX500Principal().getName()
                     );
                 } catch (UaException e) {
-                    throw new CertPathValidatorException(
-                        e.getMessage(),
-                        e,
-                        certPath,
-                        certPath.getCertificates().indexOf(cert),
-                        PKIXReason.INVALID_KEY_USAGE
+                    if (validationChecks.contains(ValidationCheck.KEY_USAGE_END_ENTITY) ||
+                        criticalExtensions.contains(KEY_USAGE_OID)
+                    ) {
+
+                        throw new CertPathValidatorException(
+                            e.getMessage(),
+                            e,
+                            certPath,
+                            certPath.getCertificates().indexOf(cert),
+                            PKIXReason.INVALID_KEY_USAGE
+                        );
+                    } else {
+                        LOGGER.warn(
+                            "check suppressed: certificate failed end-entity usage check: {}",
+                            ((X509Certificate) cert).getSubjectX500Principal().getName()
+                        );
+                    }
+                }
+                try {
+                    checkEndEntityExtendedKeyUsage(certificate);
+
+                    LOGGER.debug(
+                        "validated ExtendedKeyUsage for end entity: {}",
+                        ((X509Certificate) cert).getSubjectX500Principal().getName()
                     );
+                } catch (UaException e) {
+                    if (validationChecks.contains(ValidationCheck.EXTENDED_KEY_USAGE_END_ENTITY) ||
+                        criticalExtensions.contains(EXTENDED_KEY_USAGE_OID)
+                    ) {
+
+                        throw new CertPathValidatorException(
+                            e.getMessage(),
+                            e,
+                            certPath,
+                            certPath.getCertificates().indexOf(cert),
+                            PKIXReason.INVALID_KEY_USAGE
+                        );
+                    } else {
+                        LOGGER.warn(
+                            "check suppressed: certificate failed end-entity usage check: {}",
+                            ((X509Certificate) cert).getSubjectX500Principal().getName()
+                        );
+                    }
                 }
             } else {
                 try {
-                    checkIssuerCertificateUsage((X509Certificate) cert);
+                    checkIssuerKeyUsage((X509Certificate) cert);
 
-                    LOGGER.info(
-                        "validated certificate usage for issuer: {}",
+                    LOGGER.debug(
+                        "validated KeyUsage for issuer: {}",
                         ((X509Certificate) cert).getSubjectX500Principal().getName()
                     );
                 } catch (UaException e) {
-                    throw new CertPathValidatorException(
-                        e.getMessage(),
-                        e,
-                        certPath,
-                        certPath.getCertificates().indexOf(cert),
-                        PKIXReason.INVALID_KEY_USAGE
-                    );
+                    if (validationChecks.contains(ValidationCheck.KEY_USAGE_ISSUER) ||
+                        criticalExtensions.contains(KEY_USAGE_OID)
+                    ) {
+
+                        throw new CertPathValidatorException(
+                            e.getMessage(),
+                            e,
+                            certPath,
+                            certPath.getCertificates().indexOf(cert),
+                            PKIXReason.INVALID_KEY_USAGE
+                        );
+                    } else {
+                        LOGGER.warn(
+                            "check suppressed: certificate failed issuer usage check: {}",
+                            ((X509Certificate) cert).getSubjectX500Principal().getName()
+                        );
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@ import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.ValidationCheck;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -208,7 +210,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    true
+                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
         }
@@ -239,7 +241,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    true
+                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
         }
@@ -270,7 +272,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    true
+                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
         }
@@ -381,7 +383,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    true
+                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
         }

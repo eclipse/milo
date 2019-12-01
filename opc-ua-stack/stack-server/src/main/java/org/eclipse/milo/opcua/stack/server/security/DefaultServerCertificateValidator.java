@@ -15,24 +15,40 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
+
+import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.ValidationCheck;
+import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.buildTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.checkApplicationUri;
+import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.validateTrustedCertPath;
 
 public class DefaultServerCertificateValidator implements ServerCertificateValidator {
 
     private final TrustListManager trustListManager;
+    private final ImmutableSet<ValidationCheck> validationChecks;
 
     public DefaultServerCertificateValidator(TrustListManager trustListManager) {
+        this(trustListManager, ValidationCheck.NO_OPTIONAL_CHECKS);
+    }
+
+    public DefaultServerCertificateValidator(
+        TrustListManager trustListManager,
+        Set<ValidationCheck> validationChecks
+    ) {
+
         this.trustListManager = trustListManager;
+        this.validationChecks = ImmutableSet.copyOf(validationChecks);
     }
 
     @Override
     public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
         try {
-            PKIXCertPathBuilderResult certPathResult = CertificateValidationUtil.buildTrustedCertPath(
+            PKIXCertPathBuilderResult certPathResult = buildTrustedCertPath(
                 certificateChain,
                 trustListManager.getTrustedCertificates(),
                 trustListManager.getIssuerCertificates()
@@ -42,11 +58,11 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
             crls.addAll(trustListManager.getTrustedCrls());
             crls.addAll(trustListManager.getIssuerCrls());
 
-            CertificateValidationUtil.validateTrustedCertPath(
+            validateTrustedCertPath(
                 certPathResult.getCertPath(),
                 certPathResult.getTrustAnchor(),
                 crls,
-                true
+                validationChecks
             );
         } catch (UaException e) {
             // servers need to report a less informative StatusCode if the
@@ -77,6 +93,6 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
         X509Certificate certificate = certificateChain.get(0);
 
-        CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
+        checkApplicationUri(certificate, applicationUri);
     }
 }
