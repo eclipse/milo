@@ -134,32 +134,17 @@ public class CertificateValidationUtil {
     public static void validateTrustedCertPath(
         CertPath certPath,
         TrustAnchor trustAnchor,
-        Collection<X509CRL> crls
-    ) throws UaException {
-
-        validateTrustedCertPath(certPath, trustAnchor, crls, ValidationCheck.ALL_OPTIONAL_CHECKS);
-    }
-
-    public static void validateTrustedCertPath(
-        CertPath certPath,
-        TrustAnchor trustAnchor,
         Collection<X509CRL> crls,
         Set<ValidationCheck> validationChecks
     ) throws UaException {
 
         X509Certificate anchorCert = trustAnchor.getTrustedCert();
+        boolean anchorIsEndEntity = certPath.getCertificates().isEmpty();
 
-        if (certPath.getCertificates().isEmpty()) {
-            // self-signed; anchor is the end entity cert
+        checkAnchorValidity(anchorCert, validationChecks, anchorIsEndEntity);
 
-            // TODO suppressions
-            checkValidity(anchorCert, true);
-            checkEndEntityKeyUsage(anchorCert);
-        } else {
-            // TODO suppressions
-            checkValidity(anchorCert, false);
-            checkIssuerKeyUsage(anchorCert);
-
+        if (!anchorIsEndEntity) {
+            // anchorCert is an issuer; validate the rest of the certPath
             try {
                 PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
 
@@ -237,6 +222,67 @@ public class CertificateValidationUtil {
                 }
             } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+            }
+        }
+    }
+
+    private static void checkAnchorValidity(
+        X509Certificate anchorCert,
+        Set<ValidationCheck> validationChecks,
+        boolean endEntity
+    ) throws UaException {
+
+        try {
+            checkValidity(anchorCert, endEntity);
+        } catch (UaException e) {
+            if (validationChecks.contains(ValidationCheck.VALIDITY)) {
+                throw e;
+            } else {
+                LOGGER.warn(
+                    "check suppressed: certificate failed end-entity validity check: {}",
+                    anchorCert.getSubjectX500Principal().getName()
+                );
+            }
+        }
+
+        if (endEntity) {
+            try {
+                checkEndEntityKeyUsage(anchorCert);
+            } catch (UaException e) {
+                if (validationChecks.contains(ValidationCheck.KEY_USAGE_END_ENTITY)) {
+                    throw e;
+                } else {
+                    LOGGER.warn(
+                        "check suppressed: certificate failed end-entity KeyUsage check: {}",
+                        anchorCert.getSubjectX500Principal().getName()
+                    );
+                }
+            }
+
+            try {
+                checkEndEntityExtendedKeyUsage(anchorCert);
+            } catch (UaException e) {
+                if (validationChecks.contains(ValidationCheck.EXTENDED_KEY_USAGE_END_ENTITY)) {
+                    throw e;
+                } else {
+                    LOGGER.warn(
+                        "check suppressed: certificate failed end-entity ExtendedKeyUsage check: {}",
+                        anchorCert.getSubjectX500Principal().getName()
+                    );
+                }
+            }
+        } else {
+            try {
+                checkIssuerKeyUsage(anchorCert);
+            } catch (UaException e) {
+                if (validationChecks.contains(ValidationCheck.KEY_USAGE_ISSUER)) {
+                    throw e;
+                } else {
+                    LOGGER.warn(
+                        "check suppressed: certificate failed issuer KeyUsage check: {}",
+                        anchorCert.getSubjectX500Principal().getName()
+                    );
+                }
             }
         }
     }
