@@ -15,10 +15,10 @@ import java.io.IOException;
 import com.google.common.io.Files;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -32,7 +32,7 @@ public class OpcUaServerConfigTest {
         OpcUaServerConfig original = OpcUaServerConfig.builder()
             .setCertificateManager(new DefaultCertificateManager())
             .setTrustListManager(trustListManager)
-            .setCertificateValidator(new DefaultCertificateValidator(trustListManager))
+            .setCertificateValidator(new DefaultServerCertificateValidator(trustListManager))
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})

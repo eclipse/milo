@@ -24,8 +24,8 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -144,7 +144,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     }
 
     @Override
-    public OpcUaClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+    public OpcUaClientConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
         super.setCertificateValidator(certificateValidator);
         return this;
     }
@@ -366,7 +366,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         }
 
         @Override
-        public CertificateValidator getCertificateValidator() {
+        public ClientCertificateValidator getCertificateValidator() {
             return stackClientConfig.getCertificateValidator();
         }
 

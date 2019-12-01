@@ -835,8 +835,7 @@ public class SessionFsmFactory {
 
                         CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
 
-                        certificateValidator.validate(serverCertificate);
-                        certificateValidator.verifyTrustChain(serverCertificateChain);
+                        certificateValidator.validateCertificateChain(serverCertificateChain);
 
                         SignatureData serverSignature = response.getServerSignature();
 

@@ -483,8 +483,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 List<X509Certificate> serverCertificateChain =
                     CertificateUtil.decodeCertificates(serverCertificateBytes.bytesOrEmpty());
 
-                certificateValidator.validate(serverCertificateChain.get(0));
-                certificateValidator.verifyTrustChain(serverCertificateChain);
+                certificateValidator.validateCertificateChain(serverCertificateChain);
             }
         } else {
             if (!securityHeader.equals(headerRef.get())) {

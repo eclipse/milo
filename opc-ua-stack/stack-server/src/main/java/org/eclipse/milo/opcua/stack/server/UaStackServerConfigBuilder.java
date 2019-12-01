@@ -21,10 +21,10 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
 public class UaStackServerConfigBuilder {
 
@@ -42,7 +42,7 @@ public class UaStackServerConfigBuilder {
 
     private CertificateManager certificateManager;
     private TrustListManager trustListManager;
-    private CertificateValidator certificateValidator;
+    private ServerCertificateValidator certificateValidator;
 
     private KeyPair httpsKeyPair;
     private X509Certificate httpsCertificate;
@@ -89,7 +89,7 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
-    public UaStackServerConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+    public UaStackServerConfigBuilder setCertificateValidator(ServerCertificateValidator certificateValidator) {
         this.certificateValidator = certificateValidator;
         return this;
     }
@@ -143,7 +143,7 @@ public class UaStackServerConfigBuilder {
         private final EncodingLimits encodingLimits;
 
         private final CertificateManager certificateManager;
-        private final CertificateValidator certificateValidator;
+        private final ServerCertificateValidator certificateValidator;
         private final TrustListManager trustListManager;
 
         private final KeyPair httpsKeyPair;
@@ -160,7 +160,7 @@ public class UaStackServerConfigBuilder {
             EncodingLimits encodingLimits,
             CertificateManager certificateManager,
             TrustListManager trustListManager,
-            CertificateValidator certificateValidator,
+            ServerCertificateValidator certificateValidator,
             @Nullable KeyPair httpsKeyPair,
             @Nullable X509Certificate httpsCertificate,
             ExecutorService executor) {
@@ -220,7 +220,7 @@ public class UaStackServerConfigBuilder {
         }
 
         @Override
-        public CertificateValidator getCertificateValidator() {
+        public ServerCertificateValidator getCertificateValidator() {
             return certificateValidator;
         }
 

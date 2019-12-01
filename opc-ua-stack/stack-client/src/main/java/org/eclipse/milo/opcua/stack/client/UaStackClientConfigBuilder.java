@@ -19,10 +19,9 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -35,7 +34,7 @@ public class UaStackClientConfigBuilder {
     private KeyPair keyPair;
     private X509Certificate certificate;
     private X509Certificate[] certificateChain;
-    private CertificateValidator certificateValidator = new InsecureCertificateValidator();
+    private ClientCertificateValidator certificateValidator = new ClientCertificateValidator.InsecureValidator();
 
     private ExecutorService executor;
     private NioEventLoopGroup eventLoop;
@@ -68,7 +67,7 @@ public class UaStackClientConfigBuilder {
         return this;
     }
 
-    public UaStackClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+    public UaStackClientConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
         this.certificateValidator = certificateValidator;
         return this;
     }
@@ -155,7 +154,7 @@ public class UaStackClientConfigBuilder {
         private final KeyPair keyPair;
         private final X509Certificate certificate;
         private final X509Certificate[] certificateChain;
-        private final CertificateValidator certificateValidator;
+        private final ClientCertificateValidator certificateValidator;
 
         private final EncodingLimits encodingLimits;
         private final ExecutorService executor;
@@ -172,7 +171,7 @@ public class UaStackClientConfigBuilder {
             @Nullable KeyPair keyPair,
             @Nullable X509Certificate certificate,
             @Nullable X509Certificate[] certificateChain,
-            CertificateValidator certificateValidator,
+            ClientCertificateValidator certificateValidator,
             EncodingLimits encodingLimits,
             ExecutorService executor,
             NioEventLoopGroup eventLoop,
@@ -228,7 +227,7 @@ public class UaStackClientConfigBuilder {
         }
 
         @Override
-        public CertificateValidator getCertificateValidator() {
+        public ClientCertificateValidator getCertificateValidator() {
             return certificateValidator;
         }
 

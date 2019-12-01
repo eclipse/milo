@@ -10,18 +10,27 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SignatureException;
+import java.security.cert.CertPath;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathChecker;
+import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertStore;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.PKIXCertPathBuilderResult;
+import java.security.cert.PKIXCertPathChecker;
+import java.security.cert.PKIXParameters;
+import java.security.cert.PKIXReason;
 import java.security.cert.PKIXRevocationChecker;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509CRL;
@@ -36,83 +45,35 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.provider.certpath.PKIXCertPathValidator;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 
 public class CertificateValidationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateValidationUtil.class);
 
     private static final String KEY_USAGE_OID = "2.5.29.15";
+    private static final String EXTENDED_KEY_USAGE_OID = "2.5.29.37";
+    private static final String SERVER_AUTH_OID = "1.3.6.1.5.5.7.3.1";
+    private static final String CLIENT_AUTH_OID = "1.3.6.1.5.5.7.3.2";
 
     private static final int SUBJECT_ALT_NAME_URI = 6;
     private static final int SUBJECT_ALT_NAME_DNS_NAME = 2;
     private static final int SUBJECT_ALT_NAME_IP_ADDRESS = 7;
 
-    /**
-     * Verify that a chain of trust can be established for a certificate or chain of certificates.
-     * <p>
-     * The chain must begin with the end-entity certificate at index 0 followed by the remaining certificates in the
-     * chain, if any, in the correct order.
-     * <p>
-     * If the end-entity certificate is present in the {@code trustedCertificates} set then trust is immediately
-     * verified. Otherwise, an attempt to build a path to a trusted anchor is made using the provided
-     * {@code issuerCertificates} as the anchors.
-     *
-     * @param certificateChain    the certificate chain to verify.
-     * @param trustedCertificates the set of known-trusted certificates.
-     * @param issuerCertificates  the set of CA certificates to use as trust anchors.
-     * @throws UaException if a chain of trust could not be established.
-     */
-    public static void verifyTrustChain(
-        List<X509Certificate> certificateChain,
-        Set<X509Certificate> trustedCertificates,
-        Set<X509Certificate> issuerCertificates
-    ) throws UaException {
-
-        verifyTrustChain(
-            certificateChain,
-            trustedCertificates,
-            Collections.emptySet(),
-            issuerCertificates,
-            Collections.emptySet()
-        );
-    }
-
-    /**
-     * Verify that a chain of trust can be established for a certificate or chain of certificates.
-     * <p>
-     * The chain must begin with the end-entity certificate at index 0 followed by the remaining certificates in the
-     * chain, if any, in the correct order.
-     * <p>
-     * If the end-entity certificate is present in the {@code trustedCertificates} set then trust is immediately
-     * verified. Otherwise, an attempt to build a path to a trust anchor is made using the root CAs in
-     * {@code trustedCertificates} and the root CAs in {@code issuerCertificates} as the trust anchors.
-     * <p>
-     * Once a valid certificate path has been established, at least one component of that path must be present in the
-     * {@code trustedCertificates} list.
-     *
-     * @param certificateChain    the certificate chain to verify.
-     * @param trustedCertificates a collection of known-trusted certificates and CAs. Root CAs are used as Trust
-     *                            Anchors.
-     * @param trustedCrls         a collection of {@link X509CRL}s for CAs in {@code trustedCertificates}, if any.
-     * @param issuerCertificates  a collection of intermediate and root CA certificates used the purpose of path
-     *                            validation, but that aren't trusted issuers. Root CAs are used as Trust Anchors.
-     * @param issuerCrls          a collection of {@link X509CRL}s for CAs in {@code issuerCertificates}, if any.
-     * @throws UaException if a chain of trust could not be established.
-     */
-    public static void verifyTrustChain(
+    public static PKIXCertPathBuilderResult buildTrustedCertPath(
         List<X509Certificate> certificateChain,
         Collection<X509Certificate> trustedCertificates,
-        Collection<X509CRL> trustedCrls,
-        Collection<X509Certificate> issuerCertificates,
-        Collection<X509CRL> issuerCrls
+        Collection<X509Certificate> issuerCertificates
     ) throws UaException {
 
         Preconditions.checkArgument(!certificateChain.isEmpty(), "certificateChain must not be empty");
@@ -120,99 +81,200 @@ public class CertificateValidationUtil {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("certificateChain: {}", certificateChain);
             LOGGER.trace("trustedCertificates: {}", trustedCertificates);
-            LOGGER.trace("trustedCrls: {}", trustedCrls);
             LOGGER.trace("issuerCertificates: {}", issuerCertificates);
-            LOGGER.trace("issuerCrls: {}", issuerCrls);
         }
+
+        Set<TrustAnchor> trustAnchors = new HashSet<>();
+        for (X509Certificate c : trustedCertificates) {
+            if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
+                trustAnchors.add(new TrustAnchor(c, null));
+            }
+        }
+        for (X509Certificate c : issuerCertificates) {
+            if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
+                trustAnchors.add(new TrustAnchor(c, null));
+            }
+        }
+
+        PKIXCertPathBuilderResult certPathResult = buildCertPath(
+            certificateChain,
+            trustedCertificates,
+            issuerCertificates,
+            trustAnchors
+        );
+
+        CertPath certPath = certPathResult.getCertPath();
+        TrustAnchor trustAnchor = certPathResult.getTrustAnchor();
+
+        List<X509Certificate> certificates = new ArrayList<>();
+        certPath.getCertificates().stream()
+            .map(X509Certificate.class::cast)
+            .forEach(certificates::add);
+        certificates.add(trustAnchor.getTrustedCert());
+
+        if (LOGGER.isTraceEnabled()) {
+            List<String> path = certificates.stream()
+                .map(c -> c.getSubjectX500Principal().getName())
+                .collect(Collectors.toList());
+            LOGGER.trace("certificate path: {}", path);
+        }
+
+        if (certificates.stream().noneMatch(trustedCertificates::contains)) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUntrusted,
+                "certificate chain did not contain a trusted certificate"
+            );
+        }
+
+        return certPathResult;
+    }
+
+    public static void validateTrustedCertPath(
+        CertPath certPath,
+        TrustAnchor trustAnchor,
+        Collection<X509CRL> crls,
+        boolean revocationCheckingEnabled
+    ) throws UaException {
+
+        X509Certificate anchorCert = trustAnchor.getTrustedCert();
+
+        if (certPath.getCertificates().isEmpty()) {
+            // self-signed; anchor is the end entity cert
+            checkValidity(anchorCert, true);
+            checkCertificateUsage(anchorCert);
+        } else {
+            checkValidity(anchorCert, false);
+            checkIssuerCertificateUsage(anchorCert);
+
+            // TODO add a CertPathChecker for keyUsage and extendedKeyUsage
+            try {
+                PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
+
+                if (revocationCheckingEnabled) {
+                    parameters.setRevocationEnabled(true);
+
+                    if (!crls.isEmpty()) {
+                        parameters.addCertStore(CertStore.getInstance(
+                            "Collection",
+                            new CollectionCertStoreParameters(crls)
+                        ));
+                    }
+                } else {
+                    parameters.setRevocationEnabled(false);
+                }
+
+                parameters.addCertPathChecker(new OpcUaCertificateUsageChecker(certPath));
+
+                PKIXCertPathValidator certPathValidator = new PKIXCertPathValidator();
+
+                CertPathChecker revocationChecker = certPathValidator.engineGetRevocationChecker();
+
+                if (revocationCheckingEnabled && revocationChecker instanceof PKIXRevocationChecker) {
+                    PKIXRevocationChecker pkixRevocationChecker = (PKIXRevocationChecker) revocationChecker;
+
+                    pkixRevocationChecker.setOptions(newHashSet(
+                        PKIXRevocationChecker.Option.NO_FALLBACK,
+                        PKIXRevocationChecker.Option.PREFER_CRLS,
+                        PKIXRevocationChecker.Option.SOFT_FAIL
+                    ));
+                }
+
+                certPathValidator.engineValidate(certPath, parameters);
+            } catch (CertPathValidatorException e) {
+                CertPath path = e.getCertPath();
+                CertPathValidatorException.Reason reason = e.getReason();
+
+                int failedAtIndex = e.getIndex();
+
+                if (failedAtIndex < 0) {
+                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+                } else {
+                    X509Certificate failed = (X509Certificate) path.getCertificates().get(failedAtIndex);
+
+                    LOGGER.debug(
+                        "cert path validation failed at index={} reason={}, certificate={}",
+                        failedAtIndex,
+                        reason,
+                        failed.getSubjectX500Principal().getName()
+                    );
+
+                    if (reason == CertPathValidatorException.BasicReason.REVOKED) {
+                        if (failedAtIndex == 0) {
+                            throw new UaException(StatusCodes.Bad_CertificateRevoked, e);
+                        } else {
+                            throw new UaException(StatusCodes.Bad_CertificateIssuerRevoked, e);
+                        }
+                    } else if (reason == CertPathValidatorException.BasicReason.UNDETERMINED_REVOCATION_STATUS) {
+                        if (failedAtIndex == 0) {
+                            throw new UaException(StatusCodes.Bad_CertificateRevocationUnknown, e);
+                        } else {
+                            throw new UaException(StatusCodes.Bad_CertificateIssuerRevocationUnknown, e);
+                        }
+                    } else if (reason == CertPathValidatorException.BasicReason.EXPIRED ||
+                        reason == CertPathValidatorException.BasicReason.NOT_YET_VALID) {
+
+                        if (failedAtIndex == 0) {
+                            throw new UaException(StatusCodes.Bad_CertificateTimeInvalid, e);
+                        } else {
+                            throw new UaException(StatusCodes.Bad_CertificateIssuerTimeInvalid, e);
+                        }
+                    } else {
+                        throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+                    }
+                }
+            } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+            }
+        }
+    }
+
+    private static PKIXCertPathBuilderResult buildCertPath(
+        List<X509Certificate> certificateChain,
+        Collection<X509Certificate> trustedCertificates,
+        Collection<X509Certificate> issuerCertificates,
+        Set<TrustAnchor> trustAnchors
+    ) throws UaException {
 
         X509Certificate certificate = certificateChain.get(0);
 
+        X509CertSelector selector = new X509CertSelector();
+        selector.setCertificate(certificate);
+
         try {
-            Set<TrustAnchor> trustAnchors = new HashSet<>();
-            for (X509Certificate c : trustedCertificates) {
-                if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
-                    trustAnchors.add(new TrustAnchor(c, null));
-                }
-            }
-            for (X509Certificate c : issuerCertificates) {
-                if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
-                    trustAnchors.add(new TrustAnchor(c, null));
-                }
-            }
+            PKIXBuilderParameters builderParams = new PKIXBuilderParameters(trustAnchors, selector);
 
-            X509CertSelector selector = new X509CertSelector();
-            selector.setCertificate(certificate);
-
-            PKIXBuilderParameters params = new PKIXBuilderParameters(trustAnchors, selector);
-
-            // Add a CertStore containing any intermediate certs and CRLs
-            Collection<Object> collection = Lists.newArrayList();
-            collection.addAll(certificateChain.subList(1, certificateChain.size()));
-
+            // Add a CertStore containing potential intermediate certs
+            Collection<Object> intermediates = newArrayList();
+            intermediates.addAll(certificateChain.subList(1, certificateChain.size()));
             for (X509Certificate c : trustedCertificates) {
                 if (certificateIsCa(c) && !certificateIsSelfSigned(c)) {
-                    collection.add(c);
+                    intermediates.add(c);
                 }
             }
             for (X509Certificate c : issuerCertificates) {
                 if (certificateIsCa(c) && !certificateIsSelfSigned(c)) {
-                    collection.add(c);
+                    intermediates.add(c);
                 }
             }
 
-            collection.addAll(trustedCrls);
-            collection.addAll(issuerCrls);
-
-            if (collection.size() > 0) {
+            if (intermediates.size() > 0) {
                 CertStore certStore = CertStore.getInstance(
                     "Collection",
-                    new CollectionCertStoreParameters(collection)
+                    new CollectionCertStoreParameters(intermediates)
                 );
 
-                params.addCertStore(certStore);
+                builderParams.addCertStore(certStore);
             }
 
-            // Only enable revocation checking if the CRL list is non-empty
-            params.setRevocationEnabled(!trustedCrls.isEmpty() || !issuerCrls.isEmpty());
+            // Disable revocation checking in the CertPathBuilder; it will be
+            // checked by a PKIXCertPathValidator after the CertPath is built.
+            builderParams.setRevocationEnabled(false);
 
             CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
 
-            // Set up revocation options regardless of whether it's actually enabled
-            CertPathChecker revocationChecker = builder.getRevocationChecker();
-
-            if (revocationChecker instanceof PKIXRevocationChecker) {
-                ((PKIXRevocationChecker) revocationChecker).setOptions(Sets.newHashSet(
-                    PKIXRevocationChecker.Option.NO_FALLBACK,
-                    PKIXRevocationChecker.Option.PREFER_CRLS,
-                    PKIXRevocationChecker.Option.SOFT_FAIL
-                ));
-            }
-
-            PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder.build(params);
-
-            List<X509Certificate> certificatePath = new ArrayList<>();
-
-            result.getCertPath().getCertificates()
-                .stream()
-                .map(X509Certificate.class::cast)
-                .forEach(certificatePath::add);
-
-            certificatePath.add(result.getTrustAnchor().getTrustedCert());
-
-            LOGGER.debug("certificate path: {}", certificatePath);
-
-            if (certificatePath.stream().noneMatch(trustedCertificates::contains)) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
-                    "certificate path did not contain a trusted certificate");
-            }
-        } catch (UaException e) {
-            throw e;
-        } catch (Throwable t) {
-            LOGGER.debug("certificate path validation failed: {}", t.getMessage());
-
-            throw new UaException(
-                StatusCodes.Bad_SecurityChecksFailed,
-                "certificate path validation failed");
+            return (PKIXCertPathBuilderResult) builder.build(builderParams);
+        } catch (GeneralSecurityException e) {
+            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
         }
     }
 
@@ -266,43 +328,68 @@ public class CertificateValidationUtil {
         }
     }
 
-    public static void validateCertificateValidity(X509Certificate certificate) throws UaException {
+    /**
+     * Check that {@code certificate} is valid (the current date and time are within the validity period).
+     *
+     * @param certificate the {@link X509Certificate} to check.
+     * @param endEntity   {@code true} if the certificate is the end entity, {@code false} if it's an issuer.
+     * @throws UaException if the certificate is not valid.
+     */
+    public static void checkValidity(X509Certificate certificate, boolean endEntity) throws UaException {
         try {
             certificate.checkValidity();
         } catch (CertificateExpiredException e) {
-            throw new UaException(StatusCodes.Bad_CertificateTimeInvalid,
-                String.format("certificate is expired: %s - %s",
-                    certificate.getNotBefore(), certificate.getNotAfter()));
+            throw new UaException(
+                endEntity ?
+                    StatusCodes.Bad_CertificateTimeInvalid :
+                    StatusCodes.Bad_CertificateIssuerTimeInvalid,
+                String.format(
+                    "certificate is expired: %s - %s",
+                    certificate.getNotBefore(), certificate.getNotAfter())
+            );
         } catch (CertificateNotYetValidException e) {
-            throw new UaException(StatusCodes.Bad_CertificateTimeInvalid,
-                String.format("certificate not yet valid: %s - %s",
-                    certificate.getNotBefore(), certificate.getNotAfter()));
+            throw new UaException(
+                endEntity ?
+                    StatusCodes.Bad_CertificateTimeInvalid :
+                    StatusCodes.Bad_CertificateIssuerTimeInvalid,
+                String.format(
+                    "certificate not yet valid: %s - %s",
+                    certificate.getNotBefore(), certificate.getNotAfter())
+            );
         }
     }
 
     /**
-     * Validate that one of {@code hostnames} matches a SubjectAltName DNSName or IPAddress entry in the certificate.
+     * Validate that one of {@code hostNames} matches a SubjectAltName DNSName or IPAddress entry in the certificate.
      *
      * @param certificate the certificate to validate against.
-     * @param hostnames   the hostnames to look for.
+     * @param hostNames   the host names or ip addresses to look for.
      * @throws UaException if there is no matching DNSName or IPAddress entry.
      */
-    public static void validateHostnameOrIpAddress(
-        X509Certificate certificate, String... hostnames) throws UaException {
+    public static void checkHostnameOrIpAddress(
+        X509Certificate certificate,
+        String... hostNames
+    ) throws UaException {
 
-        boolean dnsNameMatch = Arrays.stream(hostnames).anyMatch(n -> {
+        boolean dnsNameMatch = Arrays.stream(hostNames).anyMatch(n -> {
             try {
-                return validateSubjectAltNameField(
-                    certificate, SUBJECT_ALT_NAME_DNS_NAME, n::equals);
+                return checkSubjectAltNameField(
+                    certificate,
+                    SUBJECT_ALT_NAME_DNS_NAME,
+                    n::equals
+                );
             } catch (Throwable t) {
                 return false;
             }
         });
 
-        boolean ipAddressMatch = Arrays.stream(hostnames).anyMatch(n -> {
+        boolean ipAddressMatch = Arrays.stream(hostNames).anyMatch(n -> {
             try {
-                return validateSubjectAltNameField(
-                    certificate, SUBJECT_ALT_NAME_IP_ADDRESS, n::equals);
+                return checkSubjectAltNameField(
+                    certificate,
+                    SUBJECT_ALT_NAME_IP_ADDRESS,
+                    n::equals
+                );
             } catch (Throwable t) {
                 return false;
             }
@@ -313,6 +400,81 @@ public class CertificateValidationUtil {
         }
     }
 
+    public static void checkCertificateUsage(X509Certificate certificate) throws UaException {
+        Set<String> criticalExtensions = certificate.getCriticalExtensionOIDs();
+        // TODO suppression
+        // TODO if keyUsage or extendedKeyUsage are critical they cannot be suppressed
+
+        boolean[] keyUsage = certificate.getKeyUsage();
+
+        if (keyUsage == null) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "KeyUsage extension not found"
+            );
+        }
+
+        boolean digitalSignature = keyUsage[0];
+        boolean nonRepudiation = keyUsage[1];
+        boolean keyEncipherment = keyUsage[2];
+        boolean dataEncipherment = keyUsage[3];
+
+        if (!digitalSignature) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "required KeyUsage 'digitalSignature' not found"
+            );
+        }
+
+        if (!nonRepudiation) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "required KeyUsage 'nonRepudiation' not found"
+            );
+        }
+
+        if (!keyEncipherment) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "required KeyUsage 'keyEncipherment' not found"
+            );
+        }
+
+        if (!dataEncipherment) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateUseNotAllowed,
+                "required KeyUsage 'dataEncipherment' not found"
+            );
+        }
+
+        try {
+            List<String> extendedKeyUsage = certificate.getExtendedKeyUsage();
+
+            if (extendedKeyUsage == null) {
+                throw new UaException(
+                    StatusCodes.Bad_CertificateUseNotAllowed,
+                    "ExtendedKeyUsage extension not found"
+                );
+            }
+
+            if (!extendedKeyUsage.contains(CLIENT_AUTH_OID)) {
+                throw new UaException(
+                    StatusCodes.Bad_CertificateUseNotAllowed,
+                    "required ExtendedKeyUsage 'clientAuth' not found"
+                );
+            }
+
+            if (!extendedKeyUsage.contains(SERVER_AUTH_OID)) {
+                throw new UaException(
+                    StatusCodes.Bad_CertificateUseNotAllowed,
+                    "required ExtendedKeyUsage 'serverAuth' not found"
+                );
+            }
+        } catch (CertificateParsingException e) {
+            throw new UaException(StatusCodes.Bad_CertificateUseNotAllowed);
+        }
+    }
+
     /**
      * Validate that the application URI matches the SubjectAltName URI in the given certificate.
      *
@@ -320,48 +482,34 @@ public class CertificateValidationUtil {
      * @param applicationUri the URI to validate.
      * @throws UaException if the certificate is invalid, does not contain a uri, or contains a uri that does not match.
      */
-    public static void validateApplicationUri(X509Certificate certificate, String applicationUri) throws
-        UaException {
-        if (!validateSubjectAltNameField(certificate, SUBJECT_ALT_NAME_URI, applicationUri::equals)) {
+    public static void checkApplicationUri(X509Certificate certificate, String applicationUri) throws UaException {
+        if (!checkSubjectAltNameField(certificate, SUBJECT_ALT_NAME_URI, applicationUri::equals)) {
             throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
         }
     }
 
-    public static void validateApplicationCertificateUsage(X509Certificate certificate) throws UaException {
-        Set<String> criticalExtensions = certificate.getCriticalExtensionOIDs();
-        if (criticalExtensions == null) criticalExtensions = new HashSet<>();
-
-        if (criticalExtensions.contains(KEY_USAGE_OID)) {
-            boolean[] keyUsage = certificate.getKeyUsage();
-            boolean digitalSignature = keyUsage[0];
-            boolean nonRepudiation = keyUsage[1];
-            boolean keyEncipherment = keyUsage[2];
-            boolean dataEncipherment = keyUsage[3];
-
-            if (!digitalSignature) {
-                throw new UaException(StatusCodes.Bad_CertificateUseNotAllowed,
-                    "required KeyUsage 'digitalSignature' not found");
-            }
-
-            if (!nonRepudiation) {
-                throw new UaException(StatusCodes.Bad_CertificateUseNotAllowed,
-                    "required KeyUsage 'nonRepudiation' not found");
-            }
-
-            if (!keyEncipherment) {
-                throw new UaException(StatusCodes.Bad_CertificateUseNotAllowed,
-                    "required KeyUsage 'keyEncipherment' not found");
-            }
-
-            if (!dataEncipherment) {
-                throw new UaException(StatusCodes.Bad_CertificateUseNotAllowed,
-                    "required KeyUsage 'dataEncipherment' not found");
-            }
-        }
+    public static void checkIssuerCertificateUsage(X509Certificate certificate) throws UaException {
+        // TODO
+        LOGGER.info(
+            "TODO: check certificate usage for issuer: {}",
+            certificate.getSubjectX500Principal().getName()
+        );
     }
 
-    public static boolean validateSubjectAltNameField(X509Certificate certificate, int field,
-                                                      Predicate<Object> fieldValidator) throws UaException {
+    /**
+     * Test the value of some SubjectAlternativeNames field against a predicate.
+     *
+     * @param certificate    an {@link X509Certificate}.
+     * @param field          the field id.
+     * @param fieldPredicate a predicate to test the field value.
+     * @return {@code true} if the field was found and the predicate tested true.
+     * @throws UaException if SubjectAlternativeNames can't be obtained from the certificate.
+     */
+    private static boolean checkSubjectAltNameField(
+        X509Certificate certificate,
+        int field,
+        Predicate<Object> fieldPredicate
+    ) throws UaException {
 
         try {
             Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
@@ -370,7 +518,7 @@ public class CertificateValidationUtil {
             for (List<?> idAndValue : subjectAltNames) {
                 if (idAndValue != null && idAndValue.size() == 2) {
                     if (idAndValue.get(0).equals(field)) {
-                        if (fieldValidator.test(idAndValue.get(1))) {
+                        if (fieldPredicate.test(idAndValue.get(1))) {
                             return true;
                         }
                     }
@@ -401,6 +549,83 @@ public class CertificateValidationUtil {
         } catch (CertificateParsingException e) {
             throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
         }
+    }
+
+    enum ValidationCheck {
+        KEY_USAGE,
+        EXTENDED_KEY_USAGE,
+        REVOCATION_LIST,
+        REVOCATION_STATUS
+    }
+
+    private static class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
+
+        private final X509Certificate endEntityCert;
+
+        private final CertPath certPath;
+
+        OpcUaCertificateUsageChecker(CertPath certPath) {
+            this.certPath = certPath;
+
+            endEntityCert = (X509Certificate) certPath.getCertificates().get(0);
+        }
+
+        @Override
+        public void init(boolean forward) throws CertPathValidatorException {
+            if (forward) {
+                throw new CertPathValidatorException("forward checking not supported");
+            }
+        }
+
+        @Override
+        public boolean isForwardCheckingSupported() {
+            return false;
+        }
+
+        @Override
+        public Set<String> getSupportedExtensions() {
+            return null;
+        }
+
+        @Override
+        public void check(Certificate cert, Collection<String> unresolvedCritExts) throws CertPathValidatorException {
+            if (endEntityCert.equals(cert)) {
+                try {
+                    checkCertificateUsage((X509Certificate) cert);
+
+                    LOGGER.info(
+                        "validated certificate usage for end entity: {}",
+                        ((X509Certificate) cert).getSubjectX500Principal().getName()
+                    );
+                } catch (UaException e) {
+                    throw new CertPathValidatorException(
+                        e.getMessage(),
+                        e,
+                        certPath,
+                        certPath.getCertificates().indexOf(cert),
+                        PKIXReason.INVALID_KEY_USAGE
+                    );
+                }
+            } else {
+                try {
+                    checkIssuerCertificateUsage((X509Certificate) cert);
+
+                    LOGGER.info(
+                        "validated certificate usage for issuer: {}",
+                        ((X509Certificate) cert).getSubjectX500Principal().getName()
+                    );
+                } catch (UaException e) {
+                    throw new CertPathValidatorException(
+                        e.getMessage(),
+                        e,
+                        certPath,
+                        certPath.getCertificates().indexOf(cert),
+                        PKIXReason.INVALID_KEY_USAGE
+                    );
+                }
+            }
+        }
+
     }
 
 }

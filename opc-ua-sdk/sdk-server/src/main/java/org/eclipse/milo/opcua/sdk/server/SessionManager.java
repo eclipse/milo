@@ -36,7 +36,6 @@ import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -61,10 +60,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertific
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
@@ -299,16 +298,13 @@ public class SessionManager implements
                     "client certificate must be non-null");
             }
 
-            CertificateValidationUtil.validateApplicationUri(
-                clientCertificate,
-                clientDescription.getApplicationUri()
-            );
-
-            CertificateValidator certificateValidator =
+            ServerCertificateValidator certificateValidator =
                 server.getConfig().getCertificateValidator();
 
-            certificateValidator.validate(clientCertificate);
-            certificateValidator.verifyTrustChain(clientCertificateChain);
+            certificateValidator.validateCertificateChain(
+                clientCertificateChain,
+                clientDescription.getApplicationUri()
+            );
         }
 
         // SignatureData must be created using only the bytes of the client

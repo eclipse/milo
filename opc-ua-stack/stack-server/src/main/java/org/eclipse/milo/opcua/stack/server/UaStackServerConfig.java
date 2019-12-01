@@ -19,11 +19,11 @@ import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
 public interface UaStackServerConfig {
 
@@ -82,9 +82,9 @@ public interface UaStackServerConfig {
     TrustListManager getTrustListManager();
 
     /**
-     * @return the {@link CertificateValidator} for this server.
+     * @return the {@link ServerCertificateValidator} for this server.
      */
-    CertificateValidator getCertificateValidator();
+    ServerCertificateValidator getCertificateValidator();
 
     /**
      * @return the {@link KeyPair} used for SSL/TLS with HTTPS endpoints.

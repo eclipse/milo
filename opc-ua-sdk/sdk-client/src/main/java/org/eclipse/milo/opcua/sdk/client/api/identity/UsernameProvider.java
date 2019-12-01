@@ -171,8 +171,7 @@ public class UsernameProvider implements IdentityProvider {
                 // If the SecurityPolicy is None or if this is an HTTP(S) connection the certificate used to encrypt
                 // the username and password must be trusted. Otherwise, if it's a secure connection, the certificate
                 // will have already been validated and verified when the secure channel or session was created.
-                certificateValidator.validate(certificate);
-                certificateValidator.verifyTrustChain(certificateChain);
+                certificateValidator.validateCertificateChain(certificateChain);
             }
 
             int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(

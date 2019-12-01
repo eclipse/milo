@@ -18,7 +18,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 import org.testng.annotations.BeforeSuite;
 
 public abstract class SecurityFixture {
@@ -36,7 +36,7 @@ public abstract class SecurityFixture {
     protected volatile KeyPair serverKeyPair;
 
     protected volatile CertificateManager serverCertificateManager;
-    protected volatile CertificateValidator serverCertificateValidator;
+    protected volatile ServerCertificateValidator serverCertificateValidator;
 
     @BeforeSuite
     public void setUp() throws Exception {
@@ -67,7 +67,7 @@ public abstract class SecurityFixture {
             serverCertificate
         );
 
-        serverCertificateValidator = new TestCertificateValidator(clientCertificate);
+        serverCertificateValidator = new TestServerCertificateValidator(clientCertificate);
     }
 
 }
