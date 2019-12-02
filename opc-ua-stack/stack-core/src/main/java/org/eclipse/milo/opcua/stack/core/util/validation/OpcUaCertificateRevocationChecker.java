@@ -146,7 +146,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
                     }
                 } else if (reason == BasicReason.UNDETERMINED_REVOCATION_STATUS) {
                     // sanity check: this can only happen if we didn't include
-                    // Option.SOFT_FAIL, which only happens when
+                    // the Option.SOFT_FAIL option, which only happens when
                     // ValidationCheck.REVOCATION_LIST_FOUND is present.
                     assert !getOptions().contains(Option.SOFT_FAIL);
                     assert validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND);
