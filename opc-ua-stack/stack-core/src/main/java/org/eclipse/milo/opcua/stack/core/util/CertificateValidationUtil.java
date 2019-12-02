@@ -501,8 +501,6 @@ public class CertificateValidationUtil {
                 "required KeyUsage 'dataEncipherment' not found"
             );
         }
-
-
     }
 
     public static void checkEndEntityExtendedKeyUsage(X509Certificate certificate) throws UaException {
@@ -535,11 +533,39 @@ public class CertificateValidationUtil {
     }
 
     public static void checkIssuerKeyUsage(X509Certificate certificate) throws UaException {
-        // TODO
-        LOGGER.info(
-            "TODO: check certificate usage for issuer: {}",
-            certificate.getSubjectX500Principal().getName()
-        );
+        boolean[] keyUsage = certificate.getKeyUsage();
+
+        if (keyUsage == null) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
+                "KeyUsage extension not found"
+            );
+        }
+
+        boolean digitalSignature = keyUsage[0];
+        boolean keyCertSign = keyUsage[5];
+        boolean crlSign = keyUsage[6];
+
+        if (!digitalSignature) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
+                "required KeyUsage 'digitalSignature' not found"
+            );
+        }
+
+        if (!keyCertSign) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
+                "required KeyUsage 'keyCertSign' not found"
+            );
+        }
+
+        if (!crlSign) {
+            throw new UaException(
+                StatusCodes.Bad_CertificateIssuerUseNotAllowed,
+                "required KeyUsage 'cRLSign' not found"
+            );
+        }
     }
 
     /**
