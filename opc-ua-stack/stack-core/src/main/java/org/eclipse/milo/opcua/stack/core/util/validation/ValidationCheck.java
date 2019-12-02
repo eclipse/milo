@@ -66,7 +66,7 @@ public enum ValidationCheck {
     public static final ImmutableSet<ValidationCheck> NO_OPTIONAL_CHECKS = ImmutableSet.of();
 
     /**
-     * A set the includes all optional {@link ValidationCheck}s.
+     * A set the includes all {@link ValidationCheck}s.
      */
     public static final ImmutableSet<ValidationCheck> ALL_OPTIONAL_CHECKS =
         ImmutableSet.copyOf(EnumSet.allOf(ValidationCheck.class));
