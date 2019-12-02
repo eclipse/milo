@@ -8,29 +8,24 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.util;
+package org.eclipse.milo.opcua.stack.core.util.validation;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathBuilder;
-import java.security.cert.CertPathChecker;
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertStore;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.PKIXCertPathBuilderResult;
-import java.security.cert.PKIXCertPathChecker;
 import java.security.cert.PKIXParameters;
-import java.security.cert.PKIXReason;
 import java.security.cert.PKIXRevocationChecker;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509CRL;
@@ -40,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +43,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
@@ -146,9 +139,18 @@ public class CertificateValidationUtil {
         if (!anchorIsEndEntity) {
             // anchorCert is an issuer; validate the rest of the certPath
             try {
+                PKIXCertPathValidator certPathValidator = new PKIXCertPathValidator();
+
                 PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
 
-                if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
+                parameters.addCertPathChecker(
+                    new OpcUaCertificateUsageChecker(
+                        certPath,
+                        validationChecks
+                    )
+                );
+
+                try {
                     parameters.setRevocationEnabled(true);
 
                     if (!crls.isEmpty()) {
@@ -157,24 +159,40 @@ public class CertificateValidationUtil {
                             new CollectionCertStoreParameters(crls)
                         ));
                     }
-                } else {
-                    parameters.setRevocationEnabled(false);
-                }
 
-                parameters.addCertPathChecker(new OpcUaCertificateUsageChecker(certPath, validationChecks));
+                    parameters.addCertPathChecker(
+                        new OpcUaCertificateRevocationChecker(
+                            certPath,
+                            trustAnchor,
+                            parameters,
+                            validationChecks
+                        )
+                    );
+                } catch (Exception e) {
+                    // Couldn't add our custom revocation checker, so use the
+                    // default one. It's not as fine-grained as ours - it's
+                    // either enabled or it isn't, and if CRL location fails
+                    // we can't suppress it.
 
-                PKIXCertPathValidator certPathValidator = new PKIXCertPathValidator();
+                    if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
+                        parameters.setRevocationEnabled(true);
 
-                CertPathChecker revocationChecker = certPathValidator.engineGetRevocationChecker();
+                        PKIXRevocationChecker pkixRevocationChecker =
+                            (PKIXRevocationChecker) certPathValidator.engineGetRevocationChecker();
 
-                if (parameters.isRevocationEnabled() && revocationChecker instanceof PKIXRevocationChecker) {
-                    PKIXRevocationChecker pkixRevocationChecker = (PKIXRevocationChecker) revocationChecker;
+                        pkixRevocationChecker.setOptions(newHashSet(
+                            PKIXRevocationChecker.Option.NO_FALLBACK,
+                            PKIXRevocationChecker.Option.PREFER_CRLS,
+                            PKIXRevocationChecker.Option.SOFT_FAIL
+                        ));
+                    } else {
+                        parameters.setRevocationEnabled(false);
+                    }
 
-                    pkixRevocationChecker.setOptions(newHashSet(
-                        PKIXRevocationChecker.Option.NO_FALLBACK,
-                        PKIXRevocationChecker.Option.PREFER_CRLS,
-                        PKIXRevocationChecker.Option.SOFT_FAIL
-                    ));
+                    LOGGER.warn(
+                        "Failed to add custom revocation checker; " +
+                            "REVOCATION_LIST_FOUND check will be ignored."
+                    );
                 }
 
                 certPathValidator.engineValidate(certPath, parameters);
@@ -220,7 +238,7 @@ public class CertificateValidationUtil {
                         throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
                     }
                 }
-            } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
+            } catch (InvalidAlgorithmParameterException e) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
             }
         }
@@ -231,6 +249,9 @@ public class CertificateValidationUtil {
         Set<ValidationCheck> validationChecks,
         boolean endEntity
     ) throws UaException {
+
+        Set<String> criticalExtensions = anchorCert.getCriticalExtensionOIDs();
+        if (criticalExtensions == null) criticalExtensions = Collections.emptySet();
 
         try {
             checkValidity(anchorCert, endEntity);
@@ -249,7 +270,10 @@ public class CertificateValidationUtil {
             try {
                 checkEndEntityKeyUsage(anchorCert);
             } catch (UaException e) {
-                if (validationChecks.contains(ValidationCheck.KEY_USAGE_END_ENTITY)) {
+                if (validationChecks.contains(ValidationCheck.KEY_USAGE_END_ENTITY) ||
+                    criticalExtensions.contains(KEY_USAGE_OID)
+                ) {
+
                     throw e;
                 } else {
                     LOGGER.warn(
@@ -262,7 +286,10 @@ public class CertificateValidationUtil {
             try {
                 checkEndEntityExtendedKeyUsage(anchorCert);
             } catch (UaException e) {
-                if (validationChecks.contains(ValidationCheck.EXTENDED_KEY_USAGE_END_ENTITY)) {
+                if (validationChecks.contains(ValidationCheck.EXTENDED_KEY_USAGE_END_ENTITY) ||
+                    criticalExtensions.contains(EXTENDED_KEY_USAGE_OID)
+                ) {
+
                     throw e;
                 } else {
                     LOGGER.warn(
@@ -634,179 +661,6 @@ public class CertificateValidationUtil {
         } catch (CertificateParsingException e) {
             throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
         }
-    }
-
-    /**
-     * Validation checks that are allowed to be suppressed (i.e. they are optional) according to the spec.
-     * <p>
-     * See OPC UA (v1.03) Part 4, Section 6.1.3.
-     */
-    public enum ValidationCheck {
-        /**
-         * Check that the end-entity certificate contains a particular hostname or IP address in its SANs.
-         * <p>
-         * This check is only done in clients, against the server they are connecting to.
-         */
-        HOSTNAME,
-        /**
-         * Certificate validity and expiration is checked.
-         */
-        VALIDITY,
-        /**
-         * The KeyUsage extension must be present and checked for end-entity certificates.
-         */
-        KEY_USAGE_END_ENTITY,
-        /**
-         * The ExtendedKeyUsage extension must be present and checked for end-entity certificates.
-         */
-        EXTENDED_KEY_USAGE_END_ENTITY,
-        /**
-         * The KeyUsage extension must be presented and checked for CA certificates.
-         * <p>
-         * This check does not apply to self-signed end-entity certificates.
-         */
-        KEY_USAGE_ISSUER,
-        /**
-         * Revocation checking must happen.
-         */
-        REVOCATION_CHECK,
-        /**
-         * CRLs for every non-end-entity must CA must be found.
-         */
-        REVOCATION_LIST_FOUND;
-
-        /**
-         * An empty set of {@link ValidationCheck}s.
-         */
-        public static final ImmutableSet<ValidationCheck> NO_OPTIONAL_CHECKS = ImmutableSet.of();
-
-        /**
-         * A set the includes all optional {@link ValidationCheck}s.
-         */
-        public static final ImmutableSet<ValidationCheck> ALL_OPTIONAL_CHECKS =
-            ImmutableSet.copyOf(EnumSet.allOf(ValidationCheck.class));
-    }
-
-    private static class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
-
-        private final X509Certificate endEntityCert;
-
-        private final CertPath certPath;
-        private final Set<ValidationCheck> validationChecks;
-
-        OpcUaCertificateUsageChecker(CertPath certPath, Set<ValidationCheck> validationChecks) {
-            this.certPath = certPath;
-            this.validationChecks = validationChecks;
-
-            endEntityCert = (X509Certificate) certPath.getCertificates().get(0);
-        }
-
-        @Override
-        public void init(boolean forward) throws CertPathValidatorException {
-            if (forward) {
-                throw new CertPathValidatorException("forward checking not supported");
-            }
-        }
-
-        @Override
-        public boolean isForwardCheckingSupported() {
-            return false;
-        }
-
-        @Override
-        public Set<String> getSupportedExtensions() {
-            return null;
-        }
-
-        @Override
-        public void check(Certificate cert, Collection<String> unresolvedCritExts) throws CertPathValidatorException {
-            X509Certificate certificate = (X509Certificate) cert;
-
-            Set<String> criticalExtensions = certificate.getCriticalExtensionOIDs();
-
-            if (endEntityCert.equals(cert)) {
-                try {
-                    checkEndEntityKeyUsage((X509Certificate) cert);
-
-                    LOGGER.debug(
-                        "validated KeyUsage for end entity: {}",
-                        ((X509Certificate) cert).getSubjectX500Principal().getName()
-                    );
-                } catch (UaException e) {
-                    if (validationChecks.contains(ValidationCheck.KEY_USAGE_END_ENTITY) ||
-                        criticalExtensions.contains(KEY_USAGE_OID)
-                    ) {
-
-                        throw new CertPathValidatorException(
-                            e.getMessage(),
-                            e,
-                            certPath,
-                            certPath.getCertificates().indexOf(cert),
-                            PKIXReason.INVALID_KEY_USAGE
-                        );
-                    } else {
-                        LOGGER.warn(
-                            "check suppressed: certificate failed end-entity usage check: {}",
-                            ((X509Certificate) cert).getSubjectX500Principal().getName()
-                        );
-                    }
-                }
-                try {
-                    checkEndEntityExtendedKeyUsage(certificate);
-
-                    LOGGER.debug(
-                        "validated ExtendedKeyUsage for end entity: {}",
-                        ((X509Certificate) cert).getSubjectX500Principal().getName()
-                    );
-                } catch (UaException e) {
-                    if (validationChecks.contains(ValidationCheck.EXTENDED_KEY_USAGE_END_ENTITY) ||
-                        criticalExtensions.contains(EXTENDED_KEY_USAGE_OID)
-                    ) {
-
-                        throw new CertPathValidatorException(
-                            e.getMessage(),
-                            e,
-                            certPath,
-                            certPath.getCertificates().indexOf(cert),
-                            PKIXReason.INVALID_KEY_USAGE
-                        );
-                    } else {
-                        LOGGER.warn(
-                            "check suppressed: certificate failed end-entity usage check: {}",
-                            ((X509Certificate) cert).getSubjectX500Principal().getName()
-                        );
-                    }
-                }
-            } else {
-                try {
-                    checkIssuerKeyUsage((X509Certificate) cert);
-
-                    LOGGER.debug(
-                        "validated KeyUsage for issuer: {}",
-                        ((X509Certificate) cert).getSubjectX500Principal().getName()
-                    );
-                } catch (UaException e) {
-                    if (validationChecks.contains(ValidationCheck.KEY_USAGE_ISSUER) ||
-                        criticalExtensions.contains(KEY_USAGE_OID)
-                    ) {
-
-                        throw new CertPathValidatorException(
-                            e.getMessage(),
-                            e,
-                            certPath,
-                            certPath.getCertificates().indexOf(cert),
-                            PKIXReason.INVALID_KEY_USAGE
-                        );
-                    } else {
-                        LOGGER.warn(
-                            "check suppressed: certificate failed issuer usage check: {}",
-                            ((X509Certificate) cert).getSubjectX500Principal().getName()
-                        );
-                    }
-                }
-            }
-        }
-
     }
 
 }

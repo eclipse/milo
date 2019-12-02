@@ -20,8 +20,8 @@ import java.util.Set;
 import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.ValidationCheck;
+import org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil;
+import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
 
 public class DefaultClientCertificateValidator implements ClientCertificateValidator {
 

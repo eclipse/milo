@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.util;
+package org.eclipse.milo.opcua.stack.core.util.validation;
 
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -30,16 +30,18 @@ import org.bouncycastle.cert.X509v2CRLBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.ValidationCheck;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
-import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.buildTrustedCertPath;
-import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.validateTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -186,18 +188,24 @@ public class CertificateValidationUtilTest {
     public void testBuildAndValidate_LeafIntermediateSigned_Revoked() {
         // chain: leaf
         // trusted: ca-intermediate
-        // issuers: ca--root
+        // issuers: ca-root
         // crls: ca-intermediate revokes leaf
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
-            expectThrows(UaException.class, () -> {
+            UaException e = expectThrows(UaException.class, () -> {
                 HashSet<X509CRL> x509CRLS = newHashSet(
                     generateCrl(
                         caIntermediate,
                         (PrivateKey) keyStore.getKey(
                             ALIAS_CA_INTERMEDIATE, "password".toCharArray()),
-                        leafIntermediateSigned)
+                        leafIntermediateSigned
+                    ),
+                    generateCrl(
+                        caRoot,
+                        (PrivateKey) keyStore.getKey(
+                            ALIAS_CA_ROOT, "password".toCharArray())
+                    )
                 );
 
                 PKIXCertPathBuilderResult pathBuilderResult = buildTrustedCertPath(
@@ -213,6 +221,8 @@ public class CertificateValidationUtilTest {
                     EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
+
+            assertEquals(e.getStatusCode(), new StatusCode(StatusCodes.Bad_CertificateRevoked));
         }
 
         // chain: leaf
@@ -222,7 +232,7 @@ public class CertificateValidationUtilTest {
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
-            expectThrows(UaException.class, () -> {
+            UaException e = expectThrows(UaException.class, () -> {
                 HashSet<X509CRL> x509CRLS = newHashSet(
                     generateCrl(
                         caRoot,
@@ -244,37 +254,8 @@ public class CertificateValidationUtilTest {
                     EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
-        }
 
-        // chain: leaf
-        // trusted: ca-intermediate
-        // issuers: ca-root
-        // crls: ca-root revokes leaf
-        {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
-
-            expectThrows(UaException.class, () -> {
-                HashSet<X509CRL> x509CRLS = newHashSet(
-                    generateCrl(
-                        caRoot,
-                        (PrivateKey) keyStore.getKey(
-                            ALIAS_CA_ROOT, "password".toCharArray()),
-                        leafIntermediateSigned)
-                );
-
-                PKIXCertPathBuilderResult pathBuilderResult = buildTrustedCertPath(
-                    certificateChain,
-                    newHashSet(caIntermediate),
-                    newHashSet(caRoot)
-                );
-
-                validateTrustedCertPath(
-                    pathBuilderResult.getCertPath(),
-                    pathBuilderResult.getTrustAnchor(),
-                    x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
-                );
-            });
+            assertEquals(e.getStatusCode(), new StatusCode(StatusCodes.Bad_CertificateIssuerRevoked));
         }
     }
 
@@ -364,7 +345,7 @@ public class CertificateValidationUtilTest {
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
-            expectThrows(UaException.class, () -> {
+            UaException e = expectThrows(UaException.class, () -> {
                 HashSet<X509CRL> x509CRLS = newHashSet(
                     generateCrl(
                         caRoot,
@@ -386,6 +367,8 @@ public class CertificateValidationUtilTest {
                     EnumSet.of(ValidationCheck.REVOCATION_CHECK)
                 );
             });
+
+            assertEquals(e.getStatusCode(), new StatusCode(StatusCodes.Bad_CertificateIssuerRevoked));
         }
     }
 
@@ -403,8 +386,14 @@ public class CertificateValidationUtilTest {
             new Date()
         );
 
+        builder.setNextUpdate(new Date(System.currentTimeMillis() + 60_000));
+
         for (X509Certificate certificate : revoked) {
-            builder.addCRLEntry(certificate.getSerialNumber(), new Date(), CRLReason.privilegeWithdrawn);
+            builder.addCRLEntry(
+                certificate.getSerialNumber(),
+                new Date(System.currentTimeMillis() - 60_000),
+                CRLReason.privilegeWithdrawn
+            );
         }
 
         JcaContentSignerBuilder contentSignerBuilder =

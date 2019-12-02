@@ -21,11 +21,11 @@ import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
+import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
 
-import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.ValidationCheck;
-import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.buildTrustedCertPath;
-import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.checkApplicationUri;
-import static org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil.validateTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.checkApplicationUri;
+import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
 
 public class DefaultServerCertificateValidator implements ServerCertificateValidator {
 
