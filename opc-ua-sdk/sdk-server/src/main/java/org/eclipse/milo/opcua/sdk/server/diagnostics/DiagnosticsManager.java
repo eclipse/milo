@@ -215,7 +215,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         @Override
-        protected void onStartup() {
+        protected synchronized void onStartup() {
             logger.debug("ServerDiagnosticsNode onStartup()");
 
             configureServerDiagnosticsSummary();
@@ -229,7 +229,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         @Override
-        protected void onShutdown() {
+        protected synchronized void onShutdown() {
             logger.debug("ServerDiagnosticsNode onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
@@ -314,7 +314,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         @Override
-        protected void onStartup() {
+        protected synchronized void onStartup() {
             logger.debug("SessionsDiagnosticsSummaryObject onStartup()");
 
             configureSessionDiagnosticsArray();
@@ -332,26 +332,30 @@ public class DiagnosticsManager extends AbstractLifecycle {
             getServer().getSessionManager().addSessionListener(sessionListener = new SessionListener() {
                 @Override
                 public void onSessionCreated(Session session) {
-                    SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(session, node);
+                    synchronized (SessionsDiagnosticsSummaryObject.this) {
+                        SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(session, node);
 
-                    sessionDiagnosticsObjects.put(session.getSessionId(), sdo);
+                        sessionDiagnosticsObjects.put(session.getSessionId(), sdo);
 
-                    sdo.startup();
+                        sdo.startup();
+                    }
                 }
 
                 @Override
                 public void onSessionClosed(Session session) {
-                    SessionDiagnosticsObject sdo = sessionDiagnosticsObjects.remove(session.getSessionId());
+                    synchronized (SessionsDiagnosticsSummaryObject.this) {
+                        SessionDiagnosticsObject sdo = sessionDiagnosticsObjects.remove(session.getSessionId());
 
-                    if (sdo != null) {
-                        sdo.shutdown();
+                        if (sdo != null) {
+                            sdo.shutdown();
+                        }
                     }
                 }
             });
         }
 
         @Override
-        protected void onShutdown() {
+        protected synchronized void onShutdown() {
             logger.debug("SessionsDiagnosticsSummaryObject onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
@@ -437,12 +441,15 @@ public class DiagnosticsManager extends AbstractLifecycle {
         private final SessionsDiagnosticsSummaryTypeNode summaryNode;
 
         SessionDiagnosticsObject(Session session, SessionsDiagnosticsSummaryTypeNode summaryNode) {
+            checkNotNull(session, "Session");
+            checkNotNull(summaryNode, "SessionsDiagnosticsSummaryTypeNode");
+
             this.session = session;
             this.summaryNode = summaryNode;
         }
 
         @Override
-        protected void onStartup() {
+        protected synchronized void onStartup() {
             logger.debug("SessionDiagnosticsObject onStartup()");
 
             try {
@@ -469,7 +476,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         @Override
-        protected void onShutdown() {
+        protected synchronized void onShutdown() {
             logger.debug("SessionDiagnosticsObject onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
