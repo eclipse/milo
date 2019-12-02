@@ -78,7 +78,6 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
         initRevocationChecker();
     }
 
-    @SuppressWarnings("JavaReflectionInvocation")
     private void initRevocationChecker() throws Exception {
         Class<?> pkixClass = Class.forName("sun.security.provider.certpath.PKIX");
         Class<?> validatorParamsClass = Class.forName("sun.security.provider.certpath.PKIX$ValidatorParams");
