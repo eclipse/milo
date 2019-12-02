@@ -14,12 +14,14 @@ import java.lang.reflect.Method;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathParameters;
 import java.security.cert.CertPathValidatorException;
+import java.security.cert.CertPathValidatorException.BasicReason;
 import java.security.cert.Certificate;
 import java.security.cert.PKIXParameters;
 import java.security.cert.PKIXRevocationChecker;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,10 +56,22 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
 
         checker = (PKIXRevocationChecker) new PKIXCertPathValidator().engineGetRevocationChecker();
 
-        checker.setOptions(newHashSet(
-            PKIXRevocationChecker.Option.NO_FALLBACK,
-            PKIXRevocationChecker.Option.PREFER_CRLS
-        ));
+        HashSet<Option> options = newHashSet(
+            Option.NO_FALLBACK,
+            Option.PREFER_CRLS
+        );
+
+        // If the REVOCATION_LIST_FOUND check is suppressed, enable SOFT_FAIL.
+        // Unfortunately these means we won't be able to log a warning when
+        // a CRL is not found, but without SOFT_FAIL *every* CRL in the chain
+        // must be available, or the check fails with
+        // BasicReason.UNDETERMINED_REVOCATION_STATUS, which could mask a revoked
+        // certificate in a CRL we *do* have.
+        if (!validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND)) {
+            options.add(Option.SOFT_FAIL);
+        }
+
+        checker.setOptions(options);
 
         // init once here so know at construction
         // time if access via reflection will fail.
@@ -123,7 +137,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
             } else {
                 X509Certificate failed = (X509Certificate) certPath.getCertificates().get(failedAtIndex);
 
-                if (reason == CertPathValidatorException.BasicReason.REVOKED) {
+                if (reason == BasicReason.REVOKED) {
                     if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
                         throw e;
                     } else {
@@ -132,7 +146,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
                             failed.getSubjectX500Principal().getName()
                         );
                     }
-                } else if (reason == CertPathValidatorException.BasicReason.UNDETERMINED_REVOCATION_STATUS) {
+                } else if (reason == BasicReason.UNDETERMINED_REVOCATION_STATUS) {
                     if (validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND)) {
                         throw e;
                     } else {

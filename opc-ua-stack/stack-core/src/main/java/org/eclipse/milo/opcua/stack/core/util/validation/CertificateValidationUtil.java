@@ -18,6 +18,7 @@ import java.security.SignatureException;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathValidatorException;
+import java.security.cert.CertPathValidatorException.BasicReason;
 import java.security.cert.CertStore;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -214,21 +215,19 @@ public class CertificateValidationUtil {
                         failed.getSubjectX500Principal().getName()
                     );
 
-                    if (reason == CertPathValidatorException.BasicReason.REVOKED) {
+                    if (reason == BasicReason.REVOKED) {
                         if (failedAtIndex == 0) {
                             throw new UaException(StatusCodes.Bad_CertificateRevoked, e);
                         } else {
                             throw new UaException(StatusCodes.Bad_CertificateIssuerRevoked, e);
                         }
-                    } else if (reason == CertPathValidatorException.BasicReason.UNDETERMINED_REVOCATION_STATUS) {
+                    } else if (reason == BasicReason.UNDETERMINED_REVOCATION_STATUS) {
                         if (failedAtIndex == 0) {
                             throw new UaException(StatusCodes.Bad_CertificateRevocationUnknown, e);
                         } else {
                             throw new UaException(StatusCodes.Bad_CertificateIssuerRevocationUnknown, e);
                         }
-                    } else if (reason == CertPathValidatorException.BasicReason.EXPIRED ||
-                        reason == CertPathValidatorException.BasicReason.NOT_YET_VALID) {
-
+                    } else if (reason == BasicReason.EXPIRED || reason == BasicReason.NOT_YET_VALID) {
                         if (failedAtIndex == 0) {
                             throw new UaException(StatusCodes.Bad_CertificateTimeInvalid, e);
                         } else {

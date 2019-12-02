@@ -200,11 +200,6 @@ public class CertificateValidationUtilTest {
                         (PrivateKey) keyStore.getKey(
                             ALIAS_CA_INTERMEDIATE, "password".toCharArray()),
                         leafIntermediateSigned
-                    ),
-                    generateCrl(
-                        caRoot,
-                        (PrivateKey) keyStore.getKey(
-                            ALIAS_CA_ROOT, "password".toCharArray())
                     )
                 );
 
