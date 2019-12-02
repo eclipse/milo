@@ -145,14 +145,13 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
                         );
                     }
                 } else if (reason == BasicReason.UNDETERMINED_REVOCATION_STATUS) {
-                    if (validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND)) {
-                        throw e;
-                    } else {
-                        LOGGER.warn(
-                            "check suppressed: certificate failed revocation list found check: {}",
-                            failed.getSubjectX500Principal().getName()
-                        );
-                    }
+                    // sanity check: this can only happen if we didn't include
+                    // Option.SOFT_FAIL, which only happens when
+                    // ValidationCheck.REVOCATION_LIST_FOUND is present.
+                    assert !getOptions().contains(Option.SOFT_FAIL);
+                    assert validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND);
+
+                    throw e;
                 } else {
                     throw e;
                 }
