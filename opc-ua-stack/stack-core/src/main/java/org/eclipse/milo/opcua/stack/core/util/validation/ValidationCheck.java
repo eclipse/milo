@@ -53,12 +53,12 @@ public enum ValidationCheck {
     /**
      * Revocation checking must happen.
      */
-    REVOCATION_CHECK,
+    REVOCATION,
 
     /**
      * CRLs for every non-end-entity must CA must be found.
      */
-    REVOCATION_LIST_FOUND;
+    REVOCATION_LISTS;
 
     /**
      * An empty set of {@link ValidationCheck}s.

@@ -178,7 +178,7 @@ public class CertificateValidationUtil {
                     // either enabled or it isn't, and CRL location is allowed
                     // to fail, regardless of the REVOCATION_LIST_FOUND check.
 
-                    if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
+                    if (validationChecks.contains(ValidationCheck.REVOCATION)) {
                         parameters.setRevocationEnabled(true);
 
                         PKIXRevocationChecker pkixRevocationChecker =

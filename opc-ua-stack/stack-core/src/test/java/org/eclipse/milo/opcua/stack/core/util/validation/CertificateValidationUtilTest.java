@@ -213,7 +213,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
+                    EnumSet.of(ValidationCheck.REVOCATION)
                 );
             });
 
@@ -246,7 +246,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
+                    EnumSet.of(ValidationCheck.REVOCATION)
                 );
             });
 
@@ -359,7 +359,7 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION_CHECK)
+                    EnumSet.of(ValidationCheck.REVOCATION)
                 );
             });
 

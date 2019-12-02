@@ -65,7 +65,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
         // must be available, or the check fails with
         // BasicReason.UNDETERMINED_REVOCATION_STATUS, which could mask a revoked
         // certificate in a CRL we *do* have.
-        if (!validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND)) {
+        if (!validationChecks.contains(ValidationCheck.REVOCATION_LISTS)) {
             options.add(Option.SOFT_FAIL);
         }
 
@@ -136,7 +136,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
                 X509Certificate failed = (X509Certificate) certPath.getCertificates().get(failedAtIndex);
 
                 if (reason == BasicReason.REVOKED) {
-                    if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
+                    if (validationChecks.contains(ValidationCheck.REVOCATION)) {
                         throw e;
                     } else {
                         LOGGER.warn(
@@ -149,7 +149,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
                     // the Option.SOFT_FAIL option, which only happens when
                     // ValidationCheck.REVOCATION_LIST_FOUND is present.
                     assert !getOptions().contains(Option.SOFT_FAIL);
-                    assert validationChecks.contains(ValidationCheck.REVOCATION_LIST_FOUND);
+                    assert validationChecks.contains(ValidationCheck.REVOCATION_LISTS);
 
                     throw e;
                 } else {
