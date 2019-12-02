@@ -53,7 +53,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
@@ -407,22 +406,31 @@ public class OpcUaNamespace extends ManagedNamespace {
             Out<UInteger[]> clientHandles
         ) throws UaException {
 
+            Session session = context.getSession().orElseThrow(
+                () ->
+                    new UaException(StatusCodes.Bad_SessionIdInvalid)
+            );
+
             Subscription subscription = server.getSubscriptions().get(subscriptionId);
 
-            if (subscription != null) {
-                List<UInteger> serverHandleList = Lists.newArrayList();
-                List<UInteger> clientHandleList = Lists.newArrayList();
-
-                for (BaseMonitoredItem<?> item : subscription.getMonitoredItems().values()) {
-                    serverHandleList.add(item.getId());
-                    clientHandleList.add(uint(item.getClientHandle()));
-                }
-
-                serverHandles.set(serverHandleList.toArray(new UInteger[0]));
-                clientHandles.set(clientHandleList.toArray(new UInteger[0]));
-            } else {
-                throw new UaException(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid));
+            if (subscription == null) {
+                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
             }
+
+            if (!session.getSessionId().equals(subscription.getSession().getSessionId())) {
+                throw new UaException(StatusCodes.Bad_UserAccessDenied);
+            }
+
+            List<UInteger> serverHandleList = Lists.newArrayList();
+            List<UInteger> clientHandleList = Lists.newArrayList();
+
+            for (BaseMonitoredItem<?> item : subscription.getMonitoredItems().values()) {
+                serverHandleList.add(item.getId());
+                clientHandleList.add(uint(item.getClientHandle()));
+            }
+
+            serverHandles.set(serverHandleList.toArray(new UInteger[0]));
+            clientHandles.set(clientHandleList.toArray(new UInteger[0]));
         }
 
     }
