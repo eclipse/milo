@@ -245,8 +245,8 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
         ServerCapabilitiesTypeNode serverCapabilities = serverTypeNode.getServerCapabilitiesNode();
+        serverCapabilities.setServerProfileArray(new String[]{"http://opcfoundation.org/UA-Profile/Server/StandardUA"});
         serverCapabilities.setLocaleIdArray(new String[]{Locale.ENGLISH.getLanguage()});
-        serverCapabilities.setServerProfileArray(new String[]{});
         serverCapabilities.setMaxArrayLength(limits.getMaxArrayLength());
         serverCapabilities.setMaxStringLength(limits.getMaxStringLength());
         serverCapabilities.setMaxByteStringLength(limits.getMaxByteStringLength());
