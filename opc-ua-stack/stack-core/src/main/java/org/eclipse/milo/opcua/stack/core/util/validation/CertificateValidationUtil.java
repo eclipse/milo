@@ -13,10 +13,12 @@ package org.eclipse.milo.opcua.stack.core.util.validation;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathBuilder;
+import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertPathValidatorException.BasicReason;
 import java.security.cert.CertStore;
@@ -48,7 +50,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.certpath.PKIXCertPathValidator;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -140,7 +141,7 @@ public class CertificateValidationUtil {
         if (!anchorIsEndEntity) {
             // anchorCert is an issuer; validate the rest of the certPath
             try {
-                PKIXCertPathValidator certPathValidator = new PKIXCertPathValidator();
+                CertPathValidator certPathValidator = CertPathValidator.getInstance("PKIX");
 
                 PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
 
@@ -183,7 +184,7 @@ public class CertificateValidationUtil {
                         parameters.setRevocationEnabled(true);
 
                         PKIXRevocationChecker pkixRevocationChecker =
-                            (PKIXRevocationChecker) certPathValidator.engineGetRevocationChecker();
+                            (PKIXRevocationChecker) certPathValidator.getRevocationChecker();
 
                         pkixRevocationChecker.setOptions(newHashSet(
                             PKIXRevocationChecker.Option.NO_FALLBACK,
@@ -200,7 +201,7 @@ public class CertificateValidationUtil {
                     );
                 }
 
-                certPathValidator.engineValidate(certPath, parameters);
+                certPathValidator.validate(certPath, parameters);
             } catch (CertPathValidatorException e) {
                 CertPath path = e.getCertPath();
                 CertPathValidatorException.Reason reason = e.getReason();
@@ -241,7 +242,7 @@ public class CertificateValidationUtil {
                         throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
                     }
                 }
-            } catch (InvalidAlgorithmParameterException e) {
+            } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
             }
         }

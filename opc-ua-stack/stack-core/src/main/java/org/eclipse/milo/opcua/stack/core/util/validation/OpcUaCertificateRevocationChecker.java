@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.util.validation;
 import java.lang.reflect.Method;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathParameters;
+import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertPathValidatorException.BasicReason;
 import java.security.cert.Certificate;
@@ -27,7 +28,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.certpath.PKIXCertPathValidator;
 
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -54,7 +54,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
         this.parameters = parameters;
         this.validationChecks = validationChecks;
 
-        checker = (PKIXRevocationChecker) new PKIXCertPathValidator().engineGetRevocationChecker();
+        checker = (PKIXRevocationChecker) CertPathValidator.getInstance("PKIX").getRevocationChecker();
 
         HashSet<Option> options = newHashSet(
             Option.NO_FALLBACK,
