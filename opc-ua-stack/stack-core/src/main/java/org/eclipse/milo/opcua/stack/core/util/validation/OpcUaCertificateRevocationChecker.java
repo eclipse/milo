@@ -73,8 +73,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
 
         checker.setOptions(options);
 
-        // init once here so know at construction
-        // time if access via reflection will fail.
+        // bail in constructor if access via reflection will fail.
         initRevocationChecker();
     }
 
