@@ -11,9 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util.validation;
 
 import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertPath;
@@ -141,7 +139,7 @@ public class CertificateValidationUtil {
         if (!anchorIsEndEntity) {
             // anchorCert is an issuer; validate the rest of the certPath
             try {
-                CertPathValidator certPathValidator = CertPathValidator.getInstance("PKIX");
+                CertPathValidator certPathValidator = CertPathValidator.getInstance("PKIX", "SUN");
 
                 PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
 
@@ -242,7 +240,7 @@ public class CertificateValidationUtil {
                         throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
                     }
                 }
-            } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
+            } catch (GeneralSecurityException e) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
             }
         }

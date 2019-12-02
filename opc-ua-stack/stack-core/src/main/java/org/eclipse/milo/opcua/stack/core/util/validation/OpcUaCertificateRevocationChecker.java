@@ -69,7 +69,8 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
             options.add(Option.SOFT_FAIL);
         }
 
-        checker = (PKIXRevocationChecker) CertPathValidator.getInstance("PKIX").getRevocationChecker();
+        CertPathValidator validator = CertPathValidator.getInstance("PKIX", "SUN");
+        checker = (PKIXRevocationChecker) validator.getRevocationChecker();
         checker.setOptions(options);
 
         // bail in constructor if access via reflection will fail.
