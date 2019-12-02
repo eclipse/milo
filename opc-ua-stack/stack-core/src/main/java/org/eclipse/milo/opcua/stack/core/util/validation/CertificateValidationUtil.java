@@ -152,6 +152,10 @@ public class CertificateValidationUtil {
                 );
 
                 try {
+                    // Try to add our own custom revocation checker that can
+                    // optionally suppress failures to locate the CRLs or allow
+                    // certificates even if they've been revoked.
+
                     parameters.setRevocationEnabled(true);
 
                     if (!crls.isEmpty()) {
@@ -172,8 +176,8 @@ public class CertificateValidationUtil {
                 } catch (Exception e) {
                     // Couldn't add our custom revocation checker, so use the
                     // default one. It's not as fine-grained as ours - it's
-                    // either enabled or it isn't, and if CRL location fails
-                    // we can't suppress it.
+                    // either enabled or it isn't, and CRL location is allowed
+                    // to fail, regardless of the REVOCATION_LIST_FOUND check.
 
                     if (validationChecks.contains(ValidationCheck.REVOCATION_CHECK)) {
                         parameters.setRevocationEnabled(true);
