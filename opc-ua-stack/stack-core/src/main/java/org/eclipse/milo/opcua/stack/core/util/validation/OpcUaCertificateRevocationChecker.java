@@ -54,8 +54,6 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
         this.parameters = parameters;
         this.validationChecks = validationChecks;
 
-        checker = (PKIXRevocationChecker) CertPathValidator.getInstance("PKIX").getRevocationChecker();
-
         HashSet<Option> options = newHashSet(
             Option.NO_FALLBACK,
             Option.PREFER_CRLS
@@ -71,6 +69,7 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
             options.add(Option.SOFT_FAIL);
         }
 
+        checker = (PKIXRevocationChecker) CertPathValidator.getInstance("PKIX").getRevocationChecker();
         checker.setOptions(options);
 
         // bail in constructor if access via reflection will fail.
