@@ -33,7 +33,8 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpcUaCertificateUsageChecker.class);
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(OpcUaCertificateRevocationChecker.class);
 
     private final PKIXRevocationChecker checker;
 

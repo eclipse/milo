@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 
 class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpcUaCertificateUsageChecker.class);
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(OpcUaCertificateUsageChecker.class);
 
     private static final String KEY_USAGE_OID = "2.5.29.15";
     private static final String EXTENDED_KEY_USAGE_OID = "2.5.29.37";
