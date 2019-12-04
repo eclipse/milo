@@ -44,13 +44,11 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.TrustListTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.VendorServerInfoTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 class ObjectNodeLoader {
     private final UaNodeContext context;
@@ -63,2414 +61,2414 @@ class ObjectNodeLoader {
     }
 
     private void loadNode0() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 8251), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 8251), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7594), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 8251), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7656), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 8251), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EnumValueType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EnumValueType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.EnumValueType.expanded(), false));
+        node.addReference(new Reference(Identifiers.EnumValueType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_EnumValueType.expanded(), true));
+        node.addReference(new Reference(Identifiers.EnumValueType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode1() {
-        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, new NodeId(0, 78), new QualifiedName(0, "Mandatory"), new LocalizedText("en", "Mandatory"), new LocalizedText("en", "Specifies that an instance with the attributes and references of the instance declaration must appear when a type is instantiated."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 78), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(112), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 78), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(77), UInteger.valueOf(0)), true));
+        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, Identifiers.ModellingRule_Mandatory, new QualifiedName(0, "Mandatory"), new LocalizedText("en", "Mandatory"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModellingRule_Mandatory, Identifiers.HasProperty, Identifiers.ModellingRule_Mandatory_NamingRule.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModellingRule_Mandatory, Identifiers.HasTypeDefinition, Identifiers.ModellingRuleType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode2() {
-        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, new NodeId(0, 79), new QualifiedName(0, "MandatoryShared"), new LocalizedText("en", "MandatoryShared"), new LocalizedText("en", "Specifies that a reference to a shared instance must appear in when a type is instantiated."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 79), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(116), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 79), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(77), UInteger.valueOf(0)), true));
+        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, Identifiers.ModellingRule_MandatoryShared, new QualifiedName(0, "MandatoryShared"), new LocalizedText("en", "MandatoryShared"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModellingRule_MandatoryShared, Identifiers.HasProperty, Identifiers.ModellingRule_MandatoryShared_NamingRule.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModellingRule_MandatoryShared, Identifiers.HasTypeDefinition, Identifiers.ModellingRuleType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode3() {
-        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, new NodeId(0, 80), new QualifiedName(0, "Optional"), new LocalizedText("en", "Optional"), new LocalizedText("en", "Specifies that an instance with the attributes and references of the instance declaration may appear when a type is instantiated."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 80), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(113), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 80), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(77), UInteger.valueOf(0)), true));
+        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, Identifiers.ModellingRule_Optional, new QualifiedName(0, "Optional"), new LocalizedText("en", "Optional"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModellingRule_Optional, Identifiers.HasProperty, Identifiers.ModellingRule_Optional_NamingRule.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModellingRule_Optional, Identifiers.HasTypeDefinition, Identifiers.ModellingRuleType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode4() {
-        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, new NodeId(0, 83), new QualifiedName(0, "ExposesItsArray"), new LocalizedText("en", "ExposesItsArray"), new LocalizedText("en", "Specifies that an instance appears for each element of the containing array variable."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 83), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(114), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 83), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(77), UInteger.valueOf(0)), true));
+        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, Identifiers.ModellingRule_ExposesItsArray, new QualifiedName(0, "ExposesItsArray"), new LocalizedText("en", "ExposesItsArray"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModellingRule_ExposesItsArray, Identifiers.HasProperty, Identifiers.ModellingRule_ExposesItsArray_NamingRule.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModellingRule_ExposesItsArray, Identifiers.HasTypeDefinition, Identifiers.ModellingRuleType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode5() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 84), new QualifiedName(0, "Root"), new LocalizedText("en", "Root"), new LocalizedText("en", "The root of the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 84), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.RootFolder, new QualifiedName(0, "Root"), new LocalizedText("en", "Root"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RootFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode6() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 85), new QualifiedName(0, "Objects"), new LocalizedText("en", "Objects"), new LocalizedText("en", "The browse entry point when looking for objects in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 85), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(84), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 85), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ObjectsFolder, new QualifiedName(0, "Objects"), new LocalizedText("en", "Objects"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ObjectsFolder, Identifiers.Organizes, Identifiers.RootFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.ObjectsFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode7() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 86), new QualifiedName(0, "Types"), new LocalizedText("en", "Types"), new LocalizedText("en", "The browse entry point when looking for types in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 86), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(84), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 86), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.TypesFolder, new QualifiedName(0, "Types"), new LocalizedText("en", "Types"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.TypesFolder, Identifiers.Organizes, Identifiers.RootFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.TypesFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode8() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 87), new QualifiedName(0, "Views"), new LocalizedText("en", "Views"), new LocalizedText("en", "The browse entry point when looking for views in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 87), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(84), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 87), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ViewsFolder, new QualifiedName(0, "Views"), new LocalizedText("en", "Views"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ViewsFolder, Identifiers.Organizes, Identifiers.RootFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.ViewsFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode9() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 88), new QualifiedName(0, "ObjectTypes"), new LocalizedText("en", "ObjectTypes"), new LocalizedText("en", "The browse entry point when looking for object types in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 88), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(86), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 88), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(58), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 88), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ObjectTypesFolder, new QualifiedName(0, "ObjectTypes"), new LocalizedText("en", "ObjectTypes"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ObjectTypesFolder, Identifiers.Organizes, Identifiers.TypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.ObjectTypesFolder, Identifiers.Organizes, Identifiers.BaseObjectType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ObjectTypesFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode10() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 89), new QualifiedName(0, "VariableTypes"), new LocalizedText("en", "VariableTypes"), new LocalizedText("en", "The browse entry point when looking for variable types in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 89), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(86), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 89), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(62), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 89), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.VariableTypesFolder, new QualifiedName(0, "VariableTypes"), new LocalizedText("en", "VariableTypes"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.VariableTypesFolder, Identifiers.Organizes, Identifiers.TypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.VariableTypesFolder, Identifiers.Organizes, Identifiers.BaseVariableType.expanded(), true));
+        node.addReference(new Reference(Identifiers.VariableTypesFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode11() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 90), new QualifiedName(0, "DataTypes"), new LocalizedText("en", "DataTypes"), new LocalizedText("en", "The browse entry point when looking for data types in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 90), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(86), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 90), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(24), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 90), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.DataTypesFolder, new QualifiedName(0, "DataTypes"), new LocalizedText("en", "DataTypes"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DataTypesFolder, Identifiers.Organizes, Identifiers.TypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.DataTypesFolder, Identifiers.Organizes, Identifiers.BaseDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.DataTypesFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode12() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 91), new QualifiedName(0, "ReferenceTypes"), new LocalizedText("en", "ReferenceTypes"), new LocalizedText("en", "The browse entry point when looking for reference types in the server address space."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 91), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(86), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 91), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(31), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 91), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ReferenceTypesFolder, new QualifiedName(0, "ReferenceTypes"), new LocalizedText("en", "ReferenceTypes"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ReferenceTypesFolder, Identifiers.Organizes, Identifiers.TypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.ReferenceTypesFolder, Identifiers.Organizes, Identifiers.References.expanded(), true));
+        node.addReference(new Reference(Identifiers.ReferenceTypesFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode13() {
-        DataTypeSystemTypeNode node = new DataTypeSystemTypeNode(this.context, new NodeId(0, 92), new QualifiedName(0, "XML Schema"), new LocalizedText("en", "XML Schema"), new LocalizedText("en", "A type system which uses XML schema to describe the encoding of data types."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 92), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(90), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 92), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(75), UInteger.valueOf(0)), true));
+        DataTypeSystemTypeNode node = new DataTypeSystemTypeNode(this.context, Identifiers.XmlSchema_TypeSystem, new QualifiedName(0, "XML Schema"), new LocalizedText("en", "XML Schema"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.XmlSchema_TypeSystem, Identifiers.Organizes, Identifiers.DataTypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.XmlSchema_TypeSystem, Identifiers.HasTypeDefinition, Identifiers.DataTypeSystemType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode14() {
-        DataTypeSystemTypeNode node = new DataTypeSystemTypeNode(this.context, new NodeId(0, 93), new QualifiedName(0, "OPC Binary"), new LocalizedText("en", "OPC Binary"), new LocalizedText("en", "A type system which uses OPC binary schema to describe the encoding of data types."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 93), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(90), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 93), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(75), UInteger.valueOf(0)), true));
+        DataTypeSystemTypeNode node = new DataTypeSystemTypeNode(this.context, Identifiers.OPCBinarySchema_TypeSystem, new QualifiedName(0, "OPC Binary"), new LocalizedText("en", "OPC Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.OPCBinarySchema_TypeSystem, Identifiers.Organizes, Identifiers.DataTypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.OPCBinarySchema_TypeSystem, Identifiers.HasTypeDefinition, Identifiers.DataTypeSystemType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode15() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 297), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(296), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8285), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 297), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Argument_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Argument_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.Argument.expanded(), false));
+        node.addReference(new Reference(Identifiers.Argument_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_Argument.expanded(), true));
+        node.addReference(new Reference(Identifiers.Argument_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode16() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 298), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 298), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(296), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 298), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7650), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 298), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Argument_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Argument_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.Argument.expanded(), false));
+        node.addReference(new Reference(Identifiers.Argument_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_Argument.expanded(), true));
+        node.addReference(new Reference(Identifiers.Argument_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode17() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 300), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(299), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8294), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 300), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.StatusResult_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.StatusResult_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.StatusResult.expanded(), false));
+        node.addReference(new Reference(Identifiers.StatusResult_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_StatusResult.expanded(), true));
+        node.addReference(new Reference(Identifiers.StatusResult_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode18() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 301), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 301), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(299), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 301), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7659), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 301), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.StatusResult_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.StatusResult_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.StatusResult.expanded(), false));
+        node.addReference(new Reference(Identifiers.StatusResult_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_StatusResult.expanded(), true));
+        node.addReference(new Reference(Identifiers.StatusResult_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode19() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 305), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(304), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8297), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 305), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.UserTokenPolicy_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.UserTokenPolicy_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.UserTokenPolicy.expanded(), false));
+        node.addReference(new Reference(Identifiers.UserTokenPolicy_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_UserTokenPolicy.expanded(), true));
+        node.addReference(new Reference(Identifiers.UserTokenPolicy_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode20() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 306), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 306), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(304), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 306), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7662), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 306), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.UserTokenPolicy_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.UserTokenPolicy_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.UserTokenPolicy.expanded(), false));
+        node.addReference(new Reference(Identifiers.UserTokenPolicy_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_UserTokenPolicy.expanded(), true));
+        node.addReference(new Reference(Identifiers.UserTokenPolicy_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode21() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 309), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(308), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8300), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 309), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ApplicationDescription_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ApplicationDescription_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ApplicationDescription.expanded(), false));
+        node.addReference(new Reference(Identifiers.ApplicationDescription_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ApplicationDescription.expanded(), true));
+        node.addReference(new Reference(Identifiers.ApplicationDescription_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode22() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 310), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 310), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(308), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 310), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7665), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 310), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ApplicationDescription_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ApplicationDescription_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ApplicationDescription.expanded(), false));
+        node.addReference(new Reference(Identifiers.ApplicationDescription_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ApplicationDescription.expanded(), true));
+        node.addReference(new Reference(Identifiers.ApplicationDescription_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode23() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 313), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(312), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8303), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 313), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EndpointDescription_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EndpointDescription_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.EndpointDescription.expanded(), false));
+        node.addReference(new Reference(Identifiers.EndpointDescription_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_EndpointDescription.expanded(), true));
+        node.addReference(new Reference(Identifiers.EndpointDescription_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode24() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 314), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 314), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(312), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 314), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7668), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 314), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EndpointDescription_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EndpointDescription_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.EndpointDescription.expanded(), false));
+        node.addReference(new Reference(Identifiers.EndpointDescription_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_EndpointDescription.expanded(), true));
+        node.addReference(new Reference(Identifiers.EndpointDescription_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode25() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 317), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(316), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8306), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 317), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.UserIdentityToken_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.UserIdentityToken_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.UserIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.UserIdentityToken_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_UserIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.UserIdentityToken_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode26() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 318), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 318), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(316), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 318), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7671), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 318), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.UserIdentityToken_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.UserIdentityToken_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.UserIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.UserIdentityToken_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_UserIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.UserIdentityToken_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode27() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 320), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(319), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8309), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 320), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AnonymousIdentityToken_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AnonymousIdentityToken_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.AnonymousIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.AnonymousIdentityToken_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_AnonymousIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.AnonymousIdentityToken_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode28() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 321), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 321), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(319), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 321), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7674), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 321), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AnonymousIdentityToken_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AnonymousIdentityToken_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.AnonymousIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.AnonymousIdentityToken_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_AnonymousIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.AnonymousIdentityToken_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode29() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 323), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(322), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8312), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 323), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.UserNameIdentityToken_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.UserNameIdentityToken_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.UserNameIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.UserNameIdentityToken_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_UserNameIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.UserNameIdentityToken_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode30() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 324), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 324), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(322), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 324), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7677), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 324), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.UserNameIdentityToken_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.UserNameIdentityToken_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.UserNameIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.UserNameIdentityToken_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_UserNameIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.UserNameIdentityToken_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode31() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 326), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(325), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8315), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 326), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.X509IdentityToken_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.X509IdentityToken_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.X509IdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.X509IdentityToken_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_X509IdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.X509IdentityToken_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode32() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 327), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 327), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(325), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 327), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7680), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 327), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.X509IdentityToken_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.X509IdentityToken_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.X509IdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.X509IdentityToken_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_X509IdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.X509IdentityToken_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode33() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 332), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(331), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8321), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 332), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EndpointConfiguration_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EndpointConfiguration_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.EndpointConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.EndpointConfiguration_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_EndpointConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.EndpointConfiguration_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode34() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 333), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 333), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(331), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 333), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7686), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 333), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EndpointConfiguration_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EndpointConfiguration_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.EndpointConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.EndpointConfiguration_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_EndpointConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.EndpointConfiguration_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode35() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 339), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(338), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8327), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 339), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.BuildInfo_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.BuildInfo_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.BuildInfo.expanded(), false));
+        node.addReference(new Reference(Identifiers.BuildInfo_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_BuildInfo.expanded(), true));
+        node.addReference(new Reference(Identifiers.BuildInfo_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode36() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 340), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 340), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(338), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 340), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7692), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 340), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.BuildInfo_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.BuildInfo_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.BuildInfo.expanded(), false));
+        node.addReference(new Reference(Identifiers.BuildInfo_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_BuildInfo.expanded(), true));
+        node.addReference(new Reference(Identifiers.BuildInfo_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode37() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 345), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(344), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8333), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 345), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SignedSoftwareCertificate_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SignedSoftwareCertificate_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SignedSoftwareCertificate.expanded(), false));
+        node.addReference(new Reference(Identifiers.SignedSoftwareCertificate_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SignedSoftwareCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.SignedSoftwareCertificate_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode38() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 346), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 346), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(344), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 346), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7698), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 346), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SignedSoftwareCertificate_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SignedSoftwareCertificate_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SignedSoftwareCertificate.expanded(), false));
+        node.addReference(new Reference(Identifiers.SignedSoftwareCertificate_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SignedSoftwareCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.SignedSoftwareCertificate_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode39() {
-        ServerConfigurationTypeNode node = new ServerConfigurationTypeNode(this.context, new NodeId(0, 12637), new QualifiedName(0, "ServerConfiguration"), new LocalizedText("en", "ServerConfiguration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14053), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12710), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12639), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12640), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12641), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13737), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12740), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12737), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12777), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2253), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12637), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12581), UInteger.valueOf(0)), true));
+        ServerConfigurationTypeNode node = new ServerConfigurationTypeNode(this.context, Identifiers.ServerConfiguration, new QualifiedName(0, "ServerConfiguration"), new LocalizedText("en", "ServerConfiguration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasProperty, Identifiers.ServerConfiguration_ServerCapabilities.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasProperty, Identifiers.ServerConfiguration_SupportedPrivateKeyFormats.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasProperty, Identifiers.ServerConfiguration_MaxTrustListSize.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasProperty, Identifiers.ServerConfiguration_MulticastDnsEnabled.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasComponent, Identifiers.ServerConfiguration_UpdateCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasComponent, Identifiers.ServerConfiguration_ApplyChanges.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasComponent, Identifiers.ServerConfiguration_CreateSigningRequest.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasComponent, Identifiers.ServerConfiguration_GetRejectedList.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerConfiguration, Identifiers.HasTypeDefinition, Identifiers.ServerConfigurationType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode40() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 12642), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12643), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14157), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14158), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12646), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12647), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12650), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12652), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12655), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12657), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12660), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12662), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12663), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12666), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12668), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12670), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12642), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14156), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_CloseAndUpdate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_AddCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList_RemoveCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode41() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 377), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(376), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8363), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 377), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AddNodesItem_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AddNodesItem_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.AddNodesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.AddNodesItem_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_AddNodesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.AddNodesItem_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode42() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 378), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 378), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(376), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 378), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7728), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 378), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AddNodesItem_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AddNodesItem_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.AddNodesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.AddNodesItem_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_AddNodesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.AddNodesItem_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode43() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 380), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(379), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8366), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 380), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AddReferencesItem_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AddReferencesItem_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.AddReferencesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.AddReferencesItem_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_AddReferencesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.AddReferencesItem_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode44() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 381), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 381), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(379), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 381), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7731), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 381), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AddReferencesItem_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AddReferencesItem_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.AddReferencesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.AddReferencesItem_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_AddReferencesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.AddReferencesItem_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode45() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 383), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(382), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8369), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 383), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DeleteNodesItem_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DeleteNodesItem_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.DeleteNodesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.DeleteNodesItem_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_DeleteNodesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.DeleteNodesItem_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode46() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 384), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 384), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(382), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 384), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7734), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 384), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DeleteNodesItem_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DeleteNodesItem_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.DeleteNodesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.DeleteNodesItem_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_DeleteNodesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.DeleteNodesItem_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode47() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 386), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(385), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8372), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 386), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DeleteReferencesItem_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DeleteReferencesItem_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.DeleteReferencesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.DeleteReferencesItem_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_DeleteReferencesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.DeleteReferencesItem_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode48() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 387), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 387), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(385), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 387), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7737), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 387), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DeleteReferencesItem_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DeleteReferencesItem_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.DeleteReferencesItem.expanded(), false));
+        node.addReference(new Reference(Identifiers.DeleteReferencesItem_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_DeleteReferencesItem.expanded(), true));
+        node.addReference(new Reference(Identifiers.DeleteReferencesItem_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode49() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12676), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12554), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12677), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12676), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.TrustListDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.TrustListDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.TrustListDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.TrustListDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_TrustListDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.TrustListDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode50() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12680), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12680), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12554), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12680), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12681), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12680), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.TrustListDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.TrustListDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.TrustListDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.TrustListDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_TrustListDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.TrustListDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode51() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 433), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(432), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8417), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 433), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RegisteredServer_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RegisteredServer_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.RegisteredServer.expanded(), false));
+        node.addReference(new Reference(Identifiers.RegisteredServer_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_RegisteredServer.expanded(), true));
+        node.addReference(new Reference(Identifiers.RegisteredServer_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode52() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 434), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 434), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(432), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 434), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7782), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 434), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RegisteredServer_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RegisteredServer_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.RegisteredServer.expanded(), false));
+        node.addReference(new Reference(Identifiers.RegisteredServer_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_RegisteredServer.expanded(), true));
+        node.addReference(new Reference(Identifiers.RegisteredServer_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode53() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12757), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12755), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12759), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12757), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.OptionSet_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.OptionSet_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.OptionSet.expanded(), false));
+        node.addReference(new Reference(Identifiers.OptionSet_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_OptionSet.expanded(), true));
+        node.addReference(new Reference(Identifiers.OptionSet_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode54() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12758), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12756), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12762), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12758), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Union_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Union_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.Union.expanded(), false));
+        node.addReference(new Reference(Identifiers.Union_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_Union.expanded(), true));
+        node.addReference(new Reference(Identifiers.Union_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode55() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12765), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12765), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12755), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12765), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12767), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12765), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.OptionSet_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.OptionSet_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.OptionSet.expanded(), false));
+        node.addReference(new Reference(Identifiers.OptionSet_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_OptionSet.expanded(), true));
+        node.addReference(new Reference(Identifiers.OptionSet_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode56() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12766), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12766), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12756), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12766), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12770), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12766), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Union_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Union_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.Union.expanded(), false));
+        node.addReference(new Reference(Identifiers.Union_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_Union.expanded(), true));
+        node.addReference(new Reference(Identifiers.Union_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode57() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 538), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(537), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12712), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 538), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RelativePathElement_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RelativePathElement_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.RelativePathElement.expanded(), false));
+        node.addReference(new Reference(Identifiers.RelativePathElement_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_RelativePathElement.expanded(), true));
+        node.addReference(new Reference(Identifiers.RelativePathElement_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode58() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 539), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 539), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(537), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 539), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12718), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 539), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RelativePathElement_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RelativePathElement_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.RelativePathElement.expanded(), false));
+        node.addReference(new Reference(Identifiers.RelativePathElement_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_RelativePathElement.expanded(), true));
+        node.addReference(new Reference(Identifiers.RelativePathElement_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode59() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 541), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(540), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12715), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 541), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RelativePath_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RelativePath_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.RelativePath.expanded(), false));
+        node.addReference(new Reference(Identifiers.RelativePath_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_RelativePath.expanded(), true));
+        node.addReference(new Reference(Identifiers.RelativePath_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode60() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 542), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 542), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(540), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 542), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12721), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 542), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RelativePath_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RelativePath_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.RelativePath.expanded(), false));
+        node.addReference(new Reference(Identifiers.RelativePath_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_RelativePath.expanded(), true));
+        node.addReference(new Reference(Identifiers.RelativePath_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode61() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 584), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(583), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8564), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 584), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ContentFilterElement_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ContentFilterElement_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ContentFilterElement.expanded(), false));
+        node.addReference(new Reference(Identifiers.ContentFilterElement_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ContentFilterElement.expanded(), true));
+        node.addReference(new Reference(Identifiers.ContentFilterElement_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode62() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 585), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 585), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(583), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 585), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7929), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 585), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ContentFilterElement_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ContentFilterElement_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ContentFilterElement.expanded(), false));
+        node.addReference(new Reference(Identifiers.ContentFilterElement_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ContentFilterElement.expanded(), true));
+        node.addReference(new Reference(Identifiers.ContentFilterElement_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode63() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 587), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(586), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8567), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 587), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ContentFilter_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ContentFilter_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ContentFilter.expanded(), false));
+        node.addReference(new Reference(Identifiers.ContentFilter_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ContentFilter.expanded(), true));
+        node.addReference(new Reference(Identifiers.ContentFilter_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode64() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 588), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 588), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(586), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 588), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7932), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 588), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ContentFilter_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ContentFilter_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ContentFilter.expanded(), false));
+        node.addReference(new Reference(Identifiers.ContentFilter_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ContentFilter.expanded(), true));
+        node.addReference(new Reference(Identifiers.ContentFilter_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode65() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 590), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(589), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8570), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 590), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.FilterOperand_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.FilterOperand_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.FilterOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.FilterOperand_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_FilterOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.FilterOperand_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode66() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 591), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 591), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(589), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 591), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7935), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 591), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.FilterOperand_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.FilterOperand_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.FilterOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.FilterOperand_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_FilterOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.FilterOperand_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode67() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 593), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(592), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8573), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 593), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ElementOperand_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ElementOperand_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ElementOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.ElementOperand_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ElementOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.ElementOperand_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode68() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 594), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 594), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(592), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 594), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7938), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 594), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ElementOperand_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ElementOperand_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ElementOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.ElementOperand_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ElementOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.ElementOperand_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode69() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 596), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(595), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8576), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 596), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.LiteralOperand_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.LiteralOperand_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.LiteralOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.LiteralOperand_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_LiteralOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.LiteralOperand_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode70() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 597), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 597), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(595), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 597), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7941), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 597), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.LiteralOperand_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.LiteralOperand_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.LiteralOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.LiteralOperand_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_LiteralOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.LiteralOperand_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode71() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 599), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(598), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8579), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 599), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AttributeOperand_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AttributeOperand_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.AttributeOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.AttributeOperand_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_AttributeOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.AttributeOperand_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode72() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 600), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 600), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(598), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 600), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7944), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 600), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AttributeOperand_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AttributeOperand_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.AttributeOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.AttributeOperand_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_AttributeOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.AttributeOperand_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode73() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 602), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(601), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8582), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 602), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SimpleAttributeOperand_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SimpleAttributeOperand_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SimpleAttributeOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.SimpleAttributeOperand_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SimpleAttributeOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.SimpleAttributeOperand_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode74() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 603), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 603), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(601), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 603), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7947), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 603), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SimpleAttributeOperand_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SimpleAttributeOperand_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SimpleAttributeOperand.expanded(), false));
+        node.addReference(new Reference(Identifiers.SimpleAttributeOperand_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SimpleAttributeOperand.expanded(), true));
+        node.addReference(new Reference(Identifiers.SimpleAttributeOperand_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode75() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12892), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12890), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12894), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12892), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DiscoveryConfiguration_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DiscoveryConfiguration_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.DiscoveryConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.DiscoveryConfiguration_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_DiscoveryConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.DiscoveryConfiguration_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode76() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12893), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12891), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12897), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12893), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.MdnsDiscoveryConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_MdnsDiscoveryConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode77() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12900), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12900), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12890), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12900), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12902), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12900), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DiscoveryConfiguration_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DiscoveryConfiguration_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.DiscoveryConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.DiscoveryConfiguration_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_DiscoveryConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.DiscoveryConfiguration_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode78() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12901), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12901), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12891), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12901), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12905), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12901), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.MdnsDiscoveryConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_MdnsDiscoveryConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode79() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 660), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(659), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8639), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 660), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.HistoryEvent_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryEvent_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.HistoryEvent.expanded(), false));
+        node.addReference(new Reference(Identifiers.HistoryEvent_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_HistoryEvent.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryEvent_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode80() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 661), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 661), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(659), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 661), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8004), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 661), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.HistoryEvent_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryEvent_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.HistoryEvent.expanded(), false));
+        node.addReference(new Reference(Identifiers.HistoryEvent_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_HistoryEvent.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryEvent_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode81() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 720), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(719), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8702), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 720), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.MonitoringFilter_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.MonitoringFilter_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.MonitoringFilter.expanded(), false));
+        node.addReference(new Reference(Identifiers.MonitoringFilter_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_MonitoringFilter.expanded(), true));
+        node.addReference(new Reference(Identifiers.MonitoringFilter_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode82() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 8913), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8912), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8918), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 8913), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.TimeZoneDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.TimeZoneDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.TimeZoneDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.TimeZoneDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_TimeZoneDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.TimeZoneDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode83() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 721), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 721), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(719), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 721), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8067), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 721), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.MonitoringFilter_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.MonitoringFilter_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.MonitoringFilter.expanded(), false));
+        node.addReference(new Reference(Identifiers.MonitoringFilter_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_MonitoringFilter.expanded(), true));
+        node.addReference(new Reference(Identifiers.MonitoringFilter_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode84() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 8917), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 8917), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8912), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 8917), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8914), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 8917), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.TimeZoneDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.TimeZoneDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.TimeZoneDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.TimeZoneDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_TimeZoneDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.TimeZoneDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode85() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 726), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(725), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8708), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 726), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EventFilter_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EventFilter_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.EventFilter.expanded(), false));
+        node.addReference(new Reference(Identifiers.EventFilter_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_EventFilter.expanded(), true));
+        node.addReference(new Reference(Identifiers.EventFilter_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode86() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 727), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 727), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(725), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 727), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8073), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 727), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EventFilter_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EventFilter_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.EventFilter.expanded(), false));
+        node.addReference(new Reference(Identifiers.EventFilter_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_EventFilter.expanded(), true));
+        node.addReference(new Reference(Identifiers.EventFilter_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode87() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 854), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(853), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8843), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 854), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RedundantServerDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RedundantServerDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.RedundantServerDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.RedundantServerDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_RedundantServerDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.RedundantServerDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode88() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 855), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 855), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(853), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 855), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8208), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 855), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.RedundantServerDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.RedundantServerDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.RedundantServerDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.RedundantServerDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_RedundantServerDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.RedundantServerDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode89() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 857), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(856), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8846), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 857), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SamplingIntervalDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SamplingIntervalDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode90() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 858), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 858), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(856), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 858), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8211), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 858), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SamplingIntervalDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SamplingIntervalDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode91() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 860), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(859), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8849), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 860), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ServerDiagnosticsSummaryDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ServerDiagnosticsSummaryDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode92() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 861), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 861), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(859), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 861), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8214), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 861), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ServerDiagnosticsSummaryDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ServerDiagnosticsSummaryDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsSummaryDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode93() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 863), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(862), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8852), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 863), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServerStatusDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerStatusDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ServerStatusDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerStatusDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ServerStatusDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerStatusDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode94() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 864), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 864), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(862), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 864), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8217), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 864), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServerStatusDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerStatusDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ServerStatusDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerStatusDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ServerStatusDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerStatusDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode95() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 866), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(865), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8855), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 866), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SessionDiagnosticsDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SessionDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SessionDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SessionDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SessionDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode96() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 867), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 867), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(865), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 867), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8220), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 867), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SessionDiagnosticsDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SessionDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SessionDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SessionDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SessionDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode97() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 869), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(868), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8858), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 869), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SessionSecurityDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SessionSecurityDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode98() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 870), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 870), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(868), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 870), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8223), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 870), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SessionSecurityDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SessionSecurityDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode99() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 872), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(871), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8861), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 872), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServiceCounterDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServiceCounterDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ServiceCounterDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServiceCounterDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ServiceCounterDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServiceCounterDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode100() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 873), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 873), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(871), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 873), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8226), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 873), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServiceCounterDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServiceCounterDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ServiceCounterDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServiceCounterDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ServiceCounterDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServiceCounterDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode101() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 875), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(874), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8864), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 875), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SubscriptionDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SubscriptionDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode102() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 876), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 876), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(874), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 876), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8229), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 876), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SubscriptionDiagnosticsDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SubscriptionDiagnosticsDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode103() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 878), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(877), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8867), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 878), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ModelChangeStructureDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModelChangeStructureDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ModelChangeStructureDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ModelChangeStructureDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ModelChangeStructureDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModelChangeStructureDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode104() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 879), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 879), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(877), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 879), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8232), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 879), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ModelChangeStructureDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModelChangeStructureDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ModelChangeStructureDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ModelChangeStructureDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ModelChangeStructureDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModelChangeStructureDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode105() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 885), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(884), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8873), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 885), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Range_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Range_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.Range.expanded(), false));
+        node.addReference(new Reference(Identifiers.Range_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_Range.expanded(), true));
+        node.addReference(new Reference(Identifiers.Range_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode106() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 886), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 886), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(884), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 886), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8238), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 886), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Range_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Range_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.Range.expanded(), false));
+        node.addReference(new Reference(Identifiers.Range_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_Range.expanded(), true));
+        node.addReference(new Reference(Identifiers.Range_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode107() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 888), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(887), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8876), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 888), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EUInformation_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EUInformation_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.EUInformation.expanded(), false));
+        node.addReference(new Reference(Identifiers.EUInformation_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_EUInformation.expanded(), true));
+        node.addReference(new Reference(Identifiers.EUInformation_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode108() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 889), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 889), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(887), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 889), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8241), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 889), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EUInformation_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EUInformation_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.EUInformation.expanded(), false));
+        node.addReference(new Reference(Identifiers.EUInformation_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_EUInformation.expanded(), true));
+        node.addReference(new Reference(Identifiers.EUInformation_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode109() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 892), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(891), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8879), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 892), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Annotation_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Annotation_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.Annotation.expanded(), false));
+        node.addReference(new Reference(Identifiers.Annotation_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_Annotation.expanded(), true));
+        node.addReference(new Reference(Identifiers.Annotation_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode110() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 893), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 893), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(891), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 893), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8244), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 893), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.Annotation_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Annotation_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.Annotation.expanded(), false));
+        node.addReference(new Reference(Identifiers.Annotation_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_Annotation.expanded(), true));
+        node.addReference(new Reference(Identifiers.Annotation_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode111() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 895), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(894), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8882), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 895), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ProgramDiagnosticDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramDiagnosticDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ProgramDiagnosticDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramDiagnosticDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ProgramDiagnosticDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramDiagnosticDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode112() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 896), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 896), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(894), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 896), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8247), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 896), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ProgramDiagnosticDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramDiagnosticDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ProgramDiagnosticDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramDiagnosticDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ProgramDiagnosticDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramDiagnosticDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode113() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 898), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(897), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8870), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 898), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SemanticChangeStructureDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SemanticChangeStructureDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.SemanticChangeStructureDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SemanticChangeStructureDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_SemanticChangeStructureDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SemanticChangeStructureDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode114() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 899), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 899), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(897), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 899), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8235), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 899), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.SemanticChangeStructureDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SemanticChangeStructureDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.SemanticChangeStructureDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.SemanticChangeStructureDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_SemanticChangeStructureDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SemanticChangeStructureDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode115() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 921), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(920), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8807), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 921), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.HistoryEventFieldList_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryEventFieldList_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.HistoryEventFieldList.expanded(), false));
+        node.addReference(new Reference(Identifiers.HistoryEventFieldList_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_HistoryEventFieldList.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryEventFieldList_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode116() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 922), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 922), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(920), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 922), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8172), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 922), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.HistoryEventFieldList_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryEventFieldList_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.HistoryEventFieldList.expanded(), false));
+        node.addReference(new Reference(Identifiers.HistoryEventFieldList_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_HistoryEventFieldList.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryEventFieldList_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode117() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 939), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(938), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8318), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 939), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.IssuedIdentityToken_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.IssuedIdentityToken_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.IssuedIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.IssuedIdentityToken_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_IssuedIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.IssuedIdentityToken_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode118() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 940), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 940), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(938), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 940), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7683), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 940), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.IssuedIdentityToken_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.IssuedIdentityToken_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.IssuedIdentityToken.expanded(), false));
+        node.addReference(new Reference(Identifiers.IssuedIdentityToken_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_IssuedIdentityToken.expanded(), true));
+        node.addReference(new Reference(Identifiers.IssuedIdentityToken_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode119() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 949), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(948), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8711), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 949), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AggregateConfiguration_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateConfiguration_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.AggregateConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.AggregateConfiguration_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_AggregateConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.AggregateConfiguration_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode120() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 950), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 950), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(948), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 950), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8076), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 950), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AggregateConfiguration_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateConfiguration_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.AggregateConfiguration.expanded(), false));
+        node.addReference(new Reference(Identifiers.AggregateConfiguration_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_AggregateConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.AggregateConfiguration_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode121() {
-        ShelvedStateMachineTypeNode node = new ShelvedStateMachineTypeNode(this.context, new NodeId(0, 9178), new QualifiedName(0, "ShelvingState"), new LocalizedText("en", "ShelvingState"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9179), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9184), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9189), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9211), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9212), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9213), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 9004), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9118), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9178), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), false));
+        ShelvedStateMachineTypeNode node = new ShelvedStateMachineTypeNode(this.context, Identifiers.AlarmConditionType_ShelvingState, new QualifiedName(0, "ShelvingState"), new LocalizedText("en", "ShelvingState"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasComponent, Identifiers.AlarmConditionType_ShelvingState_CurrentState.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasComponent, Identifiers.AlarmConditionType_ShelvingState_LastTransition.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasProperty, Identifiers.AlarmConditionType_ShelvingState_UnshelveTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasComponent, Identifiers.AlarmConditionType_ShelvingState_Unshelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasComponent, Identifiers.AlarmConditionType_ShelvingState_OneShotShelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasComponent, Identifiers.AlarmConditionType_ShelvingState_TimedShelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasTrueSubState, Identifiers.AlarmConditionType_EnabledState.expanded(), false));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasTypeDefinition, Identifiers.ShelvedStateMachineType.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.AlarmConditionType_ShelvingState, Identifiers.HasComponent, Identifiers.AlarmConditionType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode122() {
-        FileDirectoryTypeNode node = new FileDirectoryTypeNode(this.context, new NodeId(0, 13354), new QualifiedName(0, "<FileDirectoryName>"), new LocalizedText("en", "<FileDirectoryName>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13355), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13358), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13361), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13363), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13353), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11508), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13354), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13353), UInteger.valueOf(0)), false));
+        FileDirectoryTypeNode node = new FileDirectoryTypeNode(this.context, Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, new QualifiedName(0, "<FileDirectoryName>"), new LocalizedText("en", "<FileDirectoryName>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileDirectoryName_Placeholder_CreateDirectory.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileDirectoryName_Placeholder_CreateFile.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileDirectoryName_Placeholder_Delete.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileDirectoryName_Placeholder_MoveOrCopy.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasTypeDefinition, Identifiers.FileDirectoryType.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasModellingRule, Identifiers.ModellingRule_OptionalPlaceholder.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileDirectoryName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode123() {
-        FileTypeNode node = new FileTypeNode(this.context, new NodeId(0, 13366), new QualifiedName(0, "<FileName>"), new LocalizedText("en", "<FileName>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13367), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13368), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13369), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13370), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13372), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13375), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13377), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13380), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13382), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13385), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11575), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11508), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13366), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13353), UInteger.valueOf(0)), false));
+        FileTypeNode node = new FileTypeNode(this.context, Identifiers.FileDirectoryType_FileName_Placeholder, new QualifiedName(0, "<FileName>"), new LocalizedText("en", "<FileName>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasProperty, Identifiers.FileDirectoryType_FileName_Placeholder_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasProperty, Identifiers.FileDirectoryType_FileName_Placeholder_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasProperty, Identifiers.FileDirectoryType_FileName_Placeholder_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasProperty, Identifiers.FileDirectoryType_FileName_Placeholder_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileName_Placeholder_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileName_Placeholder_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileName_Placeholder_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileName_Placeholder_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileName_Placeholder_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType_FileName_Placeholder_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasTypeDefinition, Identifiers.FileType.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasModellingRule, Identifiers.ModellingRule_OptionalPlaceholder.expanded(), true));
+        node.addReference(new Reference(Identifiers.FileDirectoryType_FileName_Placeholder, Identifiers.HasComponent, Identifiers.FileDirectoryType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode124() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 9329), new QualifiedName(0, "HighHigh"), new LocalizedText("en", "HighHigh"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9329), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9330), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9329), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9339), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9329), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9340), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9329), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9329), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_HighHigh, new QualifiedName(0, "HighHigh"), new LocalizedText("en", "HighHigh"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHigh, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_HighHigh_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHigh, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHigh, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHigh, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHigh, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode125() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 9331), new QualifiedName(0, "High"), new LocalizedText("en", "High"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9331), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9332), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9331), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9339), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9331), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9340), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9331), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9331), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_High, new QualifiedName(0, "High"), new LocalizedText("en", "High"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_High, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_High_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_High, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_High, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_High, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_High, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode126() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 9333), new QualifiedName(0, "Low"), new LocalizedText("en", "Low"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9333), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9334), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9333), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9337), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9333), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9338), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9333), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9333), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_Low, new QualifiedName(0, "Low"), new LocalizedText("en", "Low"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_Low, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_Low_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_Low, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_LowLowToLow.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_Low, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_LowToLowLow.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_Low, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_Low, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode127() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 9335), new QualifiedName(0, "LowLow"), new LocalizedText("en", "LowLow"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9335), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9336), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9335), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9337), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9335), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9338), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9335), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9335), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_LowLow, new QualifiedName(0, "LowLow"), new LocalizedText("en", "LowLow"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLow, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_LowLow_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLow, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_LowLowToLow.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLow, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_LowToLowLow.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLow, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLow, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode128() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 9337), new QualifiedName(0, "LowLowToLow"), new LocalizedText("en", "LowLowToLow"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9337), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11340), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9337), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9335), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9337), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9333), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9337), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9337), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_LowLowToLow, new QualifiedName(0, "LowLowToLow"), new LocalizedText("en", "LowLowToLow"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLowToLow, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_LowLowToLow_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLowToLow, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_LowLow.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLowToLow, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_Low.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLowToLow, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowLowToLow, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode129() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 9338), new QualifiedName(0, "LowToLowLow"), new LocalizedText("en", "LowToLowLow"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9338), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11341), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9338), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9333), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9338), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9335), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9338), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9338), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_LowToLowLow, new QualifiedName(0, "LowToLowLow"), new LocalizedText("en", "LowToLowLow"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowToLowLow, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_LowToLowLow_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowToLowLow, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_Low.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowToLowLow, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_LowLow.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowToLowLow, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_LowToLowLow, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode130() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 9339), new QualifiedName(0, "HighHighToHigh"), new LocalizedText("en", "HighHighToHigh"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9339), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11342), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9339), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9329), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9339), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9331), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9339), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9339), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh, new QualifiedName(0, "HighHighToHigh"), new LocalizedText("en", "HighHighToHigh"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_HighHigh.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_High.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighHighToHigh, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode131() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 9340), new QualifiedName(0, "HighToHighHigh"), new LocalizedText("en", "HighToHighHigh"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9340), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11343), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9340), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9331), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9340), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9329), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9340), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9340), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh, new QualifiedName(0, "HighToHighHigh"), new LocalizedText("en", "HighToHighHigh"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh, Identifiers.HasProperty, Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh, Identifiers.FromState, Identifiers.ExclusiveLimitStateMachineType_High.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh, Identifiers.ToState, Identifiers.ExclusiveLimitStateMachineType_HighHigh.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitStateMachineType_HighToHighHigh, Identifiers.HasComponent, Identifiers.ExclusiveLimitStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode132() {
-        ExclusiveLimitStateMachineTypeNode node = new ExclusiveLimitStateMachineTypeNode(this.context, new NodeId(0, 9455), new QualifiedName(0, "LimitState"), new LocalizedText("en", "LimitState"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 9455), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9456), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9455), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9461), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9455), new NodeId(0, 9004), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9398), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 9455), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9318), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9455), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 9455), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(9341), UInteger.valueOf(0)), false));
+        ExclusiveLimitStateMachineTypeNode node = new ExclusiveLimitStateMachineTypeNode(this.context, Identifiers.ExclusiveLimitAlarmType_LimitState, new QualifiedName(0, "LimitState"), new LocalizedText("en", "LimitState"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitAlarmType_LimitState, Identifiers.HasComponent, Identifiers.ExclusiveLimitAlarmType_LimitState_CurrentState.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitAlarmType_LimitState, Identifiers.HasComponent, Identifiers.ExclusiveLimitAlarmType_LimitState_LastTransition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitAlarmType_LimitState, Identifiers.HasTrueSubState, Identifiers.ExclusiveLimitAlarmType_ActiveState.expanded(), false));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitAlarmType_LimitState, Identifiers.HasTypeDefinition, Identifiers.ExclusiveLimitStateMachineType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitAlarmType_LimitState, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ExclusiveLimitAlarmType_LimitState, Identifiers.HasComponent, Identifiers.ExclusiveLimitAlarmType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode133() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 13599), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13600), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13601), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13602), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13603), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13605), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13608), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13610), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13613), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13615), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13618), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13620), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13621), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13599), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.CertificateGroupType_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupType_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupType_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupType_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupType_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupType_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupType_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode134() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 13814), new QualifiedName(0, "DefaultApplicationGroup"), new LocalizedText("en", "DefaultApplicationGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13814), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13815), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13814), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13847), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13814), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13814), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13814), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13813), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup, new QualifiedName(0, "DefaultApplicationGroup"), new LocalizedText("en", "DefaultApplicationGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode135() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 13815), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13816), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13817), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13818), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13819), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13821), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13824), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13826), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13829), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13831), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13834), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13836), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13837), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13815), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13814), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultApplicationGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode136() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 13848), new QualifiedName(0, "DefaultHttpsGroup"), new LocalizedText("en", "DefaultHttpsGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13848), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13849), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13848), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13881), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13848), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13848), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13848), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13813), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup, new QualifiedName(0, "DefaultHttpsGroup"), new LocalizedText("en", "DefaultHttpsGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode137() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 13849), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13850), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13851), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13852), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13853), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13855), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13858), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13860), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13863), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13865), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13868), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13870), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13871), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13849), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13848), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultHttpsGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode138() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 13882), new QualifiedName(0, "DefaultUserTokenGroup"), new LocalizedText("en", "DefaultUserTokenGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13882), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13883), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13882), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13882), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13882), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13882), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13813), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup, new QualifiedName(0, "DefaultUserTokenGroup"), new LocalizedText("en", "DefaultUserTokenGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode139() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 13883), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13884), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13885), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13886), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13887), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13889), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13892), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13894), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13897), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13899), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13902), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13904), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13905), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13883), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13882), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_DefaultUserTokenGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode140() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 13916), new QualifiedName(0, "<AdditionalGroup>"), new LocalizedText("en", "<AdditionalGroup>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13916), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13917), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13916), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13949), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13916), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13916), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11508), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13916), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13813), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder, new QualifiedName(0, "<AdditionalGroup>"), new LocalizedText("en", "<AdditionalGroup>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder, Identifiers.HasModellingRule, Identifiers.ModellingRule_OptionalPlaceholder.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder, Identifiers.Organizes, Identifiers.CertificateGroupFolderType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode141() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 13917), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13918), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13919), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13920), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13921), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13923), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13926), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13928), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13931), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13933), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13936), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13938), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13939), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13917), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13916), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasProperty, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustList, Identifiers.HasComponent, Identifiers.CertificateGroupFolderType_AdditionalGroup_Placeholder.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode142() {
-        CertificateGroupFolderTypeNode node = new CertificateGroupFolderTypeNode(this.context, new NodeId(0, 13950), new QualifiedName(0, "CertificateGroups"), new LocalizedText("en", "CertificateGroups"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13950), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13951), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13950), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13813), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13950), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13950), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12581), UInteger.valueOf(0)), false));
+        CertificateGroupFolderTypeNode node = new CertificateGroupFolderTypeNode(this.context, Identifiers.ServerConfigurationType_CertificateGroups, new QualifiedName(0, "CertificateGroups"), new LocalizedText("en", "CertificateGroups"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupFolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups, Identifiers.HasComponent, Identifiers.ServerConfigurationType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode143() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 13951), new QualifiedName(0, "DefaultApplicationGroup"), new LocalizedText("en", "DefaultApplicationGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13951), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13952), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13951), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13984), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13951), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13951), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13951), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13950), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup, new QualifiedName(0, "DefaultApplicationGroup"), new LocalizedText("en", "DefaultApplicationGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup, Identifiers.HasProperty, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode144() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 13952), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13953), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13954), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13955), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13956), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13958), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13961), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13963), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13966), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13968), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13971), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13973), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13974), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 13952), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13951), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfigurationType_CertificateGroups_DefaultApplicationGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode145() {
-        CertificateGroupFolderTypeNode node = new CertificateGroupFolderTypeNode(this.context, new NodeId(0, 14053), new QualifiedName(0, "CertificateGroups"), new LocalizedText("en", "CertificateGroups"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14053), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14156), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14053), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14088), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14053), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14122), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14053), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(13813), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14053), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12637), UInteger.valueOf(0)), false));
+        CertificateGroupFolderTypeNode node = new CertificateGroupFolderTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups, new QualifiedName(0, "CertificateGroups"), new LocalizedText("en", "CertificateGroups"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupFolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups, Identifiers.HasComponent, Identifiers.ServerConfiguration.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode146() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 14088), new QualifiedName(0, "DefaultHttpsGroup"), new LocalizedText("en", "DefaultHttpsGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14088), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14089), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14088), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14121), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14088), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14088), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14053), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup, new QualifiedName(0, "DefaultHttpsGroup"), new LocalizedText("en", "DefaultHttpsGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode147() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 14089), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14090), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14091), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14092), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14093), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14095), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14098), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14100), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14103), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14105), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14108), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14110), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14111), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14114), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14117), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14119), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14089), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14088), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_CloseAndUpdate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_AddCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_RemoveCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultHttpsGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode148() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 14122), new QualifiedName(0, "DefaultUserTokenGroup"), new LocalizedText("en", "DefaultUserTokenGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14122), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14123), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14122), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14155), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14122), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14122), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14053), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup, new QualifiedName(0, "DefaultUserTokenGroup"), new LocalizedText("en", "DefaultUserTokenGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode149() {
-        TrustListTypeNode node = new TrustListTypeNode(this.context, new NodeId(0, 14123), new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14124), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14125), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14126), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14127), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14129), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14132), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14134), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14137), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14139), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14142), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14144), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14145), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14148), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14151), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14153), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12522), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14123), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14122), UInteger.valueOf(0)), false));
+        TrustListTypeNode node = new TrustListTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, new QualifiedName(0, "TrustList"), new LocalizedText("en", "TrustList"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_LastUpdateTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_OpenWithMasks.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_CloseAndUpdate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_AddCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_RemoveCertificate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasTypeDefinition, Identifiers.TrustListType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultUserTokenGroup.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode150() {
-        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, new NodeId(0, 14156), new QualifiedName(0, "DefaultApplicationGroup"), new LocalizedText("en", "DefaultApplicationGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 14156), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12642), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14156), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14161), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14156), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12555), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 14156), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14053), UInteger.valueOf(0)), false));
+        CertificateGroupTypeNode node = new CertificateGroupTypeNode(this.context, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup, new QualifiedName(0, "DefaultApplicationGroup"), new LocalizedText("en", "DefaultApplicationGroup"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_TrustList.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup, Identifiers.HasProperty, Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup_CertificateTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup, Identifiers.HasTypeDefinition, Identifiers.CertificateGroupType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerConfiguration_CertificateGroups_DefaultApplicationGroup, Identifiers.HasComponent, Identifiers.ServerConfiguration_CertificateGroups.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode151() {
-        ServerCapabilitiesTypeNode node = new ServerCapabilitiesTypeNode(this.context, new NodeId(0, 2009), new QualifiedName(0, "ServerCapabilities"), new LocalizedText("en", "ServerCapabilities"), new LocalizedText("en", "Describes capabilities supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3086), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3087), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3088), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3089), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3090), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3091), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3092), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3093), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3094), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2013), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2009), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2004), UInteger.valueOf(0)), false));
+        ServerCapabilitiesTypeNode node = new ServerCapabilitiesTypeNode(this.context, Identifiers.ServerType_ServerCapabilities, new QualifiedName(0, "ServerCapabilities"), new LocalizedText("en", "ServerCapabilities"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_ServerProfileArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_LocaleIdArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_MinSupportedSampleRate.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_MaxBrowseContinuationPoints.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_MaxQueryContinuationPoints.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_MaxHistoryContinuationPoints.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasProperty, Identifiers.ServerType_ServerCapabilities_SoftwareCertificates.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasComponent, Identifiers.ServerType_ServerCapabilities_ModellingRules.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasComponent, Identifiers.ServerType_ServerCapabilities_AggregateFunctions.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasTypeDefinition, Identifiers.ServerCapabilitiesType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities, Identifiers.HasComponent, Identifiers.ServerType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode152() {
-        ServerDiagnosticsTypeNode node = new ServerDiagnosticsTypeNode(this.context, new NodeId(0, 2010), new QualifiedName(0, "ServerDiagnostics"), new LocalizedText("en", "ServerDiagnostics"), new LocalizedText("en", "Reports diagnostics about the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3095), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3110), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3111), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3114), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2020), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2010), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2004), UInteger.valueOf(0)), false));
+        ServerDiagnosticsTypeNode node = new ServerDiagnosticsTypeNode(this.context, Identifiers.ServerType_ServerDiagnostics, new QualifiedName(0, "ServerDiagnostics"), new LocalizedText("en", "ServerDiagnostics"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasComponent, Identifiers.ServerType_ServerDiagnostics_ServerDiagnosticsSummary.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasComponent, Identifiers.ServerType_ServerDiagnostics_SubscriptionDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasComponent, Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasProperty, Identifiers.ServerType_ServerDiagnostics_EnabledFlag.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasTypeDefinition, Identifiers.ServerDiagnosticsType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics, Identifiers.HasComponent, Identifiers.ServerType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode153() {
-        VendorServerInfoTypeNode node = new VendorServerInfoTypeNode(this.context, new NodeId(0, 2011), new QualifiedName(0, "VendorServerInfo"), new LocalizedText("en", "VendorServerInfo"), new LocalizedText("en", "Server information provided by the vendor."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2011), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2033), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2011), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2011), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2004), UInteger.valueOf(0)), false));
+        VendorServerInfoTypeNode node = new VendorServerInfoTypeNode(this.context, Identifiers.ServerType_VendorServerInfo, new QualifiedName(0, "VendorServerInfo"), new LocalizedText("en", "VendorServerInfo"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_VendorServerInfo, Identifiers.HasTypeDefinition, Identifiers.VendorServerInfoType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_VendorServerInfo, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_VendorServerInfo, Identifiers.HasComponent, Identifiers.ServerType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode154() {
-        ServerRedundancyTypeNode node = new ServerRedundancyTypeNode(this.context, new NodeId(0, 2012), new QualifiedName(0, "ServerRedundancy"), new LocalizedText("en", "ServerRedundancy"), new LocalizedText("en", "Describes the redundancy capabilities of the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2012), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3115), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2012), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2034), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2012), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2012), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2004), UInteger.valueOf(0)), false));
+        ServerRedundancyTypeNode node = new ServerRedundancyTypeNode(this.context, Identifiers.ServerType_ServerRedundancy, new QualifiedName(0, "ServerRedundancy"), new LocalizedText("en", "ServerRedundancy"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_ServerRedundancy, Identifiers.HasProperty, Identifiers.ServerType_ServerRedundancy_RedundancySupport.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerRedundancy, Identifiers.HasTypeDefinition, Identifiers.ServerRedundancyType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerRedundancy, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerRedundancy, Identifiers.HasComponent, Identifiers.ServerType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode155() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 2019), new QualifiedName(0, "ModellingRules"), new LocalizedText("en", "ModellingRules"), new LocalizedText("en", "A folder for the modelling rules supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2019), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2019), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2019), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2013), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ServerCapabilitiesType_ModellingRules, new QualifiedName(0, "ModellingRules"), new LocalizedText("en", "ModellingRules"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_ModellingRules, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_ModellingRules, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_ModellingRules, Identifiers.HasComponent, Identifiers.ServerCapabilitiesType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode156() {
-        ServerTypeNode node = new ServerTypeNode(this.context, new NodeId(0, 2253), new QualifiedName(0, "Server"), new LocalizedText("en", "Server"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(1));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2254), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2255), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2256), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2267), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2994), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12885), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2268), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2274), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2295), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2296), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11715), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11492), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12873), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12749), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12886), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(85), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2253), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2004), UInteger.valueOf(0)), true));
+        ServerTypeNode node = new ServerTypeNode(this.context, Identifiers.Server, new QualifiedName(0, "Server"), new LocalizedText("en", "Server"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(1));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasProperty, Identifiers.Server_ServerArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasProperty, Identifiers.Server_NamespaceArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_ServerStatus.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasProperty, Identifiers.Server_ServiceLevel.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasProperty, Identifiers.Server_Auditing.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasProperty, Identifiers.Server_EstimatedReturnTime.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_VendorServerInfo.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_ServerRedundancy.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_Namespaces.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_GetMonitoredItems.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_ResendData.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_SetSubscriptionDurable.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasComponent, Identifiers.Server_RequestServerStateChange.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.Organizes, Identifiers.ObjectsFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.Server, Identifiers.HasTypeDefinition, Identifiers.ServerType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode157() {
-        ServerCapabilitiesTypeNode node = new ServerCapabilitiesTypeNode(this.context, new NodeId(0, 2268), new QualifiedName(0, "ServerCapabilities"), new LocalizedText("en", "ServerCapabilities"), new LocalizedText("en", "Describes capabilities supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2269), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2271), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2272), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2735), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2736), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2737), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3704), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11702), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11703), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12911), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11704), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2996), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2997), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2013), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2268), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2253), UInteger.valueOf(0)), false));
+        ServerCapabilitiesTypeNode node = new ServerCapabilitiesTypeNode(this.context, Identifiers.Server_ServerCapabilities, new QualifiedName(0, "ServerCapabilities"), new LocalizedText("en", "ServerCapabilities"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_ServerProfileArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_LocaleIdArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MinSupportedSampleRate.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MaxBrowseContinuationPoints.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MaxQueryContinuationPoints.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MaxHistoryContinuationPoints.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_SoftwareCertificates.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MaxArrayLength.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MaxStringLength.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_MaxByteStringLength.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities_OperationLimits.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities_ModellingRules.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities_AggregateFunctions.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasTypeDefinition, Identifiers.ServerCapabilitiesType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode158() {
-        ServerDiagnosticsTypeNode node = new ServerDiagnosticsTypeNode(this.context, new NodeId(0, 2274), new QualifiedName(0, "ServerDiagnostics"), new LocalizedText("en", "ServerDiagnostics"), new LocalizedText("en", "Reports diagnostics about the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2275), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2289), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2290), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3706), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2294), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2020), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2274), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2253), UInteger.valueOf(0)), false));
+        ServerDiagnosticsTypeNode node = new ServerDiagnosticsTypeNode(this.context, Identifiers.Server_ServerDiagnostics, new QualifiedName(0, "ServerDiagnostics"), new LocalizedText("en", "ServerDiagnostics"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics_ServerDiagnosticsSummary.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics_SamplingIntervalDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics_SubscriptionDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasProperty, Identifiers.Server_ServerDiagnostics_EnabledFlag.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasTypeDefinition, Identifiers.ServerDiagnosticsType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode159() {
-        VendorServerInfoTypeNode node = new VendorServerInfoTypeNode(this.context, new NodeId(0, 2295), new QualifiedName(0, "VendorServerInfo"), new LocalizedText("en", "VendorServerInfo"), new LocalizedText("en", "Server information provided by the vendor."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2295), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2033), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2295), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2253), UInteger.valueOf(0)), false));
+        VendorServerInfoTypeNode node = new VendorServerInfoTypeNode(this.context, Identifiers.Server_VendorServerInfo, new QualifiedName(0, "VendorServerInfo"), new LocalizedText("en", "VendorServerInfo"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_VendorServerInfo, Identifiers.HasTypeDefinition, Identifiers.VendorServerInfoType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_VendorServerInfo, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode160() {
-        ServerRedundancyTypeNode node = new ServerRedundancyTypeNode(this.context, new NodeId(0, 2296), new QualifiedName(0, "ServerRedundancy"), new LocalizedText("en", "ServerRedundancy"), new LocalizedText("en", "Describes the redundancy capabilities of the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3709), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11312), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11313), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11314), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(14415), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2034), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2296), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2253), UInteger.valueOf(0)), false));
+        ServerRedundancyTypeNode node = new ServerRedundancyTypeNode(this.context, Identifiers.Server_ServerRedundancy, new QualifiedName(0, "ServerRedundancy"), new LocalizedText("en", "ServerRedundancy"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_RedundancySupport.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_CurrentServerId.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_RedundantServerArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_ServerUriArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_ServerNetworkGroups.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasTypeDefinition, Identifiers.ServerRedundancyType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode161() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2341), new QualifiedName(0, "Interpolative"), new LocalizedText("en", "Interpolative"), new LocalizedText("en", "At the beginning of each interval, retrieve the calculated value from the data points on either side of the requested timestamp."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2341), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Interpolative, new QualifiedName(0, "Interpolative"), new LocalizedText("en", "Interpolative"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Interpolative, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode162() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2342), new QualifiedName(0, "Average"), new LocalizedText("en", "Average"), new LocalizedText("en", "Retrieve the average value of the data over the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2342), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Average, new QualifiedName(0, "Average"), new LocalizedText("en", "Average"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Average, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode163() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2343), new QualifiedName(0, "TimeAverage"), new LocalizedText("en", "TimeAverage"), new LocalizedText("en", "Retrieve the time weighted average data over the interval using Interpolated Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2343), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_TimeAverage, new QualifiedName(0, "TimeAverage"), new LocalizedText("en", "TimeAverage"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_TimeAverage, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode164() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2344), new QualifiedName(0, "Total"), new LocalizedText("en", "Total"), new LocalizedText("en", "Retrieve the total (time integral) of the data over the interval using Interpolated Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2344), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Total, new QualifiedName(0, "Total"), new LocalizedText("en", "Total"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Total, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode165() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2346), new QualifiedName(0, "Minimum"), new LocalizedText("en", "Minimum"), new LocalizedText("en", "Retrieve the minimum raw value in the interval with the timestamp of the start of the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2346), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Minimum, new QualifiedName(0, "Minimum"), new LocalizedText("en", "Minimum"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Minimum, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode166() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2347), new QualifiedName(0, "Maximum"), new LocalizedText("en", "Maximum"), new LocalizedText("en", "Retrieve the maximum raw value in the interval with the timestamp of the start of the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2347), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Maximum, new QualifiedName(0, "Maximum"), new LocalizedText("en", "Maximum"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Maximum, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode167() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2348), new QualifiedName(0, "MinimumActualTime"), new LocalizedText("en", "MinimumActualTime"), new LocalizedText("en", "Retrieve the minimum value in the interval and the Timestamp of the minimum value."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2348), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_MinimumActualTime, new QualifiedName(0, "MinimumActualTime"), new LocalizedText("en", "MinimumActualTime"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_MinimumActualTime, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode168() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2349), new QualifiedName(0, "MaximumActualTime"), new LocalizedText("en", "MaximumActualTime"), new LocalizedText("en", "Retrieve the maximum value in the interval and the Timestamp of the maximum value."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2349), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_MaximumActualTime, new QualifiedName(0, "MaximumActualTime"), new LocalizedText("en", "MaximumActualTime"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_MaximumActualTime, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode169() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2350), new QualifiedName(0, "Range"), new LocalizedText("en", "Range"), new LocalizedText("en", "Retrieve the difference between the minimum and maximum Value over the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2350), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Range, new QualifiedName(0, "Range"), new LocalizedText("en", "Range"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Range, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode170() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2351), new QualifiedName(0, "AnnotationCount"), new LocalizedText("en", "AnnotationCount"), new LocalizedText("en", "Retrieve the number of Annotations in the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2351), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_AnnotationCount, new QualifiedName(0, "AnnotationCount"), new LocalizedText("en", "AnnotationCount"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_AnnotationCount, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode171() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2352), new QualifiedName(0, "Count"), new LocalizedText("en", "Count"), new LocalizedText("en", "Retrieve the number of raw values over the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2352), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Count, new QualifiedName(0, "Count"), new LocalizedText("en", "Count"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Count, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode172() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2355), new QualifiedName(0, "NumberOfTransitions"), new LocalizedText("en", "NumberOfTransitions"), new LocalizedText("en", "Retrieve the number of changes between zero and non-zero that a Boolean or Numeric value experienced in the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2355), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_NumberOfTransitions, new QualifiedName(0, "NumberOfTransitions"), new LocalizedText("en", "NumberOfTransitions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_NumberOfTransitions, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode173() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2357), new QualifiedName(0, "Start"), new LocalizedText("en", "Start"), new LocalizedText("en", "Retrieve the value at the beginning of the interval using Interpolated Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2357), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Start, new QualifiedName(0, "Start"), new LocalizedText("en", "Start"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Start, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode174() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2358), new QualifiedName(0, "End"), new LocalizedText("en", "End"), new LocalizedText("en", "Retrieve the value at the end of the interval using Interpolated Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2358), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_End, new QualifiedName(0, "End"), new LocalizedText("en", "End"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_End, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode175() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2359), new QualifiedName(0, "Delta"), new LocalizedText("en", "Delta"), new LocalizedText("en", "Retrieve the difference between the Start and End value in the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2359), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Delta, new QualifiedName(0, "Delta"), new LocalizedText("en", "Delta"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Delta, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode176() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2360), new QualifiedName(0, "DurationGood"), new LocalizedText("en", "DurationGood"), new LocalizedText("en", "Retrieve the total duration of time in the interval during which the data is good."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2360), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_DurationGood, new QualifiedName(0, "DurationGood"), new LocalizedText("en", "DurationGood"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_DurationGood, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode177() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2361), new QualifiedName(0, "DurationBad"), new LocalizedText("en", "DurationBad"), new LocalizedText("en", "Retrieve the total duration of time in the interval during which the data is bad."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2361), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_DurationBad, new QualifiedName(0, "DurationBad"), new LocalizedText("en", "DurationBad"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_DurationBad, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode178() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2362), new QualifiedName(0, "PercentGood"), new LocalizedText("en", "PercentGood"), new LocalizedText("en", "Retrieve the percent of data (0 to 100) in the interval which has a good StatusCode."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2362), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_PercentGood, new QualifiedName(0, "PercentGood"), new LocalizedText("en", "PercentGood"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_PercentGood, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode179() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2363), new QualifiedName(0, "PercentBad"), new LocalizedText("en", "PercentBad"), new LocalizedText("en", "Retrieve the percent of data (0 to 100) in the interval which has a bad StatusCode."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2363), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_PercentBad, new QualifiedName(0, "PercentBad"), new LocalizedText("en", "PercentBad"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_PercentBad, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode180() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 2364), new QualifiedName(0, "WorstQuality"), new LocalizedText("en", "WorstQuality"), new LocalizedText("en", "Retrieve the worst StatusCode of data in the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2364), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_WorstQuality, new QualifiedName(0, "WorstQuality"), new LocalizedText("en", "WorstQuality"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_WorstQuality, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode181() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2400), new QualifiedName(0, "Ready"), new LocalizedText("en", "Ready"), new LocalizedText("en", "The Program is properly initialized and may be started."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2401), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2408), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2410), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2414), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2422), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2424), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2400), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ProgramStateMachineType_Ready, new QualifiedName(0, "Ready"), new LocalizedText("en", "Ready"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_Ready_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.ToState, Identifiers.ProgramStateMachineType_HaltedToReady.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.FromState, Identifiers.ProgramStateMachineType_ReadyToRunning.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.ToState, Identifiers.ProgramStateMachineType_RunningToReady.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.ToState, Identifiers.ProgramStateMachineType_SuspendedToReady.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.FromState, Identifiers.ProgramStateMachineType_ReadyToHalted.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Ready, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode182() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2402), new QualifiedName(0, "Running"), new LocalizedText("en", "Running"), new LocalizedText("en", "The Program is executing making progress towards completion."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2403), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2410), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2412), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2414), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2416), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2418), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2402), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ProgramStateMachineType_Running, new QualifiedName(0, "Running"), new LocalizedText("en", "Running"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_Running_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.ToState, Identifiers.ProgramStateMachineType_ReadyToRunning.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.FromState, Identifiers.ProgramStateMachineType_RunningToHalted.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.FromState, Identifiers.ProgramStateMachineType_RunningToReady.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.FromState, Identifiers.ProgramStateMachineType_RunningToSuspended.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.ToState, Identifiers.ProgramStateMachineType_SuspendedToRunning.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Running, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode183() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2404), new QualifiedName(0, "Suspended"), new LocalizedText("en", "Suspended"), new LocalizedText("en", "The Program has been stopped prior to reaching a terminal state but may be resumed."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2405), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2416), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2418), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2420), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2422), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2404), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ProgramStateMachineType_Suspended, new QualifiedName(0, "Suspended"), new LocalizedText("en", "Suspended"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_Suspended_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.ToState, Identifiers.ProgramStateMachineType_RunningToSuspended.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.FromState, Identifiers.ProgramStateMachineType_SuspendedToRunning.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.FromState, Identifiers.ProgramStateMachineType_SuspendedToHalted.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.FromState, Identifiers.ProgramStateMachineType_SuspendedToReady.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Suspended, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode184() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2406), new QualifiedName(0, "Halted"), new LocalizedText("en", "Halted"), new LocalizedText("en", "The Program is in a terminal or failed state, and it cannot be started or resumed without being reset."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2407), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2408), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2412), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2420), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2424), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2406), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ProgramStateMachineType_Halted, new QualifiedName(0, "Halted"), new LocalizedText("en", "Halted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_Halted_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.FromState, Identifiers.ProgramStateMachineType_HaltedToReady.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.ToState, Identifiers.ProgramStateMachineType_RunningToHalted.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.ToState, Identifiers.ProgramStateMachineType_SuspendedToHalted.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.ToState, Identifiers.ProgramStateMachineType_ReadyToHalted.expanded(), false));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_Halted, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode185() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2408), new QualifiedName(0, "HaltedToReady"), new LocalizedText("en", "HaltedToReady"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2409), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2406), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2400), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2430), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2408), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_HaltedToReady, new QualifiedName(0, "HaltedToReady"), new LocalizedText("en", "HaltedToReady"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_HaltedToReady_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.FromState, Identifiers.ProgramStateMachineType_Halted.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.ToState, Identifiers.ProgramStateMachineType_Ready.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Reset.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_HaltedToReady, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode186() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2410), new QualifiedName(0, "ReadyToRunning"), new LocalizedText("en", "ReadyToRunning"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2411), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2400), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2402), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2426), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2410), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_ReadyToRunning, new QualifiedName(0, "ReadyToRunning"), new LocalizedText("en", "ReadyToRunning"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_ReadyToRunning_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.FromState, Identifiers.ProgramStateMachineType_Ready.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.ToState, Identifiers.ProgramStateMachineType_Running.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Start.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToRunning, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode187() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2412), new QualifiedName(0, "RunningToHalted"), new LocalizedText("en", "RunningToHalted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2413), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2402), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2406), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2429), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2412), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_RunningToHalted, new QualifiedName(0, "RunningToHalted"), new LocalizedText("en", "RunningToHalted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_RunningToHalted_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.FromState, Identifiers.ProgramStateMachineType_Running.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.ToState, Identifiers.ProgramStateMachineType_Halted.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Halt.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToHalted, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode188() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2414), new QualifiedName(0, "RunningToReady"), new LocalizedText("en", "RunningToReady"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2414), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2415), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2414), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2402), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2414), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2400), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2414), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2414), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2414), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_RunningToReady, new QualifiedName(0, "RunningToReady"), new LocalizedText("en", "RunningToReady"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToReady, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_RunningToReady_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToReady, Identifiers.FromState, Identifiers.ProgramStateMachineType_Running.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToReady, Identifiers.ToState, Identifiers.ProgramStateMachineType_Ready.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToReady, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToReady, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToReady, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode189() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2416), new QualifiedName(0, "RunningToSuspended"), new LocalizedText("en", "RunningToSuspended"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2417), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2402), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2404), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2427), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2416), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_RunningToSuspended, new QualifiedName(0, "RunningToSuspended"), new LocalizedText("en", "RunningToSuspended"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_RunningToSuspended_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.FromState, Identifiers.ProgramStateMachineType_Running.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.ToState, Identifiers.ProgramStateMachineType_Suspended.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Suspend.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_RunningToSuspended, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode190() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2418), new QualifiedName(0, "SuspendedToRunning"), new LocalizedText("en", "SuspendedToRunning"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2419), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2404), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2402), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2428), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2418), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_SuspendedToRunning, new QualifiedName(0, "SuspendedToRunning"), new LocalizedText("en", "SuspendedToRunning"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_SuspendedToRunning_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.FromState, Identifiers.ProgramStateMachineType_Suspended.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.ToState, Identifiers.ProgramStateMachineType_Running.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Resume.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToRunning, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode191() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2420), new QualifiedName(0, "SuspendedToHalted"), new LocalizedText("en", "SuspendedToHalted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2421), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2404), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2406), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2429), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2420), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_SuspendedToHalted, new QualifiedName(0, "SuspendedToHalted"), new LocalizedText("en", "SuspendedToHalted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_SuspendedToHalted_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.FromState, Identifiers.ProgramStateMachineType_Suspended.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.ToState, Identifiers.ProgramStateMachineType_Halted.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Halt.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToHalted, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode192() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2422), new QualifiedName(0, "SuspendedToReady"), new LocalizedText("en", "SuspendedToReady"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2422), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2423), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2422), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2404), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2422), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2400), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2422), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2422), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2422), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_SuspendedToReady, new QualifiedName(0, "SuspendedToReady"), new LocalizedText("en", "SuspendedToReady"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToReady, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_SuspendedToReady_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToReady, Identifiers.FromState, Identifiers.ProgramStateMachineType_Suspended.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToReady, Identifiers.ToState, Identifiers.ProgramStateMachineType_Ready.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToReady, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToReady, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_SuspendedToReady, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode193() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2424), new QualifiedName(0, "ReadyToHalted"), new LocalizedText("en", "ReadyToHalted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2425), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2400), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2406), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2429), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2378), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2424), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ProgramStateMachineType_ReadyToHalted, new QualifiedName(0, "ReadyToHalted"), new LocalizedText("en", "ReadyToHalted"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.HasProperty, Identifiers.ProgramStateMachineType_ReadyToHalted_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.FromState, Identifiers.ProgramStateMachineType_Ready.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.ToState, Identifiers.ProgramStateMachineType_Halted.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.HasCause, Identifiers.ProgramStateMachineType_Halt.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.HasEffect, Identifiers.ProgramTransitionEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_ReadyToHalted, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode194() {
-        SessionsDiagnosticsSummaryTypeNode node = new SessionsDiagnosticsSummaryTypeNode(this.context, new NodeId(0, 2744), new QualifiedName(0, "SessionsDiagnosticsSummary"), new LocalizedText("en", "SessionsDiagnosticsSummary"), new LocalizedText("en", "A summary of session level diagnostics."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2744), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3129), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2744), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3130), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2744), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2026), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2744), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2744), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2020), UInteger.valueOf(0)), false));
+        SessionsDiagnosticsSummaryTypeNode node = new SessionsDiagnosticsSummaryTypeNode(this.context, Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary, new QualifiedName(0, "SessionsDiagnosticsSummary"), new LocalizedText("en", "SessionsDiagnosticsSummary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary_SessionDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary_SessionSecurityDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary, Identifiers.HasTypeDefinition, Identifiers.SessionsDiagnosticsSummaryType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerDiagnosticsType_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.ServerDiagnosticsType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode195() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 2754), new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), new LocalizedText("en", "A folder for the real time aggregates supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2754), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2754), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2754), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2013), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ServerCapabilitiesType_AggregateFunctions, new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_AggregateFunctions, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_AggregateFunctions, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_AggregateFunctions, Identifiers.HasComponent, Identifiers.ServerCapabilitiesType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode196() {
-        NamespaceMetadataTypeNode node = new NamespaceMetadataTypeNode(this.context, new NodeId(0, 15182), new QualifiedName(0, "http://opcfoundation.org/UA/"), new LocalizedText("en", "http://opcfoundation.org/UA/"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15183), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15184), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15185), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15186), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15187), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15188), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15189), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11616), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 15182), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11715), UInteger.valueOf(0)), false));
+        NamespaceMetadataTypeNode node = new NamespaceMetadataTypeNode(this.context, Identifiers.Server_Namespaces_OPCUANamespaceUri, new QualifiedName(0, "http://opcfoundation.org/UA/"), new LocalizedText("en", "http://opcfoundation.org/UA/"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_NamespaceUri.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_NamespaceVersion.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_NamespacePublicationDate.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_IsNamespaceSubset.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_StaticNodeIdTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_StaticNumericNodeIdRange.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasProperty, Identifiers.Server_Namespaces_OPCUANamespaceUri_StaticStringNodeIdPattern.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasTypeDefinition, Identifiers.NamespaceMetadataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces_OPCUANamespaceUri, Identifiers.HasComponent, Identifiers.Server_Namespaces.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode197() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2930), new QualifiedName(0, "Unshelved"), new LocalizedText("en", "Unshelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(6098), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2935), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2936), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2940), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2943), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2930), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ShelvedStateMachineType_Unshelved, new QualifiedName(0, "Unshelved"), new LocalizedText("en", "Unshelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_Unshelved_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_Unshelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode198() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2932), new QualifiedName(0, "TimedShelved"), new LocalizedText("en", "TimedShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(6100), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2935), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2940), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2942), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2945), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2932), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ShelvedStateMachineType_TimedShelved, new QualifiedName(0, "TimedShelved"), new LocalizedText("en", "TimedShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_TimedShelved_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode199() {
-        StateTypeNode node = new StateTypeNode(this.context, new NodeId(0, 2933), new QualifiedName(0, "OneShotShelved"), new LocalizedText("en", "OneShotShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(6101), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2936), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2942), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2943), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2945), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2307), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2933), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        StateTypeNode node = new StateTypeNode(this.context, Identifiers.ShelvedStateMachineType_OneShotShelved, new QualifiedName(0, "OneShotShelved"), new LocalizedText("en", "OneShotShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_OneShotShelved_StateNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved.expanded(), false));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.HasTypeDefinition, Identifiers.StateType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode200() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2935), new QualifiedName(0, "UnshelvedToTimedShelved"), new LocalizedText("en", "UnshelvedToTimedShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11322), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2930), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2932), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2949), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2935), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, new QualifiedName(0, "UnshelvedToTimedShelved"), new LocalizedText("en", "UnshelvedToTimedShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_Unshelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_TimedShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.HasEffect, Identifiers.AlarmConditionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.HasCause, Identifiers.ShelvedStateMachineType_TimedShelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToTimedShelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode201() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2936), new QualifiedName(0, "UnshelvedToOneShotShelved"), new LocalizedText("en", "UnshelvedToOneShotShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11323), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2930), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2933), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2948), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2936), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, new QualifiedName(0, "UnshelvedToOneShotShelved"), new LocalizedText("en", "UnshelvedToOneShotShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_Unshelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_OneShotShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.HasEffect, Identifiers.AlarmConditionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.HasCause, Identifiers.ShelvedStateMachineType_OneShotShelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_UnshelvedToOneShotShelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode202() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2940), new QualifiedName(0, "TimedShelvedToUnshelved"), new LocalizedText("en", "TimedShelvedToUnshelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11324), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2932), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2930), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2947), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2940), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, new QualifiedName(0, "TimedShelvedToUnshelved"), new LocalizedText("en", "TimedShelvedToUnshelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_TimedShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_Unshelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.HasEffect, Identifiers.AlarmConditionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.HasCause, Identifiers.ShelvedStateMachineType_Unshelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToUnshelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode203() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2942), new QualifiedName(0, "TimedShelvedToOneShotShelved"), new LocalizedText("en", "TimedShelvedToOneShotShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11325), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2932), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2933), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2948), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2942), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, new QualifiedName(0, "TimedShelvedToOneShotShelved"), new LocalizedText("en", "TimedShelvedToOneShotShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_TimedShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_OneShotShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.HasEffect, Identifiers.AlarmConditionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.HasCause, Identifiers.ShelvedStateMachineType_OneShotShelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_TimedShelvedToOneShotShelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode204() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2943), new QualifiedName(0, "OneShotShelvedToUnshelved"), new LocalizedText("en", "OneShotShelvedToUnshelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11326), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2933), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2930), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2947), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2943), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, new QualifiedName(0, "OneShotShelvedToUnshelved"), new LocalizedText("en", "OneShotShelvedToUnshelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_OneShotShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_Unshelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.HasEffect, Identifiers.AlarmConditionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.HasCause, Identifiers.ShelvedStateMachineType_Unshelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToUnshelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode205() {
-        TransitionTypeNode node = new TransitionTypeNode(this.context, new NodeId(0, 2945), new QualifiedName(0, "OneShotShelvedToTimedShelved"), new LocalizedText("en", "OneShotShelvedToTimedShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11327), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 51), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2933), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 52), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2932), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 54), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2915), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 53), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2949), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2310), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2945), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2929), UInteger.valueOf(0)), false));
+        TransitionTypeNode node = new TransitionTypeNode(this.context, Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, new QualifiedName(0, "OneShotShelvedToTimedShelved"), new LocalizedText("en", "OneShotShelvedToTimedShelved"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.HasProperty, Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved_TransitionNumber.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.FromState, Identifiers.ShelvedStateMachineType_OneShotShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.ToState, Identifiers.ShelvedStateMachineType_TimedShelved.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.HasEffect, Identifiers.AlarmConditionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.HasCause, Identifiers.ShelvedStateMachineType_TimedShelve.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.HasTypeDefinition, Identifiers.TransitionType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ShelvedStateMachineType_OneShotShelvedToTimedShelved, Identifiers.HasComponent, Identifiers.ShelvedStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode206() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 11172), new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11172), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11172), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11172), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2330), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.HistoryServerCapabilitiesType_AggregateFunctions, new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilitiesType_AggregateFunctions, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilitiesType_AggregateFunctions, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilitiesType_AggregateFunctions, Identifiers.HasComponent, Identifiers.HistoryServerCapabilitiesType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode207() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 2996), new QualifiedName(0, "ModellingRules"), new LocalizedText("en", "ModellingRules"), new LocalizedText("en", "A folder for the modelling rules supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2996), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2996), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2268), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.Server_ServerCapabilities_ModellingRules, new QualifiedName(0, "ModellingRules"), new LocalizedText("en", "ModellingRules"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_ModellingRules, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_ModellingRules, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode208() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 2997), new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), new LocalizedText("en", "A folder for the real time aggregates supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 2997), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 2997), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2268), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.Server_ServerCapabilities_AggregateFunctions, new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_AggregateFunctions, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_AggregateFunctions, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode209() {
-        HistoryServerCapabilitiesTypeNode node = new HistoryServerCapabilitiesTypeNode(this.context, new NodeId(0, 11192), new QualifiedName(0, "HistoryServerCapabilities"), new LocalizedText("en", "HistoryServerCapabilities"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11193), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11242), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11273), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11274), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11196), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11197), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11198), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11199), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11200), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11281), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11282), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11283), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11502), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11275), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11201), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2268), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 11192), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2330), UInteger.valueOf(0)), true));
+        HistoryServerCapabilitiesTypeNode node = new HistoryServerCapabilitiesTypeNode(this.context, Identifiers.HistoryServerCapabilities, new QualifiedName(0, "HistoryServerCapabilities"), new LocalizedText("en", "HistoryServerCapabilities"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_AccessHistoryDataCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_AccessHistoryEventsCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_MaxReturnDataValues.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_MaxReturnEventValues.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_InsertDataCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_ReplaceDataCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_UpdateDataCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_DeleteRawCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_DeleteAtTimeCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_InsertEventCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_ReplaceEventCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_UpdateEventCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_DeleteEventCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasProperty, Identifiers.HistoryServerCapabilities_InsertAnnotationCapability.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasComponent, Identifiers.HistoryServerCapabilities_AggregateFunctions.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities.expanded(), false));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities, Identifiers.HasTypeDefinition, Identifiers.HistoryServerCapabilitiesType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode210() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 11201), new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11201), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11201), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11192), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.HistoryServerCapabilities_AggregateFunctions, new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities_AggregateFunctions, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoryServerCapabilities_AggregateFunctions, Identifiers.HasComponent, Identifiers.HistoryServerCapabilities.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode211() {
-        HistoricalDataConfigurationTypeNode node = new HistoricalDataConfigurationTypeNode(this.context, new NodeId(0, 11202), new QualifiedName(0, "HA Configuration"), new LocalizedText("en", "HA Configuration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11202), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11203), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11202), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11208), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11202), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2318), UInteger.valueOf(0)), true));
+        HistoricalDataConfigurationTypeNode node = new HistoricalDataConfigurationTypeNode(this.context, Identifiers.HAConfiguration, new QualifiedName(0, "HA Configuration"), new LocalizedText("en", "HA Configuration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HAConfiguration, Identifiers.HasComponent, Identifiers.HAConfiguration_AggregateConfiguration.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration, Identifiers.HasProperty, Identifiers.HAConfiguration_Stepped.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration, Identifiers.HasTypeDefinition, Identifiers.HistoricalDataConfigurationType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode212() {
-        AggregateConfigurationTypeNode node = new AggregateConfigurationTypeNode(this.context, new NodeId(0, 11203), new QualifiedName(0, "AggregateConfiguration"), new LocalizedText("en", "AggregateConfiguration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11203), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11204), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11203), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11205), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11203), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11206), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11203), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11207), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11203), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11187), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11203), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11202), UInteger.valueOf(0)), false));
+        AggregateConfigurationTypeNode node = new AggregateConfigurationTypeNode(this.context, Identifiers.HAConfiguration_AggregateConfiguration, new QualifiedName(0, "AggregateConfiguration"), new LocalizedText("en", "AggregateConfiguration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HAConfiguration_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HAConfiguration_AggregateConfiguration_TreatUncertainAsBad.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HAConfiguration_AggregateConfiguration_PercentDataBad.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HAConfiguration_AggregateConfiguration_PercentDataGood.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HAConfiguration_AggregateConfiguration_UseSlopedExtrapolation.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration_AggregateConfiguration, Identifiers.HasTypeDefinition, Identifiers.AggregateConfigurationType.expanded(), true));
+        node.addReference(new Reference(Identifiers.HAConfiguration_AggregateConfiguration, Identifiers.HasComponent, Identifiers.HAConfiguration.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode213() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 3048), new QualifiedName(0, "EventTypes"), new LocalizedText("en", "EventTypes"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3048), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(86), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 3048), new NodeId(0, 35), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2041), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3048), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.EventTypesFolder, new QualifiedName(0, "EventTypes"), new LocalizedText("en", "EventTypes"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EventTypesFolder, Identifiers.Organizes, Identifiers.TypesFolder.expanded(), false));
+        node.addReference(new Reference(Identifiers.EventTypesFolder, Identifiers.Organizes, Identifiers.BaseEventType.expanded(), true));
+        node.addReference(new Reference(Identifiers.EventTypesFolder, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode214() {
-        AggregateConfigurationTypeNode node = new AggregateConfigurationTypeNode(this.context, new NodeId(0, 3059), new QualifiedName(0, "AggregateConfiguration"), new LocalizedText("en", "AggregateConfiguration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11168), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11169), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11170), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11171), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11187), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3059), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2318), UInteger.valueOf(0)), false));
+        AggregateConfigurationTypeNode node = new AggregateConfigurationTypeNode(this.context, Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, new QualifiedName(0, "AggregateConfiguration"), new LocalizedText("en", "AggregateConfiguration"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HistoricalDataConfigurationType_AggregateConfiguration_TreatUncertainAsBad.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HistoricalDataConfigurationType_AggregateConfiguration_PercentDataBad.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HistoricalDataConfigurationType_AggregateConfiguration_PercentDataGood.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasProperty, Identifiers.HistoricalDataConfigurationType_AggregateConfiguration_UseSlopedExtrapolation.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasTypeDefinition, Identifiers.AggregateConfigurationType.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateConfiguration, Identifiers.HasComponent, Identifiers.HistoricalDataConfigurationType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode215() {
-        BaseObjectTypeNode node = new BaseObjectTypeNode(this.context, new NodeId(0, 3062), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), new LocalizedText("en", "The default binary encoding for a data type."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3062), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(58), UInteger.valueOf(0)), true));
+        BaseObjectTypeNode node = new BaseObjectTypeNode(this.context, Identifiers.DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.BaseObjectType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode216() {
-        BaseObjectTypeNode node = new BaseObjectTypeNode(this.context, new NodeId(0, 3063), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), new LocalizedText("en", "The default XML encoding for a data type."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3063), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(58), UInteger.valueOf(0)), true));
+        BaseObjectTypeNode node = new BaseObjectTypeNode(this.context, Identifiers.DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DefaultXml, Identifiers.HasTypeDefinition, Identifiers.BaseObjectType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode217() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 3093), new QualifiedName(0, "ModellingRules"), new LocalizedText("en", "ModellingRules"), new LocalizedText("en", "A folder for the modelling rules supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3093), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3093), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3093), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2009), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ServerType_ServerCapabilities_ModellingRules, new QualifiedName(0, "ModellingRules"), new LocalizedText("en", "ModellingRules"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities_ModellingRules, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities_ModellingRules, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities_ModellingRules, Identifiers.HasComponent, Identifiers.ServerType_ServerCapabilities.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode218() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11285), new QualifiedName(0, "TimeAverage2"), new LocalizedText("en", "TimeAverage2"), new LocalizedText("en", "Retrieve the time weighted average data over the interval using Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11285), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_TimeAverage2, new QualifiedName(0, "TimeAverage2"), new LocalizedText("en", "TimeAverage2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_TimeAverage2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode219() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 3094), new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), new LocalizedText("en", "A folder for the real time aggregates supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3094), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3094), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3094), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2009), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.ServerType_ServerCapabilities_AggregateFunctions, new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities_AggregateFunctions, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities_AggregateFunctions, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerCapabilities_AggregateFunctions, Identifiers.HasComponent, Identifiers.ServerType_ServerCapabilities.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode220() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11286), new QualifiedName(0, "Minimum2"), new LocalizedText("en", "Minimum2"), new LocalizedText("en", "Retrieve the minimum value in the interval including the Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11286), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Minimum2, new QualifiedName(0, "Minimum2"), new LocalizedText("en", "Minimum2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Minimum2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode221() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11287), new QualifiedName(0, "Maximum2"), new LocalizedText("en", "Maximum2"), new LocalizedText("en", "Retrieve the maximum value in the interval including the Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11287), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Maximum2, new QualifiedName(0, "Maximum2"), new LocalizedText("en", "Maximum2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Maximum2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode222() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11288), new QualifiedName(0, "Range2"), new LocalizedText("en", "Range2"), new LocalizedText("en", "Retrieve the difference between the Minimum2 and Maximum2 value over the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11288), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Range2, new QualifiedName(0, "Range2"), new LocalizedText("en", "Range2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Range2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode223() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11292), new QualifiedName(0, "WorstQuality2"), new LocalizedText("en", "WorstQuality2"), new LocalizedText("en", "Retrieve the worst StatusCode of data in the interval including the Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11292), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_WorstQuality2, new QualifiedName(0, "WorstQuality2"), new LocalizedText("en", "WorstQuality2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_WorstQuality2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode224() {
-        SessionsDiagnosticsSummaryTypeNode node = new SessionsDiagnosticsSummaryTypeNode(this.context, new NodeId(0, 3111), new QualifiedName(0, "SessionsDiagnosticsSummary"), new LocalizedText("en", "SessionsDiagnosticsSummary"), new LocalizedText("en", "A summary of session level diagnostics."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3111), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3112), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3111), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3113), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3111), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2026), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3111), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(78), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3111), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2010), UInteger.valueOf(0)), false));
+        SessionsDiagnosticsSummaryTypeNode node = new SessionsDiagnosticsSummaryTypeNode(this.context, Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary, new QualifiedName(0, "SessionsDiagnosticsSummary"), new LocalizedText("en", "SessionsDiagnosticsSummary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary_SessionDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary_SessionSecurityDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasTypeDefinition, Identifiers.SessionsDiagnosticsSummaryType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.ServerType_ServerDiagnostics.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode225() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11304), new QualifiedName(0, "Total2"), new LocalizedText("en", "Total2"), new LocalizedText("en", "Retrieve the total (time integral) of the data over the interval using Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11304), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_Total2, new QualifiedName(0, "Total2"), new LocalizedText("en", "Total2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_Total2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode226() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11305), new QualifiedName(0, "MinimumActualTime2"), new LocalizedText("en", "MinimumActualTime2"), new LocalizedText("en", "Retrieve the minimum value with the actual timestamp including the Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11305), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_MinimumActualTime2, new QualifiedName(0, "MinimumActualTime2"), new LocalizedText("en", "MinimumActualTime2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_MinimumActualTime2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode227() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11306), new QualifiedName(0, "MaximumActualTime2"), new LocalizedText("en", "MaximumActualTime2"), new LocalizedText("en", "Retrieve the maximum value with the actual timestamp including the Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11306), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_MaximumActualTime2, new QualifiedName(0, "MaximumActualTime2"), new LocalizedText("en", "MaximumActualTime2"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_MaximumActualTime2, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode228() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11307), new QualifiedName(0, "DurationInStateZero"), new LocalizedText("en", "DurationInStateZero"), new LocalizedText("en", "Retrieve the time a Boolean or numeric was in a zero state using Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11307), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_DurationInStateZero, new QualifiedName(0, "DurationInStateZero"), new LocalizedText("en", "DurationInStateZero"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_DurationInStateZero, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode229() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11308), new QualifiedName(0, "DurationInStateNonZero"), new LocalizedText("en", "DurationInStateNonZero"), new LocalizedText("en", "Retrieve the time a Boolean or numeric was in a non-zero state using Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11308), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_DurationInStateNonZero, new QualifiedName(0, "DurationInStateNonZero"), new LocalizedText("en", "DurationInStateNonZero"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_DurationInStateNonZero, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode230() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11426), new QualifiedName(0, "StandardDeviationSample"), new LocalizedText("en", "StandardDeviationSample"), new LocalizedText("en", "Retrieve the standard deviation for the interval for a sample of the population (n-1)."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11426), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_StandardDeviationSample, new QualifiedName(0, "StandardDeviationSample"), new LocalizedText("en", "StandardDeviationSample"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_StandardDeviationSample, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode231() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11427), new QualifiedName(0, "StandardDeviationPopulation"), new LocalizedText("en", "StandardDeviationPopulation"), new LocalizedText("en", "Retrieve the standard deviation for the interval for a complete population (n) which includes Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11427), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_StandardDeviationPopulation, new QualifiedName(0, "StandardDeviationPopulation"), new LocalizedText("en", "StandardDeviationPopulation"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_StandardDeviationPopulation, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode232() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11428), new QualifiedName(0, "VarianceSample"), new LocalizedText("en", "VarianceSample"), new LocalizedText("en", "Retrieve the variance for the interval as calculated by the StandardDeviationSample."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11428), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_VarianceSample, new QualifiedName(0, "VarianceSample"), new LocalizedText("en", "VarianceSample"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_VarianceSample, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode233() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11429), new QualifiedName(0, "VariancePopulation"), new LocalizedText("en", "VariancePopulation"), new LocalizedText("en", "Retrieve the variance for the interval as calculated by the StandardDeviationPopulation which includes Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11429), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_VariancePopulation, new QualifiedName(0, "VariancePopulation"), new LocalizedText("en", "VariancePopulation"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_VariancePopulation, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode234() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11505), new QualifiedName(0, "StartBound"), new LocalizedText("en", "StartBound"), new LocalizedText("en", "Retrieve the value at the beginning of the interval using Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11505), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_StartBound, new QualifiedName(0, "StartBound"), new LocalizedText("en", "StartBound"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_StartBound, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode235() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11506), new QualifiedName(0, "EndBound"), new LocalizedText("en", "EndBound"), new LocalizedText("en", "Retrieve the value at the end of the interval using Simple Bounding Values."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11506), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_EndBound, new QualifiedName(0, "EndBound"), new LocalizedText("en", "EndBound"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_EndBound, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode236() {
-        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, new NodeId(0, 11507), new QualifiedName(0, "DeltaBounds"), new LocalizedText("en", "DeltaBounds"), new LocalizedText("en", "Retrieve the difference between the StartBound and EndBound value in the interval."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11507), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2340), UInteger.valueOf(0)), true));
+        AggregateFunctionTypeNode node = new AggregateFunctionTypeNode(this.context, Identifiers.AggregateFunction_DeltaBounds, new QualifiedName(0, "DeltaBounds"), new LocalizedText("en", "DeltaBounds"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AggregateFunction_DeltaBounds, Identifiers.HasTypeDefinition, Identifiers.AggregateFunctionType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode237() {
-        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, new NodeId(0, 11508), new QualifiedName(0, "OptionalPlaceholder"), new LocalizedText("en", "OptionalPlaceholder"), new LocalizedText("en", "Specifies that zero or more instances with the attributes and references of the instance declaration may appear when a type is instantiated."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11508), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11509), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11508), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(77), UInteger.valueOf(0)), true));
+        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, Identifiers.ModellingRule_OptionalPlaceholder, new QualifiedName(0, "OptionalPlaceholder"), new LocalizedText("en", "OptionalPlaceholder"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModellingRule_OptionalPlaceholder, Identifiers.HasProperty, Identifiers.ModellingRule_OptionalPlaceholder_NamingRule.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModellingRule_OptionalPlaceholder, Identifiers.HasTypeDefinition, Identifiers.ModellingRuleType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode238() {
-        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, new NodeId(0, 11510), new QualifiedName(0, "MandatoryPlaceholder"), new LocalizedText("en", "MandatoryPlaceholder"), new LocalizedText("en", "Specifies that one or more instances with the attributes and references of the instance declaration must appear when a type is instantiated."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11510), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11511), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11510), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(77), UInteger.valueOf(0)), true));
+        ModellingRuleTypeNode node = new ModellingRuleTypeNode(this.context, Identifiers.ModellingRule_MandatoryPlaceholder, new QualifiedName(0, "MandatoryPlaceholder"), new LocalizedText("en", "MandatoryPlaceholder"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ModellingRule_MandatoryPlaceholder, Identifiers.HasProperty, Identifiers.ModellingRule_MandatoryPlaceholder_NamingRule.expanded(), true));
+        node.addReference(new Reference(Identifiers.ModellingRule_MandatoryPlaceholder, Identifiers.HasTypeDefinition, Identifiers.ModellingRuleType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode239() {
-        NamespacesTypeNode node = new NamespacesTypeNode(this.context, new NodeId(0, 11527), new QualifiedName(0, "Namespaces"), new LocalizedText("en", "Namespaces"), new LocalizedText("en", "Describes the namespaces supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11527), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11645), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11527), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11527), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2004), UInteger.valueOf(0)), false));
+        NamespacesTypeNode node = new NamespacesTypeNode(this.context, Identifiers.ServerType_Namespaces, new QualifiedName(0, "Namespaces"), new LocalizedText("en", "Namespaces"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerType_Namespaces, Identifiers.HasTypeDefinition, Identifiers.NamespacesType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_Namespaces, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerType_Namespaces, Identifiers.HasComponent, Identifiers.ServerType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode240() {
-        OperationLimitsTypeNode node = new OperationLimitsTypeNode(this.context, new NodeId(0, 11551), new QualifiedName(0, "OperationLimits"), new LocalizedText("en", "OperationLimits"), new LocalizedText("en", "Defines the limits supported by the server for different operations."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11551), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11564), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11551), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11551), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2013), UInteger.valueOf(0)), false));
+        OperationLimitsTypeNode node = new OperationLimitsTypeNode(this.context, Identifiers.ServerCapabilitiesType_OperationLimits, new QualifiedName(0, "OperationLimits"), new LocalizedText("en", "OperationLimits"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_OperationLimits, Identifiers.HasTypeDefinition, Identifiers.OperationLimitsType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_OperationLimits, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerCapabilitiesType_OperationLimits, Identifiers.HasComponent, Identifiers.ServerCapabilitiesType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode241() {
-        AddressSpaceFileTypeNode node = new AddressSpaceFileTypeNode(this.context, new NodeId(0, 11624), new QualifiedName(0, "NamespaceFile"), new LocalizedText("en", "NamespaceFile"), new LocalizedText("en", "A file containing the nodes of the namespace."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11625), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12690), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12691), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11628), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11629), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11632), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11634), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11637), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11639), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11642), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11595), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11624), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11616), UInteger.valueOf(0)), false));
+        AddressSpaceFileTypeNode node = new AddressSpaceFileTypeNode(this.context, Identifiers.NamespaceMetadataType_NamespaceFile, new QualifiedName(0, "NamespaceFile"), new LocalizedText("en", "NamespaceFile"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasProperty, Identifiers.NamespaceMetadataType_NamespaceFile_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasProperty, Identifiers.NamespaceMetadataType_NamespaceFile_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasProperty, Identifiers.NamespaceMetadataType_NamespaceFile_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasProperty, Identifiers.NamespaceMetadataType_NamespaceFile_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType_NamespaceFile_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType_NamespaceFile_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType_NamespaceFile_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType_NamespaceFile_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType_NamespaceFile_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType_NamespaceFile_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasTypeDefinition, Identifiers.AddressSpaceFileType.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespaceMetadataType_NamespaceFile, Identifiers.HasComponent, Identifiers.NamespaceMetadataType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode242() {
-        NamespaceMetadataTypeNode node = new NamespaceMetadataTypeNode(this.context, new NodeId(0, 11646), new QualifiedName(0, "<NamespaceIdentifier>"), new LocalizedText("en", "<NamespaceIdentifier>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11647), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11648), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11649), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11650), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11651), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11652), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11653), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11616), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11508), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11646), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11645), UInteger.valueOf(0)), false));
+        NamespaceMetadataTypeNode node = new NamespaceMetadataTypeNode(this.context, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, new QualifiedName(0, "<NamespaceIdentifier>"), new LocalizedText("en", "<NamespaceIdentifier>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_NamespaceUri.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_NamespaceVersion.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_NamespacePublicationDate.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_IsNamespaceSubset.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_StaticNodeIdTypes.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_StaticNumericNodeIdRange.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasProperty, Identifiers.NamespacesType_NamespaceIdentifier_Placeholder_StaticStringNodeIdPattern.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasTypeDefinition, Identifiers.NamespaceMetadataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasModellingRule, Identifiers.ModellingRule_OptionalPlaceholder.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_NamespaceIdentifier_Placeholder, Identifiers.HasComponent, Identifiers.NamespacesType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode243() {
-        AddressSpaceFileTypeNode node = new AddressSpaceFileTypeNode(this.context, new NodeId(0, 11675), new QualifiedName(0, "AddressSpaceFile"), new LocalizedText("en", "AddressSpaceFile"), new LocalizedText("en", "A file containing the nodes of the namespace."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11676), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12694), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12695), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11679), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11680), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11683), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11685), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11688), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11690), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11693), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11595), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11675), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11645), UInteger.valueOf(0)), false));
+        AddressSpaceFileTypeNode node = new AddressSpaceFileTypeNode(this.context, Identifiers.NamespacesType_AddressSpaceFile, new QualifiedName(0, "AddressSpaceFile"), new LocalizedText("en", "AddressSpaceFile"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasProperty, Identifiers.NamespacesType_AddressSpaceFile_Size.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasProperty, Identifiers.NamespacesType_AddressSpaceFile_Writable.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasProperty, Identifiers.NamespacesType_AddressSpaceFile_UserWritable.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasProperty, Identifiers.NamespacesType_AddressSpaceFile_OpenCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType_AddressSpaceFile_Open.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType_AddressSpaceFile_Close.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType_AddressSpaceFile_Read.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType_AddressSpaceFile_Write.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType_AddressSpaceFile_GetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType_AddressSpaceFile_SetPosition.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasTypeDefinition, Identifiers.AddressSpaceFileType.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.NamespacesType_AddressSpaceFile, Identifiers.HasComponent, Identifiers.NamespacesType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode244() {
-        OperationLimitsTypeNode node = new OperationLimitsTypeNode(this.context, new NodeId(0, 11704), new QualifiedName(0, "OperationLimits"), new LocalizedText("en", "OperationLimits"), new LocalizedText("en", "Defines the limits supported by the server for different operations."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11705), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12165), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12166), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11707), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12167), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12168), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11709), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11710), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11711), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11712), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11713), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 46), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11714), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11564), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11704), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2268), UInteger.valueOf(0)), false));
+        OperationLimitsTypeNode node = new OperationLimitsTypeNode(this.context, Identifiers.Server_ServerCapabilities_OperationLimits, new QualifiedName(0, "OperationLimits"), new LocalizedText("en", "OperationLimits"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerRead.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryReadData.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryReadEvents.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerWrite.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryUpdateData.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryUpdateEvents.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerMethodCall.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerBrowse.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerRegisterNodes.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerTranslateBrowsePathsToNodeIds.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerNodeManagement.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasProperty, Identifiers.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasTypeDefinition, Identifiers.OperationLimitsType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerCapabilities_OperationLimits, Identifiers.HasComponent, Identifiers.Server_ServerCapabilities.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode245() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 7616), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(7594), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(8291), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 7616), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EnumValueType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EnumValueType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.EnumValueType.expanded(), false));
+        node.addReference(new Reference(Identifiers.EnumValueType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_EnumValueType.expanded(), true));
+        node.addReference(new Reference(Identifiers.EnumValueType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode246() {
-        NamespacesTypeNode node = new NamespacesTypeNode(this.context, new NodeId(0, 11715), new QualifiedName(0, "Namespaces"), new LocalizedText("en", "Namespaces"), new LocalizedText("en", "Describes the namespaces supported by the server."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11715), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(15182), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11715), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11645), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11715), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2253), UInteger.valueOf(0)), false));
+        NamespacesTypeNode node = new NamespacesTypeNode(this.context, Identifiers.Server_Namespaces, new QualifiedName(0, "Namespaces"), new LocalizedText("en", "Namespaces"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_Namespaces, Identifiers.HasComponent, Identifiers.Server_Namespaces_OPCUANamespaceUri.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces, Identifiers.HasTypeDefinition, Identifiers.NamespacesType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_Namespaces, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode247() {
-        FolderTypeNode node = new FolderTypeNode(this.context, new NodeId(0, 11876), new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11876), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(61), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11876), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11876), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2318), UInteger.valueOf(0)), false));
+        FolderTypeNode node = new FolderTypeNode(this.context, Identifiers.HistoricalDataConfigurationType_AggregateFunctions, new QualifiedName(0, "AggregateFunctions"), new LocalizedText("en", "AggregateFunctions"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateFunctions, Identifiers.HasTypeDefinition, Identifiers.FolderType.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateFunctions, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.HistoricalDataConfigurationType_AggregateFunctions, Identifiers.HasComponent, Identifiers.HistoricalDataConfigurationType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode248() {
-        SessionsDiagnosticsSummaryTypeNode node = new SessionsDiagnosticsSummaryTypeNode(this.context, new NodeId(0, 3706), new QualifiedName(0, "SessionsDiagnosticsSummary"), new LocalizedText("en", "SessionsDiagnosticsSummary"), new LocalizedText("en", "A summary of session level diagnostics."), UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3706), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3707), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3706), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(3708), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3706), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2026), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3706), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2274), UInteger.valueOf(0)), false));
+        SessionsDiagnosticsSummaryTypeNode node = new SessionsDiagnosticsSummaryTypeNode(this.context, Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary, new QualifiedName(0, "SessionsDiagnosticsSummary"), new LocalizedText("en", "SessionsDiagnosticsSummary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary_SessionDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary_SessionSecurityDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasTypeDefinition, Identifiers.SessionsDiagnosticsSummaryType.expanded(), true));
+        node.addReference(new Reference(Identifiers.Server_ServerDiagnostics_SessionsDiagnosticsSummary, Identifiers.HasComponent, Identifiers.Server_ServerDiagnostics.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode249() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11949), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11943), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11951), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11949), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EndpointUrlListDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EndpointUrlListDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.EndpointUrlListDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.EndpointUrlListDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_EndpointUrlListDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.EndpointUrlListDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode250() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11950), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11944), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11954), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11950), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.NetworkGroupDataType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.NetworkGroupDataType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.NetworkGroupDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.NetworkGroupDataType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_NetworkGroupDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.NetworkGroupDataType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode251() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11957), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11957), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11943), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 11957), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11959), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11957), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.EndpointUrlListDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.EndpointUrlListDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.EndpointUrlListDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.EndpointUrlListDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_EndpointUrlListDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.EndpointUrlListDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode252() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 11958), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 11958), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11944), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 11958), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11962), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 11958), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.NetworkGroupDataType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.NetworkGroupDataType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.NetworkGroupDataType.expanded(), false));
+        node.addReference(new Reference(Identifiers.NetworkGroupDataType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_NetworkGroupDataType.expanded(), true));
+        node.addReference(new Reference(Identifiers.NetworkGroupDataType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode253() {
-        BaseObjectTypeNode node = new BaseObjectTypeNode(this.context, new NodeId(0, 3850), new QualifiedName(0, "FinalResultData"), new LocalizedText("en", "FinalResultData"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 3850), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(58), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3850), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(80), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 3850), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2391), UInteger.valueOf(0)), false));
+        BaseObjectTypeNode node = new BaseObjectTypeNode(this.context, Identifiers.ProgramStateMachineType_FinalResultData, new QualifiedName(0, "FinalResultData"), new LocalizedText("en", "FinalResultData"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_FinalResultData, Identifiers.HasTypeDefinition, Identifiers.BaseObjectType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_FinalResultData, Identifiers.HasModellingRule, Identifiers.ModellingRule_Optional.expanded(), true));
+        node.addReference(new Reference(Identifiers.ProgramStateMachineType_FinalResultData, Identifiers.HasComponent, Identifiers.ProgramStateMachineType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode254() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12081), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12079), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12083), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12081), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AxisInformation_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AxisInformation_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.AxisInformation.expanded(), false));
+        node.addReference(new Reference(Identifiers.AxisInformation_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_AxisInformation.expanded(), true));
+        node.addReference(new Reference(Identifiers.AxisInformation_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode255() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12082), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12080), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12086), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12082), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.XVType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.XVType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.XVType.expanded(), false));
+        node.addReference(new Reference(Identifiers.XVType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_XVType.expanded(), true));
+        node.addReference(new Reference(Identifiers.XVType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode256() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12089), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12089), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12079), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12089), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12091), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12089), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.AxisInformation_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.AxisInformation_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.AxisInformation.expanded(), false));
+        node.addReference(new Reference(Identifiers.AxisInformation_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_AxisInformation.expanded(), true));
+        node.addReference(new Reference(Identifiers.AxisInformation_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode257() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12090), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12090), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12080), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12090), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12094), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12090), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.XVType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.XVType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.XVType.expanded(), false));
+        node.addReference(new Reference(Identifiers.XVType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_XVType.expanded(), true));
+        node.addReference(new Reference(Identifiers.XVType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode258() {
-        SessionDiagnosticsObjectTypeNode node = new SessionDiagnosticsObjectTypeNode(this.context, new NodeId(0, 12097), new QualifiedName(0, "<ClientName>"), new LocalizedText("en", "<ClientName>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12097), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12098), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12097), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12142), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12097), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12152), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12097), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2029), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12097), new NodeId(0, 37), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(11508), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12097), new NodeId(0, 47), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(2026), UInteger.valueOf(0)), false));
+        SessionDiagnosticsObjectTypeNode node = new SessionDiagnosticsObjectTypeNode(this.context, Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, new QualifiedName(0, "<ClientName>"), new LocalizedText("en", "<ClientName>"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, Identifiers.HasComponent, Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder_SessionDiagnostics.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, Identifiers.HasComponent, Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder_SessionSecurityDiagnostics.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, Identifiers.HasComponent, Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder_SubscriptionDiagnosticsArray.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, Identifiers.HasTypeDefinition, Identifiers.SessionDiagnosticsObjectType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, Identifiers.HasModellingRule, Identifiers.ModellingRule_OptionalPlaceholder.expanded(), true));
+        node.addReference(new Reference(Identifiers.SessionsDiagnosticsSummaryType_ClientName_Placeholder, Identifiers.HasComponent, Identifiers.SessionsDiagnosticsSummaryType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode259() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12173), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12171), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12175), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12173), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ComplexNumberType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ComplexNumberType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ComplexNumberType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ComplexNumberType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ComplexNumberType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ComplexNumberType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode260() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12174), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12172), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12178), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12174), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DoubleComplexNumberType_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DoubleComplexNumberType_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.DoubleComplexNumberType.expanded(), false));
+        node.addReference(new Reference(Identifiers.DoubleComplexNumberType_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_DoubleComplexNumberType.expanded(), true));
+        node.addReference(new Reference(Identifiers.DoubleComplexNumberType_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode261() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12181), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12181), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12171), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12181), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12183), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12181), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ComplexNumberType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ComplexNumberType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ComplexNumberType.expanded(), false));
+        node.addReference(new Reference(Identifiers.ComplexNumberType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ComplexNumberType.expanded(), true));
+        node.addReference(new Reference(Identifiers.ComplexNumberType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode262() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12182), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12182), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12172), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12182), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12186), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12182), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.DoubleComplexNumberType_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.DoubleComplexNumberType_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.DoubleComplexNumberType.expanded(), false));
+        node.addReference(new Reference(Identifiers.DoubleComplexNumberType_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_DoubleComplexNumberType.expanded(), true));
+        node.addReference(new Reference(Identifiers.DoubleComplexNumberType_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode263() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12195), new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12189), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12201), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12195), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServerOnNetwork_Encoding_DefaultXml, new QualifiedName(0, "Default XML"), new LocalizedText("en", "Default XML"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerOnNetwork_Encoding_DefaultXml, Identifiers.HasEncoding, Identifiers.ServerOnNetwork.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerOnNetwork_Encoding_DefaultXml, Identifiers.HasDescription, Identifiers.OpcUa_XmlSchema_ServerOnNetwork.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerOnNetwork_Encoding_DefaultXml, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
     private void loadNode264() {
-        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, new NodeId(0, 12207), new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
-        node.addReference(new Reference(new NodeId(0, 12207), new NodeId(0, 38), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12189), UInteger.valueOf(0)), false));
-        node.addReference(new Reference(new NodeId(0, 12207), new NodeId(0, 39), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(12213), UInteger.valueOf(0)), true));
-        node.addReference(new Reference(new NodeId(0, 12207), new NodeId(0, 40), new ExpandedNodeId(UShort.valueOf(0), null, UInteger.valueOf(76), UInteger.valueOf(0)), true));
+        DataTypeEncodingTypeNode node = new DataTypeEncodingTypeNode(this.context, Identifiers.ServerOnNetwork_Encoding_DefaultBinary, new QualifiedName(0, "Default Binary"), new LocalizedText("en", "Default Binary"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
+        node.addReference(new Reference(Identifiers.ServerOnNetwork_Encoding_DefaultBinary, Identifiers.HasEncoding, Identifiers.ServerOnNetwork.expanded(), false));
+        node.addReference(new Reference(Identifiers.ServerOnNetwork_Encoding_DefaultBinary, Identifiers.HasDescription, Identifiers.OpcUa_BinarySchema_ServerOnNetwork.expanded(), true));
+        node.addReference(new Reference(Identifiers.ServerOnNetwork_Encoding_DefaultBinary, Identifiers.HasTypeDefinition, Identifiers.DataTypeEncodingType.expanded(), true));
         this.nodeManager.addNode(node);
     }
 
