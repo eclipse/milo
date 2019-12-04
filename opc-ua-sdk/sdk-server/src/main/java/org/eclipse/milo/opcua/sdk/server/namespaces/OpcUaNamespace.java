@@ -105,7 +105,6 @@ public class OpcUaNamespace extends ManagedNamespace {
             .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
 
         diagnosticsManager.startup();
-        diagnosticsManager.setDiagnosticsEnabled(true);
     }
 
     @Override
