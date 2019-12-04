@@ -16,6 +16,8 @@ import java.util.Set;
 import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+
 public enum AccessLevel {
 
     CurrentRead(0x01),
@@ -43,18 +45,60 @@ public enum AccessLevel {
         return value;
     }
 
-    public static int getMask(AccessLevel... levels) {
+    /**
+     * Create a Set of {@link AccessLevel} from the {@code accessLevel} value.
+     *
+     * @param accessLevel a {@link UByte} value.
+     * @return the Set of {@link AccessLevel} indicated by {@code accessValue}.
+     */
+    public static EnumSet<AccessLevel> fromValue(UByte accessLevel) {
+        return fromValue(accessLevel.intValue());
+    }
+
+    /**
+     * Create a Set of {@link AccessLevel} from the {@code accessLevel} value.
+     *
+     * @param accessLevel an int value.
+     * @return the Set of {@link AccessLevel} indicated by {@code accessValue}.
+     */
+    public static EnumSet<AccessLevel> fromValue(int accessLevel) {
+        EnumSet<AccessLevel> e = EnumSet.noneOf(AccessLevel.class);
+        for (AccessLevel al : values()) {
+            if ((al.value & accessLevel) != 0) {
+                e.add(al);
+            }
+        }
+        return e;
+    }
+
+    /**
+     * Convert {@code levels} to a {@link UByte} value for the AccessLevel or UserAccessLevel attribute.
+     *
+     * @param levels the {@link AccessLevel}s to include in the value.
+     * @return a value for the AccessLevel or UserAccessLevel attribute.
+     */
+    public static UByte toValue(AccessLevel... levels) {
         short result = 0;
         for (AccessLevel level : levels) result |= level.value;
-        return result;
+        return ubyte(result);
     }
 
-    public static int getMask(Set<AccessLevel> levels) {
+    /**
+     * Convert {@code levels} to a {@link UByte} value for the AccessLevel or UserAccessLevel attribute.
+     *
+     * @param levels the {@link AccessLevel}s to include in the value.
+     * @return a value for the AccessLevel or UserAccessLevel attribute.
+     */
+    public static UByte toValue(Set<AccessLevel> levels) {
         int result = 0;
         for (AccessLevel level : levels) result |= level.value;
-        return result;
+        return ubyte(result);
     }
 
+    /**
+     * @deprecated use {@link #fromValue(int)} instead.
+     */
+    @Deprecated
     public static EnumSet<AccessLevel> fromMask(int accessLevel) {
         EnumSet<AccessLevel> e = EnumSet.noneOf(AccessLevel.class);
         for (AccessLevel al : values()) {
@@ -65,8 +109,32 @@ public enum AccessLevel {
         return e;
     }
 
+    /**
+     * @deprecated use {@link #fromValue(UByte)} instead.
+     */
+    @Deprecated
     public static EnumSet<AccessLevel> fromMask(UByte accessLevel) {
         return fromMask(accessLevel.intValue());
+    }
+
+    /**
+     * @deprecated use {@link #toValue(AccessLevel...)} instead.
+     */
+    @Deprecated
+    public static int getMask(AccessLevel... levels) {
+        short result = 0;
+        for (AccessLevel level : levels) result |= level.value;
+        return result;
+    }
+
+    /**
+     * @deprecated use {@link #toValue(Set)} instead.
+     */
+    @Deprecated
+    public static int getMask(Set<AccessLevel> levels) {
+        int result = 0;
+        for (AccessLevel level : levels) result |= level.value;
+        return result;
     }
 
 }
