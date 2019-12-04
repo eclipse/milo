@@ -14,16 +14,24 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 
-public class UaViewLoader {
+public class NodeLoader {
 
     private final UaNodeContext context;
     private final NodeManager<UaNode> nodeManager;
 
-    public UaViewLoader(UaNodeContext context, NodeManager<UaNode> nodeManager) {
+    public NodeLoader(UaNodeContext context, NodeManager<UaNode> nodeManager) {
         this.context = context;
         this.nodeManager = nodeManager;
     }
 
-    public void buildNodes() {}
+    public void loadNodes() throws Exception {
+        new DataTypeNodeLoader(context, nodeManager).loadAllNodes();
+        new MethodNodeLoader(context, nodeManager).loadAllNodes();
+        new ObjectNodeLoader(context, nodeManager).loadAllNodes();
+        new ObjectTypeNodeLoader(context, nodeManager).loadAllNodes();
+        new ReferenceTypeNodeLoader(context, nodeManager).loadAllNodes();
+        new VariableNodeLoader(context, nodeManager).loadAllNodes();
+        new VariableTypeNodeLoader(context, nodeManager).loadAllNodes();
+    }
 
 }

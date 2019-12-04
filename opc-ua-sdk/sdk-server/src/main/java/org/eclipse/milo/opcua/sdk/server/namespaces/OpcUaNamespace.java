@@ -37,7 +37,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsType
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusTypeNode;
-import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
+import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -161,13 +161,14 @@ public class OpcUaNamespace extends ManagedNamespace {
     private void loadNodes() {
         try {
             long startTime = System.nanoTime();
+            long startCount = getNodeManager().getNodes().size();
 
-            new UaNodeLoader(getNodeContext(), getNodeManager()).loadNodes();
+            new NodeLoader(getNodeContext(), getNodeManager()).loadNodes();
 
-            long endTime = System.nanoTime();
-            long deltaMs = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
+            long deltaMs = TimeUnit.MILLISECONDS.convert(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+            long deltaCount = getNodeManager().getNodes().size() - startCount;
 
-            logger.info("Loaded nodes in {}ms.", deltaMs);
+            logger.info("Loaded {} nodes in {}ms.", deltaCount, deltaMs);
         } catch (Exception e) {
             logger.error("Error loading nodes.", e);
         }
