@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -84,6 +85,10 @@ public class DiagnosticsManager extends AbstractLifecycle {
             .getAddressSpaceManager()
             .getManagedNode(Identifiers.Server_ServerDiagnostics)
             .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        serverDiagnosticsNode.getEnabledFlagNode().setUserAccessLevel(
+            AccessLevel.toValue(AccessLevel.READ_WRITE)
+        );
 
         serverDiagnosticsNode.getEnabledFlagNode().getFilterChain().addLast(
             AttributeFilters.getValue(
