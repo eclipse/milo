@@ -24,6 +24,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
 
     private static final Logger LOGGER =
@@ -58,7 +60,7 @@ class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
 
     @Override
     public Set<String> getSupportedExtensions() {
-        return null;
+        return Collections.unmodifiableSet(newHashSet(KEY_USAGE_OID, EXTENDED_KEY_USAGE_OID));
     }
 
     @Override
@@ -148,6 +150,11 @@ class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
                     );
                 }
             }
+        }
+
+        if (unresolvedCritExts != null && !unresolvedCritExts.isEmpty()) {
+            unresolvedCritExts.remove(KEY_USAGE_OID);
+            unresolvedCritExts.remove(EXTENDED_KEY_USAGE_OID);
         }
     }
 
