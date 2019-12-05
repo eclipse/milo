@@ -65,6 +65,26 @@ public class CertificateValidationUtil {
     private static final int SUBJECT_ALT_NAME_DNS_NAME = 2;
     private static final int SUBJECT_ALT_NAME_IP_ADDRESS = 7;
 
+    /**
+     * Given a possibly partial certificate chain with at least one certificate in it, builds a path to a trust anchor
+     * using a collection of trusted and issuer certificates as possible intermediate and root CAs, and then ensures
+     * that at least one certificate in the resulting path is in the trusted collection.
+     * <p>
+     * Each certificate has its signature and subject/issuer chaining checked. Revocation and other more detailed
+     * checks are not done at this stage.
+     * <p>
+     * The {@link CertPath} and {@link TrustAnchor} from the result is meant to be further validated by
+     * {@link #validateTrustedCertPath(CertPath, TrustAnchor, Collection, Set)}, which can return more detailed failure
+     * {@link StatusCodes} in its exceptions because it is dealing with a known trusted path.
+     *
+     * @param certificateChain    a possibly partial certificate chain to build a trusted path from.
+     * @param trustedCertificates a collection of known trusted certificates.
+     * @param issuerCertificates  a collection of known CAs that can be used in path building but are not considered
+     *                            "trusted" when it comes to determining if the resulting path is "trusted".
+     * @return a {@link PKIXCertPathBuilderResult} with a {@link TrustAnchor} and {@link CertPath}, which combined
+     * make up the full trusted path.
+     * @throws UaException if a trusted path cannot be built.
+     */
     public static PKIXCertPathBuilderResult buildTrustedCertPath(
         List<X509Certificate> certificateChain,
         Collection<X509Certificate> trustedCertificates,
@@ -124,6 +144,24 @@ public class CertificateValidationUtil {
         return certPathResult;
     }
 
+    /**
+     * Validates the trusted certificate path represented by a {@link TrustAnchor} and a {@link CertPath} that may or
+     * may not be empty, depending on the length of the path.
+     * <p>
+     * Each certificate is checked for validity, key usage, and revocation status. Whether a failed check ultimately
+     * results in a thrown exception depends on the set of {@link ValidationCheck}s.
+     * <p>
+     * The function is meant to be used in conjunction with {@link #buildTrustedCertPath(List, Collection, Collection)},
+     * the result of which contains a {@link CertPath} and {@link TrustAnchor} that form a trusted certificate path.
+     *
+     * @param certPath         a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
+     * @param trustAnchor      a {@link TrustAnchor} containing the root of trust for the path being validated.
+     * @param crls             a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
+     *                         leaf should have a CRL, though whether that's enforced or not depends on
+     *                         {@link ValidationCheck#REVOCATION_LISTS} being present.
+     * @param validationChecks the set of {@link ValidationCheck}s to enforce.
+     * @throws UaException if a check from the set of {@link ValidationCheck}s failed.
+     */
     public static void validateTrustedCertPath(
         CertPath certPath,
         TrustAnchor trustAnchor,
