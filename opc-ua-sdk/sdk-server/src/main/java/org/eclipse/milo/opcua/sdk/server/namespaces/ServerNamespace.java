@@ -33,7 +33,16 @@ public class ServerNamespace extends ManagedNamespace {
     protected void onStartup() {
         super.onStartup();
 
+        subscriptionModel.startup();
+
         VendorServerInfoNodes.add(getNodeContext());
+    }
+
+    @Override
+    protected void onShutdown() {
+        super.onShutdown();
+
+        subscriptionModel.shutdown();
     }
 
     @Override

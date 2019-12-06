@@ -92,6 +92,8 @@ public class OpcUaNamespace extends ManagedNamespace {
     protected void onStartup() {
         super.onStartup();
 
+        subscriptionModel.startup();
+
         loadNodes();
         configureServerObject();
         configureConditionRefresh();
@@ -110,6 +112,8 @@ public class OpcUaNamespace extends ManagedNamespace {
     @Override
     protected void onShutdown() {
         super.onShutdown();
+
+        subscriptionModel.shutdown();
 
         diagnosticsManager.shutdown();
     }
