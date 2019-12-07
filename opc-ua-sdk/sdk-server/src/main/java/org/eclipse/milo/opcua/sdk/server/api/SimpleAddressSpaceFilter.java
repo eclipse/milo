@@ -147,52 +147,52 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     //region MonitoredItemServices
 
     @Override
-    public boolean filterOnCreateDataItem(OpcUaServer server, ReadValueId readValueId) {
+    public boolean filterOnBeforeDataItemCreated(OpcUaServer server, ReadValueId readValueId) {
         return filter(readValueId.getNodeId());
     }
 
     @Override
-    public boolean filterOnModifyDataItem(OpcUaServer server, DataItem dataItem) {
+    public boolean filterOnBeforeDataItemModified(OpcUaServer server, DataItem dataItem) {
         return filter(dataItem);
     }
 
     @Override
-    public boolean filterOnCreateEventItem(OpcUaServer server, ReadValueId readValueId) {
+    public boolean filterOnAfterDataItemsCreated(OpcUaServer server, DataItem dataItem) {
+        return filter(dataItem);
+    }
+
+    @Override
+    public boolean filterOnAfterDataItemsModified(OpcUaServer server, DataItem dataItem) {
+        return filter(dataItem);
+    }
+
+    @Override
+    public boolean filterOnAfterDataItemsDeleted(OpcUaServer server, DataItem dataItem) {
+        return filter(dataItem);
+    }
+
+    @Override
+    public boolean filterOnBeforeEventItemCreated(OpcUaServer server, ReadValueId readValueId) {
         return filter(readValueId.getNodeId());
     }
 
     @Override
-    public boolean filterOnModifyEventItem(OpcUaServer server, EventItem eventItem) {
+    public boolean filterOnBeforeEventItemModified(OpcUaServer server, EventItem eventItem) {
         return filter(eventItem);
     }
 
     @Override
-    public boolean filterOnDataItemsCreated(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
-    }
-
-    @Override
-    public boolean filterOnDataItemsModified(OpcUaServer server, DataItem dataItem) {
-        return filter(dataItem);
-    }
-
-    @Override
-    public boolean filterOnDataItemsDeleted(OpcUaServer server, DataItem dataItem) {
-        return filter(dataItem);
-    }
-
-    @Override
-    public boolean filterOnEventItemsCreated(OpcUaServer server, ReadValueId readValueId) {
-        return filter(readValueId.getNodeId());
-    }
-
-    @Override
-    public boolean filterOnEventItemsModified(OpcUaServer server, EventItem eventItem) {
+    public boolean filterOnAfterEventItemsCreated(OpcUaServer server, EventItem eventItem) {
         return filter(eventItem);
     }
 
     @Override
-    public boolean filterOnEventItemsDeleted(OpcUaServer server, EventItem eventItem) {
+    public boolean filterOnAfterEventItemsModified(OpcUaServer server, EventItem eventItem) {
+        return filter(eventItem);
+    }
+
+    @Override
+    public boolean filterOnAfterEventItemsDeleted(OpcUaServer server, EventItem eventItem) {
         return filter(eventItem);
     }
 

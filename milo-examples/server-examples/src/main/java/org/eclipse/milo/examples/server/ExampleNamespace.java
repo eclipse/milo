@@ -754,17 +754,17 @@ public class ExampleNamespace extends ManagedNamespace {
     }
 
     @Override
-    public void onDataItemsCreated(List<DataItem> dataItems) {
+    public void onAfterDataItemsCreated(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsCreated(dataItems);
     }
 
     @Override
-    public void onDataItemsModified(List<DataItem> dataItems) {
+    public void onAfterDataItemsModified(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsModified(dataItems);
     }
 
     @Override
-    public void onDataItemsDeleted(List<DataItem> dataItems) {
+    public void onAfterDataItemsDeleted(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsDeleted(dataItems);
     }
 

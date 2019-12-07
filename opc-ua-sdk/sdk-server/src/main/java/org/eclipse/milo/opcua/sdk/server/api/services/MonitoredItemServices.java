@@ -36,7 +36,7 @@ public interface MonitoredItemServices {
      * @param requestedSamplingInterval the requested sampling interval.
      * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
      */
-    default void onCreateDataItem(
+    default void onBeforeDataItemCreated(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
@@ -58,7 +58,7 @@ public interface MonitoredItemServices {
      * @param requestedSamplingInterval the requested sampling interval.
      * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
      */
-    default void onModifyDataItem(
+    default void onBeforeDataItemModified(
         @SuppressWarnings("unused") DataItem dataItem,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
@@ -66,6 +66,34 @@ public interface MonitoredItemServices {
 
         revisionCallback.accept(requestedSamplingInterval, requestedQueueSize);
     }
+
+    /**
+     * {@link DataItem}s have been created for nodes belonging to this {@link MonitoredItemServices}.
+     * <p>
+     * If sampling is enabled for this item, it is expected that a best-effort will be made to update the item's value
+     * at the sampling rate.
+     *
+     * @param dataItems the {@link DataItem}s that were created.
+     */
+    void onAfterDataItemsCreated(List<DataItem> dataItems);
+
+    /**
+     * {@link DataItem}s have been modified for nodes belonging to this {@link MonitoredItemServices}.
+     * <p>
+     * Check to see if the sampling rate has changed or if sampling has been enabled or disabled.
+     *
+     * @param dataItems the {@link DataItem}s that were modified.
+     */
+    void onAfterDataItemsModified(List<DataItem> dataItems);
+
+    /**
+     * {@link DataItem}s have been deleted for nodes belonging to this {@link MonitoredItemServices}.
+     * <p>
+     * Updates to this item should cease and any references to it should be removed.
+     *
+     * @param dataItems the {@link DataItem}s that were deleted.
+     */
+    void onAfterDataItemsDeleted(List<DataItem> dataItems);
 
     /**
      * An {@link EventItem} is being created for a Node managed by this {@link MonitoredItemServices}.
@@ -76,7 +104,7 @@ public interface MonitoredItemServices {
      * @param requestedQueueSize the requested queue size.
      * @param revisionCallback   the callback to invoke to revise the queue size.
      */
-    default void onCreateEventItem(
+    default void onBeforeEventItemCreated(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback) {
@@ -93,7 +121,7 @@ public interface MonitoredItemServices {
      * @param requestedQueueSize the requested queue size.
      * @param revisionCallback   the callback to invoke to revise the queue size.
      */
-    default void onModifyEventItem(
+    default void onBeforeEventItemModified(
         @SuppressWarnings("unused") EventItem eventItem,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback) {
@@ -102,53 +130,25 @@ public interface MonitoredItemServices {
     }
 
     /**
-     * {@link DataItem}s have been created for nodes belonging to this {@link MonitoredItemServices}.
-     * <p>
-     * If sampling is enabled for this item, it is expected that a best-effort will be made to update the item's value
-     * at the sampling rate.
-     *
-     * @param dataItems the {@link DataItem}s that were created.
-     */
-    void onDataItemsCreated(List<DataItem> dataItems);
-
-    /**
-     * {@link DataItem}s have been modified for nodes belonging to this {@link MonitoredItemServices}.
-     * <p>
-     * Check to see if the sampling rate has changed or if sampling has been enabled or disabled.
-     *
-     * @param dataItems the {@link DataItem}s that were modified.
-     */
-    void onDataItemsModified(List<DataItem> dataItems);
-
-    /**
-     * {@link DataItem}s have been deleted for nodes belonging to this {@link MonitoredItemServices}.
-     * <p>
-     * Updates to this item should cease and any references to it should be removed.
-     *
-     * @param dataItems the {@link DataItem}s that were deleted.
-     */
-    void onDataItemsDeleted(List<DataItem> dataItems);
-
-    /**
      * {@link EventItem}s have been created for nodes belonging to this {@link MonitoredItemServices}.
      *
      * @param eventItems the {@link EventItem}s that were created.
      */
-    default void onEventItemsCreated(List<EventItem> eventItems) {}
+    default void onAfterEventItemsCreated(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been modified for nodes belonging to this {@link MonitoredItemServices}.
      *
      * @param eventItems the {@link EventItem}s that were modified.
      */
-    default void onEventItemsModified(List<EventItem> eventItems) {}
+    default void onAfterEventItemsModified(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been deleted for nodes belonging to this {@link MonitoredItemServices}.
      *
      * @param eventItems the {@link EventItem}s that were deleted.
      */
-    default void onEventItemsDeleted(List<EventItem> eventItems) {}
+    default void onAfterEventItemsDeleted(List<EventItem> eventItems) {}
 
     /**
      * {@link MonitoredItem}s have had their {@link MonitoringMode} modified by a client.
