@@ -241,8 +241,8 @@ public class SubscriptionManager {
 
                 byMonitoredItemType(
                     deletedItems,
-                    dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
-                    eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
+                    dataItems -> server.getAddressSpaceManager().onAfterDataItemsDeleted(dataItems),
+                    eventItems -> server.getAddressSpaceManager().onAfterEventItemsDeleted(eventItems)
                 );
 
                 results[i] = StatusCode.GOOD;
@@ -363,8 +363,8 @@ public class SubscriptionManager {
 
             byMonitoredItemType(
                 monitoredItems,
-                dataItems -> server.getAddressSpaceManager().onDataItemsCreated(dataItems),
-                eventItems -> server.getAddressSpaceManager().onEventItemsCreated(eventItems)
+                dataItems -> server.getAddressSpaceManager().onAfterDataItemsCreated(dataItems),
+                eventItems -> server.getAddressSpaceManager().onAfterEventItemsCreated(eventItems)
             );
 
             ResponseHeader header = service.createResponseHeader();
@@ -426,7 +426,7 @@ public class SubscriptionManager {
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                server.getAddressSpaceManager().onCreateEventItem(
+                server.getAddressSpaceManager().onBeforeEventItemCreated(
                     request.getItemToMonitor(),
                     requestedQueueSize,
                     revisedQueueSize::set
@@ -516,7 +516,7 @@ public class SubscriptionManager {
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                server.getAddressSpaceManager().onCreateDataItem(
+                server.getAddressSpaceManager().onBeforeDataItemCreated(
                     request.getItemToMonitor(),
                     requestedSamplingInterval,
                     requestedQueueSize,
@@ -692,8 +692,8 @@ public class SubscriptionManager {
 
             byMonitoredItemType(
                 monitoredItems,
-                dataItems -> server.getAddressSpaceManager().onDataItemsModified(dataItems),
-                eventItems -> server.getAddressSpaceManager().onEventItemsModified(eventItems)
+                dataItems -> server.getAddressSpaceManager().onAfterDataItemsModified(dataItems),
+                eventItems -> server.getAddressSpaceManager().onAfterEventItemsModified(eventItems)
             );
 
             /*
@@ -743,7 +743,7 @@ public class SubscriptionManager {
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                server.getAddressSpaceManager().onModifyEventItem(
+                server.getAddressSpaceManager().onBeforeEventItemModified(
                     (EventItem) monitoredItem,
                     requestedQueueSize,
                     revisedQueueSize::set
@@ -806,7 +806,7 @@ public class SubscriptionManager {
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                server.getAddressSpaceManager().onModifyDataItem(
+                server.getAddressSpaceManager().onBeforeDataItemModified(
                     (DataItem) monitoredItem,
                     requestedSamplingInterval,
                     requestedQueueSize,
@@ -960,8 +960,8 @@ public class SubscriptionManager {
 
         byMonitoredItemType(
             deletedItems,
-            dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
-            eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
+            dataItems -> server.getAddressSpaceManager().onAfterDataItemsDeleted(dataItems),
+            eventItems -> server.getAddressSpaceManager().onAfterEventItemsDeleted(eventItems)
         );
 
         /*
@@ -1211,8 +1211,8 @@ public class SubscriptionManager {
 
                 byMonitoredItemType(
                     deletedItems,
-                    dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
-                    eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
+                    dataItems -> server.getAddressSpaceManager().onAfterDataItemsDeleted(dataItems),
+                    eventItems -> server.getAddressSpaceManager().onAfterEventItemsDeleted(eventItems)
                 );
             }
 

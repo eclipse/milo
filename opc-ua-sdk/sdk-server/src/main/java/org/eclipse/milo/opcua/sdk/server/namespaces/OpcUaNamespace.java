@@ -106,17 +106,17 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     @Override
-    public void onDataItemsCreated(List<DataItem> dataItems) {
+    public void onAfterDataItemsCreated(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsCreated(dataItems);
     }
 
     @Override
-    public void onDataItemsModified(List<DataItem> dataItems) {
+    public void onAfterDataItemsModified(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsModified(dataItems);
     }
 
     @Override
-    public void onDataItemsDeleted(List<DataItem> dataItems) {
+    public void onAfterDataItemsDeleted(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsDeleted(dataItems);
     }
 
@@ -126,14 +126,14 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     @Override
-    public void onEventItemsCreated(List<EventItem> eventItems) {
+    public void onAfterEventItemsCreated(List<EventItem> eventItems) {
         eventItems.stream()
             .filter(MonitoredItem::isSamplingEnabled)
             .forEach(item -> server.getEventBus().register(item));
     }
 
     @Override
-    public void onEventItemsModified(List<EventItem> eventItems) {
+    public void onAfterEventItemsModified(List<EventItem> eventItems) {
         for (EventItem item : eventItems) {
             if (item.isSamplingEnabled()) {
                 server.getEventBus().register(item);
@@ -144,7 +144,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     @Override
-    public void onEventItemsDeleted(List<EventItem> eventItems) {
+    public void onAfterEventItemsDeleted(List<EventItem> eventItems) {
         eventItems.forEach(item -> server.getEventBus().unregister(item));
     }
 
