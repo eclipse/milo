@@ -10,6 +10,10 @@
 
     <artifactId>client-examples</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.examples.client</javaModuleName>
+    </properties>
+
     <profiles>
         <profile>
             <id>standalone-client</id>
