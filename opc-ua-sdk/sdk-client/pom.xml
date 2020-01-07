@@ -10,6 +10,10 @@
 
     <artifactId>sdk-client</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.client</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
