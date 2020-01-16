@@ -45,4 +45,24 @@
         <opc:Field SwitchField="rangeYSpecified" TypeName="ua:Range" Name="rangeY"/>
     </opc:StructuredType>
 
+    <opc:EnumeratedType LengthInBits="32" Name="LocationTypeEnumeration">
+        <opc:EnumeratedValue Name="NMEA" Value="0"/>
+        <opc:EnumeratedValue Name="UTM" Value="1"/>
+        <opc:EnumeratedValue Name="LOCAL" Value="2"/>
+        <opc:EnumeratedValue Name="LOCAL_1D" Value="3"/>
+        <opc:EnumeratedValue Name="WGS84" Value="4"/>
+        <opc:EnumeratedValue Name="NAME" Value="5"/>
+        <opc:EnumeratedValue Name="LCI_DHCP" Value="6"/>
+        <opc:EnumeratedValue Name="Civic_Address" Value="7"/>
+    </opc:EnumeratedType>
+
+    <opc:StructuredType BaseType="ua:ExtensionObject" Name="ScanSettings">
+        <opc:Field TypeName="opc:Bit" Name="LocationTypeSpecified"/>
+        <opc:Field Length="31" TypeName="opc:Bit" Name="Reserved1"/>
+        <opc:Field TypeName="opc:Double" Name="Duration"/>
+        <opc:Field TypeName="opc:Int32" Name="Cycles"/>
+        <opc:Field TypeName="opc:Boolean" Name="DataAvailable"/>
+        <opc:Field SwitchField="LocationTypeSpecified" TypeName="tns:LocationTypeEnumeration" Name="LocationType"/>
+    </opc:StructuredType>
+
 </opc:TypeDictionary>

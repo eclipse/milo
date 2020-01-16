@@ -110,6 +110,11 @@ public abstract class BsdParserTest {
             codecTable.put(
                 dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec())
         );
+
+        dictionary.getEnumCodecs().forEach(cd ->
+            codecTable.put(
+                dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec())
+        );
     }
 
     @SuppressWarnings("unchecked")
