@@ -31,7 +31,6 @@ import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -71,8 +70,6 @@ public class OpcUaServer {
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Stack.sharedScheduledExecutor();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
 
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
 
@@ -254,10 +251,6 @@ public class OpcUaServer {
 
     public Map<NodeId, ReferenceType> getReferenceTypes() {
         return referenceTypes;
-    }
-
-    public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
-        return browseContinuationPoints;
     }
 
 }

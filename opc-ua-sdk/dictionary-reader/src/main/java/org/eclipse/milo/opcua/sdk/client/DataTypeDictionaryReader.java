@@ -133,7 +133,7 @@ public class DataTypeDictionaryReader {
         return readDataTypeDictionaryBytes(nodeId, DEFAULT_FRAGMENT_SIZE)
             .thenCompose(bs -> createDataTypeDictionary(nodeId, bs))
             .exceptionally(ex -> {
-                logger.debug("Failed to create DataTypeDictionary: {}", ex.getMessage(), ex);
+                logger.warn("Failed to create DataTypeDictionary nodeId={}", nodeId, ex);
                 return null;
             });
     }

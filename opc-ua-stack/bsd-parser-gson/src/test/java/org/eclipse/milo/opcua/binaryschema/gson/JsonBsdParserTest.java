@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.binaryschema.gson;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.binaryschema.BsdParserTest;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
@@ -111,6 +112,50 @@ public class JsonBsdParserTest extends BsdParserTest {
         OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Bar");
 
         assertRoundTrip("Bar", bar, codec);
+    }
+
+    @Test
+    public void testScanSettings() {
+        /*
+        {
+            "LocationTypeSpecified": 1,
+            "Reserved1": 0,
+            "Duration": 0.0,
+            "Cycles": 0,
+            "DataAvailable": false,
+            "LocationType": 0
+        }
+        */
+
+        JsonObject scanSettings = new JsonObject();
+        scanSettings.add("LocationTypeSpecified", new JsonPrimitive(1));
+        scanSettings.add("Reserved1", new JsonPrimitive(0));
+        scanSettings.add("Duration", new JsonPrimitive(0.0));
+        scanSettings.add("Cycles", new JsonPrimitive(0));
+        scanSettings.add("DataAvailable", new JsonPrimitive(false));
+        scanSettings.add("LocationType", new JsonPrimitive(0));
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ScanSettings");
+
+        assertRoundTrip("ScanSettings", scanSettings, codec);
+    }
+
+    @Test
+    public void testScanSettingsJson() {
+        String json = "{\n" +
+            "    \"LocationTypeSpecified\": 1,\n" +
+            "    \"Reserved1\": 0,\n" +
+            "    \"Duration\": 0.0,\n" +
+            "    \"Cycles\": 0,\n" +
+            "    \"DataAvailable\": false,\n" +
+            "    \"LocationType\": 0\n" +
+            "}";
+
+        JsonObject scanSettings = new JsonParser().parse(json).getAsJsonObject();
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ScanSettings");
+
+        assertRoundTrip("ScanSettings", scanSettings, codec);
     }
 
 }

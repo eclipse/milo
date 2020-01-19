@@ -272,9 +272,36 @@ public class UaStackServer {
     }
 
     public void onServiceRequest(String path, ServiceRequest serviceRequest) {
-        logger.trace("onServiceRequest(path={}, request={})", path, serviceRequest);
+        UaRequestMessage request = serviceRequest.getRequest();
 
-        ServiceRequestHandler serviceHandler = getServiceHandler(path, serviceRequest.getRequest().getTypeId());
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                "ServiceRequest received path={}, requestHandle={} request={}",
+                path,
+                request.getRequestHeader().getRequestHandle(),
+                request.getClass().getSimpleName()
+            );
+
+            serviceRequest.getFuture().whenComplete((response, ex) -> {
+                if (response != null) {
+                    logger.trace(
+                        "ServiceRequest completed path={}, requestHandle={} response={}",
+                        path,
+                        response.getResponseHeader().getRequestHandle(),
+                        response.getClass().getSimpleName()
+                    );
+                } else {
+                    logger.trace(
+                        "ServiceRequest completed exceptionally path={}, requestHandle={}",
+                        path,
+                        request.getRequestHeader().getRequestHandle(),
+                        ex
+                    );
+                }
+            });
+        }
+
+        ServiceRequestHandler serviceHandler = getServiceHandler(path, request.getTypeId());
 
         try {
             if (serviceHandler != null) {

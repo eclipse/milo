@@ -11,6 +11,10 @@
 
     <artifactId>bsd-core</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.binaryschema.core</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>

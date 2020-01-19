@@ -13,8 +13,12 @@ package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
@@ -36,8 +40,23 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
+import org.slf4j.LoggerFactory;
 
 public class NodeFactory {
+
+    private static final Cache<NodeId, InstanceDeclarationHierarchy> IDH_CACHE = CacheBuilder.newBuilder()
+        .maximumSize(1024)
+        .expireAfterAccess(1, TimeUnit.HOURS)
+        .build();
+
+    /**
+     * Invalidate the cached {@link InstanceDeclarationHierarchy} for {@code typeDefinitionId}.
+     *
+     * @param typeDefinitionId the {@link NodeId} type definition to invalidate.
+     */
+    public static void invalidateCachedIdh(NodeId typeDefinitionId) {
+        IDH_CACHE.invalidate(typeDefinitionId);
+    }
 
     private final UaNodeContext context;
     private final ObjectTypeManager objectTypeManager;
@@ -107,12 +126,28 @@ public class NodeFactory {
 
         NamespaceTable namespaceTable = context.getServer().getNamespaceTable();
 
-        InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy.create(
-            addressSpaceManager,
-            namespaceTable,
-            typeDefinitionId,
-            includeOptionalNodes
-        );
+        InstanceDeclarationHierarchy idh;
+
+        try {
+            idh = IDH_CACHE.get(
+                typeDefinitionId,
+                () -> {
+                    LoggerFactory.getLogger(getClass()).info(
+                        "InstanceDeclarationHierarchy cache " +
+                            "miss for typeDefinitionId={}", typeDefinitionId
+                    );
+
+                    return InstanceDeclarationHierarchy.create(
+                        addressSpaceManager,
+                        namespaceTable,
+                        typeDefinitionId,
+                        includeOptionalNodes
+                    );
+                }
+            );
+        } catch (ExecutionException e) {
+            throw new UaException(StatusCodes.Bad_InternalError, e);
+        }
 
         NodeTable nodeTable = idh.getNodeTable();
         ReferenceTable referenceTable = idh.getReferenceTable();

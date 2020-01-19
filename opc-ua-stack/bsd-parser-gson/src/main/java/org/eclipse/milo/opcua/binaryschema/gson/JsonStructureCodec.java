@@ -206,6 +206,9 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
                 }
             } else if (primitive.isNumber()) {
                 switch (typeName) {
+                    case "Bit":
+                        return primitive.getAsInt();
+
                     case "SByte":
                         return primitive.getAsByte();
                     case "Int16":

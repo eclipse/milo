@@ -145,6 +145,7 @@ public class ExampleNamespace extends ManagedNamespace {
         super.onStartup();
 
         dictionaryManager.startup();
+        subscriptionModel.startup();
 
         // Create a "HelloWorld" folder and add it to the node manager
         NodeId folderNodeId = newNodeId("HelloWorld");
@@ -230,6 +231,7 @@ public class ExampleNamespace extends ManagedNamespace {
     @Override
     protected void onShutdown() {
         dictionaryManager.shutdown();
+        subscriptionModel.shutdown();
 
         super.onShutdown();
     }

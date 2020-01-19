@@ -835,8 +835,7 @@ public class SessionFsmFactory {
 
                         CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
 
-                        certificateValidator.validate(serverCertificate);
-                        certificateValidator.verifyTrustChain(serverCertificateChain);
+                        certificateValidator.validateCertificateChain(serverCertificateChain);
 
                         SignatureData serverSignature = response.getServerSignature();
 
@@ -875,8 +874,6 @@ public class SessionFsmFactory {
 
             ByteString csrNonce = csr.getServerNonce();
 
-            NonceUtil.validateNonce(csrNonce);
-
             SignedIdentityToken signedIdentityToken =
                 client.getConfig().getIdentityProvider()
                     .getIdentityToken(endpoint, csrNonce);
@@ -898,27 +895,23 @@ public class SessionFsmFactory {
             return stackClient.sendRequest(request)
                 .thenApply(ActivateSessionResponse.class::cast)
                 .thenCompose(asr -> {
-                    try {
-                        ByteString asrNonce = asr.getServerNonce();
+                    ByteString asrNonce = asr.getServerNonce();
 
-                        NonceUtil.validateNonce(asrNonce);
+                    // TODO check for repeated nonce?
 
-                        OpcUaSession session = new OpcUaSession(
-                            csr.getAuthenticationToken(),
-                            csr.getSessionId(),
-                            client.getConfig().getSessionName().get(),
-                            csr.getRevisedSessionTimeout(),
-                            csr.getMaxRequestMessageSize(),
-                            csr.getServerCertificate(),
-                            csr.getServerSoftwareCertificates()
-                        );
+                    OpcUaSession session = new OpcUaSession(
+                        csr.getAuthenticationToken(),
+                        csr.getSessionId(),
+                        client.getConfig().getSessionName().get(),
+                        csr.getRevisedSessionTimeout(),
+                        csr.getMaxRequestMessageSize(),
+                        csr.getServerCertificate(),
+                        csr.getServerSoftwareCertificates()
+                    );
 
-                        session.setServerNonce(asrNonce);
+                    session.setServerNonce(asrNonce);
 
-                        return completedFuture(session);
-                    } catch (UaException e) {
-                        return failedFuture(e);
-                    }
+                    return completedFuture(session);
                 });
         } catch (Exception ex) {
             return failedFuture(ex);

@@ -130,6 +130,7 @@ public class SubscriptionManager {
         return server;
     }
 
+    @Nullable
     public Subscription getSubscription(UInteger subscriptionId) {
         return subscriptions.get(subscriptionId);
     }

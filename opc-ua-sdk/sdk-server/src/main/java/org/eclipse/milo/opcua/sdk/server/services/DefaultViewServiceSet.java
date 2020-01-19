@@ -63,6 +63,11 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         List<BrowseDescription> nodesToBrowse = l(request.getNodesToBrowse());
 
+        if (nodesToBrowse.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NothingToDo);
+            return;
+        }
+
         if (nodesToBrowse.size() > server.getConfig().getLimits().getMaxNodesPerBrowse().intValue()) {
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
             return;

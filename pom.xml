@@ -171,7 +171,7 @@
                 <configuration>
                     <configLocation>milo/checkstyle.xml</configLocation>
                     <excludes>
-                        **/Ua*Loader*,
+                        **/org/eclipse/milo/opcua/sdk/server/namespaces/loader/*,
                         **/org/eclipse/milo/opcua/stack/core/types/structured/**,
                         **/org/eclipse/milo/opcua/stack/core/types/enumerated/**,
                         **/org/eclipse/milo/opcua/sdk/core/CefactEngineeringUnits.java,
@@ -219,7 +219,7 @@
                         <configuration>
                             <configLocation>milo/checkstyle.xml</configLocation>
                             <excludes>
-                                **/Ua*Loader*,
+                                **/org/eclipse/milo/opcua/sdk/server/namespaces/loader/*,
                                 **/org/eclipse/milo/opcua/stack/core/types/structured/**,
                                 **/org/eclipse/milo/opcua/stack/core/types/enumerated/**,
                                 **/org/eclipse/milo/opcua/sdk/core/CefactEngineeringUnits.java,
@@ -299,7 +299,7 @@
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             </manifest>
                             <manifestEntries>
-                                <Automatic-Module-Name>org.eclipse.milo.opcua</Automatic-Module-Name>
+                                <Automatic-Module-Name>${javaModuleName}</Automatic-Module-Name>
                             </manifestEntries>
                             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                         </archive>
@@ -359,7 +359,7 @@
                 <configuration>
                     <configLocation>milo/checkstyle.xml</configLocation>
                     <excludes>
-                        **/Ua*Loader*,
+                        **/org/eclipse/milo/opcua/sdk/server/namespaces/loader/*,
                         **/org/eclipse/milo/opcua/stack/core/types/structured/**,
                         **/org/eclipse/milo/opcua/stack/core/types/enumerated/**,
                         **/org/eclipse/milo/opcua/sdk/client/api/model/nodes/objects/*,

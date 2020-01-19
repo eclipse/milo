@@ -49,6 +49,11 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             return;
         }
 
+        if (methodsToCall.size() > server.getConfig().getLimits().getMaxNodesPerMethodCall().longValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
+            return;
+        }
+
         DiagnosticsContext<CallMethodRequest> diagnosticsContext = new DiagnosticsContext<>();
 
         CallContext context = new CallContext(

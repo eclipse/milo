@@ -64,37 +64,16 @@ Submit a pull request via the normal GitHub UI.
 
 ## License Header
 
-Please make sure any file you newly create contains a proper license header like this:
+Please make sure new source files have license header like this:
 
 ````
-/**
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+/*
+ * Copyright (c) 2019 the Eclipse Milo Authors
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 1.0 which is available at
- * https://www.eclipse.org/legal/epl-v10.html
- *
- * SPDX-License-Identifier: EPL-1.0
+ * SPDX-License-Identifier: EPL-2.0
  */
 ````
-You should, of course, adapt this header to use the specific mechanism for comments pertaining to the type of file you create, e.g. using something like
-
-````
-<!--
- Copyright (c) 2017 Contributors to the Eclipse Foundation
-
- See the NOTICE file(s) distributed with this work for additional
- information regarding copyright ownership.
-
- This program and the accompanying materials are made available under the
- terms of the Eclipse Public License 1.0 which is available at
- https://www.eclipse.org/legal/epl-v10.html
-
- SPDX-License-Identifier: EPL-1.0
--->
-````
-
-when adding an XML file.

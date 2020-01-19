@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
+import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -80,7 +80,7 @@ public class InstanceDeclarationHierarchyTest {
             }
         };
 
-        new UaNodeLoader(context, nodeManager).loadNodes();
+        new NodeLoader(context, nodeManager).loadNodes();
 
         InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy.create(
             addressSpaceManager,

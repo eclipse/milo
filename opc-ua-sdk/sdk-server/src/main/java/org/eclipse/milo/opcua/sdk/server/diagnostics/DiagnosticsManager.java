@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -34,7 +35,6 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnostic
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -46,8 +46,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DiagnosticsManager extends AbstractLifecycle {
 
@@ -82,6 +85,10 @@ public class DiagnosticsManager extends AbstractLifecycle {
             .getAddressSpaceManager()
             .getManagedNode(Identifiers.Server_ServerDiagnostics)
             .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        serverDiagnosticsNode.getEnabledFlagNode().setUserAccessLevel(
+            AccessLevel.toValue(AccessLevel.READ_WRITE)
+        );
 
         serverDiagnosticsNode.getEnabledFlagNode().getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -208,11 +215,12 @@ public class DiagnosticsManager extends AbstractLifecycle {
         private final ServerDiagnosticsTypeNode node;
 
         ServerDiagnosticsObject(ServerDiagnosticsTypeNode node) {
+            checkNotNull(node, "ServerDiagnosticsTypeNode");
             this.node = node;
         }
 
         @Override
-        protected void onStartup() {
+        protected synchronized void onStartup() {
             logger.debug("ServerDiagnosticsNode onStartup()");
 
             configureServerDiagnosticsSummary();
@@ -226,7 +234,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         @Override
-        protected void onShutdown() {
+        protected synchronized void onShutdown() {
             logger.debug("ServerDiagnosticsNode onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
@@ -242,27 +250,30 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         private void configureSubscriptionDiagnosticsArray() {
-            SubscriptionDiagnosticsArrayTypeNode subscriptionDiagnosticsArrayNode =
-                node.getSubscriptionDiagnosticsArrayNode();
-
-            subscriptionDiagnosticsArrayNode.getFilterChain().addLast(
-                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType)
+            node.getSubscriptionDiagnosticsArrayNode().getFilterChain().addLast(
+                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType) {
+                    @Override
+                    protected String getElementNodeName(String arrayNodeName, Object value, int index) {
+                        if (value instanceof SubscriptionDiagnosticsDataType) {
+                            return ((SubscriptionDiagnosticsDataType) value).getSubscriptionId().toString();
+                        } else {
+                            return super.getElementNodeName(arrayNodeName, value, index);
+                        }
+                    }
+                }
             );
 
             Runnable updateTask = () -> {
-                ExtensionObject[] xos = getServer().getSubscriptions()
+                SubscriptionDiagnosticsDataType[] value = server.getSubscriptions()
                     .values()
                     .stream()
                     .map(s ->
-                        ExtensionObject.encode(
-                            getServer().getSerializationContext(),
-                            s.getSubscriptionDiagnostics()
-                                .getSubscriptionDiagnosticsDataType()
-                        )
+                        s.getSubscriptionDiagnostics()
+                            .getSubscriptionDiagnosticsDataType()
                     )
-                    .toArray(ExtensionObject[]::new);
+                    .toArray(SubscriptionDiagnosticsDataType[]::new);
 
-                subscriptionDiagnosticsArrayNode.setValue(new DataValue(new Variant(xos)));
+                node.getSubscriptionDiagnosticsArrayNode().setValue(new DataValue(new Variant(value)));
             };
 
             diagnosticTasks.add(updateTask);
@@ -303,11 +314,12 @@ public class DiagnosticsManager extends AbstractLifecycle {
         private final SessionsDiagnosticsSummaryTypeNode node;
 
         SessionsDiagnosticsSummaryObject(SessionsDiagnosticsSummaryTypeNode node) {
+            checkNotNull(node, "SessionsDiagnosticsSummaryTypeNode");
             this.node = node;
         }
 
         @Override
-        protected void onStartup() {
+        protected synchronized void onStartup() {
             logger.debug("SessionsDiagnosticsSummaryObject onStartup()");
 
             configureSessionDiagnosticsArray();
@@ -325,26 +337,30 @@ public class DiagnosticsManager extends AbstractLifecycle {
             getServer().getSessionManager().addSessionListener(sessionListener = new SessionListener() {
                 @Override
                 public void onSessionCreated(Session session) {
-                    SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(session, node);
+                    synchronized (SessionsDiagnosticsSummaryObject.this) {
+                        SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(session, node);
 
-                    sessionDiagnosticsObjects.put(session.getSessionId(), sdo);
+                        sessionDiagnosticsObjects.put(session.getSessionId(), sdo);
 
-                    sdo.startup();
+                        sdo.startup();
+                    }
                 }
 
                 @Override
                 public void onSessionClosed(Session session) {
-                    SessionDiagnosticsObject sdo = sessionDiagnosticsObjects.remove(session.getSessionId());
+                    synchronized (SessionsDiagnosticsSummaryObject.this) {
+                        SessionDiagnosticsObject sdo = sessionDiagnosticsObjects.remove(session.getSessionId());
 
-                    if (sdo != null) {
-                        sdo.shutdown();
+                        if (sdo != null) {
+                            sdo.shutdown();
+                        }
                     }
                 }
             });
         }
 
         @Override
-        protected void onShutdown() {
+        protected synchronized void onShutdown() {
             logger.debug("SessionsDiagnosticsSummaryObject onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
@@ -358,7 +374,8 @@ public class DiagnosticsManager extends AbstractLifecycle {
                 .forEach(SessionDiagnosticsObject::shutdown);
             sessionDiagnosticsObjects.clear();
 
-            node.delete();
+            // The SessionsDiagnosticsSummaryTypeNode is not deleted because it
+            // should be present whether or not diagnostics are enabled.
         }
 
         private void configureSessionSecurityDiagnosticsArray() {
@@ -429,28 +446,26 @@ public class DiagnosticsManager extends AbstractLifecycle {
         private final SessionsDiagnosticsSummaryTypeNode summaryNode;
 
         SessionDiagnosticsObject(Session session, SessionsDiagnosticsSummaryTypeNode summaryNode) {
+            checkNotNull(session, "Session");
+            checkNotNull(summaryNode, "SessionsDiagnosticsSummaryTypeNode");
+
             this.session = session;
             this.summaryNode = summaryNode;
         }
 
         @Override
-        protected void onStartup() {
+        protected synchronized void onStartup() {
             logger.debug("SessionDiagnosticsObject onStartup()");
 
             try {
-                String name = String.format(
-                    "%s (%s)",
-                    session.getSessionName(),
-                    session.getSessionId()
-                );
-
                 node = (SessionDiagnosticsObjectTypeNode) nodeFactory.createNode(
                     new NodeId(0, UUID.randomUUID()),
                     Identifiers.SessionDiagnosticsObjectType,
                     false
                 );
-                node.setBrowseName(new QualifiedName(1, name));
-                node.setDisplayName(LocalizedText.english(name));
+
+                node.setBrowseName(new QualifiedName(1, session.getSessionName()));
+                node.setDisplayName(LocalizedText.english(session.getSessionName()));
 
                 nodeManager.addNode(node);
                 summaryNode.addComponent(node);
@@ -466,7 +481,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         @Override
-        protected void onShutdown() {
+        protected synchronized void onShutdown() {
             logger.debug("SessionDiagnosticsObject onShutdown()");
 
             diagnosticTasks.removeAll(registeredTasks);
@@ -522,27 +537,30 @@ public class DiagnosticsManager extends AbstractLifecycle {
         }
 
         private void configureSubscriptionDiagnosticsArray() {
-            SubscriptionDiagnosticsArrayTypeNode subscriptionDiagnosticsArrayNode =
-                node.getSubscriptionDiagnosticsArrayNode();
-
-            subscriptionDiagnosticsArrayNode.getFilterChain().addLast(
-                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType)
+            node.getSubscriptionDiagnosticsArrayNode().getFilterChain().addLast(
+                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType) {
+                    @Override
+                    protected String getElementNodeName(String arrayNodeName, Object value, int index) {
+                        if (value instanceof SubscriptionDiagnosticsDataType) {
+                            return ((SubscriptionDiagnosticsDataType) value).getSubscriptionId().toString();
+                        } else {
+                            return super.getElementNodeName(arrayNodeName, value, index);
+                        }
+                    }
+                }
             );
 
             Runnable updateTask = () -> {
-                ExtensionObject[] xos = session.getSubscriptionManager()
+                SubscriptionDiagnosticsDataType[] value = session.getSubscriptionManager()
                     .getSubscriptions()
                     .stream()
                     .map(s ->
-                        ExtensionObject.encode(
-                            getServer().getSerializationContext(),
-                            s.getSubscriptionDiagnostics()
-                                .getSubscriptionDiagnosticsDataType()
-                        )
+                        s.getSubscriptionDiagnostics()
+                            .getSubscriptionDiagnosticsDataType()
                     )
-                    .toArray(ExtensionObject[]::new);
+                    .toArray(SubscriptionDiagnosticsDataType[]::new);
 
-                subscriptionDiagnosticsArrayNode.setValue(new DataValue(new Variant(xos)));
+                node.getSubscriptionDiagnosticsArrayNode().setValue(new DataValue(new Variant(value)));
             };
 
             diagnosticTasks.add(updateTask);

@@ -44,6 +44,12 @@ public class UaException extends Exception implements UaExceptionStatus {
         this.statusCode = new StatusCode(statusCode);
     }
 
+    public UaException(long statusCode, String message, Throwable cause) {
+        super(message, cause);
+
+        this.statusCode = new StatusCode(statusCode);
+    }
+
     public UaException(StatusCode statusCode, String message) {
         super(message);
 

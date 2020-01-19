@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -59,11 +59,11 @@ public interface UaStackClientConfig {
     Optional<X509Certificate[]> getCertificateChain();
 
     /**
-     * Get the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     * Get the {@link ClientCertificateValidator} this client will use to validate server certificates when connecting.
      *
-     * @return the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     * @return the validator this client will use to validate server certificates when connecting.
      */
-    CertificateValidator getCertificateValidator();
+    ClientCertificateValidator getCertificateValidator();
 
     /**
      * @return the configured {@link EncodingLimits}.

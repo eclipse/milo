@@ -45,19 +45,29 @@ public class PublishQueue {
         if (waitingSubscriptions.isEmpty()) {
             serviceQueue.add(service);
 
-            logger.debug("Queued PublishRequest requestHandle={}, size={}",
+            logger.debug(
+                "Queued PublishRequest requestHandle={}, size={}",
                 service.getRequest().getRequestHeader().getRequestHandle(),
                 serviceQueue.size()
             );
         } else {
+            logger.debug("{} subscriptions waiting", waitingSubscriptions.size());
+
             WaitingSubscription subscription = null;
 
             int maxPriority = 0;
             long minWaitingSince = Long.MAX_VALUE;
 
             for (WaitingSubscription waiting : waitingSubscriptions) {
-                int priority = waiting.getSubscription().getPriority();
-                long waitingSince = waiting.getWaitingSince().getTime();
+                final int priority = waiting.getSubscription().getPriority();
+                final long waitingSince = waiting.getWaitingSince().getTime();
+
+                logger.debug(
+                    "subscription id={} priority={} waitingSince={}",
+                    waiting.getSubscription().getId(),
+                    priority,
+                    waitingSince
+                );
 
                 if (priority > maxPriority) {
                     maxPriority = priority;
@@ -66,14 +76,23 @@ public class PublishQueue {
                 if (priority >= maxPriority && waitingSince < minWaitingSince) {
                     minWaitingSince = waitingSince;
                     subscription = waiting;
+
+                    logger.debug(
+                        "subscription id={} priority={} now next in line",
+                        waiting.getSubscription().getId(),
+                        priority
+                    );
                 }
             }
 
             if (subscription != null) {
                 waitList.remove(subscription.subscription.getId());
 
-                logger.debug("Delivering PublishRequest to Subscription [id={}]",
-                    subscription.getSubscription().getId());
+                logger.debug(
+                    "delivering PublishRequest to subscription id={} priority={}",
+                    subscription.getSubscription().getId(),
+                    subscription.getSubscription().getPriority()
+                );
 
                 final WaitingSubscription ws = subscription;
 

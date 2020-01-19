@@ -50,6 +50,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class BrowsePathsHelper {
@@ -69,29 +70,35 @@ public class BrowsePathsHelper {
 
         List<BrowsePath> browsePaths = l(request.getBrowsePaths());
 
+        if (browsePaths.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NothingToDo);
+            return;
+        }
+
         if (browsePaths.size() >
             server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {
 
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
-        } else {
-            List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.size());
-
-            for (BrowsePath browsePath : browsePaths) {
-                futures.add(translate(browsePath));
-            }
-
-            sequence(futures).thenAcceptAsync(results -> {
-                ResponseHeader header = service.createResponseHeader();
-
-                TranslateBrowsePathsToNodeIdsResponse response = new TranslateBrowsePathsToNodeIdsResponse(
-                    header,
-                    a(results, BrowsePathResult.class),
-                    new DiagnosticInfo[0]
-                );
-
-                service.setResponse(response);
-            }, server.getExecutorService());
+            return;
         }
+
+        List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.size());
+
+        for (BrowsePath browsePath : browsePaths) {
+            futures.add(translate(browsePath));
+        }
+
+        sequence(futures).thenAcceptAsync(results -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            TranslateBrowsePathsToNodeIdsResponse response = new TranslateBrowsePathsToNodeIdsResponse(
+                header,
+                a(results, BrowsePathResult.class),
+                new DiagnosticInfo[0]
+            );
+
+            service.setResponse(response);
+        }, server.getExecutorService());
     }
 
     private CompletableFuture<BrowsePathResult> translate(BrowsePath browsePath) {
@@ -100,7 +107,27 @@ public class BrowsePathsHelper {
         NodeId startingNode = browsePath.getStartingNode();
         RelativePath relativePath = browsePath.getRelativePath();
 
-        follow(startingNode, l(relativePath.getElements())).whenComplete((targets, ex) -> {
+        if (startingNode.isNull()) {
+            future.complete(new BrowsePathResult(
+                new StatusCode(StatusCodes.Bad_NodeIdInvalid),
+                new BrowsePathTarget[0]
+            ));
+
+            return future;
+        }
+
+        List<RelativePathElement> relativePathElements = l(relativePath.getElements());
+
+        if (relativePathElements.isEmpty()) {
+            future.complete(new BrowsePathResult(
+                new StatusCode(StatusCodes.Bad_NothingToDo),
+                new BrowsePathTarget[0]
+            ));
+
+            return future;
+        }
+
+        follow(startingNode, relativePathElements).whenComplete((targets, ex) -> {
             if (targets != null) {
                 BrowsePathResult result;
 
@@ -118,14 +145,13 @@ public class BrowsePathsHelper {
 
                 future.complete(result);
             } else {
-                StatusCode statusCode = new StatusCode(StatusCodes.Bad_NoMatch);
-
-                if (ex instanceof UaException) {
-                    statusCode = ((UaException) ex).getStatusCode();
-                }
+                StatusCode statusCode = UaException.extractStatusCode(ex)
+                    .orElse(new StatusCode(StatusCodes.Bad_NoMatch));
 
                 BrowsePathResult result = new BrowsePathResult(
-                    statusCode, new BrowsePathTarget[0]);
+                    statusCode,
+                    new BrowsePathTarget[0]
+                );
 
                 future.complete(result);
             }
@@ -134,8 +160,10 @@ public class BrowsePathsHelper {
         return future;
     }
 
-    private CompletableFuture<List<BrowsePathTarget>> follow(NodeId nodeId,
-                                                             List<RelativePathElement> elements) {
+    private CompletableFuture<List<BrowsePathTarget>> follow(
+        NodeId nodeId,
+        List<RelativePathElement> elements
+    ) {
 
         if (elements.isEmpty()) {
             return completedFuture(Collections.emptyList());
@@ -143,11 +171,17 @@ public class BrowsePathsHelper {
             return target(nodeId, elements.get(0)).thenApply(targets ->
                 targets.stream()
                     .map(n -> new BrowsePathTarget(n, UInteger.MAX))
-                    .collect(toList()));
+                    .collect(toList())
+            );
         } else {
             RelativePathElement e = elements.get(0);
 
             return next(nodeId, e).thenCompose(nextExId -> {
+                if (nextExId.isNull()) {
+                    // There was no match for the target name
+                    return failedUaFuture(StatusCodes.Bad_NoMatch);
+                }
+
                 List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
                 Optional<NodeId> nextId = nextExId.local(server.getNamespaceTable());
@@ -173,6 +207,10 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
+        if (targetName.isNull()) {
+            return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
+        }
+
         BrowseContext browseContext = new BrowseContext(
             server,
             context.getSession().orElse(null)
@@ -196,17 +234,21 @@ public class BrowsePathsHelper {
                 .map(Reference::getTargetNodeId)
                 .collect(toList());
 
-            return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                for (int i = 0; i < targetNodeIds.size(); i++) {
-                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                    QualifiedName browseName = browseNames.get(i);
-                    if (browseName.equals(targetName)) {
-                        return targetNodeId;
+            if (targetNodeIds.isEmpty()) {
+                return failedUaFuture(StatusCodes.Bad_NoMatch);
+            } else {
+                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
+                    for (int i = 0; i < targetNodeIds.size(); i++) {
+                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                        QualifiedName browseName = browseNames.get(i);
+                        if (browseName.equals(targetName)) {
+                            return targetNodeId;
+                        }
                     }
-                }
 
-                return ExpandedNodeId.NULL_VALUE;
-            });
+                    return ExpandedNodeId.NULL_VALUE;
+                });
+            }
         });
     }
 
@@ -215,6 +257,10 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
+        if (targetName.isNull()) {
+            return failedUaFuture(StatusCodes.Bad_BrowseNameInvalid);
+        }
+
         BrowseContext browseContext = new BrowseContext(
             server,
             context.getSession().orElse(null)
@@ -238,19 +284,23 @@ public class BrowsePathsHelper {
                 .map(Reference::getTargetNodeId)
                 .collect(toList());
 
-            return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                List<ExpandedNodeId> targets = newArrayList();
+            if (targetNodeIds.isEmpty()) {
+                return failedUaFuture(StatusCodes.Bad_NoMatch);
+            } else {
+                return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
+                    List<ExpandedNodeId> targets = newArrayList();
 
-                for (int i = 0; i < targetNodeIds.size(); i++) {
-                    ExpandedNodeId targetNodeId = targetNodeIds.get(i);
-                    QualifiedName browseName = browseNames.get(i);
-                    if (matchesTarget(browseName, targetName)) {
-                        targets.add(targetNodeId);
+                    for (int i = 0; i < targetNodeIds.size(); i++) {
+                        ExpandedNodeId targetNodeId = targetNodeIds.get(i);
+                        QualifiedName browseName = browseNames.get(i);
+                        if (matchesTarget(browseName, targetName)) {
+                            targets.add(targetNodeId);
+                        }
                     }
-                }
 
-                return targets;
-            });
+                    return targets;
+                });
+            }
         });
     }
 

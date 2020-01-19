@@ -16,8 +16,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;
@@ -32,19 +32,25 @@ public class ClientCertificateValidatorIT extends StackIntegrationTest {
 
     private final CountDownLatch latch = new CountDownLatch(2);
 
-    private final CertificateValidator validator = new CertificateValidator() {
-        @Override
-        public void validate(X509Certificate certificate) throws UaException {
-            logger.info("validate: {}", certificate.getSubjectX500Principal());
-            latch.countDown();
-        }
+    private final ClientCertificateValidator validator = new ClientCertificateValidator() {
 
         @Override
-        public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
+        public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
             X509Certificate certificate = certificateChain.get(0);
             logger.info("verifyTrustChain: {}", certificate.getSubjectX500Principal());
             latch.countDown();
         }
+
+        @Override
+        public void validateCertificateChain(
+            List<X509Certificate> certificateChain,
+            String applicationUri,
+            String... validHostNames
+        ) throws UaException {
+
+            validateCertificateChain(certificateChain);
+        }
+
     };
 
     @Test

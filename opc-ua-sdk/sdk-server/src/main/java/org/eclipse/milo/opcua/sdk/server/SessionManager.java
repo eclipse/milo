@@ -36,7 +36,6 @@ import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -61,10 +60,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertific
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
@@ -180,7 +179,8 @@ public class SessionManager implements
             session = createdSessions.get(authToken);
 
             if (session != null) {
-                session.getSessionDiagnostics().getUnauthorizedRequestCount().increment();
+                session.close(true);
+
                 throw new UaException(StatusCodes.Bad_SessionNotActivated);
             } else {
                 throw new UaException(StatusCodes.Bad_SessionIdInvalid);
@@ -253,10 +253,12 @@ public class SessionManager implements
 
         ByteString clientNonce = request.getClientNonce();
 
-        NonceUtil.validateNonce(clientNonce);
+        if (securityPolicy != SecurityPolicy.None) {
+            NonceUtil.validateNonce(clientNonce);
 
-        if (securityPolicy != SecurityPolicy.None && clientNonces.contains(clientNonce)) {
-            throw new UaException(StatusCodes.Bad_NonceInvalid);
+            if (clientNonces.contains(clientNonce)) {
+                throw new UaException(StatusCodes.Bad_NonceInvalid);
+            }
         }
 
         if (securityPolicy != SecurityPolicy.None && clientNonce.isNotNull()) {
@@ -298,16 +300,13 @@ public class SessionManager implements
                     "client certificate must be non-null");
             }
 
-            CertificateValidationUtil.validateApplicationUri(
-                clientCertificate,
-                clientDescription.getApplicationUri()
-            );
-
-            CertificateValidator certificateValidator =
+            ServerCertificateValidator certificateValidator =
                 server.getConfig().getCertificateValidator();
 
-            certificateValidator.validate(clientCertificate);
-            certificateValidator.verifyTrustChain(clientCertificateChain);
+            certificateValidator.validateCertificateChain(
+                clientCertificateChain,
+                clientDescription.getApplicationUri()
+            );
         }
 
         // SignatureData must be created using only the bytes of the client
@@ -342,7 +341,7 @@ public class SessionManager implements
             createdSessions.remove(authenticationToken);
             activeSessions.remove(authenticationToken);
 
-            sessionListeners.forEach(l -> l.onSessionClosed(session));
+            sessionListeners.forEach(l -> l.onSessionClosed(s));
         });
 
         createdSessions.put(authenticationToken, session);
@@ -603,12 +602,16 @@ public class SessionManager implements
 
             byte[] signatureBytes = clientSignature.getSignature().bytesOrEmpty();
 
-            SignatureUtil.verify(
-                SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
-                securityConfiguration.getClientCertificate(),
-                dataBytes,
-                signatureBytes
-            );
+            try {
+                SignatureUtil.verify(
+                    SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
+                    securityConfiguration.getClientCertificate(),
+                    dataBytes,
+                    signatureBytes
+                );
+            } catch (UaException e) {
+                throw new UaException(StatusCodes.Bad_ApplicationSignatureInvalid, e);
+            }
         }
     }
 

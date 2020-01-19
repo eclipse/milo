@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -21,6 +22,11 @@ public interface MonitoredItem {
      * @return the server-side id of this item.
      */
     UInteger getId();
+
+    /**
+     * @return the most recent {@link Session} that owned the subscription this item belongs to.
+     */
+    Session getSession();
 
     /**
      * @return the id of the {@link Subscription} this item belongs to.
