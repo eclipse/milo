@@ -11,6 +11,10 @@
 
     <artifactId>bsd-parser-gson</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.binaryschema.gson</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>

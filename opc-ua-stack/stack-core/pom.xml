@@ -11,6 +11,10 @@
 
     <artifactId>stack-core</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.stack.core</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.bouncycastle</groupId>

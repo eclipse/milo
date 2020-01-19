@@ -299,7 +299,7 @@
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             </manifest>
                             <manifestEntries>
-                                <Automatic-Module-Name>org.eclipse.milo.opcua</Automatic-Module-Name>
+                                <Automatic-Module-Name>${javaModuleName}</Automatic-Module-Name>
                             </manifestEntries>
                             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                         </archive>
