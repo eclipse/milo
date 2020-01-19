@@ -19,7 +19,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import com.google.common.collect.Maps;
@@ -61,6 +63,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 public class DataTypeDictionaryManager implements Lifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final List<UaNode> nodes = new CopyOnWriteArrayList<>();
 
     private final Lazy<File> dictionaryFile = new Lazy<>();
 
@@ -156,14 +160,14 @@ public class DataTypeDictionaryManager implements Lifecycle {
             Direction.INVERSE
         ));
 
-        getNodeManager().addNode(dictionaryNode);
+        addNode(dictionaryNode);
     }
 
     @Override
     public void shutdown() {
-        // TODO remove all the nodes we added
-
         dictionaryNode.delete();
+        nodes.forEach(UaNode::delete);
+        nodes.clear();
     }
 
     public OpcUaBinaryDataTypeDictionary getDictionary() {
@@ -193,7 +197,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
             Direction.INVERSE
         ));
 
-        getNodeManager().addNode(dataTypeNode);
+        addNode(dataTypeNode);
 
         // TODO figure out a way to not require re-registration every time...
         getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
@@ -236,7 +240,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
             Direction.INVERSE
         ));
 
-        getNodeManager().addNode(dataTypeNode);
+        addNode(dataTypeNode);
 
         // TODO figure out a way to not require re-registration every time...
         getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
@@ -275,7 +279,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
             Direction.INVERSE
         ));
 
-        getNodeManager().addNode(descriptionNode);
+        addNode(descriptionNode);
 
         // Add a DataTypeEncodingTypeNode with a HasDescription reference to
         // descriptionNode and an EncodingOf reference to the DataTypeNode.
@@ -311,7 +315,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
             Direction.INVERSE
         ));
 
-        getNodeManager().addNode(dataTypeEncodingNode);
+        addNode(dataTypeEncodingNode);
 
         dictionaryFile.reset();
     }
@@ -372,6 +376,16 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
     private QualifiedName newQualifiedName(String name) {
         return new QualifiedName(getNamespaceIndex(), name);
+    }
+
+    /**
+     * Add {@code node} to the {@link UaNodeManager} and our own bookkeeping so it can be deleted during shutdown.
+     *
+     * @param node the {@link UaNode} to add.
+     */
+    private void addNode(UaNode node) {
+        getNodeManager().addNode(node);
+        nodes.add(node);
     }
 
     private static DataTypeDictionaryGenerator newDictionaryGenerator(
