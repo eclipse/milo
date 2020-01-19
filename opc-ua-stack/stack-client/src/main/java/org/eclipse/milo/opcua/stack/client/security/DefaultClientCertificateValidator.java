@@ -43,11 +43,19 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
 
     @Override
     public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
-        PKIXCertPathBuilderResult certPathResult = CertificateValidationUtil.buildTrustedCertPath(
-            certificateChain,
-            trustListManager.getTrustedCertificates(),
-            trustListManager.getIssuerCertificates()
-        );
+        PKIXCertPathBuilderResult certPathResult;
+
+        try {
+            certPathResult = CertificateValidationUtil.buildTrustedCertPath(
+                certificateChain,
+                trustListManager.getTrustedCertificates(),
+                trustListManager.getIssuerCertificates()
+            );
+        } catch (UaException e) {
+            certificateChain.forEach(trustListManager::addRejectedCertificate);
+
+            throw e;
+        }
 
         List<X509CRL> crls = new ArrayList<>();
         crls.addAll(trustListManager.getTrustedCrls());

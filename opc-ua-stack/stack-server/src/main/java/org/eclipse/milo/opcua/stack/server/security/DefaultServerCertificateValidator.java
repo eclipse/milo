@@ -47,13 +47,31 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
     @Override
     public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
+        PKIXCertPathBuilderResult certPathResult;
+
         try {
-            PKIXCertPathBuilderResult certPathResult = buildTrustedCertPath(
+            certPathResult = buildTrustedCertPath(
                 certificateChain,
                 trustListManager.getTrustedCertificates(),
                 trustListManager.getIssuerCertificates()
             );
+        } catch (UaException e) {
+            certificateChain.forEach(trustListManager::addRejectedCertificate);
 
+            long statusCode = e.getStatusCode().getValue();
+
+            if (statusCode == StatusCodes.Bad_CertificateUntrusted) {
+                // servers need to report a less informative StatusCode if the
+                // certificate was not trusted, either explicitly or because it
+                // or one if its issuers was revoked.
+
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e.getMessage(), e);
+            } else {
+                throw e;
+            }
+        }
+
+        try {
             List<X509CRL> crls = new ArrayList<>();
             crls.addAll(trustListManager.getTrustedCrls());
             crls.addAll(trustListManager.getIssuerCrls());
@@ -65,16 +83,14 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
                 validationChecks
             );
         } catch (UaException e) {
-            // servers need to report a less informative StatusCode if the
-            // certificate was not trusted, either explicitly or because it
-            // or one if its issuers was revoked.
-
             long statusCode = e.getStatusCode().getValue();
 
-            if (statusCode == StatusCodes.Bad_CertificateUntrusted ||
-                statusCode == StatusCodes.Bad_CertificateRevoked ||
+            if (statusCode == StatusCodes.Bad_CertificateRevoked ||
                 statusCode == StatusCodes.Bad_CertificateIssuerRevoked
             ) {
+                // servers need to report a less informative StatusCode if the
+                // certificate was not trusted, either explicitly or because it
+                // or one if its issuers was revoked.
 
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e.getMessage(), e);
             } else {
