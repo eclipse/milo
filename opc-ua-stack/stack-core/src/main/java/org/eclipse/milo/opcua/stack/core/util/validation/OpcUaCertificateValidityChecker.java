@@ -31,6 +31,15 @@ import javax.security.auth.x500.X500Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A {@link PKIXCertPathChecker} that does the same basic checks as
+ * sun.security.provider.certpath.BasicChecker but allows for the validation
+ * check to be suppressed.
+ *
+ * Not currently used because the BasicChecker isn't replaceable. Needs to be
+ * used in conjuction with {@link OpcUaCertPathValidator} if/when it's
+ * implemented.
+ */
 public class OpcUaCertificateValidityChecker extends PKIXCertPathChecker {
 
     private static final Logger LOGGER =
