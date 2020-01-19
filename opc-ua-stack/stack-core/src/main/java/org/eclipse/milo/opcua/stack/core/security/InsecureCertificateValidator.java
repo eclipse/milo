@@ -25,15 +25,10 @@ public class InsecureCertificateValidator implements CertificateValidator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void validate(X509Certificate certificate) throws UaException {
-        logger.warn("Skipping validation for certificate: {}", certificate.getSubjectX500Principal());
-    }
-
-    @Override
-    public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
+    public void validateCertificateChain(List<X509Certificate> certificateChain) throws UaException {
         X509Certificate certificate = certificateChain.get(0);
 
-        logger.warn("Skipping trust chain verification for certificate: {}", certificate.getSubjectX500Principal());
+        logger.warn("Skipping validation for certificate: {}", certificate.getSubjectX500Principal());
     }
 
 }

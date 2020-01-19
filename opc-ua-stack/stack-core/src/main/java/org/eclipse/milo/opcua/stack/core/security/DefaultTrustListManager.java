@@ -160,7 +160,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     /**
      * Stop the certificate store watcher and free all resources.
      * <p>
-     * After calling closing {@link CertificateValidator#verifyTrustChain(List)} will fail for all inputs.
+     * After calling closing {@link CertificateValidator#validateCertificateChain(List)} will fail for all inputs.
      */
     @Override
     public synchronized void close() throws IOException {

@@ -16,10 +16,9 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.SecurityFixture;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
@@ -46,12 +45,18 @@ public class UaStackClientConfigTest extends SecurityFixture {
         null
     );
 
-    private final CertificateValidator validator = new CertificateValidator() {
-        @Override
-        public void validate(X509Certificate certificate) throws UaException {}
+    private final ClientCertificateValidator validator = new ClientCertificateValidator() {
 
         @Override
-        public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {}
+        public void validateCertificateChain(List<X509Certificate> certificateChain) {}
+
+        @Override
+        public void validateCertificateChain(
+            List<X509Certificate> certificateChain,
+            String applicationUri,
+            String... validHostNames
+        ) {}
+
     };
 
     @Test

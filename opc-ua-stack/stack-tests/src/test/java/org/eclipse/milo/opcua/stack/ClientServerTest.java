@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -466,13 +465,6 @@ public class ClientServerTest extends SecurityFixture {
             .setEndpoint(endpoint)
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
-            .setCertificateValidator(new InsecureCertificateValidator() {
-                @Override
-                public void validate(X509Certificate certificate) {}
-
-                @Override
-                public void verifyTrustChain(List<X509Certificate> certificateChain) {}
-            })
             .build();
 
         return UaStackClient.create(config);
