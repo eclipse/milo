@@ -11,6 +11,10 @@
 
     <artifactId>sdk-core</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.core</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>

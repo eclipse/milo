@@ -10,6 +10,10 @@
 
     <artifactId>stack-client</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.stack.client</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>

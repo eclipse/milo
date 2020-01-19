@@ -12,6 +12,10 @@
 
     <artifactId>sdk-server</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.server</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
