@@ -136,9 +136,11 @@ public class CustomUnionType extends Union implements UaStructure {
                     break;
                 case Foo: {
                     encoder.writeUInt32("foo", value.asFoo());
+                    break;
                 }
                 case Bar: {
                     encoder.writeString("bar", value.asBar());
+                    break;
                 }
             }
         }
