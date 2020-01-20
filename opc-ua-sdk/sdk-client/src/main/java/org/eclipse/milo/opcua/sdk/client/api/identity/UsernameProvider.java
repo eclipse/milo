@@ -22,12 +22,11 @@ import javax.crypto.Cipher;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -36,9 +35,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -47,11 +45,9 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
  */
 public class UsernameProvider implements IdentityProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final String username;
     private final String password;
-    private final CertificateValidator certificateValidator;
+    private final ClientCertificateValidator certificateValidator;
     private final Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser;
 
 
@@ -63,7 +59,7 @@ public class UsernameProvider implements IdentityProvider {
      * @param password the password to authenticate with.
      */
     public UsernameProvider(String username, String password) {
-        this(username, password, new InsecureCertificateValidator());
+        this(username, password, new ClientCertificateValidator.InsecureValidator());
     }
 
     /**
@@ -72,9 +68,9 @@ public class UsernameProvider implements IdentityProvider {
      *
      * @param username             the username to authenticate with.
      * @param password             the password to authenticate with.
-     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
      */
-    public UsernameProvider(String username, String password, CertificateValidator certificateValidator) {
+    public UsernameProvider(String username, String password, ClientCertificateValidator certificateValidator) {
         this(username, password, certificateValidator, ps -> ps.get(0));
     }
 
@@ -86,14 +82,14 @@ public class UsernameProvider implements IdentityProvider {
      *
      * @param username             the username to authenticate with.
      * @param password             the password to authenticate with.
-     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
      * @param policyChooser        a function that selects a {@link UserTokenPolicy} to use. The policy list is
      *                             guaranteed to be non-null and non-empty.
      */
     public UsernameProvider(
         String username,
         String password,
-        CertificateValidator certificateValidator,
+        ClientCertificateValidator certificateValidator,
         Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser) {
 
         this.username = username;
@@ -163,7 +159,11 @@ public class UsernameProvider implements IdentityProvider {
                 // If the SecurityPolicy is None or if this is an HTTP(S) connection the certificate used to encrypt
                 // the username and password must be trusted. Otherwise, if it's a secure connection, the certificate
                 // will have already been validated and verified when the secure channel or session was created.
-                certificateValidator.validateCertificateChain(certificateChain);
+                certificateValidator.validateCertificateChain(
+                    certificateChain,
+                    endpoint.getServer().getApplicationUri(),
+                    EndpointUtil.getHost(endpoint.getEndpointUrl())
+                );
             }
 
             int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(
@@ -234,7 +234,12 @@ public class UsernameProvider implements IdentityProvider {
             '}';
     }
 
-    public static UsernameProvider of(String username, String password, CertificateValidator certificateValidator) {
+    public static UsernameProvider of(
+        String username,
+        String password,
+        ClientCertificateValidator certificateValidator
+    ) {
+
         return new UsernameProvider(username, password, certificateValidator);
     }
 
