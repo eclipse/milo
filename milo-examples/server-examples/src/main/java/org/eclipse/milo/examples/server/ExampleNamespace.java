@@ -20,6 +20,7 @@ import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.examples.server.types.CustomEnumType;
+import org.eclipse.milo.examples.server.types.CustomUnionType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
@@ -184,6 +185,13 @@ public class ExampleNamespace extends ManagedNamespace {
         try {
             registerCustomStructType();
             addCustomStructVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom struct type", e);
+        }
+
+        try {
+            registerCustomUnionType();
+            addCustomUnionVariable(folderNode);
         } catch (Exception e) {
             logger.warn("Failed to register custom struct type", e);
         }
@@ -815,6 +823,57 @@ public class ExampleNamespace extends ManagedNamespace {
         dictionaryManager.registerStructureDescription(description, binaryEncodingId);
     }
 
+    private void registerCustomUnionType() throws Exception {
+        NodeId dataTypeId = CustomUnionType.TYPE_ID
+            .localOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID
+            .localOrThrow(getServer().getNamespaceTable());
+
+        dictionaryManager.registerStructureCodec(
+            new CustomUnionType.Codec().asBinaryCodec(),
+            "CustomUnionType",
+            dataTypeId,
+            binaryEncodingId
+        );
+
+        StructureField[] fields = new StructureField[]{
+            new StructureField(
+                "foo",
+                LocalizedText.NULL_VALUE,
+                Identifiers.UInt32,
+                ValueRanks.Scalar,
+                null,
+                getServer().getConfig().getLimits().getMaxStringLength(),
+                false
+            ),
+            new StructureField(
+                "bar",
+                LocalizedText.NULL_VALUE,
+                Identifiers.String,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            )
+        };
+
+        StructureDefinition definition = new StructureDefinition(
+            binaryEncodingId,
+            Identifiers.Structure,
+            StructureType.Union,
+            fields
+        );
+
+        StructureDescription description = new StructureDescription(
+            dataTypeId,
+            new QualifiedName(getNamespaceIndex(), "CustomUnionType"),
+            definition
+        );
+
+        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+    }
+
     private void addCustomEnumVariable(UaFolderNode rootFolder) throws Exception {
         NodeId dataTypeId = CustomEnumType.TYPE_ID
             .localOrThrow(getServer().getNamespaceTable());
@@ -876,6 +935,43 @@ public class ExampleNamespace extends ManagedNamespace {
 
         customStructTypeVariable.addReference(new Reference(
             customStructTypeVariable.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            false
+        ));
+    }
+
+    private void addCustomUnionVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomUnionType.TYPE_ID
+            .localOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID
+            .localOrThrow(getServer().getNamespaceTable());
+
+        UaVariableNode customUnionTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
+            .setDataType(dataTypeId)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        CustomUnionType value = CustomUnionType.ofBar("hello");
+
+        ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
+            getServer().getSerializationContext(),
+            value,
+            binaryEncodingId
+        );
+
+        customUnionTypeVariable.setValue(new DataValue(new Variant(xo)));
+
+        getNodeManager().addNode(customUnionTypeVariable);
+
+        customUnionTypeVariable.addReference(new Reference(
+            customUnionTypeVariable.getNodeId(),
             Identifiers.Organizes,
             rootFolder.getNodeId().expanded(),
             false

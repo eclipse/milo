@@ -86,12 +86,6 @@ public class DataTypeDictionaryGenerator {
     }
 
     public void addStructureDescription(StructureDescription description) {
-        StructureType structureType = description.getStructureDefinition().getStructureType();
-
-        if (structureType == StructureType.Union) {
-            throw new IllegalArgumentException("StructureType not supported: " + structureType);
-        }
-
         structuredTypes.add(createStructuredType(description));
 
         structureDescriptions.put(description.getDataTypeId(), description);
