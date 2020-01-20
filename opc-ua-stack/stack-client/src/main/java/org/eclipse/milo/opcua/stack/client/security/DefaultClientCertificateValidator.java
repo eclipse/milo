@@ -22,8 +22,12 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultClientCertificateValidator implements ClientCertificateValidator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClientCertificateValidator.class);
 
     private final TrustListManager trustListManager;
     private final ImmutableSet<ValidationCheck> validationChecks;
@@ -92,7 +96,19 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
         X509Certificate certificate = certificateChain.get(0);
 
         CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
-        CertificateValidationUtil.checkHostnameOrIpAddress(certificate, validHostNames);
+
+        try {
+            CertificateValidationUtil.checkHostnameOrIpAddress(certificate, validHostNames);
+        } catch (UaException e) {
+            if (validationChecks.contains(ValidationCheck.HOSTNAME)) {
+                throw e;
+            } else {
+                LOGGER.warn(
+                    "check suppressed: certificate failed hostname check: {}",
+                    certificate.getSubjectX500Principal().getName()
+                );
+            }
+        }
     }
 
 }
