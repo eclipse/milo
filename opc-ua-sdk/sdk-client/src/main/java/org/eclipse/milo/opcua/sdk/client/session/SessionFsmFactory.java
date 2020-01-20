@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -75,6 +74,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsR
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -833,9 +833,11 @@ public class SessionFsmFactory {
                                     "match certificate from EndpointDescription!");
                         }
 
-                        CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
-
-                        certificateValidator.validateCertificateChain(serverCertificateChain);
+                        client.getConfig().getCertificateValidator().validateCertificateChain(
+                            serverCertificateChain,
+                            endpoint.getServer().getApplicationUri(),
+                            EndpointUtil.getHost(endpoint.getEndpointUrl())
+                        );
 
                         SignatureData serverSignature = response.getServerSignature();
 
