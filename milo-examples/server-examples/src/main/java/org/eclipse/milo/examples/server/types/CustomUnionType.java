@@ -142,6 +142,8 @@ public class CustomUnionType extends Union implements UaStructure {
                     encoder.writeString("bar", value.asBar());
                     break;
                 }
+                default:
+                    throw new IllegalArgumentException("unhandled type: " + value.type);
             }
         }
     }
