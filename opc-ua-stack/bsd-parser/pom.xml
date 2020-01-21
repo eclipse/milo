@@ -11,6 +11,10 @@
 
     <artifactId>bsd-parser</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.binaryschema.parser</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>

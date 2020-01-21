@@ -11,6 +11,10 @@
 
     <artifactId>bsd-generator</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.binaryschema.generator</javaModuleName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
