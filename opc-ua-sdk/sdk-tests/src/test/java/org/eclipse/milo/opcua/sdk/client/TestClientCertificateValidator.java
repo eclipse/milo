@@ -32,7 +32,7 @@ public class TestClientCertificateValidator implements ClientCertificateValidato
 
     @Override
     public void validateCertificateChain(List<X509Certificate> certificateChain) {
-        // TODO
+        // noop
     }
 
     @Override
@@ -42,7 +42,7 @@ public class TestClientCertificateValidator implements ClientCertificateValidato
         String... validHostNames
     ) {
 
-        // TODO
+        // noop
     }
 
 }
