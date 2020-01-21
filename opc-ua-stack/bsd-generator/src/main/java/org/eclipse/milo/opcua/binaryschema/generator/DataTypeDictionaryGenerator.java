@@ -290,8 +290,8 @@ public class DataTypeDictionaryGenerator {
             String dictionaryNamespaceUri
         ) {
 
-            this.dictionaryNamespaceUri = dictionaryNamespaceUri;
             this.dataTypeName = dataTypeName;
+            this.dictionaryNamespaceUri = dictionaryNamespaceUri;
         }
     }
 
