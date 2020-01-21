@@ -24,29 +24,29 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class CustomDataType implements UaStructure {
+public class CustomStructType implements UaStructure {
 
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse(String.format(
         "nsu=%s;s=%s",
         ExampleNamespace.NAMESPACE_URI,
-        "DataType.CustomDataType"
+        "DataType.CustomStructType"
     ));
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse(String.format(
         "nsu=%s;s=%s",
         ExampleNamespace.NAMESPACE_URI,
-        "DataType.CustomDataType.BinaryEncoding"
+        "DataType.CustomStructType.BinaryEncoding"
     ));
 
     private final String foo;
     private final UInteger bar;
     private final boolean baz;
 
-    public CustomDataType() {
+    public CustomStructType() {
         this(null, uint(0), false);
     }
 
-    public CustomDataType(String foo, UInteger bar, boolean baz) {
+    public CustomStructType(String foo, UInteger bar, boolean baz) {
         this.foo = foo;
         this.bar = bar;
         this.baz = baz;
@@ -84,7 +84,7 @@ public class CustomDataType implements UaStructure {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CustomDataType that = (CustomDataType) o;
+        CustomStructType that = (CustomStructType) o;
         return baz == that.baz &&
             Objects.equal(foo, that.foo) &&
             Objects.equal(bar, that.bar);
@@ -104,14 +104,14 @@ public class CustomDataType implements UaStructure {
             .toString();
     }
 
-    public static class Codec extends GenericDataTypeCodec<CustomDataType> {
+    public static class Codec extends GenericDataTypeCodec<CustomStructType> {
         @Override
-        public Class<CustomDataType> getType() {
-            return CustomDataType.class;
+        public Class<CustomStructType> getType() {
+            return CustomStructType.class;
         }
 
         @Override
-        public CustomDataType decode(
+        public CustomStructType decode(
             SerializationContext context,
             UaDecoder decoder) throws UaSerializationException {
 
@@ -119,13 +119,13 @@ public class CustomDataType implements UaStructure {
             UInteger bar = decoder.readUInt32("Bar");
             boolean baz = decoder.readBoolean("Baz");
 
-            return new CustomDataType(foo, bar, baz);
+            return new CustomStructType(foo, bar, baz);
         }
 
         @Override
         public void encode(
             SerializationContext context,
-            UaEncoder encoder, CustomDataType value) throws UaSerializationException {
+            UaEncoder encoder, CustomStructType value) throws UaSerializationException {
 
             encoder.writeString("Foo", value.foo);
             encoder.writeUInt32("Bar", value.bar);

@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
-import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.examples.server.types.CustomEnumType;
+import org.eclipse.milo.examples.server.types.CustomStructType;
 import org.eclipse.milo.examples.server.types.CustomUnionType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -177,21 +177,21 @@ public class ExampleNamespace extends ManagedNamespace {
 
         try {
             registerCustomEnumType();
-            addCustomEnumVariable(folderNode);
+            addCustomEnumTypeVariable(folderNode);
         } catch (Exception e) {
             logger.warn("Failed to register custom enum type", e);
         }
 
         try {
             registerCustomStructType();
-            addCustomStructVariable(folderNode);
+            addCustomStructTypeVariable(folderNode);
         } catch (Exception e) {
             logger.warn("Failed to register custom struct type", e);
         }
 
         try {
             registerCustomUnionType();
-            addCustomUnionVariable(folderNode);
+            addCustomUnionTypeVariable(folderNode);
         } catch (Exception e) {
             logger.warn("Failed to register custom struct type", e);
         }
@@ -750,10 +750,10 @@ public class ExampleNamespace extends ManagedNamespace {
     private void registerCustomStructType() throws Exception {
         // Get the NodeId for the DataType and encoding Nodes.
 
-        NodeId dataTypeId = CustomDataType.TYPE_ID
+        NodeId dataTypeId = CustomStructType.TYPE_ID
             .localOrThrow(getServer().getNamespaceTable());
 
-        NodeId binaryEncodingId = CustomDataType.BINARY_ENCODING_ID
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
             .localOrThrow(getServer().getNamespaceTable());
 
         // At a minimum, custom types must have their codec registered.
@@ -764,8 +764,8 @@ public class ExampleNamespace extends ManagedNamespace {
         // the AddressSpace.
 
         dictionaryManager.registerStructureCodec(
-            new CustomDataType.Codec().asBinaryCodec(),
-            "CustomDataType",
+            new CustomStructType.Codec().asBinaryCodec(),
+            "CustomStructType",
             dataTypeId,
             binaryEncodingId
         );
@@ -816,7 +816,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         StructureDescription description = new StructureDescription(
             dataTypeId,
-            new QualifiedName(getNamespaceIndex(), "CustomDataType"),
+            new QualifiedName(getNamespaceIndex(), "CustomStructType"),
             definition
         );
 
@@ -874,7 +874,7 @@ public class ExampleNamespace extends ManagedNamespace {
         dictionaryManager.registerStructureDescription(description, binaryEncodingId);
     }
 
-    private void addCustomEnumVariable(UaFolderNode rootFolder) throws Exception {
+    private void addCustomEnumTypeVariable(UaFolderNode rootFolder) throws Exception {
         NodeId dataTypeId = CustomEnumType.TYPE_ID
             .localOrThrow(getServer().getNamespaceTable());
 
@@ -900,11 +900,11 @@ public class ExampleNamespace extends ManagedNamespace {
         ));
     }
 
-    private void addCustomStructVariable(UaFolderNode rootFolder) throws Exception {
-        NodeId dataTypeId = CustomDataType.TYPE_ID
+    private void addCustomStructTypeVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomStructType.TYPE_ID
             .localOrThrow(getServer().getNamespaceTable());
 
-        NodeId binaryEncodingId = CustomDataType.BINARY_ENCODING_ID
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
             .localOrThrow(getServer().getNamespaceTable());
 
         UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
@@ -917,7 +917,7 @@ public class ExampleNamespace extends ManagedNamespace {
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
 
-        CustomDataType value = new CustomDataType(
+        CustomStructType value = new CustomStructType(
             "foo",
             uint(42),
             true
@@ -941,7 +941,7 @@ public class ExampleNamespace extends ManagedNamespace {
         ));
     }
 
-    private void addCustomUnionVariable(UaFolderNode rootFolder) throws Exception {
+    private void addCustomUnionTypeVariable(UaFolderNode rootFolder) throws Exception {
         NodeId dataTypeId = CustomUnionType.TYPE_ID
             .localOrThrow(getServer().getNamespaceTable());
 
