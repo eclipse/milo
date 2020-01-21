@@ -44,7 +44,7 @@ public enum ValidationCheck {
     EXTENDED_KEY_USAGE_END_ENTITY,
 
     /**
-     * The KeyUsage extension must be presented and checked for CA certificates.
+     * The KeyUsage extension must be present and checked for CA certificates.
      * <p>
      * This check does not apply to self-signed end-entity certificates.
      */
@@ -56,7 +56,7 @@ public enum ValidationCheck {
     REVOCATION,
 
     /**
-     * CRLs for every non-end-entity must CA must be found.
+     * CRLs for every non-end-entity CA must be found.
      */
     REVOCATION_LISTS;
 
