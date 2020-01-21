@@ -241,7 +241,13 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
                     members.put(fieldName, opcUaToMemberTypeArray(fieldName, bitAccumulation.intValue(), typeName));
                 } else {
-                    Object[] values = new Object[length];
+                    Object[] values;
+
+                    if (length >= 0) {
+                        values = new Object[length];
+                    } else {
+                        values = new Object[0];
+                    }
 
                     if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
                         for (int i = 0; i < length; i++) {
