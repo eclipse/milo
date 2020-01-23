@@ -32,6 +32,11 @@
             <artifactId>sdk-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.milo</groupId>
+            <artifactId>bsd-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
