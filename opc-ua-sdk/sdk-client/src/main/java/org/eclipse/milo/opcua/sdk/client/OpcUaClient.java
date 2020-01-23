@@ -23,8 +23,8 @@ import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
-import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.client.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
@@ -231,26 +231,6 @@ public class OpcUaClient implements UaClient {
         sessionFsm = SessionFsmFactory.newSessionFsm(this);
 
         sessionFsm.addInitializer((client, session) -> {
-            logger.debug("SessionInitializer: DataTypeDictionary");
-
-            DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
-                client,
-                session,
-                config.getBsdParser()
-            );
-
-            return reader.readDataTypeDictionaries()
-                .thenAccept(dictionaries ->
-                    dictionaries.forEach(
-                        stackClient.getDataTypeManager()::registerTypeDictionary))
-                .thenApply(v -> Unit.VALUE)
-                .exceptionally(ex -> {
-                    logger.warn("SessionInitializer: DataTypeDictionary", ex);
-                    return Unit.VALUE;
-                });
-        });
-
-        sessionFsm.addInitializer((client, session) -> {
             logger.debug("SessionInitializer: NamespaceTable");
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
@@ -302,12 +282,12 @@ public class OpcUaClient implements UaClient {
         addressSpace = new DefaultAddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
-        ObjectTypeManagerInitializer.initialize(
+        ObjectTypeInitializer.initialize(
             stackClient.getNamespaceTable(),
             objectTypeManager
         );
 
-        VariableTypeManagerInitializer.initialize(
+        VariableTypeInitializer.initialize(
             stackClient.getNamespaceTable(),
             variableTypeManager
         );

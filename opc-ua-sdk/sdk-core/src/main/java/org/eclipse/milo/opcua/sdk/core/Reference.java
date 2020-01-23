@@ -241,6 +241,9 @@ public class Reference {
     public static final Predicate<Reference> HAS_COMPONENT_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
 
+    public static final Predicate<Reference> COMPONENT_OF_PREDICATE =
+        (reference) -> reference.isInverse() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
+
     public static final Predicate<Reference> HAS_PROPERTY_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasProperty.equals(reference.getReferenceTypeId());
 
@@ -255,6 +258,9 @@ public class Reference {
 
     public static final Predicate<Reference> ORGANIZES_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.Organizes.equals(reference.getReferenceTypeId());
+
+    public static final Predicate<Reference> HAS_ENCODING_PREDICATE =
+        (reference) -> reference.isForward() && Identifiers.HasEncoding.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_DESCRIPTION_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasDescription.equals(reference.getReferenceTypeId());

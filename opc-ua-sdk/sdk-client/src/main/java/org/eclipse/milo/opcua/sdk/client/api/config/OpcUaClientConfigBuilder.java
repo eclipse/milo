@@ -18,8 +18,6 @@ import java.util.function.Supplier;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
-import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
@@ -47,8 +45,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     private UInteger maxResponseMessageSize = uint(0);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
-
-    private BsdParser bsdParser = new GenericBsdParser();
 
     private UInteger keepAliveFailuresAllowed = uint(1);
     private UInteger keepAliveInterval = uint(5000);
@@ -96,11 +92,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setIdentityProvider(IdentityProvider identityProvider) {
         this.identityProvider = identityProvider;
-        return this;
-    }
-
-    public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
-        this.bsdParser = bsdParser;
         return this;
     }
 
@@ -224,7 +215,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             maxResponseMessageSize,
             maxPendingPublishRequests,
             identityProvider,
-            bsdParser,
             keepAliveFailuresAllowed,
             keepAliveInterval,
             keepAliveTimeout
@@ -243,7 +233,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
         private final IdentityProvider identityProvider;
-        private final BsdParser bsdParser;
         private final UInteger keepAliveFailuresAllowed;
         private final UInteger keepAliveInterval;
         private final UInteger keepAliveTimeout;
@@ -259,7 +248,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             UInteger maxResponseMessageSize,
             UInteger maxPendingPublishRequests,
             IdentityProvider identityProvider,
-            BsdParser bsdParser,
             UInteger keepAliveFailuresAllowed,
             UInteger keepAliveInterval,
             UInteger keepAliveTimeout) {
@@ -274,7 +262,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
             this.identityProvider = identityProvider;
-            this.bsdParser = bsdParser;
             this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
             this.keepAliveInterval = keepAliveInterval;
             this.keepAliveTimeout = keepAliveTimeout;
@@ -323,11 +310,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public IdentityProvider getIdentityProvider() {
             return identityProvider;
-        }
-
-        @Override
-        public BsdParser getBsdParser() {
-            return bsdParser;
         }
 
         @Override

@@ -26,8 +26,8 @@ import org.eclipse.milo.opcua.sdk.core.ServerTable;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
-import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
@@ -115,9 +115,9 @@ public class OpcUaServer {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
+        ObjectTypeInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
 
-        VariableTypeManagerInitializer.initialize(stackServer.getNamespaceTable(), variableTypeManager);
+        VariableTypeInitializer.initialize(stackServer.getNamespaceTable(), variableTypeManager);
 
         opcUaNamespace = new OpcUaNamespace(this);
         opcUaNamespace.startup();

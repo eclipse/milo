@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -38,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
-import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_DESCRIPTION_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_EVENT_SOURCE_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_NOTIFIER_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
@@ -259,15 +257,6 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             .filter(ORGANIZES_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
-    }
-
-    public Optional<Node> getDescriptionNode() {
-        Optional<UaNode> node = getReferences().stream()
-            .filter(HAS_DESCRIPTION_PREDICATE)
-            .findFirst()
-            .flatMap(r -> getManagedNode(r.getTargetNodeId()));
-
-        return node.map(n -> n);
     }
 
     /**

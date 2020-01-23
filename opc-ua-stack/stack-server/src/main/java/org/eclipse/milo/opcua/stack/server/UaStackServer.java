@@ -121,8 +121,10 @@ public class UaStackServer {
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
-    private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
     private final NamespaceTable namespaceTable = new NamespaceTable();
+
+    private final DataTypeManager dataTypeManager =
+        DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();

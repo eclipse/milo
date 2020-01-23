@@ -32,12 +32,12 @@ public class TestServerCertificateValidator implements ServerCertificateValidato
 
     @Override
     public void validateCertificateChain(List<X509Certificate> certificateChain) {
-        // TODO
+        // noop
     }
 
     @Override
     public void validateCertificateChain(List<X509Certificate> certificateChain, String applicationUri) {
-        // TODO
+        // noop
     }
 
 }

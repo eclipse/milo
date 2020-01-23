@@ -172,8 +172,8 @@
                     <configLocation>milo/checkstyle.xml</configLocation>
                     <excludes>
                         **/org/eclipse/milo/opcua/sdk/server/namespaces/loader/*,
-                        **/org/eclipse/milo/opcua/stack/core/types/structured/*,
-                        **/org/eclipse/milo/opcua/stack/core/types/enumerated/*,
+                        **/org/eclipse/milo/opcua/stack/core/types/structured/**,
+                        **/org/eclipse/milo/opcua/stack/core/types/enumerated/**,
                         **/org/eclipse/milo/opcua/sdk/core/CefactEngineeringUnits.java,
                         **/org/eclipse/milo/opcua/sdk/client/model/nodes/objects/*,
                         **/org/eclipse/milo/opcua/sdk/client/model/nodes/variables/*,
@@ -220,8 +220,8 @@
                             <configLocation>milo/checkstyle.xml</configLocation>
                             <excludes>
                                 **/org/eclipse/milo/opcua/sdk/server/namespaces/loader/*,
-                                **/org/eclipse/milo/opcua/stack/core/types/structured/*,
-                                **/org/eclipse/milo/opcua/stack/core/types/enumerated/*,
+                                **/org/eclipse/milo/opcua/stack/core/types/structured/**,
+                                **/org/eclipse/milo/opcua/stack/core/types/enumerated/**,
                                 **/org/eclipse/milo/opcua/sdk/core/CefactEngineeringUnits.java,
                                 **/org/eclipse/milo/opcua/sdk/client/model/nodes/objects/*,
                                 **/org/eclipse/milo/opcua/sdk/client/model/nodes/variables/*,
@@ -360,8 +360,8 @@
                     <configLocation>milo/checkstyle.xml</configLocation>
                     <excludes>
                         **/org/eclipse/milo/opcua/sdk/server/namespaces/loader/*,
-                        **/org/eclipse/milo/opcua/stack/core/types/structured/*,
-                        **/org/eclipse/milo/opcua/stack/core/types/enumerated/*,
+                        **/org/eclipse/milo/opcua/stack/core/types/structured/**,
+                        **/org/eclipse/milo/opcua/stack/core/types/enumerated/**,
                         **/org/eclipse/milo/opcua/sdk/client/api/model/nodes/objects/*,
                         **/org/eclipse/milo/opcua/sdk/client/api/model/nodes/variables/*,
                         **/org/eclipse/milo/opcua/sdk/client/api/model/types/objects/*,
