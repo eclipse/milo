@@ -83,7 +83,8 @@ public class NodeFactory {
     public UaNode createNode(
         NodeId rootNodeId,
         NodeId typeDefinitionId,
-        boolean includeOptionalNodes) throws UaException {
+        boolean includeOptionalNodes
+    ) throws UaException {
 
         Tree<UaNode> nodeTree = createNodeTree(
             rootNodeId,
@@ -98,7 +99,8 @@ public class NodeFactory {
         NodeId rootNodeId,
         NodeId typeDefinitionId,
         boolean includeOptionalNodes,
-        InstanceListener instanceListener) throws UaException {
+        InstanceListener instanceListener
+    ) throws UaException {
 
         Tree<UaNode> nodeTree = createNodeTree(
             rootNodeId,
@@ -111,10 +113,48 @@ public class NodeFactory {
         return nodeTree.getValue();
     }
 
+    public UaNode createNode(
+        NodeId rootNodeId,
+        ExpandedNodeId typeDefinitionId,
+        boolean includeOptionalNodes
+    ) throws UaException {
+
+        NodeId localTypeDefinitionId = typeDefinitionId
+            .local(context.getNamespaceTable())
+            .orElseThrow(
+                () ->
+                    new UaException(
+                        StatusCodes.Bad_NodeIdUnknown,
+                        "typeDefinitionId not local: " + typeDefinitionId)
+            );
+
+        return createNode(rootNodeId, localTypeDefinitionId, includeOptionalNodes);
+    }
+
+    public UaNode createNode(
+        NodeId rootNodeId,
+        ExpandedNodeId typeDefinitionId,
+        boolean includeOptionalNodes,
+        InstanceListener instanceListener
+    ) throws UaException {
+
+        NodeId localTypeDefinitionId = typeDefinitionId
+            .local(context.getNamespaceTable())
+            .orElseThrow(
+                () ->
+                    new UaException(
+                        StatusCodes.Bad_NodeIdUnknown,
+                        "typeDefinitionId not local: " + typeDefinitionId)
+            );
+
+        return createNode(rootNodeId, localTypeDefinitionId, includeOptionalNodes, instanceListener);
+    }
+
     public Tree<UaNode> createNodeTree(
         NodeId rootNodeId,
         NodeId typeDefinitionId,
-        boolean includeOptionalNodes) throws UaException {
+        boolean includeOptionalNodes
+    ) throws UaException {
 
         AddressSpaceManager addressSpaceManager = context.getServer().getAddressSpaceManager();
 
@@ -336,7 +376,8 @@ public class NodeFactory {
 
     protected UaObjectNode instanceFromTypeDefinition(
         NodeId nodeId,
-        ObjectTypeNode typeDefinitionNode) {
+        ObjectTypeNode typeDefinitionNode
+    ) {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
@@ -358,7 +399,8 @@ public class NodeFactory {
 
     protected UaVariableNode instanceFromTypeDefinition(
         NodeId nodeId,
-        VariableTypeNode typeDefinitionNode) {
+        VariableTypeNode typeDefinitionNode
+    ) {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
