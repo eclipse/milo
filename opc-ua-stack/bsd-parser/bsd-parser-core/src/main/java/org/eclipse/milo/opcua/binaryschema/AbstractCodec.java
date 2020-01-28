@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
@@ -241,25 +242,23 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
                     members.put(fieldName, opcUaToMemberTypeArray(fieldName, bitAccumulation.intValue(), typeName));
                 } else {
-                    Object[] values;
+                    Object[] values = null;
 
                     if (length >= 0) {
                         values = new Object[length];
-                    } else {
-                        values = new Object[0];
-                    }
 
-                    if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
-                        for (int i = 0; i < length; i++) {
-                            Object value = READERS.get(typeName).apply(decoder);
+                        if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
+                            for (int i = 0; i < length; i++) {
+                                Object value = READERS.get(typeName).apply(decoder);
 
-                            values[i] = value;
-                        }
-                    } else {
-                        for (int i = 0; i < length; i++) {
-                            Object value = context.decode(typeNamespace, typeName, decoder);
+                                values[i] = value;
+                            }
+                        } else {
+                            for (int i = 0; i < length; i++) {
+                                Object value = context.decode(typeNamespace, typeName, decoder);
 
-                            values[i] = value;
+                                values[i] = value;
+                            }
                         }
                     }
 
@@ -388,7 +387,7 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
      * @param typeName the name of the OPC UA DataType.
      * @return a member of type {@link MemberT}.
      */
-    protected abstract MemberT opcUaToMemberTypeScalar(String name, Object value, String typeName);
+    protected abstract MemberT opcUaToMemberTypeScalar(String name, @Nullable Object value, String typeName);
 
     /**
      * Convert an OPC UA array value into a member of type {@link MemberT}.
@@ -398,7 +397,7 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
      * @param typeName the name of the OPC UA DataType.
      * @return member of type {@link MemberT}.
      */
-    protected abstract MemberT opcUaToMemberTypeArray(String name, Object values, String typeName);
+    protected abstract MemberT opcUaToMemberTypeArray(String name, @Nullable Object values, String typeName);
 
     protected abstract Object memberTypeToOpcUaScalar(MemberT member, String typeName);
 
