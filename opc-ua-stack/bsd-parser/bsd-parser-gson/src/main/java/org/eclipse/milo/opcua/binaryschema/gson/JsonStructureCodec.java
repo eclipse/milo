@@ -124,21 +124,25 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
 
     @Override
     protected JsonElement opcUaToMemberTypeArray(String name, Object values, String typeName) {
-        JsonArray array = new JsonArray();
+        if (values == null) {
+            return JsonNull.INSTANCE;
+        } else {
+            JsonArray array = new JsonArray();
 
-        if (values instanceof Object[]) {
-            Object[] objects = (Object[]) values;
+            if (values instanceof Object[]) {
+                Object[] objects = (Object[]) values;
 
-            for (Object value : objects) {
-                array.add(opcUaToMemberTypeScalar(name, value, typeName));
+                for (Object value : objects) {
+                    array.add(opcUaToMemberTypeScalar(name, value, typeName));
+                }
+            } else if (values instanceof Number) {
+                // This is a bit array...
+                Number number = (Number) values;
+                return new JsonPrimitive(number);
             }
-        } else if (values instanceof Number) {
-            // This is a bit array...
-            Number number = (Number) values;
-            return new JsonPrimitive(number);
-        }
 
-        return array;
+            return array;
+        }
     }
 
     @Override
