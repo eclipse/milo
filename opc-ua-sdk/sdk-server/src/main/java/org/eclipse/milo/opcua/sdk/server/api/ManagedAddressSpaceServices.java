@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
@@ -164,10 +165,88 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         List<ReadValueId> readValueIds
     ) {
 
+//        CompletableFuture<List<DataValue>> f = GroupMapCollate.groupMapCollate(
+//            readValueIds,
+//            readValueId -> {
+//                UaNode node = nodeManager.get(readValueId.getNodeId());
+//                if (node != null) {
+//                    if (node.getFilterChain().isAsync()) {
+//                        return NodeStatus.ASYNC_FILTER;
+//                    } else {
+//                        return NodeStatus.BLOCKING_FILTER;
+//                    }
+//                } else {
+//                    return NodeStatus.NOT_FOUND;
+//                }
+//            },
+//            nodeStatus -> items -> {
+//                switch (nodeStatus) {
+//                    case ASYNC_FILTER: {
+//                        List<CompletableFuture<DataValue>> futures = new ArrayList<>();
+//
+//                        for (ReadValueId id : items) {
+//                            UaNode node = nodeManager.get(id.getNodeId());
+//
+//                            if (node != null) {
+//                                futures.add(
+//                                    node.getAttributeAsync(
+//                                        new AttributeContext(null, null),
+//                                        AttributeId.from(id.getAttributeId()).get()
+//                                    )
+//                                );
+//                            } else {
+//                                futures.add(completedFuture(new DataValue(StatusCodes.Bad_NodeIdUnknown)));
+//                            }
+//                        }
+//
+//                        return FutureUtils.sequence(futures);
+//                    }
+//
+//                    case BLOCKING_FILTER: {
+//                        List<CompletableFuture<DataValue>> futures = new ArrayList<>();
+//
+//                        for (ReadValueId id : items) {
+//                            UaNode node = nodeManager.get(id.getNodeId());
+//
+//                            if (node != null) {
+//                                try {
+//                                    AttributeId attributeId = AttributeId.from(id.getAttributeId())
+//                                        .orElseThrow(() -> new UaException(StatusCodes.Bad_AttributeIdInvalid));
+//
+//                                    AttributeContext attributeContext = new AttributeContext(null, null); // TODO
+//
+//                                    DataValue value = node.getAttribute(attributeContext, attributeId);
+//
+//                                    futures.add(completedFuture(value));
+//                                } catch (UaException e) {
+//                                    futures.add(completedFuture(new DataValue(e.getStatusCode())));
+//                                }
+//                            } else {
+//                                futures.add(completedFuture(new DataValue(StatusCodes.Bad_NodeIdUnknown)));
+//                            }
+//                        }
+//
+//                        return FutureUtils.sequence(futures);
+//                    }
+//                    case NOT_FOUND: {
+//                        List<DataValue> values = Collections.nCopies(
+//                            items.size(),
+//                            new DataValue(StatusCodes.Bad_NodeIdUnknown)
+//                        );
+//                        return completedFuture(values);
+//                    }
+//                    default:
+//                        throw new IllegalArgumentException("unhandled NodeStatus: " + nodeStatus);
+//                }
+//            }
+//        );
+
+
+
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId readValueId : readValueIds) {
-            UaServerNode node = nodeManager.get(readValueId.getNodeId());
+            UaNode node = nodeManager.get(readValueId.getNodeId());
 
             if (node != null) {
                 DataValue value = node.readAttribute(
@@ -192,6 +271,25 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         }
 
         context.success(results);
+    }
+
+    private enum NodeStatus {
+        ASYNC_FILTER,
+        BLOCKING_FILTER,
+        NOT_FOUND
+    }
+
+    enum ExecutionStrategy {
+        ASYNC,
+        BLOCKING
+    }
+
+    protected ExecutionStrategy getReadStrategy(UaNode node, UInteger attributeId) {
+        return ExecutionStrategy.BLOCKING;
+    }
+
+    protected ExecutionStrategy getWriteStrategy(UaNode node, UInteger attributeId) {
+        return ExecutionStrategy.BLOCKING;
     }
 
     @Override

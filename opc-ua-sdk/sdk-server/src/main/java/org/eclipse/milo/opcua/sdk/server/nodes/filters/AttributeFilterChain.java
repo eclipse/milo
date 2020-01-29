@@ -52,6 +52,10 @@ public class AttributeFilterChain {
         this.filters.addAll(filters);
     }
 
+    public boolean isAsync() {
+        return filters.stream().anyMatch(AttributeFilter::isAsync);
+    }
+
     /**
      * Get the value for the attribute identified by {@code attributeId} from {@code node}.
      *
