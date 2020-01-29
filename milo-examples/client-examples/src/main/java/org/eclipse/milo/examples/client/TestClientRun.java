@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
@@ -30,7 +31,8 @@ public class TestClientRun {
 
     public static void main(String[] args) throws Exception {
         TestClientRun example = new TestClientRun();
-        String uri = "opc.tcp://milo.digitalpetri.com:62541/milo";
+        // String uri = "opc.tcp://milo.digitalpetri.com:62541/milo";
+        String uri = "opc.tcp://localhost:49320/";
         List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints(uri).get();
         OpcUaClientConfigBuilder cfg = new OpcUaClientConfigBuilder();
         cfg.setEndpoint(endpoints.get(0)); // please do better, and not only pick the first entry
@@ -43,7 +45,9 @@ public class TestClientRun {
 
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
-        client.connect().get();
+        // client.
+        UaClient get = client.connect().get();
+        // client.connect();
 
         // start browsing at root folder
         browseNode("", client, Identifiers.RootFolder);
@@ -59,13 +63,11 @@ public class TestClientRun {
                 NodeId id =  node.getNodeId().get();
                 QualifiedName bname = node.getBrowseName().get();
                 LocalizedText dname = node.getDisplayName().get();
-                browseNode(indent + "  ", client, node.getNodeId().get());
                 System.out.println("---------------------------");
                 System.out.println(id);
                 System.out.println(bname);
                 System.out.println(dname);
                 System.out.println();
-
                 // recursively browse to children
                 browseNode(indent + "  ", client, node.getNodeId().get());
             }
