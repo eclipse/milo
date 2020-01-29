@@ -18,23 +18,13 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AttributeFilter {
 
-    default void getAttributeAsync(
-        GetAttributeContext ctx,
-        AttributeId attributeId,
-        Pending<Unit, Object> pending
-    ) {
-
-        ctx.getAttributeAsync(attributeId, pending);
+    default boolean isAsync() {
+        return false;
     }
 
-    default void setAttributeAsync(
-        SetAttributeContext ctx,
-        AttributeId attributeId,
-        Pending<Object, Unit> pending
-    ) {
+    void getAttributeAsync(GetAttributeContext ctx, AttributeId attributeId, Pending<Unit, Object> pending);
 
-        ctx.setAttributeAsync(attributeId, pending);
-    }
+    void setAttributeAsync(SetAttributeContext ctx, AttributeId attributeId, Pending<Object, Unit> pending);
 
     /**
      * Get the value for the attribute identified by {@code attributeId} or delegate to the next filter in the chain.
@@ -44,9 +34,7 @@ public interface AttributeFilter {
      * @return the value for the attribute identified by {@code attributeId}.
      * @see GetAttributeContext#getAttribute(AttributeId)
      */
-    default Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
-        return ctx.getAttribute(attributeId);
-    }
+    Object getAttributeBlocking(GetAttributeContext ctx, AttributeId attributeId);
 
     /**
      * Set the value for the attribute identified by {@code attributeId} or delegate to the next filter in the chain.
@@ -56,8 +44,6 @@ public interface AttributeFilter {
      * @param value       the value to set.
      * @see SetAttributeContext#setAttribute(AttributeId, Object)
      */
-    default void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
-        ctx.setAttribute(attributeId, value);
-    }
+    void setAttributeBlocking(SetAttributeContext ctx, AttributeId attributeId, Object value);
 
 }

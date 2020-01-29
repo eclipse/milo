@@ -25,8 +25,8 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.BlockingAttributeFilter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
-class ArrayValueAttributeFilter implements AttributeFilter {
+class ArrayValueAttributeFilter extends BlockingAttributeFilter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -58,7 +58,7 @@ class ArrayValueAttributeFilter implements AttributeFilter {
     }
 
     @Override
-    public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+    public void setAttributeBlocking(SetAttributeContext ctx, AttributeId attributeId, Object value) {
         if (attributeId == AttributeId.Value) {
             ctx.setAttribute(attributeId, value);
 

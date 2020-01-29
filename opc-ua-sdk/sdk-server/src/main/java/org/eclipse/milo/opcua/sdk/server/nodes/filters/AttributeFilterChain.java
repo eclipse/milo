@@ -80,7 +80,7 @@ public class AttributeFilterChain {
 
         GetAttributeContext ctx = new GetAttributeContext(session, node, filterIterator);
 
-        Object value = filter.getAttribute(ctx, attributeId);
+        Object value = filter.getAttributeBlocking(ctx, attributeId);
 
         if (ctx.isObservable()) {
             node.fireAttributeChanged(attributeId, value);
@@ -159,7 +159,7 @@ public class AttributeFilterChain {
 
         SetAttributeContext ctx = new SetAttributeContext(session, node, filterIterator);
 
-        filter.setAttribute(ctx, attributeId, value);
+        filter.setAttributeBlocking(ctx, attributeId, value);
     }
 
     /**

@@ -27,9 +27,9 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.BlockingAttributeFilter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -43,14 +43,14 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
-class ComplexValueAttributeFilter implements AttributeFilter {
+class ComplexValueAttributeFilter extends BlockingAttributeFilter {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final Map<String, Method> getters = new HashMap<>();
     private final List<UaVariableNode> members = new ArrayList<>();
 
     @Override
-    public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+    public void setAttributeBlocking(SetAttributeContext ctx, AttributeId attributeId, Object value) {
         if (attributeId == AttributeId.Value) {
             if (ctx.getNode() instanceof UaVariableNode) {
                 Object o = ((DataValue) value).getValue().getValue();

@@ -91,7 +91,7 @@ public abstract class AttributeFilterContext {
                 filterIterator.next() :
                 DefaultAttributeFilter.INSTANCE;
 
-            return next.getAttribute(this, attributeId);
+            return next.getAttributeBlocking(this, attributeId);
         }
 
         public void getAttributeAsync(AttributeId attributeId, Pending<Unit, Object> pending) {
@@ -125,7 +125,7 @@ public abstract class AttributeFilterContext {
                 filterIterator.next() :
                 DefaultAttributeFilter.INSTANCE;
 
-            next.setAttribute(this, attributeId, value);
+            next.setAttributeBlocking(this, attributeId, value);
         }
 
         public void setAttributeAsync(AttributeId attributeId, Pending<Object, Unit> pending) {

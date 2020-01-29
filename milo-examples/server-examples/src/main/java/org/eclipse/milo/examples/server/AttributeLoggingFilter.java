@@ -12,14 +12,14 @@ package org.eclipse.milo.examples.server;
 
 import java.util.function.Predicate;
 
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.BlockingAttributeFilter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AttributeLoggingFilter implements AttributeFilter {
+public class AttributeLoggingFilter extends BlockingAttributeFilter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -34,7 +34,7 @@ public class AttributeLoggingFilter implements AttributeFilter {
     }
 
     @Override
-    public Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
+    public Object getAttributeBlocking(GetAttributeContext ctx, AttributeId attributeId) {
         Object value = ctx.getAttribute(attributeId);
 
         // only log external reads
@@ -49,7 +49,7 @@ public class AttributeLoggingFilter implements AttributeFilter {
     }
 
     @Override
-    public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+    public void setAttributeBlocking(SetAttributeContext ctx, AttributeId attributeId, Object value) {
         // only log external writes
         if (attributePredicate.test(attributeId) && ctx.getSession().isPresent()) {
             logger.info(

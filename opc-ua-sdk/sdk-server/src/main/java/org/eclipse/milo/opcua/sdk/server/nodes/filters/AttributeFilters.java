@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
@@ -26,32 +27,35 @@ public final class AttributeFilters {
     private AttributeFilters() {}
 
     public static AttributeFilter getValue(Function<GetAttributeContext, DataValue> get) {
-        return new AttributeFilter() {
+        return new BlockingAttributeFilter() {
             @Override
-            public void getAttributeAsync(
-                GetAttributeContext ctx,
-                AttributeId attributeId,
-                Pending<Unit, Object> pending
-            ) {
-
+            public Object getAttributeBlocking(GetAttributeContext ctx, AttributeId attributeId) {
                 if (attributeId == AttributeId.Value) {
-                    pending.getOutputFuture().complete(get.apply(ctx));
+                    return get.apply(ctx);
                 } else {
-                    ctx.getAttributeAsync(attributeId, pending);
+                    return ctx.getAttribute(attributeId);
+                }
+            }
+        };
+    }
+
+    public static AttributeFilter setValue(BiConsumer<SetAttributeContext, DataValue> set) {
+        return new BlockingAttributeFilter() {
+            @Override
+            public void setAttributeBlocking(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+                if (attributeId == AttributeId.Value) {
+                    set.accept(ctx, (DataValue) value);
+                } else {
+                    ctx.setAttribute(attributeId, value);
                 }
             }
         };
     }
 
     public static AttributeFilter getValueAsync(Function<GetAttributeContext, CompletableFuture<DataValue>> get) {
-        return new AttributeFilter() {
+        return new AsyncAttributeFilter() {
             @Override
-            public void getAttributeAsync(
-                GetAttributeContext ctx,
-                AttributeId attributeId,
-                Pending<Unit, Object> pending
-            ) {
-
+            public void getAttributeAsync(GetAttributeContext ctx, AttributeId attributeId, Pending<Unit, Object> pending) {
                 if (attributeId == AttributeId.Value) {
                     get.apply(ctx).thenAccept(pending.getOutputFuture()::complete);
                 } else {
@@ -61,14 +65,25 @@ public final class AttributeFilters {
         };
     }
 
-    public static AttributeFilter setValue(BiConsumer<SetAttributeContext, DataValue> set) {
-        return new AttributeFilter() {
+    public static AttributeFilter setValueAsync(
+        BiFunction<SetAttributeContext, DataValue, CompletableFuture<Unit>> set
+    ) {
+
+        return new AsyncAttributeFilter() {
             @Override
-            public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+            public void setAttributeAsync(
+                SetAttributeContext ctx,
+                AttributeId attributeId,
+                Pending<Object, Unit> pending
+            ) {
+
                 if (attributeId == AttributeId.Value) {
-                    set.accept(ctx, (DataValue) value);
+                    CompletableFuture<Unit> future =
+                        set.apply(ctx, (DataValue) pending.getInput());
+
+                    future.thenAccept(pending.getOutputFuture()::complete);
                 } else {
-                    ctx.setAttribute(attributeId, value);
+                    ctx.setAttributeAsync(attributeId, pending);
                 }
             }
         };
