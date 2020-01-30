@@ -33,16 +33,17 @@ public class RestrictedAccessFilter extends BlockingAttributeFilter {
     }
 
     @Override
+    public boolean filterGet(AttributeId attributeId) {
+        return attributeId == AttributeId.UserAccessLevel;
+    }
+
+    @Override
     public Object getAttributeBlocking(GetAttributeContext ctx, AttributeId attributeId) {
-        if (attributeId == AttributeId.UserAccessLevel) {
-            Optional<Object> identity = ctx.getSession().map(Session::getIdentityObject);
+        Optional<Object> identity = ctx.getSession().map(Session::getIdentityObject);
 
-            Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
+        Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
 
-            return ubyte(AccessLevel.getMask(accessLevels));
-        } else {
-            return ctx.getAttribute(attributeId);
-        }
+        return ubyte(AccessLevel.getMask(accessLevels));
     }
 
 }

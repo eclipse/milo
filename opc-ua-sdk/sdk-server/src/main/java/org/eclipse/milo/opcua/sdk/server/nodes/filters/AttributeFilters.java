@@ -29,12 +29,13 @@ public final class AttributeFilters {
     public static AttributeFilter getValue(Function<GetAttributeContext, DataValue> get) {
         return new BlockingAttributeFilter() {
             @Override
+            public boolean filterGet(AttributeId attributeId) {
+                return attributeId == AttributeId.Value;
+            }
+
+            @Override
             public Object getAttributeBlocking(GetAttributeContext ctx, AttributeId attributeId) {
-                if (attributeId == AttributeId.Value) {
-                    return get.apply(ctx);
-                } else {
-                    return ctx.getAttribute(attributeId);
-                }
+                return get.apply(ctx);
             }
         };
     }
@@ -42,12 +43,13 @@ public final class AttributeFilters {
     public static AttributeFilter setValue(BiConsumer<SetAttributeContext, DataValue> set) {
         return new BlockingAttributeFilter() {
             @Override
+            public boolean filterSet(AttributeId attributeId) {
+                return attributeId == AttributeId.Value;
+            }
+
+            @Override
             public void setAttributeBlocking(SetAttributeContext ctx, AttributeId attributeId, Object value) {
-                if (attributeId == AttributeId.Value) {
-                    set.accept(ctx, (DataValue) value);
-                } else {
-                    ctx.setAttribute(attributeId, value);
-                }
+                set.accept(ctx, (DataValue) value);
             }
         };
     }
@@ -55,12 +57,13 @@ public final class AttributeFilters {
     public static AttributeFilter getValueAsync(Function<GetAttributeContext, CompletableFuture<DataValue>> get) {
         return new AsyncAttributeFilter() {
             @Override
+            public boolean filterGet(AttributeId attributeId) {
+                return attributeId == AttributeId.Value;
+            }
+
+            @Override
             public void getAttributeAsync(GetAttributeContext ctx, AttributeId attributeId, Pending<Unit, Object> pending) {
-                if (attributeId == AttributeId.Value) {
-                    get.apply(ctx).thenAccept(pending.getOutputFuture()::complete);
-                } else {
-                    ctx.getAttributeAsync(attributeId, pending);
-                }
+                get.apply(ctx).thenAccept(pending.getOutputFuture()::complete);
             }
         };
     }
@@ -71,20 +74,21 @@ public final class AttributeFilters {
 
         return new AsyncAttributeFilter() {
             @Override
+            public boolean filterSet(AttributeId attributeId) {
+                return attributeId == AttributeId.Value;
+            }
+
+            @Override
             public void setAttributeAsync(
                 SetAttributeContext ctx,
                 AttributeId attributeId,
                 Pending<Object, Unit> pending
             ) {
 
-                if (attributeId == AttributeId.Value) {
-                    CompletableFuture<Unit> future =
-                        set.apply(ctx, (DataValue) pending.getInput());
+                CompletableFuture<Unit> future =
+                    set.apply(ctx, (DataValue) pending.getInput());
 
-                    future.thenAccept(pending.getOutputFuture()::complete);
-                } else {
-                    ctx.setAttributeAsync(attributeId, pending);
-                }
+                future.thenAccept(pending.getOutputFuture()::complete);
             }
         };
     }

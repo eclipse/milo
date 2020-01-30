@@ -10,9 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -29,6 +31,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AsyncAttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -44,11 +48,26 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 public abstract class ManagedAddressSpaceServices extends AbstractLifecycle implements AddressSpaceServices {
+
+    private static final int KEY_ASYNC = 0;
+    private static final int KEY_BLOCKING = 1;
+    private static final int KEY_NOT_FOUND = 2;
+
+    /**
+     * Execution strategy for an attribute read or write operation.
+     */
+    enum ExecutionStrategy {
+        ASYNC,
+        BLOCKING
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -165,131 +184,121 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         List<ReadValueId> readValueIds
     ) {
 
-//        CompletableFuture<List<DataValue>> f = GroupMapCollate.groupMapCollate(
-//            readValueIds,
-//            readValueId -> {
-//                UaNode node = nodeManager.get(readValueId.getNodeId());
-//                if (node != null) {
-//                    if (node.getFilterChain().isAsync()) {
-//                        return NodeStatus.ASYNC_FILTER;
-//                    } else {
-//                        return NodeStatus.BLOCKING_FILTER;
-//                    }
-//                } else {
-//                    return NodeStatus.NOT_FOUND;
-//                }
-//            },
-//            nodeStatus -> items -> {
-//                switch (nodeStatus) {
-//                    case ASYNC_FILTER: {
-//                        List<CompletableFuture<DataValue>> futures = new ArrayList<>();
-//
-//                        for (ReadValueId id : items) {
-//                            UaNode node = nodeManager.get(id.getNodeId());
-//
-//                            if (node != null) {
-//                                futures.add(
-//                                    node.getAttributeAsync(
-//                                        new AttributeContext(null, null),
-//                                        AttributeId.from(id.getAttributeId()).get()
-//                                    )
-//                                );
-//                            } else {
-//                                futures.add(completedFuture(new DataValue(StatusCodes.Bad_NodeIdUnknown)));
-//                            }
-//                        }
-//
-//                        return FutureUtils.sequence(futures);
-//                    }
-//
-//                    case BLOCKING_FILTER: {
-//                        List<CompletableFuture<DataValue>> futures = new ArrayList<>();
-//
-//                        for (ReadValueId id : items) {
-//                            UaNode node = nodeManager.get(id.getNodeId());
-//
-//                            if (node != null) {
-//                                try {
-//                                    AttributeId attributeId = AttributeId.from(id.getAttributeId())
-//                                        .orElseThrow(() -> new UaException(StatusCodes.Bad_AttributeIdInvalid));
-//
-//                                    AttributeContext attributeContext = new AttributeContext(null, null); // TODO
-//
-//                                    DataValue value = node.getAttribute(attributeContext, attributeId);
-//
-//                                    futures.add(completedFuture(value));
-//                                } catch (UaException e) {
-//                                    futures.add(completedFuture(new DataValue(e.getStatusCode())));
-//                                }
-//                            } else {
-//                                futures.add(completedFuture(new DataValue(StatusCodes.Bad_NodeIdUnknown)));
-//                            }
-//                        }
-//
-//                        return FutureUtils.sequence(futures);
-//                    }
-//                    case NOT_FOUND: {
-//                        List<DataValue> values = Collections.nCopies(
-//                            items.size(),
-//                            new DataValue(StatusCodes.Bad_NodeIdUnknown)
-//                        );
-//                        return completedFuture(values);
-//                    }
-//                    default:
-//                        throw new IllegalArgumentException("unhandled NodeStatus: " + nodeStatus);
-//                }
-//            }
-//        );
+        CompletableFuture<List<DataValue>> future = GroupMapCollate.groupMapCollate(
+            readValueIds,
+            readValueId -> {
+                UaNode node = nodeManager.get(readValueId.getNodeId());
 
+                if (node != null) {
+                    ExecutionStrategy readStrategy =
+                        getReadStrategy(node, readValueId.getAttributeId());
 
+                    if (readStrategy == ExecutionStrategy.ASYNC) {
+                        return KEY_ASYNC;
+                    } else {
+                        return KEY_BLOCKING;
+                    }
+                } else {
+                    return KEY_NOT_FOUND;
+                }
+            },
+            (Integer key) -> readValueIdsForKey -> {
+                switch (key) {
+                    case KEY_ASYNC: {
+                        return readAsync(readValueIdsForKey);
+                    }
+                    case KEY_BLOCKING: {
+                        return readBlocking(readValueIdsForKey);
+                    }
+                    default:
+                    case KEY_NOT_FOUND: {
+                        List<DataValue> values = Collections.nCopies(
+                            readValueIdsForKey.size(),
+                            new DataValue(StatusCodes.Bad_NodeIdUnknown)
+                        );
+                        return completedFuture(values);
+                    }
+                }
+            }
+        );
 
-        List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
+        future.thenAccept(context::success);
+    }
 
-        for (ReadValueId readValueId : readValueIds) {
-            UaNode node = nodeManager.get(readValueId.getNodeId());
+    private CompletableFuture<List<DataValue>> readAsync(List<ReadValueId> idsForKey) {
+        // TODO BatchContext? Here or in AsyncAttributeReader?
+
+        List<CompletableFuture<DataValue>> futures = new ArrayList<>();
+
+        for (ReadValueId id : idsForKey) {
+            UaNode node = nodeManager.get(id.getNodeId());
 
             if (node != null) {
-                DataValue value = node.readAttribute(
-                    new AttributeContext(context),
-                    readValueId.getAttributeId(),
-                    timestamps,
-                    readValueId.getIndexRange(),
-                    readValueId.getDataEncoding()
+                // TODO should use AsyncAttributeReader or readAttributeAsync
+                futures.add(
+                    node.getAttributeAsync(
+                        new AttributeContext(null, null),
+                        AttributeId.from(id.getAttributeId()).get()
+                    )
                 );
-
-                logger.debug("Read value {} from attribute {} of {}",
-                    value.getValue().getValue(),
-                    AttributeId.from(readValueId.getAttributeId())
-                        .map(Object::toString).orElse("unknown"),
-                    node.getNodeId()
-                );
-
-                results.add(value);
             } else {
-                results.add(new DataValue(StatusCodes.Bad_NodeIdUnknown));
+                futures.add(completedFuture(new DataValue(StatusCodes.Bad_NodeIdUnknown)));
             }
         }
 
-        context.success(results);
+        return FutureUtils.sequence(futures);
     }
 
-    private enum NodeStatus {
-        ASYNC_FILTER,
-        BLOCKING_FILTER,
-        NOT_FOUND
+    private CompletableFuture<List<DataValue>> readBlocking(List<ReadValueId> idsForKey) {
+        List<CompletableFuture<DataValue>> futures = new ArrayList<>();
+
+        for (ReadValueId id : idsForKey) {
+            UaNode node = nodeManager.get(id.getNodeId());
+
+            if (node != null) {
+                // TODO should use BlockingAttributeReader or readAttributeBlocking
+                AttributeContext attributeContext = new AttributeContext(null, null); // TODO
+
+                DataValue value = node.readAttribute(attributeContext, id.getAttributeId());
+
+                futures.add(completedFuture(value));
+            } else {
+                futures.add(completedFuture(new DataValue(StatusCodes.Bad_NodeIdUnknown)));
+            }
+        }
+
+        return FutureUtils.sequence(futures);
     }
 
-    enum ExecutionStrategy {
-        ASYNC,
-        BLOCKING
-    }
-
+    /**
+     * Get the {@link ExecutionStrategy} for reading an attribute on a {@link UaNode}.
+     *
+     * @param node        the {@link UaNode} being read.
+     * @param attributeId the attribute id being read.
+     * @return the {@link ExecutionStrategy} to use.
+     */
     protected ExecutionStrategy getReadStrategy(UaNode node, UInteger attributeId) {
-        return ExecutionStrategy.BLOCKING;
+        Optional<ExecutionStrategy> strategy = AttributeId.from(attributeId).map(id -> {
+            boolean async = node.getFilterChain().getFilters()
+                .stream()
+                .anyMatch(f -> f.filterGet(id) && f instanceof AsyncAttributeFilter);
+
+            return async ? ExecutionStrategy.ASYNC : ExecutionStrategy.BLOCKING;
+        });
+
+        return strategy.orElse(ExecutionStrategy.BLOCKING);
     }
 
     protected ExecutionStrategy getWriteStrategy(UaNode node, UInteger attributeId) {
-        return ExecutionStrategy.BLOCKING;
+        Optional<ExecutionStrategy> strategy = AttributeId.from(attributeId).map(id -> {
+            boolean async = node.getFilterChain().getFilters()
+                .stream()
+                .anyMatch(f -> f.filterSet(id) && f instanceof AsyncAttributeFilter);
+
+            return async ? ExecutionStrategy.ASYNC : ExecutionStrategy.BLOCKING;
+        });
+
+        return strategy.orElse(ExecutionStrategy.BLOCKING);
     }
 
     @Override

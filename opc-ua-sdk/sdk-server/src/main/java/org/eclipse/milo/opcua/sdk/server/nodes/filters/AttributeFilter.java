@@ -18,7 +18,23 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AttributeFilter {
 
-    default boolean isAsync() {
+    /**
+     * Return {@code true} if a get for {@code attributeId} is handled by this filter.
+     *
+     * @param attributeId the {@link AttributeId} to get.
+     * @return {@code true} if a get for {@code attributeId} is handled by this filter.
+     */
+    default boolean filterGet(AttributeId attributeId) {
+        return false;
+    }
+
+    /**
+     * {@code true} if a set for {@code attributeId} is handled by this filter.
+     *
+     * @param attributeId the {@link AttributeId} to set.
+     * @return {@code true} if a set for {@code attributeId} is handled by this filter.
+     */
+    default boolean filterSet(AttributeId attributeId) {
         return false;
     }
 

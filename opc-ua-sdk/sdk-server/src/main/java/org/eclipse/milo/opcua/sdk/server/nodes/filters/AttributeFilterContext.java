@@ -87,19 +87,33 @@ public abstract class AttributeFilterContext {
          * @return the value for the attribute identified by {@code attributeId} from the next filter in the chain.
          */
         public Object getAttribute(AttributeId attributeId) {
-            AttributeFilter next = filterIterator.hasNext() ?
-                filterIterator.next() :
-                DefaultAttributeFilter.INSTANCE;
+            AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
 
-            return next.getAttributeBlocking(this, attributeId);
+            while (filterIterator.hasNext()) {
+                AttributeFilter next = filterIterator.next();
+
+                if (next.filterGet(attributeId)) {
+                    filter = next;
+                    break;
+                }
+            }
+
+            return filter.getAttributeBlocking(this, attributeId);
         }
 
         public void getAttributeAsync(AttributeId attributeId, Pending<Unit, Object> pending) {
-            AttributeFilter next = filterIterator.hasNext() ?
-                filterIterator.next() :
-                DefaultAttributeFilter.INSTANCE;
+            AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
 
-            next.getAttributeAsync(this, attributeId, pending);
+            while (filterIterator.hasNext()) {
+                AttributeFilter next = filterIterator.next();
+
+                if (next.filterGet(attributeId)) {
+                    filter = next;
+                    break;
+                }
+            }
+
+            filter.getAttributeAsync(this, attributeId, pending);
         }
 
     }
@@ -121,19 +135,33 @@ public abstract class AttributeFilterContext {
          * @param value       the value to set.
          */
         public void setAttribute(AttributeId attributeId, Object value) {
-            AttributeFilter next = filterIterator.hasNext() ?
-                filterIterator.next() :
-                DefaultAttributeFilter.INSTANCE;
+            AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
 
-            next.setAttributeBlocking(this, attributeId, value);
+            while (filterIterator.hasNext()) {
+                AttributeFilter next = filterIterator.next();
+
+                if (next.filterSet(attributeId)) {
+                    filter = next;
+                    break;
+                }
+            }
+
+            filter.setAttributeBlocking(this, attributeId, value);
         }
 
         public void setAttributeAsync(AttributeId attributeId, Pending<Object, Unit> pending) {
-            AttributeFilter next = filterIterator.hasNext() ?
-                filterIterator.next() :
-                DefaultAttributeFilter.INSTANCE;
+            AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
 
-            next.setAttributeAsync(this, attributeId, pending);
+            while (filterIterator.hasNext()) {
+                AttributeFilter next = filterIterator.next();
+
+                if (next.filterGet(attributeId)) {
+                    filter = next;
+                    break;
+                }
+            }
+
+            filter.setAttributeAsync(this, attributeId, pending);
         }
 
     }

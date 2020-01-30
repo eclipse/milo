@@ -24,11 +24,6 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 public abstract class AsyncAttributeFilter implements AttributeFilter {
 
     @Override
-    public final boolean isAsync() {
-        return true;
-    }
-
-    @Override
     public void getAttributeAsync(GetAttributeContext ctx, AttributeId attributeId, Pending<Unit, Object> pending) {
         ctx.getAttributeAsync(attributeId, pending);
     }

@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -52,10 +53,6 @@ public class AttributeFilterChain {
         this.filters.addAll(filters);
     }
 
-    public boolean isAsync() {
-        return filters.stream().anyMatch(AttributeFilter::isAsync);
-    }
-
     /**
      * Get the value for the attribute identified by {@code attributeId} from {@code node}.
      *
@@ -78,9 +75,16 @@ public class AttributeFilterChain {
     public Object getAttribute(@Nullable Session session, UaNode node, AttributeId attributeId) {
         Iterator<AttributeFilter> filterIterator = filters.iterator();
 
-        AttributeFilter filter = filterIterator.hasNext() ?
-            filterIterator.next() :
-            DefaultAttributeFilter.INSTANCE;
+        AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
+
+        while (filterIterator.hasNext()) {
+            AttributeFilter next = filterIterator.next();
+
+            if (next.filterGet(attributeId)) {
+                filter = next;
+                break;
+            }
+        }
 
         GetAttributeContext ctx = new GetAttributeContext(session, node, filterIterator);
 
@@ -102,9 +106,16 @@ public class AttributeFilterChain {
 
         Iterator<AttributeFilter> filterIterator = filters.iterator();
 
-        AttributeFilter filter = filterIterator.hasNext() ?
-            filterIterator.next() :
-            DefaultAttributeFilter.INSTANCE;
+        AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
+
+        while (filterIterator.hasNext()) {
+            AttributeFilter next = filterIterator.next();
+
+            if (next.filterGet(attributeId)) {
+                filter = next;
+                break;
+            }
+        }
 
         GetAttributeContext ctx = new GetAttributeContext(session, node, filterIterator);
 
@@ -116,23 +127,6 @@ public class AttributeFilterChain {
         }
 
         filter.getAttributeAsync(ctx, attributeId, promise);
-    }
-
-    public void setAttributeAsync(
-        @Nullable Session session,
-        UaNode node,
-        AttributeId attributeId,
-        Pending<Object, Unit> pending
-    ) {
-        Iterator<AttributeFilter> filterIterator = filters.iterator();
-
-        AttributeFilter filter = filterIterator.hasNext() ?
-            filterIterator.next() :
-            DefaultAttributeFilter.INSTANCE;
-
-        SetAttributeContext ctx = new SetAttributeContext(session, node, filterIterator);
-
-        filter.setAttributeAsync(ctx, attributeId, pending);
     }
 
     /**
@@ -157,13 +151,44 @@ public class AttributeFilterChain {
     public void setAttribute(@Nullable Session session, UaNode node, AttributeId attributeId, Object value) {
         Iterator<AttributeFilter> filterIterator = filters.iterator();
 
-        AttributeFilter filter = filterIterator.hasNext() ?
-            filterIterator.next() :
-            DefaultAttributeFilter.INSTANCE;
+        AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
+
+        while (filterIterator.hasNext()) {
+            AttributeFilter next = filterIterator.next();
+
+            if (next.filterSet(attributeId)) {
+                filter = next;
+                break;
+            }
+        }
 
         SetAttributeContext ctx = new SetAttributeContext(session, node, filterIterator);
 
         filter.setAttributeBlocking(ctx, attributeId, value);
+    }
+
+    public void setAttributeAsync(
+        @Nullable Session session,
+        UaNode node,
+        AttributeId attributeId,
+        Pending<Object, Unit> pending
+    ) {
+        Iterator<AttributeFilter> filterIterator = filters.iterator();
+
+        AttributeFilter filter = DefaultAttributeFilter.INSTANCE;
+
+        while (filterIterator.hasNext()) {
+            AttributeFilter next = filterIterator.next();
+
+            if (next.filterSet(attributeId)) {
+                filter = next;
+                break;
+            }
+        }
+
+        SetAttributeContext ctx = new SetAttributeContext(session, node, filterIterator);
+
+        filter.setAttributeAsync(ctx, attributeId, pending);
     }
 
     /**
@@ -212,6 +237,10 @@ public class AttributeFilterChain {
         Arrays.stream(attributeFilters).forEach(this::addLast);
 
         return this;
+    }
+
+    public Collection<AttributeFilter> getFilters() {
+        return filters;
     }
 
 }

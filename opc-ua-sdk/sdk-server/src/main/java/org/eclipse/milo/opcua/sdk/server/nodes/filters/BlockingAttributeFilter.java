@@ -19,11 +19,6 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 public abstract class BlockingAttributeFilter implements AttributeFilter {
 
     @Override
-    public final boolean isAsync() {
-        return false;
-    }
-
-    @Override
     public final void getAttributeAsync(
         GetAttributeContext ctx,
         AttributeId attributeId,
