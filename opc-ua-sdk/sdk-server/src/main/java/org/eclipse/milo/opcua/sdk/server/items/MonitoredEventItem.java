@@ -44,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElementRe
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 import org.slf4j.Logger;
@@ -76,8 +77,8 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         UInteger clientHandle,
         double samplingInterval,
         UInteger queueSize,
-        boolean discardOldest,
-        ExtensionObject filter) throws UaException {
+        boolean discardOldest
+    ) {
 
         super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
@@ -93,8 +94,6 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
                 return Optional.of(session);
             }
         };
-
-        installFilter(filter);
     }
 
     @Override
@@ -225,13 +224,11 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     }
 
     @Override
-    protected void installFilter(ExtensionObject filterXo) throws UaException {
-        Object filterObject = filterXo != null ? filterXo.decode(server.getSerializationContext()) : null;
+    public void installFilter(MonitoringFilter filter) throws UaException {
+        if (filter instanceof EventFilter) {
+            this.filter = (EventFilter) filter;
 
-        if (filterObject instanceof EventFilter) {
-            this.filter = (EventFilter) filterObject;
-
-            filterResult = EventContentFilter.validate(filterContext, filter);
+            filterResult = EventContentFilter.validate(filterContext, this.filter);
 
             boolean selectClauseGood = l(filterResult.getSelectClauseResults())
                 .stream()
@@ -246,10 +243,10 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         } else {
             filterResultGood = false;
 
-            throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid);
+            throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
         }
     }
-
+    
     @Override
     protected EventFieldList wrapQueueValue(Variant[] value) {
         return new EventFieldList(uint(getClientHandle()), value);
