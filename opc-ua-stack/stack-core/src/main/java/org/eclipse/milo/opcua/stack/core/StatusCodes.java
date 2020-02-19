@@ -372,7 +372,7 @@ public class StatusCodes {
     /**
      * Communication with the data source is defined.
      */
-    @Description("Communication with the data source is defined.")
+    @Description("Communication with the data source is defined, but not established, and there is no last known value available.")
     public static final long Bad_NoCommunication = 0x80310000L;
 
     /**
