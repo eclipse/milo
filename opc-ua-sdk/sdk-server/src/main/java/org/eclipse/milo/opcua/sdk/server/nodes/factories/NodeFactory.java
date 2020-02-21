@@ -430,7 +430,7 @@ public class NodeFactory {
             .orElse(ExpandedNodeId.NULL_VALUE);
     }
 
-    interface InstanceListener {
+    public interface InstanceListener {
 
         /**
          * Called when a {@link UaMethodNode} has been added to a {@link UaObjectNode} somewhere in the instance
