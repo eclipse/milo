@@ -35,24 +35,28 @@ public class BrowsePath {
      * @return a String with the components of this browse path joined with "/" as the separator.
      */
     public String join() {
-        return join("/");
+        return join("/", true);
     }
 
     /**
      * Join the components of this browse path with {@code separator}.
      *
-     * @param separator the separator to join with.
+     * @param separator             the separator to join with.
+     * @param includeNamespaceIndex include the namespace index of each browse name component.
      * @return a String with the components of this browse path joined by {@code separator}.
      */
-    public String join(String separator) {
+    public String join(String separator, boolean includeNamespaceIndex) {
         if (parent == null) {
             return "";
         } else {
-            String s = parent.join();
+            String s = parent.join(separator, includeNamespaceIndex);
             if (!s.endsWith(separator)) {
                 s += separator;
             }
-            return s + browseName.getNamespaceIndex() + ":" + browseName.getName();
+            if (includeNamespaceIndex) {
+                s += browseName.getNamespaceIndex() + ":";
+            }
+            return s + browseName.getName();
         }
     }
 
