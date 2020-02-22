@@ -73,7 +73,11 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
             }
         };
 
-        nodeFactory = new NodeFactory(nodeContext);
+        nodeFactory = createNodeFactory();
+    }
+
+    protected NodeFactory createNodeFactory() {
+        return new NodeFactory(nodeContext);
     }
 
     protected OpcUaServer getServer() {
