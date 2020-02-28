@@ -148,7 +148,7 @@ public class NodeFactoryTest {
                 }
 
                 @Override
-                public void onObjectAdded(@Nullable UaObjectNode parent, UaObjectNode instance, NodeId typeDefinitionId) {
+                public void onObjectAdded(@Nullable UaNode parent, UaObjectNode instance, NodeId typeDefinitionId) {
                     String pbn = parent != null ? parent.getBrowseName().getName() : null;
                     System.out.println("onObjectAdded parent=" + pbn + " instance=" + instance.getBrowseName().getName());
                     objectAdded.set(true);

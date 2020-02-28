@@ -345,11 +345,11 @@ public class NodeFactory {
                 UaMethodNode methodNode = (UaMethodNode) node;
 
                 instanceListener.onMethodAdded((UaObjectNode) parentNode, methodNode);
-            } else if (parentNode instanceof UaObjectNode && node instanceof UaObjectNode) {
+            } else if (node instanceof UaObjectNode) {
                 UaObjectNode objectNode = (UaObjectNode) node;
                 ObjectTypeNode objectTypeNode = objectNode.getTypeDefinitionNode();
 
-                instanceListener.onObjectAdded((UaObjectNode) parentNode, objectNode, objectTypeNode.getNodeId());
+                instanceListener.onObjectAdded(parentNode, objectNode, objectTypeNode.getNodeId());
             } else if (node instanceof UaVariableNode) {
                 UaVariableNode variableNode = (UaVariableNode) node;
                 VariableTypeNode variableTypeNode = variableNode.getTypeDefinitionNode();
@@ -442,20 +442,24 @@ public class NodeFactory {
         default void onMethodAdded(@Nullable UaObjectNode parent, UaMethodNode instance) {}
 
         /**
-         * Called when a {@link UaObjectNode} has been added to a parent {@link UaObjectNode} by a hierarchical
+         * Called when a {@link UaObjectNode} has been added to a parent {@link UaNode} by a hierarchical
          * reference somewhere in the instance hierarchy.
+         * <p>
+         * If {@code parent} is {@code null} then {@code instance} is the root of the instance hierarchy.
          *
-         * @param parent           the parent {@link UaObjectNode}
+         * @param parent           the parent {@link UaNode}.
          * @param instance         the {@link UaObjectNode} instance.
          * @param typeDefinitionId the {@link NodeId} of the ObjectTypeDefinition.
          */
-        default void onObjectAdded(@Nullable UaObjectNode parent, UaObjectNode instance, NodeId typeDefinitionId) {}
+        default void onObjectAdded(@Nullable UaNode parent, UaObjectNode instance, NodeId typeDefinitionId) {}
 
         /**
          * Called when a {@link UaVariableNode} has been added to a parent {@link UaNode} by a hierarchical
          * reference somewhere in the instance hierarchy.
+         * <p>
+         * If {@code parent} is {@code null} then {@code instance} is the root of the instance hierarchy.
          *
-         * @param parent           the parent {@link UaVariableNode}
+         * @param parent           the parent {@link UaNode}.
          * @param instance         the {@link UaVariableNode} instance.
          * @param typeDefinitionId the {@link NodeId} of the VariableTypeDefinition.
          */
