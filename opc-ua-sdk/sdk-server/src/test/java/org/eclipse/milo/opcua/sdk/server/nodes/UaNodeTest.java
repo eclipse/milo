@@ -158,7 +158,12 @@ public class UaNodeTest {
         AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             nodeId,
             Identifiers.AnalogItemType,
-            true
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+            }
         );
 
         assertTrue(nodeManager.containsNode(nodeId));

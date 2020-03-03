@@ -98,8 +98,7 @@ class ArrayValueAttributeFilter implements AttributeFilter {
                 try {
                     UaVariableNode elementNode = (UaVariableNode) nodeFactory.createNode(
                         elementNodeId,
-                        elementNodeTypeDefinitionId,
-                        false
+                        elementNodeTypeDefinitionId
                     );
 
                     String elementNodeName = getElementNodeName(

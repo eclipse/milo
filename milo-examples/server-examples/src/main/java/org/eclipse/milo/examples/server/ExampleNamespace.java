@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -544,7 +545,12 @@ public class ExampleNamespace extends ManagedNamespace {
             AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
                 newNodeId("HelloWorld/DataAccess/AnalogValue"),
                 Identifiers.AnalogItemType,
-                true
+                new NodeFactory.InstantiationCallback() {
+                    @Override
+                    public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                        return true;
+                    }
+                }
             );
 
             node.setBrowseName(newQualifiedName("AnalogValue"));
@@ -684,8 +690,7 @@ public class ExampleNamespace extends ManagedNamespace {
         try {
             UaObjectNode myObject = (UaObjectNode) getNodeFactory().createNode(
                 newNodeId("HelloWorld/MyObject"),
-                objectTypeNode.getNodeId(),
-                false
+                objectTypeNode.getNodeId()
             );
             myObject.setBrowseName(newQualifiedName("MyObject"));
             myObject.setDisplayName(LocalizedText.english("MyObject"));

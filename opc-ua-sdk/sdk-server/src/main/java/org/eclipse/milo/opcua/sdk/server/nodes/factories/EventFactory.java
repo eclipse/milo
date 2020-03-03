@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class EventFactory extends AbstractLifecycle {
 
@@ -79,7 +80,12 @@ public class EventFactory extends AbstractLifecycle {
         return (BaseEventTypeNode) nodeFactory.createNode(
             nodeId,
             typeDefinitionId,
-            true
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+            }
         );
     }
 

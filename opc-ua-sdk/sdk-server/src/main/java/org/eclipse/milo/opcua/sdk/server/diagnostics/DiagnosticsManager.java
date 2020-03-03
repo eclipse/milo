@@ -460,8 +460,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
             try {
                 node = (SessionDiagnosticsObjectTypeNode) nodeFactory.createNode(
                     new NodeId(0, UUID.randomUUID()),
-                    Identifiers.SessionDiagnosticsObjectType,
-                    false
+                    Identifiers.SessionDiagnosticsObjectType
                 );
 
                 node.setBrowseName(new QualifiedName(1, session.getSessionName()));

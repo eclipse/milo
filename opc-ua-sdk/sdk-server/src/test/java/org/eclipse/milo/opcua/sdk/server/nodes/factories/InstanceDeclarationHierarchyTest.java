@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
@@ -86,7 +87,12 @@ public class InstanceDeclarationHierarchyTest {
             addressSpaceManager,
             namespaceTable,
             Identifiers.AnalogItemType,
-            true
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+            }
         );
 
         System.out.println(idh);

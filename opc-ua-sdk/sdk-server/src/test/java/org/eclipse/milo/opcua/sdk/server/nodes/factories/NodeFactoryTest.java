@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeTest;
@@ -122,7 +123,12 @@ public class NodeFactoryTest {
         AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             new NodeId(1, "TestAnalog"),
             Identifiers.AnalogItemType,
-            true
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+            }
         );
 
         assertNotNull(analogItem);
@@ -138,8 +144,12 @@ public class NodeFactoryTest {
         ServerTypeNode serverNode = (ServerTypeNode) nodeFactory.createNode(
             new NodeId(0, "Server"),
             Identifiers.ServerType,
-            true,
-            new NodeFactory.InstanceListener() {
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+
                 @Override
                 public void onMethodAdded(@Nullable UaObjectNode parent, UaMethodNode instance) {
                     String pbn = parent != null ? parent.getBrowseName().getName() : null;
