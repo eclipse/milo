@@ -60,11 +60,10 @@ public class InstanceDeclarationHierarchy {
     public static InstanceDeclarationHierarchy create(
         AddressSpaceManager addressSpaceManager,
         NamespaceTable namespaceTable,
-        NodeId typeDefinitionId,
-        NodeFactory.InstantiationCallback instantiationCallback
+        NodeId typeDefinitionId
     ) {
 
-        Builder builder = new Builder(addressSpaceManager, namespaceTable, instantiationCallback);
+        Builder builder = new Builder(addressSpaceManager, namespaceTable);
 
         return builder.build(typeDefinitionId);
     }
@@ -76,17 +75,10 @@ public class InstanceDeclarationHierarchy {
 
         private final AddressSpaceManager addressSpaceManager;
         private final NamespaceTable namespaceTable;
-        private final NodeFactory.InstantiationCallback instantiationCallback;
 
-        Builder(
-            AddressSpaceManager addressSpaceManager,
-            NamespaceTable namespaceTable,
-            NodeFactory.InstantiationCallback instantiationCallback
-        ) {
-
+        Builder(AddressSpaceManager addressSpaceManager, NamespaceTable namespaceTable) {
             this.addressSpaceManager = addressSpaceManager;
             this.namespaceTable = namespaceTable;
-            this.instantiationCallback = instantiationCallback;
         }
 
         public InstanceDeclarationHierarchy build(NodeId typeDefinitionId) {
@@ -97,7 +89,7 @@ public class InstanceDeclarationHierarchy {
                 .findFirst()
                 .flatMap(r -> r.getTargetNodeId().local(namespaceTable))
                 .map(parentTypeId -> InstanceDeclarationHierarchy
-                    .create(addressSpaceManager, namespaceTable, parentTypeId, instantiationCallback));
+                    .create(addressSpaceManager, namespaceTable, parentTypeId));
 
             final InstanceDeclarationHierarchy idh = buildHierarchyForType(typeDefinitionId);
 
@@ -129,7 +121,7 @@ public class InstanceDeclarationHierarchy {
 
                     BrowsePath browsePath = new BrowsePath(parentPath, node.getBrowseName());
 
-                    if (isInstanceDeclaration(typeDefinitionId, node, instantiationCallback)) {
+                    if (isInstanceDeclaration(node)) {
                         nodeTable.addNode(browsePath, node.getNodeId());
                         referenceTable.addReference(parentPath, reference.getReferenceTypeId(), browsePath);
 
@@ -144,12 +136,7 @@ public class InstanceDeclarationHierarchy {
             );
         }
 
-        private static boolean isInstanceDeclaration(
-            NodeId typeDefinitionId,
-            UaNode potentialMemberNode,
-            NodeFactory.InstantiationCallback instantiationCallback
-        ) {
-
+        private static boolean isInstanceDeclaration(UaNode potentialMemberNode) {
             NodeClass nodeClass = potentialMemberNode.getNodeClass();
 
             boolean methodOrObjectOrVariable =
@@ -157,30 +144,17 @@ public class InstanceDeclarationHierarchy {
                     nodeClass == NodeClass.Object ||
                     nodeClass == NodeClass.Variable;
 
-            return methodOrObjectOrVariable &&
-                hasModellingRule(typeDefinitionId, potentialMemberNode, instantiationCallback);
+            return methodOrObjectOrVariable && hasModellingRule(potentialMemberNode);
         }
 
-        private static boolean hasModellingRule(
-            NodeId typeDefinitionId,
-            UaNode potentialMemberNode,
-            NodeFactory.InstantiationCallback instantiationCallback
-        ) {
-
-            return potentialMemberNode.getReferences().stream()
+        private static boolean hasModellingRule(UaNode potentialMemberNode) {
+            return potentialMemberNode.getReferences()
+                .stream()
                 .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
-                .anyMatch(r -> {
-                    if (Identifiers.ModellingRule_Mandatory.equals(r.getTargetNodeId())) {
-                        return true;
-                    } else if (Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId())) {
-                        return instantiationCallback.includeOptionalNode(
-                            typeDefinitionId,
-                            potentialMemberNode.getBrowseName()
-                        );
-                    } else {
-                        return false;
-                    }
-                });
+                .anyMatch(r ->
+                    Identifiers.ModellingRule_Mandatory.equals(r.getTargetNodeId()) ||
+                        Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId())
+                );
         }
 
     }

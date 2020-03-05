@@ -23,16 +23,15 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -161,8 +160,7 @@ public class NodeFactory {
                     return InstanceDeclarationHierarchy.create(
                         addressSpaceManager,
                         namespaceTable,
-                        typeDefinitionId,
-                        instantiationCallback
+                        typeDefinitionId
                     );
                 }
             );
@@ -184,12 +182,12 @@ public class NodeFactory {
             if (browsePath.parent == null) {
                 // Root Node of hierarchy will be the ObjectType or VariableType to be instantiated
 
-                if (node instanceof ObjectTypeNode) {
-                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (ObjectTypeNode) node);
+                if (node instanceof UaObjectTypeNode) {
+                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (UaObjectTypeNode) node);
 
                     nodes.put(browsePath, instance);
-                } else if (node instanceof VariableTypeNode) {
-                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (VariableTypeNode) node);
+                } else if (node instanceof UaVariableTypeNode) {
+                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (UaVariableTypeNode) node);
 
                     nodes.put(browsePath, instance);
                 } else {
@@ -199,8 +197,8 @@ public class NodeFactory {
                 // Non-root Nodes are all instance declarations
                 NodeId instanceNodeId = instanceNodeId(rootNodeId, browsePath);
 
-                if (node instanceof MethodNode) {
-                    MethodNode declaration = (MethodNode) node;
+                if (node instanceof UaMethodNode) {
+                    UaMethodNode declaration = (UaMethodNode) node;
 
                     UaMethodNode instance = new UaMethodNode(
                         context,
@@ -215,8 +213,8 @@ public class NodeFactory {
                     );
 
                     nodes.put(browsePath, instance);
-                } else if (node instanceof ObjectNode) {
-                    ObjectNode declaration = (ObjectNode) node;
+                } else if (node instanceof UaObjectNode) {
+                    UaObjectNode declaration = (UaObjectNode) node;
 
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
@@ -226,24 +224,30 @@ public class NodeFactory {
                         .orElse(null);
 
                     if (typeDefinitionNode instanceof ObjectTypeNode) {
-                        UaObjectNode instance = instanceFromTypeDefinition(
-                            instanceNodeId, (ObjectTypeNode) typeDefinitionNode);
+                        boolean optional = isOptionalDeclaration(declaration);
 
-                        instance.setBrowseName(declaration.getBrowseName());
-                        instance.setDisplayName(declaration.getDisplayName());
-                        instance.setDescription(declaration.getDescription());
-                        instance.setWriteMask(declaration.getWriteMask());
-                        instance.setUserWriteMask(declaration.getUserWriteMask());
-                        instance.setEventNotifier(declaration.getEventNotifier());
+                        if (!optional || instantiationCallback.includeOptionalNode(
+                            typeDefinitionNode.getNodeId(), declaration.getBrowseName())) {
 
-                        nodes.put(browsePath, instance);
+                            UaObjectNode instance = instanceFromTypeDefinition(
+                                instanceNodeId, (ObjectTypeNode) typeDefinitionNode);
+
+                            instance.setBrowseName(declaration.getBrowseName());
+                            instance.setDisplayName(declaration.getDisplayName());
+                            instance.setDescription(declaration.getDescription());
+                            instance.setWriteMask(declaration.getWriteMask());
+                            instance.setUserWriteMask(declaration.getUserWriteMask());
+                            instance.setEventNotifier(declaration.getEventNotifier());
+
+                            nodes.put(browsePath, instance);
+                        }
                     } else {
                         throw new UaException(
                             StatusCodes.Bad_InternalError,
                             "expected type definition for " + instanceTypeDefinitionId);
                     }
-                } else if (node instanceof VariableNode) {
-                    VariableNode declaration = (VariableNode) node;
+                } else if (node instanceof UaVariableNode) {
+                    UaVariableNode declaration = (UaVariableNode) node;
 
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
@@ -253,22 +257,27 @@ public class NodeFactory {
                         .orElse(null);
 
                     if (typeDefinitionNode instanceof VariableTypeNode) {
-                        UaVariableNode instance = instanceFromTypeDefinition(
-                            instanceNodeId, (VariableTypeNode) typeDefinitionNode);
+                        boolean optional = isOptionalDeclaration(declaration);
 
-                        instance.setBrowseName(declaration.getBrowseName());
-                        instance.setDisplayName(declaration.getDisplayName());
-                        instance.setDescription(declaration.getDescription());
-                        instance.setWriteMask(declaration.getWriteMask());
-                        instance.setUserWriteMask(declaration.getUserWriteMask());
-                        instance.setValue(declaration.getValue());
-                        instance.setDataType(declaration.getDataType());
-                        instance.setValueRank(declaration.getValueRank());
-                        instance.setArrayDimensions(declaration.getArrayDimensions());
-                        instance.setAccessLevel(declaration.getAccessLevel());
-                        instance.setUserAccessLevel(declaration.getUserAccessLevel());
+                        if (!optional || instantiationCallback.includeOptionalNode(
+                            typeDefinitionNode.getNodeId(), declaration.getBrowseName())) {
+                            UaVariableNode instance = instanceFromTypeDefinition(
+                                instanceNodeId, (VariableTypeNode) typeDefinitionNode);
 
-                        nodes.put(browsePath, instance);
+                            instance.setBrowseName(declaration.getBrowseName());
+                            instance.setDisplayName(declaration.getDisplayName());
+                            instance.setDescription(declaration.getDescription());
+                            instance.setWriteMask(declaration.getWriteMask());
+                            instance.setUserWriteMask(declaration.getUserWriteMask());
+                            instance.setValue(declaration.getValue());
+                            instance.setDataType(declaration.getDataType());
+                            instance.setValueRank(declaration.getValueRank());
+                            instance.setArrayDimensions(declaration.getArrayDimensions());
+                            instance.setAccessLevel(declaration.getAccessLevel());
+                            instance.setUserAccessLevel(declaration.getUserAccessLevel());
+
+                            nodes.put(browsePath, instance);
+                        }
                     } else {
                         throw new UaException(
                             StatusCodes.Bad_InternalError,
@@ -403,6 +412,13 @@ public class NodeFactory {
             typeDefinitionNode.getWriteMask(),
             typeDefinitionNode.getUserWriteMask()
         );
+    }
+
+    protected boolean isOptionalDeclaration(UaNode node) {
+        return node.getReferences()
+            .stream()
+            .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
+            .anyMatch(r -> Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId()));
     }
 
     private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {
