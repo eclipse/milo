@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.sdk.server.nodes.DefaultAttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
@@ -30,6 +32,7 @@ public interface AttributeFilter {
      * @return the value for the attribute identified by {@code attributeId}.
      * @see GetAttributeContext#getAttribute(AttributeId)
      */
+    @Nullable
     default Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
         return ctx.getAttribute(attributeId);
     }
@@ -42,7 +45,7 @@ public interface AttributeFilter {
      * @param value       the value to set.
      * @see SetAttributeContext#setAttribute(AttributeId, Object)
      */
-    default void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+    default void setAttribute(SetAttributeContext ctx, AttributeId attributeId, @Nullable Object value) {
         ctx.setAttribute(attributeId, value);
     }
 

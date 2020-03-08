@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
@@ -22,13 +24,14 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
  */
 public final class DefaultAttributeFilter implements AttributeFilter {
 
+    @Nullable
     @Override
     public Object getAttribute(GetAttributeContext ctx, AttributeId attributeId) {
         return ctx.getNode().getAttribute(attributeId);
     }
 
     @Override
-    public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, Object value) {
+    public void setAttribute(SetAttributeContext ctx, AttributeId attributeId, @Nullable Object value) {
         ctx.getNode().setAttribute(attributeId, value);
     }
 
