@@ -835,7 +835,7 @@ public class ExampleNamespace extends ManagedNamespace {
         NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID
             .localOrThrow(getServer().getNamespaceTable());
 
-        dictionaryManager.registerStructureCodec(
+        dictionaryManager.registerUnionCodec(
             new CustomUnionType.Codec().asBinaryCodec(),
             "CustomUnionType",
             dataTypeId,

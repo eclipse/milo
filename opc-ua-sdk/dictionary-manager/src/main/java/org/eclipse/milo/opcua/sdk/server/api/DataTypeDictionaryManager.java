@@ -211,11 +211,42 @@ public class DataTypeDictionaryManager implements Lifecycle {
         dictionaryFile.reset();
     }
 
+    public void registerOptionSetCodec(
+        OpcUaBinaryDataTypeCodec<?> codec,
+        String description,
+        NodeId dataTypeId,
+        NodeId binaryEncodingId
+    ) {
+
+        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, Identifiers.OptionSet);
+    }
+
     public void registerStructureCodec(
         OpcUaBinaryDataTypeCodec<?> codec,
         String description,
         NodeId dataTypeId,
         NodeId binaryEncodingId
+    ) {
+
+        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, Identifiers.Structure);
+    }
+
+    public void registerUnionCodec(
+        OpcUaBinaryDataTypeCodec<?> codec,
+        String description,
+        NodeId dataTypeId,
+        NodeId binaryEncodingId
+    ) {
+
+        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, Identifiers.Union);
+    }
+
+    public void registerStructureCodec(
+        OpcUaBinaryDataTypeCodec<?> codec,
+        String description,
+        NodeId dataTypeId,
+        NodeId binaryEncodingId,
+        NodeId parentType
     ) {
 
         dictionary.registerStructCodec(codec, description, dataTypeId, binaryEncodingId);
@@ -236,7 +267,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         dataTypeNode.addReference(new Reference(
             dataTypeId,
             Identifiers.HasSubtype,
-            Identifiers.Structure.expanded(),
+            parentType.expanded(),
             Direction.INVERSE
         ));
 
