@@ -422,7 +422,7 @@ public class CertificateValidationUtil {
                 // KeyUsage is present and the keyCertSign bit is set.
                 // According to RFC 5280 the BasicConstraint cA bit must also
                 // be set, but it's not!
-                LOGGER.warn(
+                LOGGER.debug(
                     "'{}' violates RFC 5280: KeyUsage keyCertSign " +
                         "bit set without BasicConstraint cA bit set",
                     certificate.getSubjectX500Principal().getName()
