@@ -164,7 +164,7 @@ public class AttributeReader {
         ExtensionObject xo,
         QualifiedName encodingName) {
 
-        if (xo.isNull()) {
+        if (xo == null || xo.isNull()) {
             return xo;
         }
 
