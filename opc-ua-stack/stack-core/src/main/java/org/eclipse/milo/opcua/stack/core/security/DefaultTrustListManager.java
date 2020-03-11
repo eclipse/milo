@@ -72,11 +72,11 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     private final File issuerDir;
     private final File issuerCertsDir;
-    private final File issuerCrlsDir;
+    private final File issuerCrlDir;
 
     private final File trustedDir;
     private final File trustedCertsDir;
-    private final File trustedCrlsDir;
+    private final File trustedCrlDir;
 
     private final File rejectedDir;
 
@@ -90,8 +90,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         issuerCertsDir = issuerDir.toPath().resolve("certs").toFile();
         ensureDirectoryExists(issuerCertsDir);
 
-        issuerCrlsDir = issuerDir.toPath().resolve("crls").toFile();
-        ensureDirectoryExists(issuerCrlsDir);
+        issuerCrlDir = issuerDir.toPath().resolve("crl").toFile();
+        ensureDirectoryExists(issuerCrlDir);
 
         trustedDir = baseDir.toPath().resolve("trusted").toFile();
         ensureDirectoryExists(trustedDir);
@@ -99,8 +99,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         trustedCertsDir = trustedDir.toPath().resolve("certs").toFile();
         ensureDirectoryExists(trustedCertsDir);
 
-        trustedCrlsDir = trustedDir.toPath().resolve("crls").toFile();
-        ensureDirectoryExists(trustedCrlsDir);
+        trustedCrlDir = trustedDir.toPath().resolve("crl").toFile();
+        ensureDirectoryExists(trustedCrlDir);
 
         rejectedDir = baseDir.toPath().resolve("rejected").toFile();
         ensureDirectoryExists(rejectedDir);
@@ -119,7 +119,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             this::synchronizeIssuerCerts
         );
         watchKeys.put(
-            issuerCrlsDir.toPath().register(
+            issuerCrlDir.toPath().register(
                 watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE,
@@ -137,7 +137,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             this::synchronizeTrustedCerts
         );
         watchKeys.put(
-            trustedCrlsDir.toPath().register(
+            trustedCrlDir.toPath().register(
                 watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE,
@@ -216,14 +216,14 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     @Override
     public synchronized void setIssuerCrls(List<X509CRL> issuerCrls) {
-        replaceCrlsInDir(issuerCrls, issuerCrlsDir);
+        replaceCrlsInDir(issuerCrls, issuerCrlDir);
 
         synchronizeIssuerCrls();
     }
 
     @Override
     public synchronized void setTrustedCrls(List<X509CRL> trustedCrls) {
-        replaceCrlsInDir(trustedCrls, trustedCrlsDir);
+        replaceCrlsInDir(trustedCrls, trustedCrlDir);
 
         synchronizeTrustedCrls();
     }
@@ -298,8 +298,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return issuerCertsDir;
     }
 
-    public File getIssuerCrlsDir() {
-        return issuerCrlsDir;
+    public File getIssuerCrlDir() {
+        return issuerCrlDir;
     }
 
     public File getTrustedDir() {
@@ -310,8 +310,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return trustedCertsDir;
     }
 
-    public File getTrustedCrlsDir() {
-        return trustedCrlsDir;
+    public File getTrustedCrlDir() {
+        return trustedCrlDir;
     }
 
     public File getRejectedDir() {
@@ -403,7 +403,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     private synchronized void synchronizeIssuerCrls() {
         LOGGER.debug("Synchronizing issuer CRLs...");
 
-        File[] files = issuerCrlsDir.listFiles();
+        File[] files = issuerCrlDir.listFiles();
         if (files == null) files = new File[0];
 
         issuerCrls.clear();
@@ -434,7 +434,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     private synchronized void synchronizeTrustedCrls() {
         LOGGER.debug("Synchronizing trusted CRLs...");
 
-        File[] files = trustedCrlsDir.listFiles();
+        File[] files = trustedCrlDir.listFiles();
         if (files == null) files = new File[0];
 
         trustedCrls.clear();
