@@ -160,6 +160,7 @@ public class CertificateValidationUtil {
      *                         leaf should have a CRL, though whether that's enforced or not depends on
      *                         {@link ValidationCheck#REVOCATION_LISTS} being present.
      * @param validationChecks the set of {@link ValidationCheck}s to enforce.
+     * @param endEntityIsClient {@code true} if the end-entity is a client, {@code false} if it is a server.
      * @throws UaException if a check from the set of {@link ValidationCheck}s failed.
      */
     public static void validateTrustedCertPath(
