@@ -74,8 +74,8 @@ public class CertificateValidationUtil {
      * checks are not done at this stage.
      * <p>
      * The {@link CertPath} and {@link TrustAnchor} from the result is meant to be further validated by
-     * {@link #validateTrustedCertPath(CertPath, TrustAnchor, Collection, Set)}, which can return more detailed failure
-     * {@link StatusCodes} in its exceptions because it is dealing with a known trusted path.
+     * {@link #validateTrustedCertPath(CertPath, TrustAnchor, Collection, Set, boolean)}, which can return more detailed
+     * failure {@link StatusCodes} in its exceptions because it is dealing with a known trusted path.
      *
      * @param certificateChain    a possibly partial certificate chain to build a trusted path from.
      * @param trustedCertificates a collection of known trusted certificates.
@@ -166,13 +166,14 @@ public class CertificateValidationUtil {
         CertPath certPath,
         TrustAnchor trustAnchor,
         Collection<X509CRL> crls,
-        Set<ValidationCheck> validationChecks
+        Set<ValidationCheck> validationChecks,
+        boolean endEntityIsClient
     ) throws UaException {
 
         X509Certificate anchorCert = trustAnchor.getTrustedCert();
         boolean anchorIsEndEntity = certPath.getCertificates().isEmpty();
 
-        checkAnchorValidity(anchorCert, validationChecks, anchorIsEndEntity);
+        checkAnchorValidity(anchorCert, validationChecks, anchorIsEndEntity, endEntityIsClient);
 
         if (!anchorIsEndEntity) {
             // anchorCert is an issuer; validate the rest of the certPath
@@ -184,7 +185,8 @@ public class CertificateValidationUtil {
                 parameters.addCertPathChecker(
                     new OpcUaCertificateUsageChecker(
                         certPath,
-                        validationChecks
+                        validationChecks,
+                        endEntityIsClient
                     )
                 );
 
@@ -287,7 +289,8 @@ public class CertificateValidationUtil {
     private static void checkAnchorValidity(
         X509Certificate anchorCert,
         Set<ValidationCheck> validationChecks,
-        boolean endEntity
+        boolean endEntity,
+        boolean endEntityIsClient
     ) throws UaException {
 
         Set<String> criticalExtensions = anchorCert.getCriticalExtensionOIDs();
@@ -324,7 +327,7 @@ public class CertificateValidationUtil {
             }
 
             try {
-                checkEndEntityExtendedKeyUsage(anchorCert);
+                checkEndEntityExtendedKeyUsage(anchorCert, endEntityIsClient);
             } catch (UaException e) {
                 if (validationChecks.contains(ValidationCheck.EXTENDED_KEY_USAGE_END_ENTITY) ||
                     criticalExtensions.contains(EXTENDED_KEY_USAGE_OID)
@@ -570,7 +573,11 @@ public class CertificateValidationUtil {
         }
     }
 
-    public static void checkEndEntityExtendedKeyUsage(X509Certificate certificate) throws UaException {
+    public static void checkEndEntityExtendedKeyUsage(
+        X509Certificate certificate,
+        boolean endEntityIsClient
+    ) throws UaException {
+
         try {
             List<String> extendedKeyUsage = certificate.getExtendedKeyUsage();
 
@@ -581,14 +588,14 @@ public class CertificateValidationUtil {
                 );
             }
 
-            if (!extendedKeyUsage.contains(CLIENT_AUTH_OID)) {
+            if (endEntityIsClient && !extendedKeyUsage.contains(CLIENT_AUTH_OID)) {
                 throw new UaException(
                     StatusCodes.Bad_CertificateUseNotAllowed,
                     "required ExtendedKeyUsage 'clientAuth' not found"
                 );
             }
 
-            if (!extendedKeyUsage.contains(SERVER_AUTH_OID)) {
+            if (!endEntityIsClient && !extendedKeyUsage.contains(SERVER_AUTH_OID)) {
                 throw new UaException(
                     StatusCodes.Bad_CertificateUseNotAllowed,
                     "required ExtendedKeyUsage 'serverAuth' not found"

@@ -38,10 +38,12 @@ class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
 
     private final CertPath certPath;
     private final Set<ValidationCheck> validationChecks;
+    private final boolean endEntityIsClient;
 
-    OpcUaCertificateUsageChecker(CertPath certPath, Set<ValidationCheck> validationChecks) {
+    OpcUaCertificateUsageChecker(CertPath certPath, Set<ValidationCheck> validationChecks, boolean endEntityIsClient) {
         this.certPath = certPath;
         this.validationChecks = validationChecks;
+        this.endEntityIsClient = endEntityIsClient;
 
         endEntityCert = (X509Certificate) certPath.getCertificates().get(0);
     }
@@ -98,7 +100,7 @@ class OpcUaCertificateUsageChecker extends PKIXCertPathChecker {
                 }
             }
             try {
-                CertificateValidationUtil.checkEndEntityExtendedKeyUsage(certificate);
+                CertificateValidationUtil.checkEndEntityExtendedKeyUsage(certificate, endEntityIsClient);
 
                 LOGGER.debug(
                     "validated ExtendedKeyUsage for end entity: {}",

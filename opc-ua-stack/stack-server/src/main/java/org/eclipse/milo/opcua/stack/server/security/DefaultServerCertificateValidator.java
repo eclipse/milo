@@ -91,7 +91,8 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
                 certPathResult.getCertPath(),
                 certPathResult.getTrustAnchor(),
                 crls,
-                validationChecks
+                validationChecks,
+                true
             );
         } catch (UaException e) {
             long statusCode = e.getStatusCode().getValue();

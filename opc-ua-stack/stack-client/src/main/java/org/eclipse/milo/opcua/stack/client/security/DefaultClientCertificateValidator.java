@@ -80,7 +80,8 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
             certPathResult.getCertPath(),
             certPathResult.getTrustAnchor(),
             crls,
-            validationChecks
+            validationChecks,
+            false
         );
     }
 

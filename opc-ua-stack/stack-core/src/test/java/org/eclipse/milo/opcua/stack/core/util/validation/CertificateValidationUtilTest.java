@@ -213,7 +213,16 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION)
+                    EnumSet.of(ValidationCheck.REVOCATION),
+                    true
+                );
+
+                validateTrustedCertPath(
+                    pathBuilderResult.getCertPath(),
+                    pathBuilderResult.getTrustAnchor(),
+                    x509CRLS,
+                    EnumSet.of(ValidationCheck.REVOCATION),
+                    false
                 );
             });
 
@@ -246,7 +255,16 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION)
+                    EnumSet.of(ValidationCheck.REVOCATION),
+                    true
+                );
+
+                validateTrustedCertPath(
+                    pathBuilderResult.getCertPath(),
+                    pathBuilderResult.getTrustAnchor(),
+                    x509CRLS,
+                    EnumSet.of(ValidationCheck.REVOCATION),
+                    false
                 );
             });
 
@@ -359,7 +377,16 @@ public class CertificateValidationUtilTest {
                     pathBuilderResult.getCertPath(),
                     pathBuilderResult.getTrustAnchor(),
                     x509CRLS,
-                    EnumSet.of(ValidationCheck.REVOCATION)
+                    EnumSet.of(ValidationCheck.REVOCATION),
+                    true
+                );
+
+                CertificateValidationUtil.validateTrustedCertPath(
+                    pathBuilderResult.getCertPath(),
+                    pathBuilderResult.getTrustAnchor(),
+                    x509CRLS,
+                    EnumSet.of(ValidationCheck.REVOCATION),
+                    false
                 );
             });
 
