@@ -38,7 +38,6 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -790,7 +789,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
         String typeName = node.getLocalName();
 
-        DataTypeCodec codec = OpcUaDataTypeManager.getInstance().getCodec(
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(
             Namespaces.OPC_UA_XSD,
             String.format("//xs:element[@name='%s']", typeName)
         );
@@ -816,8 +815,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         Node node = currentNode(field);
 
         OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec == null) {
@@ -1038,8 +1036,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         Node node = currentNode(field);
 
         OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec == null) {

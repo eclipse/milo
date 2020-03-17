@@ -25,7 +25,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -661,8 +660,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         NodeId encodingId = readNodeId();
 
         OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(encodingId);
 
         if (binaryCodec != null) {
@@ -678,8 +676,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
         if (binaryCodec != null) {
@@ -1152,8 +1149,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             checkArrayLength(length);
 
             OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-                OpcUaDataTypeManager
-                    .getInstance()
+                context.getDataTypeManager()
                     .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
             if (binaryCodec == null) {

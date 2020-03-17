@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -907,8 +906,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
         @SuppressWarnings("unchecked")
         OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec = (OpcUaBinaryDataTypeCodec<UaMessage>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(encodingId);
 
         if (binaryCodec == null) {
@@ -928,8 +926,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         try {
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec = (OpcUaBinaryDataTypeCodec<Object>)
-                OpcUaDataTypeManager
-                    .getInstance()
+                context.getDataTypeManager()
                     .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec == null) {
