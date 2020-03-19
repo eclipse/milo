@@ -83,12 +83,12 @@ public enum ServerState implements UaEnumeration {
 
         @Override
         public ServerState decode(SerializationContext context, UaDecoder decoder) {
-            return ServerState.from(decoder.readInt32(null));
+            return decoder.readEnum(null, ServerState.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, ServerState value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

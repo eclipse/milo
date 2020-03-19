@@ -67,12 +67,12 @@ public enum MessageSecurityMode implements UaEnumeration {
 
         @Override
         public MessageSecurityMode decode(SerializationContext context, UaDecoder decoder) {
-            return MessageSecurityMode.from(decoder.readInt32(null));
+            return decoder.readEnum(null, MessageSecurityMode.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, MessageSecurityMode value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

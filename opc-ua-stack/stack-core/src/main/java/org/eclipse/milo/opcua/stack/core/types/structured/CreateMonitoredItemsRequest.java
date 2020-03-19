@@ -93,7 +93,7 @@ public class CreateMonitoredItemsRequest extends Structure implements UaRequestM
         public CreateMonitoredItemsRequest decode(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readInt32("TimestampsToReturn"));
+            TimestampsToReturn timestampsToReturn = decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
             MonitoredItemCreateRequest[] itemsToCreate = (MonitoredItemCreateRequest[]) decoder.readStructArray("ItemsToCreate", MonitoredItemCreateRequest.TYPE_ID);
             return new CreateMonitoredItemsRequest(requestHeader, subscriptionId, timestampsToReturn, itemsToCreate);
         }
@@ -103,7 +103,7 @@ public class CreateMonitoredItemsRequest extends Structure implements UaRequestM
                            CreateMonitoredItemsRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeInt32("TimestampsToReturn", value.getTimestampsToReturn().getValue());
+            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
             encoder.writeStructArray("ItemsToCreate", value.getItemsToCreate(), MonitoredItemCreateRequest.TYPE_ID);
         }
     }

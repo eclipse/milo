@@ -78,7 +78,7 @@ public class ContentFilterElement extends Structure implements UaStructure {
 
         @Override
         public ContentFilterElement decode(SerializationContext context, UaDecoder decoder) {
-            FilterOperator filterOperator = FilterOperator.from(decoder.readInt32("FilterOperator"));
+            FilterOperator filterOperator = decoder.readEnum("FilterOperator", FilterOperator.class);
             ExtensionObject[] filterOperands = decoder.readExtensionObjectArray("FilterOperands");
             return new ContentFilterElement(filterOperator, filterOperands);
         }
@@ -86,7 +86,7 @@ public class ContentFilterElement extends Structure implements UaStructure {
         @Override
         public void encode(SerializationContext context, UaEncoder encoder,
                            ContentFilterElement value) {
-            encoder.writeInt32("FilterOperator", value.getFilterOperator().getValue());
+            encoder.writeEnum("FilterOperator", value.getFilterOperator());
             encoder.writeExtensionObjectArray("FilterOperands", value.getFilterOperands());
         }
     }

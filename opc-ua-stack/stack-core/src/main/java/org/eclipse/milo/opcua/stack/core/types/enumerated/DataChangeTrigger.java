@@ -63,12 +63,12 @@ public enum DataChangeTrigger implements UaEnumeration {
 
         @Override
         public DataChangeTrigger decode(SerializationContext context, UaDecoder decoder) {
-            return DataChangeTrigger.from(decoder.readInt32(null));
+            return decoder.readEnum(null, DataChangeTrigger.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, DataChangeTrigger value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

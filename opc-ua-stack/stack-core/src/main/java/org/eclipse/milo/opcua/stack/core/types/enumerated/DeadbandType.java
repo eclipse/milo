@@ -63,12 +63,12 @@ public enum DeadbandType implements UaEnumeration {
 
         @Override
         public DeadbandType decode(SerializationContext context, UaDecoder decoder) {
-            return DeadbandType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, DeadbandType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, DeadbandType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

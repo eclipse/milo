@@ -179,12 +179,12 @@ public enum NodeAttributesMask implements UaEnumeration {
 
         @Override
         public NodeAttributesMask decode(SerializationContext context, UaDecoder decoder) {
-            return NodeAttributesMask.from(decoder.readInt32(null));
+            return decoder.readEnum(null, NodeAttributesMask.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, NodeAttributesMask value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

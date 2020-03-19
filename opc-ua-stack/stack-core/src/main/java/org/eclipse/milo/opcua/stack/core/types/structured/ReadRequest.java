@@ -92,7 +92,7 @@ public class ReadRequest extends Structure implements UaRequestMessage {
         public ReadRequest decode(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Double maxAge = decoder.readDouble("MaxAge");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readInt32("TimestampsToReturn"));
+            TimestampsToReturn timestampsToReturn = decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
             ReadValueId[] nodesToRead = (ReadValueId[]) decoder.readStructArray("NodesToRead", ReadValueId.TYPE_ID);
             return new ReadRequest(requestHeader, maxAge, timestampsToReturn, nodesToRead);
         }
@@ -101,7 +101,7 @@ public class ReadRequest extends Structure implements UaRequestMessage {
         public void encode(SerializationContext context, UaEncoder encoder, ReadRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeDouble("MaxAge", value.getMaxAge());
-            encoder.writeInt32("TimestampsToReturn", value.getTimestampsToReturn().getValue());
+            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
             encoder.writeStructArray("NodesToRead", value.getNodesToRead(), ReadValueId.TYPE_ID);
         }
     }

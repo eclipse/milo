@@ -87,12 +87,12 @@ public enum NodeClass implements UaEnumeration {
 
         @Override
         public NodeClass decode(SerializationContext context, UaDecoder decoder) {
-            return NodeClass.from(decoder.readInt32(null));
+            return decoder.readEnum(null, NodeClass.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, NodeClass value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

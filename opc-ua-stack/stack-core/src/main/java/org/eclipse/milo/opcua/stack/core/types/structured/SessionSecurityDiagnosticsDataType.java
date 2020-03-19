@@ -136,7 +136,7 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
             String authenticationMechanism = decoder.readString("AuthenticationMechanism");
             String encoding = decoder.readString("Encoding");
             String transportProtocol = decoder.readString("TransportProtocol");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readInt32("SecurityMode"));
+            MessageSecurityMode securityMode = decoder.readEnum("SecurityMode", MessageSecurityMode.class);
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");
             ByteString clientCertificate = decoder.readByteString("ClientCertificate");
             return new SessionSecurityDiagnosticsDataType(sessionId, clientUserIdOfSession, clientUserIdHistory, authenticationMechanism, encoding, transportProtocol, securityMode, securityPolicyUri, clientCertificate);
@@ -151,7 +151,7 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
             encoder.writeString("AuthenticationMechanism", value.getAuthenticationMechanism());
             encoder.writeString("Encoding", value.getEncoding());
             encoder.writeString("TransportProtocol", value.getTransportProtocol());
-            encoder.writeInt32("SecurityMode", value.getSecurityMode().getValue());
+            encoder.writeEnum("SecurityMode", value.getSecurityMode());
             encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
             encoder.writeByteString("ClientCertificate", value.getClientCertificate());
         }

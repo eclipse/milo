@@ -59,13 +59,13 @@ public enum SecurityTokenRequestType implements UaEnumeration {
 
         @Override
         public SecurityTokenRequestType decode(SerializationContext context, UaDecoder decoder) {
-            return SecurityTokenRequestType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, SecurityTokenRequestType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder,
                            SecurityTokenRequestType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

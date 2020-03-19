@@ -63,12 +63,12 @@ public enum MonitoringMode implements UaEnumeration {
 
         @Override
         public MonitoringMode decode(SerializationContext context, UaDecoder decoder) {
-            return MonitoringMode.from(decoder.readInt32(null));
+            return decoder.readEnum(null, MonitoringMode.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, MonitoringMode value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

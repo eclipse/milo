@@ -205,6 +205,11 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeEnum(String field, UaEnumeration value) {
+        writeString(field, String.format("%s_%s", value.toString(), value.getValue()));
+    }
+
+    @Override
     public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
 
     }

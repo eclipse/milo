@@ -110,7 +110,7 @@ public class AddReferencesItem extends Structure implements UaStructure {
             Boolean isForward = decoder.readBoolean("IsForward");
             String targetServerUri = decoder.readString("TargetServerUri");
             ExpandedNodeId targetNodeId = decoder.readExpandedNodeId("TargetNodeId");
-            NodeClass targetNodeClass = NodeClass.from(decoder.readInt32("TargetNodeClass"));
+            NodeClass targetNodeClass = decoder.readEnum("TargetNodeClass", NodeClass.class);
             return new AddReferencesItem(sourceNodeId, referenceTypeId, isForward, targetServerUri, targetNodeId, targetNodeClass);
         }
 
@@ -121,7 +121,7 @@ public class AddReferencesItem extends Structure implements UaStructure {
             encoder.writeBoolean("IsForward", value.getIsForward());
             encoder.writeString("TargetServerUri", value.getTargetServerUri());
             encoder.writeExpandedNodeId("TargetNodeId", value.getTargetNodeId());
-            encoder.writeInt32("TargetNodeClass", value.getTargetNodeClass().getValue());
+            encoder.writeEnum("TargetNodeClass", value.getTargetNodeClass());
         }
     }
 }

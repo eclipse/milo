@@ -71,12 +71,12 @@ public enum TimestampsToReturn implements UaEnumeration {
 
         @Override
         public TimestampsToReturn decode(SerializationContext context, UaDecoder decoder) {
-            return TimestampsToReturn.from(decoder.readInt32(null));
+            return decoder.readEnum(null, TimestampsToReturn.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, TimestampsToReturn value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

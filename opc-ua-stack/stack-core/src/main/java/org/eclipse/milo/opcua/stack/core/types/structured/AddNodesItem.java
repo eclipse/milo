@@ -119,7 +119,7 @@ public class AddNodesItem extends Structure implements UaStructure {
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             ExpandedNodeId requestedNewNodeId = decoder.readExpandedNodeId("RequestedNewNodeId");
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
-            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            NodeClass nodeClass = decoder.readEnum("NodeClass", NodeClass.class);
             ExtensionObject nodeAttributes = decoder.readExtensionObject("NodeAttributes");
             ExpandedNodeId typeDefinition = decoder.readExpandedNodeId("TypeDefinition");
             return new AddNodesItem(parentNodeId, referenceTypeId, requestedNewNodeId, browseName, nodeClass, nodeAttributes, typeDefinition);
@@ -131,7 +131,7 @@ public class AddNodesItem extends Structure implements UaStructure {
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeExpandedNodeId("RequestedNewNodeId", value.getRequestedNewNodeId());
             encoder.writeQualifiedName("BrowseName", value.getBrowseName());
-            encoder.writeInt32("NodeClass", value.getNodeClass().getValue());
+            encoder.writeEnum("NodeClass", value.getNodeClass());
             encoder.writeExtensionObject("NodeAttributes", value.getNodeAttributes());
             encoder.writeExpandedNodeId("TypeDefinition", value.getTypeDefinition());
         }

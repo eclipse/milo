@@ -124,7 +124,7 @@ public class EndpointDescription extends Structure implements UaStructure {
             String endpointUrl = decoder.readString("EndpointUrl");
             ApplicationDescription server = (ApplicationDescription) decoder.readStruct("Server", ApplicationDescription.TYPE_ID);
             ByteString serverCertificate = decoder.readByteString("ServerCertificate");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readInt32("SecurityMode"));
+            MessageSecurityMode securityMode = decoder.readEnum("SecurityMode", MessageSecurityMode.class);
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");
             UserTokenPolicy[] userIdentityTokens = (UserTokenPolicy[]) decoder.readStructArray("UserIdentityTokens", UserTokenPolicy.TYPE_ID);
             String transportProfileUri = decoder.readString("TransportProfileUri");
@@ -137,7 +137,7 @@ public class EndpointDescription extends Structure implements UaStructure {
             encoder.writeString("EndpointUrl", value.getEndpointUrl());
             encoder.writeStruct("Server", value.getServer(), ApplicationDescription.TYPE_ID);
             encoder.writeByteString("ServerCertificate", value.getServerCertificate());
-            encoder.writeInt32("SecurityMode", value.getSecurityMode().getValue());
+            encoder.writeEnum("SecurityMode", value.getSecurityMode());
             encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
             encoder.writeStructArray("UserIdentityTokens", value.getUserIdentityTokens(), UserTokenPolicy.TYPE_ID);
             encoder.writeString("TransportProfileUri", value.getTransportProfileUri());

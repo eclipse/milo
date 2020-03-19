@@ -63,13 +63,13 @@ public enum AxisScaleEnumeration implements UaEnumeration {
 
         @Override
         public AxisScaleEnumeration decode(SerializationContext context, UaDecoder decoder) {
-            return AxisScaleEnumeration.from(decoder.readInt32(null));
+            return decoder.readEnum(null, AxisScaleEnumeration.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder,
                            AxisScaleEnumeration value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

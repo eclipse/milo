@@ -75,12 +75,12 @@ public enum TrustListMasks implements UaEnumeration {
 
         @Override
         public TrustListMasks decode(SerializationContext context, UaDecoder decoder) {
-            return TrustListMasks.from(decoder.readInt32(null));
+            return decoder.readEnum(null, TrustListMasks.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, TrustListMasks value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

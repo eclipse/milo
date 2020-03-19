@@ -116,7 +116,7 @@ public class ApplicationDescription extends Structure implements UaStructure {
             String applicationUri = decoder.readString("ApplicationUri");
             String productUri = decoder.readString("ProductUri");
             LocalizedText applicationName = decoder.readLocalizedText("ApplicationName");
-            ApplicationType applicationType = ApplicationType.from(decoder.readInt32("ApplicationType"));
+            ApplicationType applicationType = decoder.readEnum("ApplicationType", ApplicationType.class);
             String gatewayServerUri = decoder.readString("GatewayServerUri");
             String discoveryProfileUri = decoder.readString("DiscoveryProfileUri");
             String[] discoveryUrls = decoder.readStringArray("DiscoveryUrls");
@@ -129,7 +129,7 @@ public class ApplicationDescription extends Structure implements UaStructure {
             encoder.writeString("ApplicationUri", value.getApplicationUri());
             encoder.writeString("ProductUri", value.getProductUri());
             encoder.writeLocalizedText("ApplicationName", value.getApplicationName());
-            encoder.writeInt32("ApplicationType", value.getApplicationType().getValue());
+            encoder.writeEnum("ApplicationType", value.getApplicationType());
             encoder.writeString("GatewayServerUri", value.getGatewayServerUri());
             encoder.writeString("DiscoveryProfileUri", value.getDiscoveryProfileUri());
             encoder.writeStringArray("DiscoveryUrls", value.getDiscoveryUrls());

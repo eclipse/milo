@@ -123,7 +123,7 @@ public class RegisteredServer extends Structure implements UaStructure {
             String serverUri = decoder.readString("ServerUri");
             String productUri = decoder.readString("ProductUri");
             LocalizedText[] serverNames = decoder.readLocalizedTextArray("ServerNames");
-            ApplicationType serverType = ApplicationType.from(decoder.readInt32("ServerType"));
+            ApplicationType serverType = decoder.readEnum("ServerType", ApplicationType.class);
             String gatewayServerUri = decoder.readString("GatewayServerUri");
             String[] discoveryUrls = decoder.readStringArray("DiscoveryUrls");
             String semaphoreFilePath = decoder.readString("SemaphoreFilePath");
@@ -136,7 +136,7 @@ public class RegisteredServer extends Structure implements UaStructure {
             encoder.writeString("ServerUri", value.getServerUri());
             encoder.writeString("ProductUri", value.getProductUri());
             encoder.writeLocalizedTextArray("ServerNames", value.getServerNames());
-            encoder.writeInt32("ServerType", value.getServerType().getValue());
+            encoder.writeEnum("ServerType", value.getServerType());
             encoder.writeString("GatewayServerUri", value.getGatewayServerUri());
             encoder.writeStringArray("DiscoveryUrls", value.getDiscoveryUrls());
             encoder.writeString("SemaphoreFilePath", value.getSemaphoreFilePath());

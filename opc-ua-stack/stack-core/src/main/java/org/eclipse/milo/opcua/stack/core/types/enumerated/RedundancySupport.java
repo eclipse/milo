@@ -75,12 +75,12 @@ public enum RedundancySupport implements UaEnumeration {
 
         @Override
         public RedundancySupport decode(SerializationContext context, UaDecoder decoder) {
-            return RedundancySupport.from(decoder.readInt32(null));
+            return decoder.readEnum(null, RedundancySupport.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, RedundancySupport value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

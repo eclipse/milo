@@ -83,7 +83,7 @@ public class MonitoredItemCreateRequest extends Structure {
         @Override
         public MonitoredItemCreateRequest decode(SerializationContext context, UaDecoder decoder) {
             ReadValueId itemToMonitor = (ReadValueId) decoder.readStruct("ItemToMonitor", ReadValueId.TYPE_ID);
-            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readInt32("MonitoringMode"));
+            MonitoringMode monitoringMode = decoder.readEnum("MonitoringMode", MonitoringMode.class);
             MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemCreateRequest(itemToMonitor, monitoringMode, requestedParameters);
         }
@@ -92,7 +92,7 @@ public class MonitoredItemCreateRequest extends Structure {
         public void encode(SerializationContext context, UaEncoder encoder,
                            MonitoredItemCreateRequest value) {
             encoder.writeStruct("ItemToMonitor", value.getItemToMonitor(), ReadValueId.TYPE_ID);
-            encoder.writeInt32("MonitoringMode", value.getMonitoringMode().getValue());
+            encoder.writeEnum("MonitoringMode", value.getMonitoringMode());
             encoder.writeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);
         }
     }

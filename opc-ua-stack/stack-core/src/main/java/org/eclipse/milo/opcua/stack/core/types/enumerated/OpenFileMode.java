@@ -67,12 +67,12 @@ public enum OpenFileMode implements UaEnumeration {
 
         @Override
         public OpenFileMode decode(SerializationContext context, UaDecoder decoder) {
-            return OpenFileMode.from(decoder.readInt32(null));
+            return decoder.readEnum(null, OpenFileMode.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, OpenFileMode value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

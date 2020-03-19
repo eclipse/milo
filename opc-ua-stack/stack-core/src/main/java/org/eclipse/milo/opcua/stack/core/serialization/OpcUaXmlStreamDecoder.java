@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -109,7 +111,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         return setInput(builder.parse(inputStream));
     }
 
-    private Node currentNode(String field) throws UaSerializationException {
+    private boolean currentNode(String field) throws UaSerializationException {
         if (currentNode == null) {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
@@ -117,484 +119,580 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
             );
         }
 
-        if (field != null && !field.equals(currentNode.getLocalName())) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                String.format("expected '%s' found '%s'",
-                    field, currentNode.getLocalName())
-            );
-        }
-
-        return currentNode;
+        return field == null || field.equals(currentNode.getLocalName());
     }
 
     @Override
     public Boolean readBoolean(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseBoolean(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseBoolean(currentNode.getTextContent());
+            } catch (IllegalArgumentException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return false;
         }
     }
 
     @Override
     public Byte readSByte(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseByte(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseByte(currentNode.getTextContent());
+            } catch (IllegalArgumentException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return (byte) 0;
         }
     }
 
     @Override
     public Short readInt16(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseShort(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseShort(currentNode.getTextContent());
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return 0;
         }
     }
 
     @Override
     public Integer readInt32(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseInt(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseInt(currentNode.getTextContent());
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return 0;
         }
     }
 
     @Override
     public Long readInt64(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseLong(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseLong(currentNode.getTextContent());
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return 0L;
         }
     }
 
     @Override
     public UByte readByte(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return ubyte(DatatypeConverter.parseShort(node.getTextContent()));
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return ubyte(DatatypeConverter.parseShort(currentNode.getTextContent()));
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return UByte.MIN;
         }
     }
 
     @Override
     public UShort readUInt16(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return ushort(DatatypeConverter.parseInt(node.getTextContent()));
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return ushort(DatatypeConverter.parseInt(currentNode.getTextContent()));
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return UShort.MIN;
         }
     }
 
     @Override
     public UInteger readUInt32(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return uint(DatatypeConverter.parseLong(node.getTextContent()));
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return uint(DatatypeConverter.parseLong(currentNode.getTextContent()));
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return UInteger.MIN;
         }
     }
 
     @Override
     public ULong readUInt64(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return ulong(DatatypeConverter.parseInteger(node.getTextContent()));
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return ulong(DatatypeConverter.parseInteger(currentNode.getTextContent()));
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return ULong.MIN;
         }
     }
 
     @Override
     public Float readFloat(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseFloat(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseFloat(currentNode.getTextContent());
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return 0f;
         }
     }
 
     @Override
     public Double readDouble(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return DatatypeConverter.parseDouble(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return DatatypeConverter.parseDouble(currentNode.getTextContent());
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return 0.0;
         }
     }
 
     @Override
     public String readString(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return node.getTextContent();
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return currentNode.getTextContent();
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return null;
         }
     }
 
     @Override
     public DateTime readDateTime(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            try {
+                Calendar calendar = DatatypeConverter.parseDateTime(currentNode.getTextContent());
 
-        try {
-            Calendar calendar = DatatypeConverter.parseDateTime(node.getTextContent());
-
-            return new DateTime(calendar.getTime());
-        } finally {
-            currentNode = node.getNextSibling();
+                return new DateTime(calendar.getTime());
+            } catch (IllegalArgumentException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return DateTime.NULL_VALUE;
         }
     }
 
     @Override
     public UUID readGuid(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return UUID.fromString(node.getTextContent());
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return UUID.fromString(currentNode.getTextContent());
+            } catch (IllegalArgumentException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return new UUID(0L, 0L);
         }
     }
 
     @Override
     public ByteString readByteString(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            try {
+                byte[] bs = DatatypeConverter.parseBase64Binary(currentNode.getTextContent());
 
-        try {
-            byte[] bs = DatatypeConverter.parseBase64Binary(node.getTextContent());
-
-            return ByteString.of(bs);
-        } finally {
-            currentNode = node.getNextSibling();
+                return ByteString.of(bs);
+            } catch (IllegalArgumentException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return ByteString.NULL_VALUE;
         }
     }
 
     @Override
     public XmlElement readXmlElement(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        try {
-            return nodeToXmlElement(node);
-        } finally {
-            currentNode = node.getNextSibling();
+        if (currentNode(field)) {
+            try {
+                return nodeToXmlElement(currentNode);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return XmlElement.of(null);
         }
     }
 
     @Override
     public NodeId readNodeId(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node idNode = currentNode.getFirstChild();
 
-        Node idNode = node.getFirstChild();
+            try {
+                if (idNode != null) {
+                    String textContent = idNode.getTextContent();
 
-        try {
-            if (idNode != null) {
-                return NodeId.parse(idNode.getTextContent());
-            } else {
-                return NodeId.NULL_VALUE;
+                    return NodeId.parseSafe(textContent).orElseThrow(() ->
+                        new UaSerializationException(
+                            StatusCodes.Bad_DecodingError, "invalid NodeId: " + textContent)
+                    );
+                } else {
+                    return NodeId.NULL_VALUE;
+                }
+            } finally {
+                currentNode = currentNode.getNextSibling();
             }
-        } finally {
-            currentNode = node.getNextSibling();
+        } else {
+            return NodeId.NULL_VALUE;
         }
     }
 
     @Override
     public ExpandedNodeId readExpandedNodeId(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node expandedIdNode = currentNode.getFirstChild();
 
-        Node expandedIdNode = node.getFirstChild();
-
-        try {
-            if (expandedIdNode != null) {
-                return ExpandedNodeId.parse(expandedIdNode.getTextContent());
-            } else {
-                return ExpandedNodeId.NULL_VALUE;
+            try {
+                if (expandedIdNode != null) {
+                    return ExpandedNodeId.parse(expandedIdNode.getTextContent());
+                } else {
+                    return ExpandedNodeId.NULL_VALUE;
+                }
+            } catch (UaRuntimeException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
             }
-        } finally {
-            currentNode = node.getNextSibling();
+        } else {
+            return ExpandedNodeId.NULL_VALUE;
         }
     }
 
     @Override
     public StatusCode readStatusCode(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            try {
+                long code = 0L;
 
-        try {
-            long code = 0L;
+                Node codeNode = currentNode.getFirstChild();
 
-            Node codeNode = node.getFirstChild();
-            if (codeNode != null) {
-                code = DatatypeConverter.parseUnsignedInt(codeNode.getTextContent());
+                if (codeNode != null) {
+                    code = DatatypeConverter.parseUnsignedInt(codeNode.getTextContent());
+                }
+
+                return new StatusCode(code);
+            } catch (NumberFormatException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            } finally {
+                currentNode = currentNode.getNextSibling();
             }
-
-            return new StatusCode(code);
-        } finally {
-            currentNode = node.getNextSibling();
+        } else {
+            return new StatusCode(0L);
         }
     }
 
     @Override
     public QualifiedName readQualifiedName(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            try {
+                Map<String, Node> children = nodeMap(currentNode.getChildNodes());
 
-        Map<String, Node> children = nodeMap(node.getChildNodes());
+                int namespaceIndex = 0;
+                String name = null;
 
-        int namespaceIndex = 0;
-        String name = null;
+                Node namespaceIndexNode = children.get("NamespaceIndex");
+                if (namespaceIndexNode != null) {
+                    namespaceIndex = DatatypeConverter.parseInt(namespaceIndexNode.getTextContent());
+                }
 
-        Node namespaceIndexNode = children.get("NamespaceIndex");
-        if (namespaceIndexNode != null) {
-            namespaceIndex = DatatypeConverter.parseInt(namespaceIndexNode.getTextContent());
-        }
+                Node nameNode = children.get("Name");
+                if (nameNode != null) {
+                    name = nameNode.getTextContent();
+                }
 
-        Node nameNode = children.get("Name");
-        if (nameNode != null) {
-            name = nameNode.getTextContent();
-        }
-
-        try {
-            return new QualifiedName(namespaceIndex, name);
-        } finally {
-            currentNode = node.getNextSibling();
+                return new QualifiedName(namespaceIndex, name);
+            } catch (Throwable t) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return QualifiedName.NULL_VALUE;
         }
     }
 
     @Override
     public LocalizedText readLocalizedText(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            try {
+                Map<String, Node> children = nodeMap(currentNode.getChildNodes());
 
-        Map<String, Node> children = nodeMap(node.getChildNodes());
+                String locale = null;
+                String text = null;
 
-        String locale = null;
-        String text = null;
+                Node localeNode = children.get("Locale");
+                if (localeNode != null) {
+                    locale = localeNode.getTextContent();
+                }
 
-        Node localeNode = children.get("Locale");
-        if (localeNode != null) {
-            locale = localeNode.getTextContent();
-        }
+                Node textNode = children.get("Text");
+                if (textNode != null) {
+                    text = textNode.getTextContent();
+                }
 
-        Node textNode = children.get("Text");
-        if (textNode != null) {
-            text = textNode.getTextContent();
-        }
-
-        try {
-            return new LocalizedText(locale, text);
-        } finally {
-            currentNode = node.getNextSibling();
+                return new LocalizedText(locale, text);
+            } catch (Throwable t) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return LocalizedText.NULL_VALUE;
         }
     }
 
     @Override
     public ExtensionObject readExtensionObject(String field) throws UaSerializationException {
-        Node node = currentNode(field);
-
-        Map<String, Node> children = nodeMap(node.getChildNodes());
-
         NodeId typeId = NodeId.NULL_VALUE;
+
         ExtensionObject extensionObject = new ExtensionObject(
             new XmlElement(""),
             NodeId.NULL_VALUE
         );
 
-        Node typeIdNode = children.get("TypeId");
-        if (typeIdNode != null) {
-            currentNode = typeIdNode;
-            typeId = readNodeId("TypeId");
-        }
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        Node bodyNode = children.get("Body");
-        if (bodyNode != null) {
-            if ("ByteString".equals(bodyNode.getLocalName()) &&
-                Namespaces.OPC_UA_XSD.equals(bodyNode.getNamespaceURI())) {
+            try {
+                Map<String, Node> children = nodeMap(currentNode.getChildNodes());
 
-                currentNode = bodyNode;
+                Node typeIdNode = children.get("TypeId");
+                if (typeIdNode != null) {
+                    currentNode = typeIdNode;
+                    typeId = readNodeId("TypeId");
+                }
 
-                extensionObject = new ExtensionObject(
-                    readByteString("ByteString"),
-                    typeId
-                );
-            } else {
-                extensionObject = new ExtensionObject(
-                    nodeToXmlElement(bodyNode.getFirstChild()),
-                    typeId
-                );
+                Node bodyNode = children.get("Body");
+                if (bodyNode != null) {
+                    if ("ByteString".equals(bodyNode.getLocalName()) &&
+                        Namespaces.OPC_UA_XSD.equals(bodyNode.getNamespaceURI())) {
+
+                        currentNode = bodyNode;
+
+                        extensionObject = new ExtensionObject(
+                            readByteString("ByteString"),
+                            typeId
+                        );
+                    } else {
+                        extensionObject = new ExtensionObject(
+                            nodeToXmlElement(bodyNode.getFirstChild()),
+                            typeId
+                        );
+                    }
+                }
+
+                return extensionObject;
+            } catch (Throwable t) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
+            } finally {
+                currentNode = node.getNextSibling();
             }
-        }
-
-        try {
+        } else {
             return extensionObject;
-        } finally {
-            currentNode = node.getNextSibling();
         }
     }
 
     @Override
     public DataValue readDataValue(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        Map<String, Node> children = nodeMap(node.getChildNodes());
+            Map<String, Node> children = nodeMap(currentNode.getChildNodes());
 
-        Variant value = Variant.NULL_VALUE;
-        StatusCode statusCode = StatusCode.GOOD;
-        DateTime sourceTimestamp = null;
-        UShort sourcePicoseconds = null;
-        DateTime serverTimestamp = null;
-        UShort serverPicoseconds = null;
+            Variant value = Variant.NULL_VALUE;
+            StatusCode statusCode = StatusCode.GOOD;
+            DateTime sourceTimestamp = null;
+            UShort sourcePicoseconds = null;
+            DateTime serverTimestamp = null;
+            UShort serverPicoseconds = null;
 
-        try {
-            Node valueNode = children.get("Value");
-            if (valueNode != null) {
-                currentNode = valueNode;
-                value = readVariant("Value");
+            try {
+                Node valueNode = children.get("Value");
+                if (valueNode != null) {
+                    currentNode = valueNode;
+                    value = readVariant("Value");
+                }
+
+                Node statusCodeNode = children.get("StatusCode");
+                if (statusCodeNode != null) {
+                    currentNode = statusCodeNode;
+                    statusCode = readStatusCode("StatusCode");
+                }
+
+                Node sourceTimestampNode = children.get("SourceTimestamp");
+                if (sourceTimestampNode != null) {
+                    currentNode = sourceTimestampNode;
+                    sourceTimestamp = readDateTime("SourceTimestamp");
+                }
+
+                Node sourcePicosecondsNode = children.get("SourcePicoseconds");
+                if (sourcePicosecondsNode != null) {
+                    currentNode = sourcePicosecondsNode;
+                    sourcePicoseconds = readUInt16("SourcePicoseconds");
+                }
+
+                Node serverTimestampNode = children.get("ServerTimestamp");
+                if (serverTimestampNode != null) {
+                    currentNode = serverTimestampNode;
+                    serverTimestamp = readDateTime("ServerTimestamp");
+                }
+
+                Node serverPicosecondsNode = children.get("ServerPicoseconds");
+                if (serverPicosecondsNode != null) {
+                    currentNode = serverPicosecondsNode;
+                    serverPicoseconds = readUInt16("ServerPicoseconds");
+                }
+
+                return new DataValue(
+                    value,
+                    statusCode,
+                    sourceTimestamp,
+                    sourcePicoseconds,
+                    serverTimestamp,
+                    serverPicoseconds
+                );
+            } finally {
+                currentNode = node.getNextSibling();
             }
-
-            Node statusCodeNode = children.get("StatusCode");
-            if (statusCodeNode != null) {
-                currentNode = statusCodeNode;
-                statusCode = readStatusCode("StatusCode");
-            }
-
-            Node sourceTimestampNode = children.get("SourceTimestamp");
-            if (sourceTimestampNode != null) {
-                currentNode = sourceTimestampNode;
-                sourceTimestamp = readDateTime("SourceTimestamp");
-            }
-
-            Node sourcePicosecondsNode = children.get("SourcePicoseconds");
-            if (sourcePicosecondsNode != null) {
-                currentNode = sourcePicosecondsNode;
-                sourcePicoseconds = readUInt16("SourcePicoseconds");
-            }
-
-            Node serverTimestampNode = children.get("ServerTimestamp");
-            if (serverTimestampNode != null) {
-                currentNode = serverTimestampNode;
-                serverTimestamp = readDateTime("ServerTimestamp");
-            }
-
-            Node serverPicosecondsNode = children.get("ServerPicoseconds");
-            if (serverPicosecondsNode != null) {
-                currentNode = serverPicosecondsNode;
-                serverPicoseconds = readUInt16("ServerPicoseconds");
-            }
-
-            return new DataValue(
-                value,
-                statusCode,
-                sourceTimestamp,
-                sourcePicoseconds,
-                serverTimestamp,
-                serverPicoseconds
-            );
-        } finally {
-            currentNode = node.getNextSibling();
+        } else {
+            return new DataValue(Variant.NULL_VALUE);
         }
     }
 
     @Override
     public Variant readVariant(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        currentNode = node.getFirstChild().getFirstChild();
+            try {
+                currentNode = node.getFirstChild().getFirstChild();
+                Object value = readVariantValue();
 
-        Object value = readVariantValue();
-
-        try {
-            return new Variant(value);
-        } finally {
-            currentNode = node.getNextSibling();
+                return new Variant(value);
+            } catch (Throwable t) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, t);
+            } finally {
+                currentNode = node.getNextSibling();
+            }
+        } else {
+            return Variant.NULL_VALUE;
         }
     }
 
     public Object readVariantValue() {
-        Node node = currentNode(null);
+        if (currentNode(null)) {
+            Node node = currentNode;
 
-        String nodeName = node.getLocalName();
+            String nodeName = node.getLocalName();
 
-        if (nodeName.startsWith("ListOf")) {
-            String type = nodeName.substring(6);
+            if (nodeName.startsWith("ListOf")) {
+                String type = nodeName.substring(6);
 
-            List<Object> values = new ArrayList<>();
-            NodeList childNodes = node.getChildNodes();
+                List<Object> values = new ArrayList<>();
+                NodeList childNodes = node.getChildNodes();
 
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                currentNode = childNodes.item(i);
+                for (int i = 0; i < childNodes.getLength(); i++) {
+                    currentNode = childNodes.item(i);
 
-                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                    values.add(readBuiltinType(type, type));
+                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                        values.add(readBuiltinType(type, type));
+                    }
                 }
-            }
 
-            Object array = Array.newInstance(builtinTypeClass(type), values.size());
-            for (int i = 0; i < values.size(); i++) {
-                Array.set(array, i, values.get(i));
-            }
-
-            return array;
-        } else if (nodeName.equals("Matrix")) {
-            List<Integer> dimensions = new ArrayList<>();
-            Node child = node.getFirstChild();
-            for (int i = 0; i < child.getChildNodes().getLength(); i++) {
-                currentNode = child.getChildNodes().item(i);
-
-                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                    dimensions.add(readInt32("Int32"));
+                Object array = Array.newInstance(builtinTypeClass(type), values.size());
+                for (int i = 0; i < values.size(); i++) {
+                    Array.set(array, i, values.get(i));
                 }
-            }
 
-            List<Object> elements = new ArrayList<>();
-            child = child.getNextSibling();
-            for (int i = 0; i < child.getChildNodes().getLength(); i++) {
-                currentNode = child.getChildNodes().item(i);
+                return array;
+            } else if (nodeName.equals("Matrix")) {
+                List<Integer> dimensions = new ArrayList<>();
+                Node child = node.getFirstChild();
+                for (int i = 0; i < child.getChildNodes().getLength(); i++) {
+                    currentNode = child.getChildNodes().item(i);
 
-                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                    String type = currentNode.getLocalName();
-                    elements.add(readBuiltinType(type, type));
+                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                        dimensions.add(readInt32("Int32"));
+                    }
                 }
-            }
 
-            Class<?> clazz = elements.get(0).getClass();
-            Object array = Array.newInstance(clazz, elements.size());
-            for (int i = 0; i < elements.size(); i++) {
-                Array.set(array, i, elements.get(i));
-            }
+                List<Object> elements = new ArrayList<>();
+                child = child.getNextSibling();
+                for (int i = 0; i < child.getChildNodes().getLength(); i++) {
+                    currentNode = child.getChildNodes().item(i);
 
-            int[] dims = new int[dimensions.size()];
-            for (int i = 0; i < dimensions.size(); i++) {
-                dims[i] = dimensions.get(i);
-            }
+                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                        String type = currentNode.getLocalName();
+                        elements.add(readBuiltinType(type, type));
+                    }
+                }
 
-            return ArrayUtil.unflatten(array, dims);
+                Class<?> clazz = elements.get(0).getClass();
+                Object array = Array.newInstance(clazz, elements.size());
+                for (int i = 0; i < elements.size(); i++) {
+                    Array.set(array, i, elements.get(i));
+                }
+
+                int[] dims = new int[dimensions.size()];
+                for (int i = 0; i < dimensions.size(); i++) {
+                    dims[i] = dimensions.get(i);
+                }
+
+                return ArrayUtil.unflatten(array, dims);
+            } else {
+                return readBuiltinType(nodeName, nodeName);
+            }
         } else {
-            return readBuiltinType(nodeName, nodeName);
+            return null;
         }
     }
 
@@ -714,122 +812,174 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
     @Override
     public DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        Map<String, Node> children = nodeMap(node.getChildNodes());
+            Map<String, Node> children = nodeMap(node.getChildNodes());
 
-        int symbolicId = -1;
-        int namespaceUri = -1;
-        int locale = -1;
-        int localizedText = -1;
-        String additionalInfo = null;
-        StatusCode innerStatusCode = null;
-        DiagnosticInfo innerDiagnosticInfo = null;
+            int symbolicId = -1;
+            int namespaceUri = -1;
+            int locale = -1;
+            int localizedText = -1;
+            String additionalInfo = null;
+            StatusCode innerStatusCode = null;
+            DiagnosticInfo innerDiagnosticInfo = null;
 
-        Node child = children.get("SymbolicId");
-        if (child != null) {
-            currentNode = child;
-            symbolicId = readInt32("SymbolicId");
-        }
+            Node child = children.get("SymbolicId");
+            if (child != null) {
+                currentNode = child;
+                symbolicId = readInt32("SymbolicId");
+            }
 
-        child = children.get("NamespaceUri");
-        if (child != null) {
-            currentNode = child;
-            namespaceUri = readInt32("NamespaceUri");
-        }
+            child = children.get("NamespaceUri");
+            if (child != null) {
+                currentNode = child;
+                namespaceUri = readInt32("NamespaceUri");
+            }
 
-        child = children.get("Locale");
-        if (child != null) {
-            currentNode = child;
-            locale = readInt32("Locale");
-        }
+            child = children.get("Locale");
+            if (child != null) {
+                currentNode = child;
+                locale = readInt32("Locale");
+            }
 
-        child = children.get("LocalizedText");
-        if (child != null) {
-            currentNode = child;
-            localizedText = readInt32("LocalizedText");
-        }
+            child = children.get("LocalizedText");
+            if (child != null) {
+                currentNode = child;
+                localizedText = readInt32("LocalizedText");
+            }
 
-        child = children.get("AdditionalInfo");
-        if (child != null) {
-            currentNode = child;
-            additionalInfo = readString("AdditionalInfo");
-        }
+            child = children.get("AdditionalInfo");
+            if (child != null) {
+                currentNode = child;
+                additionalInfo = readString("AdditionalInfo");
+            }
 
-        child = children.get("InnerStatusCode");
-        if (child != null) {
-            currentNode = child;
-            innerStatusCode = readStatusCode("InnerStatusCode");
-        }
+            child = children.get("InnerStatusCode");
+            if (child != null) {
+                currentNode = child;
+                innerStatusCode = readStatusCode("InnerStatusCode");
+            }
 
-        child = children.get("InnerDiagnosticInfo");
-        if (child != null) {
-            currentNode = child;
-            innerDiagnosticInfo = readDiagnosticInfo("InnerDiagnosticInfo");
-        }
+            child = children.get("InnerDiagnosticInfo");
+            if (child != null) {
+                currentNode = child;
+                innerDiagnosticInfo = readDiagnosticInfo("InnerDiagnosticInfo");
+            }
 
-        try {
-            return new DiagnosticInfo(
-                namespaceUri,
-                symbolicId,
-                locale,
-                localizedText,
-                additionalInfo,
-                innerStatusCode,
-                innerDiagnosticInfo
-            );
-        } finally {
-            currentNode = node.getNextSibling();
+            try {
+                return new DiagnosticInfo(
+                    namespaceUri,
+                    symbolicId,
+                    locale,
+                    localizedText,
+                    additionalInfo,
+                    innerStatusCode,
+                    innerDiagnosticInfo
+                );
+            } finally {
+                currentNode = node.getNextSibling();
+            }
+        } else {
+            return DiagnosticInfo.NULL_VALUE;
         }
     }
 
     @Override
     public UaMessage readMessage(String field) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        String typeName = node.getLocalName();
+            String typeName = node.getLocalName();
 
-        DataTypeCodec codec = context.getDataTypeManager().getCodec(
-            Namespaces.OPC_UA_XSD,
-            String.format("//xs:element[@name='%s']", typeName)
-        );
+            DataTypeCodec codec = context.getDataTypeManager().getCodec(
+                Namespaces.OPC_UA_XSD,
+                String.format("//xs:element[@name='%s']", typeName)
+            );
 
-        if (codec instanceof OpcUaXmlDataTypeCodec<?>) {
-            currentNode = node.getFirstChild();
+            if (codec instanceof OpcUaXmlDataTypeCodec<?>) {
+                currentNode = node.getFirstChild();
 
-            try {
-                return (UaMessage) ((OpcUaXmlDataTypeCodec<?>) codec).decode(context, this);
-            } finally {
-                currentNode = node.getNextSibling();
+                try {
+                    return (UaMessage) ((OpcUaXmlDataTypeCodec<?>) codec).decode(context, this);
+                } finally {
+                    currentNode = node.getNextSibling();
+                }
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + typeName
+                );
             }
         } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + typeName
-            );
+            // TODO could be better if we passed Class<?> into method
+            return null;
         }
     }
 
     @Override
-    public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        Node node = currentNode(field);
+    public <T extends Enum<?> & UaEnumeration> T readEnum(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
 
-        OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
-            context.getDataTypeManager()
-                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+        if (currentNode(field)) {
+            try {
+                String s = currentNode.getTextContent();
+                int lastIndex = s.lastIndexOf("_");
 
-        if (codec == null) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
-            );
+                if (lastIndex != -1) {
+                    try {
+                        int value = Integer.parseInt(s.substring(lastIndex + 1));
+                        Method m = enumType.getDeclaredMethod("from", int.class);
+                        Object o = m.invoke(null, value);
+                        return enumType.cast(o);
+                    } catch (ClassCastException | NoSuchMethodException |
+                        IllegalAccessException | InvocationTargetException e) {
+
+                        throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                    }
+                } else {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid enum value: " + s);
+                }
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            try {
+                return enumType.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
         }
+    }
 
-        try {
-            currentNode = node.getFirstChild();
-            return codec.decode(context, this);
-        } finally {
-            currentNode = node.getNextSibling();
+
+    @Override
+    public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
+        if (currentNode(field)) {
+            Node node = currentNode;
+
+            OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
+                context.getDataTypeManager()
+                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+
+            if (codec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + dataTypeId
+                );
+            }
+
+            try {
+                currentNode = node.getFirstChild();
+                return codec.decode(context, this);
+            } finally {
+                currentNode = node.getNextSibling();
+            }
+        } else {
+            // TODO could be better if we passed Class<?> into method
+            return null;
         }
     }
 
@@ -849,14 +999,19 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         if (codec instanceof OpcUaXmlDataTypeCodec) {
             OpcUaXmlDataTypeCodec xmlCodec = (OpcUaXmlDataTypeCodec) codec;
 
-            Node node = currentNode(field);
+            if (currentNode(field)) {
+                Node node = currentNode;
 
-            try {
-                currentNode = node.getFirstChild();
+                try {
+                    currentNode = node.getFirstChild();
 
-                return xmlCodec.decode(context, this);
-            } finally {
-                currentNode = node.getNextSibling();
+                    return xmlCodec.decode(context, this);
+                } finally {
+                    currentNode = node.getNextSibling();
+                }
+            } else {
+                // TODO could be better if we passed Class<?> into method
+                return null;
             }
         } else {
             throw new UaSerializationException(
@@ -873,34 +1028,38 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         Function<String, T> decoder,
         Class<T> clazz) throws UaSerializationException {
 
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        List<Object> values = new ArrayList<>();
-        Node listNode = node.getFirstChild();
+            List<Object> values = new ArrayList<>();
+            Node listNode = node.getFirstChild();
 
-        if (listNode != null) {
-            NodeList children = listNode.getChildNodes();
+            if (listNode != null) {
+                NodeList children = listNode.getChildNodes();
 
-            for (int i = 0; i < children.getLength(); i++) {
-                currentNode = children.item(i);
+                for (int i = 0; i < children.getLength(); i++) {
+                    currentNode = children.item(i);
 
-                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                    values.add(decoder.apply(currentNode.getLocalName()));
+                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                        values.add(decoder.apply(currentNode.getLocalName()));
+                    }
                 }
             }
-        }
 
-        try {
-            checkArrayLength(values.size());
+            try {
+                checkArrayLength(values.size());
 
-            Object array = Array.newInstance(clazz, values.size());
-            for (int i = 0; i < values.size(); i++) {
-                Array.set(array, i, values.get(i));
+                Object array = Array.newInstance(clazz, values.size());
+                for (int i = 0; i < values.size(); i++) {
+                    Array.set(array, i, values.get(i));
+                }
+
+                return (T[]) array;
+            } finally {
+                currentNode = node.getNextSibling();
             }
-
-            return (T[]) array;
-        } finally {
-            currentNode = node.getNextSibling();
+        } else {
+            return null;
         }
     }
 
@@ -1033,40 +1192,44 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
-        Node node = currentNode(field);
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-        OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
-            context.getDataTypeManager()
-                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+            OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
+                context.getDataTypeManager()
+                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
-        if (codec == null) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
-            );
-        }
-
-        List<Object> values = new ArrayList<>();
-        Node listNode = node.getFirstChild();
-        NodeList children = listNode.getChildNodes();
-
-        for (int i = 0; i < children.getLength(); i++) {
-            currentNode = children.item(i);
-
-            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                values.add(readStruct(currentNode.getLocalName(), dataTypeId));
-            }
-        }
-
-        try {
-            Object array = Array.newInstance(codec.getType(), values.size());
-            for (int i = 0; i < values.size(); i++) {
-                Array.set(array, i, values.get(i));
+            if (codec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + dataTypeId
+                );
             }
 
-            return (Object[]) array;
-        } finally {
-            currentNode = node.getNextSibling();
+            List<Object> values = new ArrayList<>();
+            Node listNode = node.getFirstChild();
+            NodeList children = listNode.getChildNodes();
+
+            for (int i = 0; i < children.getLength(); i++) {
+                currentNode = children.item(i);
+
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    values.add(readStruct(currentNode.getLocalName(), dataTypeId));
+                }
+            }
+
+            try {
+                Object array = Array.newInstance(codec.getType(), values.size());
+                for (int i = 0; i < values.size(); i++) {
+                    Array.set(array, i, values.get(i));
+                }
+
+                return (Object[]) array;
+            } finally {
+                currentNode = node.getNextSibling();
+            }
+        } else {
+            return null;
         }
     }
 

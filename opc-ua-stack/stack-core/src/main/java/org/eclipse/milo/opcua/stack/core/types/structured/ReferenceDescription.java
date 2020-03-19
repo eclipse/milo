@@ -122,7 +122,7 @@ public class ReferenceDescription extends Structure implements UaStructure {
             ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            NodeClass nodeClass = decoder.readEnum("NodeClass", NodeClass.class);
             ExpandedNodeId typeDefinition = decoder.readExpandedNodeId("TypeDefinition");
             return new ReferenceDescription(referenceTypeId, isForward, nodeId, browseName, displayName, nodeClass, typeDefinition);
         }
@@ -135,7 +135,7 @@ public class ReferenceDescription extends Structure implements UaStructure {
             encoder.writeExpandedNodeId("NodeId", value.getNodeId());
             encoder.writeQualifiedName("BrowseName", value.getBrowseName());
             encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeInt32("NodeClass", value.getNodeClass().getValue());
+            encoder.writeEnum("NodeClass", value.getNodeClass());
             encoder.writeExpandedNodeId("TypeDefinition", value.getTypeDefinition());
         }
     }

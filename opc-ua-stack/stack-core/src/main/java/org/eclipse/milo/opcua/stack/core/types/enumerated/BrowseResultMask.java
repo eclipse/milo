@@ -91,12 +91,12 @@ public enum BrowseResultMask implements UaEnumeration {
 
         @Override
         public BrowseResultMask decode(SerializationContext context, UaDecoder decoder) {
-            return BrowseResultMask.from(decoder.readInt32(null));
+            return decoder.readEnum(null, BrowseResultMask.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, BrowseResultMask value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -670,6 +672,21 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
                 StatusCodes.Bad_DecodingError,
                 "no codec registered: " + encodingId
             );
+        }
+    }
+
+    @Override
+    public <T extends Enum<?> & UaEnumeration> T readEnum(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
+
+        try {
+            Method m = enumType.getDeclaredMethod("from", int.class);
+            Object o = m.invoke(null, readInt32(field));
+            return enumType.cast(o);
+        } catch (ClassCastException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
     }
 

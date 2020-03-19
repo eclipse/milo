@@ -101,7 +101,7 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         public HistoryReadRequest decode(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ExtensionObject historyReadDetails = decoder.readExtensionObject("HistoryReadDetails");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readInt32("TimestampsToReturn"));
+            TimestampsToReturn timestampsToReturn = decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
             Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
             HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.readStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
             return new HistoryReadRequest(requestHeader, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead);
@@ -111,7 +111,7 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         public void encode(SerializationContext context, UaEncoder encoder, HistoryReadRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
-            encoder.writeInt32("TimestampsToReturn", value.getTimestampsToReturn().getValue());
+            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
             encoder.writeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
             encoder.writeStructArray("NodesToRead", value.getNodesToRead(), HistoryReadValueId.TYPE_ID);
         }

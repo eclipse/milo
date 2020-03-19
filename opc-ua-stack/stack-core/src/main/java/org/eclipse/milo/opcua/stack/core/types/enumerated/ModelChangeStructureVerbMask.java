@@ -71,13 +71,13 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
 
         @Override
         public ModelChangeStructureVerbMask decode(SerializationContext context, UaDecoder decoder) {
-            return ModelChangeStructureVerbMask.from(decoder.readInt32(null));
+            return decoder.readEnum(null, ModelChangeStructureVerbMask.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder,
                            ModelChangeStructureVerbMask value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

@@ -86,6 +86,8 @@ public interface UaEncoder {
 
     void writeMessage(String field, UaMessage message) throws UaSerializationException;
 
+    void writeEnum(String field, UaEnumeration value) throws UaSerializationException;
+
     void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException;
 
     void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException;

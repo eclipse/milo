@@ -26,7 +26,7 @@ public enum ExceptionDeviationFormat implements UaEnumeration {
 
     PercentOfRange(2),
 
-    PercentOfEURange(3),
+    PercentOfEuRange(3),
 
     Unknown(4);
 
@@ -51,7 +51,7 @@ public enum ExceptionDeviationFormat implements UaEnumeration {
             case 2:
                 return PercentOfRange;
             case 3:
-                return PercentOfEURange;
+                return PercentOfEuRange;
             case 4:
                 return Unknown;
             default:
@@ -71,13 +71,13 @@ public enum ExceptionDeviationFormat implements UaEnumeration {
 
         @Override
         public ExceptionDeviationFormat decode(SerializationContext context, UaDecoder decoder) {
-            return ExceptionDeviationFormat.from(decoder.readInt32(null));
+            return decoder.readEnum(null, ExceptionDeviationFormat.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder,
                            ExceptionDeviationFormat value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

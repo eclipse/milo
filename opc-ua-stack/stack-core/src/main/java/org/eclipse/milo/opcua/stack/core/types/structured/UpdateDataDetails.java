@@ -80,7 +80,7 @@ public class UpdateDataDetails extends HistoryUpdateDetails implements UaStructu
         @Override
         public UpdateDataDetails decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readInt32("PerformInsertReplace"));
+            PerformUpdateType performInsertReplace = decoder.readEnum("PerformInsertReplace", PerformUpdateType.class);
             DataValue[] updateValues = decoder.readDataValueArray("UpdateValues");
             return new UpdateDataDetails(nodeId, performInsertReplace, updateValues);
         }
@@ -88,7 +88,7 @@ public class UpdateDataDetails extends HistoryUpdateDetails implements UaStructu
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, UpdateDataDetails value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeInt32("PerformInsertReplace", value.getPerformInsertReplace().getValue());
+            encoder.writeEnum("PerformInsertReplace", value.getPerformInsertReplace());
             encoder.writeDataValueArray("UpdateValues", value.getUpdateValues());
         }
     }

@@ -63,12 +63,12 @@ public enum StructureType implements UaEnumeration {
 
         @Override
         public StructureType decode(SerializationContext context, UaDecoder decoder) {
-            return StructureType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, StructureType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, StructureType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

@@ -107,7 +107,7 @@ public class BrowseDescription extends Structure implements UaStructure {
         @Override
         public BrowseDescription decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            BrowseDirection browseDirection = BrowseDirection.from(decoder.readInt32("BrowseDirection"));
+            BrowseDirection browseDirection = decoder.readEnum("BrowseDirection", BrowseDirection.class);
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
             UInteger nodeClassMask = decoder.readUInt32("NodeClassMask");
@@ -118,7 +118,7 @@ public class BrowseDescription extends Structure implements UaStructure {
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, BrowseDescription value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeInt32("BrowseDirection", value.getBrowseDirection().getValue());
+            encoder.writeEnum("BrowseDirection", value.getBrowseDirection());
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
             encoder.writeUInt32("NodeClassMask", value.getNodeClassMask());

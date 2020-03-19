@@ -123,12 +123,12 @@ public enum FilterOperator implements UaEnumeration {
 
         @Override
         public FilterOperator decode(SerializationContext context, UaDecoder decoder) {
-            return FilterOperator.from(decoder.readInt32(null));
+            return decoder.readEnum(null, FilterOperator.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, FilterOperator value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

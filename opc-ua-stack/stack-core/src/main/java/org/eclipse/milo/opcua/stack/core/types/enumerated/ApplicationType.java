@@ -67,12 +67,12 @@ public enum ApplicationType implements UaEnumeration {
 
         @Override
         public ApplicationType decode(SerializationContext context, UaDecoder decoder) {
-            return ApplicationType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, ApplicationType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, ApplicationType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

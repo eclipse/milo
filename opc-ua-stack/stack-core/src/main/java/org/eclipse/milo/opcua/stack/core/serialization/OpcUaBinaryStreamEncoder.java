@@ -922,6 +922,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeEnum(String field, UaEnumeration value) {
+        writeInt32(value.getValue());
+    }
+
+    @Override
     public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         try {
             @SuppressWarnings("unchecked")

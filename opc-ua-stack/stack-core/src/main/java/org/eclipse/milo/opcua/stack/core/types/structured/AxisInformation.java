@@ -38,7 +38,7 @@ public class AxisInformation extends Structure implements UaStructure {
 
     private final EUInformation engineeringUnits;
 
-    private final Range eURange;
+    private final Range euRange;
 
     private final LocalizedText title;
 
@@ -46,10 +46,10 @@ public class AxisInformation extends Structure implements UaStructure {
 
     private final Double[] axisSteps;
 
-    public AxisInformation(EUInformation engineeringUnits, Range eURange, LocalizedText title,
+    public AxisInformation(EUInformation engineeringUnits, Range euRange, LocalizedText title,
                            AxisScaleEnumeration axisScaleType, Double[] axisSteps) {
         this.engineeringUnits = engineeringUnits;
-        this.eURange = eURange;
+        this.euRange = euRange;
         this.title = title;
         this.axisScaleType = axisScaleType;
         this.axisSteps = axisSteps;
@@ -74,8 +74,8 @@ public class AxisInformation extends Structure implements UaStructure {
         return engineeringUnits;
     }
 
-    public Range getEURange() {
-        return eURange;
+    public Range getEuRange() {
+        return euRange;
     }
 
     public LocalizedText getTitle() {
@@ -99,19 +99,19 @@ public class AxisInformation extends Structure implements UaStructure {
         @Override
         public AxisInformation decode(SerializationContext context, UaDecoder decoder) {
             EUInformation engineeringUnits = (EUInformation) decoder.readStruct("EngineeringUnits", EUInformation.TYPE_ID);
-            Range eURange = (Range) decoder.readStruct("EURange", Range.TYPE_ID);
+            Range euRange = (Range) decoder.readStruct("EURange", Range.TYPE_ID);
             LocalizedText title = decoder.readLocalizedText("Title");
-            AxisScaleEnumeration axisScaleType = AxisScaleEnumeration.from(decoder.readInt32("AxisScaleType"));
+            AxisScaleEnumeration axisScaleType = decoder.readEnum("AxisScaleType", AxisScaleEnumeration.class);
             Double[] axisSteps = decoder.readDoubleArray("AxisSteps");
-            return new AxisInformation(engineeringUnits, eURange, title, axisScaleType, axisSteps);
+            return new AxisInformation(engineeringUnits, euRange, title, axisScaleType, axisSteps);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, AxisInformation value) {
             encoder.writeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
-            encoder.writeStruct("EURange", value.getEURange(), Range.TYPE_ID);
+            encoder.writeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
             encoder.writeLocalizedText("Title", value.getTitle());
-            encoder.writeInt32("AxisScaleType", value.getAxisScaleType().getValue());
+            encoder.writeEnum("AxisScaleType", value.getAxisScaleType());
             encoder.writeDoubleArray("AxisSteps", value.getAxisSteps());
         }
     }

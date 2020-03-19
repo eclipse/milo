@@ -63,12 +63,12 @@ public enum NamingRuleType implements UaEnumeration {
 
         @Override
         public NamingRuleType decode(SerializationContext context, UaDecoder decoder) {
-            return NamingRuleType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, NamingRuleType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, NamingRuleType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

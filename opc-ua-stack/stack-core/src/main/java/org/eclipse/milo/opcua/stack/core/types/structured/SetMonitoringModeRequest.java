@@ -93,7 +93,7 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
         public SetMonitoringModeRequest decode(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readInt32("MonitoringMode"));
+            MonitoringMode monitoringMode = decoder.readEnum("MonitoringMode", MonitoringMode.class);
             UInteger[] monitoredItemIds = decoder.readUInt32Array("MonitoredItemIds");
             return new SetMonitoringModeRequest(requestHeader, subscriptionId, monitoringMode, monitoredItemIds);
         }
@@ -103,7 +103,7 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
                            SetMonitoringModeRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeInt32("MonitoringMode", value.getMonitoringMode().getValue());
+            encoder.writeEnum("MonitoringMode", value.getMonitoringMode());
             encoder.writeUInt32Array("MonitoredItemIds", value.getMonitoredItemIds());
         }
     }

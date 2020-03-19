@@ -67,12 +67,12 @@ public enum IdType implements UaEnumeration {
 
         @Override
         public IdType decode(SerializationContext context, UaDecoder decoder) {
-            return IdType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, IdType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, IdType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

@@ -109,7 +109,7 @@ public class ServerStatusDataType extends Structure implements UaStructure {
         public ServerStatusDataType decode(SerializationContext context, UaDecoder decoder) {
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime currentTime = decoder.readDateTime("CurrentTime");
-            ServerState state = ServerState.from(decoder.readInt32("State"));
+            ServerState state = decoder.readEnum("State", ServerState.class);
             BuildInfo buildInfo = (BuildInfo) decoder.readStruct("BuildInfo", BuildInfo.TYPE_ID);
             UInteger secondsTillShutdown = decoder.readUInt32("SecondsTillShutdown");
             LocalizedText shutdownReason = decoder.readLocalizedText("ShutdownReason");
@@ -121,7 +121,7 @@ public class ServerStatusDataType extends Structure implements UaStructure {
                            ServerStatusDataType value) {
             encoder.writeDateTime("StartTime", value.getStartTime());
             encoder.writeDateTime("CurrentTime", value.getCurrentTime());
-            encoder.writeInt32("State", value.getState().getValue());
+            encoder.writeEnum("State", value.getState());
             encoder.writeStruct("BuildInfo", value.getBuildInfo(), BuildInfo.TYPE_ID);
             encoder.writeUInt32("SecondsTillShutdown", value.getSecondsTillShutdown());
             encoder.writeLocalizedText("ShutdownReason", value.getShutdownReason());

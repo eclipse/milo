@@ -67,12 +67,12 @@ public enum BrowseDirection implements UaEnumeration {
 
         @Override
         public BrowseDirection decode(SerializationContext context, UaDecoder decoder) {
-            return BrowseDirection.from(decoder.readInt32(null));
+            return decoder.readEnum(null, BrowseDirection.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, BrowseDirection value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

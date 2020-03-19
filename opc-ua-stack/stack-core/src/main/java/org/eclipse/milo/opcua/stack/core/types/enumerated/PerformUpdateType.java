@@ -67,12 +67,12 @@ public enum PerformUpdateType implements UaEnumeration {
 
         @Override
         public PerformUpdateType decode(SerializationContext context, UaDecoder decoder) {
-            return PerformUpdateType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, PerformUpdateType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, PerformUpdateType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }

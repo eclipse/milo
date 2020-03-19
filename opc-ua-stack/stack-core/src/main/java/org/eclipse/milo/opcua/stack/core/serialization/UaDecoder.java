@@ -86,6 +86,8 @@ public interface UaDecoder {
 
     UaMessage readMessage(String field) throws UaSerializationException;
 
+    <T extends Enum<?> & UaEnumeration> T readEnum(String field, Class<T> enumType) throws UaSerializationException;
+
     Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;

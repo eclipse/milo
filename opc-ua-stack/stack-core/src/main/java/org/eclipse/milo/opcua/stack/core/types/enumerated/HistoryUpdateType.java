@@ -67,12 +67,12 @@ public enum HistoryUpdateType implements UaEnumeration {
 
         @Override
         public HistoryUpdateType decode(SerializationContext context, UaDecoder decoder) {
-            return HistoryUpdateType.from(decoder.readInt32(null));
+            return decoder.readEnum(null, HistoryUpdateType.class);
         }
 
         @Override
         public void encode(SerializationContext context, UaEncoder encoder, HistoryUpdateType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.writeEnum(null, value);
         }
     }
 }
