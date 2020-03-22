@@ -30,7 +30,7 @@ public class ClientCertificateValidatorIT extends StackIntegrationTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final CountDownLatch latch = new CountDownLatch(2);
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     private final ClientCertificateValidator validator = new ClientCertificateValidator() {
 
