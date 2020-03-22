@@ -107,7 +107,10 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
                     UInteger[] availableSequenceNumbers;
 
                     synchronized (subscription) {
-                        otherSession.getSubscriptionManager().sendStatusChangeNotification(subscription);
+                        otherSession.getSubscriptionManager().sendStatusChangeNotification(
+                            subscription,
+                            new StatusCode(StatusCodes.Good_SubscriptionTransferred)
+                        );
                         otherSession.getSubscriptionManager().removeSubscription(subscriptionId);
 
                         subscription.setSubscriptionManager(session.getSubscriptionManager());

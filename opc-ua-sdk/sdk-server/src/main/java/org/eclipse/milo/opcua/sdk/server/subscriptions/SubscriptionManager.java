@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.netty.util.AttributeKey;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -102,6 +103,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class SubscriptionManager {
 
+    static final AttributeKey<StatusCode[]> KEY_ACK_RESULTS = AttributeKey.valueOf("ackResults");
+
     private static final QualifiedName DEFAULT_BINARY_ENCODING = new QualifiedName(0, "DefaultBinary");
     private static final QualifiedName DEFAULT_XML_ENCODING = new QualifiedName(0, "DefaultXML");
 
@@ -112,8 +115,6 @@ public class SubscriptionManager {
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Map<UInteger, StatusCode[]> acknowledgeResults = Maps.newConcurrentMap();
 
     private final PublishQueue publishQueue = new PublishQueue();
 
@@ -1021,17 +1022,6 @@ public class SubscriptionManager {
     public void publish(ServiceRequest service) {
         PublishRequest request = (PublishRequest) service.getRequest();
 
-        if (!transferred.isEmpty()) {
-            Subscription subscription = transferred.remove(0);
-            subscription.returnStatusChangeNotification(service);
-            return;
-        }
-
-        if (subscriptions.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NoSubscription);
-            return;
-        }
-
         SubscriptionAcknowledgement[] acknowledgements = request.getSubscriptionAcknowledgements();
 
         if (acknowledgements != null) {
@@ -1043,18 +1033,39 @@ public class SubscriptionManager {
                 UInteger sequenceNumber = acknowledgement.getSequenceNumber();
                 UInteger subscriptionId = acknowledgement.getSubscriptionId();
 
-                logger.debug("Acknowledging sequenceNumber={} on subscriptionId={}", sequenceNumber, subscriptionId);
-
                 Subscription subscription = subscriptions.get(subscriptionId);
 
                 if (subscription == null) {
+                    logger.debug(
+                        "Can't acknowledge sequenceNumber={} on subscriptionId={}; id not valid for this session",
+                        sequenceNumber,
+                        subscriptionId
+                    );
                     results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
                 } else {
+                    logger.debug("Acknowledging sequenceNumber={} on subscriptionId={}",
+                        sequenceNumber,
+                        subscriptionId
+                    );
                     results[i] = subscription.acknowledge(sequenceNumber);
                 }
             }
 
-            acknowledgeResults.put(request.getRequestHeader().getRequestHandle(), results);
+            service.attr(KEY_ACK_RESULTS).set(results);
+        }
+
+        if (!transferred.isEmpty()) {
+            Subscription subscription = transferred.remove(0);
+            subscription.returnStatusChangeNotification(
+                service,
+                new StatusCode(StatusCodes.Good_SubscriptionTransferred)
+            );
+            return;
+        }
+
+        if (subscriptions.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NoSubscription);
+            return;
         }
 
         publishQueue.addRequest(service);
@@ -1220,15 +1231,11 @@ public class SubscriptionManager {
         return subscription;
     }
 
-    StatusCode[] getAcknowledgeResults(UInteger requestHandle) {
-        return acknowledgeResults.remove(requestHandle);
-    }
-
-    public void sendStatusChangeNotification(Subscription subscription) {
+    public void sendStatusChangeNotification(Subscription subscription, StatusCode status) {
         ServiceRequest service = publishQueue.poll();
 
         if (service != null) {
-            subscription.returnStatusChangeNotification(service);
+            subscription.returnStatusChangeNotification(service, status);
         } else {
             transferred.add(subscription);
         }
