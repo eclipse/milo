@@ -136,8 +136,10 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
         super.setMonitoringMode(monitoringMode);
     }
 
-    public synchronized void clearLastValue() {
-        lastValue = null;
+    public synchronized void maybeSendLastValue() {
+        if (queue.isEmpty()) {
+            enqueue(lastValue);
+        }
     }
 
     @Override
