@@ -59,6 +59,7 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager.KEY_ACK_RESULTS;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class Subscription {
@@ -374,13 +375,16 @@ public class Subscription {
 
         UInteger[] available = getAvailableSequenceNumbers();
 
-        UInteger requestHandle = service.getRequest().getRequestHeader().getRequestHandle();
-        StatusCode[] acknowledgeResults = subscriptionManager.getAcknowledgeResults(requestHandle);
+        StatusCode[] acknowledgeResults = service.attr(KEY_ACK_RESULTS).get();
 
         PublishResponse response = new PublishResponse(
-            header, subscriptionId, available,
-            moreNotifications, notificationMessage,
-            acknowledgeResults, new DiagnosticInfo[0]
+            header,
+            subscriptionId,
+            available,
+            moreNotifications,
+            notificationMessage,
+            acknowledgeResults,
+            new DiagnosticInfo[0]
         );
 
         service.setResponse(response);
@@ -389,10 +393,8 @@ public class Subscription {
             subscriptionId, sequenceNumber);
     }
 
-    void returnStatusChangeNotification(ServiceRequest service) {
-        StatusChangeNotification statusChange = new StatusChangeNotification(
-            new StatusCode(StatusCodes.Bad_Timeout), null
-        );
+    void returnStatusChangeNotification(ServiceRequest service, StatusCode status) {
+        StatusChangeNotification statusChange = new StatusChangeNotification(status, null);
 
         UInteger sequenceNumber = uint(nextSequenceNumber());
 
@@ -405,14 +407,23 @@ public class Subscription {
         ResponseHeader header = service.createResponseHeader();
 
         PublishResponse response = new PublishResponse(
-            header, subscriptionId,
-            new UInteger[0], false, notificationMessage,
-            new StatusCode[0], new DiagnosticInfo[0]
+            header,
+            subscriptionId,
+            new UInteger[0],
+            false,
+            notificationMessage,
+            service.attr(KEY_ACK_RESULTS).get(),
+            new DiagnosticInfo[0]
         );
 
         service.setResponse(response);
 
-        logger.debug("[id={}] returned StatusChangeNotification sequenceNumber={}.", subscriptionId, sequenceNumber);
+        logger.debug(
+            "[id={}] returned StatusChangeNotification ({}) sequenceNumber={}.",
+            subscriptionId,
+            status,
+            sequenceNumber
+        );
     }
 
     private void returnNotifications(ServiceRequest service) {
@@ -545,9 +556,7 @@ public class Subscription {
         }
 
         UInteger[] available = getAvailableSequenceNumbers();
-
-        UInteger requestHandle = service.getRequest().getRequestHeader().getRequestHandle();
-        StatusCode[] acknowledgeResults = subscriptionManager.getAcknowledgeResults(requestHandle);
+        StatusCode[] acknowledgeResults = service.attr(KEY_ACK_RESULTS).get();
 
         ResponseHeader header = service.createResponseHeader();
 
@@ -862,7 +871,7 @@ public class Subscription {
         }
 
         private void whenClosing(ServiceRequest service) {
-            returnStatusChangeNotification(service);
+            returnStatusChangeNotification(service, new StatusCode(StatusCodes.Bad_Timeout));
 
             setState(State.Closed);
         }
