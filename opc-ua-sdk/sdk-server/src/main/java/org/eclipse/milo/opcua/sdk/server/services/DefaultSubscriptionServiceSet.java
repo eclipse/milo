@@ -121,7 +121,7 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
                             subscription.getMonitoredItems().values().stream()
                                 .filter(item -> item instanceof MonitoredDataItem)
                                 .map(item -> (MonitoredDataItem) item)
-                                .forEach(MonitoredDataItem::clearLastValue);
+                                .forEach(MonitoredDataItem::maybeSendLastValue);
                         }
                     }
 
