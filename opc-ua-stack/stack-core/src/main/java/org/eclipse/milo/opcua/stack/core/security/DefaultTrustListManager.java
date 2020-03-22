@@ -29,6 +29,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -372,10 +373,16 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         if (files != null && files.length >= MAX_REJECTED_CERTIFICATES) {
             int excessCount = files.length - MAX_REJECTED_CERTIFICATES;
 
+            // If last modified of any file changes during the sort it can lead
+            // to "IllegalArgumentException: Comparison method violates its general contract!"
+            // thrown from Java's TimSort implementation.
+            Map<File, Long> stableLastModified = new HashMap<>();
+            Arrays.stream(files).forEach(f -> stableLastModified.put(f, f.lastModified()));
+
             Arrays.stream(files)
                 .sorted(
-                    (o1, o2) ->
-                        (int) (o1.lastModified() - o2.lastModified()))
+                    (f1, f2) ->
+                        (int) (stableLastModified.get(f1) - stableLastModified.get(f2)))
                 .limit(excessCount + 1)
                 .forEach(file -> {
                     if (!file.delete()) {
