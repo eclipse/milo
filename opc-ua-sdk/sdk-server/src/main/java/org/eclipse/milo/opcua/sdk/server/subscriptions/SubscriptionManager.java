@@ -475,7 +475,7 @@ public class SubscriptionManager {
             String indexRange = request.getItemToMonitor().getIndexRange();
             if (indexRange != null) NumericRange.parse(indexRange);
 
-            Double minimumSamplingInterval = 0.0;
+            Double minimumSamplingInterval = -1.0;
             try {
                 minimumSamplingInterval = attributeGroup.getMinimumSamplingInterval();
                 if (minimumSamplingInterval == null) {
@@ -778,7 +778,7 @@ public class SubscriptionManager {
                 throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid, e);
             }
 
-            Double minimumSamplingInterval = 0.0;
+            Double minimumSamplingInterval = -1.0;
             try {
                 minimumSamplingInterval = attributeGroup.getMinimumSamplingInterval();
                 if (minimumSamplingInterval == null) {

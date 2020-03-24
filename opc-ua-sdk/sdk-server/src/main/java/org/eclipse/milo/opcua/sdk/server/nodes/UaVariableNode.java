@@ -63,7 +63,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private UInteger[] arrayDimensions = null;
     private UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
     private UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    private Double minimumSamplingInterval = 0.0;
+    private Double minimumSamplingInterval = -1.0;
     private Boolean historizing = false;
 
     public UaVariableNode(
@@ -568,7 +568,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private UInteger[] arrayDimensions = null;
         private UByte accessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
         private UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-        private Double minimumSamplingInterval = 0.0;
+        private Double minimumSamplingInterval = -1.0;
         private boolean historizing = false;
 
         private final UaNodeContext context;
