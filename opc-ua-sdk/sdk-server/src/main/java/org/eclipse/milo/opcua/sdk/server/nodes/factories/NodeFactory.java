@@ -152,7 +152,7 @@ public class NodeFactory {
             idh = IDH_CACHE.get(
                 typeDefinitionId,
                 () -> {
-                    LoggerFactory.getLogger(getClass()).info(
+                    LoggerFactory.getLogger(NodeFactory.class).debug(
                         "InstanceDeclarationHierarchy cache " +
                             "miss for typeDefinitionId={}", typeDefinitionId
                     );
