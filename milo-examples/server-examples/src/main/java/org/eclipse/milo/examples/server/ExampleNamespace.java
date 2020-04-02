@@ -240,6 +240,7 @@ public class ExampleNamespace extends ManagedNamespace {
                     try {
                         Thread.sleep(2_000);
                     } catch (InterruptedException ignored) {
+                        // ignored
                     }
                 }
             }, "bogus-event-poster");
@@ -258,6 +259,7 @@ public class ExampleNamespace extends ManagedNamespace {
             eventThread.interrupt();
             eventThread.join();
         } catch (InterruptedException ignored) {
+            // ignored
         }
 
         super.onShutdown();
