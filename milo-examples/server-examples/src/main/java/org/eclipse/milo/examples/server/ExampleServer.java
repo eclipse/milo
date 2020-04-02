@@ -71,6 +71,7 @@ public class ExampleServer {
     }
 
     private final OpcUaServer server;
+    private final ExampleNamespace exampleNamespace;
 
     public ExampleServer() throws Exception {
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
@@ -152,8 +153,7 @@ public class ExampleServer {
 
         server = new OpcUaServer(serverConfig);
 
-        ExampleNamespace exampleNamespace = new ExampleNamespace(server);
-        exampleNamespace.startup();
+        exampleNamespace = new ExampleNamespace(server);
     }
 
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
@@ -243,10 +243,17 @@ public class ExampleServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
-        return server.startup();
+        // start ExampleNamespace only *after* the server has
+        // started up and started its own namespaces.
+        return server.startup().whenComplete((server, ex) -> {
+            if (server != null) {
+                exampleNamespace.startup();
+            }
+        });
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        exampleNamespace.shutdown();
         return server.shutdown();
     }
 

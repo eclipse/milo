@@ -14,7 +14,6 @@ import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
@@ -128,6 +127,9 @@ public class ExampleNamespace extends ManagedNamespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private volatile Thread eventThread;
+    private volatile boolean keepPostingEvents = true;
+
     private final Random random = new Random();
 
     private final DataTypeDictionaryManager dictionaryManager;
@@ -209,31 +211,40 @@ public class ExampleNamespace extends ManagedNamespace {
             ((ServerTypeNode) serverNode).setEventNotifier(ubyte(1));
 
             // Post a bogus Event every couple seconds
-            getServer().getScheduledExecutorService().scheduleAtFixedRate(() -> {
-                try {
-                    BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
-                        newNodeId(UUID.randomUUID()),
-                        Identifiers.BaseEventType
-                    );
+            eventThread = new Thread(() -> {
+                while (keepPostingEvents) {
+                    try {
+                        BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
+                            newNodeId(UUID.randomUUID()),
+                            Identifiers.BaseEventType
+                        );
 
-                    eventNode.setBrowseName(new QualifiedName(1, "foo"));
-                    eventNode.setDisplayName(LocalizedText.english("foo"));
-                    eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                    eventNode.setEventType(Identifiers.BaseEventType);
-                    eventNode.setSourceNode(serverNode.getNodeId());
-                    eventNode.setSourceName(serverNode.getDisplayName().getText());
-                    eventNode.setTime(DateTime.now());
-                    eventNode.setReceiveTime(DateTime.NULL_VALUE);
-                    eventNode.setMessage(LocalizedText.english("event message!"));
-                    eventNode.setSeverity(ushort(2));
+                        eventNode.setBrowseName(new QualifiedName(1, "foo"));
+                        eventNode.setDisplayName(LocalizedText.english("foo"));
+                        eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
+                        eventNode.setEventType(Identifiers.BaseEventType);
+                        eventNode.setSourceNode(serverNode.getNodeId());
+                        eventNode.setSourceName(serverNode.getDisplayName().getText());
+                        eventNode.setTime(DateTime.now());
+                        eventNode.setReceiveTime(DateTime.NULL_VALUE);
+                        eventNode.setMessage(LocalizedText.english("event message!"));
+                        eventNode.setSeverity(ushort(2));
 
-                    getServer().getEventBus().post(eventNode);
+                        getServer().getEventBus().post(eventNode);
 
-                    eventNode.delete();
-                } catch (Throwable e) {
-                    logger.error("Error creating EventNode: {}", e.getMessage(), e);
+                        eventNode.delete();
+                    } catch (Throwable e) {
+                        logger.error("Error creating EventNode: {}", e.getMessage(), e);
+                    }
+
+                    try {
+                        Thread.sleep(2_000);
+                    } catch (InterruptedException ignored) {
+                    }
                 }
-            }, 0, 2, TimeUnit.SECONDS);
+            }, "bogus-event-poster");
+
+            eventThread.start();
         }
     }
 
@@ -241,6 +252,13 @@ public class ExampleNamespace extends ManagedNamespace {
     protected void onShutdown() {
         dictionaryManager.shutdown();
         subscriptionModel.shutdown();
+
+        try {
+            keepPostingEvents = false;
+            eventThread.interrupt();
+            eventThread.join();
+        } catch (InterruptedException ignored) {
+        }
 
         super.onShutdown();
     }
