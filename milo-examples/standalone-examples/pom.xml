@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-client</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.3.5</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
