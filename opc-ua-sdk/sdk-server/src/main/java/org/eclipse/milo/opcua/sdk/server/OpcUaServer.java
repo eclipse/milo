@@ -144,6 +144,9 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        opcUaNamespace.shutdown();
+        serverNamespace.shutdown();
+
         eventFactory.shutdown();
 
         subscriptions.values()

@@ -154,6 +154,7 @@ public class ExampleServer {
         server = new OpcUaServer(serverConfig);
 
         exampleNamespace = new ExampleNamespace(server);
+        exampleNamespace.startup();
     }
 
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
@@ -243,17 +244,12 @@ public class ExampleServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
-        // start ExampleNamespace only *after* the server has
-        // started up and started its own namespaces.
-        return server.startup().whenComplete((server, ex) -> {
-            if (server != null) {
-                exampleNamespace.startup();
-            }
-        });
+        return server.startup();
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
         exampleNamespace.shutdown();
+
         return server.shutdown();
     }
 
