@@ -69,6 +69,8 @@ public class OpcUaServer {
 
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Stack.sharedScheduledExecutor();
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
@@ -118,7 +120,10 @@ public class OpcUaServer {
         VariableTypeInitializer.initialize(stackServer.getNamespaceTable(), variableTypeManager);
 
         opcUaNamespace = new OpcUaNamespace(this);
+        opcUaNamespace.startup();
+
         serverNamespace = new ServerNamespace(this);
+        serverNamespace.startup();
 
         serverTable.addUri(stackServer.getConfig().getApplicationUri());
 
@@ -132,8 +137,6 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
-        opcUaNamespace.startup();
-        serverNamespace.startup();
         eventFactory.startup();
 
         return stackServer.startup()
@@ -141,8 +144,6 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
-        opcUaNamespace.shutdown();
-        serverNamespace.shutdown();
         eventFactory.shutdown();
 
         subscriptions.values()
