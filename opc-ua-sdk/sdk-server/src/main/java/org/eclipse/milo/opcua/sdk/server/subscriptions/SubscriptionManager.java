@@ -831,24 +831,41 @@ public class SubscriptionManager {
     private double getSamplingInterval(
         Subscription subscription,
         Double minimumSamplingInterval,
-        Double requestedSamplingInterval) {
+        Double requestedSamplingInterval
+    ) {
 
         double samplingInterval = requestedSamplingInterval;
+
+        if (requestedSamplingInterval < 0) {
+            samplingInterval = subscription.getPublishingInterval();
+        } else if (requestedSamplingInterval == 0) {
+            if (minimumSamplingInterval < 0) {
+                // Node has no opinion on sampling interval (indeterminate)
+                samplingInterval = subscription.getPublishingInterval();
+            } else if (minimumSamplingInterval == 0) {
+                // Node allows report-by-exception
+                samplingInterval = minimumSamplingInterval;
+            } else if (minimumSamplingInterval > 0) {
+                // Node has a defined minimum sampling interval, use that
+                // because requested rate of 0 means "fastest practical rate"
+                samplingInterval = minimumSamplingInterval;
+            }
+        } else {
+            if (requestedSamplingInterval < minimumSamplingInterval) {
+                samplingInterval = minimumSamplingInterval;
+            }
+        }
+
         double minSupportedSampleRate = server.getConfig().getLimits().getMinSupportedSampleRate();
         double maxSupportedSampleRate = server.getConfig().getLimits().getMaxSupportedSampleRate();
 
-        if (samplingInterval < 0) {
-            samplingInterval = subscription.getPublishingInterval();
-        }
-        if (samplingInterval < minimumSamplingInterval) {
-            samplingInterval = minimumSamplingInterval;
-        }
         if (samplingInterval < minSupportedSampleRate) {
             samplingInterval = minSupportedSampleRate;
         }
         if (samplingInterval > maxSupportedSampleRate) {
             samplingInterval = maxSupportedSampleRate;
         }
+
         return samplingInterval;
     }
 
