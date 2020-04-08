@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.MapMaker;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     private final ConcurrentMap<NodeId, T> nodeMap;
-    private final ConcurrentMap<NodeId, ConcurrentHashMultiset<Reference>> referenceMap;
+    private final ConcurrentMap<NodeId, ReferenceMultiset> referenceMap;
 
     public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
@@ -55,15 +55,6 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
      */
     protected ConcurrentMap<NodeId, T> getNodeMap() {
         return nodeMap;
-    }
-
-    /**
-     * Get the backing {@link ConcurrentMap} holding this {@link NodeManager}'s References.
-     *
-     * @return the backing {@link ConcurrentMap} holding this {@link NodeManager}'s References.
-     */
-    public ConcurrentMap<NodeId, ConcurrentHashMultiset<Reference>> getReferenceMap() {
-        return referenceMap;
     }
 
     /**
@@ -123,12 +114,14 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public void addReference(Reference reference) {
-        ConcurrentHashMultiset<Reference> references = referenceMap.computeIfAbsent(
+        ReferenceMultiset references = referenceMap.computeIfAbsent(
             reference.getSourceNodeId(),
-            nodeId -> ConcurrentHashMultiset.create()
+            nodeId -> new ReferenceMultiset()
         );
 
-        references.add(reference);
+        synchronized (references.lock) {
+            references.multiset.add(reference);
+        }
     }
 
     @Override
@@ -140,29 +133,17 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public void removeReference(Reference reference) {
-        ConcurrentHashMultiset<Reference> references = referenceMap.computeIfAbsent(
-            reference.getSourceNodeId(),
-            nodeId -> ConcurrentHashMultiset.create()
+        ReferenceMultiset references = referenceMap.get(
+            reference.getSourceNodeId()
         );
 
-        references.remove(reference);
+        if (references != null) {
+            synchronized (references.lock) {
+                references.multiset.remove(reference);
 
-        if (references.isEmpty()) {
-            references = referenceMap.remove(reference.getSourceNodeId());
-
-            if (references != null && !references.isEmpty()) {
-                // Oops, it gained a node between isEmpty() and remove(), merge
-                // it back in...
-                referenceMap.merge(
-                    reference.getSourceNodeId(),
-                    references,
-                    (references1, references2) -> {
-                        ConcurrentHashMultiset<Reference> merged = ConcurrentHashMultiset.create();
-                        merged.addAll(references1);
-                        merged.addAll(references2);
-                        return merged;
-                    }
-                );
+                if (references.multiset.isEmpty()) {
+                    referenceMap.remove(reference.getSourceNodeId());
+                }
             }
         }
     }
@@ -176,10 +157,12 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public List<Reference> getReferences(NodeId nodeId) {
-        ConcurrentHashMultiset<Reference> references = referenceMap.get(nodeId);
+        ReferenceMultiset references = referenceMap.get(nodeId);
 
         if (references != null) {
-            return new ArrayList<>(references);
+            synchronized (references.lock) {
+                return new ArrayList<>(references.multiset);
+            }
         } else {
             return Collections.emptyList();
         }
@@ -191,6 +174,11 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
             .stream()
             .filter(filter)
             .collect(Collectors.toList());
+    }
+
+    private static class ReferenceMultiset {
+        private final Object lock = new Object();
+        private final LinkedHashMultiset<Reference> multiset = LinkedHashMultiset.create();
     }
 
 }
