@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     private final ConcurrentMap<NodeId, T> nodeMap;
-    private final ConcurrentMap<NodeId, ReferenceMultiset> referenceMap;
+    private final ConcurrentMap<NodeId, LinkedHashMultiset<Reference>> referenceMap;
 
     public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
@@ -55,6 +55,15 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
      */
     protected ConcurrentMap<NodeId, T> getNodeMap() {
         return nodeMap;
+    }
+
+    /**
+     * Get the backing {@link ConcurrentMap} holding this {@link NodeManager}'s References.
+     *
+     * @return the backing {@link ConcurrentMap} holding this {@link NodeManager}'s References.
+     */
+    public ConcurrentMap<NodeId, LinkedHashMultiset<Reference>> getReferenceMap() {
+        return referenceMap;
     }
 
     /**
@@ -113,56 +122,50 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public void addReference(Reference reference) {
-        ReferenceMultiset references = referenceMap.computeIfAbsent(
+    public synchronized void addReference(Reference reference) {
+        LinkedHashMultiset<Reference> references = referenceMap.computeIfAbsent(
             reference.getSourceNodeId(),
-            nodeId -> new ReferenceMultiset()
+            nodeId -> LinkedHashMultiset.create()
         );
 
-        synchronized (references.lock) {
-            references.multiset.add(reference);
-        }
+        references.add(reference);
     }
 
     @Override
-    public void addReferences(Reference reference, NamespaceTable namespaceTable) {
+    public synchronized void addReferences(Reference reference, NamespaceTable namespaceTable) {
         addReference(reference);
 
         reference.invert(namespaceTable).ifPresent(this::addReference);
     }
 
     @Override
-    public void removeReference(Reference reference) {
-        ReferenceMultiset references = referenceMap.get(
+    public synchronized void removeReference(Reference reference) {
+        LinkedHashMultiset<Reference> references = referenceMap.get(
             reference.getSourceNodeId()
         );
 
         if (references != null) {
-            synchronized (references.lock) {
-                references.multiset.remove(reference);
+            references.remove(reference);
 
-                if (references.multiset.isEmpty()) {
-                    referenceMap.remove(reference.getSourceNodeId());
-                }
+            if (references.isEmpty()) {
+                referenceMap.remove(reference.getSourceNodeId());
             }
         }
     }
 
     @Override
-    public void removeReferences(Reference reference, NamespaceTable namespaceTable) {
+    public synchronized void removeReferences(Reference reference, NamespaceTable namespaceTable) {
         removeReference(reference);
 
         reference.invert(namespaceTable).ifPresent(this::removeReference);
     }
 
     @Override
-    public List<Reference> getReferences(NodeId nodeId) {
-        ReferenceMultiset references = referenceMap.get(nodeId);
+    public synchronized List<Reference> getReferences(NodeId nodeId) {
+        LinkedHashMultiset<Reference> references = referenceMap.get(nodeId);
 
         if (references != null) {
-            synchronized (references.lock) {
-                return new ArrayList<>(references.multiset);
-            }
+            return new ArrayList<>(references);
         } else {
             return Collections.emptyList();
         }
@@ -174,11 +177,6 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
             .stream()
             .filter(filter)
             .collect(Collectors.toList());
-    }
-
-    private static class ReferenceMultiset {
-        private final Object lock = new Object();
-        private final LinkedHashMultiset<Reference> multiset = LinkedHashMultiset.create();
     }
 
 }
