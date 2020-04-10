@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -62,7 +61,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
  * <p>
  * Service call operations are executed by the first sub-AddressSpace that matches on the NodeId in the operation.
  */
-public abstract class AddressSpaceComposite extends AbstractLifecycle implements AddressSpace {
+public abstract class AddressSpaceComposite implements AddressSpace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -75,12 +74,6 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public AddressSpaceComposite(OpcUaServer server) {
         this.server = server;
     }
-
-    @Override
-    protected void onStartup() {}
-
-    @Override
-    protected void onShutdown() {}
 
     @Override
     public AddressSpaceFilter getFilter() {
@@ -902,16 +895,6 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         }
 
         // EmptyAddressSpace is used ephemerally and should never be started/registered
-
-        @Override
-        protected void onStartup() {
-            throw new IllegalStateException("EmptyAddressSpace onStartup()");
-        }
-
-        @Override
-        protected void onShutdown() {
-            throw new IllegalStateException("EmptyAddressSpace onShutdown()");
-        }
 
         @Override
         public AddressSpaceFilter getFilter() {
