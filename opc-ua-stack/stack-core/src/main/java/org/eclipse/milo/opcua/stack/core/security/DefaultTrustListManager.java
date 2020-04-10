@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -346,21 +347,28 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     private synchronized void replaceCrlsInDir(List<X509CRL> crls, File dir) {
-        File[] files = dir.listFiles();
-        if (files == null) files = new File[0];
-
-        Arrays.stream(files).forEach(File::delete);
+        deleteDirectoryContents(dir);
 
         crls.forEach(crl -> writeCrlToDir(crl, dir));
     }
 
     private synchronized void replaceCertificatesInDir(List<X509Certificate> certificates, File dir) {
+        deleteDirectoryContents(dir);
+
+        certificates.forEach(certificate -> writeCertificateToDir(certificate, dir));
+    }
+
+    private static void deleteDirectoryContents(File dir) {
         File[] files = dir.listFiles();
         if (files == null) files = new File[0];
 
-        Arrays.stream(files).forEach(File::delete);
-
-        certificates.forEach(certificate -> writeCertificateToDir(certificate, dir));
+        Arrays.stream(files).forEach(file -> {
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                LOGGER.warn("Failed to delete file: {}", file, e);
+            }
+        });
     }
 
     /**
