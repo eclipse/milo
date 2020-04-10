@@ -29,7 +29,7 @@ public final class ObjectTypeNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String,
+        Identifiers.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -43,7 +43,7 @@ public final class ObjectTypeNodeProperties {
     public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "Icon",
-        Identifiers.Image,
+        Identifiers.Image.expanded(),
         ValueRanks.Scalar,
         ByteString.class
     );
