@@ -34,7 +34,6 @@ import org.mockito.Mockito;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
 
 public class ArrayValueAttributeFilterTest {
@@ -89,7 +88,7 @@ public class ArrayValueAttributeFilterTest {
     public void testArrayValueAttributeFilter() {
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
             .setNodeId(NodeId.NULL_VALUE)
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
             .setBrowseName(new QualifiedName(1, "foo"))
             .setDisplayName(LocalizedText.NULL_VALUE)
             .setDataType(Identifiers.String)

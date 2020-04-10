@@ -33,7 +33,6 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class AttributeWriterTest {
@@ -89,7 +88,7 @@ public class AttributeWriterTest {
         Consumer<UaVariableNode> nodeCustomizer) throws UaException {
 
         final UaVariableNode varNode = createMockNode("test", node -> {
-            UByte accessLevel = ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE));
+            UByte accessLevel = AccessLevel.toValue(AccessLevel.READ_WRITE);
             node.setAccessLevel(accessLevel);
             node.setUserAccessLevel(accessLevel);
             if (nodeCustomizer != null) {

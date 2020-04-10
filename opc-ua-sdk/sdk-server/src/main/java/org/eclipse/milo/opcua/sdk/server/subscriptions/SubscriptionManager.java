@@ -460,8 +460,8 @@ public class SubscriptionManager {
                 UByte userAccessLevel = attributeGroup.getUserAccessLevel();
                 if (userAccessLevel == null) userAccessLevel = ubyte(0);
 
-                EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
-                EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
+                EnumSet<AccessLevel> accessLevels = AccessLevel.fromValue(accessLevel);
+                EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromValue(userAccessLevel);
 
                 if (!accessLevels.contains(AccessLevel.CurrentRead)) {
                     throw new UaException(StatusCodes.Bad_NotReadable);

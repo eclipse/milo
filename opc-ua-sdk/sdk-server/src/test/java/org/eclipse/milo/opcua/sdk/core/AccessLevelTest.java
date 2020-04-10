@@ -12,59 +12,64 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
 
 public class AccessLevelTest {
 
     @Test
-    public void testGetMask() {
+    public void testToValue() {
         for (AccessLevel accessLevel : AccessLevel.values()) {
-            assertEquals(AccessLevel.getMask(accessLevel), accessLevel.getValue());
+            assertEquals(AccessLevel.toValue(accessLevel), ubyte(accessLevel.getValue()));
         }
 
-        assertEquals(AccessLevel.getMask(AccessLevel.NONE), 0);
+        assertEquals(AccessLevel.toValue(AccessLevel.NONE), ubyte(0));
 
         assertEquals(
-            AccessLevel.getMask(AccessLevel.READ_ONLY),
-            AccessLevel.CurrentRead.getValue());
+            AccessLevel.toValue(AccessLevel.READ_ONLY).intValue(),
+            AccessLevel.CurrentRead.getValue()
+        );
 
         assertEquals(
-            AccessLevel.getMask(AccessLevel.READ_WRITE),
-            AccessLevel.CurrentRead.getValue() | AccessLevel.CurrentWrite.getValue());
+            AccessLevel.toValue(AccessLevel.READ_WRITE).intValue(),
+            AccessLevel.CurrentRead.getValue() | AccessLevel.CurrentWrite.getValue()
+        );
 
         assertEquals(
-            AccessLevel.getMask(AccessLevel.HISTORY_READ_ONLY),
-            AccessLevel.HistoryRead.getValue());
+            AccessLevel.toValue(AccessLevel.HISTORY_READ_ONLY).intValue(),
+            AccessLevel.HistoryRead.getValue()
+        );
 
         assertEquals(
-            AccessLevel.getMask(AccessLevel.HISTORY_READ_WRITE),
-            AccessLevel.HistoryRead.getValue() | AccessLevel.HistoryWrite.getValue());
+            AccessLevel.toValue(AccessLevel.HISTORY_READ_WRITE).intValue(),
+            AccessLevel.HistoryRead.getValue() | AccessLevel.HistoryWrite.getValue()
+        );
     }
 
     @Test
-    public void testFromMask() {
-        assertEquals(AccessLevel.fromMask(0), AccessLevel.NONE);
+    public void testFromValue() {
+        assertEquals(AccessLevel.fromValue(0), AccessLevel.NONE);
 
         assertEquals(
-            AccessLevel.fromMask(
+            AccessLevel.fromValue(
                 AccessLevel.CurrentRead.getValue()),
             AccessLevel.READ_ONLY
         );
 
         assertEquals(
-            AccessLevel.fromMask(
+            AccessLevel.fromValue(
                 AccessLevel.CurrentRead.getValue() | AccessLevel.CurrentWrite.getValue()),
             AccessLevel.READ_WRITE
         );
 
         assertEquals(
-            AccessLevel.fromMask(
+            AccessLevel.fromValue(
                 AccessLevel.HistoryRead.getValue()),
             AccessLevel.HISTORY_READ_ONLY
         );
 
         assertEquals(
-            AccessLevel.fromMask(
+            AccessLevel.fromValue(
                 AccessLevel.HistoryRead.getValue() | AccessLevel.HistoryWrite.getValue()),
             AccessLevel.HISTORY_READ_WRITE
         );

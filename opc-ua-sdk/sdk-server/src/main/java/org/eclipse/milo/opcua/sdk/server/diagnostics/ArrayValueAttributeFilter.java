@@ -39,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
 class ArrayValueAttributeFilter implements AttributeFilter {
 
@@ -118,8 +117,8 @@ class ArrayValueAttributeFilter implements AttributeFilter {
                     elementNode.setArrayDimensions(null);
                     elementNode.setValueRank(ValueRanks.Scalar);
                     elementNode.setDataType(arrayNode.getDataType());
-                    elementNode.setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_ONLY)));
-                    elementNode.setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_ONLY)));
+                    elementNode.setAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
+                    elementNode.setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
 
                     elementNodes.add(elementNode);
 

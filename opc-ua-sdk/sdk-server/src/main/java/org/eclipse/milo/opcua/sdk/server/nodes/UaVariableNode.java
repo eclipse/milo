@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -41,7 +42,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
@@ -51,7 +51,6 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDI
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_TYPE_DEFINITION_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
 public class UaVariableNode extends UaNode implements VariableNode {
 
@@ -61,8 +60,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private NodeId dataType = Identifiers.BaseDataType;
     private Integer valueRank = ValueRanks.Scalar;
     private UInteger[] arrayDimensions = null;
-    private UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    private UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+    private UByte accessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
+    private UByte userAccessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
     private Double minimumSamplingInterval = -1.0;
     private Boolean historizing = false;
 
@@ -566,8 +565,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private NodeId dataType;
         private int valueRank = ValueRanks.Scalar;
         private UInteger[] arrayDimensions = null;
-        private UByte accessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-        private UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+        private UByte accessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
+        private UByte userAccessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
         private Double minimumSamplingInterval = -1.0;
         private boolean historizing = false;
 

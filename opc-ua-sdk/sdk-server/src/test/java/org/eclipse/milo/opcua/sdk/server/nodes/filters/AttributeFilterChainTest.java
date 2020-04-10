@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -84,7 +83,7 @@ public class AttributeFilterChainTest {
     public void testEmptyChain() {
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
             .setNodeId(NodeId.NULL_VALUE)
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
             .setBrowseName(QualifiedName.NULL_VALUE)
             .setDisplayName(LocalizedText.NULL_VALUE)
             .setDataType(Identifiers.String)
@@ -103,7 +102,7 @@ public class AttributeFilterChainTest {
 
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
             .setNodeId(NodeId.NULL_VALUE)
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
             .setBrowseName(QualifiedName.NULL_VALUE)
             .setDisplayName(LocalizedText.NULL_VALUE)
             .setDataType(Identifiers.String)

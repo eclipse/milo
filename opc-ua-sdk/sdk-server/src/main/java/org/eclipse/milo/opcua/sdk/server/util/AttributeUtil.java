@@ -66,7 +66,7 @@ public class AttributeUtil {
         );
 
         if (accessLevel != null) {
-            return AccessLevel.fromMask(accessLevel);
+            return AccessLevel.fromValue(accessLevel);
         } else {
             return AccessLevel.NONE;
         }
@@ -83,7 +83,7 @@ public class AttributeUtil {
         );
 
         if (userAccessLevel != null) {
-            return AccessLevel.fromMask(userAccessLevel);
+            return AccessLevel.fromValue(userAccessLevel);
         } else {
             return AccessLevel.NONE;
         }
