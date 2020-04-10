@@ -16,8 +16,6 @@ import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.Lifecycle;
-import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.methods.MethodInvocationHandler;
@@ -48,11 +46,9 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ManagedAddressSpace implements AddressSpace, Lifecycle {
+public abstract class ManagedAddressSpace implements AddressSpace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final LifecycleManager lifecycleManager = new LifecycleManager();
 
     private final UaNodeManager nodeManager = new UaNodeManager();
 
@@ -77,30 +73,6 @@ public abstract class ManagedAddressSpace implements AddressSpace, Lifecycle {
         };
 
         nodeFactory = createNodeFactory();
-
-        lifecycleManager.addLifecycle(new Lifecycle() {
-            @Override
-            public void startup() {
-                registerAddressSpace(ManagedAddressSpace.this);
-                registerNodeManager(nodeManager);
-            }
-
-            @Override
-            public void shutdown() {
-                unregisterAddressSpace(ManagedAddressSpace.this);
-                unregisterNodeManager(nodeManager);
-            }
-        });
-    }
-
-    @Override
-    public void startup() {
-        lifecycleManager.startup();
-    }
-
-    @Override
-    public void shutdown() {
-        lifecycleManager.shutdown();
     }
 
     protected NodeFactory createNodeFactory() {
@@ -121,60 +93,6 @@ public abstract class ManagedAddressSpace implements AddressSpace, Lifecycle {
 
     protected UaNodeManager getNodeManager() {
         return nodeManager;
-    }
-
-    protected LifecycleManager getLifecycleManager() {
-        return lifecycleManager;
-    }
-
-    /**
-     * Register this {@link ManagedAddressSpace} with its managing entity.
-     * <p>
-     * The default implementation registers it with the Server's {@link AddressSpaceManager}.
-     * <p>
-     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
-     * should override this to register with that composite.
-     *
-     * @param addressSpace the {@link AddressSpace} to register.
-     */
-    protected void registerAddressSpace(AddressSpace addressSpace) {
-        server.getAddressSpaceManager().register(addressSpace);
-    }
-
-    /**
-     * Unregister this {@link ManagedAddressSpace} with its managing entity.
-     * <p>
-     * The default implementation unregisters it with the Server's {@link AddressSpaceManager}.
-     * <p>
-     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
-     * should override this to unregister with that composite.
-     *
-     * @param addressSpace the {@link AddressSpace} to unregister.
-     */
-    protected void unregisterAddressSpace(AddressSpace addressSpace) {
-        server.getAddressSpaceManager().unregister(addressSpace);
-    }
-
-    /**
-     * Register this {@link ManagedAddressSpace}'s {@link UaNodeManager} with its managing entity.
-     * <p>
-     * The default implementation registers it with the Server's {@link AddressSpaceManager}.
-     *
-     * @param nodeManager the {@link UaNodeManager} to register.
-     */
-    protected void registerNodeManager(UaNodeManager nodeManager) {
-        server.getAddressSpaceManager().register(nodeManager);
-    }
-
-    /**
-     * Unregister this {@link ManagedAddressSpace}'s {@link UaNodeManager} with its managing entity.
-     * <p>
-     * The default implementation unregisters it with the Server's {@link AddressSpaceManager}.
-     *
-     * @param nodeManager the {@link UaNodeManager} to unregister.
-     */
-    protected void unregisterNodeManager(UaNodeManager nodeManager) {
-        server.getAddressSpaceManager().unregister(nodeManager);
     }
 
     @Override
