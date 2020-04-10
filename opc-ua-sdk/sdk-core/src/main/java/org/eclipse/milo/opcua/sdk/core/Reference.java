@@ -117,24 +117,6 @@ public class Reference {
      * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
      *
      * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
-     * @deprecated use {@link #invert(NamespaceTable)}
-     */
-    @Deprecated
-    public Optional<Reference> invert() {
-        return getTargetNodeId().local().map(
-            sourceNodeId -> new Reference(
-                sourceNodeId,
-                getReferenceTypeId(),
-                getSourceNodeId().expanded(),
-                !isForward()
-            )
-        );
-    }
-
-    /**
-     * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
-     *
-     * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
      */
     public Optional<Reference> invert(NamespaceTable namespaceTable) {
         return getTargetNodeId().local(namespaceTable).map(
