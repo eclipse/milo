@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
@@ -65,12 +65,12 @@ public class HelloMessage {
                         @UInt32Primitive long sendBufferSize,
                         @UInt32Primitive long maxMessageSize,
                         @UInt32Primitive long maxChunkCount,
-                        @Nonnull String endpointUrl) {
+                        @Nullable String endpointUrl) {
 
         checkArgument(receiveBufferSize >= 8192, "receiverBufferSize must be at least 8192 bytes");
         checkArgument(sendBufferSize >= 8192, "sendBufferSize must be at least 8192 bytes");
         checkArgument(
-            endpointUrl.length() <= MAX_ENDPOINT_URL_LENGTH,
+            endpointUrl == null || endpointUrl.length() <= MAX_ENDPOINT_URL_LENGTH,
             "endpointUrl length cannot be greater than 4096 bytes");
 
         this.protocolVersion = protocolVersion;
@@ -106,6 +106,7 @@ public class HelloMessage {
         return maxChunkCount;
     }
 
+    @Nullable
     public String getEndpointUrl() {
         return endpointUrl;
     }
