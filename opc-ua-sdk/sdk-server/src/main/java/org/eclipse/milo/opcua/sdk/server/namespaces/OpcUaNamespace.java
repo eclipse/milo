@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -86,36 +87,34 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         diagnosticsManager = new DiagnosticsManager(server, getNodeFactory(), getNodeManager());
         subscriptionModel = new SubscriptionModel(server, this);
-    }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
+        getLifecycleManager().addStartupTask(() -> {
+            loadNodes();
+            configureServerObject();
+            configureConditionRefresh();
 
-        subscriptionModel.startup();
+            // Set a reasonable value for the MinimumSamplingInterval
+            // attribute on all VariableNodes, otherwise it defaults to 0.
+            getNodeManager().getNodes()
+                .stream()
+                .filter(node -> node instanceof UaVariableNode)
+                .map(UaVariableNode.class::cast)
+                .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
+        });
 
-        loadNodes();
-        configureServerObject();
-        configureConditionRefresh();
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                subscriptionModel.startup();
+                diagnosticsManager.startup();
+            }
 
-        // Set a reasonable value for the MinimumSamplingInterval
-        // attribute on all VariableNodes, otherwise it defaults to 0.
-        getNodeManager().getNodes()
-            .stream()
-            .filter(node -> node instanceof UaVariableNode)
-            .map(UaVariableNode.class::cast)
-            .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
-
-        diagnosticsManager.startup();
-    }
-
-    @Override
-    protected void onShutdown() {
-        super.onShutdown();
-
-        subscriptionModel.shutdown();
-
-        diagnosticsManager.shutdown();
+            @Override
+            public void shutdown() {
+                subscriptionModel.shutdown();
+                diagnosticsManager.shutdown();
+            }
+        });
     }
 
     @Override

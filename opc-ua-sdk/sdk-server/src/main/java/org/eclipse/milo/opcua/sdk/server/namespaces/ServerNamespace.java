@@ -27,22 +27,9 @@ public class ServerNamespace extends ManagedNamespace {
         super(server, server.getConfig().getApplicationUri());
 
         subscriptionModel = new SubscriptionModel(server, this);
-    }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
-
-        subscriptionModel.startup();
-
-        VendorServerInfoNodes.add(getNodeContext());
-    }
-
-    @Override
-    protected void onShutdown() {
-        super.onShutdown();
-
-        subscriptionModel.shutdown();
+        getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
+        getLifecycleManager().addLifecycle(subscriptionModel);
     }
 
     @Override
