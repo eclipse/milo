@@ -10,41 +10,6 @@
 
     <artifactId>server-examples</artifactId>
 
-    <profiles>
-        <profile>
-            <id>standalone-server</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>build-server</id>
-                                <configuration>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>org.eclipse.milo.examples.server.SecureServerStandalone
-                                            </mainClass>
-                                        </manifest>
-                                    </archive>
-                                    <descriptorRefs>
-                                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                                    </descriptorRefs>
-                                    <finalName>milo-opcua-server</finalName>
-                                </configuration>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
@@ -83,6 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
@@ -91,7 +57,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.2.2</version>
                 <configuration>
                     <filters>
                         <filter>

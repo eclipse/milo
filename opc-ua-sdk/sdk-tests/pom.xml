@@ -10,7 +10,6 @@
 
     <artifactId>sdk-tests</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
@@ -49,6 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
