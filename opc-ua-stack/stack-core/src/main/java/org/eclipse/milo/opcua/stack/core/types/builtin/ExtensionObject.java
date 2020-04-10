@@ -15,15 +15,11 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
@@ -92,23 +88,6 @@ public final class ExtensionObject {
                 return ((XmlElement) body).isNull();
             default:
                 throw new IllegalStateException("BodyType: " + bodyType);
-        }
-    }
-
-    @Deprecated
-    public Object decode() throws UaSerializationException {
-        SerializationContext context = newDefaultSerializationContext();
-
-        return decode(context);
-    }
-
-    @Deprecated
-    @Nullable
-    public Object decodeOrNull() {
-        try {
-            return decode();
-        } catch (UaSerializationException e) {
-            return null;
         }
     }
 
@@ -206,18 +185,6 @@ public final class ExtensionObject {
         );
     }
 
-    @Deprecated
-    public static ExtensionObject encode(
-        Object object,
-        NodeId encodingId,
-        DataTypeEncoding encoding
-    ) throws UaSerializationException {
-
-        SerializationContext context = newDefaultSerializationContext();
-
-        return encode(context, object, encodingId, encoding);
-    }
-
     public static ExtensionObject encode(
         SerializationContext context,
         Object object,
@@ -274,29 +241,6 @@ public final class ExtensionObject {
             .add("encoded", body)
             .add("encodingId", encodingId)
             .toString();
-    }
-
-    private static SerializationContext newDefaultSerializationContext() {
-        return new SerializationContext() {
-
-            private final NamespaceTable namespaceTable = new NamespaceTable();
-
-            @Override
-            public EncodingLimits getEncodingLimits() {
-                return EncodingLimits.DEFAULT;
-            }
-
-            @Override
-            public NamespaceTable getNamespaceTable() {
-                return namespaceTable;
-            }
-
-            @Override
-            public DataTypeManager getDataTypeManager() {
-                return OpcUaDataTypeManager.getInstance();
-            }
-
-        };
     }
 
 }
