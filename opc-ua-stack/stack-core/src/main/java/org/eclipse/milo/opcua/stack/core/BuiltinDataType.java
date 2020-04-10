@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public enum BuiltinDataType {
 
@@ -144,7 +145,13 @@ public enum BuiltinDataType {
 
     @Nullable
     public static BuiltinDataType fromNodeId(ExpandedNodeId nodeId) {
-        return nodeId.local().map(BuiltinDataType::fromNodeId).orElse(null);
+        if (nodeId.getIdentifier() instanceof UInteger &&
+            (Namespaces.OPC_UA.equals(nodeId.getNamespaceUri()) || nodeId.getNamespaceIndex().intValue() == 0)) {
+
+            return fromNodeId(new NodeId(0, (UInteger) nodeId.getIdentifier()));
+        } else {
+            return null;
+        }
     }
 
     public static boolean isBuiltin(int typeId) {
@@ -156,7 +163,7 @@ public enum BuiltinDataType {
     }
 
     public static boolean isBuiltin(ExpandedNodeId typeId) {
-        return typeId.local().map(BackingClassesByNodeId::containsKey).orElse(false);
+        return BuiltinDataType.fromNodeId(typeId) != null;
     }
 
     private static Class<?> maybeBoxPrimitive(Class<?> clazz) {

@@ -112,7 +112,7 @@ public class DataTypeDictionaryReader {
                 references.stream()
                     .filter(r -> r.getNodeId().getNamespaceIndex().intValue() != 0)
                     .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType))
-                    .flatMap(r -> opt2stream(r.getNodeId().local()))
+                    .flatMap(r -> opt2stream(r.getNodeId().local(stackClient.getNamespaceTable())))
         );
 
         return dictionaryNodeIds
@@ -363,7 +363,7 @@ public class DataTypeDictionaryReader {
         return browseResult.thenApply(references ->
             references.stream()
                 .filter(r -> Identifiers.DataTypeDescriptionType.equals(r.getTypeDefinition()))
-                .flatMap(r -> opt2stream(r.getNodeId().local()))
+                .flatMap(r -> opt2stream(r.getNodeId().local(stackClient.getNamespaceTable())))
                 .collect(Collectors.toList())
         );
     }
@@ -426,7 +426,11 @@ public class DataTypeDictionaryReader {
                         Identifiers.DataTypeEncodingType.equals(r.getTypeDefinition()))
                     .findFirst();
 
-                return ref.map(r -> r.getNodeId().local().orElse(NodeId.NULL_VALUE)).orElse(NodeId.NULL_VALUE);
+                return ref.map(r ->
+                    r.getNodeId()
+                        .local(stackClient.getNamespaceTable())
+                        .orElse(NodeId.NULL_VALUE)
+                ).orElse(NodeId.NULL_VALUE);
             });
         });
 
@@ -447,7 +451,11 @@ public class DataTypeDictionaryReader {
             return browse.thenApply(references -> {
                 Optional<ReferenceDescription> ref = references.stream().findFirst();
 
-                return ref.map(r -> r.getNodeId().local().orElse(NodeId.NULL_VALUE)).orElse(NodeId.NULL_VALUE);
+                return ref.map(r ->
+                    r.getNodeId()
+                        .local(stackClient.getNamespaceTable())
+                        .orElse(NodeId.NULL_VALUE)
+                ).orElse(NodeId.NULL_VALUE);
             });
         });
 

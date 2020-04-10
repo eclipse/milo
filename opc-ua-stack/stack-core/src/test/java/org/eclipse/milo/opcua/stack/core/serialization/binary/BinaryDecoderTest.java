@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -39,7 +40,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         OpcUaBinaryDataTypeCodec<Argument> codec = (OpcUaBinaryDataTypeCodec<Argument>)
             OpcUaDataTypeManager.getInstance().getCodec(
                 OpcUaDefaultBinaryEncoding.ENCODING_NAME,
-                Argument.TYPE_ID.local().get()
+                Argument.TYPE_ID.local(new NamespaceTable()).get()
             );
 
         assertNotNull(codec);

@@ -254,18 +254,6 @@ public final class ExpandedNodeId {
     /**
      * If this {@link ExpandedNodeId} resides on the local server ({@code serverIndex == 0}), return its representation
      * as a local {@link NodeId}.
-     *
-     * @return a local {@link NodeId}, if {@code serverIndex == 0}.
-     * @deprecated use {@link #local(NamespaceTable)}, which correctly handles a namespace URI being specified.
-     */
-    @Deprecated
-    public Optional<NodeId> local() {
-        return isLocal() ? Optional.of(new NodeId(namespaceIndex, identifier)) : Optional.empty();
-    }
-
-    /**
-     * If this {@link ExpandedNodeId} resides on the local server ({@code serverIndex == 0}), return its representation
-     * as a local {@link NodeId}.
      * <p>
      * If this ExpandedNodeId specifies a namespace URI instead of a namespace index then the URI must exist in
      * {@code namespaceTable} or {@link Optional#empty()} is returned.
