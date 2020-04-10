@@ -92,7 +92,7 @@ public class AttributeDelegateChainTest {
 
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
             .setNodeId(NodeId.NULL_VALUE)
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(QualifiedName.NULL_VALUE)
             .setDisplayName(LocalizedText.NULL_VALUE)
             .setDataType(Identifiers.String)

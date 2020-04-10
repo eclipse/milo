@@ -298,8 +298,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name))
-                .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
-                .setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -335,8 +335,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/ScalarTypes/" + name))
-                .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
-                .setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -366,8 +366,8 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/WriteOnly/" + name))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.WRITE_ONLY))
-            .setUserAccessLevel(AccessLevel.toValue(AccessLevel.WRITE_ONLY))
+            .setAccessLevel(AccessLevel.WRITE_ONLY)
+            .setUserAccessLevel(AccessLevel.WRITE_ONLY)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -394,7 +394,7 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/OnlyAdminCanRead/" + name))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -429,7 +429,7 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/OnlyAdminCanWrite/" + name))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -469,7 +469,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -498,7 +498,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -527,7 +527,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -647,7 +647,7 @@ public class ExampleNamespace extends ManagedNamespace {
         // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
         UaVariableNode foo = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("ObjectTypes/MyObjectType.Foo"))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("Foo"))
             .setDisplayName(LocalizedText.english("Foo"))
             .setDataType(Identifiers.Int16)
@@ -666,7 +666,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode bar = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("ObjectTypes/MyObjectType.Bar"))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("Bar"))
             .setDisplayName(LocalizedText.english("Bar"))
             .setDataType(Identifiers.String)
@@ -905,8 +905,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
-            .setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
             .setDataType(dataTypeId)
@@ -934,8 +934,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
-            .setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
             .setDataType(dataTypeId)
@@ -975,8 +975,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode customUnionTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))
-            .setAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
-            .setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_WRITE))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
             .setDataType(dataTypeId)

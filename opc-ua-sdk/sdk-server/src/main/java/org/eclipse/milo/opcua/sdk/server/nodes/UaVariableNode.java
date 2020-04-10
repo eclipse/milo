@@ -690,8 +690,28 @@ public class UaVariableNode extends UaNode implements VariableNode {
             return this;
         }
 
+        public UaVariableNodeBuilder setAccessLevel(AccessLevel... accessLevel) {
+            setAccessLevel(AccessLevel.toValue(accessLevel));
+            return this;
+        }
+
+        public UaVariableNodeBuilder setAccessLevel(Set<AccessLevel> accessLevel) {
+            setAccessLevel(AccessLevel.toValue(accessLevel));
+            return this;
+        }
+
         public UaVariableNodeBuilder setUserAccessLevel(UByte userAccessLevel) {
             this.userAccessLevel = userAccessLevel;
+            return this;
+        }
+
+        public UaVariableNodeBuilder setUserAccessLevel(AccessLevel... accessLevel) {
+            setUserAccessLevel(AccessLevel.toValue(accessLevel));
+            return this;
+        }
+
+        public UaVariableNodeBuilder setUserAccessLevel(Set<AccessLevel> accessLevel) {
+            setUserAccessLevel(AccessLevel.toValue(accessLevel));
             return this;
         }
 
