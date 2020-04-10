@@ -513,7 +513,8 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
         if (cause instanceof IOException) {
             ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed");
+            logger.debug("[remote={}] IOException caught; channel closed",
+                ctx.channel().remoteAddress(), cause);
         } else {
             ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
 
