@@ -79,11 +79,11 @@ public class BrowseAsyncExample implements ClientExample {
     }
 
     private static String indent(int depth) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < depth; i++) {
-            s += "  ";
+            s.append("  ");
         }
-        return s;
+        return s.toString();
     }
 
     private static <T> void traverse(Tree<T> tree, int depth, BiConsumer<Integer, T> consumer) {
