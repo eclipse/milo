@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 
 import java.util.List;
 
+import org.eclipse.milo.opcua.sdk.server.Lifecycle;
+import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
@@ -19,7 +21,9 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 
 @SuppressWarnings("restriction")
-public class ServerNamespace extends ManagedNamespace {
+public class ServerNamespace extends ManagedNamespace implements Lifecycle {
+
+    private final LifecycleManager lifecycleManager = new LifecycleManager();
 
     private final SubscriptionModel subscriptionModel;
 
@@ -28,8 +32,33 @@ public class ServerNamespace extends ManagedNamespace {
 
         subscriptionModel = new SubscriptionModel(server, this);
 
-        getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
-        getLifecycleManager().addLifecycle(subscriptionModel);
+        lifecycleManager.addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                server.getAddressSpaceManager().register(getNodeManager());
+                server.getAddressSpaceManager().register(ServerNamespace.this);
+            }
+
+            @Override
+            public void shutdown() {
+                server.getAddressSpaceManager().unregister(getNodeManager());
+                server.getAddressSpaceManager().unregister(ServerNamespace.this);
+            }
+        });
+
+        lifecycleManager.addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
+
+        lifecycleManager.addLifecycle(subscriptionModel);
+    }
+
+    @Override
+    public void startup() {
+        lifecycleManager.startup();
+    }
+
+    @Override
+    public void shutdown() {
+        lifecycleManager.shutdown();
     }
 
     @Override

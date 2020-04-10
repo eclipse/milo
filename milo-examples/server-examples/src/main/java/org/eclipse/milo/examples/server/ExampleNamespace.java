@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
+import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.DataTypeDictionaryManager;
@@ -72,7 +73,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class ExampleNamespace extends ManagedNamespace {
+public class ExampleNamespace extends ManagedNamespace implements Lifecycle {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
@@ -128,6 +129,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final LifecycleManager lifecycleManager = new LifecycleManager();
+
     private volatile Thread eventThread;
     private volatile boolean keepPostingEvents = true;
 
@@ -143,110 +146,29 @@ public class ExampleNamespace extends ManagedNamespace {
         subscriptionModel = new SubscriptionModel(server, this);
         dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
 
-        getLifecycleManager().addLifecycle(dictionaryManager);
-        getLifecycleManager().addLifecycle(subscriptionModel);
-
-        getLifecycleManager().addStartupTask(() -> {
-            // Create a "HelloWorld" folder and add it to the node manager
-            NodeId folderNodeId = newNodeId("HelloWorld");
-
-            UaFolderNode folderNode = new UaFolderNode(
-                getNodeContext(),
-                folderNodeId,
-                newQualifiedName("HelloWorld"),
-                LocalizedText.english("HelloWorld")
-            );
-
-            getNodeManager().addNode(folderNode);
-
-            // Make sure our new folder shows up under the server's Objects folder.
-            folderNode.addReference(new Reference(
-                folderNode.getNodeId(),
-                Identifiers.Organizes,
-                Identifiers.ObjectsFolder.expanded(),
-                false
-            ));
-
-            // Add the rest of the nodes
-            addVariableNodes(folderNode);
-
-            addSqrtMethod(folderNode);
-
-            addGenerateEventMethod(folderNode);
-
-            try {
-                registerCustomEnumType();
-                addCustomEnumTypeVariable(folderNode);
-            } catch (Exception e) {
-                logger.warn("Failed to register custom enum type", e);
-            }
-
-            try {
-                registerCustomStructType();
-                addCustomStructTypeVariable(folderNode);
-            } catch (Exception e) {
-                logger.warn("Failed to register custom struct type", e);
-            }
-
-            try {
-                registerCustomUnionType();
-                addCustomUnionTypeVariable(folderNode);
-            } catch (Exception e) {
-                logger.warn("Failed to register custom struct type", e);
-            }
-
-            addCustomObjectTypeAndInstance(folderNode);
-        });
-
-        getLifecycleManager().addLifecycle(new Lifecycle() {
+        lifecycleManager.addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                // Set the EventNotifier bit on Server Node for Events.
-                UaNode serverNode = getServer()
-                    .getAddressSpaceManager()
-                    .getManagedNode(Identifiers.Server)
-                    .orElse(null);
+                server.getAddressSpaceManager().register(getNodeManager());
+                server.getAddressSpaceManager().register(ExampleNamespace.this);
+            }
 
-                if (serverNode instanceof ServerTypeNode) {
-                    ((ServerTypeNode) serverNode).setEventNotifier(ubyte(1));
+            @Override
+            public void shutdown() {
+                server.getAddressSpaceManager().unregister(getNodeManager());
+                server.getAddressSpaceManager().unregister(ExampleNamespace.this);
+            }
+        });
 
-                    // Post a bogus Event every couple seconds
-                    eventThread = new Thread(() -> {
-                        while (keepPostingEvents) {
-                            try {
-                                BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
-                                    newNodeId(UUID.randomUUID()),
-                                    Identifiers.BaseEventType
-                                );
+        lifecycleManager.addLifecycle(dictionaryManager);
+        lifecycleManager.addLifecycle(subscriptionModel);
 
-                                eventNode.setBrowseName(new QualifiedName(1, "foo"));
-                                eventNode.setDisplayName(LocalizedText.english("foo"));
-                                eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                                eventNode.setEventType(Identifiers.BaseEventType);
-                                eventNode.setSourceNode(serverNode.getNodeId());
-                                eventNode.setSourceName(serverNode.getDisplayName().getText());
-                                eventNode.setTime(DateTime.now());
-                                eventNode.setReceiveTime(DateTime.NULL_VALUE);
-                                eventNode.setMessage(LocalizedText.english("event message!"));
-                                eventNode.setSeverity(ushort(2));
+        lifecycleManager.addStartupTask(this::createAndAddNodes);
 
-                                getServer().getEventBus().post(eventNode);
-
-                                eventNode.delete();
-                            } catch (Throwable e) {
-                                logger.error("Error creating EventNode: {}", e.getMessage(), e);
-                            }
-
-                            try {
-                                Thread.sleep(2_000);
-                            } catch (InterruptedException ignored) {
-                                // ignored
-                            }
-                        }
-                    }, "bogus-event-poster");
-
-                    eventThread.start();
-                }
+        lifecycleManager.addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                startBogusEventNotifier();
             }
 
             @Override
@@ -260,6 +182,119 @@ public class ExampleNamespace extends ManagedNamespace {
                 }
             }
         });
+    }
+
+    @Override
+    public void startup() {
+        lifecycleManager.startup();
+    }
+
+    @Override
+    public void shutdown() {
+        lifecycleManager.shutdown();
+    }
+
+    private void createAndAddNodes() {
+        // Create a "HelloWorld" folder and add it to the node manager
+        NodeId folderNodeId = newNodeId("HelloWorld");
+
+        UaFolderNode folderNode = new UaFolderNode(
+            getNodeContext(),
+            folderNodeId,
+            newQualifiedName("HelloWorld"),
+            LocalizedText.english("HelloWorld")
+        );
+
+        getNodeManager().addNode(folderNode);
+
+        // Make sure our new folder shows up under the server's Objects folder.
+        folderNode.addReference(new Reference(
+            folderNode.getNodeId(),
+            Identifiers.Organizes,
+            Identifiers.ObjectsFolder.expanded(),
+            false
+        ));
+
+        // Add the rest of the nodes
+        addVariableNodes(folderNode);
+
+        addSqrtMethod(folderNode);
+
+        addGenerateEventMethod(folderNode);
+
+        try {
+            registerCustomEnumType();
+            addCustomEnumTypeVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom enum type", e);
+        }
+
+        try {
+            registerCustomStructType();
+            addCustomStructTypeVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom struct type", e);
+        }
+
+        try {
+            registerCustomUnionType();
+            addCustomUnionTypeVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom struct type", e);
+        }
+
+        addCustomObjectTypeAndInstance(folderNode);
+    }
+
+    private void startBogusEventNotifier() {
+        // Set the EventNotifier bit on Server Node for Events.
+        UaNode serverNode = getServer()
+            .getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server)
+            .orElse(null);
+
+        if (serverNode instanceof ServerTypeNode) {
+            ((ServerTypeNode) serverNode).setEventNotifier(ubyte(1));
+
+            // Post a bogus Event every couple seconds
+            eventThread = new Thread(() -> {
+                while (keepPostingEvents) {
+                    try {
+                        BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
+                            newNodeId(UUID.randomUUID()),
+                            Identifiers.BaseEventType
+                        );
+
+                        eventNode.setBrowseName(new QualifiedName(1, "foo"));
+                        eventNode.setDisplayName(LocalizedText.english("foo"));
+                        eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
+                        eventNode.setEventType(Identifiers.BaseEventType);
+                        eventNode.setSourceNode(serverNode.getNodeId());
+                        eventNode.setSourceName(serverNode.getDisplayName().getText());
+                        eventNode.setTime(DateTime.now());
+                        eventNode.setReceiveTime(DateTime.NULL_VALUE);
+                        eventNode.setMessage(LocalizedText.english("event message!"));
+                        eventNode.setSeverity(ushort(2));
+
+                        //noinspection UnstableApiUsage
+                        getServer().getEventBus().post(eventNode);
+
+                        eventNode.delete();
+                    } catch (Throwable e) {
+                        logger.error("Error creating EventNode: {}", e.getMessage(), e);
+                    }
+
+                    try {
+                        //noinspection BusyWait
+                        Thread.sleep(2_000);
+                    } catch (InterruptedException ignored) {
+                        // ignored
+                    }
+                }
+            }, "bogus-event-poster");
+
+            eventThread.start();
+        }
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {

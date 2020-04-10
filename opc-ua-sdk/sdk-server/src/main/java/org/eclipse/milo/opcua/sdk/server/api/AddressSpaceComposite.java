@@ -888,13 +888,14 @@ public abstract class AddressSpaceComposite implements AddressSpace {
 
     }
 
+    /**
+     * EmptyAddressSpace is used ephemerally and should never be registered.
+     */
     private static class EmptyAddressSpace extends ManagedAddressSpace {
 
         EmptyAddressSpace(OpcUaServer server) {
             super(server);
         }
-
-        // EmptyAddressSpace is used ephemerally and should never be started/registered
 
         @Override
         public AddressSpaceFilter getFilter() {
