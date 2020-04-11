@@ -10,21 +10,26 @@
 
 package org.eclipse.milo.opcua.stack.core.channel;
 
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class MessageAbortedException extends UaException {
+public class MessageAbortedException extends Exception {
 
     private final long requestId;
+    private final StatusCode statusCode;
 
-    MessageAbortedException(StatusCode statusCode, String message, long requestId) {
-        super(statusCode, message);
+    MessageAbortedException(String message, long requestId, StatusCode statusCode) {
+        super(message);
 
+        this.statusCode = statusCode;
         this.requestId = requestId;
     }
 
     public long getRequestId() {
         return requestId;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
     }
 
 }

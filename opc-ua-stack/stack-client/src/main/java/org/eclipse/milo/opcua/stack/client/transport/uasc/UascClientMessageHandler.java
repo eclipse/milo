@@ -496,28 +496,13 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
             final List<ByteBuf> buffersToDecode = chunkBuffers;
             chunkBuffers = new ArrayList<>(maxChunkCount);
 
-            serializationQueue.decode((binaryDecoder, chunkDecoder) ->
-                chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                    @Override
-                    public void onDecodingError(UaException ex) {
-                        logger.error(
-                            "Error decoding asymmetric message: {}",
-                            ex.getMessage(), ex);
+            serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                    try {
+                        ChunkDecoder.DecodedMessage decodedMessage =
+                            chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
 
-                        handshakeFuture.completeExceptionally(ex);
+                        ByteBuf message = decodedMessage.getMessage();
 
-                        ctx.close();
-                    }
-
-                    @Override
-                    public void onMessageAborted(MessageAbortedException ex) {
-                        logger.warn(
-                            "Asymmetric message aborted. error={} reason={}",
-                            ex.getStatusCode(), ex.getMessage());
-                    }
-
-                    @Override
-                    public void onMessageDecoded(ByteBuf message, long requestId) {
                         try {
                             UaResponseMessage response = (UaResponseMessage) binaryDecoder
                                 .setBuffer(message)
@@ -551,8 +536,19 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                         } finally {
                             message.release();
                         }
+                    } catch (MessageAbortedException e) {
+                        logger.warn(
+                            "Asymmetric message aborted. error={} reason={}",
+                            e.getStatusCode(), e.getMessage()
+                        );
+                    } catch (UaException | UaSerializationException e) {
+                        logger.error("Error decoding asymmetric message", e);
+
+                        handshakeFuture.completeExceptionally(e);
+
+                        ctx.close();
                     }
-                })
+                }
             );
         }
     }
@@ -628,91 +624,55 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
                 try {
-                    validateChunkHeaders(buffersToDecode);
-                } catch (UaException e) {
-                    logger.error("Error validating chunk headers: {}", e.getMessage(), e);
-                    buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
-                    ctx.close();
-                    return;
-                }
+                    ChunkDecoder.DecodedMessage decodedMessage =
+                        chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode);
 
-                chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                    @Override
-                    public void onDecodingError(UaException ex) {
-                        logger.error(
-                            "Error decoding symmetric message: {}",
-                            ex.getMessage(), ex);
+                    ByteBuf message = decodedMessage.getMessage();
+                    long requestId = decodedMessage.getRequestId();
 
-                        ctx.close();
-                    }
+                    UaTransportRequest request = pending.remove(requestId);
 
-                    @Override
-                    public void onMessageAborted(MessageAbortedException ex) {
-                        logger.warn(
-                            "Received message abort chunk; error={}, reason={}",
-                            ex.getStatusCode(), ex.getMessage());
-
-                        long requestId = ex.getRequestId();
-                        UaTransportRequest request = pending.remove(requestId);
+                    try {
+                        UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                            .setBuffer(message)
+                            .readMessage(null);
 
                         if (request != null) {
-                            request.getFuture().completeExceptionally(ex);
+                            request.getFuture().complete(response);
                         } else {
-                            logger.warn("No pending request for requestId={}", requestId);
+                            logger.warn(
+                                "No pending request with requestId={} for {}",
+                                requestId, response.getClass().getSimpleName());
                         }
-                    }
+                    } catch (Throwable t) {
+                        logger.error("Error decoding UaResponseMessage", t);
 
-                    @Override
-                    public void onMessageDecoded(ByteBuf message, long requestId) {
-                        UaTransportRequest request = pending.remove(requestId);
-
-                        try {
-                            UaResponseMessage response = (UaResponseMessage) binaryDecoder
-                                .setBuffer(message)
-                                .readMessage(null);
-
-                            if (request != null) {
-                                request.getFuture().complete(response);
-                            } else {
-                                logger.warn(
-                                    "No pending request with requestId={} for {}",
-                                    requestId, response.getClass().getSimpleName());
-                            }
-                        } catch (Throwable t) {
-                            logger.error("Error decoding UaResponseMessage", t);
-
-                            if (request != null) {
-                                request.getFuture().completeExceptionally(t);
-                            }
-                        } finally {
-                            message.release();
+                        if (request != null) {
+                            request.getFuture().completeExceptionally(t);
                         }
+                    } finally {
+                        message.release();
                     }
-                });
+                } catch (MessageAbortedException e) {
+                    logger.warn(
+                        "Received message abort chunk; error={}, reason={}",
+                        e.getStatusCode(), e.getMessage()
+                    );
+
+                    long requestId = e.getRequestId();
+                    UaTransportRequest request = pending.remove(requestId);
+
+                    if (request != null) {
+                        request.getFuture().completeExceptionally(e);
+                    } else {
+                        logger.warn("No pending request for requestId={}", requestId);
+                    }
+                } catch (UaException | UaSerializationException e) {
+                    logger.error("Error decoding symmetric message", e);
+
+                    ctx.close();
+                }
             });
-        }
-    }
-
-    private void validateChunkHeaders(List<ByteBuf> chunkBuffers) throws UaException {
-        ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
-        long currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
-        long previousTokenId = channelSecurity.getPreviousToken()
-            .map(t -> t.getTokenId().longValue())
-            .orElse(-1L);
-
-        for (ByteBuf chunkBuffer : chunkBuffers) {
-            // tokenId starts after messageType + chunkType + messageSize + secureChannelId
-            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
-
-            if (tokenId != currentTokenId && tokenId != previousTokenId) {
-                String message = String.format(
-                    "received unknown secure channel token: " +
-                        "tokenId=%s currentTokenId=%s previousTokenId=%s",
-                    tokenId, currentTokenId, previousTokenId
-                );
-
-                throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
-            }
         }
     }
 

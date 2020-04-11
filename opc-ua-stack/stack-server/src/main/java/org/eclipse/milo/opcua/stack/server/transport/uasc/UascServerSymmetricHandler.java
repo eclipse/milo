@@ -18,11 +18,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
@@ -130,85 +128,76 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
                 serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
                     try {
-                        validateChunkHeaders(buffersToDecode);
-                    } catch (UaException e) {
-                        logger.error("Error validating chunk headers: {}", e.getMessage(), e);
-                        buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
-                        ctx.fireExceptionCaught(e);
-                        return;
-                    }
+                        ChunkDecoder.DecodedMessage decodedMessage =
+                            chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode);
 
-                    chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                        @Override
-                        public void onDecodingError(UaException ex) {
-                            logger.error(
-                                "Error decoding symmetric message: {}",
-                                ex.getMessage(), ex);
+                        ByteBuf message = decodedMessage.getMessage();
+                        long requestId = decodedMessage.getRequestId();
 
-                            ctx.close();
-                        }
-
-                        @Override
-                        public void onMessageAborted(MessageAbortedException ex) {
-                            logger.warn(
-                                "Received message abort chunk; error={}, reason={}",
-                                ex.getStatusCode(), ex.getMessage());
-                        }
-
-                        @Override
-                        public void onMessageDecoded(ByteBuf message, long requestId) {
+                        try {
                             UaRequestMessage request = (UaRequestMessage) binaryDecoder
-                                .setBuffer(message)
+                                .setBuffer(decodedMessage.getMessage())
                                 .readMessage(null);
 
-                            stackServer.getConfig().getExecutor().execute(() -> {
-                                try {
-                                    String endpointUrl = ctx
-                                        .channel()
-                                        .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
-                                        .get();
+                            String endpointUrl = ctx.channel()
+                                .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
+                                .get();
 
-                                    EndpointDescription endpoint = ctx
-                                        .channel()
-                                        .attr(UascServerAsymmetricHandler.ENDPOINT_KEY)
-                                        .get();
+                            EndpointDescription endpoint = ctx.channel()
+                                .attr(UascServerAsymmetricHandler.ENDPOINT_KEY)
+                                .get();
 
-                                    String path = EndpointUtil.getPath(endpointUrl);
+                            String path = EndpointUtil.getPath(endpointUrl);
 
-                                    InetSocketAddress remoteSocketAddress =
-                                        (InetSocketAddress) ctx.channel().remoteAddress();
+                            InetSocketAddress remoteSocketAddress =
+                                (InetSocketAddress) ctx.channel().remoteAddress();
 
-                                    ServiceRequest serviceRequest = new ServiceRequest(
-                                        stackServer,
-                                        request,
-                                        endpoint,
-                                        secureChannel.getChannelId(),
-                                        remoteSocketAddress.getAddress(),
-                                        secureChannel.getRemoteCertificateBytes()
-                                    );
+                            ServiceRequest serviceRequest = new ServiceRequest(
+                                stackServer,
+                                request,
+                                endpoint,
+                                secureChannel.getChannelId(),
+                                remoteSocketAddress.getAddress(),
+                                secureChannel.getRemoteCertificateBytes()
+                            );
 
-                                    serviceRequest.getFuture().whenComplete((response, fault) -> {
-                                        if (response != null) {
-                                            sendServiceResponse(ctx, requestId, request, response);
-                                        } else {
-                                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+                            serviceRequest.getFuture().whenComplete((response, fault) -> {
+                                if (response != null) {
+                                    sendServiceResponse(ctx, requestId, request, response);
+                                } else {
+                                    UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
-                                            sendServiceFault(ctx, requestId, requestHandle, fault);
-                                        }
-                                    });
-
-                                    stackServer.onServiceRequest(path, serviceRequest);
-                                } catch (Throwable t) {
-                                    logger.error("Error decoding UaRequestMessage", t);
-
-                                    sendServiceFault(ctx, requestId, uint(0), t);
-                                } finally {
-                                    message.release();
-                                    buffersToDecode.clear();
+                                    sendServiceFault(ctx, requestId, requestHandle, fault);
                                 }
                             });
+
+                            stackServer.onServiceRequest(path, serviceRequest);
+                        } catch (UaSerializationException e) {
+                            logger.error("Error decoding UaRequestMessage", e);
+
+                            sendServiceFault(ctx, requestId, uint(0), e);
+                        } catch (Throwable t) {
+                            logger.error("Unexpected error decoding symmetric message", t);
+
+                            long statusCode = UaException.extractStatusCode(t)
+                                .map(StatusCode::getValue)
+                                .orElse(StatusCodes.Bad_UnexpectedError);
+
+                            sendServiceFault(ctx, requestId, uint(0), new UaException(statusCode, t));
+                        } finally {
+                            message.release();
+                            buffersToDecode.clear();
                         }
-                    });
+                    } catch (MessageAbortedException e) {
+                        logger.warn(
+                            "Received message abort chunk; error={}, reason={}",
+                            e.getStatusCode(), e.getMessage()
+                        );
+                    } catch (UaException e) {
+                        logger.error("Error decoding symmetric message", e);
+
+                        ctx.close();
+                    }
                 });
             }
         }
@@ -342,29 +331,6 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                 StatusCodes.Bad_ResponseTooLarge,
                 "response exceeds remote max message size: " +
                     messageSize + " > " + remoteMaxMessageSize);
-        }
-    }
-
-    private void validateChunkHeaders(List<ByteBuf> chunkBuffers) throws UaException {
-        ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
-        long currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
-        long previousTokenId = channelSecurity.getPreviousToken()
-            .map(t -> t.getTokenId().longValue())
-            .orElse(-1L);
-
-        for (ByteBuf chunkBuffer : chunkBuffers) {
-            // tokenId starts after messageType + chunkType + messageSize + secureChannelId
-            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
-
-            if (tokenId != currentTokenId && tokenId != previousTokenId) {
-                String message = String.format(
-                    "received unknown secure channel token: " +
-                        "tokenId=%s currentTokenId=%s previousTokenId=%s",
-                    tokenId, currentTokenId, previousTokenId
-                );
-
-                throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
-            }
         }
     }
 

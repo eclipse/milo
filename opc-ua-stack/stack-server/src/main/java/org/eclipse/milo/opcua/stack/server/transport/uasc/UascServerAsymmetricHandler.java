@@ -243,46 +243,42 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 chunkBuffers = new ArrayList<>();
                 headerRef.set(null);
 
-                serializationQueue.decode((binaryDecoder, chunkDecoder) ->
-                    chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                        @Override
-                        public void onDecodingError(UaException ex) {
-                            logger.error(
-                                "Error decoding asymmetric message: {}",
-                                ex.getMessage(), ex);
+                serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                    try {
+                        ChunkDecoder.DecodedMessage decodedMessage =
+                            chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
 
+                        ByteBuf message = decodedMessage.getMessage();
+                        long requestId = decodedMessage.getRequestId();
+
+                        try {
+                            OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
+                                .setBuffer(message)
+                                .readMessage(null);
+
+                            logger.debug(
+                                "Received OpenSecureChannelRequest ({}, id={}).",
+                                request.getRequestType(), secureChannelId);
+
+                            sendOpenSecureChannelResponse(ctx, requestId, request);
+                        } catch (Throwable t) {
+                            logger.error("Error decoding OpenSecureChannelRequest", t);
                             ctx.close();
+                        } finally {
+                            message.release();
+                            buffersToDecode.clear();
                         }
+                    } catch (MessageAbortedException e) {
+                        logger.warn(
+                            "Asymmetric message aborted. error={} reason={}",
+                            e.getStatusCode(), e.getMessage()
+                        );
+                    } catch (UaException | UaSerializationException e) {
+                        logger.error("Error decoding asymmetric message", e);
 
-                        @Override
-                        public void onMessageAborted(MessageAbortedException ex) {
-                            logger.warn(
-                                "Asymmetric message aborted. error={} reason={}",
-                                ex.getStatusCode(), ex.getMessage());
-                        }
-
-                        @Override
-                        public void onMessageDecoded(ByteBuf message, long requestId) {
-                            try {
-                                OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
-                                    .setBuffer(message)
-                                    .readMessage(null);
-
-                                logger.debug(
-                                    "Received OpenSecureChannelRequest ({}, id={}).",
-                                    request.getRequestType(), secureChannelId);
-
-                                sendOpenSecureChannelResponse(ctx, requestId, request);
-                            } catch (Throwable t) {
-                                logger.error("Error decoding OpenSecureChannelRequest", t);
-                                ctx.close();
-                            } finally {
-                                message.release();
-                                buffersToDecode.clear();
-                            }
-                        }
-                    })
-                );
+                        ctx.close();
+                    }
+                });
             }
         }
     }
