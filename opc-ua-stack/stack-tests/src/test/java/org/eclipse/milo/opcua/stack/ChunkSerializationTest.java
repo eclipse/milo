@@ -19,11 +19,10 @@ import io.netty.util.ReferenceCountUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
@@ -188,26 +187,20 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                 }
             );
 
-            decoder.decodeAsymmetric(serverChannel, chunkBuffers, new ChunkDecoder.Callback() {
-                @Override
-                public void onDecodingError(UaException ex) {
-                    fail("onDecodingError", ex);
-                }
+            try {
+                ChunkDecoder.DecodedMessage decodedMessage =
+                    decoder.decodeAsymmetric(serverChannel, chunkBuffers);
 
-                @Override
-                public void onMessageAborted(MessageAbortedException ex) {
-                    fail("onMessageAborted", ex);
-                }
+                ByteBuf message = decodedMessage.getMessage();
 
-                @Override
-                public void onMessageDecoded(ByteBuf message, long requestId) {
-                    messageBuffer.readerIndex(0);
-                    assertEquals(message, messageBuffer);
+                messageBuffer.readerIndex(0);
+                assertEquals(message, messageBuffer);
 
-                    ReferenceCountUtil.release(message);
-                    ReferenceCountUtil.release(messageBuffer);
-                }
-            });
+                ReferenceCountUtil.release(message);
+                ReferenceCountUtil.release(messageBuffer);
+            } catch (Throwable t) {
+                fail("decoding error", t);
+            }
         }
     }
 
@@ -298,27 +291,20 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                     }
                 );
 
-                decoder.decodeSymmetric(serverChannel, chunkBuffers, new ChunkDecoder.Callback() {
-                        @Override
-                        public void onDecodingError(UaException ex) {
-                            fail("onDecodingError", ex);
-                        }
+                try {
+                    ChunkDecoder.DecodedMessage decodedMessage =
+                        decoder.decodeSymmetric(serverChannel, chunkBuffers);
 
-                        @Override
-                        public void onMessageAborted(MessageAbortedException ex) {
-                            fail("onMessageAborted", ex);
-                        }
+                    ByteBuf message = decodedMessage.getMessage();
 
-                        @Override
-                        public void onMessageDecoded(ByteBuf message, long requestId) {
-                            messageBuffer.readerIndex(0);
-                            assertEquals(message, messageBuffer);
+                    messageBuffer.readerIndex(0);
+                    assertEquals(message, messageBuffer);
 
-                            ReferenceCountUtil.release(messageBuffer);
-                            ReferenceCountUtil.release(message);
-                        }
-                    }
-                );
+                    ReferenceCountUtil.release(messageBuffer);
+                    ReferenceCountUtil.release(message);
+                } catch (Throwable t) {
+                    fail("decoding error", t);
+                }
             }
         }
     }

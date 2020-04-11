@@ -272,6 +272,10 @@ public class UaStackServer {
     }
 
     public void onServiceRequest(String path, ServiceRequest serviceRequest) {
+        config.getExecutor().execute(() -> handleServiceRequest(path, serviceRequest));
+    }
+
+    private void handleServiceRequest(String path, ServiceRequest serviceRequest) {
         UaRequestMessage request = serviceRequest.getRequest();
 
         if (logger.isTraceEnabled()) {
