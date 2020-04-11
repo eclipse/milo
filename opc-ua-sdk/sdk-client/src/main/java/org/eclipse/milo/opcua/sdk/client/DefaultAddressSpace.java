@@ -137,7 +137,7 @@ public class DefaultAddressSpace implements AddressSpace {
     public CompletableFuture<ObjectNode> getObjectNode(NodeId nodeId) {
         return getNodeInstance(nodeId).thenCompose(node -> {
             if (ObjectNode.class.isAssignableFrom(node.getClass())) {
-                return completedFuture(ObjectNode.class.cast(node));
+                return completedFuture((ObjectNode) node);
             } else {
                 return failedFuture(
                     new UaException(
@@ -167,7 +167,7 @@ public class DefaultAddressSpace implements AddressSpace {
     public CompletableFuture<VariableNode> getVariableNode(NodeId nodeId) {
         return getNodeInstance(nodeId).thenCompose(node -> {
             if (VariableNode.class.isAssignableFrom(node.getClass())) {
-                return completedFuture(VariableNode.class.cast(node));
+                return completedFuture((VariableNode) node);
             } else {
                 return failedFuture(
                     new UaException(
