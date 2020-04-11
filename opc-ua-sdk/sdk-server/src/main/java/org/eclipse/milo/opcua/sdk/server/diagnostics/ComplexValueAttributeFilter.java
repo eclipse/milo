@@ -61,11 +61,9 @@ class ComplexValueAttributeFilter implements AttributeFilter {
 
                 synchronizeStructMembers((UaVariableNode) ctx.getNode(), o);
             }
-
-            ctx.setAttribute(attributeId, value);
-        } else {
-            ctx.setAttribute(attributeId, value);
         }
+
+        ctx.setAttribute(attributeId, value);
     }
 
     private synchronized void synchronizeStructMembers(UaVariableNode complexNode, Object structValue) {
