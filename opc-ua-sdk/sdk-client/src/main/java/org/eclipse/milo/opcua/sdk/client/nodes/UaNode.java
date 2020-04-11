@@ -354,7 +354,7 @@ public abstract class UaNode implements Node {
             try {
                 Object enumeration = clazz
                     .getMethod("from", new Class[]{Integer.class})
-                    .invoke(null, (Integer) o);
+                    .invoke(null, o);
 
                 return clazz.cast(enumeration);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
