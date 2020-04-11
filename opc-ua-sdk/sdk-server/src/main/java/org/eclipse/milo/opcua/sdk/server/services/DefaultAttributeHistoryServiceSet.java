@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.HistoryReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.HistoryUpdateContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
@@ -104,7 +103,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
     }
 
     @Override
-    public void onHistoryUpdate(ServiceRequest service) throws UaException {
+    public void onHistoryUpdate(ServiceRequest service) {
         historyUpdateMetric.record(service);
 
         HistoryUpdateRequest request = (HistoryUpdateRequest) service.getRequest();

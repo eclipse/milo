@@ -36,7 +36,6 @@ import org.eclipse.milo.opcua.sdk.server.services.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -408,7 +407,7 @@ public class Session implements SessionServiceSet {
     }
 
     @Override
-    public void onCancel(ServiceRequest serviceRequest) throws UaException {
+    public void onCancel(ServiceRequest serviceRequest) {
         serviceRequest.setResponse(new CancelResponse(serviceRequest.createResponseHeader(), uint(0)));
     }
     //endregion
