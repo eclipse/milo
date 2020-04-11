@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
 public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
 
-    private IdentityValidator identityValidator = AnonymousIdentityValidator.INSTANCE;
+    private IdentityValidator<?> identityValidator = AnonymousIdentityValidator.INSTANCE;
 
     private BuildInfo buildInfo = new BuildInfo(
         "",
@@ -45,7 +45,7 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
 
     private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
 
-    public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator identityValidator) {
+    public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator<?> identityValidator) {
         this.identityValidator = identityValidator;
         return this;
     }
@@ -148,13 +148,13 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
 
         private final UaStackServerConfig stackServerConfig;
 
-        private final IdentityValidator identityValidator;
+        private final IdentityValidator<?> identityValidator;
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
 
         public OpcUaServerConfigImpl(
             UaStackServerConfig stackServerConfig,
-            IdentityValidator identityValidator,
+            IdentityValidator<?> identityValidator,
             BuildInfo buildInfo,
             OpcUaServerConfigLimits limits) {
 
@@ -165,7 +165,7 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         }
 
         @Override
-        public IdentityValidator getIdentityValidator() {
+        public IdentityValidator<?> getIdentityValidator() {
             return identityValidator;
         }
 
