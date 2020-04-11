@@ -57,10 +57,23 @@ public abstract class AbstractLifecycle implements Lifecycle {
     }
 
     /**
-     * @return {@code true} after {@link #startup()} is called and before {@link #shutdown()} is called.
+     * True if this lifecycle is running, i.e. after {@link #startup()} is called and before {@link #shutdown()} is
+     * called.
+     *
+     * @return {@code true} if this lifecycle is running.
      */
     public final boolean isRunning() {
         return this.state.get() == LifecycleState.RUNNING;
+    }
+
+    /**
+     * True if this lifecycle is <b>not</b> running, i.e. before {@link #startup()} is called or after
+     * {@link #shutdown()}} is called.
+     *
+     * @return {@code true} if this lifecycle is <b>not</b> running.
+     */
+    public final boolean isNotRunning() {
+        return !isRunning();
     }
 
     /**
