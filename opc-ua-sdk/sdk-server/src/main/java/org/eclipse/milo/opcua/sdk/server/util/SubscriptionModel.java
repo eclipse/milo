@@ -63,7 +63,8 @@ public class SubscriptionModel extends AbstractLifecycle {
     }
 
     @Override
-    protected void onStartup() {}
+    protected void onStartup() {
+    }
 
     @Override
     protected void onShutdown() {
@@ -75,7 +76,7 @@ public class SubscriptionModel extends AbstractLifecycle {
     }
 
     public void onDataItemsCreated(List<DataItem> items) {
-        if (!isRunning()) {
+        if (isNotRunning()) {
             throw new IllegalArgumentException("not running");
         }
 
@@ -86,7 +87,7 @@ public class SubscriptionModel extends AbstractLifecycle {
     }
 
     public void onDataItemsModified(List<DataItem> items) {
-        if (!isRunning()) {
+        if (isNotRunning()) {
             throw new IllegalArgumentException("not running");
         }
 
@@ -94,7 +95,7 @@ public class SubscriptionModel extends AbstractLifecycle {
     }
 
     public void onDataItemsDeleted(List<DataItem> items) {
-        if (!isRunning()) {
+        if (isNotRunning()) {
             throw new IllegalArgumentException("not running");
         }
 
@@ -105,7 +106,7 @@ public class SubscriptionModel extends AbstractLifecycle {
     }
 
     public void onMonitoringModeChanged(List<MonitoredItem> items) {
-        if (!isRunning()) {
+        if (isNotRunning()) {
             throw new IllegalArgumentException("not running");
         }
 
