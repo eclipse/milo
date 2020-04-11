@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
@@ -75,7 +77,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             nodesToRead
         );
 
-        context.getFuture().thenAccept(values -> {
+        CompletableFuture<Void> result = context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -89,6 +91,8 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
             service.setResponse(response);
         });
+
+        FutureUtils.logUncaughtErrors(result);
     }
 
     @Override
@@ -120,7 +124,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
         server.getAddressSpaceManager().write(context, nodesToWrite);
 
-        context.getFuture().thenAccept(values -> {
+        CompletableFuture<Void> result = context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -134,6 +138,8 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
             service.setResponse(response);
         });
+
+        FutureUtils.logUncaughtErrors(result);
     }
 
 }

@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -282,7 +283,7 @@ public class UaStackServer {
                 request.getClass().getSimpleName()
             );
 
-            serviceRequest.getFuture().whenComplete((response, ex) -> {
+            CompletableFuture<UaResponseMessage> result = serviceRequest.getFuture().whenComplete((response, ex) -> {
                 if (response != null) {
                     logger.trace(
                         "ServiceRequest completed path={}, requestHandle={} response={}",
@@ -299,6 +300,8 @@ public class UaStackServer {
                     );
                 }
             });
+
+            FutureUtils.logUncaughtErrors(result);
         }
 
         ServiceRequestHandler serviceHandler = getServiceHandler(path, request.getTypeId());

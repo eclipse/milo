@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.AttributeKey;
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +89,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
                         helloDeadlineMs + "ms; closing channel. " +
                         "cumulativeDeadlinesMissed=" + cumulativeDeadlinesMissed);
 
-                    ctx.close();
+                    FutureUtils.logUncaughtErrors(ctx.close());
                 }
             },
             helloDeadlineMs, TimeUnit.MILLISECONDS
@@ -203,7 +205,14 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
         // Using ctx.executor() is necessary to ensure this handler is removed
         // before the message can be written and another response arrives.
-        ctx.executor().execute(() -> ctx.writeAndFlush(messageBuffer));
+        ctx.executor().execute(() -> {
+            ctx.writeAndFlush(messageBuffer).addListener((ChannelFutureListener) future -> {
+                if (!future.isSuccess()) {
+                    logger.warn("Failed to write AcknowledgeMessage", future.cause());
+                    ctx.close();
+                }
+            });
+        });
 
         logger.debug("[remote={}] Sent Acknowledge message.", ctx.channel().remoteAddress());
     }

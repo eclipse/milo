@@ -18,8 +18,11 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.slf4j.LoggerFactory;
 
 public class FutureUtils {
 
@@ -58,6 +61,26 @@ public class FutureUtils {
             }
 
             return results;
+        });
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    public static void logUncaughtErrors(CompletableFuture<?> f) {
+        f.whenComplete((v, ex) -> {
+            if (ex != null) {
+                LoggerFactory.getLogger("CompletableFutureUncaughtExceptionHandler")
+                    .warn("Uncaught exception in ignored future return value!", ex);
+            }
+        });
+    }
+
+    @SuppressWarnings("FutureReturnValueIgnored")
+    public static void logUncaughtErrors(ChannelFuture cf) {
+        cf.addListener((ChannelFutureListener) future -> {
+            if (!future.isSuccess()) {
+                LoggerFactory.getLogger("CompletableFutureUncaughtExceptionHandler")
+                    .warn("Uncaught exception in ignored future return value!", future.cause());
+            }
         });
     }
 

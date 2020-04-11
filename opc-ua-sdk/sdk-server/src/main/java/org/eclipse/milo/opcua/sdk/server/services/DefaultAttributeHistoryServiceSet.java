@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -30,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
@@ -86,7 +88,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             nodesToRead
         );
 
-        context.getFuture().thenAccept(values -> {
+        CompletableFuture<Void> result = context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -100,6 +102,8 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
             service.setResponse(response);
         });
+
+        FutureUtils.logUncaughtErrors(result);
     }
 
     @Override
@@ -137,7 +141,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
         server.getAddressSpaceManager().historyUpdate(context, historyUpdateDetailsList);
 
-        context.getFuture().thenAccept(values -> {
+        CompletableFuture<Void> result = context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -151,6 +155,8 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
             service.setResponse(response);
         });
+
+        FutureUtils.logUncaughtErrors(result);
     }
 
 }

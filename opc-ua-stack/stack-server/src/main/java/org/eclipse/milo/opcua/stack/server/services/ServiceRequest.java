@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 
 public class ServiceRequest extends DefaultAttributeMap {
@@ -54,7 +55,7 @@ public class ServiceRequest extends DefaultAttributeMap {
         this.clientAddress = clientAddress;
         this.clientCertificateBytes = clientCertificateBytes;
 
-        future.whenComplete(this::updateDiagnosticCounters);
+        FutureUtils.logUncaughtErrors(future.whenComplete(this::updateDiagnosticCounters));
     }
 
     public UaStackServer getServer() {
