@@ -67,7 +67,7 @@ public final class UByte extends UNumber implements Comparable<UByte> {
      *
      * @return Array of cached values for UByte.
      */
-    private static final UByte[] mkValues() {
+    private static UByte[] mkValues() {
         UByte[] ret = new UByte[256];
 
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++)
