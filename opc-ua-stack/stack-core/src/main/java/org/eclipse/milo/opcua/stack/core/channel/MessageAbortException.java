@@ -12,12 +12,12 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class MessageAbortedException extends Exception {
+public class MessageAbortException extends Exception {
 
     private final long requestId;
     private final StatusCode statusCode;
 
-    MessageAbortedException(String message, long requestId, StatusCode statusCode) {
+    MessageAbortException(String message, long requestId, StatusCode statusCode) {
         super(message);
 
         this.statusCode = statusCode;

@@ -59,7 +59,7 @@ public final class ChunkDecoder {
     public DecodedMessage decodeAsymmetric(
         SecureChannel channel,
         List<ByteBuf> chunkBuffers
-    ) throws UaException, MessageAbortedException {
+    ) throws MessageAbortException, MessageDecodeException {
 
         return decode(asymmetricDecoder, channel, chunkBuffers);
     }
@@ -67,13 +67,13 @@ public final class ChunkDecoder {
     public DecodedMessage decodeSymmetric(
         SecureChannel channel,
         List<ByteBuf> chunkBuffers
-    ) throws UaException, MessageAbortedException {
+    ) throws MessageAbortException, MessageDecodeException {
 
         try {
             validateSymmetricSecurityHeaders(channel, chunkBuffers);
         } catch (UaException e) {
             chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
-            throw e;
+            throw new MessageDecodeException(e);
         }
 
         return decode(symmetricDecoder, channel, chunkBuffers);
@@ -83,16 +83,20 @@ public final class ChunkDecoder {
         AbstractDecoder decoder,
         SecureChannel channel,
         List<ByteBuf> chunkBuffers
-    ) throws UaException, MessageAbortedException {
+    ) throws MessageAbortException, MessageDecodeException {
 
         CompositeByteBuf composite = BufferUtil.compositeBuffer();
 
         try {
             return decoder.decode(channel, composite, chunkBuffers);
-        } catch (UaException | MessageAbortedException e) {
+        } catch (MessageAbortException e) {
             ReferenceCountUtil.safeRelease(composite);
             chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
             throw e;
+        } catch (UaException e) {
+            ReferenceCountUtil.safeRelease(composite);
+            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+            throw new MessageDecodeException(e);
         }
     }
 
@@ -154,7 +158,7 @@ public final class ChunkDecoder {
             SecureChannel channel,
             CompositeByteBuf composite,
             List<ByteBuf> chunkBuffers
-        ) throws UaException, MessageAbortedException {
+        ) throws MessageAbortException, UaException {
 
             int signatureSize = getSignatureSize(channel);
             int cipherTextBlockSize = getCipherTextBlockSize(channel);
@@ -210,7 +214,7 @@ public final class ChunkDecoder {
                 if (chunkType == 'A') {
                     ErrorMessage errorMessage = ErrorMessage.decode(bodyBuffer);
 
-                    throw new MessageAbortedException(errorMessage.getReason(), requestId, errorMessage.getError());
+                    throw new MessageAbortException(errorMessage.getReason(), requestId, errorMessage.getError());
                 }
 
                 composite.addComponent(bodyBuffer);
