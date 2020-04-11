@@ -57,10 +57,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
 
-    private volatile ByteBuf buffer;
+    private ByteBuf buffer;
 
-    private volatile int currentByte = 0;
-    private volatile int bitsRemaining = 0;
+    private int currentByte = 0;
+    private int bitsRemaining = 0;
 
     private final AtomicInteger depth = new AtomicInteger(0);
 
