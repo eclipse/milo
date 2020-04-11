@@ -54,7 +54,7 @@ public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) {
         if (Stack.WSS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
             // Pass the binary contents to the UA Secure Conversation handlers
 
