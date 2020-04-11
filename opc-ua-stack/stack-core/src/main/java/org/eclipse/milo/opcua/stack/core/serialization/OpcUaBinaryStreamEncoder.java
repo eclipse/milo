@@ -50,10 +50,10 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
 
-    private volatile ByteBuf buffer;
+    private ByteBuf buffer;
 
-    private volatile int currentByte;
-    private volatile int bitCount;
+    private int currentByte;
+    private int bitCount;
 
     private final SerializationContext context;
 
