@@ -146,11 +146,9 @@ public class AttributeWriter {
 
                 validateArrayType(valueRank, arrayDimensions, value);
             }
-
-            node.setAttribute(context, attributeId, value);
-        } else {
-            node.setAttribute(context, attributeId, value);
         }
+
+        node.setAttribute(context, attributeId, value);
     }
 
     private static WriteMask writeMaskForAttribute(AttributeId attributeId) {
