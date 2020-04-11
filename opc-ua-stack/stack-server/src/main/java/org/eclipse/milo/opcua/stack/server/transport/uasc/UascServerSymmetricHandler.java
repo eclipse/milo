@@ -18,14 +18,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
@@ -129,86 +128,82 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                 chunkBuffers = new ArrayList<>();
 
                 serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                    ByteBuf message;
+                    long requestId;
+
                     try {
-                        validateChunkHeaders(buffersToDecode);
-                    } catch (UaException e) {
-                        logger.error("Error validating chunk headers: {}", e.getMessage(), e);
-                        buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
-                        ctx.fireExceptionCaught(e);
+                        ChunkDecoder.DecodedMessage decodedMessage =
+                            chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode);
+
+                        message = decodedMessage.getMessage();
+                        requestId = decodedMessage.getRequestId();
+                    } catch (MessageAbortException e) {
+                        logger.warn(
+                            "Received message abort chunk; error={}, reason={}",
+                            e.getStatusCode(), e.getMessage()
+                        );
+                        return;
+                    } catch (MessageDecodeException e) {
+                        logger.error("Error decoding symmetric message", e);
+
+                        ctx.close();
                         return;
                     }
 
-                    chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                        @Override
-                        public void onDecodingError(UaException ex) {
-                            logger.error(
-                                "Error decoding symmetric message: {}",
-                                ex.getMessage(), ex);
+                    try {
+                        UaRequestMessage request = (UaRequestMessage) binaryDecoder
+                            .setBuffer(message)
+                            .readMessage(null);
 
-                            ctx.close();
-                        }
+                        String endpointUrl = ctx.channel()
+                            .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
+                            .get();
 
-                        @Override
-                        public void onMessageAborted(MessageAbortedException ex) {
-                            logger.warn(
-                                "Received message abort chunk; error={}, reason={}",
-                                ex.getStatusCode(), ex.getMessage());
-                        }
+                        EndpointDescription endpoint = ctx.channel()
+                            .attr(UascServerAsymmetricHandler.ENDPOINT_KEY)
+                            .get();
 
-                        @Override
-                        public void onMessageDecoded(ByteBuf message, long requestId) {
-                            UaRequestMessage request = (UaRequestMessage) binaryDecoder
-                                .setBuffer(message)
-                                .readMessage(null);
+                        String path = EndpointUtil.getPath(endpointUrl);
 
-                            stackServer.getConfig().getExecutor().execute(() -> {
-                                try {
-                                    String endpointUrl = ctx
-                                        .channel()
-                                        .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
-                                        .get();
+                        InetSocketAddress remoteSocketAddress =
+                            (InetSocketAddress) ctx.channel().remoteAddress();
 
-                                    EndpointDescription endpoint = ctx
-                                        .channel()
-                                        .attr(UascServerAsymmetricHandler.ENDPOINT_KEY)
-                                        .get();
+                        ServiceRequest serviceRequest = new ServiceRequest(
+                            stackServer,
+                            request,
+                            endpoint,
+                            secureChannel.getChannelId(),
+                            remoteSocketAddress.getAddress(),
+                            secureChannel.getRemoteCertificateBytes()
+                        );
 
-                                    String path = EndpointUtil.getPath(endpointUrl);
+                        serviceRequest.getFuture().whenComplete((response, fault) -> {
+                            if (response != null) {
+                                sendServiceResponse(ctx, requestId, request, response);
+                            } else {
+                                UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
-                                    InetSocketAddress remoteSocketAddress =
-                                        (InetSocketAddress) ctx.channel().remoteAddress();
+                                sendServiceFault(ctx, requestId, requestHandle, fault);
+                            }
+                        });
 
-                                    ServiceRequest serviceRequest = new ServiceRequest(
-                                        stackServer,
-                                        request,
-                                        endpoint,
-                                        secureChannel.getChannelId(),
-                                        remoteSocketAddress.getAddress(),
-                                        secureChannel.getRemoteCertificateBytes()
-                                    );
+                        stackServer.onServiceRequest(path, serviceRequest);
+                    } catch (UaSerializationException e) {
+                        logger.error("Error decoding UaRequestMessage", e);
 
-                                    serviceRequest.getFuture().whenComplete((response, fault) -> {
-                                        if (response != null) {
-                                            sendServiceResponse(ctx, requestId, request, response);
-                                        } else {
-                                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+                        sendServiceFault(ctx, requestId, uint(0), e);
+                    } catch (Throwable t) {
+                        logger.error("Unexpected error servicing UaRequestMessage", t);
 
-                                            sendServiceFault(ctx, requestId, requestHandle, fault);
-                                        }
-                                    });
+                        long statusCode = UaException.extractStatusCode(t)
+                            .map(StatusCode::getValue)
+                            .orElse(StatusCodes.Bad_UnexpectedError);
 
-                                    stackServer.onServiceRequest(path, serviceRequest);
-                                } catch (Throwable t) {
-                                    logger.error("Error decoding UaRequestMessage", t);
-
-                                    sendServiceFault(ctx, requestId, uint(0), t);
-                                } finally {
-                                    message.release();
-                                    buffersToDecode.clear();
-                                }
-                            });
-                        }
-                    });
+                        sendServiceFault(ctx, requestId, uint(0), new UaException(statusCode, t));
+                    } finally {
+                        message.release();
+                        buffersToDecode.clear();
+                    }
                 });
             }
         }
@@ -342,29 +337,6 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                 StatusCodes.Bad_ResponseTooLarge,
                 "response exceeds remote max message size: " +
                     messageSize + " > " + remoteMaxMessageSize);
-        }
-    }
-
-    private void validateChunkHeaders(List<ByteBuf> chunkBuffers) throws UaException {
-        ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
-        long currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
-        long previousTokenId = channelSecurity.getPreviousToken()
-            .map(t -> t.getTokenId().longValue())
-            .orElse(-1L);
-
-        for (ByteBuf chunkBuffer : chunkBuffers) {
-            // tokenId starts after messageType + chunkType + messageSize + secureChannelId
-            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
-
-            if (tokenId != currentTokenId && tokenId != previousTokenId) {
-                String message = String.format(
-                    "received unknown secure channel token: " +
-                        "tokenId=%s currentTokenId=%s previousTokenId=%s",
-                    tokenId, currentTokenId, previousTokenId
-                );
-
-                throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
-            }
         }
     }
 

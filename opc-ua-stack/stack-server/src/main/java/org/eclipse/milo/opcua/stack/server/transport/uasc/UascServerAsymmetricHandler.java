@@ -36,7 +36,8 @@ import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecurityKeys;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
-import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -243,46 +244,49 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 chunkBuffers = new ArrayList<>();
                 headerRef.set(null);
 
-                serializationQueue.decode((binaryDecoder, chunkDecoder) ->
-                    chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                        @Override
-                        public void onDecodingError(UaException ex) {
-                            logger.error(
-                                "Error decoding asymmetric message: {}",
-                                ex.getMessage(), ex);
+                serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                    ByteBuf message;
+                    long requestId;
 
-                            ctx.close();
-                        }
+                    try {
+                        ChunkDecoder.DecodedMessage decodedMessage =
+                            chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
 
-                        @Override
-                        public void onMessageAborted(MessageAbortedException ex) {
-                            logger.warn(
-                                "Asymmetric message aborted. error={} reason={}",
-                                ex.getStatusCode(), ex.getMessage());
-                        }
+                        message = decodedMessage.getMessage();
+                        requestId = decodedMessage.getRequestId();
+                    } catch (MessageAbortException e) {
+                        logger.warn(
+                            "Received message abort chunk; error={}, reason={}",
+                            e.getStatusCode(), e.getMessage()
+                        );
+                        return;
+                    } catch (MessageDecodeException e) {
+                        logger.error("Error decoding asymmetric message", e);
 
-                        @Override
-                        public void onMessageDecoded(ByteBuf message, long requestId) {
-                            try {
-                                OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
-                                    .setBuffer(message)
-                                    .readMessage(null);
+                        ctx.close();
+                        return;
+                    }
 
-                                logger.debug(
-                                    "Received OpenSecureChannelRequest ({}, id={}).",
-                                    request.getRequestType(), secureChannelId);
+                    try {
+                        OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
+                            .setBuffer(message)
+                            .readMessage(null);
 
-                                sendOpenSecureChannelResponse(ctx, requestId, request);
-                            } catch (Throwable t) {
-                                logger.error("Error decoding OpenSecureChannelRequest", t);
-                                ctx.close();
-                            } finally {
-                                message.release();
-                                buffersToDecode.clear();
-                            }
-                        }
-                    })
-                );
+                        logger.debug(
+                            "Received OpenSecureChannelRequest ({}, id={}).",
+                            request.getRequestType(), secureChannelId
+                        );
+
+                        sendOpenSecureChannelResponse(ctx, requestId, request);
+                    } catch (Throwable t) {
+                        logger.error("Error decoding OpenSecureChannelRequest", t);
+
+                        ctx.close();
+                    } finally {
+                        message.release();
+                        buffersToDecode.clear();
+                    }
+                });
             }
         }
     }

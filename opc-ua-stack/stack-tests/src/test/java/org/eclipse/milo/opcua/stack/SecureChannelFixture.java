@@ -53,47 +53,45 @@ public abstract class SecureChannelFixture extends SecurityFixture {
         serverChannel.setLocalNonce(serverNonce);
         serverChannel.setRemoteNonce(clientNonce);
 
-        switch (securityPolicy) {
-            case None:
-                break;
+        if (securityPolicy != SecurityPolicy.None) {
+            serverChannel.setKeyPair(serverKeyPair);
+            serverChannel.setLocalCertificate(serverCertificate);
+            serverChannel.setLocalCertificateChain(new X509Certificate[]{serverCertificate});
+            serverChannel.setRemoteCertificate(clientCertificateBytes);
+        }
 
-            case Basic128Rsa15:
-            case Basic256:
-            case Basic256Sha256:
-            default:
-                if (messageSecurity != MessageSecurityMode.None) {
-                    ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.generateKeyPair(
-                        clientChannel,
-                        clientChannel.getLocalNonce(),
-                        clientChannel.getRemoteNonce()
-                    );
+        // Configure the ChannelSecurityToken for clientChannel
+        ChannelSecurityToken clientToken = new ChannelSecurityToken(
+            uint(0), uint(1), DateTime.now(), uint(60000)
+        );
 
-                    ChannelSecurityToken clientToken = new ChannelSecurityToken(
-                        uint(0), uint(1), DateTime.now(), uint(60000));
+        if (messageSecurity == MessageSecurityMode.None) {
+            clientChannel.setChannelSecurity(new ChannelSecurity(null, clientToken));
+        } else {
+            ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.generateKeyPair(
+                clientChannel,
+                clientChannel.getLocalNonce(),
+                clientChannel.getRemoteNonce()
+            );
 
-                    clientChannel.setChannelSecurity(new ChannelSecurity(clientSecrets, clientToken));
-                }
+            clientChannel.setChannelSecurity(new ChannelSecurity(clientSecrets, clientToken));
+        }
 
+        // Configure the ChannelSecurityToken for serverChannel
+        ChannelSecurityToken serverToken = new ChannelSecurityToken(
+            uint(0), uint(1), DateTime.now(), uint(60000)
+        );
 
-                serverChannel.setKeyPair(serverKeyPair);
-                serverChannel.setLocalCertificate(serverCertificate);
-                serverChannel.setLocalCertificateChain(new X509Certificate[]{serverCertificate});
-                serverChannel.setRemoteCertificate(clientCertificateBytes);
+        if (messageSecurity == MessageSecurityMode.None) {
+            serverChannel.setChannelSecurity(new ChannelSecurity(null, serverToken));
+        } else {
+            ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.generateKeyPair(
+                serverChannel,
+                serverChannel.getRemoteNonce(),
+                serverChannel.getLocalNonce()
+            );
 
-                if (messageSecurity != MessageSecurityMode.None) {
-                    ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.generateKeyPair(
-                        serverChannel,
-                        serverChannel.getRemoteNonce(),
-                        serverChannel.getLocalNonce()
-                    );
-
-                    ChannelSecurityToken serverToken = new ChannelSecurityToken(
-                        uint(0), uint(1), DateTime.now(), uint(60000));
-
-                    serverChannel.setChannelSecurity(new ChannelSecurity(serverSecrets, serverToken));
-                }
-
-                break;
+            serverChannel.setChannelSecurity(new ChannelSecurity(serverSecrets, serverToken));
         }
 
         return new SecureChannel[]{clientChannel, serverChannel};
