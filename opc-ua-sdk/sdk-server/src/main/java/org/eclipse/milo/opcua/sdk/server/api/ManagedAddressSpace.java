@@ -50,25 +50,30 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaNodeManager nodeManager = new UaNodeManager();
-
     private final UaNodeContext nodeContext;
     private final NodeFactory nodeFactory;
 
     private final OpcUaServer server;
+    private final UaNodeManager nodeManager;
 
     public ManagedAddressSpace(OpcUaServer server) {
+        this(server, new UaNodeManager());
+    }
+
+    public ManagedAddressSpace(OpcUaServer server, UaNodeManager nodeManager) {
         this.server = server;
+
+        this.nodeManager = nodeManager;
 
         nodeContext = new UaNodeContext() {
             @Override
             public OpcUaServer getServer() {
-                return server;
+                return ManagedAddressSpace.this.getServer();
             }
 
             @Override
             public NodeManager<UaNode> getNodeManager() {
-                return nodeManager;
+                return ManagedAddressSpace.this.getNodeManager();
             }
         };
 
