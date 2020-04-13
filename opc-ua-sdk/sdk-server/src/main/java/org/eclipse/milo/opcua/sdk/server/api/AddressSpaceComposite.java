@@ -61,7 +61,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
  * <p>
  * Service call operations are executed by the first sub-AddressSpace that matches on the NodeId in the operation.
  */
-public abstract class AddressSpaceComposite implements AddressSpace {
+public class AddressSpaceComposite implements AddressSpace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
