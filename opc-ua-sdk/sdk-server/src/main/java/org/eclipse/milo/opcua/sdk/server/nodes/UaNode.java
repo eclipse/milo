@@ -256,9 +256,9 @@ public abstract class UaNode implements UaServerNode {
     public final void delete() {
         NodeManager<UaNode> nodeManager = context.getNodeManager();
 
-        nodeManager.removeNode(nodeId);
+        nodeManager.removeNode(getNodeId());
 
-        for (Reference reference : nodeManager.getReferences(nodeId)) {
+        for (Reference reference : nodeManager.getReferences(getNodeId())) {
             if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
                 Optional<UaNode> targetNode = nodeManager.getNode(
                     reference.getTargetNodeId(),
@@ -295,7 +295,7 @@ public abstract class UaNode implements UaServerNode {
         return ImmutableList.copyOf(
             context.getServer()
                 .getAddressSpaceManager()
-                .getManagedReferences(nodeId)
+                .getManagedReferences(getNodeId())
         );
     }
 
