@@ -12,18 +12,13 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 
 import java.util.List;
 
-import org.eclipse.milo.opcua.sdk.server.Lifecycle;
-import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 
-@SuppressWarnings("restriction")
-public class ServerNamespace extends ManagedNamespace implements Lifecycle {
-
-    private final LifecycleManager lifecycleManager = new LifecycleManager();
+public class ServerNamespace extends ManagedNamespaceWithLifecycle {
 
     private final SubscriptionModel subscriptionModel;
 
@@ -32,33 +27,9 @@ public class ServerNamespace extends ManagedNamespace implements Lifecycle {
 
         subscriptionModel = new SubscriptionModel(server, this);
 
-        lifecycleManager.addLifecycle(new Lifecycle() {
-            @Override
-            public void startup() {
-                server.getAddressSpaceManager().register(getNodeManager());
-                server.getAddressSpaceManager().register(ServerNamespace.this);
-            }
+        getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
 
-            @Override
-            public void shutdown() {
-                server.getAddressSpaceManager().unregister(getNodeManager());
-                server.getAddressSpaceManager().unregister(ServerNamespace.this);
-            }
-        });
-
-        lifecycleManager.addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
-
-        lifecycleManager.addLifecycle(subscriptionModel);
-    }
-
-    @Override
-    public void startup() {
-        lifecycleManager.startup();
-    }
-
-    @Override
-    public void shutdown() {
-        lifecycleManager.shutdown();
+        getLifecycleManager().addLifecycle(subscriptionModel);
     }
 
     @Override

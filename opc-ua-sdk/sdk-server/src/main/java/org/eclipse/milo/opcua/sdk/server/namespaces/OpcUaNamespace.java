@@ -17,13 +17,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.sdk.server.Lifecycle;
-import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
@@ -70,13 +68,11 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class OpcUaNamespace extends ManagedNamespace implements Lifecycle {
+public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
     private static final double MIN_SAMPLING_INTERVAL = 100.0;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final LifecycleManager lifecycleManager = new LifecycleManager();
 
     private final DiagnosticsManager diagnosticsManager;
     private final SubscriptionModel subscriptionModel;
@@ -91,21 +87,7 @@ public class OpcUaNamespace extends ManagedNamespace implements Lifecycle {
         diagnosticsManager = new DiagnosticsManager(server, getNodeFactory(), getNodeManager());
         subscriptionModel = new SubscriptionModel(server, this);
 
-        lifecycleManager.addLifecycle(new Lifecycle() {
-            @Override
-            public void startup() {
-                server.getAddressSpaceManager().register(getNodeManager());
-                server.getAddressSpaceManager().register(OpcUaNamespace.this);
-            }
-
-            @Override
-            public void shutdown() {
-                server.getAddressSpaceManager().unregister(getNodeManager());
-                server.getAddressSpaceManager().unregister(OpcUaNamespace.this);
-            }
-        });
-
-        lifecycleManager.addStartupTask(() -> {
+        getLifecycleManager().addStartupTask(() -> {
             loadNodes();
             configureServerObject();
             configureConditionRefresh();
@@ -119,29 +101,8 @@ public class OpcUaNamespace extends ManagedNamespace implements Lifecycle {
                 .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
         });
 
-        lifecycleManager.addLifecycle(new Lifecycle() {
-            @Override
-            public void startup() {
-                subscriptionModel.startup();
-                diagnosticsManager.startup();
-            }
-
-            @Override
-            public void shutdown() {
-                subscriptionModel.shutdown();
-                diagnosticsManager.shutdown();
-            }
-        });
-    }
-
-    @Override
-    public void startup() {
-        lifecycleManager.startup();
-    }
-
-    @Override
-    public void shutdown() {
-        lifecycleManager.shutdown();
+        getLifecycleManager().addLifecycle(subscriptionModel);
+        getLifecycleManager().addLifecycle(diagnosticsManager);
     }
 
     @Override

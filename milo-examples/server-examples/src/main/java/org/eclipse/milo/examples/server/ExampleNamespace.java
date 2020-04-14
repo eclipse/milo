@@ -25,11 +25,10 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
-import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.DataTypeDictionaryManager;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
@@ -73,7 +72,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class ExampleNamespace extends ManagedNamespace implements Lifecycle {
+public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
@@ -129,8 +128,6 @@ public class ExampleNamespace extends ManagedNamespace implements Lifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final LifecycleManager lifecycleManager = new LifecycleManager();
-
     private volatile Thread eventThread;
     private volatile boolean keepPostingEvents = true;
 
@@ -146,26 +143,12 @@ public class ExampleNamespace extends ManagedNamespace implements Lifecycle {
         subscriptionModel = new SubscriptionModel(server, this);
         dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
 
-        lifecycleManager.addLifecycle(new Lifecycle() {
-            @Override
-            public void startup() {
-                server.getAddressSpaceManager().register(getNodeManager());
-                server.getAddressSpaceManager().register(ExampleNamespace.this);
-            }
+        getLifecycleManager().addLifecycle(dictionaryManager);
+        getLifecycleManager().addLifecycle(subscriptionModel);
 
-            @Override
-            public void shutdown() {
-                server.getAddressSpaceManager().unregister(getNodeManager());
-                server.getAddressSpaceManager().unregister(ExampleNamespace.this);
-            }
-        });
+        getLifecycleManager().addStartupTask(this::createAndAddNodes);
 
-        lifecycleManager.addLifecycle(dictionaryManager);
-        lifecycleManager.addLifecycle(subscriptionModel);
-
-        lifecycleManager.addStartupTask(this::createAndAddNodes);
-
-        lifecycleManager.addLifecycle(new Lifecycle() {
+        getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
                 startBogusEventNotifier();
@@ -182,16 +165,6 @@ public class ExampleNamespace extends ManagedNamespace implements Lifecycle {
                 }
             }
         });
-    }
-
-    @Override
-    public void startup() {
-        lifecycleManager.startup();
-    }
-
-    @Override
-    public void shutdown() {
-        lifecycleManager.shutdown();
     }
 
     private void createAndAddNodes() {
