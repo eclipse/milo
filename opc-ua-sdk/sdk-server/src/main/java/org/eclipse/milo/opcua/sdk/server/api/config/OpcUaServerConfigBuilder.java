@@ -132,6 +132,7 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         return this;
     }
 
+    @Override
     public OpcUaServerConfig build() {
         UaStackServerConfig stackServerConfig = super.build();
 

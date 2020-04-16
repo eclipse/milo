@@ -34,6 +34,7 @@ public class OpcTcpTransport extends AbstractTransport implements UaTransport {
         channelFsm = ClientChannelFsm.newChannelFsm(client);
     }
 
+    @Override
     public UaStackClientConfig getConfig() {
         return client.getConfig();
     }

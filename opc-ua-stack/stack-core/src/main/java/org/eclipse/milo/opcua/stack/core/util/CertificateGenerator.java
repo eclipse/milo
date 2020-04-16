@@ -180,6 +180,7 @@ public class CertificateGenerator {
 
     private static synchronized void disableSystemExitCall() {
         SecurityManager securityManager = new SecurityManager() {
+            @Override
             public void checkPermission(Permission permission) {
                 if (permission.getName().startsWith("exitVM")) {
                     throw new ExitTrappedException();

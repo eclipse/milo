@@ -291,6 +291,7 @@ public abstract class UaNode implements UaServerNode {
         return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
+    @Override
     public ImmutableList<Reference> getReferences() {
         return ImmutableList.copyOf(
             context.getServer()
@@ -304,6 +305,7 @@ public abstract class UaNode implements UaServerNode {
      *
      * @param reference the {@link Reference} to add.
      */
+    @Override
     public void addReference(Reference reference) {
         context.getNodeManager().addReferences(reference, context.getNamespaceTable());
     }
@@ -313,6 +315,7 @@ public abstract class UaNode implements UaServerNode {
      *
      * @param reference the {@link Reference} to remove.
      */
+    @Override
     public void removeReference(Reference reference) {
         context.getNodeManager().removeReferences(reference, context.getNamespaceTable());
     }

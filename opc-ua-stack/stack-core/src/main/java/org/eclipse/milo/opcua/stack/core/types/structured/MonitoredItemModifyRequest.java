@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -27,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
     toBuilder = true
 )
 @ToString
-public class MonitoredItemModifyRequest extends Structure {
+public class MonitoredItemModifyRequest extends Structure implements UaStructure {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=755");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=757");

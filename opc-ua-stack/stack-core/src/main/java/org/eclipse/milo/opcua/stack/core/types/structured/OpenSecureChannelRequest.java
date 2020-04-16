@@ -76,6 +76,7 @@ public class OpenSecureChannelRequest extends Structure implements UaRequestMess
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

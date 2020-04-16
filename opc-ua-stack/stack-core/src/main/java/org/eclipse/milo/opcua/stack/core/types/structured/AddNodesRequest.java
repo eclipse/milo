@@ -58,6 +58,7 @@ public class AddNodesRequest extends Structure implements UaRequestMessage {
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

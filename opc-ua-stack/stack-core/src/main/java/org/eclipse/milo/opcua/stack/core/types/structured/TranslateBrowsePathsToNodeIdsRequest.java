@@ -61,6 +61,7 @@ public class TranslateBrowsePathsToNodeIdsRequest extends Structure implements U
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

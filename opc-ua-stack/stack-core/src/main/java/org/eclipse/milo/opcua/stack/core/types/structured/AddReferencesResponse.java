@@ -64,6 +64,7 @@ public class AddReferencesResponse extends Structure implements UaResponseMessag
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

@@ -55,6 +55,7 @@ public class RegisterServerResponse extends Structure implements UaResponseMessa
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

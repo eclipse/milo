@@ -194,6 +194,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         return this;
     }
 
+    @Override
     public OpcUaClientConfig build() {
         UaStackClientConfig stackClientConfig = super.build();
 

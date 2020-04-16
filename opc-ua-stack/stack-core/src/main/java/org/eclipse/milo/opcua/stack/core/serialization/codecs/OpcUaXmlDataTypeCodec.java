@@ -25,6 +25,7 @@ public interface OpcUaXmlDataTypeCodec<T> extends
      * @param reader  the {@link OpcUaXmlStreamDecoder} to decode from.
      * @return a decoded {@link T}.
      */
+    @Override
     T decode(SerializationContext context, OpcUaXmlStreamDecoder reader) throws UaSerializationException;
 
     /**
@@ -34,6 +35,7 @@ public interface OpcUaXmlDataTypeCodec<T> extends
      * @param writer  the {@link OpcUaXmlStreamEncoder} to encode to.
      * @param value   the value {@link T} to encode.
      */
+    @Override
     void encode(SerializationContext context, OpcUaXmlStreamEncoder writer, T value) throws UaSerializationException;
 
 }

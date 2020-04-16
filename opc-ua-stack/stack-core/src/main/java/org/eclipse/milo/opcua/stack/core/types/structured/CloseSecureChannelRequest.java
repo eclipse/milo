@@ -55,6 +55,7 @@ public class CloseSecureChannelRequest extends Structure implements UaRequestMes
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

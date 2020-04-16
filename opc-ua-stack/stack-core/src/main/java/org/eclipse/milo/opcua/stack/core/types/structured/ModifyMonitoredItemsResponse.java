@@ -63,6 +63,7 @@ public class ModifyMonitoredItemsResponse extends Structure implements UaRespons
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

@@ -34,6 +34,7 @@ public class OpcWebSocketTransport extends AbstractTransport {
         channelFsm = ClientChannelFsm.newChannelFsm(client);
     }
 
+    @Override
     public UaStackClientConfig getConfig() {
         return client.getConfig();
     }

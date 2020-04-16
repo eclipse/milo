@@ -63,6 +63,7 @@ public class AddNodesResponse extends Structure implements UaResponseMessage {
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

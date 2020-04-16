@@ -67,6 +67,7 @@ public class ModifyMonitoredItemsRequest extends Structure implements UaRequestM
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

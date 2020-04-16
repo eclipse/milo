@@ -59,6 +59,7 @@ public class DeleteSubscriptionsRequest extends Structure implements UaRequestMe
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

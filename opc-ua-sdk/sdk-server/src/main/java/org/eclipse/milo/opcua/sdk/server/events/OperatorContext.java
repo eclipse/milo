@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events;
 
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -18,8 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 
 public interface OperatorContext extends AccessContext, FilterContext {
-
-    OpcUaServer getServer();
 
     ContentFilterElement[] getElements();
 

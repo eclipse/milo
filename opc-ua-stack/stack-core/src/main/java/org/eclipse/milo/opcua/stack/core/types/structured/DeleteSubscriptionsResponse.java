@@ -64,6 +64,7 @@ public class DeleteSubscriptionsResponse extends Structure implements UaResponse
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

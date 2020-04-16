@@ -70,6 +70,7 @@ public class CreateSubscriptionResponse extends Structure implements UaResponseM
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

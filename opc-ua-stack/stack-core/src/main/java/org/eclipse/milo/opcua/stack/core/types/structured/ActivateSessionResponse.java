@@ -68,6 +68,7 @@ public class ActivateSessionResponse extends Structure implements UaResponseMess
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

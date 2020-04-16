@@ -73,6 +73,7 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
         return XML_ENCODING_ID;
     }
 
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

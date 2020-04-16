@@ -64,6 +64,7 @@ public class SetMonitoringModeResponse extends Structure implements UaResponseMe
         return XML_ENCODING_ID;
     }
 
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }
