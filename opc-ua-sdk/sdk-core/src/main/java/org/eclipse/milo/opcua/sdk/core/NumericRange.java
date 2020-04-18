@@ -64,6 +64,14 @@ public final class NumericRange {
             this.high = high;
         }
 
+        public int getLow() {
+            return low;
+        }
+
+        public int getHigh() {
+            return high;
+        }
+
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
@@ -126,8 +134,8 @@ public final class NumericRange {
     private static Object readFromValueAtRange(Object array, NumericRange range, int dimension) throws UaException {
         int dimensionCount = range.getDimensionCount();
         Bounds bounds = range.getDimensionBounds(dimension);
-        int low = bounds.low;
-        int high = bounds.high;
+        int low = bounds.getLow();
+        int high = bounds.getHigh();
 
         if (dimension == dimensionCount) {
             if (array.getClass().isArray()) {
@@ -193,8 +201,8 @@ public final class NumericRange {
 
         int dimensionCount = range.getDimensionCount();
         Bounds bounds = range.getDimensionBounds(dimension);
-        int low = bounds.low;
-        int high = bounds.high;
+        int low = bounds.getLow();
+        int high = bounds.getHigh();
 
         if (dimension == dimensionCount) {
             if (current.getClass().isArray()) {
