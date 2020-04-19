@@ -18,6 +18,7 @@ import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -112,6 +113,18 @@ public class ExpandedNodeIdTest {
 
             assertFalse(xni.equals(nodeId));
         }
+    }
+
+    @Test
+    public void testToParseableString() {
+        String withoutNamespaceUri = new ExpandedNodeId(ushort(1), null, uint(0)).toParseableString();
+        assertEquals(withoutNamespaceUri, "ns=1;i=0");
+
+        String withNamespaceUri = new ExpandedNodeId(ushort(0), "urn:test", uint(0)).toParseableString();
+        assertEquals(withNamespaceUri, "nsu=urn:test;i=0");
+
+        String withServerIndex = new ExpandedNodeId(ushort(0), "urn:test", uint(0), uint(1)).toParseableString();
+        assertEquals(withServerIndex, "svr=1;nsu=urn:test;i=0");
     }
 
 }
