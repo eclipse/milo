@@ -1157,6 +1157,31 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
+
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Object array = Array.newInstance(enumType, length);
+
+            for (int i = 0; i < length; i++) {
+                T value = readEnum(field, enumType);
+
+                Array.set(array, i, value);
+            }
+
+            return (Object[]) array;
+        }
+    }
+
+    @Override
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         int length = readInt32();
 

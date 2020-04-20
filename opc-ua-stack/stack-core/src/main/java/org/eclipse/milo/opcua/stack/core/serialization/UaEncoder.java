@@ -144,6 +144,8 @@ public interface UaEncoder {
 
     void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException;
 
+    void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException;
+
     void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException;
 
     void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException;

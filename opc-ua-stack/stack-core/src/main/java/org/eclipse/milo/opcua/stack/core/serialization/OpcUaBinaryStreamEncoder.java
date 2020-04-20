@@ -1100,6 +1100,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException {
+        writeArray(value, v -> writeEnum(field, v));
+    }
+
+    @Override
     public void writeStructArray(
         String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
 

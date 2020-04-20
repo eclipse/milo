@@ -144,6 +144,11 @@ public interface UaDecoder {
 
     DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException;
 
+    <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException;
+
     Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
