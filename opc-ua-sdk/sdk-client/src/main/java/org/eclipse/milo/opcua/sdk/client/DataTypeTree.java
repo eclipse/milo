@@ -24,6 +24,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 
+/**
+ * A tree-based representation of a DataType hierarchy.
+ * <p>
+ * Allows for convenient operations such as:
+ * <ul>
+ *     <li>resolving the backing Class for a value of a given DataType</li>
+ *     <li>reducing a DataType to its inherited builtin type</li>
+ *     <li>checking if a Class would be assignable to a value of some DataType</li>
+ *     <li>retrieving the encoding ids for structured DataTypes</li>
+ * </ul>
+ */
 public class DataTypeTree {
 
     private final Map<NodeId, Tree<DataType>> dataTypes = Maps.newConcurrentMap();

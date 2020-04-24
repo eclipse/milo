@@ -50,10 +50,22 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
+/**
+ * Builds a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
+ * {@link Identifiers#BaseDataType}.
+ */
 public final class DataTypeTreeBuilder {
 
     private DataTypeTreeBuilder() {}
 
+    /**
+     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
+     * {@link Identifiers#BaseDataType}.
+     *
+     * @param client  a connected {@link UaStackClient}.
+     * @param session an active {@link OpcUaSession}.
+     * @return a {@link DataTypeTree}.
+     */
     public static CompletableFuture<DataTypeTree> build(UaStackClient client, OpcUaSession session) {
         Tree<DataTypeTree.DataType> root = new Tree<>(
             null,
