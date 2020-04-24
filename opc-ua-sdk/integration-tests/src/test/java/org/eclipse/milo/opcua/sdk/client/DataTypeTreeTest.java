@@ -127,6 +127,8 @@ public class DataTypeTreeTest extends ClientServerTest {
             if (!Objects.equals(dataType.getBrowseName().getName(), "Structure")) {
                 assertNotNull(dataType.getBinaryEncodingId());
                 assertNotNull(dataType.getXmlEncodingId());
+                assertNotNull(dataTypeTree.getBinaryEncodingId(dataType.getNodeId()));
+                assertNotNull(dataTypeTree.getXmlEncodingId(dataType.getNodeId()));
             }
         });
     }
