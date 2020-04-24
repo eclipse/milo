@@ -122,30 +122,6 @@ public class DataTypeTree {
     }
 
     /**
-     * Check if a value of type {@code clazz} is assignable to a value of DataType {@code dataTypeId}, i.e. it is
-     * equal to or a subtype of the backing class for {@code dataTypeId}.
-     *
-     * @param dataTypeId the {@link NodeId} of a DataType Node.
-     * @param clazz      the backing Class to check.
-     * @return {@code true} if {@code clazz} is equal to or a subtype of the backing class for {@code dataTypeId}.
-     */
-    public boolean isAssignable(NodeId dataTypeId, Class<?> clazz) {
-        Class<?> backingClass = getBackingClass(dataTypeId);
-
-        if (Identifiers.Integer.equals(dataTypeId)) {
-            return clazz == byte.class || clazz == Byte.class
-                || clazz == short.class || clazz == Short.class
-                || clazz == int.class || clazz == Integer.class
-                || clazz == long.class || clazz == Long.class;
-        } else if (Identifiers.UInteger.equals(dataTypeId)) {
-            return clazz == UByte.class || clazz == UShort.class
-                || clazz == UInteger.class || clazz == ULong.class;
-        } else {
-            return backingClass.isAssignableFrom(clazz);
-        }
-    }
-
-    /**
      * Get the {@link BuiltinDataType} {@code dataTypeId} inherits from, following references to the parent
      * as necessary until a {@link BuiltinDataType} is found.
      *
@@ -173,6 +149,30 @@ public class DataTypeTree {
         return node != null ? node.getValue() : null;
     }
 
+    /**
+     * Check if a value of type {@code clazz} is assignable to a value of DataType {@code dataTypeId}, i.e. it is
+     * equal to or a subtype of the backing class for {@code dataTypeId}.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @param clazz      the backing Class to check.
+     * @return {@code true} if {@code clazz} is equal to or a subtype of the backing class for {@code dataTypeId}.
+     */
+    public boolean isAssignable(NodeId dataTypeId, Class<?> clazz) {
+        Class<?> backingClass = getBackingClass(dataTypeId);
+
+        if (Identifiers.Integer.equals(dataTypeId)) {
+            return clazz == byte.class || clazz == Byte.class
+                || clazz == short.class || clazz == Short.class
+                || clazz == int.class || clazz == Integer.class
+                || clazz == long.class || clazz == Long.class;
+        } else if (Identifiers.UInteger.equals(dataTypeId)) {
+            return clazz == UByte.class || clazz == UShort.class
+                || clazz == UInteger.class || clazz == ULong.class;
+        } else {
+            return backingClass.isAssignableFrom(clazz);
+        }
+    }
+
     public Tree<DataType> getTree() {
         return tree;
     }
@@ -181,10 +181,9 @@ public class DataTypeTree {
         Tree<DataType> root = new Tree<>(
             null,
             new DataType(
-                Identifiers.BaseDataType,
+                QualifiedName.parse("0:BaseDataType"), Identifiers.BaseDataType,
                 null,
-                null,
-                QualifiedName.parse("0:BaseDataType")
+                null
             )
         );
 
@@ -276,10 +275,10 @@ public class DataTypeTree {
                     }
 
                     return new DataType(
+                        dataTypeReference.getBrowseName(),
                         dataTypeId,
                         binaryEncodingId,
-                        xmlEncodingId,
-                        dataTypeReference.getBrowseName()
+                        xmlEncodingId
                     );
                 });
             });
@@ -375,33 +374,45 @@ public class DataTypeTree {
         });
     }
 
+    /**
+     * Data object that holds details of a DataType:
+     * <ul>
+     *     <li>NodeId of the DataType Node</li>
+     *     <li>NodeId of the Binary Encoding Node</li>
+     *     <li>NodeId of the XML Encoding Node</li>
+     *     <li>Browse Name of the DataType Node</li>
+     * </ul>
+     */
     public static class DataType {
+
+        private final QualifiedName browseName;
         private final NodeId nodeId;
         private final NodeId binaryEncodingId;
         private final NodeId xmlEncodingId;
-        private final QualifiedName browseName;
 
-        public DataType(NodeId nodeId, NodeId binaryEncodingId, NodeId xmlEncodingId, QualifiedName browseName) {
+        private DataType(QualifiedName browseName, NodeId nodeId, NodeId binaryEncodingId, NodeId xmlEncodingId) {
+            this.browseName = browseName;
             this.nodeId = nodeId;
             this.binaryEncodingId = binaryEncodingId;
             this.xmlEncodingId = xmlEncodingId;
-            this.browseName = browseName;
+        }
+
+        public QualifiedName getBrowseName() {
+            return browseName;
         }
 
         public NodeId getNodeId() {
             return nodeId;
         }
 
+        @Nullable
         public NodeId getBinaryEncodingId() {
             return binaryEncodingId;
         }
 
+        @Nullable
         public NodeId getXmlEncodingId() {
             return xmlEncodingId;
-        }
-
-        public QualifiedName getBrowseName() {
-            return browseName;
         }
 
         @Override
@@ -409,26 +420,27 @@ public class DataTypeTree {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             DataType dataType = (DataType) o;
-            return nodeId.equals(dataType.nodeId) &&
+            return browseName.equals(dataType.browseName) &&
+                nodeId.equals(dataType.nodeId) &&
                 Objects.equals(binaryEncodingId, dataType.binaryEncodingId) &&
-                Objects.equals(xmlEncodingId, dataType.xmlEncodingId) &&
-                browseName.equals(dataType.browseName);
+                Objects.equals(xmlEncodingId, dataType.xmlEncodingId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(nodeId, binaryEncodingId, xmlEncodingId, browseName);
+            return Objects.hash(browseName, nodeId, binaryEncodingId, xmlEncodingId);
         }
 
         @Override
         public String toString() {
             return "DataType{" +
-                "nodeId=" + nodeId +
+                "browseName=" + browseName +
+                ", nodeId=" + nodeId +
                 ", binaryEncodingId=" + binaryEncodingId +
                 ", xmlEncodingId=" + xmlEncodingId +
-                ", browseName=" + browseName +
                 '}';
         }
+
     }
 
     public static class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitializer {
