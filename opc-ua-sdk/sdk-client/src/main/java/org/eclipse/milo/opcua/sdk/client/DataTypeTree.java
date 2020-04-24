@@ -35,7 +35,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -101,9 +105,9 @@ public class DataTypeTree {
             } else if (Identifiers.Number.equals(dataTypeId)) {
                 return Number.class;
             } else if (Identifiers.Integer.equals(dataTypeId)) {
-                return Integer.class;
+                return Number.class;
             } else if (Identifiers.UInteger.equals(dataTypeId)) {
-                return UInteger.class;
+                return UNumber.class;
             } else {
                 Tree<DataType> node = dataTypes.get(dataTypeId);
                 Tree<DataType> parent = node != null ? node.getParent() : null;
@@ -126,7 +130,19 @@ public class DataTypeTree {
      * @return {@code true} if {@code clazz} is equal to or a subtype of the backing class for {@code dataTypeId}.
      */
     public boolean isAssignable(NodeId dataTypeId, Class<?> clazz) {
-        return false; // TODO
+        Class<?> backingClass = getBackingClass(dataTypeId);
+
+        if (Identifiers.Integer.equals(dataTypeId)) {
+            return clazz == byte.class || clazz == Byte.class
+                || clazz == short.class || clazz == Short.class
+                || clazz == int.class || clazz == Integer.class
+                || clazz == long.class || clazz == Long.class;
+        } else if (Identifiers.UInteger.equals(dataTypeId)) {
+            return clazz == UByte.class || clazz == UShort.class
+                || clazz == UInteger.class || clazz == ULong.class;
+        } else {
+            return backingClass.isAssignableFrom(clazz);
+        }
     }
 
     /**
