@@ -17,11 +17,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -30,8 +32,10 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -56,21 +60,105 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class DataTypeTree {
 
-    private final Map<NodeId, DataType> dataTypes = Maps.newConcurrentMap();
+    public static final String SESSION_ATTRIBUTE_KEY = "dataTypeTree";
+
+    private final Map<NodeId, Tree<DataType>> dataTypes = Maps.newConcurrentMap();
 
     private final Tree<DataType> tree;
 
     public DataTypeTree(Tree<DataType> tree) {
         this.tree = tree;
 
-        tree.traverse(dataType -> dataTypes.put(dataType.getNodeId(), dataType));
+        tree.traverseNodes(
+            treeNode ->
+                dataTypes.put(treeNode.getValue().getNodeId(), treeNode)
+        );
+    }
 
-        tree.traverseWithDepth((dataType, depth) -> {
-            for (int i = 0; i < depth; i++) {
-                System.out.print("\t");
+    /**
+     * Get the backing Class a value of DataType {@code dataTypeId} would have.
+     * <p>
+     * Builtin DataTypes are backed by their intrinsic backing class.
+     * <p>
+     * Abstract types {@link Identifiers#Number}, {@link Identifiers#Integer}, and {@link Identifiers#UInteger}
+     * are backed by {@link Number}, {@link Integer}, and {@link UInteger} respectively.
+     * <p>
+     * Enumerations are backed by {@link Integer}.
+     * <p>
+     * Structures are backed by {@link ExtensionObject}.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @return the backing Class a value of DataType {@code dataTypeId} would have.
+     * @see BuiltinDataType
+     * @see BuiltinDataType#getBackingClass()
+     */
+    public Class<?> getBackingClass(NodeId dataTypeId) {
+        if (BuiltinDataType.isBuiltin(dataTypeId)) {
+            return BuiltinDataType.getBackingClass(dataTypeId);
+        } else {
+            if (Identifiers.Enumeration.equals(dataTypeId)) {
+                return Integer.class;
+            } else if (Identifiers.Number.equals(dataTypeId)) {
+                return Number.class;
+            } else if (Identifiers.Integer.equals(dataTypeId)) {
+                return Integer.class;
+            } else if (Identifiers.UInteger.equals(dataTypeId)) {
+                return UInteger.class;
+            } else {
+                Tree<DataType> node = dataTypes.get(dataTypeId);
+                Tree<DataType> parent = node != null ? node.getParent() : null;
+
+                if (parent != null) {
+                    return getBackingClass(parent.getValue().getNodeId());
+                } else {
+                    return Object.class;
+                }
             }
-            System.out.println(dataType.getBrowseName().toParseableString());
-        });
+        }
+    }
+
+    /**
+     * Check if a value of type {@code clazz} is assignable to a value of DataType {@code dataTypeId}, i.e. it is
+     * equal to or a subtype of the backing class for {@code dataTypeId}.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @param clazz      the backing Class to check.
+     * @return {@code true} if {@code clazz} is equal to or a subtype of the backing class for {@code dataTypeId}.
+     */
+    public boolean isAssignable(NodeId dataTypeId, Class<?> clazz) {
+        return false; // TODO
+    }
+
+    /**
+     * Get the {@link BuiltinDataType} {@code dataTypeId} inherits from, following references to the parent
+     * as necessary until a {@link BuiltinDataType} is found.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @return the {@link BuiltinDataType} this DataType inherits from.
+     */
+    public BuiltinDataType getBuiltinType(NodeId dataTypeId) {
+        if (BuiltinDataType.isBuiltin(dataTypeId)) {
+            return BuiltinDataType.fromNodeId(dataTypeId);
+        } else {
+            Tree<DataType> node = dataTypes.get(dataTypeId);
+            Tree<DataType> parent = node != null ? node.getParent() : null;
+
+            if (parent != null) {
+                return getBuiltinType(parent.getValue().getNodeId());
+            } else {
+                return BuiltinDataType.Variant;
+            }
+        }
+    }
+
+    @Nullable
+    public DataType getDataType(NodeId dataTypeId) {
+        Tree<DataType> node = dataTypes.get(dataTypeId);
+        return node != null ? node.getValue() : null;
+    }
+
+    public Tree<DataType> getTree() {
+        return tree;
     }
 
     public static CompletableFuture<DataTypeTree> create(UaStackClient client, OpcUaSession session) {
@@ -328,8 +416,6 @@ public class DataTypeTree {
     }
 
     public static class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitializer {
-
-        public static final String SESSION_ATTRIBUTE_KEY = "dataTypeTree";
 
         @Override
         public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {

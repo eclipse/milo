@@ -60,6 +60,10 @@ public class Tree<A> {
         traverse(this, (a, integer) -> c.accept(a), 0);
     }
 
+    public void traverseNodes(Consumer<Tree<A>> c) {
+        traverseNodes(this, (t, integer) -> c.accept(t), 0);
+    }
+
     public void traverseWithDepth(BiConsumer<A, Integer> c) {
         traverse(this, c, 0);
     }
@@ -117,6 +121,11 @@ public class Tree<A> {
         T value = tree.value;
         c.accept(value, depth);
         tree.children.forEach(t -> traverse(t, c, depth + 1));
+    }
+
+    private static <T> void traverseNodes(Tree<T> tree, BiConsumer<Tree<T>, Integer> c, int depth) {
+        c.accept(tree, depth);
+        tree.children.forEach(t -> traverseNodes(t, c, depth + 1));
     }
 
     private static <T> void traverse(Tree<T> tree, BiConsumer<T, T> c) {
