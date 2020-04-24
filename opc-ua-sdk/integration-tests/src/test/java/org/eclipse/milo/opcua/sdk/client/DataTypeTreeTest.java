@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.milo.opcua.sdk.test.ClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
