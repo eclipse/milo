@@ -26,6 +26,7 @@
         <module>sdk-core</module>
         <module>sdk-server</module>
         <module>sdk-tests</module>
+        <module>integration-tests</module>
     </modules>
 
     <build>

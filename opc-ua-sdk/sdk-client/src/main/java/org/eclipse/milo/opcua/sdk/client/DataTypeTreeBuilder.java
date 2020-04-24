@@ -133,44 +133,45 @@ public final class DataTypeTreeBuilder {
         );
 
         CompletableFuture<List<DataTypeTree.DataType>> dataTypesFuture = subtypes.thenCompose(references -> {
-            Stream<CompletableFuture<DataTypeTree.DataType>> dataTypeFutures = references.stream().map(dataTypeReference -> {
-                NodeId dataTypeId = dataTypeReference.getNodeId()
-                    .local(namespaceTable)
-                    .orElse(NodeId.NULL_VALUE);
+            Stream<CompletableFuture<DataTypeTree.DataType>> dataTypeFutures =
+                references.stream().map(dataTypeReference -> {
+                    NodeId dataTypeId = dataTypeReference.getNodeId()
+                        .local(namespaceTable)
+                        .orElse(NodeId.NULL_VALUE);
 
-                CompletableFuture<List<ReferenceDescription>> encodings = browseSafe(
-                    client,
-                    session,
-                    new BrowseDescription(
-                        dataTypeId,
-                        BrowseDirection.Forward,
-                        Identifiers.HasEncoding,
-                        false,
-                        uint(NodeClass.Object.getValue()),
-                        uint(BrowseResultMask.All.getValue())
-                    )
-                );
-
-                return encodings.thenApply(encodingReferences -> {
-                    NodeId binaryEncodingId = null;
-                    NodeId xmlEncodingId = null;
-
-                    for (ReferenceDescription r : encodingReferences) {
-                        if (r.getBrowseName().equals(OpcUaDefaultBinaryEncoding.ENCODING_NAME)) {
-                            binaryEncodingId = r.getNodeId().local(namespaceTable).orElse(null);
-                        } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
-                            xmlEncodingId = r.getNodeId().local(namespaceTable).orElse(null);
-                        }
-                    }
-
-                    return new DataTypeTree.DataType(
-                        dataTypeReference.getBrowseName(),
-                        dataTypeId,
-                        binaryEncodingId,
-                        xmlEncodingId
+                    CompletableFuture<List<ReferenceDescription>> encodings = browseSafe(
+                        client,
+                        session,
+                        new BrowseDescription(
+                            dataTypeId,
+                            BrowseDirection.Forward,
+                            Identifiers.HasEncoding,
+                            false,
+                            uint(NodeClass.Object.getValue()),
+                            uint(BrowseResultMask.All.getValue())
+                        )
                     );
+
+                    return encodings.thenApply(encodingReferences -> {
+                        NodeId binaryEncodingId = null;
+                        NodeId xmlEncodingId = null;
+
+                        for (ReferenceDescription r : encodingReferences) {
+                            if (r.getBrowseName().equals(OpcUaDefaultBinaryEncoding.ENCODING_NAME)) {
+                                binaryEncodingId = r.getNodeId().local(namespaceTable).orElse(null);
+                            } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
+                                xmlEncodingId = r.getNodeId().local(namespaceTable).orElse(null);
+                            }
+                        }
+
+                        return new DataTypeTree.DataType(
+                            dataTypeReference.getBrowseName(),
+                            dataTypeId,
+                            binaryEncodingId,
+                            xmlEncodingId
+                        );
+                    });
                 });
-            });
 
             return FutureUtils.sequence(dataTypeFutures);
         });

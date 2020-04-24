@@ -189,6 +189,17 @@ public class DataTypeTree {
     }
 
     /**
+     * Get the underlying {@link Tree} node for the DataType identified by {@code dataTypeId}.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @return the underlying {@link Tree} node for the DataType identified by {@code dataTypeId}.
+     */
+    @Nullable
+    public Tree<DataType> getTreeNode(NodeId dataTypeId) {
+        return dataTypes.get(dataTypeId);
+    }
+
+    /**
      * Data object that holds details of a DataType:
      * <ul>
      *     <li>Browse Name of the DataType Node</li>
