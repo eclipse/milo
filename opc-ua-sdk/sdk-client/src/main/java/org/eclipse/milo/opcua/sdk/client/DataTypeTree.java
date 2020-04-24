@@ -161,13 +161,13 @@ public class DataTypeTree {
         Class<?> backingClass = getBackingClass(dataTypeId);
 
         if (Identifiers.Integer.equals(dataTypeId)) {
-            return clazz == byte.class || clazz == Byte.class
-                || clazz == short.class || clazz == Short.class
-                || clazz == int.class || clazz == Integer.class
-                || clazz == long.class || clazz == Long.class;
+            return clazz == byte.class || clazz == Byte.class ||
+                clazz == short.class || clazz == Short.class ||
+                clazz == int.class || clazz == Integer.class ||
+                clazz == long.class || clazz == Long.class;
         } else if (Identifiers.UInteger.equals(dataTypeId)) {
-            return clazz == UByte.class || clazz == UShort.class
-                || clazz == UInteger.class || clazz == ULong.class;
+            return clazz == UByte.class || clazz == UShort.class ||
+                clazz == UInteger.class || clazz == ULong.class;
         } else {
             return backingClass.isAssignableFrom(clazz);
         }
