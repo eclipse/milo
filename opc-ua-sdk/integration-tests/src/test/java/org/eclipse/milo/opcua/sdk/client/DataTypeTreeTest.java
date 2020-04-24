@@ -19,15 +19,19 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DataTypeTreeTest extends ClientServerTest {
@@ -116,7 +120,46 @@ public class DataTypeTreeTest extends ClientServerTest {
     }
 
     @Test
-    public void testIsAssignable() {}
+    public void testIsAssignable() {
+        assertTrue(dataTypeTree.isAssignable(Identifiers.NumericRange, String.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Date, DateTime.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Image, ByteString.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.ImageBMP, ByteString.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.SessionAuthenticationToken, NodeId.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.TrustListDataType, ExtensionObject.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Number.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Float.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Double.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Byte.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Short.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Integer.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, Long.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, UByte.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, UShort.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, UInteger.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Number, ULong.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Byte.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Short.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Integer.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Integer, Long.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, UByte.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, UShort.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, UInteger.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.UInteger, ULong.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.Duration, Double.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.BitFieldMaskDataType, ULong.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.NamingRuleType, Integer.class));
+
+        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Byte.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Short.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Integer.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.UInteger, Long.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, UByte.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, UShort.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, UInteger.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.Integer, ULong.class));
+        assertFalse(dataTypeTree.isAssignable(Identifiers.Duration, Float.class));
+    }
 
     @Test
     public void testGetEncodingIds() {
