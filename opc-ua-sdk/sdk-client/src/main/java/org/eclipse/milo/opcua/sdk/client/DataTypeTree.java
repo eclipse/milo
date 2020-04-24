@@ -179,6 +179,11 @@ public class DataTypeTree {
         }
     }
 
+    /**
+     * Get the underlying {@link Tree} structure.
+     *
+     * @return the underlying {@link Tree} structure.
+     */
     public Tree<DataType> getTree() {
         return tree;
     }
