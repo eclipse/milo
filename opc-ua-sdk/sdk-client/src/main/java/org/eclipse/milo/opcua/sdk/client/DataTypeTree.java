@@ -123,7 +123,34 @@ public class DataTypeTree {
     @Nullable
     public DataType getDataType(NodeId dataTypeId) {
         Tree<DataType> node = dataTypes.get(dataTypeId);
+
         return node != null ? node.getValue() : null;
+    }
+
+    /**
+     * Get the {@link NodeId} of the Binary Encoding Node for the DataType identified by {@code dataTypeId}.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @return the {@link NodeId} of the Binary Encoding Node, or {@code null} if none exists.
+     */
+    @Nullable
+    public NodeId getBinaryEncodingId(NodeId dataTypeId) {
+        DataType dataType = getDataType(dataTypeId);
+
+        return dataType != null ? dataType.getBinaryEncodingId() : null;
+    }
+
+    /**
+     * Get the {@link NodeId} of the XML Encoding Node for the DataType identified by {@code dataTypeId}.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @return the {@link NodeId} of the XML Encoding Node, or {@code null} if none exists.
+     */
+    @Nullable
+    public NodeId getXmlEncodingId(NodeId dataTypeId) {
+        DataType dataType = getDataType(dataTypeId);
+
+        return dataType != null ? dataType.getXmlEncodingId() : null;
     }
 
     /**
