@@ -377,10 +377,10 @@ public class DataTypeTree {
     /**
      * Data object that holds details of a DataType:
      * <ul>
+     *     <li>Browse Name of the DataType Node</li>
      *     <li>NodeId of the DataType Node</li>
      *     <li>NodeId of the Binary Encoding Node</li>
      *     <li>NodeId of the XML Encoding Node</li>
-     *     <li>Browse Name of the DataType Node</li>
      * </ul>
      */
     public static class DataType {
