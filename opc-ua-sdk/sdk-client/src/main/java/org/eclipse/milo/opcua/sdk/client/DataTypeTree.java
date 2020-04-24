@@ -302,7 +302,26 @@ public class DataTypeTree {
             .thenApply(v -> Unit.VALUE);
     }
 
+    /**
+     * Browse a {@link BrowseDescription} "safely", completing successfully
+     * with an empty List if any exceptions occur.
+     *
+     * @param client            a {@link UaStackClient}.
+     * @param session           an {@link OpcUaSession}.
+     * @param browseDescription the {@link BrowseDescription}.
+     * @return a List of {@link ReferenceDescription}s obtained by browsing {@code browseDescription}.
+     */
     private static CompletableFuture<List<ReferenceDescription>> browseSafe(
+        UaStackClient client,
+        OpcUaSession session,
+        BrowseDescription browseDescription
+    ) {
+
+        return browse(client, session, browseDescription)
+            .exceptionally(ex -> Collections.emptyList());
+    }
+
+    private static CompletableFuture<List<ReferenceDescription>> browse(
         UaStackClient client,
         OpcUaSession session,
         BrowseDescription browseDescription
@@ -328,23 +347,33 @@ public class DataTypeTree {
             List<ReferenceDescription> references =
                 Collections.synchronizedList(new ArrayList<>());
 
-            if (result.getStatusCode().isGood()) {
-                Collections.addAll(references, result.getReferences());
-
-                ByteString continuationPoint = result.getContinuationPoint();
-
-                if (continuationPoint == null || continuationPoint.isNull()) {
-                    return CompletableFuture.completedFuture(references);
-                } else {
-                    return browseNextSafe(client, session, continuationPoint, references);
-                }
-            } else {
-                return CompletableFuture.completedFuture(references);
-            }
+            return maybeBrowseNext(client, session, references, result);
         });
     }
 
-    private static CompletableFuture<List<ReferenceDescription>> browseNextSafe(
+    private static CompletableFuture<List<ReferenceDescription>> maybeBrowseNext(
+        UaStackClient client,
+        OpcUaSession session,
+        List<ReferenceDescription> references,
+        BrowseResult result
+    ) {
+
+        if (result.getStatusCode().isGood()) {
+            Collections.addAll(references, result.getReferences());
+
+            ByteString nextContinuationPoint = result.getContinuationPoint();
+
+            if (nextContinuationPoint == null || nextContinuationPoint.isNull()) {
+                return CompletableFuture.completedFuture(references);
+            } else {
+                return browseNext(client, session, nextContinuationPoint, references);
+            }
+        } else {
+            return CompletableFuture.completedFuture(references);
+        }
+    }
+
+    private static CompletableFuture<List<ReferenceDescription>> browseNext(
         UaStackClient client,
         OpcUaSession session,
         ByteString continuationPoint,
@@ -363,19 +392,7 @@ public class DataTypeTree {
         return client.sendRequest(browseNextRequest).thenApply(BrowseNextResponse.class::cast).thenCompose(response -> {
             BrowseResult result = response.getResults()[0];
 
-            if (result.getStatusCode().isGood()) {
-                Collections.addAll(references, result.getReferences());
-
-                ByteString nextContinuationPoint = result.getContinuationPoint();
-
-                if (nextContinuationPoint == null || nextContinuationPoint.isNull()) {
-                    return CompletableFuture.completedFuture(references);
-                } else {
-                    return browseNextSafe(client, session, nextContinuationPoint, references);
-                }
-            } else {
-                return CompletableFuture.completedFuture(references);
-            }
+            return maybeBrowseNext(client, session, references, result);
         });
     }
 
