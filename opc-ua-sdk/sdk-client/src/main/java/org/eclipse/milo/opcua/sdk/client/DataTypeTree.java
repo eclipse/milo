@@ -35,11 +35,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -143,6 +140,12 @@ public class DataTypeTree {
         }
     }
 
+    /**
+     * Get the {@link DataType} info for the DataType identified by {@code dataTypeId}, if it exists.
+     *
+     * @param dataTypeId the {@link NodeId} of a DataType Node.
+     * @return the {@link DataType} info for the DataType identified by {@code dataTypeId}, if it exists.
+     */
     @Nullable
     public DataType getDataType(NodeId dataTypeId) {
         Tree<DataType> node = dataTypes.get(dataTypeId);
@@ -161,13 +164,15 @@ public class DataTypeTree {
         Class<?> backingClass = getBackingClass(dataTypeId);
 
         if (Identifiers.Integer.equals(dataTypeId)) {
+            // Can't just check that it's assignable from Number.class because
+            // UNumber extends Number rather than the two sharing a common
+            // superclass.
             return clazz == byte.class || clazz == Byte.class ||
                 clazz == short.class || clazz == Short.class ||
                 clazz == int.class || clazz == Integer.class ||
                 clazz == long.class || clazz == Long.class;
         } else if (Identifiers.UInteger.equals(dataTypeId)) {
-            return clazz == UByte.class || clazz == UShort.class ||
-                clazz == UInteger.class || clazz == ULong.class;
+            return UNumber.class.isAssignableFrom(clazz);
         } else {
             return backingClass.isAssignableFrom(clazz);
         }
@@ -397,19 +402,43 @@ public class DataTypeTree {
             this.xmlEncodingId = xmlEncodingId;
         }
 
+        /**
+         * Get the Browse Name of this DataType.
+         *
+         * @return the Browse Name of this DataType.
+         */
         public QualifiedName getBrowseName() {
             return browseName;
         }
 
+        /**
+         * Get the {@link NodeId} of this DataType.
+         *
+         * @return the {@link NodeId} of this DataType.
+         */
         public NodeId getNodeId() {
             return nodeId;
         }
 
+        /**
+         * Get the {@link NodeId} of the Binary Encoding Node for this DataType, if it exists.
+         * <p>
+         * Only Structured DataTypes have encoding ids.
+         *
+         * @return the NodeId of the Binary Encoding Node for this DataType, if it exists.
+         */
         @Nullable
         public NodeId getBinaryEncodingId() {
             return binaryEncodingId;
         }
 
+        /**
+         * Get the {@link NodeId} of the XML Encoding Node for this DataType, if it exists.
+         * <p>
+         * Only Structured DataTypes have encoding ids.
+         *
+         * @return the NodeId of the XML Encoding Node for this DataType, if it exists.
+         */
         @Nullable
         public NodeId getXmlEncodingId() {
             return xmlEncodingId;
