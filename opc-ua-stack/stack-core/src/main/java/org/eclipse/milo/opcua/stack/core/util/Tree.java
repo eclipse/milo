@@ -57,7 +57,11 @@ public class Tree<A> {
      * @param c the {@link BiConsumer}.
      */
     public void traverse(Consumer<A> c) {
-        traverse(this, c);
+        traverse(this, (a, integer) -> c.accept(a), 0);
+    }
+
+    public void traverseWithDepth(BiConsumer<A, Integer> c) {
+        traverse(this, c, 0);
     }
 
     /**
@@ -82,6 +86,18 @@ public class Tree<A> {
         return map(this, f);
     }
 
+    /*
+    fun <T> Tree<T>.traverseWithDepth(visitor: (Tree<T>, Int) -> Unit) {
+    fun go(t: Tree<T>, v: (Tree<T>, Int) -> Unit, d: Int) {
+        v.invoke(t, d)
+        t.getChildren().forEach { go(it, v, d + 1) }
+    }
+
+    go(this, visitor, 0)
+}
+
+     */
+
     private static <A, B> Tree<B> map(Tree<A> tA, Function<A, B> f) {
         Tree<B> tB = new Tree<B>(null, f.apply(tA.value));
 
@@ -97,10 +113,10 @@ public class Tree<A> {
         });
     }
 
-    private static <T> void traverse(Tree<T> tree, Consumer<T> c) {
+    private static <T> void traverse(Tree<T> tree, BiConsumer<T, Integer> c, int depth) {
         T value = tree.value;
-        c.accept(value);
-        tree.children.forEach(t -> traverse(t, c));
+        c.accept(value, depth);
+        tree.children.forEach(t -> traverse(t, c, depth + 1));
     }
 
     private static <T> void traverse(Tree<T> tree, BiConsumer<T, T> c) {
