@@ -97,7 +97,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
         if (value.getClass().isArray()) {
             return convertArray(value, targetType);
         } else {
-            return ImplicitConversions.convert(value, targetType);
+            return ImplicitConversions.convertOrNull(value, targetType);
         }
     }
 
@@ -111,7 +111,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
 
         for (int i = 0; i < length; i++) {
             Object sourceValue = Array.get(flattened, i);
-            Object targetValue = ImplicitConversions.convert(sourceValue, targetType);
+            Object targetValue = ImplicitConversions.convertOrNull(sourceValue, targetType);
             Array.set(transformed, i, targetValue);
         }
 

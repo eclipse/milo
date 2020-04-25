@@ -16,8 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -41,153 +39,135 @@ final class StringConversions {
 
     private StringConversions() {}
 
-    @Nullable
-    static Boolean stringToBoolean(@Nonnull String s) {
+    static Boolean stringToBoolean(String s) throws ConversionFailedException {
         if (s.equalsIgnoreCase("true") || s.equals("1")) {
             return true;
         } else if (s.equalsIgnoreCase("false") || s.equals("0")) {
             return false;
         } else {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Boolean);
         }
     }
 
-    @Nullable
-    static UByte stringToByte(@Nonnull String s) {
+    static UByte stringToByte(String s) throws ConversionFailedException {
         try {
             return UByte.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Byte, e);
         }
     }
 
-    @Nullable
-    static DateTime stringToDateTime(@Nonnull String s) {
+    static DateTime stringToDateTime(String s) throws ConversionFailedException {
         try {
             Date date = iso8601UtcStringToDate(s);
 
             return new DateTime(date);
         } catch (ParseException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.DateTime, e);
         }
     }
 
-    @Nullable
-    static Double stringToDouble(@Nonnull String s) {
+    static Double stringToDouble(String s) throws ConversionFailedException {
         try {
             return Double.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Double, e);
         }
     }
 
-    @Nullable
-    static ExpandedNodeId stringToExpandedNodeId(@Nonnull String s) {
+    static ExpandedNodeId stringToExpandedNodeId(String s) throws ConversionFailedException {
         try {
             return ExpandedNodeId.parse(s);
         } catch (Throwable t) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.ExpandedNodeId, t);
         }
     }
 
-    @Nullable
-    static Float stringToFloat(@Nonnull String s) {
+    static Float stringToFloat(String s) throws ConversionFailedException {
         try {
             return Float.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Float, e);
         }
     }
 
-    @Nullable
-    static UUID stringToGuid(@Nonnull String s) {
+    static UUID stringToGuid(String s) throws ConversionFailedException {
         try {
             return UUID.fromString(s);
         } catch (IllegalArgumentException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Guid, e);
         }
     }
 
-    @Nullable
-    static Short stringToInt16(@Nonnull String s) {
+    static Short stringToInt16(String s) throws ConversionFailedException {
         try {
             return Short.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Int16, e);
         }
     }
 
-    @Nullable
-    static Integer stringToInt32(@Nonnull String s) {
+    static Integer stringToInt32(String s) throws ConversionFailedException {
         try {
             return Integer.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Int32, e);
         }
     }
 
-    @Nullable
-    static Long stringToInt64(@Nonnull String s) {
+    static Long stringToInt64(String s) throws ConversionFailedException {
         try {
             return Long.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.Int64, e);
         }
     }
 
-    @Nullable
-    static NodeId stringToNodeId(@Nonnull String s) {
+    static NodeId stringToNodeId(String s) throws ConversionFailedException {
         try {
             return NodeId.parse(s);
         } catch (Throwable t) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.NodeId, t);
         }
     }
 
-
-    @Nullable
-    static Byte stringToSByte(@Nonnull String s) {
+    static Byte stringToSByte(String s) throws ConversionFailedException {
         try {
             return Byte.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.SByte, e);
         }
     }
 
-    @Nonnull
-    static LocalizedText stringToLocalizedText(@Nonnull String s) {
+    static LocalizedText stringToLocalizedText(String s) {
         return new LocalizedText("", s);
     }
 
-    @Nonnull
-    static QualifiedName stringToQualifiedName(@Nonnull String s) {
+    static QualifiedName stringToQualifiedName(String s) {
         return new QualifiedName(0, s);
     }
 
-    @Nullable
-    static UShort stringToUInt16(@Nonnull String s) {
+    static UShort stringToUInt16(String s) throws ConversionFailedException {
         try {
             return UShort.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.UInt16, e);
         }
     }
 
-    @Nullable
-    static UInteger stringToUInt32(@Nonnull String s) {
+    static UInteger stringToUInt32(String s) throws ConversionFailedException {
         try {
             return UInteger.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.UInt32, e);
         }
     }
 
-    @Nullable
-    static ULong stringToUInt64(@Nonnull String s) {
+    static ULong stringToUInt64(String s) throws ConversionFailedException {
         try {
             return ULong.valueOf(s);
         } catch (NumberFormatException e) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.String, BuiltinDataType.UInt64, e);
         }
     }
 
@@ -197,21 +177,28 @@ final class StringConversions {
         }
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof String) {
-            String s = (String) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionFailedException {
+
+        if (value instanceof String) {
+            String s = (String) value;
 
             return implicit ?
                 implicitConversion(s, targetType) :
                 explicitConversion(s, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull String s, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        String s,
+        BuiltinDataType targetType
+    ) throws ConversionFailedException, ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case DateTime:          return stringToDateTime(s);
@@ -224,8 +211,11 @@ final class StringConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull String s, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        String s,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException, ConversionFailedException {
+
         //@formatter:off
         switch (targetType) {
             case Boolean:   return stringToBoolean(s);
@@ -240,7 +230,7 @@ final class StringConversions {
             case UInt16:    return stringToUInt16(s);
             case UInt32:    return stringToUInt32(s);
             case UInt64:    return stringToUInt64(s);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.String, targetType);
         }
         //@formatter:on
     }

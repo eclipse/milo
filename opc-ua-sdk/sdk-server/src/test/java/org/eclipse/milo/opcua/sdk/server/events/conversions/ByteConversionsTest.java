@@ -48,7 +48,7 @@ public class ByteConversionsTest {
     };
 
     @Test
-    public void testConversions() {
+    public void testConversions() throws ConversionNotDefinedException {
         for (Object[] conversion : CONVERSIONS) {
             UByte b = (UByte) conversion[0];
             Object expected = conversion[1];

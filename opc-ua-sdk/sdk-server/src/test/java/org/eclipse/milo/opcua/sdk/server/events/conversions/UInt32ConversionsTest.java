@@ -32,17 +32,17 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
     public Conversion[] getConversions(BuiltinDataType targetType) {
         switch (targetType) {
             case Boolean: {
-                return new Conversion[] {
+                return new Conversion[]{
                     c(uint(0), Boolean.FALSE),
                     c(uint(1), Boolean.TRUE)
                 };
             }
 
             case Byte: {
-                return new Conversion[] {
+                return new Conversion[]{
                     c(uint(0), ubyte(0)),
                     c(uint(UByte.MAX_VALUE), UByte.MAX),
-                    c(uint(UByte.MAX_VALUE+1), null, targetType)
+                    f(uint(UByte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -64,7 +64,7 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
                 return new Conversion[]{
                     c(uint(0), (short) 0),
                     c(uint(Short.MAX_VALUE), Short.MAX_VALUE),
-                    c(uint(Short.MAX_VALUE + 1), null, targetType)
+                    f(uint(Short.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -72,7 +72,7 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
                 return new Conversion[]{
                     c(uint(0), 0),
                     c(uint(Integer.MAX_VALUE), Integer.MAX_VALUE),
-                    c(uint(Integer.MAX_VALUE + 1L), null, targetType)
+                    f(uint(Integer.MAX_VALUE + 1L), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -87,7 +87,7 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
                 return new Conversion[]{
                     c(uint(0), (byte) 0),
                     c(uint(Byte.MAX_VALUE), Byte.MAX_VALUE),
-                    c(uint(Byte.MAX_VALUE + 1), null, targetType)
+                    f(uint(Byte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -111,7 +111,7 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
                 return new Conversion[]{
                     c(uint(0), ushort(0)),
                     c(uint(UShort.MAX_VALUE), UShort.MAX),
-                    c(uint(UShort.MAX_VALUE+1), null, targetType)
+                    f(uint(UShort.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -123,7 +123,7 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -149,7 +149,12 @@ public class UInt32ConversionsTest extends AbstractConversionTest<UInteger> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
         return UInt32Conversions.convert(fromValue, targetType, implicit);
     }
 

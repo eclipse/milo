@@ -45,8 +45,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                     c(0.0, ubyte(0)),
                     c(UByte.MIN.doubleValue(), UByte.MIN),
                     c(UByte.MAX.doubleValue(), UByte.MAX),
-                    c(UByte.MIN.doubleValue() - 1, null, targetType),
-                    c(UByte.MAX.doubleValue() + 1, null, targetType)
+                    f(UByte.MIN.doubleValue() - 1, targetType, ConversionUnderflowException.class),
+                    f(UByte.MAX.doubleValue() + 1, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -57,8 +57,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                     c((double) Float.MAX_VALUE, Float.MAX_VALUE),
                     c((double) -Float.MIN_VALUE, -Float.MIN_VALUE),
                     c((double) -Float.MAX_VALUE, -Float.MAX_VALUE),
-                    c(Double.MAX_VALUE, null, targetType),
-                    c(-Double.MAX_VALUE, null, targetType)
+                    f(-Double.MAX_VALUE, targetType, ConversionUnderflowException.class),
+                    f(Double.MAX_VALUE, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -67,8 +67,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                     c(0.0, (short) 0),
                     c((double) Short.MIN_VALUE, Short.MIN_VALUE),
                     c((double) Short.MAX_VALUE, Short.MAX_VALUE),
-                    c(Short.MIN_VALUE - 1.0, null, targetType),
-                    c(Short.MAX_VALUE + 1.0, null, targetType)
+                    f(Short.MIN_VALUE - 1.0, targetType, ConversionUnderflowException.class),
+                    f(Short.MAX_VALUE + 1.0, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -77,8 +77,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                     c(0.0, 0),
                     c((double) Integer.MIN_VALUE, Integer.MIN_VALUE),
                     c((double) Integer.MAX_VALUE, Integer.MAX_VALUE),
-                    c(Integer.MIN_VALUE - 1.0, null, targetType),
-                    c(Integer.MAX_VALUE + 1.0, null, targetType)
+                    f(Integer.MIN_VALUE - 1.0, targetType, ConversionUnderflowException.class),
+                    f(Integer.MAX_VALUE + 1.0, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -87,8 +87,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                     c(0.0, 0L),
                     c(Long.MIN_VALUE + 0.0, Long.MIN_VALUE),
                     c(Long.MAX_VALUE + 0.0, Long.MAX_VALUE),
-                    c(-Double.MAX_VALUE, null, targetType),
-                    c(Double.MAX_VALUE, null, targetType)
+                    f(-Double.MAX_VALUE, targetType, ConversionUnderflowException.class),
+                    f(Double.MAX_VALUE, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -97,8 +97,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                     c(0.0, (byte) 0),
                     c(Byte.MIN_VALUE + 0.0, Byte.MIN_VALUE),
                     c(Byte.MAX_VALUE + 0.0, Byte.MAX_VALUE),
-                    c(Byte.MIN_VALUE - 1.0, null, targetType),
-                    c(Byte.MAX_VALUE + 1.0, null, targetType)
+                    f(Byte.MIN_VALUE - 1.0, targetType, ConversionUnderflowException.class),
+                    f(Byte.MAX_VALUE + 1.0, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -113,8 +113,8 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                 return new Conversion[]{
                     c(0.0, ushort(0)),
                     c(UShort.MAX_VALUE + 0.0, UShort.MAX),
-                    c(UShort.MIN_VALUE - 1.0, null, targetType),
-                    c(UShort.MAX_VALUE + 1.0, null, targetType)
+                    f(UShort.MIN_VALUE - 1.0, targetType, ConversionUnderflowException.class),
+                    f(UShort.MAX_VALUE + 1.0, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -122,21 +122,21 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
                 return new Conversion[]{
                     c(0.0, uint(0)),
                     c(UInteger.MAX_VALUE + 0.0, UInteger.MAX),
-                    c(UInteger.MIN_VALUE - 1.0, null, targetType),
-                    c(UInteger.MAX_VALUE + 1.0, null, targetType)
+                    f(UInteger.MIN_VALUE - 1.0, targetType, ConversionUnderflowException.class),
+                    f(UInteger.MAX_VALUE + 1.0, targetType, ConversionOverflowException.class)
                 };
             }
 
             case UInt64: {
                 return new Conversion[]{
                     c(0.0, ulong(0)),
-                    c(-1.0, null, targetType),
-                    c(Double.MAX_VALUE, ulong(Math.round(Double.MAX_VALUE)))
+                    c(Double.MAX_VALUE, ulong(Math.round(Double.MAX_VALUE))),
+                    f(-1.0, targetType, ConversionUnderflowException.class)
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -161,7 +161,12 @@ public class DoubleConversionsTest extends AbstractConversionTest<Double> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionUnderflowException, ConversionOverflowException {
+
         return DoubleConversions.convert(fromValue, targetType, implicit);
     }
 

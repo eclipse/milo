@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -29,109 +28,107 @@ final class Int64Conversions {
 
     private Int64Conversions() {}
 
-    @Nonnull
     static Boolean int64ToBoolean(@Nonnull Long l) {
         return l != 0;
     }
 
-    @Nullable
-    static UByte int64ToByte(@Nonnull Long l) {
-        if (l >= 0 && l <= UByte.MAX_VALUE) {
-            return ubyte(l);
+    static UByte int64ToByte(@Nonnull Long l) throws ConversionUnderflowException, ConversionOverflowException {
+        if (l < 0) {
+            throw new ConversionUnderflowException(l, 0);
+        } else if (l > UByte.MAX_VALUE) {
+            throw new ConversionOverflowException(l, UByte.MAX_VALUE);
         } else {
-            return null;
+            return ubyte(l);
         }
     }
 
-    @Nonnull
     static Double int64ToDouble(@Nonnull Long l) {
         return l.doubleValue();
     }
 
-    @Nonnull
     static Float int64ToFloat(@Nonnull Long l) {
         return l.floatValue();
     }
 
-    @Nullable
-    static Short int64ToInt16(@Nonnull Long l) {
-        if (l >= Short.MIN_VALUE && l <= Short.MAX_VALUE) {
+    static Short int64ToInt16(@Nonnull Long l) throws ConversionUnderflowException, ConversionOverflowException {
+        if (l < Short.MIN_VALUE) {
+            throw new ConversionUnderflowException(l, Short.MIN_VALUE);
+        } else if (l > Short.MAX_VALUE) {
+            throw new ConversionOverflowException(l, Short.MAX_VALUE);
+        } else {
             return l.shortValue();
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Integer int64ToInt32(@Nonnull Long l) {
-        if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) {
+    static Integer int64ToInt32(@Nonnull Long l) throws ConversionUnderflowException, ConversionOverflowException {
+        if (l < Integer.MIN_VALUE) {
+            throw new ConversionUnderflowException(l, Integer.MIN_VALUE);
+        } else if (l > Integer.MAX_VALUE) {
+            throw new ConversionOverflowException(l, Integer.MAX_VALUE);
+        } else {
             return l.intValue();
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Byte int64ToSByte(@Nonnull Long l) {
-        if (l >= Byte.MIN_VALUE && l <= Byte.MAX_VALUE) {
+    static Byte int64ToSByte(@Nonnull Long l) throws ConversionUnderflowException, ConversionOverflowException {
+        if (l < Byte.MIN_VALUE) {
+            throw new ConversionUnderflowException(l, Byte.MIN_VALUE);
+        } else if (l > Byte.MAX_VALUE) {
+            throw new ConversionOverflowException(l, Byte.MAX_VALUE);
+        } else {
             return l.byteValue();
-        } else {
-            return null;
         }
     }
 
-    @Nonnull
     static StatusCode int64ToStatusCode(@Nonnull Long l) {
         return new StatusCode(l);
     }
 
-    @Nonnull
     static String int64ToString(@Nonnull Long l) {
         return l.toString();
     }
 
-    @Nullable
-    static UShort int64ToUInt16(@Nonnull Long l) {
-        if (l >= 0 && l <= UShort.MAX_VALUE) {
+    static UShort int64ToUInt16(@Nonnull Long l) throws ConversionUnderflowException, ConversionOverflowException {
+        if (l < 0) {
+            throw new ConversionUnderflowException(l, 0);
+        } else if (l > UShort.MAX_VALUE) {
+            throw new ConversionOverflowException(l, UShort.MAX_VALUE);
+        } else {
             return ushort(l.intValue());
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static UInteger int64ToUInt32(@Nonnull Long l) {
-        if (l >= 0 && l <= UInteger.MAX_VALUE) {
+    static UInteger int64ToUInt32(@Nonnull Long l) throws ConversionUnderflowException, ConversionOverflowException {
+        if (l < 0) {
+            throw new ConversionUnderflowException(l, 0);
+        } else if (l > UInteger.MAX_VALUE) {
+            throw new ConversionOverflowException(l, UInteger.MAX_VALUE);
+        } else {
             return uint(l);
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static ULong int64ToUInt64(@Nonnull Long l) {
+    static ULong int64ToUInt64(@Nonnull Long l) throws ConversionUnderflowException {
         if (l >= 0) {
             return ulong(l);
         } else {
-            return null;
+            throw new ConversionUnderflowException(l, 0);
         }
     }
 
-    @Nullable
-    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof Long) {
-            Long l = (Long) o;
+    static Object convert(Object value, BuiltinDataType targetType, boolean implicit) throws ConversionException {
+        if (value instanceof Long) {
+            Long l = (Long) value;
 
             return implicit ?
                 implicitConversion(l, targetType) :
                 explicitConversion(l, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull Long l, BuiltinDataType targetType) {
+    static Object explicitConversion(@Nonnull Long l, BuiltinDataType targetType) throws ConversionException {
         //@formatter:off
         switch (targetType) {
             case Boolean:       return int64ToBoolean(l);
@@ -149,13 +146,12 @@ final class Int64Conversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull Long l, BuiltinDataType targetType) {
+    static Object implicitConversion(@Nonnull Long l, BuiltinDataType targetType) throws ConversionNotDefinedException {
         //@formatter:off
         switch (targetType) {
             case Double:    return int64ToDouble(l);
             case Float:     return int64ToFloat(l);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.Int64, targetType);
         }
         //@formatter:on
     }

@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -28,76 +27,72 @@ final class BooleanConversions {
 
     private BooleanConversions() {}
 
-    @Nonnull
     static UByte booleanToByte(@Nonnull Boolean b) {
         return ubyte(b ? 1 : 0);
     }
 
-    @Nonnull
     static Double booleanToDouble(@Nonnull Boolean b) {
         return b ? 1.0 : 0.0;
     }
 
-    @Nonnull
     static Float booleanToFloat(@Nonnull Boolean b) {
         return b ? 1.0f : 0.0f;
     }
 
-    @Nonnull
     static Short booleanToInt16(@Nonnull Boolean b) {
         return b ? (short) 1 : (short) 0;
     }
 
-    @Nonnull
     static Integer booleanToInt32(@Nonnull Boolean b) {
         return b ? 1 : 0;
     }
 
-    @Nonnull
     static Long booleanToInt64(@Nonnull Boolean b) {
         return b ? 1L : 0L;
     }
 
-    @Nonnull
     static Byte booleanToSByte(@Nonnull Boolean b) {
         return b ? (byte) 1 : (byte) 0;
     }
 
-    @Nonnull
     static String booleanToString(@Nonnull Boolean b) {
         return b ? "1" : "0";
     }
 
-    @Nonnull
     static UShort booleanToUInt16(@Nonnull Boolean b) {
         return b ? ushort(1) : ushort(0);
     }
 
-    @Nonnull
     static UInteger booleanToUInt32(@Nonnull Boolean b) {
         return b ? uint(1) : uint(0);
     }
 
-    @Nonnull
     static ULong booleanToUInt64(@Nonnull Boolean b) {
         return b ? ulong(1) : ulong(0);
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof Boolean) {
-            Boolean b = (Boolean) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+
+        if (value instanceof Boolean) {
+            Boolean b = (Boolean) value;
 
             return implicit ?
                 implicitConversion(b, targetType) :
                 explicitConversion(b, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull Boolean b, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        Boolean b,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case String:    return booleanToString(b);
@@ -106,8 +101,11 @@ final class BooleanConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull Boolean b, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        Boolean b,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case Byte:      return booleanToByte(b);
@@ -120,7 +118,7 @@ final class BooleanConversions {
             case UInt16:    return booleanToUInt16(b);
             case UInt32:    return booleanToUInt32(b);
             case UInt64:    return booleanToUInt64(b);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.Boolean, targetType);
         }
         //@formatter:on
     }

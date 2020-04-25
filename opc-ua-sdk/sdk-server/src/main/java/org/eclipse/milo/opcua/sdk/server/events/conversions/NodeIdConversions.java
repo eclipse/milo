@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -21,41 +18,41 @@ final class NodeIdConversions {
 
     private NodeIdConversions() {}
 
-    @Nonnull
-    static ExpandedNodeId nodeIdToExpandedNodeId(@Nonnull NodeId nodeId) {
+    static ExpandedNodeId nodeIdToExpandedNodeId(NodeId nodeId) {
         return nodeId.expanded();
     }
 
-    @Nonnull
-    static String nodeIdToString(@Nonnull NodeId nodeId) {
+    static String nodeIdToString(NodeId nodeId) {
         return nodeId.toParseableString();
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof NodeId) {
-            NodeId nodeId = (NodeId) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+        
+        if (value instanceof NodeId) {
+            NodeId nodeId = (NodeId) value;
 
             return implicit ?
                 implicitConversion(nodeId, targetType) :
                 explicitConversion(nodeId, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull NodeId nodeId, BuiltinDataType targetType) {
+    static Object explicitConversion(NodeId nodeId, BuiltinDataType targetType) throws ConversionNotDefinedException {
         return implicitConversion(nodeId, targetType);
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull NodeId nodeId, BuiltinDataType targetType) {
+    static Object implicitConversion(NodeId nodeId, BuiltinDataType targetType) throws ConversionNotDefinedException {
         //@formatter:off
         switch (targetType) {
             case ExpandedNodeId:    return nodeIdToExpandedNodeId(nodeId);
             case String:            return nodeIdToString(nodeId);
-            default:                return null;
+            default:                throw new ConversionNotDefinedException(BuiltinDataType.NodeId, targetType);
         }
         //@formatter:on
     }

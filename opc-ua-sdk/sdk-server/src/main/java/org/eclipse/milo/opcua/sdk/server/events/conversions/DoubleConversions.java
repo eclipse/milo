@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -28,126 +27,137 @@ final class DoubleConversions {
 
     private DoubleConversions() {}
 
-    @Nonnull
-    static Boolean doubleToBoolean(@Nonnull Double d) {
+    static Boolean doubleToBoolean(Double d) {
         return d != 0.0d;
     }
 
-    @Nullable
-    static UByte doubleToByte(@Nonnull Double d) {
+    static UByte doubleToByte(Double d) throws ConversionUnderflowException, ConversionOverflowException {
         long rounded = Math.round(d);
 
-        if (rounded >= 0 && rounded <= UByte.MAX_VALUE) {
+        if (rounded < 0) {
+            throw new ConversionUnderflowException(rounded, 0);
+        } else if (rounded > UByte.MAX_VALUE) {
+            throw new ConversionOverflowException(rounded, UByte.MAX_VALUE);
+        } else {
             return ubyte(rounded);
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Float doubleToFloat(@Nonnull Double d) {
-        if (d >= -Float.MAX_VALUE && d <= Float.MAX_VALUE) {
+    static Float doubleToFloat(Double d) throws ConversionUnderflowException, ConversionOverflowException {
+        if (d < -Float.MAX_VALUE) {
+            throw new ConversionUnderflowException(d, -Float.MAX_VALUE);
+        } else if (d > Float.MAX_VALUE) {
+            throw new ConversionOverflowException(d, Float.MAX_VALUE);
+        } else {
             return d.floatValue();
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Short doubleToInt16(@Nonnull Double d) {
+    static Short doubleToInt16(Double d) throws ConversionUnderflowException, ConversionOverflowException {
         long rounded = Math.round(d);
 
-        if (rounded >= Short.MIN_VALUE && rounded <= Short.MAX_VALUE) {
+        if (rounded < Short.MIN_VALUE) {
+            throw new ConversionUnderflowException(rounded, Short.MIN_VALUE);
+        } else if (rounded > Short.MAX_VALUE) {
+            throw new ConversionOverflowException(rounded, Short.MAX_VALUE);
+        } else {
             return (short) rounded;
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Integer doubleToInt32(@Nonnull Double d) {
+    static Integer doubleToInt32(Double d) throws ConversionUnderflowException, ConversionOverflowException {
         long rounded = Math.round(d);
 
-        if (rounded >= Integer.MIN_VALUE && rounded <= Integer.MAX_VALUE) {
+        if (rounded < Integer.MIN_VALUE) {
+            throw new ConversionUnderflowException(rounded, Integer.MIN_VALUE);
+        } else if (rounded > Integer.MAX_VALUE) {
+            throw new ConversionOverflowException(rounded, Integer.MAX_VALUE);
+        } else {
             return (int) rounded;
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Long doubleToInt64(@Nonnull Double d) {
-        if (d >= Long.MIN_VALUE && d <= Long.MAX_VALUE) {
+    static Long doubleToInt64(Double d) throws ConversionUnderflowException, ConversionOverflowException {
+        if (d < Long.MIN_VALUE) {
+            throw new ConversionUnderflowException(d, Long.MIN_VALUE);
+        } else if (d > Long.MAX_VALUE) {
+            throw new ConversionOverflowException(d, Long.MAX_VALUE);
+        } else {
             return Math.round(d);
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static Byte doubleToSByte(@Nonnull Double d) {
+    static Byte doubleToSByte(Double d) throws ConversionUnderflowException, ConversionOverflowException {
         long rounded = Math.round(d);
 
-        if (rounded >= Byte.MIN_VALUE && rounded <= Byte.MAX_VALUE) {
-            return (byte) rounded;
+        if (rounded < Byte.MIN_VALUE) {
+            throw new ConversionUnderflowException(rounded, Byte.MIN_VALUE);
+        } else if (rounded > Byte.MAX_VALUE) {
+            throw new ConversionOverflowException(rounded, Byte.MAX_VALUE);
         } else {
-            return null;
+            return (byte) rounded;
         }
     }
 
-    @Nonnull
-    static String doubleToString(@Nonnull Double d) {
+    static String doubleToString(Double d) {
         return d.toString();
     }
 
-    @Nullable
-    static UShort doubleToUInt16(@Nonnull Double d) {
+    static UShort doubleToUInt16(Double d) throws ConversionUnderflowException, ConversionOverflowException {
         long rounded = Math.round(d);
 
-        if (rounded >= UShort.MIN_VALUE && rounded <= UShort.MAX_VALUE) {
+        if (rounded < UShort.MIN_VALUE) {
+            throw new ConversionUnderflowException(rounded, UShort.MIN_VALUE);
+        } else if (rounded > UShort.MAX_VALUE) {
+            throw new ConversionOverflowException(rounded, UShort.MAX_VALUE);
+        } else {
             return ushort((int) rounded);
-        } else {
-            return null;
         }
     }
 
-    @Nullable
-    static UInteger doubleToUInt32(@Nonnull Double d) {
+    static UInteger doubleToUInt32(Double d) throws ConversionUnderflowException, ConversionOverflowException {
         long rounded = Math.round(d);
 
-        if (rounded >= UInteger.MIN_VALUE && rounded <= UInteger.MAX_VALUE) {
-            return uint(rounded);
+        if (rounded < UInteger.MIN_VALUE) {
+            throw new ConversionUnderflowException(rounded, UInteger.MIN_VALUE);
+        } else if (rounded > UInteger.MAX_VALUE) {
+            throw new ConversionOverflowException(rounded, UInteger.MAX_VALUE);
         } else {
-            return null;
+            return uint(rounded);
         }
     }
 
-    @Nullable
-    static ULong doubleToUInt64(@Nonnull Double d) {
+    static ULong doubleToUInt64(Double d) throws ConversionUnderflowException {
         long rounded = Math.round(d);
 
         if (rounded >= 0) {
             return ulong(rounded);
         } else {
-            return null;
+            throw new ConversionUnderflowException(rounded, 0);
         }
     }
 
-    @Nullable
-    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof Double) {
-            Double d = (Double) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionUnderflowException, ConversionNotDefinedException, ConversionOverflowException {
+
+        if (value instanceof Double) {
+            Double d = (Double) value;
 
             return implicit ?
                 implicitConversion(d, targetType) :
                 explicitConversion(d, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull Double d, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        Double d,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException, ConversionUnderflowException, ConversionOverflowException {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return doubleToBoolean(d);
@@ -167,9 +177,9 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull Double d, BuiltinDataType targetType) {
+    static Object implicitConversion(Double d, BuiltinDataType targetType) throws ConversionNotDefinedException {
         // no implicit conversions exist
-        return null;
+        throw new ConversionNotDefinedException(BuiltinDataType.Double, targetType);
     }
 
 }

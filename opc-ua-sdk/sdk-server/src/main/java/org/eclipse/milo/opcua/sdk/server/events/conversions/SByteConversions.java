@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -28,92 +27,84 @@ final class SByteConversions {
 
     private SByteConversions() {}
 
-    @Nonnull
-    static Boolean sByteToBoolean(@Nonnull Byte b) {
+    static Boolean sByteToBoolean(Byte b) {
         return b != 0;
     }
 
-    @Nullable
-    static UByte sByteToByte(@Nonnull Byte b) {
+    static UByte sByteToByte(Byte b) throws ConversionUnderflowException {
         if (b >= 0) {
             return ubyte(b);
         } else {
-            return null;
+            throw new ConversionUnderflowException(b, 0);
         }
     }
 
-    @Nonnull
-    static Double sByteToDouble(@Nonnull Byte b) {
+    static Double sByteToDouble(Byte b) {
         return b.doubleValue();
     }
 
-    @Nonnull
-    static Float sByteToFloat(@Nonnull Byte b) {
+    static Float sByteToFloat(Byte b) {
         return b.floatValue();
     }
 
-    @Nonnull
-    static Short sByteToInt16(@Nonnull Byte b) {
+    static Short sByteToInt16(Byte b) {
         return b.shortValue();
     }
 
-    @Nonnull
-    static Integer sByteToInt32(@Nonnull Byte b) {
+    static Integer sByteToInt32(Byte b) {
         return b.intValue();
     }
 
-    @Nonnull
-    static Long sByteToInt64(@Nonnull Byte b) {
+    static Long sByteToInt64(Byte b) {
         return b.longValue();
     }
 
-    @Nonnull
-    static String sByteToString(@Nonnull Byte b) {
+    static String sByteToString(Byte b) {
         return b.toString();
     }
 
-    @Nullable
-    static UShort sByteToUInt16(@Nonnull Byte b) {
+    static UShort sByteToUInt16(Byte b) throws ConversionUnderflowException {
         if (b >= 0) {
             return ushort(b);
         } else {
-            return null;
+            throw new ConversionUnderflowException(b, 0);
         }
     }
 
-    @Nullable
-    static UInteger sByteToUInt32(@Nonnull Byte b) {
+    static UInteger sByteToUInt32(Byte b) throws ConversionUnderflowException {
         if (b >= 0) {
             return uint(b);
         } else {
-            return null;
+            throw new ConversionUnderflowException(b, 0);
         }
     }
 
-    @Nullable
-    static ULong sByteToUInt64(@Nonnull Byte b) {
+    static ULong sByteToUInt64(Byte b) throws ConversionUnderflowException {
         if (b >= 0) {
             return ulong(b);
         } else {
-            return null;
+            throw new ConversionUnderflowException(b, 0);
         }
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof Byte) {
-            Byte b = (Byte) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionException {
+
+        if (value instanceof Byte) {
+            Byte b = (Byte) value;
 
             return implicit ?
                 implicitConversion(b, targetType) :
                 explicitConversion(b, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull Byte b, BuiltinDataType targetType) {
+    static Object explicitConversion(@Nonnull Byte b, BuiltinDataType targetType) throws ConversionException {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return sByteToBoolean(b);
@@ -124,8 +115,7 @@ final class SByteConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull Byte b, BuiltinDataType targetType) {
+    static Object implicitConversion(@Nonnull Byte b, BuiltinDataType targetType) throws ConversionException {
         //@formatter:off
         switch (targetType) {
             case Double:    return sByteToDouble(b);
@@ -136,7 +126,7 @@ final class SByteConversions {
             case UInt16:    return sByteToUInt16(b);
             case UInt32:    return sByteToUInt32(b);
             case UInt64:    return sByteToUInt64(b);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.SByte, targetType);
         }
         //@formatter:on
     }

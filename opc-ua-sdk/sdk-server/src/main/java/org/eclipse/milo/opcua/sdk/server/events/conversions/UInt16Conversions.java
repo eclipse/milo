@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -28,99 +25,94 @@ final class UInt16Conversions {
 
     private UInt16Conversions() {}
 
-    @Nonnull
-    static Boolean uInt16ToBoolean(@Nonnull UShort us) {
+    static Boolean uInt16ToBoolean(UShort us) {
         return us.intValue() != 0;
     }
 
-    @Nullable
-    static UByte uInt16ToByte(@Nonnull UShort us) {
+    static UByte uInt16ToByte(UShort us) throws ConversionOverflowException {
         int i = us.intValue();
 
         if (i <= UByte.MAX_VALUE) {
             return ubyte(i);
         } else {
-            return null;
+            throw new ConversionOverflowException(i, UByte.MAX_VALUE);
         }
     }
 
-    @Nonnull
-    static Double uInt16ToDouble(@Nonnull UShort us) {
+    static Double uInt16ToDouble(UShort us) {
         return us.doubleValue();
     }
 
-    @Nonnull
-    static Float uInt16ToFloat(@Nonnull UShort us) {
+    static Float uInt16ToFloat(UShort us) {
         return us.floatValue();
     }
 
-    @Nullable
-    static Short uInt16ToInt16(@Nonnull UShort us) {
+    static Short uInt16ToInt16(UShort us) throws ConversionOverflowException {
         int i = us.intValue();
 
         if (i <= Short.MAX_VALUE) {
             return (short) i;
         } else {
-            return null;
+            throw new ConversionOverflowException(i, Short.MAX_VALUE);
         }
     }
 
-    @Nonnull
-    static Integer uInt16ToInt32(@Nonnull UShort us) {
+    static Integer uInt16ToInt32(UShort us) {
         return us.intValue();
     }
 
-    @Nonnull
-    static Long uInt16ToInt64(@Nonnull UShort us) {
+    static Long uInt16ToInt64(UShort us) {
         return us.longValue();
     }
 
-    @Nullable
-    static Byte uInt16ToSByte(@Nonnull UShort us) {
+    static Byte uInt16ToSByte(UShort us) throws ConversionOverflowException {
         int i = us.intValue();
 
         if (i <= Byte.MAX_VALUE) {
             return (byte) i;
         } else {
-            return null;
+            throw new ConversionOverflowException(i, Byte.MAX_VALUE);
         }
     }
 
-    @Nonnull
-    static StatusCode uInt16ToStatusCode(@Nonnull UShort us) {
+    static StatusCode uInt16ToStatusCode(UShort us) {
         return new StatusCode(us.longValue() << 16);
     }
 
-    @Nonnull
-    static String uInt16ToString(@Nonnull UShort us) {
+    static String uInt16ToString(UShort us) {
         return us.toString();
     }
 
-    @Nonnull
-    static UInteger uInt16ToUInt32(@Nonnull UShort us) {
+    static UInteger uInt16ToUInt32(UShort us) {
         return uint(us.intValue());
     }
 
-    @Nonnull
-    static ULong uInt16ToUInt64(@Nonnull UShort us) {
+    static ULong uInt16ToUInt64(UShort us) {
         return ulong(us.longValue());
     }
 
-    @Nullable
-    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof UShort) {
-            UShort us = (UShort) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
+        if (value instanceof UShort) {
+            UShort us = (UShort) value;
 
             return implicit ?
                 implicitConversion(us, targetType) :
                 explicitConversion(us, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull UShort us, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        UShort us,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
         //@formatter:off
         switch (targetType) {
             case Boolean:   return uInt16ToBoolean(us);
@@ -132,8 +124,11 @@ final class UInt16Conversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull UShort us, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        UShort us,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
         //@formatter:off
         switch (targetType) {
             case Double:        return uInt16ToDouble(us);
@@ -144,7 +139,7 @@ final class UInt16Conversions {
             case StatusCode:    return uInt16ToStatusCode(us);
             case UInt32:        return uInt16ToUInt32(us);
             case UInt64:        return uInt16ToUInt64(us);
-            default:            return null;
+            default:            throw new ConversionNotDefinedException(BuiltinDataType.UInt16, targetType);
         }
         //@formatter:on
     }

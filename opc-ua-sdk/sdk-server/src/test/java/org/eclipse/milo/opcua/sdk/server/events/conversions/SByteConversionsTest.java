@@ -37,7 +37,7 @@ public class SByteConversionsTest extends AbstractConversionTest<Byte> {
                 return new Conversion[]{
                     c((byte) 0, ubyte(0)),
                     c(Byte.MAX_VALUE, ubyte(Byte.MAX_VALUE)),
-                    c((byte) -1, null, BuiltinDataType.Byte)
+                    f((byte) -1, BuiltinDataType.Byte, ConversionUnderflowException.class)
                 };
 
             case Double: {
@@ -92,7 +92,7 @@ public class SByteConversionsTest extends AbstractConversionTest<Byte> {
                 return new Conversion[]{
                     c((byte) 0, ushort(0)),
                     c(Byte.MAX_VALUE, ushort(Byte.MAX_VALUE)),
-                    c((byte) -1, null, targetType)
+                    f((byte) -1, targetType, ConversionUnderflowException.class)
                 };
             }
 
@@ -100,7 +100,7 @@ public class SByteConversionsTest extends AbstractConversionTest<Byte> {
                 return new Conversion[]{
                     c((byte) 0, uint(0)),
                     c(Byte.MAX_VALUE, uint(Byte.MAX_VALUE)),
-                    c((byte) -1, null, targetType)
+                    f((byte) -1, targetType, ConversionUnderflowException.class)
                 };
             }
 
@@ -108,12 +108,12 @@ public class SByteConversionsTest extends AbstractConversionTest<Byte> {
                 return new Conversion[]{
                     c((byte) 0, ulong(0)),
                     c(Byte.MAX_VALUE, ulong(Byte.MAX_VALUE)),
-                    c((byte) -1, null, targetType)
+                    f((byte) -1, targetType, ConversionUnderflowException.class)
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -138,7 +138,12 @@ public class SByteConversionsTest extends AbstractConversionTest<Byte> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionException {
+        
         return SByteConversions.convert(fromValue, targetType, implicit);
     }
 

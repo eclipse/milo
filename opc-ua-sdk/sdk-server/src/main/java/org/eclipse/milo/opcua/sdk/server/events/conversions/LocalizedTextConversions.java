@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
@@ -20,35 +17,44 @@ final class LocalizedTextConversions {
 
     private LocalizedTextConversions() {}
 
-    @Nullable
-    static String localizedTextToString(@Nonnull LocalizedText text) {
+    static String localizedTextToString(LocalizedText text) {
         return text.getText();
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof LocalizedText) {
-            LocalizedText text = (LocalizedText) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+
+        if (value instanceof LocalizedText) {
+            LocalizedText text = (LocalizedText) value;
 
             return implicit ?
                 implicitConversion(text, targetType) :
                 explicitConversion(text, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull LocalizedText text, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        LocalizedText text,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         return implicitConversion(text, targetType);
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull LocalizedText text, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        LocalizedText text,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case String:    return localizedTextToString(text);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.LocalizedText, targetType);
         }
         //@formatter:on
     }

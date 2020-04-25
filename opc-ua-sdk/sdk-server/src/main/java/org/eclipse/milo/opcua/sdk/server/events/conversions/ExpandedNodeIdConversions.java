@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -22,32 +21,38 @@ final class ExpandedNodeIdConversions {
 
     private ExpandedNodeIdConversions() {}
 
-    @Nullable
-    static NodeId expandedNodeIdToNodeId(@Nonnull ExpandedNodeId e) {
+    static NodeId expandedNodeIdToNodeId(ExpandedNodeId e) throws ConversionFailedException {
         // TODO need a real NamespaceTable here
-        return e.local(new NamespaceTable()).orElse(null);
+        return e.local(new NamespaceTable())
+            .orElseThrow(() -> new ConversionFailedException(BuiltinDataType.ExpandedNodeId, BuiltinDataType.NodeId));
     }
 
-    @Nonnull
     static String expandedNodeIdToString(@Nonnull ExpandedNodeId e) {
         return e.toParseableString();
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof ExpandedNodeId) {
-            ExpandedNodeId eni = (ExpandedNodeId) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionFailedException {
+
+        if (value instanceof ExpandedNodeId) {
+            ExpandedNodeId eni = (ExpandedNodeId) value;
 
             return implicit ?
                 implicitConversion(eni, targetType) :
                 explicitConversion(eni, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull ExpandedNodeId eni, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        ExpandedNodeId eni,
+        BuiltinDataType targetType
+    ) throws ConversionFailedException, ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case NodeId:    return expandedNodeIdToNodeId(eni);
@@ -56,12 +61,15 @@ final class ExpandedNodeIdConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull ExpandedNodeId eni, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        ExpandedNodeId eni,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case String:    return expandedNodeIdToString(eni);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.ExpandedNodeId, targetType);
         }
         //@formatter:on
     }

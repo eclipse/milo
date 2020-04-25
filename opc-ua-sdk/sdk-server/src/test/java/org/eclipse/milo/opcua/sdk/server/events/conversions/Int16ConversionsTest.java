@@ -38,8 +38,8 @@ public class Int16ConversionsTest extends AbstractConversionTest<Short> {
                 return new Conversion[]{
                     c(UByte.MIN_VALUE, UByte.MIN, BuiltinDataType.Byte),
                     c(UByte.MAX_VALUE, UByte.MAX, BuiltinDataType.Byte),
-                    c((short) (UByte.MIN_VALUE - 1), null, BuiltinDataType.Byte),
-                    c((short) (UByte.MAX_VALUE + 1), null, BuiltinDataType.Byte)
+                    f((short) (UByte.MIN_VALUE - 1), BuiltinDataType.Byte, ConversionUnderflowException.class),
+                    f((short) (UByte.MAX_VALUE + 1), BuiltinDataType.Byte, ConversionOverflowException.class)
                 };
             }
 
@@ -80,8 +80,8 @@ public class Int16ConversionsTest extends AbstractConversionTest<Short> {
                     c((short) 0, (byte) 0),
                     c((short) Byte.MIN_VALUE, Byte.MIN_VALUE),
                     c((short) Byte.MAX_VALUE, Byte.MAX_VALUE),
-                    c((short) (Byte.MIN_VALUE - 1), null, BuiltinDataType.SByte),
-                    c((short) (Byte.MAX_VALUE + 1), null, BuiltinDataType.SByte)
+                    f((short) (Byte.MIN_VALUE - 1), BuiltinDataType.SByte, ConversionUnderflowException.class),
+                    f((short) (Byte.MAX_VALUE + 1), BuiltinDataType.SByte, ConversionOverflowException.class)
                 };
             }
 
@@ -95,7 +95,7 @@ public class Int16ConversionsTest extends AbstractConversionTest<Short> {
                 return new Conversion[]{
                     c((short) 0, ushort(0)),
                     c(Short.MAX_VALUE, ushort(Short.MAX_VALUE)),
-                    c((short) -1, null, BuiltinDataType.UInt16)
+                    f((short) -1, BuiltinDataType.UInt16, ConversionUnderflowException.class)
                 };
             }
 
@@ -103,7 +103,7 @@ public class Int16ConversionsTest extends AbstractConversionTest<Short> {
                 return new Conversion[]{
                     c((short) 0, uint(0)),
                     c(Short.MAX_VALUE, uint(Short.MAX_VALUE)),
-                    c((short) -1, null, BuiltinDataType.UInt32)
+                    f((short) -1, BuiltinDataType.UInt32, ConversionUnderflowException.class)
                 };
             }
 
@@ -111,12 +111,12 @@ public class Int16ConversionsTest extends AbstractConversionTest<Short> {
                 return new Conversion[]{
                     c((short) 0, ulong(0)),
                     c(Short.MAX_VALUE, ulong(Short.MAX_VALUE)),
-                    c((short) -1, null, BuiltinDataType.UInt64)
+                    f((short) -1, BuiltinDataType.UInt64, ConversionUnderflowException.class)
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -141,7 +141,12 @@ public class Int16ConversionsTest extends AbstractConversionTest<Short> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionUnderflowException, ConversionOverflowException, ConversionNotDefinedException {
+
         return Int16Conversions.convert(fromValue, targetType, implicit);
     }
 

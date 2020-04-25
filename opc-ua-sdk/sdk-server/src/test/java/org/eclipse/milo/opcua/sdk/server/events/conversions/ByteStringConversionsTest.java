@@ -22,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 public class ByteStringConversionsTest {
 
     @Test
-    public void testByteStringToGuid() {
+    public void testByteStringToGuid() throws ConversionFailedException {
         long msb = 0xABCDABCDABCDABCDL;
         long lsb = 0xEFEFEFEFEFEFEFEFL;
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);

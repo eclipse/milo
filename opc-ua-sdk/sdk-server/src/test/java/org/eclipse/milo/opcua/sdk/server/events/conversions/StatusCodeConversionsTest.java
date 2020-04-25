@@ -26,31 +26,31 @@ public class StatusCodeConversionsTest extends AbstractConversionTest<StatusCode
     }
 
     @Override
-    public Conversion[] getConversions(BuiltinDataType targetType) {
+    public ConversionSuccess[] getConversions(BuiltinDataType targetType) {
         switch (targetType) {
             case Int16: {
-                return new Conversion[]{
+                return new ConversionSuccess[]{
                     c(new StatusCode(0), (short) 0),
                     c(new StatusCode(0x7FFF0000), Short.MAX_VALUE)
                 };
             }
 
             case Int32: {
-                return new Conversion[]{
+                return new ConversionSuccess[]{
                     c(new StatusCode(0), 0),
                     c(new StatusCode(Integer.MAX_VALUE), Integer.MAX_VALUE)
                 };
             }
 
             case Int64: {
-                return new Conversion[]{
+                return new ConversionSuccess[]{
                     c(new StatusCode(0), 0L),
                     c(new StatusCode(0xFFFFFFFF), 0xFFFFFFFFL)
                 };
             }
 
             case UInt16: {
-                return new Conversion[]{
+                return new ConversionSuccess[]{
                     c(new StatusCode(0), ushort(0)),
                     c(new StatusCode(0x7FFF0000), ushort(Short.MAX_VALUE)),
                     c(new StatusCode(0xFFFF0000), UShort.MAX)
@@ -58,7 +58,7 @@ public class StatusCodeConversionsTest extends AbstractConversionTest<StatusCode
             }
 
             case UInt32: {
-                return new Conversion[]{
+                return new ConversionSuccess[]{
                     c(new StatusCode(0), uint(0)),
                     c(new StatusCode(0x7FFF0000), uint(0x7FFF0000)),
                     c(new StatusCode(0xFFFF0000), uint(0xFFFF0000)),
@@ -67,14 +67,14 @@ public class StatusCodeConversionsTest extends AbstractConversionTest<StatusCode
             }
 
             case UInt64: {
-                return new Conversion[]{
+                return new ConversionSuccess[]{
                     c(new StatusCode(0), ulong(0)),
                     c(new StatusCode(0xFFFFFFFF), ulong(0xFFFFFFFFL))
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -94,7 +94,12 @@ public class StatusCodeConversionsTest extends AbstractConversionTest<StatusCode
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+
         return StatusCodeConversions.convert(fromValue, targetType, implicit);
     }
 

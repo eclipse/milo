@@ -43,7 +43,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), ubyte(0)),
                     c(ulong(UByte.MAX_VALUE), UByte.MAX),
-                    c(ulong(UByte.MAX_VALUE + 1), null, targetType)
+                    f(ulong(UByte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -67,7 +67,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), (short) 0),
                     c(ulong(Short.MAX_VALUE), Short.MAX_VALUE),
-                    c(ulong(Short.MAX_VALUE + 1), null, targetType)
+                    f(ulong(Short.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -75,7 +75,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), 0),
                     c(ulong(Integer.MAX_VALUE), Integer.MAX_VALUE),
-                    c(ulong(Integer.MAX_VALUE + 1L), null, targetType)
+                    f(ulong(Integer.MAX_VALUE + 1L), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -83,7 +83,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), 0L),
                     c(ulong(Long.MAX_VALUE), Long.MAX_VALUE),
-                    c(ULong.MAX, null, targetType)
+                    f(ULong.MAX, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -91,7 +91,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), (byte) 0),
                     c(ulong(Byte.MAX_VALUE), Byte.MAX_VALUE),
-                    c(ulong(Byte.MAX_VALUE + 1), null, targetType)
+                    f(ulong(Byte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -100,7 +100,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                     c(ulong(0), new StatusCode(0x00000000)),
                     c(ulong(0xABCD), new StatusCode(0x0000ABCD)),
                     c(ulong(0xFFFFFFFFL), new StatusCode(0xFFFFFFFF)),
-                    c(ULong.MAX, null, targetType)
+                    f(ULong.MAX, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -115,7 +115,7 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), ushort(0)),
                     c(ulong(UShort.MAX_VALUE), UShort.MAX),
-                    c(ulong(UShort.MAX_VALUE + 1), null, targetType)
+                    f(ulong(UShort.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -123,12 +123,12 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
                 return new Conversion[]{
                     c(ulong(0), uint(0)),
                     c(ulong(UInteger.MAX_VALUE), UInteger.MAX),
-                    c(ulong(UInteger.MAX_VALUE + 1), null, targetType)
+                    f(ulong(UInteger.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -154,7 +154,12 @@ public class UInt64ConversionsTest extends AbstractConversionTest<ULong> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+        
         return UInt64Conversions.convert(fromValue, targetType, implicit);
     }
 

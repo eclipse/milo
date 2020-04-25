@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -29,105 +26,104 @@ final class Int32Conversions {
 
     private Int32Conversions() {}
 
-    @Nonnull
-    static Boolean int32ToBoolean(@Nonnull Integer i) {
+    static Boolean int32ToBoolean(Integer i) {
         return i != 0;
     }
 
-    @Nullable
-    static UByte int32ToByte(@Nonnull Integer i) {
-        if (i >= 0 && i <= UByte.MAX_VALUE) {
-            return ubyte(i);
+    static UByte int32ToByte(Integer i) throws ConversionUnderflowException, ConversionOverflowException {
+        if (i < 0) {
+            throw new ConversionUnderflowException(i, 0);
+        } else if (i > UByte.MAX_VALUE) {
+            throw new ConversionOverflowException(i, UByte.MAX_VALUE);
         } else {
-            return null;
+            return ubyte(i);
         }
     }
 
-    @Nonnull
-    static Double int32ToDouble(@Nonnull Integer i) {
+    static Double int32ToDouble(Integer i) {
         return i.doubleValue();
     }
 
-    @Nonnull
-    static Float int32ToFloat(@Nonnull Integer i) {
+    static Float int32ToFloat(Integer i) {
         return i.floatValue();
     }
 
-    @Nullable
-    static Short int32ToInt16(@Nonnull Integer i) {
-        if (i >= Short.MIN_VALUE && i <= Short.MAX_VALUE) {
-            return i.shortValue();
+    static Short int32ToInt16(Integer i) throws ConversionUnderflowException, ConversionOverflowException {
+        if (i < Short.MIN_VALUE) {
+            throw new ConversionUnderflowException(i, 0);
+        } else if (i > Short.MAX_VALUE) {
+            throw new ConversionOverflowException(i, Short.MAX_VALUE);
         } else {
-            return null;
+            return i.shortValue();
         }
     }
 
-    @Nonnull
-    static Long int32ToInt64(@Nonnull Integer i) {
+    static Long int32ToInt64(Integer i) {
         return i.longValue();
     }
 
-    @Nullable
-    static Byte int32ToSByte(@Nonnull Integer i) {
-        if (i >= Byte.MIN_VALUE && i <= Byte.MAX_VALUE) {
-            return i.byteValue();
+    static Byte int32ToSByte(Integer i) throws ConversionUnderflowException, ConversionOverflowException {
+        if (i < Byte.MIN_VALUE) {
+            throw new ConversionUnderflowException(i, Byte.MIN_VALUE);
+        } else if (i > Byte.MAX_VALUE) {
+            throw new ConversionOverflowException(i, Byte.MAX_VALUE);
         } else {
-            return null;
+            return i.byteValue();
         }
     }
 
-    @Nonnull
-    static StatusCode int32ToStatusCode(@Nonnull Integer i) {
+    static StatusCode int32ToStatusCode(Integer i) {
         return new StatusCode(i);
     }
 
-    @Nonnull
-    static String int32ToString(@Nonnull Integer i) {
+    static String int32ToString(Integer i) {
         return i.toString();
     }
 
-    @Nullable
-    static UShort int32ToUInt16(@Nonnull Integer i) {
-        if (i >= UShort.MIN_VALUE && i <= UShort.MAX_VALUE) {
-            return ushort(i);
+    static UShort int32ToUInt16(Integer i) throws ConversionUnderflowException, ConversionOverflowException {
+        if (i < UShort.MIN_VALUE) {
+            throw new ConversionUnderflowException(i, UShort.MIN_VALUE);
+        } else if (i > UShort.MAX_VALUE) {
+            throw new ConversionOverflowException(i, UShort.MAX_VALUE);
         } else {
-            return null;
+            return ushort(i);
         }
     }
 
-    @Nullable
-    static UInteger int32ToUInt32(@Nonnull Integer i) {
+    static UInteger int32ToUInt32(Integer i) throws ConversionUnderflowException {
         if (i >= 0) {
             return uint(i);
         } else {
-            return null;
+            throw new ConversionUnderflowException(i, 0);
         }
     }
 
-    @Nullable
-    static ULong int32ToUInt64(@Nonnull Integer i) {
+    static ULong int32ToUInt64(Integer i) throws ConversionUnderflowException {
         if (i >= 0) {
             return ulong(i);
         } else {
-            return null;
+            throw new ConversionUnderflowException(i, 0);
         }
     }
 
-    @Nullable
-    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof Integer) {
-            Integer i = (Integer) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionException {
+
+        if (value instanceof Integer) {
+            Integer i = (Integer) value;
 
             return implicit ?
                 implicitConversion(i, targetType) :
                 explicitConversion(i, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull Integer i, BuiltinDataType targetType) {
+    static Object explicitConversion(Integer i, BuiltinDataType targetType) throws ConversionException {
         //@formatter:off
         switch (targetType) {
             case Boolean:       return int32ToBoolean(i);
@@ -143,15 +139,14 @@ final class Int32Conversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull Integer i, BuiltinDataType targetType) {
+    static Object implicitConversion(Integer i, BuiltinDataType targetType) throws ConversionException {
         //@formatter:off
         switch (targetType) {
             case Double:    return int32ToDouble(i);
             case Float:     return int32ToFloat(i);
             case Int64:     return int32ToInt64(i);
             case UInt64:    return int32ToUInt64(i);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.Int32, targetType);
         }
         //@formatter:on
     }

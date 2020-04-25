@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -27,76 +26,68 @@ final class ByteConversions {
 
     private ByteConversions() {}
 
-    @Nonnull
     static Boolean byteToBoolean(@Nonnull UByte ub) {
         return ub.intValue() != 0;
     }
 
-    @Nonnull
     static Double byteToDouble(@Nonnull UByte ub) {
         return ub.doubleValue();
     }
 
-    @Nonnull
     static Float byteToFloat(@Nonnull UByte ub) {
         return ub.floatValue();
     }
 
-    @Nonnull
     static Short byteToInt16(@Nonnull UByte ub) {
         return ub.shortValue();
     }
 
-    @Nonnull
     static Integer byteToInt32(@Nonnull UByte ub) {
         return ub.intValue();
     }
 
-    @Nonnull
     static Long byteToInt64(@Nonnull UByte ub) {
         return ub.longValue();
     }
 
-    @Nullable
     static Byte byteToSByte(@Nonnull UByte ub) {
         return ub.intValue() > Byte.MAX_VALUE ? null : ub.byteValue();
     }
 
-    @Nonnull
     static String byteToString(@Nonnull UByte ub) {
         return ub.toString();
     }
 
-    @Nonnull
     static UShort byteToUInt16(@Nonnull UByte ub) {
         return ushort(ub.intValue());
     }
 
-    @Nonnull
     static UInteger byteToUInt32(@Nonnull UByte ub) {
         return uint(ub.intValue());
     }
 
-    @Nonnull
     static ULong byteToUInt64(@Nonnull UByte ub) {
         return ulong(ub.longValue());
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof UByte) {
-            UByte b = (UByte) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+
+        if (value instanceof UByte) {
+            UByte b = (UByte) value;
 
             return implicit ?
                 implicitConversion(b, targetType) :
                 explicitConversion(b, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull UByte b, BuiltinDataType targetType) {
+    static Object explicitConversion(UByte b, BuiltinDataType targetType) throws ConversionNotDefinedException {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return byteToBoolean(b);
@@ -106,8 +97,7 @@ final class ByteConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull UByte b, BuiltinDataType targetType) {
+    static Object implicitConversion(UByte b, BuiltinDataType targetType) throws ConversionNotDefinedException {
         //@formatter:off
         switch (targetType) {
             case Double:    return byteToDouble(b);
@@ -119,9 +109,9 @@ final class ByteConversions {
             case UInt16:    return byteToUInt16(b);
             case UInt32:    return byteToUInt32(b);
             case UInt64:    return byteToUInt64(b);
-            default:        return null;
+            default:        throw new ConversionNotDefinedException(BuiltinDataType.Byte, targetType);
         }
         //@formatter:on
     }
-    
+
 }

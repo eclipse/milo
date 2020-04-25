@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -23,10 +22,9 @@ final class ByteStringConversions {
 
     private ByteStringConversions() {}
 
-    @Nullable
-    static UUID byteStringToGuid(@Nonnull ByteString bs) {
+    static UUID byteStringToGuid(@Nonnull ByteString bs) throws ConversionFailedException {
         if (bs.length() != 16) {
-            return null;
+            throw new ConversionFailedException(BuiltinDataType.ByteString, BuiltinDataType.Guid);
         } else {
             ByteBuffer byteBuffer = ByteBuffer.wrap(bs.bytesOrEmpty());
             long high = byteBuffer.getLong();
@@ -35,26 +33,32 @@ final class ByteStringConversions {
         }
     }
 
-    @Nonnull
     static String byteStringToString(@Nonnull ByteString bs) {
         return ByteBufUtil.hexDump(bs.bytesOrEmpty());
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof ByteString) {
-            ByteString bs = (ByteString) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionFailedException, ConversionNotDefinedException {
+
+        if (value instanceof ByteString) {
+            ByteString bs = (ByteString) value;
 
             return implicit ?
                 implicitConversion(bs, targetType) :
                 explicitConversion(bs, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull ByteString bs, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        ByteString bs,
+        BuiltinDataType targetType
+    ) throws ConversionFailedException, ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case Guid:      return byteStringToGuid(bs);
@@ -64,10 +68,9 @@ final class ByteStringConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull ByteString bs, BuiltinDataType targetType) {
+    static Object implicitConversion(ByteString bs, BuiltinDataType targetType) throws ConversionNotDefinedException {
         // no implicit conversions exist
-        return null;
+        throw new ConversionNotDefinedException(BuiltinDataType.ByteString, targetType);
     }
 
 }

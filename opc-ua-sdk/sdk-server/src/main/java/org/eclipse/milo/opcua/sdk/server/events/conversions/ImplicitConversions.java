@@ -18,24 +18,45 @@ import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 public class ImplicitConversions {
 
     @Nullable
-    public static Object convert(@Nonnull Object sourceValue, @Nonnull BuiltinDataType targetType) {
+    public static Object convertOrNull(
+        @Nullable Object sourceValue,
+        BuiltinDataType targetType
+    ) {
+
+        if (sourceValue == null) {
+            return null;
+        } else {
+            try {
+                return convert(sourceValue, targetType);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
+
+    public static Object convert(
+        @Nonnull Object sourceValue,
+        @Nonnull BuiltinDataType targetType
+    ) throws ConversionException {
+
         BuiltinDataType sourceType = BuiltinDataType.fromBackingClass(sourceValue.getClass());
 
         if (sourceType == null) {
-            return null;
+            throw new IllegalArgumentException("sourceValue: " + sourceValue);
         }
 
         if (!sourceType.getBackingClass().isAssignableFrom(sourceValue.getClass())) {
-            return null;
+            throw new IllegalArgumentException(sourceType + " not assignable from source value: " + sourceValue);
         }
 
         return convert(sourceValue, sourceType, targetType);
     }
 
     private static Object convert(
-        @Nonnull Object sourceValue,
+        Object sourceValue,
         BuiltinDataType sourceType,
-        BuiltinDataType targetType) {
+        BuiltinDataType targetType
+    ) throws ConversionException {
 
         switch (sourceType) {
             case Boolean:

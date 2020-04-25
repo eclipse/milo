@@ -20,15 +20,18 @@ import static org.eclipse.milo.opcua.sdk.server.events.conversions.ExpandedNodeI
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertThrows;
 
 public class ExpandedNodeIdConversionsTest {
 
     @Test
-    public void testExpandedNodeIdToNodeId() {
-        assertNull(
-            expandedNodeIdToNodeId(
-                new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo", uint(2))));
+    public void testExpandedNodeIdToNodeId() throws ConversionFailedException {
+        assertThrows(
+            ConversionFailedException.class,
+            () ->
+                expandedNodeIdToNodeId(
+                    new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo", uint(2)))
+        );
 
         NodeId nodeId = new NodeId(0, "bar");
 

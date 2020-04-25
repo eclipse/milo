@@ -22,7 +22,7 @@ import static org.testng.Assert.assertNotNull;
 public class DateTimeConversionsTest {
 
     @Test
-    public void testDateTimeToString() {
+    public void testDateTimeToString() throws ConversionFailedException, ConversionNotDefinedException {
         DateTime now = DateTime.now();
         String nowAsString = (String) DateTimeConversions
             .convert(now, BuiltinDataType.String, false);

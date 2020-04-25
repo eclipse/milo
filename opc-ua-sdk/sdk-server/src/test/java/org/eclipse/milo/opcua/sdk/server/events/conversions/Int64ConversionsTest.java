@@ -44,8 +44,8 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                 return new Conversion[]{
                     c(UByte.MIN.longValue(), UByte.MIN),
                     c(UByte.MAX.longValue(), UByte.MAX),
-                    c(UByte.MIN.longValue() - 1, null, targetType),
-                    c(UByte.MAX.longValue() + 1, null, targetType)
+                    f(UByte.MIN.longValue() - 1, targetType, ConversionUnderflowException.class),
+                    f(UByte.MAX.longValue() + 1, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -70,8 +70,8 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                     c(0L, (short) 0),
                     c((long) Short.MIN_VALUE, Short.MIN_VALUE),
                     c((long) Short.MAX_VALUE, Short.MAX_VALUE),
-                    c((long) (Short.MIN_VALUE - 1), null, targetType),
-                    c((long) (Short.MAX_VALUE + 1), null, targetType)
+                    f((long) (Short.MIN_VALUE - 1), targetType, ConversionUnderflowException.class),
+                    f((long) (Short.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -80,8 +80,8 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                     c(0L, 0),
                     c((long) Integer.MIN_VALUE, Integer.MIN_VALUE),
                     c((long) Integer.MAX_VALUE, Integer.MAX_VALUE),
-                    c(Integer.MIN_VALUE - 1L, null, targetType),
-                    c(Integer.MAX_VALUE + 1L, null, targetType)
+                    f(Integer.MIN_VALUE - 1L, targetType, ConversionUnderflowException.class),
+                    f(Integer.MAX_VALUE + 1L, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -90,8 +90,8 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                     c(0L, (byte) 0),
                     c((long) Byte.MIN_VALUE, Byte.MIN_VALUE),
                     c((long) Byte.MAX_VALUE, Byte.MAX_VALUE),
-                    c((long) (Byte.MIN_VALUE - 1), null, targetType),
-                    c((long) (Byte.MAX_VALUE + 1), null, targetType)
+                    f((long) (Byte.MIN_VALUE - 1), targetType, ConversionUnderflowException.class),
+                    f((long) (Byte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -114,8 +114,8 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                 return new Conversion[]{
                     c(0L, ushort(0)),
                     c(UShort.MAX.longValue(), UShort.MAX),
-                    c(UShort.MIN.longValue() - 1, null, targetType),
-                    c(UShort.MAX.longValue() + 1, null, targetType)
+                    f(UShort.MIN.longValue() - 1, targetType, ConversionUnderflowException.class),
+                    f(UShort.MAX.longValue() + 1, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -123,8 +123,8 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                 return new Conversion[]{
                     c(0L, uint(0)),
                     c(UInteger.MAX.longValue(), UInteger.MAX),
-                    c(-1L, null, targetType),
-                    c(UInteger.MAX.longValue() + 1L, null, targetType)
+                    f(-1L, targetType, ConversionUnderflowException.class),
+                    f(UInteger.MAX.longValue() + 1L, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -132,12 +132,12 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
                 return new Conversion[]{
                     c(0L, ulong(0)),
                     c(Long.MAX_VALUE, ulong(Long.MAX_VALUE)),
-                    c(-1L, null, targetType)
+                    f(-1L, targetType, ConversionUnderflowException.class)
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -163,7 +163,12 @@ public class Int64ConversionsTest extends AbstractConversionTest<Long> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionException {
+
         return Int64Conversions.convert(fromValue, targetType, implicit);
     }
 

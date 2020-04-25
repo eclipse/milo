@@ -58,7 +58,7 @@ public class Cast implements Operator<Object> {
             BuiltinDataType dataType = BuiltinDataType.fromNodeId(dataTypeId);
 
             if (dataType != null) {
-                return ImplicitConversions.convert(sourceValue, dataType);
+                return ImplicitConversions.convertOrNull(sourceValue, dataType);
             } else {
                 return null;
             }
@@ -68,7 +68,7 @@ public class Cast implements Operator<Object> {
             BuiltinDataType dataType = BuiltinDataType.fromNodeId(dataTypeId);
 
             if (dataType != null) {
-                return ImplicitConversions.convert(sourceValue, dataType);
+                return ImplicitConversions.convertOrNull(sourceValue, dataType);
             } else {
                 return null;
             }

@@ -41,7 +41,7 @@ public class StringConversionsTest extends AbstractConversionTest<String> {
                     c("1", true),
                     c("false", false),
                     c("0", false),
-                    c("foo", null, targetType)
+                    f("foo", targetType, ConversionFailedException.class)
                 };
             }
 
@@ -56,9 +56,15 @@ public class StringConversionsTest extends AbstractConversionTest<String> {
                 // Arbitrary DateTime without any nano precision because
                 // they are lost going to ISO 8601 format.
                 DateTime dt = new DateTime(131801928020000000L);
-                String dts = (String) DateTimeConversions
-                    .convert(dt, BuiltinDataType.String, false);
-                return new Conversion[]{c(dts, dt)};
+
+                try {
+                    String dts = (String) DateTimeConversions
+                        .convert(dt, BuiltinDataType.String, false);
+
+                    return new Conversion[]{c(dts, dt)};
+                } catch (ConversionFailedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             case Double: {
@@ -134,7 +140,7 @@ public class StringConversionsTest extends AbstractConversionTest<String> {
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -165,7 +171,12 @@ public class StringConversionsTest extends AbstractConversionTest<String> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionFailedException {
+
         return StringConversions.convert(fromValue, targetType, implicit);
     }
 

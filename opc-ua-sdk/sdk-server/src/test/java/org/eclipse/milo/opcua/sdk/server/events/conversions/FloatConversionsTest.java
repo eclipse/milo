@@ -44,8 +44,8 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
                     c(0.0f, ubyte(0)),
                     c(UByte.MIN.floatValue(), UByte.MIN),
                     c(UByte.MAX.floatValue(), UByte.MAX),
-                    c(UByte.MIN.floatValue() - 1, null, targetType),
-                    c(UByte.MAX.floatValue() + 1, null, targetType)
+                    f(UByte.MIN.floatValue() - 1, targetType, ConversionUnderflowException.class),
+                    f(UByte.MAX.floatValue() + 1, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -64,8 +64,8 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
                     c(0.5f, (short) 1),
                     c((float) Short.MIN_VALUE, Short.MIN_VALUE),
                     c((float) Short.MAX_VALUE, Short.MAX_VALUE),
-                    c((float) (Short.MIN_VALUE - 1), null, targetType),
-                    c((float) (Short.MAX_VALUE + 1), null, targetType)
+                    f((float) (Short.MIN_VALUE - 1), targetType, ConversionUnderflowException.class),
+                    f((float) (Short.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -94,8 +94,8 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
                     c(0.5f, (byte) 1),
                     c((float) Byte.MIN_VALUE, Byte.MIN_VALUE),
                     c((float) Byte.MAX_VALUE, Byte.MAX_VALUE),
-                    c((float) (Byte.MIN_VALUE - 1), null, targetType),
-                    c((float) (Byte.MAX_VALUE + 1), null, targetType)
+                    f((float) (Byte.MIN_VALUE - 1), targetType, ConversionUnderflowException.class),
+                    f((float) (Byte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -115,8 +115,8 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
                     c(0.5f, ushort(1)),
                     c(UShort.MIN.floatValue(), UShort.MIN),
                     c(UShort.MAX.floatValue(), UShort.MAX),
-                    c(UShort.MIN.floatValue() - 1, null, targetType),
-                    c(UShort.MAX.floatValue() + 1, null, targetType)
+                    f(UShort.MIN.floatValue() - 1, targetType, ConversionUnderflowException.class),
+                    f(UShort.MAX.floatValue() + 1, targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -125,7 +125,7 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
                     c(0.0f, uint(0)),
                     c(0.4f, uint(0)),
                     c(0.5f, uint(1)),
-                    c(-1.0f, null, targetType)
+                    f(-1.0f, targetType, ConversionUnderflowException.class)
                 };
             }
 
@@ -134,12 +134,12 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
                     c(0.0f, ulong(0)),
                     c(0.4f, ulong(0)),
                     c(0.5f, ulong(1)),
-                    c(-1.0f, null, targetType)
+                    f(-1.0f, targetType, ConversionUnderflowException.class)
                 };
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -164,7 +164,12 @@ public class FloatConversionsTest extends AbstractConversionTest<Float> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionException {
+
         return FloatConversions.convert(fromValue, targetType, implicit);
     }
 

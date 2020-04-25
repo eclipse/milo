@@ -41,7 +41,7 @@ public class UInt16ConversionsTest extends AbstractConversionTest<UShort> {
                 return new Conversion[]{
                     c(ushort(0), ubyte(0)),
                     c(ushort(UByte.MAX_VALUE), UByte.MAX),
-                    c(ushort(UByte.MAX_VALUE + 1), null, targetType)
+                    f(ushort(UByte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -63,7 +63,7 @@ public class UInt16ConversionsTest extends AbstractConversionTest<UShort> {
                 return new Conversion[]{
                     c(ushort(0), (short) 0),
                     c(ushort(Short.MAX_VALUE), Short.MAX_VALUE),
-                    c(ushort(Short.MAX_VALUE + 1), null, targetType)
+                    f(ushort(Short.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -85,7 +85,7 @@ public class UInt16ConversionsTest extends AbstractConversionTest<UShort> {
                 return new Conversion[]{
                     c(ushort(0), (byte) 0),
                     c(ushort(Byte.MAX_VALUE), Byte.MAX_VALUE),
-                    c(ushort(Byte.MAX_VALUE + 1), null, targetType)
+                    f(ushort(Byte.MAX_VALUE + 1), targetType, ConversionOverflowException.class)
                 };
             }
 
@@ -119,7 +119,7 @@ public class UInt16ConversionsTest extends AbstractConversionTest<UShort> {
             }
 
             default:
-                return new Conversion[0];
+                return new ConversionSuccess[0];
         }
     }
 
@@ -145,7 +145,12 @@ public class UInt16ConversionsTest extends AbstractConversionTest<UShort> {
     }
 
     @Override
-    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+    protected Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+        
         return UInt16Conversions.convert(fromValue, targetType, implicit);
     }
 

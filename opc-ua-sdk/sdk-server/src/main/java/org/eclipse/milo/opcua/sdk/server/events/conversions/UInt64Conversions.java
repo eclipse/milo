@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -28,126 +25,118 @@ final class UInt64Conversions {
 
     private UInt64Conversions() {}
 
-    @Nonnull
-    static Boolean uInt64ToBoolean(@Nonnull ULong ul) {
+    static Boolean uInt64ToBoolean(ULong ul) {
         return ul.intValue() != 0;
     }
 
-    @Nullable
-    static UByte uInt64ToByte(@Nonnull ULong ul) {
+    static UByte uInt64ToByte(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, UByte.MAX_VALUE) <= 0) {
             return ubyte(l);
         } else {
-            return null;
+            throw new ConversionOverflowException(l, UByte.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Double uInt64ToDouble(@Nonnull ULong ul) {
+    static Double uInt64ToDouble(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, (long) Double.MAX_VALUE) <= 0) {
             return ul.doubleValue();
         } else {
-            return null;
+            throw new ConversionOverflowException(l, Double.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Float uInt64ToFloat(@Nonnull ULong ul) {
+    static Float uInt64ToFloat(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, (long) Float.MAX_VALUE) <= 0) {
             return ul.floatValue();
         } else {
-            return null;
+            throw new ConversionOverflowException(l, Float.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Short uInt64ToInt16(@Nonnull ULong ul) {
+    static Short uInt64ToInt16(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, Short.MAX_VALUE) <= 0) {
             return (short) l;
         } else {
-            return null;
+            throw new ConversionOverflowException(l, Short.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Integer uInt64ToInt32(@Nonnull ULong ul) {
+    static Integer uInt64ToInt32(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, Integer.MAX_VALUE) <= 0) {
             return (int) l;
         } else {
-            return null;
+            throw new ConversionOverflowException(l, Integer.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Long uInt64ToInt64(@Nonnull ULong ul) {
+    static Long uInt64ToInt64(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, Long.MAX_VALUE) <= 0) {
             return l;
         } else {
-            return null;
+            throw new ConversionOverflowException(l, Long.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Byte uInt64ToSByte(@Nonnull ULong ul) {
+    static Byte uInt64ToSByte(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, Byte.MAX_VALUE) <= 0) {
             return (byte) l;
         } else {
-            return null;
+            throw new ConversionOverflowException(l, Byte.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static StatusCode uInt64ToStatusCode(@Nonnull ULong ul) {
+    static StatusCode uInt64ToStatusCode(ULong ul) throws ConversionOverflowException {
         UInteger ui = uInt64ToUInt32(ul);
 
-        return ui != null ? UInt32Conversions.uInt32ToStatusCode(ui) : null;
+        return UInt32Conversions.uInt32ToStatusCode(ui);
     }
 
-    @Nonnull
     static String uInt64ToString(ULong ul) {
         return ul.toString();
     }
 
-    @Nullable
-    static UShort uInt64ToUInt16(ULong ul) {
+    static UShort uInt64ToUInt16(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, UShort.MAX_VALUE) <= 0) {
             return ushort((int) l);
         } else {
-            return null;
+            throw new ConversionOverflowException(l, UShort.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static UInteger uInt64ToUInt32(ULong ul) {
+    static UInteger uInt64ToUInt32(ULong ul) throws ConversionOverflowException {
         long l = ul.longValue();
 
         if (Long.compareUnsigned(l, UInteger.MAX_VALUE) <= 0) {
             return uint(l);
         } else {
-            return null;
+            throw new ConversionOverflowException(l, UInteger.MAX_VALUE);
         }
     }
 
-    @Nullable
-    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof ULong) {
-            ULong ul = (ULong) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
+        if (value instanceof ULong) {
+            ULong ul = (ULong) value;
 
             return implicit ?
                 implicitConversion(ul, targetType) :
@@ -157,8 +146,11 @@ final class UInt64Conversions {
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull ULong ul, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        ULong ul,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
         //@formatter:off
         switch (targetType) {
             case Boolean:       return uInt64ToBoolean(ul);
@@ -175,14 +167,17 @@ final class UInt64Conversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull ULong ul, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        ULong ul,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException, ConversionOverflowException {
+
         //@formatter:off
         switch (targetType) {
             case Double:        return uInt64ToDouble(ul);
             case Float:         return uInt64ToFloat(ul);
             case Int64:         return uInt64ToInt64(ul);
-            default:            return null;
+            default:            throw new ConversionNotDefinedException(BuiltinDataType.UInt64, targetType);
         }
         //@formatter:on
     }

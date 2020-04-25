@@ -24,7 +24,6 @@ final class DateTimeConversions {
 
     private DateTimeConversions() {}
 
-    @Nonnull
     static String dateTimeToString(@Nonnull DateTime dt) {
         return dateToIso8601UtcString(dt.getJavaDate());
     }
@@ -42,21 +41,20 @@ final class DateTimeConversions {
         }
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof DateTime) {
-            DateTime d = (DateTime) o;
+    static Object convert(Object value, BuiltinDataType targetType, boolean implicit) throws ConversionFailedException {
+        if (value instanceof DateTime) {
+            DateTime d = (DateTime) value;
 
             return implicit ?
                 implicitConversion(d, targetType) :
                 explicitConversion(d, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) {
+    static Object explicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) throws ConversionFailedException {
         //@formatter:off
         switch (targetType) {
             case String:    return dateTimeToString(d);
@@ -66,9 +64,9 @@ final class DateTimeConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) {
+    static Object implicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) throws ConversionFailedException {
         // no implicit conversions exist
-        return null;
+        throw new ConversionFailedException(BuiltinDataType.DateTime, targetType);
     }
 
 

@@ -12,8 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -22,8 +20,7 @@ final class GuidConversions {
 
     private GuidConversions() {}
 
-    @Nonnull
-    static ByteString guidToByteString(@Nonnull UUID uuid) {
+    static ByteString guidToByteString(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
@@ -31,26 +28,28 @@ final class GuidConversions {
         return ByteString.of(bb.array());
     }
 
-    @Nonnull
-    static String guidToString(@Nonnull UUID uuid) {
+    static String guidToString(UUID uuid) {
         return uuid.toString();
     }
 
-    @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof UUID) {
-            UUID uuid = (UUID) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+
+        if (value instanceof UUID) {
+            UUID uuid = (UUID) value;
 
             return implicit ?
                 implicitConversion(uuid, targetType) :
                 explicitConversion(uuid, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
-    @Nullable
-    static Object explicitConversion(@Nonnull UUID uuid, BuiltinDataType targetType) {
+    static Object explicitConversion(UUID uuid, BuiltinDataType targetType) throws ConversionNotDefinedException {
         //@formatter:off
         switch (targetType) {
             case ByteString:    return guidToByteString(uuid);
@@ -60,10 +59,9 @@ final class GuidConversions {
         //@formatter:on
     }
 
-    @Nullable
-    static Object implicitConversion(@Nonnull UUID uuid, BuiltinDataType targetType) {
+    static Object implicitConversion(UUID uuid, BuiltinDataType targetType) throws ConversionNotDefinedException {
         // no implicit conversions exist
-        return null;
+        throw new ConversionNotDefinedException(BuiltinDataType.Guid, targetType);
     }
-    
+
 }

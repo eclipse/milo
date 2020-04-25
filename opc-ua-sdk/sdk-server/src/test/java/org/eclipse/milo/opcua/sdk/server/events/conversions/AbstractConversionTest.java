@@ -17,21 +17,21 @@ import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertThrows;
 import static org.testng.Assert.fail;
 
 abstract class AbstractConversionTest<S> {
 
-    @Test
-    public void testNullConversion() {
-        for (BuiltinDataType targetType : BuiltinDataType.values()) {
-            assertNull(convert(null, targetType, true));
-            assertNull(convert(null, targetType, false));
-        }
-    }
+//    @Test
+//    public void testNullConversion() throws ConversionException {
+//        for (BuiltinDataType targetType : BuiltinDataType.values()) {
+//            assertNull(convert(null, targetType, true));
+//            assertNull(convert(null, targetType, false));
+//        }
+//    }
 
     @Test
-    public void testAllConversions() {
+    public void testAllConversions() throws ConversionException {
         for (BuiltinDataType targetType : BuiltinDataType.values()) {
             Conversion[] conversions = getConversions(targetType);
             ConversionType conversionType = getConversionType(targetType);
@@ -48,13 +48,21 @@ abstract class AbstractConversionTest<S> {
                     assertEquals(targetType, conversion.targetType);
 
                     S fromValue = getSourceClass().cast(conversion.fromValue);
-                    Object targetValue = conversion.targetValue;
 
-                    Object convertedValue = convert(fromValue, targetType, conversionType == ConversionType.IMPLICIT);
+                    if (conversion instanceof ConversionSuccess) {
+                        Object expectedValue = ((ConversionSuccess) conversion).expectedValue;
 
-                    System.out.println(String.format("\tfromValue=%s targetValue=%s", fromValue, targetValue));
+                        Object convertedValue = convert(fromValue, targetType, conversionType == ConversionType.IMPLICIT);
 
-                    assertEquals(convertedValue, targetValue);
+                        System.out.println(String.format("\tfromValue=%s targetValue=%s", fromValue, expectedValue));
+
+                        assertEquals(convertedValue, expectedValue);
+                    } else if (conversion instanceof ConversionFailure) {
+                        assertThrows(
+                            ((ConversionFailure) conversion).expectedFailure,
+                            () -> convert(fromValue, targetType, conversionType == ConversionType.IMPLICIT)
+                        );
+                    }
                 }
             } else {
                 if (conversions.length != 0) {
@@ -77,16 +85,18 @@ abstract class AbstractConversionTest<S> {
                 if (conversionType == ConversionType.EXPLICIT) {
                     S fromValue = getSourceClass().cast(conversion.fromValue);
 
-                    Object convertedValue = convert(fromValue, targetType, true);
-
-                    assertNull(convertedValue);
+                    assertThrows(
+                        ConversionNotDefinedException.class,
+                        () ->
+                            convert(fromValue, targetType, true)
+                    );
                 }
             }
         }
     }
 
     @Test
-    public void testImplicitConversionsCalledExplicitly() {
+    public void testImplicitConversionsCalledExplicitly() throws ConversionException {
         for (BuiltinDataType targetType : BuiltinDataType.values()) {
             Conversion[] conversions = getConversions(targetType);
 
@@ -96,32 +106,54 @@ abstract class AbstractConversionTest<S> {
                 if (conversionType == ConversionType.IMPLICIT) {
                     S fromValue = getSourceClass().cast(conversion.fromValue);
 
-                    Object convertedValue = convert(fromValue, targetType, false);
+                    if (conversion instanceof ConversionSuccess) {
+                        Object expectedValue = ((ConversionSuccess) conversion).expectedValue;
+                        Object convertedValue = convert(fromValue, targetType, false);
 
-                    System.out.println(String.format(
-                        "[%s] fromValue=%s targetType=%s targetValue=%s",
-                        conversionType, fromValue, targetType, conversion.targetValue));
+                        System.out.println(String.format(
+                            "[%s] fromValue=%s targetType=%s targetValue=%s",
+                            conversionType, fromValue, targetType, expectedValue));
 
-                    assertEquals(convertedValue, conversion.targetValue);
+                        assertEquals(convertedValue, expectedValue);
+                    } else if (conversion instanceof ConversionFailure) {
+                        assertThrows(
+                            ((ConversionFailure) conversion).expectedFailure,
+                            () -> convert(fromValue, targetType, true)
+                        );
+                    }
                 }
             }
         }
     }
 
-    protected Conversion c(@Nonnull S fromValue, @Nonnull Object targetValue) {
-        Conversion c = new Conversion();
-        c.fromValue = fromValue;
-        c.targetValue = targetValue;
-        c.targetType = BuiltinDataType.fromBackingClass(targetValue.getClass());
-        return c;
+    protected ConversionSuccess c(@Nonnull S fromValue, @Nonnull Object targetValue) {
+        return new ConversionSuccess(
+            fromValue,
+            BuiltinDataType.fromBackingClass(targetValue.getClass()),
+            targetValue
+        );
     }
 
-    protected Conversion c(@Nonnull S fromValue, @Nullable Object targetValue, @Nonnull BuiltinDataType targetType) {
-        Conversion c = new Conversion();
-        c.fromValue = fromValue;
-        c.targetValue = targetValue;
-        c.targetType = targetType;
-        return c;
+    protected ConversionSuccess c(
+        @Nonnull S fromValue,
+        @Nullable Object targetValue,
+        @Nonnull BuiltinDataType targetType
+    ) {
+
+        return new ConversionSuccess(fromValue, targetType, targetValue);
+    }
+
+    protected ConversionFailure f(
+        @Nonnull S fromValue,
+        @Nonnull BuiltinDataType targetType,
+        Class<? extends ConversionException> expectedFailure
+    ) {
+
+        return new ConversionFailure(
+            fromValue,
+            targetType,
+            expectedFailure
+        );
     }
 
     protected abstract Class<S> getSourceClass();
@@ -156,12 +188,45 @@ abstract class AbstractConversionTest<S> {
 
     // protected abstract Conversion[] getImplicitConversions();
 
-    protected abstract Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit);
+    protected abstract Object convert(
+        Object fromValue,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionException;
 
-    static class Conversion {
+    static abstract class Conversion {
         Object fromValue;
-        Object targetValue;
         BuiltinDataType targetType;
+
+        public Conversion(Object fromValue, BuiltinDataType targetType) {
+            this.fromValue = fromValue;
+            this.targetType = targetType;
+        }
+    }
+
+    static class ConversionSuccess extends Conversion {
+        Object expectedValue;
+
+        public ConversionSuccess(Object fromValue, BuiltinDataType targetType, Object expectedValue) {
+            super(fromValue, targetType);
+
+            this.expectedValue = expectedValue;
+        }
+    }
+
+    static class ConversionFailure extends Conversion {
+        Class<? extends ConversionException> expectedFailure;
+
+        public ConversionFailure(
+            Object fromValue,
+            BuiltinDataType targetType,
+            Class<? extends ConversionException> expectedFailure
+        ) {
+
+            super(fromValue, targetType);
+
+            this.expectedFailure = expectedFailure;
+        }
     }
 
     enum ConversionType {

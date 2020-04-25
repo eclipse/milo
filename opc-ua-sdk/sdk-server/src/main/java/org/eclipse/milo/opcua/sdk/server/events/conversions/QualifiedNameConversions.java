@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -22,40 +21,52 @@ final class QualifiedNameConversions {
     private QualifiedNameConversions() {}
 
     @Nullable
-    static String qualifiedNameToString(@Nonnull QualifiedName name) {
+    static String qualifiedNameToString(QualifiedName name) {
         return name.getName();
     }
 
-    @Nonnull
-    static LocalizedText qualifiedNameToLocalizedText(@Nonnull QualifiedName name) {
+    static LocalizedText qualifiedNameToLocalizedText(QualifiedName name) {
         return new LocalizedText("", name.getName());
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
-        if (o instanceof QualifiedName) {
-            QualifiedName name = (QualifiedName) o;
+    static Object convert(
+        Object value,
+        BuiltinDataType targetType,
+        boolean implicit
+    ) throws ConversionNotDefinedException {
+
+        if (value instanceof QualifiedName) {
+            QualifiedName name = (QualifiedName) value;
 
             return implicit ?
                 implicitConversion(name, targetType) :
                 explicitConversion(name, targetType);
         } else {
-            return null;
+            throw new IllegalArgumentException("value: " + value);
         }
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull QualifiedName name, BuiltinDataType targetType) {
+    static Object explicitConversion(
+        QualifiedName name,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         return implicitConversion(name, targetType);
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull QualifiedName name, BuiltinDataType targetType) {
+    static Object implicitConversion(
+        QualifiedName name,
+        BuiltinDataType targetType
+    ) throws ConversionNotDefinedException {
+
         //@formatter:off
         switch (targetType) {
             case String:        return qualifiedNameToString(name);
             case LocalizedText: return qualifiedNameToLocalizedText(name);
-            default:            return null;
+            default:            throw new ConversionNotDefinedException(BuiltinDataType.QualifiedName, targetType);
         }
         //@formatter:on
     }
