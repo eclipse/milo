@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import javax.annotation.Nonnull;
 
 import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -22,7 +21,7 @@ final class ByteStringConversions {
 
     private ByteStringConversions() {}
 
-    static UUID byteStringToGuid(@Nonnull ByteString bs) throws ConversionFailedException {
+    static UUID byteStringToGuid(ByteString bs) throws ConversionFailedException {
         if (bs.length() != 16) {
             throw new ConversionFailedException(BuiltinDataType.ByteString, BuiltinDataType.Guid);
         } else {
@@ -33,7 +32,7 @@ final class ByteStringConversions {
         }
     }
 
-    static String byteStringToString(@Nonnull ByteString bs) {
+    static String byteStringToString(ByteString bs) {
         return ByteBufUtil.hexDump(bs.bytesOrEmpty());
     }
 

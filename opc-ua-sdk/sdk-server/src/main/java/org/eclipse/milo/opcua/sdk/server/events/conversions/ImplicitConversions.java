@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 
 public class ImplicitConversions {
@@ -27,17 +28,19 @@ public class ImplicitConversions {
             return null;
         } else {
             try {
-                return convert(sourceValue, targetType);
-            } catch (Exception e) {
+                return convertOrThrow(sourceValue, targetType);
+            } catch (Throwable ignored) {
                 return null;
             }
         }
     }
 
-    public static Object convert(
-        @Nonnull Object sourceValue,
-        @Nonnull BuiltinDataType targetType
+    public static Object convertOrThrow(
+        Object sourceValue,
+        BuiltinDataType targetType
     ) throws ConversionException {
+
+        Preconditions.checkNotNull(sourceValue);
 
         BuiltinDataType sourceType = BuiltinDataType.fromBackingClass(sourceValue.getClass());
 
@@ -60,8 +63,9 @@ public class ImplicitConversions {
 
         switch (sourceType) {
             case Boolean:
-                return BooleanConversions
+                return BooleanConversions.INSTANCE
                     .convert(sourceValue, targetType, true);
+
             case Byte:
                 return ByteConversions
                     .convert(sourceValue, targetType, true);
@@ -79,12 +83,14 @@ public class ImplicitConversions {
                     .convert(sourceValue, targetType, true);
 
             case ExpandedNodeId:
-                return ExpandedNodeIdConversions
+                // TODO needs a NamespaceTable
+                return new ExpandedNodeIdConversions()
                     .convert(sourceValue, targetType, true);
 
             case Float:
                 return FloatConversions
                     .convert(sourceValue, targetType, true);
+
             case Guid:
                 return GuidConversions
                     .convert(sourceValue, targetType, true);

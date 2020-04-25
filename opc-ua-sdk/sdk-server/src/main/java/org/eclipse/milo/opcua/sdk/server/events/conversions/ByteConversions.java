@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -26,47 +24,47 @@ final class ByteConversions {
 
     private ByteConversions() {}
 
-    static Boolean byteToBoolean(@Nonnull UByte ub) {
+    static Boolean byteToBoolean(UByte ub) {
         return ub.intValue() != 0;
     }
 
-    static Double byteToDouble(@Nonnull UByte ub) {
+    static Double byteToDouble(UByte ub) {
         return ub.doubleValue();
     }
 
-    static Float byteToFloat(@Nonnull UByte ub) {
+    static Float byteToFloat(UByte ub) {
         return ub.floatValue();
     }
 
-    static Short byteToInt16(@Nonnull UByte ub) {
+    static Short byteToInt16(UByte ub) {
         return ub.shortValue();
     }
 
-    static Integer byteToInt32(@Nonnull UByte ub) {
+    static Integer byteToInt32(UByte ub) {
         return ub.intValue();
     }
 
-    static Long byteToInt64(@Nonnull UByte ub) {
+    static Long byteToInt64(UByte ub) {
         return ub.longValue();
     }
 
-    static Byte byteToSByte(@Nonnull UByte ub) {
+    static Byte byteToSByte(UByte ub) {
         return ub.intValue() > Byte.MAX_VALUE ? null : ub.byteValue();
     }
 
-    static String byteToString(@Nonnull UByte ub) {
+    static String byteToString(UByte ub) {
         return ub.toString();
     }
 
-    static UShort byteToUInt16(@Nonnull UByte ub) {
+    static UShort byteToUInt16(UByte ub) {
         return ushort(ub.intValue());
     }
 
-    static UInteger byteToUInt32(@Nonnull UByte ub) {
+    static UInteger byteToUInt32(UByte ub) {
         return uint(ub.intValue());
     }
 
-    static ULong byteToUInt64(@Nonnull UByte ub) {
+    static ULong byteToUInt64(UByte ub) {
         return ulong(ub.longValue());
     }
 

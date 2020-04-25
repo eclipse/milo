@@ -15,8 +15,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.sdk.server.events.conversions.ExpandedNodeIdConversions.expandedNodeIdToNodeId;
-import static org.eclipse.milo.opcua.sdk.server.events.conversions.ExpandedNodeIdConversions.expandedNodeIdToString;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
@@ -24,18 +22,20 @@ import static org.testng.Assert.assertThrows;
 
 public class ExpandedNodeIdConversionsTest {
 
+    private final ExpandedNodeIdConversions conversions = new ExpandedNodeIdConversions();
+
     @Test
     public void testExpandedNodeIdToNodeId() throws ConversionFailedException {
         assertThrows(
             ConversionFailedException.class,
             () ->
-                expandedNodeIdToNodeId(
+                conversions.expandedNodeIdToNodeId(
                     new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo", uint(2)))
         );
 
         NodeId nodeId = new NodeId(0, "bar");
 
-        assertEquals(expandedNodeIdToNodeId(nodeId.expanded()), nodeId);
+        assertEquals(conversions.expandedNodeIdToNodeId(nodeId.expanded()), nodeId);
     }
 
     @Test
@@ -43,8 +43,8 @@ public class ExpandedNodeIdConversionsTest {
         ExpandedNodeId e1 = new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo", uint(2));
         ExpandedNodeId e2 = new NodeId(1, "bar").expanded();
 
-        assertEquals(expandedNodeIdToString(e1), e1.toParseableString());
-        assertEquals(expandedNodeIdToString(e2), e2.toParseableString());
+        assertEquals(conversions.expandedNodeIdToString(e1), e1.toParseableString());
+        assertEquals(conversions.expandedNodeIdToString(e2), e2.toParseableString());
     }
 
 }

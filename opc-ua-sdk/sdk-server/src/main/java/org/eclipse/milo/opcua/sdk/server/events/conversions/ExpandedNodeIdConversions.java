@@ -10,28 +10,33 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-final class ExpandedNodeIdConversions {
+public final class ExpandedNodeIdConversions {
 
-    private ExpandedNodeIdConversions() {}
+    private final NamespaceTable namespaceTable;
 
-    static NodeId expandedNodeIdToNodeId(ExpandedNodeId e) throws ConversionFailedException {
-        // TODO need a real NamespaceTable here
-        return e.local(new NamespaceTable())
+    public ExpandedNodeIdConversions() {
+        this(new NamespaceTable());
+    }
+
+    public ExpandedNodeIdConversions(NamespaceTable namespaceTable) {
+        this.namespaceTable = namespaceTable;
+    }
+
+    public NodeId expandedNodeIdToNodeId(ExpandedNodeId e) throws ConversionFailedException {
+        return e.local(namespaceTable)
             .orElseThrow(() -> new ConversionFailedException(BuiltinDataType.ExpandedNodeId, BuiltinDataType.NodeId));
     }
 
-    static String expandedNodeIdToString(@Nonnull ExpandedNodeId e) {
+    public String expandedNodeIdToString(ExpandedNodeId e) {
         return e.toParseableString();
     }
 
-    static Object convert(
+    public Object convert(
         Object value,
         BuiltinDataType targetType,
         boolean implicit
@@ -48,7 +53,7 @@ final class ExpandedNodeIdConversions {
         }
     }
 
-    static Object explicitConversion(
+    public Object explicitConversion(
         ExpandedNodeId eni,
         BuiltinDataType targetType
     ) throws ConversionFailedException, ConversionNotDefinedException {
@@ -61,7 +66,7 @@ final class ExpandedNodeIdConversions {
         //@formatter:on
     }
 
-    static Object implicitConversion(
+    public Object implicitConversion(
         ExpandedNodeId eni,
         BuiltinDataType targetType
     ) throws ConversionNotDefinedException {
