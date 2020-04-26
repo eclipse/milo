@@ -27,6 +27,10 @@ public abstract class ClientServerTest {
     @BeforeAll
     public void startClientAndServer() throws Exception {
         server = TestServer.create();
+
+        TestNamespace testNamespace = new TestNamespace(server);
+        testNamespace.startup();
+
         server.startup().get();
 
         client = TestClient.create(server);
