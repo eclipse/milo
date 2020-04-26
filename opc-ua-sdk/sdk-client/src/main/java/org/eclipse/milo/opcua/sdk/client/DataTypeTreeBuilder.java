@@ -63,6 +63,20 @@ public final class DataTypeTreeBuilder {
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
      * {@link Identifiers#BaseDataType}.
      *
+     * @param client a connected {@link OpcUaClient}.
+     * @return a {@link DataTypeTree}.
+     */
+    public static CompletableFuture<DataTypeTree> build(OpcUaClient client) {
+        return client.getSession().thenCompose(
+            session ->
+                build(client.getStackClient(), session)
+        );
+    }
+
+    /**
+     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
+     * {@link Identifiers#BaseDataType}.
+     *
      * @param client  a connected {@link UaStackClient}.
      * @param session an active {@link OpcUaSession}.
      * @return a {@link DataTypeTree}.
