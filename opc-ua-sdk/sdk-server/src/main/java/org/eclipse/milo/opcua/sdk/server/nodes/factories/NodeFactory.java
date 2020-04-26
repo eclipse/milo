@@ -334,7 +334,7 @@ public class NodeFactory {
     }
 
     protected void notifyInstantiationCallback(Tree<UaNode> nodeTree, InstantiationCallback instantiationCallback) {
-        nodeTree.traverse((node, parentNode) -> {
+        nodeTree.traverseWithParent((node, parentNode) -> {
             if (parentNode instanceof UaObjectNode && node instanceof UaMethodNode) {
                 UaMethodNode methodNode = (UaMethodNode) node;
 

@@ -54,16 +54,26 @@ public class Tree<A> {
     /**
      * Traverse this tree consuming the {@code value} at each node.
      *
-     * @param c the {@link BiConsumer}.
+     * @param c the value {@link Consumer}.
      */
     public void traverse(Consumer<A> c) {
         traverse(this, (a, integer) -> c.accept(a), 0);
     }
 
+    /**
+     * Traverse this tree consuming each {@link Tree} node.
+     *
+     * @param c the node {@link Consumer}.
+     */
     public void traverseNodes(Consumer<Tree<A>> c) {
         traverseNodes(this, (t, integer) -> c.accept(t), 0);
     }
 
+    /**
+     * Traverse this tree consuming the {@code value} and current depth at each node.
+     *
+     * @param c the value and depth {@link BiConsumer}.
+     */
     public void traverseWithDepth(BiConsumer<A, Integer> c) {
         traverse(this, c, 0);
     }
@@ -75,7 +85,7 @@ public class Tree<A> {
      *
      * @param c the {@link BiConsumer}.
      */
-    public void traverse(BiConsumer<A, A> c) {
+    public void traverseWithParent(BiConsumer<A, A> c) {
         traverse(this, c);
     }
 
@@ -89,18 +99,6 @@ public class Tree<A> {
     public <B> Tree<B> map(Function<A, B> f) {
         return map(this, f);
     }
-
-    /*
-    fun <T> Tree<T>.traverseWithDepth(visitor: (Tree<T>, Int) -> Unit) {
-    fun go(t: Tree<T>, v: (Tree<T>, Int) -> Unit, d: Int) {
-        v.invoke(t, d)
-        t.getChildren().forEach { go(it, v, d + 1) }
-    }
-
-    go(this, visitor, 0)
-}
-
-     */
 
     private static <A, B> Tree<B> map(Tree<A> tA, Function<A, B> f) {
         Tree<B> tB = new Tree<B>(null, f.apply(tA.value));
