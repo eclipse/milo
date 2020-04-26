@@ -75,6 +75,24 @@ public class ManagedSubscription {
         subscription.addNotificationListener(new ManagedSubscriptionNotificationListener());
     }
 
+    /**
+     * Get the {@link OpcUaClient} that created this {@link ManagedSubscription}.
+     *
+     * @return the {@link OpcUaClient} that created this {@link ManagedSubscription}.
+     */
+    public OpcUaClient getClient() {
+        return client;
+    }
+
+    /**
+     * Get the underlying {@link OpcUaSubscription}.
+     *
+     * @return the underlying {@link OpcUaSubscription}.
+     */
+    public OpcUaSubscription getSubscription() {
+        return subscription;
+    }
+
     //region create/delete ManagedDataItem
 
     /**
@@ -237,7 +255,7 @@ public class ManagedSubscription {
     }
 
     private ManagedDataItem createAndTrackDataItem(UaMonitoredItem item) {
-        ManagedDataItem dataItem = new ManagedDataItem(client, (OpcUaMonitoredItem) item);
+        ManagedDataItem dataItem = new ManagedDataItem(client, this, (OpcUaMonitoredItem) item);
         dataItems.put((OpcUaMonitoredItem) item, dataItem);
         return dataItem;
     }
@@ -494,15 +512,6 @@ public class ManagedSubscription {
      */
     public synchronized TimestampsToReturn getDefaultTimestamps() {
         return defaultTimestamps;
-    }
-
-    /**
-     * Get the underlying {@link OpcUaSubscription}.
-     *
-     * @return the underlying {@link OpcUaSubscription}.
-     */
-    public OpcUaSubscription getSubscription() {
-        return subscription;
     }
 
     /**

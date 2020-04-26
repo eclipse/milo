@@ -16,8 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedEventItem;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription;
-import org.eclipse.milo.opcua.sdk.test.ClientServerTest;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -29,8 +27,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -39,33 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ManagedSubscriptionTest extends ClientServerTest {
-
-    private ManagedSubscription subscription;
-
-    @BeforeEach
-    private void createSubscription() throws UaException {
-        subscription = ManagedSubscription.create(client);
-
-        System.out.println(String.format(
-            "created ManagedSubscription id=%s",
-            subscription.getSubscription().getSubscriptionId()
-        ));
-    }
-
-    @AfterEach
-    private void deleteSubscription() throws UaException {
-        if (subscription != null) {
-            System.out.println(String.format(
-                "deleting ManagedSubscription id=%s",
-                subscription.getSubscription().getSubscriptionId()
-            ));
-
-            assertTrue(subscription.delete().isGood());
-            subscription = null;
-        }
-    }
+public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
     @Test
     public void createAndDeleteDataItem() throws UaException {
