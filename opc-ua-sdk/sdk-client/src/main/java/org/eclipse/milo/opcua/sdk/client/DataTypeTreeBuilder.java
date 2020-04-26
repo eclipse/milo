@@ -85,7 +85,8 @@ public final class DataTypeTreeBuilder {
         Tree<DataTypeTree.DataType> root = new Tree<>(
             null,
             new DataTypeTree.DataType(
-                QualifiedName.parse("0:BaseDataType"), Identifiers.BaseDataType,
+                QualifiedName.parse("0:BaseDataType"),
+                Identifiers.BaseDataType,
                 null,
                 null
             )
