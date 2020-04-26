@@ -42,10 +42,7 @@ public class DataTypeTreeTest extends ClientServerTest {
 
     @BeforeAll
     public void buildDataTypeTree() throws ExecutionException, InterruptedException {
-        dataTypeTree = DataTypeTreeBuilder.build(
-            client.getStackClient(),
-            client.getSession().get()
-        ).get();
+        dataTypeTree = DataTypeTreeBuilder.build(client).get();
     }
 
     @Test
