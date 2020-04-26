@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public interface UaMonitoredItem {
@@ -105,6 +106,13 @@ public interface UaMonitoredItem {
      * @return the filter requested when the item was created. May be null if no filter was requested.
      */
     ExtensionObject getMonitoringFilter();
+
+    /**
+     * Get the {@link TimestampsToReturn} requested when the item was created.
+     *
+     * @return the {@link TimestampsToReturn} requested when the item was created.
+     */
+    TimestampsToReturn getTimestamps();
 
     /**
      * Set the {@link Consumer} that will receive values as they arrive from the server.

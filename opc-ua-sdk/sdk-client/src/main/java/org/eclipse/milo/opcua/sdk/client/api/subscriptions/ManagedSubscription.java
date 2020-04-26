@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
@@ -35,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
@@ -58,10 +60,10 @@ public class ManagedSubscription {
     private final Map<UaMonitoredItem, ManagedDataItem> dataItems = new ConcurrentHashMap<>();
     private final Map<UaMonitoredItem, ManagedEventItem> eventItems = new ConcurrentHashMap<>();
 
-    // TODO default filter?
-    // TODO default queue size?
-    // TODO default sampling interval?
-    // TODO default timestamps?
+    private double defaultSamplingInterval = DEFAULT_SAMPLING_INTERVAL;
+    private UInteger defaultQueueSize = DEFAULT_QUEUE_SIZE;
+    private TimestampsToReturn defaultTimestamps = TimestampsToReturn.Both;
+    private ExtensionObject defaultDataFilter = null;
 
     private final OpcUaClient client;
     private final OpcUaSubscription subscription;
@@ -75,30 +77,75 @@ public class ManagedSubscription {
 
     //region create/delete ManagedDataItem
 
+    /**
+     * Create a {@link ManagedDataItem} monitoring the Value attribute of the Node identified by {@code nodeId}.
+     * <p>
+     * The operation will fail of the Node is not a Variable or VariableType Node. To create an item that monitors a
+     * different attribute use {@link #createDataItem(ReadValueId, double)}.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param nodeId the {@link NodeId} identifying a Variable or VariableType Node.
+     * @return a {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
     public ManagedDataItem createDataItem(NodeId nodeId) throws UaException {
-        ReadValueId readValueId = new ReadValueId(
-            nodeId,
-            AttributeId.Value.uid(),
-            null,
-            QualifiedName.NULL_VALUE
-        );
-
-        return createDataItem(readValueId, DEFAULT_SAMPLING_INTERVAL);
+        return createDataItems(singletonList(nodeId)).get(0);
     }
 
+    /**
+     * Create {@link ManagedDataItem}s monitoring the Value attribute of the Nodes identified by {@code nodeIds}.
+     * <p>
+     * This operation will fail of the Node is not a Variable or VariableType Node. To create items that monitor
+     * different attributes use {@link #createDataItems(List, double)}.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param nodeIds the {@link NodeId}s identifying a Variable or VariableType Nodes.
+     * @return a List of {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
+    public List<ManagedDataItem> createDataItems(List<NodeId> nodeIds) throws UaException {
+        List<ReadValueId> readValueIds = nodeIds.stream()
+            .map(nodeId ->
+                new ReadValueId(
+                    nodeId,
+                    AttributeId.Value.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                )
+            )
+            .collect(Collectors.toList());
+
+        return createDataItems(readValueIds, getDefaultSamplingInterval());
+    }
+
+    /**
+     * Create a {@link ManagedDataItem} monitoring the Node and attribute identified by {@code readValueId}.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param readValueId      the {@link ReadValueId} identifying the Node and attribute to monitor.
+     * @param samplingInterval the rate to request this item is sampled at.
+     * @return a {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
     public ManagedDataItem createDataItem(ReadValueId readValueId, double samplingInterval) throws UaException {
         return createDataItems(singletonList(readValueId), samplingInterval).get(0);
     }
 
     /**
-     * Create {@link ManagedDataItem}s for each of the {@link ReadValueId}s in {@code readValueIds}.
+     * Create {@link ManagedDataItem}s for the Nodes and attributes identified by {@code readValueIds}.
      * <p>
-     * The operation result should be checked before this item is used further.
+     * The operation result of each item should be checked before the item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
      *
-     * @param readValueIds     the {@link ReadValueId}s identifying the items to create.
+     * @param readValueIds     the {@link ReadValueId}s identifying the Nodes and attributes to monitor.
      * @param samplingInterval the rate to request these items are sampled at.
-     * @return a List of {@link ManagedDataItem}s.s
+     * @return a List of {@link ManagedDataItem}s.
      * @throws UaException if a service-level error occurs.
      */
     public List<ManagedDataItem> createDataItems(
@@ -122,7 +169,7 @@ public class ManagedSubscription {
     }
 
     /**
-     * Create {@link ManagedDataItem}s for each of the {@link ReadValueId}s in {@code readValueIds}.
+     * Create a {@link ManagedDataItem} monitoring the Node and attribute identified by {@code readValueId}.
      * <p>
      * The operation result should be checked before this item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
@@ -139,13 +186,16 @@ public class ManagedSubscription {
         double samplingInterval
     ) {
 
+        final ExtensionObject filter = getDefaultDataFilter();
+        final UInteger queueSize = getDefaultQueueSize();
+
         List<MonitoredItemCreateRequest> createRequests = readValueIds.stream()
             .map(readValueId -> {
                 MonitoringParameters parameters = new MonitoringParameters(
                     subscription.nextClientHandle(),
                     samplingInterval,
-                    null,
-                    DEFAULT_QUEUE_SIZE,
+                    filter,
+                    queueSize,
                     true
                 );
 
@@ -154,7 +204,7 @@ public class ManagedSubscription {
             .collect(Collectors.toList());
 
         CompletableFuture<List<UaMonitoredItem>> monitoredItems = subscription.createMonitoredItems(
-            TimestampsToReturn.Both,
+            getDefaultTimestamps(),
             createRequests
         );
 
@@ -266,7 +316,10 @@ public class ManagedSubscription {
     }
 
     public CompletableFuture<StatusCode> deleteEventItemAsync(ManagedEventItem eventItem) {
-        return null;
+        CompletableFuture<List<StatusCode>> future =
+            subscription.deleteMonitoredItems(singletonList(eventItem.getMonitoredItem()));
+
+        return future.thenApply(results -> results.get(0));
     }
 
     private ManagedEventItem createAndTrackEventItem(UaMonitoredItem item) {
@@ -364,6 +417,83 @@ public class ManagedSubscription {
      */
     public boolean isPublishingEnabled() {
         return subscription.isPublishingEnabled();
+    }
+
+    /**
+     * Set the sampling interval used in calls where it is not specified explicitly.
+     *
+     * @param defaultSamplingInterval the sampling interval used in calls where it is not specified explicitly.
+     */
+    public synchronized void setDefaultSamplingInterval(double defaultSamplingInterval) {
+        this.defaultSamplingInterval = defaultSamplingInterval;
+    }
+
+    /**
+     * Get the sampling interval used in calls where it is not specified explicitly.
+     *
+     * @return the sampling interval used in calls where it is not specified explicitly.
+     */
+    public synchronized double getDefaultSamplingInterval() {
+        return defaultSamplingInterval;
+    }
+
+    /**
+     * Set the queue size used when creating {@link ManagedDataItem}s.
+     *
+     * @param defaultQueueSize the queue size used when creating {@link ManagedDataItem}s.
+     */
+    public synchronized void setDefaultQueueSize(UInteger defaultQueueSize) {
+        this.defaultQueueSize = defaultQueueSize;
+    }
+
+    /**
+     * Get the queue size used when creating {@link ManagedDataItem}s.
+     *
+     * @return the queue size used when creating {@link ManagedDataItem}s.
+     */
+    public synchronized UInteger getDefaultQueueSize() {
+        return defaultQueueSize;
+    }
+
+    /**
+     * Set the {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
+     * <p>
+     * The default value is {@code null}, which is interpreted by servers as a filter triggered by changes in Status
+     * or Value with no deadband applied.
+     *
+     * @param defaultDataFilter the {@link DataChangeFilter} to use when creating {@link ManagedDataItem}s.
+     */
+    public synchronized void setDefaultDataFilter(@Nullable DataChangeFilter defaultDataFilter) {
+        this.defaultDataFilter = defaultDataFilter != null ?
+            ExtensionObject.encode(client.getSerializationContext(), defaultDataFilter) : null;
+    }
+
+    /**
+     * Get the encoded {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
+     *
+     * @return the encoded {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
+     */
+    @Nullable
+    public synchronized ExtensionObject getDefaultDataFilter() {
+        return defaultDataFilter;
+    }
+
+    /**
+     * Set the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
+     *
+     * @param defaultTimestamps the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
+     */
+    public synchronized void setDefaultTimestamps(TimestampsToReturn defaultTimestamps) {
+        this.defaultTimestamps = defaultTimestamps;
+    }
+
+    /**
+     * Get the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
+     *
+     * @return the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
+     */
+    public synchronized TimestampsToReturn getDefaultTimestamps() {
+        return defaultTimestamps;
     }
 
     /**

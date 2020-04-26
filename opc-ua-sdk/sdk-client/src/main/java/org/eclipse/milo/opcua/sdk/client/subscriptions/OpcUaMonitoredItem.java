@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -41,6 +42,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     private volatile ExtensionObject filterResult;
     private volatile MonitoringMode monitoringMode = MonitoringMode.Disabled;
     private volatile ExtensionObject monitoringFilter;
+    private volatile TimestampsToReturn timestamps;
 
     private final UInteger clientHandle;
     private final ReadValueId readValueId;
@@ -56,7 +58,9 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         UInteger revisedQueueSize,
         ExtensionObject filterResult,
         MonitoringMode monitoringMode,
-        ExtensionObject monitoringFilter) {
+        ExtensionObject monitoringFilter,
+        TimestampsToReturn timestamps
+    ) {
 
         this.client = client;
         this.clientHandle = clientHandle;
@@ -68,6 +72,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.filterResult = filterResult;
         this.monitoringMode = monitoringMode;
         this.monitoringFilter = monitoringFilter;
+        this.timestamps = timestamps;
     }
 
     @Override
@@ -123,6 +128,11 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     @Override
     public ExtensionObject getMonitoringFilter() {
         return monitoringFilter;
+    }
+
+    @Override
+    public TimestampsToReturn getTimestamps() {
+        return timestamps;
     }
 
     @Override
