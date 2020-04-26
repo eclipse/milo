@@ -101,7 +101,7 @@ public class Tree<A> {
     }
 
     private static <A, B> Tree<B> map(Tree<A> tA, Function<A, B> f) {
-        Tree<B> tB = new Tree<B>(null, f.apply(tA.value));
+        Tree<B> tB = new Tree<>(null, f.apply(tA.value));
 
         map(tA, tB, f);
 
