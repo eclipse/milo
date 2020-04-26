@@ -25,9 +25,11 @@ import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
@@ -76,6 +78,40 @@ public class ManagedDataItem {
 
     public StatusCode getStatusCode() {
         return item.getStatusCode();
+    }
+
+    public MonitoringMode getMonitoringMode() {
+        return item.getMonitoringMode();
+    }
+
+    public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
+        try {
+            setMonitoringModeAsync(monitoringMode).get();
+        } catch (InterruptedException e) {
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<Unit> setMonitoringModeAsync(MonitoringMode monitoringMode) {
+        CompletableFuture<List<StatusCode>> future = subscription.getSubscription().setMonitoringMode(
+            monitoringMode,
+            Collections.singletonList(item)
+        );
+
+        return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
+            if (statusCode.isGood()) {
+                return completedFuture(Unit.VALUE);
+            } else {
+                return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    public double getSamplingInterval() {
+        return item.getRevisedSamplingInterval();
     }
 
     public double setSamplingInterval(double samplingInterval) throws UaException {

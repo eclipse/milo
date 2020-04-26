@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -53,8 +54,9 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void setSamplingInterval() throws Exception {
+    public void samplingInterval() throws Exception {
         ManagedDataItem dataItem1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRevisedSamplingInterval());
 
@@ -64,11 +66,26 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void setSamplingIntervalBatch() throws Exception {
+    public void monitoringMode() throws UaException {
+        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
+
+        dataItem.setMonitoringMode(MonitoringMode.Sampling);
+        assertEquals(MonitoringMode.Sampling, dataItem.getMonitoringMode());
+
+        dataItem.setMonitoringMode(MonitoringMode.Disabled);
+        assertEquals(MonitoringMode.Disabled, dataItem.getMonitoringMode());
+
+        dataItem.setMonitoringMode(MonitoringMode.Reporting);
+        assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
+    }
+
+    @Test
+    public void samplingIntervalBatch() throws Exception {
         ManagedDataItem dataItem1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem dataItem2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
 
-        // ModifyMonitoredItemsBatch batch = BatchManager.newModifyMonitoredItemsBatch();
+        // ModifyMonitoredItemsBatch batch = subscription.getBatchManager().newModifyMonitoredItemsBatch();
         // dataItem1.setSamplingInterval(5000.0, batch);
         // dataItem2.setSamplingInterval(5000.0, batch);
         // batch.execute();
@@ -78,7 +95,7 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
         assertEquals(5000.0, dataItem2.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(5000.0, dataItem2.getMonitoredItem().getRevisedSamplingInterval());
 
-        // BatchManager.executeModifyMonitoredItemsBatch(batch -> {
+        // subscription.getBatchManager().executeModifyMonitoredItemsBatch(batch -> {
         //     dataItem1.setSamplingInterval(1000.0, batch);
         //     dataItem2.setSamplingInterval(1000.0, batch);
         // });
