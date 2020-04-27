@@ -11,10 +11,9 @@
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -26,22 +25,28 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters.MonitoringParametersBuilder;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
-public class ModifyMonitoredItemsBatch {
+public class BatchModifyMonitoredItems {
 
-    private final ConcurrentMap<ManagedDataItem, MonitoringParametersBuilder<?, ?>> builders =
-        new ConcurrentHashMap<>();
+    private final LinkedHashMap<ManagedDataItem, MonitoringParametersBuilder<?, ?>> builders =
+        new LinkedHashMap<>();
+
+    private final List<CompletableFuture<Unit>> futures = new ArrayList<>();
 
     private final ManagedSubscription subscription;
 
-    public ModifyMonitoredItemsBatch(ManagedSubscription subscription) {
+    public BatchModifyMonitoredItems(ManagedSubscription subscription) {
         this.subscription = subscription;
     }
 
-    public void add(ManagedDataItem dataItem, Consumer<MonitoringParametersBuilder<?, ?>> builderConsumer) {
+    public CompletableFuture<Unit> add(ManagedDataItem dataItem, Consumer<MonitoringParametersBuilder<?, ?>> builderConsumer) {
         MonitoringParametersBuilder<?, ?> builder =
             builders.computeIfAbsent(dataItem, this::parametersBuilderForItem);
 
         builderConsumer.accept(builder);
+
+        CompletableFuture<Unit> future = new CompletableFuture<>();
+        futures.add(future);
+        return future;
     }
 
     private MonitoringParametersBuilder<?, ?> parametersBuilderForItem(ManagedDataItem item) {
@@ -81,7 +86,13 @@ public class ModifyMonitoredItemsBatch {
             itemsToModify
         );
 
-        return future.thenApply(statusCodes -> Unit.VALUE);
+        return future.thenApply(statusCodes -> Unit.VALUE).whenComplete((unit, ex) -> {
+            if (unit != null) {
+                futures.forEach(f -> f.complete(Unit.VALUE));
+            } else {
+                futures.forEach(f -> f.completeExceptionally(ex));
+            }
+        });
     }
 
 }

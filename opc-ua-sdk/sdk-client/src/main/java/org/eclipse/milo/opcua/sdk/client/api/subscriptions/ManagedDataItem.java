@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
@@ -80,6 +81,8 @@ public class ManagedDataItem {
         return item.getStatusCode();
     }
 
+    //region MonitoringMode operations
+
     public MonitoringMode getMonitoringMode() {
         return item.getMonitoringMode();
     }
@@ -93,6 +96,10 @@ public class ManagedDataItem {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
+    }
+
+    public CompletableFuture<Unit> setMonitoringMode(MonitoringMode monitoringMode, BatchSetMonitoringMode batch) {
+        return batch.add(this, monitoringMode);
     }
 
     public CompletableFuture<Unit> setMonitoringModeAsync(MonitoringMode monitoringMode) {
@@ -110,6 +117,10 @@ public class ManagedDataItem {
         });
     }
 
+    //endregion
+
+    //region SamplingInterval operations
+
     public double getSamplingInterval() {
         return item.getRevisedSamplingInterval();
     }
@@ -125,7 +136,7 @@ public class ManagedDataItem {
         }
     }
 
-    public void setSamplingInterval(double samplingInterval, ModifyMonitoredItemsBatch batch) {
+    public void setSamplingInterval(double samplingInterval, BatchModifyMonitoredItems batch) {
         batch.add(this, b -> b.samplingInterval(samplingInterval));
     }
 
@@ -157,6 +168,57 @@ public class ManagedDataItem {
         });
     }
 
+    //endregion
+
+    //region QueueSize operations
+
+    public UInteger setQueueSize(UInteger queueSize) throws UaException {
+        try {
+            return setQueueSizeAsync(queueSize).get();
+        } catch (InterruptedException e) {
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<UInteger> setQueueSize(UInteger queueSize, BatchModifyMonitoredItems batch) {
+        CompletableFuture<Unit> future = batch.add(this, b -> b.queueSize(queueSize));
+
+        return future.thenApply(u -> item.getRevisedQueueSize());
+    }
+
+    public CompletableFuture<UInteger> setQueueSizeAsync(UInteger queueSize) {
+        MonitoringParameters parameters = new MonitoringParameters(
+            item.getClientHandle(),
+            item.getRevisedSamplingInterval(),
+            item.getMonitoringFilter(),
+            queueSize,
+            true // TODO
+        );
+
+        MonitoredItemModifyRequest modifyRequest =
+            new MonitoredItemModifyRequest(item.getMonitoredItemId(), parameters);
+
+        CompletableFuture<List<StatusCode>> future = subscription.getSubscription().modifyMonitoredItems(
+            subscription.getDefaultTimestamps(),
+            singletonList(modifyRequest)
+        );
+
+        return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
+            if (statusCode.isGood()) {
+                return completedFuture(item.getRevisedQueueSize());
+            } else {
+                return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    //endregion
+
+    //region DataValueListener bookkeeping
+
     public synchronized DataValueListener addDataValueListener(Consumer<DataValue> consumer) {
         DataValueListener dataValueListener = (item, value) -> consumer.accept(value);
 
@@ -182,6 +244,8 @@ public class ManagedDataItem {
             valueConsumer = null;
         }
     }
+
+    //endregion
 
     public StatusCode delete() throws UaException {
         try {
