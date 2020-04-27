@@ -93,10 +93,20 @@ public class ManagedSubscription {
         return subscription;
     }
 
+    /**
+     * Get a copied List of the current {@link ManagedDataItem}s.
+     *
+     * @return a copied List of the current {@link ManagedDataItem}s.
+     */
     public List<ManagedDataItem> getDataItems() {
         return new ArrayList<>(dataItems.values());
     }
 
+    /**
+     * Get a copied List of the current {@link ManagedEventItem}s.
+     *
+     * @return a copied List of the current {@link ManagedEventItem}s.
+     */
     public List<ManagedEventItem> getEventItems() {
         return new ArrayList<>(eventItems.values());
     }
