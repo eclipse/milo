@@ -16,6 +16,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public class ManagedEventItem {
@@ -50,6 +51,21 @@ public class ManagedEventItem {
 
     public CompletableFuture<StatusCode> deleteAsync() {
         return null;
+    }
+
+    /**
+     * A callback that receives notification of new events for a {@link ManagedEventItem}.
+     */
+    public interface EventValueListener {
+
+        /**
+         * A new event for {@code item} has arrived.
+         *
+         * @param item        the {@link ManagedEventItem} for which a new event has arrived.
+         * @param eventValues the new event field values.
+         */
+        void onEventValueReceived(ManagedEventItem item, Variant[] eventValues);
+
     }
 
 }
