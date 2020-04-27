@@ -13,8 +13,6 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -68,57 +66,6 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void samplingIntervalBatch() throws Exception {
-        for (int i = 0; i < 10; i++) {
-            subscription.createDataItem(
-                Identifiers.Server_ServerStatus_CurrentTime
-            );
-        }
-
-        subscription.getDataItems().forEach(
-            item -> {
-                assertEquals(1000.0, item.getSamplingInterval());
-                assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
-                assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
-            }
-        );
-
-        {
-            BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(subscription);
-            subscription.getDataItems().forEach(
-                item ->
-                    item.setSamplingInterval(5000.0, batch)
-            );
-            batch.execute();
-
-            subscription.getDataItems().forEach(
-                item -> {
-                    assertEquals(5000.0, item.getSamplingInterval());
-                    assertEquals(5000.0, item.getMonitoredItem().getRequestedSamplingInterval());
-                    assertEquals(5000.0, item.getMonitoredItem().getRevisedSamplingInterval());
-                }
-            );
-        }
-
-        {
-            BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(subscription);
-            subscription.getDataItems().forEach(
-                item ->
-                    item.setSamplingInterval(1000.0, batch)
-            );
-            batch.execute();
-
-            subscription.getDataItems().forEach(
-                item -> {
-                    assertEquals(1000.0, item.getSamplingInterval());
-                    assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
-                    assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
-                }
-            );
-        }
-    }
-
-    @Test
     public void monitoringMode() throws UaException {
         ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
@@ -131,45 +78,6 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
 
         dataItem.setMonitoringMode(MonitoringMode.Reporting);
         assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
-    }
-
-    @Test
-    public void monitoringModeBatch() throws UaException {
-        for (int i = 0; i < 10; i++) {
-            subscription.createDataItem(
-                Identifiers.Server_ServerStatus_CurrentTime
-            );
-        }
-
-        subscription.getDataItems().forEach(
-            item -> assertEquals(MonitoringMode.Reporting, item.getMonitoringMode())
-        );
-
-        {
-            BatchSetMonitoringMode batch = new BatchSetMonitoringMode(subscription);
-            subscription.getDataItems().forEach(
-                item ->
-                    item.setMonitoringMode(MonitoringMode.Sampling, batch)
-            );
-            batch.execute();
-
-            subscription.getDataItems().forEach(
-                item -> assertEquals(MonitoringMode.Sampling, item.getMonitoringMode())
-            );
-        }
-
-        {
-            BatchSetMonitoringMode batch = new BatchSetMonitoringMode(subscription);
-            subscription.getDataItems().forEach(
-                item ->
-                    item.setMonitoringMode(MonitoringMode.Disabled, batch)
-            );
-            batch.execute();
-
-            subscription.getDataItems().forEach(
-                item -> assertEquals(MonitoringMode.Disabled, item.getMonitoringMode())
-            );
-        }
     }
 
     @Test

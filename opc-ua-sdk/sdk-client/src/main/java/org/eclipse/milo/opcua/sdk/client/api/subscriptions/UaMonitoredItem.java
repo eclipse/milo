@@ -108,6 +108,15 @@ public interface UaMonitoredItem {
     ExtensionObject getMonitoringFilter();
 
     /**
+     * Get the discard policy.
+     * <p>
+     * {@code true} if oldest are discarded when the queue capacity is exceeded.
+     *
+     * @return the discard policy.
+     */
+    boolean getDiscardOldest();
+
+    /**
      * Get the {@link TimestampsToReturn} requested when the item was created.
      *
      * @return the {@link TimestampsToReturn} requested when the item was created.

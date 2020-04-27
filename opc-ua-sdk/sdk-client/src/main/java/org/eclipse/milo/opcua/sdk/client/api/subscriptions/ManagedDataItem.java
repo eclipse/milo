@@ -98,10 +98,6 @@ public class ManagedDataItem {
         }
     }
 
-    public CompletableFuture<Unit> setMonitoringMode(MonitoringMode monitoringMode, BatchSetMonitoringMode batch) {
-        return batch.add(this, monitoringMode);
-    }
-
     public CompletableFuture<Unit> setMonitoringModeAsync(MonitoringMode monitoringMode) {
         CompletableFuture<List<StatusCode>> future = subscription.getSubscription().setMonitoringMode(
             monitoringMode,
@@ -136,10 +132,6 @@ public class ManagedDataItem {
         }
     }
 
-    public void setSamplingInterval(double samplingInterval, BatchModifyMonitoredItems batch) {
-        batch.add(this, b -> b.samplingInterval(samplingInterval));
-    }
-
     public CompletableFuture<Double> setSamplingIntervalAsync(double samplingInterval) {
         MonitoringParameters parameters = new MonitoringParameters(
             item.getClientHandle(),
@@ -148,7 +140,7 @@ public class ManagedDataItem {
             // use revised so as not to modify the queue
             // size if it was revised from the original
             item.getRevisedQueueSize(),
-            true // TODO
+            item.getDiscardOldest()
         );
 
         MonitoredItemModifyRequest modifyRequest =
@@ -183,19 +175,13 @@ public class ManagedDataItem {
         }
     }
 
-    public CompletableFuture<UInteger> setQueueSize(UInteger queueSize, BatchModifyMonitoredItems batch) {
-        CompletableFuture<Unit> future = batch.add(this, b -> b.queueSize(queueSize));
-
-        return future.thenApply(u -> item.getRevisedQueueSize());
-    }
-
     public CompletableFuture<UInteger> setQueueSizeAsync(UInteger queueSize) {
         MonitoringParameters parameters = new MonitoringParameters(
             item.getClientHandle(),
             item.getRevisedSamplingInterval(),
             item.getMonitoringFilter(),
             queueSize,
-            true // TODO
+            item.getDiscardOldest()
         );
 
         MonitoredItemModifyRequest modifyRequest =

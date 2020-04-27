@@ -128,6 +128,7 @@ public class OpcUaSubscription implements UaSubscription {
                     result.getFilterResult(),
                     request.getMonitoringMode(),
                     request.getRequestedParameters().getFilter(),
+                    request.getRequestedParameters().getDiscardOldest(),
                     timestampsToReturn
                 );
 
