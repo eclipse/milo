@@ -93,6 +93,14 @@ public class ManagedSubscription {
         return subscription;
     }
 
+    public List<ManagedDataItem> getDataItems() {
+        return new ArrayList<>(dataItems.values());
+    }
+
+    public List<ManagedEventItem> getEventItems() {
+        return new ArrayList<>(eventItems.values());
+    }
+
     //region create/delete ManagedDataItem
 
     /**

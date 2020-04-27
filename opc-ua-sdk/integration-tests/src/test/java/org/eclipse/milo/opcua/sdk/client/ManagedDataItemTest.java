@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ModifyMonitoredItemsBatch;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -82,28 +83,45 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
 
     @Test
     public void samplingIntervalBatch() throws Exception {
-        ManagedDataItem dataItem1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem dataItem2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        for (int i = 0; i < 10; i++) {
+            subscription.createDataItem(
+                Identifiers.Server_ServerStatus_CurrentTime
+            );
+        }
 
-        // ModifyMonitoredItemsBatch batch = subscription.getBatchManager().newModifyMonitoredItemsBatch();
-        // dataItem1.setSamplingInterval(5000.0, batch);
-        // dataItem2.setSamplingInterval(5000.0, batch);
-        // batch.execute();
+        {
+            ModifyMonitoredItemsBatch batch1 = new ModifyMonitoredItemsBatch(subscription);
+            subscription.getDataItems().forEach(
+                item ->
+                    item.setSamplingInterval(5000.0, batch1)
+            );
+            batch1.execute();
 
-        assertEquals(5000.0, dataItem1.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(5000.0, dataItem1.getMonitoredItem().getRevisedSamplingInterval());
-        assertEquals(5000.0, dataItem2.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(5000.0, dataItem2.getMonitoredItem().getRevisedSamplingInterval());
+            subscription.getDataItems().forEach(
+                item -> {
+                    assertEquals(5000.0, item.getSamplingInterval());
+                    assertEquals(5000.0, item.getMonitoredItem().getRequestedSamplingInterval());
+                    assertEquals(5000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                }
+            );
+        }
 
-        // subscription.getBatchManager().executeModifyMonitoredItemsBatch(batch -> {
-        //     dataItem1.setSamplingInterval(1000.0, batch);
-        //     dataItem2.setSamplingInterval(1000.0, batch);
-        // });
+        {
+            ModifyMonitoredItemsBatch batch2 = new ModifyMonitoredItemsBatch(subscription);
+            subscription.getDataItems().forEach(
+                item ->
+                    item.setSamplingInterval(1000.0, batch2)
+            );
+            batch2.execute();
 
-        assertEquals(1000.0, dataItem1.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(1000.0, dataItem1.getMonitoredItem().getRevisedSamplingInterval());
-        assertEquals(1000.0, dataItem2.getMonitoredItem().getRequestedSamplingInterval());
-        assertEquals(1000.0, dataItem2.getMonitoredItem().getRevisedSamplingInterval());
+            subscription.getDataItems().forEach(
+                item -> {
+                    assertEquals(1000.0, item.getSamplingInterval());
+                    assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
+                    assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                }
+            );
+        }
     }
 
     @Test

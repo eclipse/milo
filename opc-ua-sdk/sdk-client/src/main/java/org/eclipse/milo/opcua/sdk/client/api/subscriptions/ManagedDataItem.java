@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
@@ -98,7 +98,7 @@ public class ManagedDataItem {
     public CompletableFuture<Unit> setMonitoringModeAsync(MonitoringMode monitoringMode) {
         CompletableFuture<List<StatusCode>> future = subscription.getSubscription().setMonitoringMode(
             monitoringMode,
-            Collections.singletonList(item)
+            singletonList(item)
         );
 
         return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
@@ -125,6 +125,10 @@ public class ManagedDataItem {
         }
     }
 
+    public void setSamplingInterval(double samplingInterval, ModifyMonitoredItemsBatch batch) {
+        batch.add(this, b -> b.samplingInterval(samplingInterval));
+    }
+
     public CompletableFuture<Double> setSamplingIntervalAsync(double samplingInterval) {
         MonitoringParameters parameters = new MonitoringParameters(
             item.getClientHandle(),
@@ -141,7 +145,7 @@ public class ManagedDataItem {
 
         CompletableFuture<List<StatusCode>> future = subscription.getSubscription().modifyMonitoredItems(
             subscription.getDefaultTimestamps(),
-            Collections.singletonList(modifyRequest)
+            singletonList(modifyRequest)
         );
 
         return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
@@ -192,7 +196,7 @@ public class ManagedDataItem {
 
     public CompletableFuture<StatusCode> deleteAsync() {
         return subscription.getSubscription()
-            .deleteMonitoredItems(Collections.singletonList(item))
+            .deleteMonitoredItems(singletonList(item))
             .thenApply(statusCodes -> statusCodes.get(0));
     }
 

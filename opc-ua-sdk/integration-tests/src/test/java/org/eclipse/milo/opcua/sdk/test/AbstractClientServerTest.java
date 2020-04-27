@@ -19,16 +19,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public abstract class ClientServerTest {
+public abstract class AbstractClientServerTest {
 
     protected OpcUaClient client;
     protected OpcUaServer server;
+    protected TestNamespace testNamespace;
 
     @BeforeAll
     public void startClientAndServer() throws Exception {
         server = TestServer.create();
 
-        TestNamespace testNamespace = new TestNamespace(server);
+        testNamespace = new TestNamespace(server);
         testNamespace.startup();
 
         server.startup().get();
@@ -40,6 +41,8 @@ public abstract class ClientServerTest {
     @AfterAll
     public void stopClientAndServer() throws ExecutionException, InterruptedException {
         client.disconnect().get();
+
+        testNamespace.shutdown();
         server.shutdown().get();
     }
 

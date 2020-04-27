@@ -11,14 +11,14 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription;
-import org.eclipse.milo.opcua.sdk.test.ClientServerTest;
+import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class AbstractSubscriptionTest extends ClientServerTest {
+public abstract class AbstractSubscriptionTest extends AbstractClientServerTest {
 
     protected ManagedSubscription subscription;
 
