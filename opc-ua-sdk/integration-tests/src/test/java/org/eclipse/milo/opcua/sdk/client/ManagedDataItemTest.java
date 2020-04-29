@@ -112,15 +112,22 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
     @Test
     public void dataValueListener() throws UaException, InterruptedException {
         ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            Identifiers.Server_ServerStatus_State
         );
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(2);
 
         dataItem.addDataValueListener((item, value) -> {
             assertEquals(dataItem, item);
             latch.countDown();
         });
+
+        ManagedDataItem.DataValueListener dataValueListener = (item, value) -> {
+            assertEquals(dataItem, item);
+            latch.countDown();
+        };
+
+        dataItem.addDataValueListener(dataValueListener);
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }

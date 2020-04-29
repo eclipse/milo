@@ -164,7 +164,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void testDefaultTimestamps() throws UaException {
+    public void defaultTimestamp() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
             Identifiers.Server_ServerStatus_CurrentTime
         );
@@ -178,36 +178,53 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void testDataListener() throws UaException, InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
+    public void dataChangeListener() throws UaException, InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(2);
 
         subscription.addChangeListener(new ManagedSubscription.ChangeListener() {
             @Override
             public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {
-                if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_CurrentTime)) {
+                if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_State)) {
                     latch.countDown();
                 }
             }
         });
 
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        subscription.addDataChangeListener(
+            (dataItems, dataValues) -> {
+                if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_State)) {
+                    latch.countDown();
+                }
+            }
+        );
+
+        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_State);
         assertTrue(dataItem.getStatusCode().isGood());
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
-    public void testEventListener() throws UaException, InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
+    public void eventChangeListener() throws UaException, InterruptedException {
+        final CountDownLatch latch1 = new CountDownLatch(1);
+        final CountDownLatch latch2 = new CountDownLatch(1);
 
         subscription.addChangeListener(new ManagedSubscription.ChangeListener() {
             @Override
             public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {
                 if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
-                    latch.countDown();
+                    latch1.countDown();
                 }
             }
         });
+
+        subscription.addEventChangeListener(
+            (eventItems, eventFields) -> {
+                if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
+                    latch2.countDown();
+                }
+            }
+        );
 
         EventFilter eventFilter = new EventFilter(
             new SimpleAttributeOperand[]{
@@ -233,7 +250,8 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
         assertTrue(eventItem.getStatusCode().isGood());
 
-        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch1.await(5, TimeUnit.SECONDS));
+        assertTrue(latch2.await(5, TimeUnit.SECONDS));
     }
 
 }
