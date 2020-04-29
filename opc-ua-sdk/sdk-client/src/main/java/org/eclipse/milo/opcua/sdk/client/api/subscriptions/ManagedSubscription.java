@@ -44,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static java.util.Collections.singletonList;
@@ -578,16 +579,22 @@ public class ManagedSubscription {
     }
 
     /**
-     * TODO
+     * Add a data {@link ChangeListener} to this {@link ManagedSubscription}.
+     * <p>
+     * {@code biConsumer} will be invoked when new values for {@link ManagedDataItem}s have arrived via
+     * {@link ChangeListener#onDataReceived(List, List)}.
+     * <p>
+     * The listener is transformed into the returned {@link ChangeListener} that can later be removed.
      *
-     * @param bc
-     * @return
+     * @param biConsumer a {@link BiConsumer} that will be invoked when new values for {@link ManagedDataItem}s have
+     *                   arrived.
+     * @return a {@link ChangeListener} that can later be removed.
      */
-    public ChangeListener addDataChangeListener(BiConsumer<List<ManagedDataItem>, List<DataValue>> bc) {
+    public ChangeListener addDataChangeListener(BiConsumer<List<ManagedDataItem>, List<DataValue>> biConsumer) {
         ChangeListener changeListener = new ChangeListener() {
             @Override
             public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {
-                bc.accept(dataItems, dataValues);
+                biConsumer.accept(dataItems, dataValues);
             }
         };
 
@@ -597,16 +604,22 @@ public class ManagedSubscription {
     }
 
     /**
-     * TODO
+     * Add an event {@link ChangeListener} to this {@link ManagedSubscription}.
+     * <p>
+     * {@code biConsumer} will be invoked when new events for {@link ManagedEventItem}s have arrived via
+     * {@link ChangeListener#onEventReceived(List, List)}.
+     * <p>
+     * The listener is transformed into the returned {@link ChangeListener} that can later be removed.
      *
-     * @param bc
-     * @return
+     * @param biConsumer a {@link BiConsumer} that will be invoked when new events for {@link ManagedEventItem}s have
+     *                   arrived.
+     * @return a {@link ChangeListener} that can later be removed.
      */
-    public ChangeListener addEventChangeListener(BiConsumer<List<ManagedEventItem>, List<Variant[]>> bc) {
+    public ChangeListener addEventChangeListener(BiConsumer<List<ManagedEventItem>, List<Variant[]>> biConsumer) {
         ChangeListener changeListener = new ChangeListener() {
             @Override
             public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {
-                bc.accept(eventItems, eventFields);
+                biConsumer.accept(eventItems, eventFields);
             }
         };
 
@@ -735,6 +748,9 @@ public class ManagedSubscription {
 
     }
 
+    /**
+     * A callback that receives status-related notifications for a {@link ManagedSubscription}.
+     */
     public interface StatusListener {
 
         /**
@@ -799,7 +815,12 @@ public class ManagedSubscription {
      * A {@link UaSubscription.NotificationListener} used internally by {@link ManagedSubscription} to notify its
      * {@link ChangeListener}s and {@link StatusListener}s.
      */
-    private class ManagedSubscriptionNotificationListener implements UaSubscription.NotificationListener {
+    private class ManagedSubscriptionNotificationListener implements
+        UaSubscriptionManager.SubscriptionListener, UaSubscription.NotificationListener {
+
+        private final ExecutionQueue executionQueue = new ExecutionQueue(client.getConfig().getExecutor());
+
+        //region UaSubscription.NotificationListener
 
         @Override
         public void onDataChangeNotification(
@@ -852,6 +873,55 @@ public class ManagedSubscription {
                     changeListener.onEventReceived(itemsToNotify, fieldsToNotify)
             );
         }
+
+        @Override
+        public void onKeepAliveNotification(UaSubscription subscription, DateTime publishTime) {
+            changeListeners.forEach(ChangeListener::onKeepAliveReceived);
+        }
+
+        @Override
+        public void onStatusChangedNotification(UaSubscription subscription, StatusCode status) {
+            executionQueue.submit(() ->
+                statusListeners.forEach(
+                    statusListener ->
+                        statusListener.onSubscriptionStatusChanged(ManagedSubscription.this, status)
+                )
+            );
+        }
+
+        //endregion
+
+        //region UaSubscriptionManager.SubscriptionListener
+
+        // These callbacks need to be filtered to see if they are for the
+        // UaSubscription backing this ManagedSubscription instance before
+        // doing notification.
+
+        @Override
+        public void onNotificationDataLost(UaSubscription subscription) {
+            if (ManagedSubscription.this.subscription.getSubscriptionId().equals(subscription.getSubscriptionId())) {
+                executionQueue.submit(() ->
+                    statusListeners.forEach(
+                        statusListener ->
+                            statusListener.onNotificationDataLost(ManagedSubscription.this)
+                    )
+                );
+            }
+        }
+
+        @Override
+        public void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {
+            if (ManagedSubscription.this.subscription.getSubscriptionId().equals(subscription.getSubscriptionId())) {
+                executionQueue.submit(() ->
+                    statusListeners.forEach(
+                        statusListener ->
+                            statusListener.onSubscriptionTransferFailed(ManagedSubscription.this, statusCode)
+                    )
+                );
+            }
+        }
+
+        //endregion
 
     }
 
