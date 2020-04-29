@@ -60,6 +60,10 @@ public class ManagedEventItem {
 
         /**
          * A new event for {@code item} has arrived.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications are processed
+         * synchronously as a backpressure mechanism. Blocking inside this callback will prevent subsequent
+         * notifications from being processed and new PublishRequests from being sent.
          *
          * @param item        the {@link ManagedEventItem} for which a new event has arrived.
          * @param eventValues the new event field values.

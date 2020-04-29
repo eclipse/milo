@@ -83,6 +83,12 @@ public class ManagedDataItem {
 
     //region MonitoringMode operations
 
+    /**
+     * Get this item's current {@link MonitoringMode}.
+     *
+     * @return this item's current {@link MonitoringMode}.
+     * @see UaMonitoredItem#getMonitoringMode()
+     */
     public MonitoringMode getMonitoringMode() {
         return item.getMonitoringMode();
     }
@@ -117,6 +123,12 @@ public class ManagedDataItem {
 
     //region SamplingInterval operations
 
+    /**
+     * Get this item's current sampling interval, i.e. its revised sampling interval.
+     *
+     * @return this item's current sampling interval, i.e. its revised sampling interval.
+     * @see UaMonitoredItem#getRevisedSamplingInterval()
+     */
     public double getSamplingInterval() {
         return item.getRevisedSamplingInterval();
     }
@@ -164,6 +176,16 @@ public class ManagedDataItem {
 
     //region QueueSize operations
 
+    /**
+     * Get this item's current queue size, i.e. its revised queue size.
+     *
+     * @return this item's current queue size, i.e. its revised queue size.
+     * @see UaMonitoredItem#getRevisedQueueSize()
+     */
+    public UInteger getQueueSize() {
+        return item.getRevisedQueueSize();
+    }
+
     public UInteger setQueueSize(UInteger queueSize) throws UaException {
         try {
             return setQueueSizeAsync(queueSize).get();
@@ -205,6 +227,16 @@ public class ManagedDataItem {
 
     //region DataValueListener bookkeeping
 
+    /**
+     * Add a {@link DataValue} {@link Consumer} to this {@link ManagedDataItem}.
+     * <p>
+     * {@code consumer} will be invoked any time a new {@link DataValue} arrives for this item.
+     * <p>
+     * The Consumer is transformed into the returned {@link DataValueListener} that can later be removed.
+     *
+     * @param consumer a {@link DataValue} {@link Consumer}.
+     * @return a {@link DataValueListener} that can later be removed.
+     */
     public synchronized DataValueListener addDataValueListener(Consumer<DataValue> consumer) {
         DataValueListener dataValueListener = (item, value) -> consumer.accept(value);
 
@@ -213,6 +245,13 @@ public class ManagedDataItem {
         return dataValueListener;
     }
 
+    /**
+     * Add a {@link DataValueListener} to this {@link ManagedDataItem}.
+     * <p>
+     * {@code listener} will be invoked any time a new {@link DataValue} arrives for this item.
+     *
+     * @param dataValueListener the {@link DataValueListener} to add.
+     */
     public synchronized void addDataValueListener(DataValueListener dataValueListener) {
         dataValueListeners.add(dataValueListener);
 
@@ -222,6 +261,11 @@ public class ManagedDataItem {
         }
     }
 
+    /**
+     * Remove a {@link DataValueListener} from this {@link ManagedDataItem}.
+     *
+     * @param dataValueListener the {@link DataValueListener} to remove.
+     */
     public synchronized void removeDataValueListener(DataValueListener dataValueListener) {
         dataValueListeners.remove(dataValueListener);
 
@@ -233,6 +277,12 @@ public class ManagedDataItem {
 
     //endregion
 
+    /**
+     * Delete this {@link ManagedDataItem}.
+     *
+     * @return the {@link StatusCode} from the delete operation.
+     * @throws UaException if a service-level error occurs.
+     */
     public StatusCode delete() throws UaException {
         try {
             return deleteAsync().get();
@@ -244,14 +294,35 @@ public class ManagedDataItem {
         }
     }
 
+    /**
+     * Delete this {@link ManagedDataItem}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with the operation result or completes
+     * exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<StatusCode> deleteAsync() {
         return subscription.getSubscription()
             .deleteMonitoredItems(singletonList(item))
             .thenApply(statusCodes -> statusCodes.get(0));
     }
 
+    /**
+     * A callback that receives notification of new values for a {@link ManagedDataItem}.
+     */
     public interface DataValueListener {
 
+        /**
+         * A new {@link DataValue} for {@code item} has arrived.
+         * <p>
+         * Take care not to block unnecessarily in this callback because subscription notifications are processed
+         * synchronously as a backpressure mechanism. Blocking inside this callback will prevent subsequent
+         * notifications from being processed and new PublishRequests from being sent.
+         *
+         * @param item  the {@link ManagedDataItem} for which a new value has arrived.
+         * @param value the new {@link DataValue}.
+         */
         void onDataValueReceived(ManagedDataItem item, DataValue value);
 
     }
