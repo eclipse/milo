@@ -186,8 +186,9 @@ public final class ChunkDecoder {
                     verifyChunk(channel, chunkBuffer);
                 }
 
+                final int paddingOverhead = encrypted ? (cipherTextBlockSize > 256 ? 2 : 1) : 0;
                 final int paddingSize = encrypted ? getPaddingSize(cipherTextBlockSize, signatureSize, chunkBuffer) : 0;
-                final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingSize;
+                final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingOverhead - paddingSize;
 
                 chunkBuffer.readerIndex(encryptedStart);
 
@@ -210,6 +211,19 @@ public final class ChunkDecoder {
                 }
 
                 ByteBuf bodyBuffer = chunkBuffer.readSlice(bodyEnd - chunkBuffer.readerIndex());
+
+                if (encrypted) {
+                    int expectedPaddingSize = chunkBuffer.readableBytes() - signatureSize - paddingOverhead;
+                    if (paddingSize != expectedPaddingSize) {
+                        throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "bad padding size");
+                    }
+                    byte expectedPaddingByte = (byte) (paddingSize & 0xFF);
+                    for (int i = chunkBuffer.readerIndex(); i < chunkBuffer.readerIndex() + paddingSize + 1; i++) {
+                        if (chunkBuffer.getByte(i) != expectedPaddingByte) {
+                            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "bad padding sequence");
+                        }
+                    }
+                }
 
                 if (chunkType == 'A') {
                     ErrorMessage errorMessage = ErrorMessage.decode(bodyBuffer);
@@ -279,8 +293,8 @@ public final class ChunkDecoder {
             int lastPaddingByteOffset = buffer.readableBytes() - signatureSize - 1;
 
             return cipherTextBlockSize <= 256 ?
-                buffer.getUnsignedByte(lastPaddingByteOffset) + 1 :
-                buffer.getUnsignedShortLE(lastPaddingByteOffset - 1) + 2;
+                buffer.getUnsignedByte(lastPaddingByteOffset) :
+                buffer.getUnsignedShortLE(lastPaddingByteOffset - 1);
         }
 
         protected abstract void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;

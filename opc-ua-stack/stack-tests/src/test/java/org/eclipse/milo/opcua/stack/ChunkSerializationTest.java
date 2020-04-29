@@ -125,6 +125,145 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         };
     }
 
+    @Test
+    public void testAsymmetric4096() throws Exception {
+        ChannelParameters parameters = defaultParameters;
+
+        ChunkEncoder encoder = new ChunkEncoder(parameters);
+
+        ChunkDecoder decoder = new ChunkDecoder(
+            parameters,
+            EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
+            EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+        );
+
+        SecureChannel[] channels = generateChannels4096();
+
+        ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
+        ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
+
+        clientChannel
+            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
+            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
+
+        LongSequence requestId = clientChannel
+            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+
+        for (int messageSize = 0; messageSize < 512; messageSize++) {
+            byte[] messageBytes = new byte[messageSize];
+            for (int i = 0; i < messageBytes.length; i++) {
+                messageBytes[i] = (byte) i;
+            }
+
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer().writeBytes(messageBytes);
+
+            List<ByteBuf> chunkBuffers = new ArrayList<>();
+
+            encoder.encodeAsymmetric(
+                clientChannel,
+                requestId.getAndIncrement(),
+                messageBuffer,
+                MessageType.OpenSecureChannel,
+                new ChunkEncoder.Callback() {
+                    @Override
+                    public void onEncodingError(UaException ex) {
+                        fail("onEncodingError", ex);
+                    }
+
+                    @Override
+                    public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                        chunkBuffers.addAll(messageChunks);
+                    }
+                }
+            );
+
+            try {
+                ChunkDecoder.DecodedMessage decodedMessage =
+                    decoder.decodeAsymmetric(serverChannel, chunkBuffers);
+
+                ByteBuf message = decodedMessage.getMessage();
+
+                messageBuffer.readerIndex(0);
+                assertEquals(message, messageBuffer);
+
+                ReferenceCountUtil.release(message);
+                ReferenceCountUtil.release(messageBuffer);
+            } catch (Throwable t) {
+                fail("decoding error", t);
+            }
+        }
+    }
+
+    @Test
+    public void testSymmetric4096() throws Exception {
+        ChannelParameters parameters = defaultParameters;
+
+        ChunkEncoder encoder = new ChunkEncoder(parameters);
+
+        ChunkDecoder decoder = new ChunkDecoder(
+            parameters,
+            EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
+            EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+        );
+
+        SecureChannel[] channels = generateChannels4096();
+
+        ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
+        ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
+
+        clientChannel
+            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
+            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
+
+        LongSequence requestId = clientChannel
+            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+
+        for (int messageSize = 0; messageSize < 1024; messageSize++) {
+            byte[] messageBytes = new byte[messageSize];
+            for (int i = 0; i < messageBytes.length; i++) {
+                messageBytes[i] = (byte) i;
+            }
+
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer().writeBytes(messageBytes);
+
+            List<ByteBuf> chunkBuffers = new ArrayList<>();
+
+            encoder.encodeSymmetric(
+                clientChannel,
+                requestId.getAndIncrement(),
+                messageBuffer,
+                MessageType.OpenSecureChannel,
+                new ChunkEncoder.Callback() {
+                    @Override
+                    public void onEncodingError(UaException ex) {
+                        fail("onEncodingError", ex);
+                    }
+
+                    @Override
+                    public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                        chunkBuffers.addAll(messageChunks);
+                    }
+                }
+            );
+
+            try {
+                ChunkDecoder.DecodedMessage decodedMessage =
+                    decoder.decodeSymmetric(serverChannel, chunkBuffers);
+
+                ByteBuf message = decodedMessage.getMessage();
+
+                messageBuffer.readerIndex(0);
+                assertEquals(message, messageBuffer);
+
+                ReferenceCountUtil.release(message);
+                ReferenceCountUtil.release(messageBuffer);
+            } catch (Throwable t) {
+                fail("decoding error", t);
+            }
+        }
+    }
+
+
     @Test(dataProvider = "getAsymmetricSecurityParameters")
     public void testAsymmetricMessage(SecurityPolicy securityPolicy,
                                       MessageSecurityMode messageSecurity,
