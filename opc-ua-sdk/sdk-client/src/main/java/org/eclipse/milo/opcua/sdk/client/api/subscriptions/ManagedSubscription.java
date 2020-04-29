@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -24,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -36,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
@@ -54,8 +57,8 @@ public class ManagedSubscription {
     public static final double DEFAULT_SAMPLING_INTERVAL = 1000.0;
     public static final UInteger DEFAULT_QUEUE_SIZE = uint(2);
 
-    private final CopyOnWriteArrayList<DataListener> dataListeners = new CopyOnWriteArrayList<>();
-    private final CopyOnWriteArrayList<EventListener> eventListeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<ChangeListener> changeListeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<StatusListener> statusListeners = new CopyOnWriteArrayList<>();
 
     private final Map<UaMonitoredItem, ManagedDataItem> dataItems = new ConcurrentHashMap<>();
     private final Map<UaMonitoredItem, ManagedEventItem> eventItems = new ConcurrentHashMap<>();
@@ -366,6 +369,8 @@ public class ManagedSubscription {
 
     //endregion
 
+    //region default monitoring parameters
+
     /**
      * Request a new publishing interval for this Subscription.
      *
@@ -532,41 +537,85 @@ public class ManagedSubscription {
         return defaultTimestamps;
     }
 
+    //endregion
+
+    //region listener bookkeeping
+
     /**
-     * Add a {@link DataListener} to this {@link ManagedSubscription}.
+     * Add a {@link ChangeListener} to this {@link ManagedSubscription}.
      *
-     * @param dataListener the {@link DataListener} to add.
+     * @param changeListener the {@link ChangeListener} to add.
      */
-    public void addDataListener(DataListener dataListener) {
-        dataListeners.add(dataListener);
+    public void addChangeListener(ChangeListener changeListener) {
+        changeListeners.add(changeListener);
     }
 
     /**
-     * Remove a {@link DataListener} from this {@link ManagedSubscription}.
+     * Remove a {@link ChangeListener} from this {@link ManagedSubscription}.
      *
-     * @param dataListener the {@link DataListener} to remove.
+     * @param changeListener the {@link ChangeListener} to remove.
      */
-    public void removeDataListener(DataListener dataListener) {
-        dataListeners.remove(dataListener);
+    public void removeChangeListener(ChangeListener changeListener) {
+        changeListeners.remove(changeListener);
     }
 
     /**
-     * Add an {@link EventListener} to this {@link ManagedSubscription}.
+     * Add a {@link StatusListener} to this {@link ManagedSubscription}.
      *
-     * @param eventListener the {@link EventListener} to add.
+     * @param statusListener the {@link StatusListener} to add.
      */
-    public void addEventListener(EventListener eventListener) {
-        eventListeners.add(eventListener);
+    public void addStatusListener(StatusListener statusListener) {
+        statusListeners.add(statusListener);
     }
 
     /**
-     * Remove an {@link EventListener} from this {@link ManagedSubscription}.
+     * Remove a {@link StatusListener} from this {@link ManagedSubscription}.
      *
-     * @param eventListener the {@link EventListener} to remove.
+     * @param statusListener the {@link StatusListener} to remove.
      */
-    public void removeEventListener(EventListener eventListener) {
-        eventListeners.remove(eventListener);
+    public void removeStatusListener(StatusListener statusListener) {
+        statusListeners.remove(statusListener);
     }
+
+    /**
+     * TODO
+     *
+     * @param bc
+     * @return
+     */
+    public ChangeListener addDataChangeListener(BiConsumer<List<ManagedDataItem>, List<DataValue>> bc) {
+        ChangeListener changeListener = new ChangeListener() {
+            @Override
+            public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {
+                bc.accept(dataItems, dataValues);
+            }
+        };
+
+        addChangeListener(changeListener);
+
+        return changeListener;
+    }
+
+    /**
+     * TODO
+     *
+     * @param bc
+     * @return
+     */
+    public ChangeListener addEventChangeListener(BiConsumer<List<ManagedEventItem>, List<Variant[]>> bc) {
+        ChangeListener changeListener = new ChangeListener() {
+            @Override
+            public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {
+                bc.accept(eventItems, eventFields);
+            }
+        };
+
+        addChangeListener(changeListener);
+
+        return changeListener;
+    }
+
+    //endregion
 
     /**
      * Delete this {@link ManagedSubscription} and its underlying {@link OpcUaSubscription}.
@@ -648,10 +697,10 @@ public class ManagedSubscription {
     }
 
     /**
-     * A callback that receives notification of new values for {@link ManagedDataItem}s belonging to a
-     * {@link ManagedSubscription}.
+     * A callback that receives data and event change notifications for {@link ManagedDataItem}s and
+     * {@link ManagedEventItem}s belonging to a {@link ManagedSubscription}.
      */
-    public interface DataListener {
+    public interface ChangeListener {
 
         /**
          * New values for {@code dataItems} have arrived.
@@ -663,15 +712,7 @@ public class ManagedSubscription {
          * @param dataItems  the list of {@link ManagedDataItem}s for which new values have arrived.
          * @param dataValues the corresponding {@link DataValue} for each {@link ManagedDataItem} in {@code dataItems}.
          */
-        void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues);
-
-    }
-
-    /**
-     * A callback that receives notification of new events for {@link ManagedEventItem}s belonging to a
-     * {@link ManagedSubscription}.
-     */
-    public interface EventListener {
+        default void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {}
 
         /**
          * New events for {@code eventItems} have arrived.
@@ -684,13 +725,58 @@ public class ManagedSubscription {
          * @param eventFields the corresponding event field values for each {@link ManagedEventItem} in
          *                    {@code eventItems}.
          */
-        void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields);
+        default void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {}
+
+        /**
+         * The keep alive interval for the subscription has expired without any value changes and an empty
+         * "keep alive" DataChangeNotification has arrived. No action is required.
+         */
+        default void onKeepAliveReceived() {}
+
+    }
+
+    public interface StatusListener {
+
+        /**
+         * Notification data for this subscription was lost because attempts to call the Republish service failed.
+         * <p>
+         * Some action is required to ensure all the data items belonging to this subscription have a current value.
+         * The default implementation asynchronously invokes the the ResendData method on the server with this
+         * subscription's id as the argument.
+         *
+         * @param subscription the {@link ManagedSubscription} for which notification data was lost.
+         */
+        default void onNotificationDataLost(ManagedSubscription subscription) {
+            subscription.getClient().call(
+                new CallMethodRequest(
+                    Identifiers.Server,
+                    Identifiers.Server_ResendData,
+                    new Variant[]{new Variant(subscription.getSubscription().getSubscriptionId())}
+                )
+            );
+        }
+
+        /**
+         * TODO
+         *
+         * @param subscription
+         * @param statusCode
+         */
+        default void onSubscriptionStatusChanged(ManagedSubscription subscription, StatusCode statusCode) {}
+
+        /**
+         * TODO
+         *
+         * @param subscription
+         * @param statusCode
+         */
+        default void onSubscriptionTransferFailed(ManagedSubscription subscription, StatusCode statusCode) {}
 
     }
 
     /**
      * A {@link UaSubscription.NotificationListener} used internally by {@link ManagedSubscription} to notify its
-     * {@link DataListener}s and {@link EventListener}s.
+     * {@link ChangeListener}s and {@link StatusListener}s.
      */
     private class ManagedSubscriptionNotificationListener implements UaSubscription.NotificationListener {
 
@@ -714,9 +800,9 @@ public class ManagedSubscription {
                 }
             }
 
-            dataListeners.forEach(
-                dataListener ->
-                    dataListener.onDataReceived(itemsToNotify, valuesToNotify)
+            changeListeners.forEach(
+                changeListener ->
+                    changeListener.onDataReceived(itemsToNotify, valuesToNotify)
             );
         }
 
@@ -740,9 +826,9 @@ public class ManagedSubscription {
                 }
             }
 
-            eventListeners.forEach(
-                eventListener ->
-                    eventListener.onEventReceived(itemsToNotify, fieldsToNotify)
+            changeListeners.forEach(
+                changeListener ->
+                    changeListener.onEventReceived(itemsToNotify, fieldsToNotify)
             );
         }
 

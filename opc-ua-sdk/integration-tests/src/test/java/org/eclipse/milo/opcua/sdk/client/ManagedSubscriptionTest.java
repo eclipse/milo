@@ -11,15 +11,19 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedEventItem;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -177,9 +181,12 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     public void testDataListener() throws UaException, InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        subscription.addDataListener((dataItems, dataValues) -> {
-            if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_CurrentTime)) {
-                latch.countDown();
+        subscription.addChangeListener(new ManagedSubscription.ChangeListener() {
+            @Override
+            public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {
+                if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_CurrentTime)) {
+                    latch.countDown();
+                }
             }
         });
 
@@ -193,9 +200,12 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     public void testEventListener() throws UaException, InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        subscription.addEventListener((eventItems, eventFields) -> {
-            if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
-                latch.countDown();
+        subscription.addChangeListener(new ManagedSubscription.ChangeListener() {
+            @Override
+            public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {
+                if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
+                    latch.countDown();
+                }
             }
         });
 
