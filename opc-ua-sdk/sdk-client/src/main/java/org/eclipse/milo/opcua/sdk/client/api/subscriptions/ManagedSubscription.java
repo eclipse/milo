@@ -61,8 +61,15 @@ public class ManagedSubscription {
     private final CopyOnWriteArrayList<ChangeListener> changeListeners = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<StatusListener> statusListeners = new CopyOnWriteArrayList<>();
 
-    private final Map<UaMonitoredItem, ManagedDataItem> dataItems = new ConcurrentHashMap<>();
-    private final Map<UaMonitoredItem, ManagedEventItem> eventItems = new ConcurrentHashMap<>();
+    /**
+     * Data items keyed by the client handle of the underlying {@link UaMonitoredItem}.
+     */
+    private final Map<UInteger, ManagedDataItem> dataItems = new ConcurrentHashMap<>();
+
+    /**
+     * Event items keyed by the client handle of the underlying {@link UaMonitoredItem}.
+     */
+    private final Map<UInteger, ManagedEventItem> eventItems = new ConcurrentHashMap<>();
 
     private double defaultSamplingInterval = DEFAULT_SAMPLING_INTERVAL;
     private UInteger defaultQueueSize = DEFAULT_QUEUE_SIZE;
@@ -278,7 +285,7 @@ public class ManagedSubscription {
 
     private ManagedDataItem createAndTrackDataItem(UaMonitoredItem item) {
         ManagedDataItem dataItem = new ManagedDataItem(client, this, (OpcUaMonitoredItem) item);
-        dataItems.put((OpcUaMonitoredItem) item, dataItem);
+        dataItems.put(item.getClientHandle(), dataItem);
         return dataItem;
     }
 
@@ -364,7 +371,7 @@ public class ManagedSubscription {
 
     private ManagedEventItem createAndTrackEventItem(UaMonitoredItem item) {
         ManagedEventItem eventItem = new ManagedEventItem(client, (OpcUaMonitoredItem) item);
-        eventItems.put((OpcUaMonitoredItem) item, eventItem);
+        eventItems.put(item.getClientHandle(), eventItem);
         return eventItem;
     }
 
@@ -834,7 +841,7 @@ public class ManagedSubscription {
             List<DataValue> valuesToNotify = new ArrayList<>(monitoredItems.size());
 
             for (int i = 0; i < monitoredItems.size(); i++) {
-                UaMonitoredItem key = monitoredItems.get(i);
+                UInteger key = monitoredItems.get(i).getClientHandle();
                 ManagedDataItem dataItem = dataItems.get(key);
                 if (dataItem != null) {
                     itemsToNotify.add(dataItem);
@@ -860,7 +867,7 @@ public class ManagedSubscription {
             List<Variant[]> fieldsToNotify = new ArrayList<>(monitoredItems.size());
 
             for (int i = 0; i < monitoredItems.size(); i++) {
-                UaMonitoredItem key = monitoredItems.get(i);
+                UInteger key = monitoredItems.get(i).getClientHandle();
                 ManagedEventItem eventItem = eventItems.get(key);
                 if (eventItem != null) {
                     itemsToNotify.add(eventItem);
