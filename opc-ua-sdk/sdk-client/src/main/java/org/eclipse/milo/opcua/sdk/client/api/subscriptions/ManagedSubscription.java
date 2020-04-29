@@ -757,18 +757,39 @@ public class ManagedSubscription {
         }
 
         /**
-         * TODO
+         * A status change notification for {@code subscription} was received.
+         * <p>
+         * Generally this happens in 2 scenarios:
+         * <ol>
+         *     <li>
+         *     the subscription has timed out on the server and no longer exists. In this case the {@code statusCode}
+         *     should be {@link StatusCodes#Bad_Timeout}. If data and event change notifications for items belonging to
+         *     this subscription are still desired then the subscription should be re-created.
+         *     </li>
+         *     <li>
+         *     the subscription has been transferred to another session. In this case the {@code statusCode} should be
+         *     {@link StatusCodes#Good_SubscriptionTransferred} and no further action is necessary.
+         *     </li>
+         * </ol>
          *
-         * @param subscription
-         * @param statusCode
+         * @param subscription the {@link ManagedSubscription} for which a status change notification was received.
+         * @param statusCode   the {@link StatusCode} from the status change notification.
          */
         default void onSubscriptionStatusChanged(ManagedSubscription subscription, StatusCode statusCode) {}
 
         /**
-         * TODO
+         * A subscription transfer has failed.
+         * <p>
+         * Upon reconnecting after a connection interruption an {@link OpcUaClient} will attempt to resume its previous
+         * Session. If this fails a new Session is created and the Subscriptions from the previous Session are
+         * transferred to the new one.
+         * <p>
+         * This callback is notified when the transfer to the new session has failed and indicates that the
+         * subscription and all of its {@link ManagedDataItem}s and {@link ManagedEventItem}s will need to be created
+         * again.
          *
-         * @param subscription
-         * @param statusCode
+         * @param subscription the {@link ManagedSubscription} for which transfer has failed.
+         * @param statusCode   the {@link StatusCode} for the transfer failure.
          */
         default void onSubscriptionTransferFailed(ManagedSubscription subscription, StatusCode statusCode) {}
 
