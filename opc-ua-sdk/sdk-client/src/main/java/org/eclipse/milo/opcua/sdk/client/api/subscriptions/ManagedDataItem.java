@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -217,6 +218,51 @@ public class ManagedDataItem {
         return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
             if (statusCode.isGood()) {
                 return completedFuture(item.getRevisedQueueSize());
+            } else {
+                return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    //endregion
+
+    //region TimestampToReturn operations
+
+    public TimestampsToReturn getTimestampsToReturn() {
+        return item.getTimestamps();
+    }
+
+    public void setTimestampsToReturn(TimestampsToReturn timestamps) throws UaException {
+        try {
+            setTimestampsToReturnAsync(timestamps).get();
+        } catch (InterruptedException e) {
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<Unit> setTimestampsToReturnAsync(TimestampsToReturn timestamps) {
+        MonitoringParameters parameters = new MonitoringParameters(
+            item.getClientHandle(),
+            item.getRevisedSamplingInterval(),
+            item.getMonitoringFilter(),
+            item.getRevisedQueueSize(),
+            item.getDiscardOldest()
+        );
+
+        MonitoredItemModifyRequest modifyRequest =
+            new MonitoredItemModifyRequest(item.getMonitoredItemId(), parameters);
+
+        CompletableFuture<List<StatusCode>> future = subscription.getSubscription().modifyMonitoredItems(
+            timestamps,
+            singletonList(modifyRequest)
+        );
+
+        return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
+            if (statusCode.isGood()) {
+                return completedFuture(Unit.VALUE);
             } else {
                 return failedUaFuture(statusCode);
             }

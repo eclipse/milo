@@ -193,6 +193,7 @@ public class OpcUaSubscription implements UaSubscription {
                 OpcUaMonitoredItem item = itemsByServerHandle.get(request.getMonitoredItemId());
 
                 if (item != null) {
+                    item.setTimestamps(timestampsToReturn);
                     item.setStatusCode(statusCode);
                     item.setRevisedSamplingInterval(result.getRevisedSamplingInterval());
                     item.setRevisedQueueSize(result.getRevisedQueueSize());

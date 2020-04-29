@@ -19,12 +19,15 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -78,6 +81,32 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
 
         dataItem.setMonitoringMode(MonitoringMode.Reporting);
         assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
+    }
+
+    @Test
+    public void queueSize() throws UaException {
+        UInteger initialQueueSize = subscription.getDefaultQueueSize();
+
+        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        assertEquals(initialQueueSize, dataItem.getQueueSize());
+
+        UInteger newQueueSize = initialQueueSize.add(1);
+        assertEquals(newQueueSize, dataItem.setQueueSize(newQueueSize));
+        assertEquals(newQueueSize, dataItem.getQueueSize());
+    }
+
+    @Test
+    public void timestampsToReturn() throws UaException {
+        TimestampsToReturn timestamps = subscription.getDefaultTimestamps();
+
+        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        assertEquals(timestamps, dataItem.getTimestampsToReturn());
+
+        TimestampsToReturn newTimestamps = TimestampsToReturn.Neither;
+        assertNotEquals(timestamps, newTimestamps);
+
+        dataItem.setTimestampsToReturn(newTimestamps);
+        assertEquals(newTimestamps, dataItem.getTimestampsToReturn());
     }
 
     @Test

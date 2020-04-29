@@ -201,6 +201,10 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.monitoringMode = monitoringMode;
     }
 
+    void setTimestamps(TimestampsToReturn timestamps) {
+        this.timestamps = timestamps;
+    }
+
     void onValueArrived(DataValue value) {
         ValueConsumer c = valueConsumer;
         if (c != null) c.onValueArrived(client.getSerializationContext(), this, value);
@@ -210,5 +214,5 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         EventConsumer c = eventConsumer;
         if (c != null) c.onEventArrived(client.getSerializationContext(), this, values);
     }
-
+    
 }
