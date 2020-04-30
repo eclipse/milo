@@ -70,14 +70,29 @@ public class ManagedDataItem {
         return item;
     }
 
+    /**
+     * Get the {@link NodeId} component of the {@link ReadValueId} for this item.
+     *
+     * @return the {@link NodeId} component of the {@link ReadValueId} for this item.
+     */
     public NodeId getNodeId() {
         return getReadValueId().getNodeId();
     }
 
+    /**
+     * Get the {@link ReadValueId} for this item.
+     *
+     * @return the {@link ReadValueId} for this item.
+     */
     public ReadValueId getReadValueId() {
         return item.getReadValueId();
     }
 
+    /**
+     * Get the {@link StatusCode} of the last operation this item was part of.
+     *
+     * @return the {@link StatusCode} of the last operation this item was part of.
+     */
     public StatusCode getStatusCode() {
         return item.getStatusCode();
     }
@@ -311,14 +326,17 @@ public class ManagedDataItem {
      * Remove a {@link DataValueListener} from this {@link ManagedDataItem}.
      *
      * @param dataValueListener the {@link DataValueListener} to remove.
+     * @return {@code true} if the listener was removed.
      */
-    public synchronized void removeDataValueListener(DataValueListener dataValueListener) {
-        dataValueListeners.remove(dataValueListener);
+    public synchronized boolean removeDataValueListener(DataValueListener dataValueListener) {
+        boolean removed = dataValueListeners.remove(dataValueListener);
 
         if (dataValueListeners.isEmpty()) {
             item.setValueConsumer((UaMonitoredItem.ValueConsumer) null);
             valueConsumer = null;
         }
+
+        return removed;
     }
 
     //endregion

@@ -132,4 +132,19 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
+    @Test
+    public void addRemoveDataValueListener() throws UaException {
+        ManagedDataItem dataItem = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_State
+        );
+
+        ManagedDataItem.DataValueListener listener = (item, value) -> {};
+
+        dataItem.addDataValueListener(listener);
+        assertTrue(dataItem.removeDataValueListener(listener));
+
+        listener = dataItem.addDataValueListener(value -> {});
+        assertTrue(dataItem.removeDataValueListener(listener));
+    }
+
 }
