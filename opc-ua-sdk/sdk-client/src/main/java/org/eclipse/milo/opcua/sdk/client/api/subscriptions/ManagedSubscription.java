@@ -562,9 +562,10 @@ public class ManagedSubscription {
      * Remove a {@link ChangeListener} from this {@link ManagedSubscription}.
      *
      * @param changeListener the {@link ChangeListener} to remove.
+     * @return {@code true} if the listener was removed.
      */
-    public void removeChangeListener(ChangeListener changeListener) {
-        changeListeners.remove(changeListener);
+    public boolean removeChangeListener(ChangeListener changeListener) {
+        return changeListeners.remove(changeListener);
     }
 
     /**
@@ -580,9 +581,10 @@ public class ManagedSubscription {
      * Remove a {@link StatusListener} from this {@link ManagedSubscription}.
      *
      * @param statusListener the {@link StatusListener} to remove.
+     * @return {@code true} if the listener was removed.
      */
-    public void removeStatusListener(StatusListener statusListener) {
-        statusListeners.remove(statusListener);
+    public boolean removeStatusListener(StatusListener statusListener) {
+        return statusListeners.remove(statusListener);
     }
 
     /**

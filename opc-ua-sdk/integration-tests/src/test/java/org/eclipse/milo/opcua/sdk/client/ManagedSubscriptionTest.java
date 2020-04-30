@@ -18,11 +18,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedEventItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription.ChangeListener;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType;
@@ -181,7 +183,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     public void dataChangeListener() throws UaException, InterruptedException {
         final CountDownLatch latch = new CountDownLatch(2);
 
-        subscription.addChangeListener(new ManagedSubscription.ChangeListener() {
+        subscription.addChangeListener(new ChangeListener() {
             @Override
             public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {
                 if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_State)) {
@@ -209,7 +211,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         final CountDownLatch latch1 = new CountDownLatch(1);
         final CountDownLatch latch2 = new CountDownLatch(1);
 
-        subscription.addChangeListener(new ManagedSubscription.ChangeListener() {
+        subscription.addChangeListener(new ChangeListener() {
             @Override
             public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {
                 if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
@@ -252,6 +254,56 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
         assertTrue(latch1.await(5, TimeUnit.SECONDS));
         assertTrue(latch2.await(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void addRemoveChangeListener() {
+        {
+            ChangeListener changeListener = new ChangeListener() {
+                @Override
+                public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {}
+
+                @Override
+                public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {}
+
+                @Override
+                public void onKeepAliveReceived() {}
+            };
+
+            subscription.addChangeListener(changeListener);
+
+            assertTrue(subscription.removeChangeListener(changeListener));
+        }
+
+        {
+            ChangeListener changeListener = subscription.addDataChangeListener((items, values) -> {});
+
+            assertTrue(subscription.removeChangeListener(changeListener));
+        }
+
+        {
+            ChangeListener changeListener = subscription.addEventChangeListener((items, events) -> {});
+
+            assertTrue(subscription.removeChangeListener(changeListener));
+        }
+    }
+
+    @Test
+    public void addRemoveStatusListener() {
+        ManagedSubscription.StatusListener statusListener = new ManagedSubscription.StatusListener() {
+            @Override
+            public void onNotificationDataLost(ManagedSubscription subscription) {}
+
+            @Override
+            public void onSubscriptionStatusChanged(ManagedSubscription subscription, StatusCode statusCode) {}
+
+            @Override
+            public void onSubscriptionTransferFailed(ManagedSubscription subscription, StatusCode statusCode) {}
+        };
+
+        subscription.addStatusListener(statusListener);
+
+        assertTrue(subscription.removeStatusListener(statusListener));
     }
 
 }
