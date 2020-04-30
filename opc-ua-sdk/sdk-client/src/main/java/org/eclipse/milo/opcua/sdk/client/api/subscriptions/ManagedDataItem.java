@@ -286,6 +286,51 @@ public class ManagedDataItem {
 
     //endregion
 
+    //region DiscardOldest operations
+
+    public boolean getDiscardOldest() {
+        return item.getDiscardOldest();
+    }
+
+    public void setDiscardOldest(boolean discardOldest) throws UaException {
+        try {
+            setDiscardOldestAsync(discardOldest).get();
+        } catch (InterruptedException e) {
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<Unit> setDiscardOldestAsync(boolean discardOldest) {
+        MonitoringParameters parameters = new MonitoringParameters(
+            item.getClientHandle(),
+            item.getRevisedSamplingInterval(),
+            item.getMonitoringFilter(),
+            item.getRevisedQueueSize(),
+            discardOldest
+        );
+
+        MonitoredItemModifyRequest modifyRequest =
+            new MonitoredItemModifyRequest(item.getMonitoredItemId(), parameters);
+
+        CompletableFuture<List<StatusCode>> future = subscription.getSubscription().modifyMonitoredItems(
+            item.getTimestamps(),
+            singletonList(modifyRequest)
+        );
+
+        return future.thenApply(statusCodes -> statusCodes.get(0)).thenCompose(statusCode -> {
+            if (statusCode.isGood()) {
+                return completedFuture(Unit.VALUE);
+            } else {
+                return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    //endregion
+
     //region DataValueListener bookkeeping
 
     /**

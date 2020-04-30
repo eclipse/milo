@@ -75,6 +75,7 @@ public class ManagedSubscription {
     private UInteger defaultQueueSize = DEFAULT_QUEUE_SIZE;
     private TimestampsToReturn defaultTimestamps = TimestampsToReturn.Both;
     private ExtensionObject defaultDataFilter = null;
+    private boolean defaultDiscardOldest = true;
 
     private final OpcUaClient client;
     private final OpcUaSubscription subscription;
@@ -235,6 +236,7 @@ public class ManagedSubscription {
 
         final ExtensionObject filter = getDefaultDataFilter();
         final UInteger queueSize = getDefaultQueueSize();
+        final boolean discardOldest = getDefaultDiscardOldest();
 
         List<MonitoredItemCreateRequest> createRequests = readValueIds.stream()
             .map(readValueId -> {
@@ -243,7 +245,7 @@ public class ManagedSubscription {
                     samplingInterval,
                     filter,
                     queueSize,
-                    true
+                    discardOldest
                 );
 
                 return new MonitoredItemCreateRequest(readValueId, MonitoringMode.Reporting, parameters);
@@ -315,6 +317,9 @@ public class ManagedSubscription {
         EventFilter eventFilter
     ) {
 
+        final UInteger queueSize = getDefaultQueueSize();
+        final boolean discardOldest = getDefaultDiscardOldest();
+
         List<MonitoredItemCreateRequest> createRequests = nodeIds.stream()
             .map(nodeId -> {
                 ReadValueId readValueId = new ReadValueId(
@@ -328,8 +333,8 @@ public class ManagedSubscription {
                     subscription.nextClientHandle(),
                     0.0,
                     ExtensionObject.encode(client.getSerializationContext(), eventFilter),
-                    DEFAULT_QUEUE_SIZE,
-                    true
+                    queueSize,
+                    discardOldest
                 );
 
                 return new MonitoredItemCreateRequest(readValueId, MonitoringMode.Reporting, parameters);
@@ -337,7 +342,7 @@ public class ManagedSubscription {
             .collect(Collectors.toList());
 
         CompletableFuture<List<UaMonitoredItem>> monitoredItems = subscription.createMonitoredItems(
-            TimestampsToReturn.Both,
+            getDefaultTimestamps(),
             createRequests
         );
 
@@ -543,6 +548,25 @@ public class ManagedSubscription {
      */
     public synchronized TimestampsToReturn getDefaultTimestamps() {
         return defaultTimestamps;
+    }
+
+    /**
+     * Set the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
+     *
+     * @param defaultDiscardOldest the default discard policy used when creating {@link ManagedDataItem}s and
+     *                             {@link ManagedEventItem}s.
+     */
+    public synchronized void setDefaultDiscardOldest(boolean defaultDiscardOldest) {
+        this.defaultDiscardOldest = defaultDiscardOldest;
+    }
+
+    /**
+     * Get the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
+     *
+     * @return the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
+     */
+    public synchronized boolean getDefaultDiscardOldest() {
+        return defaultDiscardOldest;
     }
 
     //endregion

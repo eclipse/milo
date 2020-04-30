@@ -110,6 +110,20 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
+    public void discardOldest() throws UaException {
+        boolean defaultDiscardOldest = subscription.getDefaultDiscardOldest();
+
+        ManagedDataItem dataItem = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
+
+        assertEquals(defaultDiscardOldest, dataItem.getDiscardOldest());
+
+        dataItem.setDiscardOldest(!defaultDiscardOldest);
+        assertEquals(!defaultDiscardOldest, dataItem.getDiscardOldest());
+    }
+
+    @Test
     public void dataValueListener() throws UaException, InterruptedException {
         ManagedDataItem dataItem = subscription.createDataItem(
             Identifiers.Server_ServerStatus_State

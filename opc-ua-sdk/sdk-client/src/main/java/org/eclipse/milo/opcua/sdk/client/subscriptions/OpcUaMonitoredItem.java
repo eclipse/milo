@@ -181,6 +181,10 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.filterResult = filterResult;
     }
 
+    void setRequestedFilter(ExtensionObject filter) {
+        this.monitoringFilter = filter;
+    }
+
     void setRequestedSamplingInterval(double requestedSamplingInterval) {
         this.requestedSamplingInterval = requestedSamplingInterval;
     }
@@ -205,6 +209,10 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.timestamps = timestamps;
     }
 
+    void setDiscardOldest(boolean discardOldest) {
+        this.discardOldest = discardOldest;
+    }
+
     void onValueArrived(DataValue value) {
         ValueConsumer c = valueConsumer;
         if (c != null) c.onValueArrived(client.getSerializationContext(), this, value);
@@ -214,5 +222,5 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         EventConsumer c = eventConsumer;
         if (c != null) c.onEventArrived(client.getSerializationContext(), this, values);
     }
-    
+
 }
