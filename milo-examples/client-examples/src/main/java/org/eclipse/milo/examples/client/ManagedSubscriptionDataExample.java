@@ -19,10 +19,10 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ManagedSubscriptionExample implements ClientExample {
+public class ManagedSubscriptionDataExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        ManagedSubscriptionExample example = new ManagedSubscriptionExample();
+        ManagedSubscriptionDataExample example = new ManagedSubscriptionDataExample();
 
         new ClientExampleRunner(example).run();
     }
