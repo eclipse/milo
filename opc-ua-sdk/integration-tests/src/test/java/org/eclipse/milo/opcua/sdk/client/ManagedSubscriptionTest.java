@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -82,6 +83,22 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
         assertTrue(eventItem.getStatusCode().isGood());
         assertTrue(subscription.deleteEventItem(eventItem).isGood());
+    }
+
+    @Test
+    public void createWithSamplingInterval() throws UaException {
+        ReadValueId readValueId = new ReadValueId(
+            Identifiers.Server_ServerStatus_State,
+            AttributeId.Value.uid(),
+            null,
+            QualifiedName.NULL_VALUE
+        );
+
+        ManagedDataItem dataItem = subscription.createDataItem(readValueId, 5000.0);
+
+        assertEquals(5000.0, dataItem.getSamplingInterval());
+        assertEquals(5000.0, dataItem.getMonitoredItem().getRequestedSamplingInterval());
+        assertEquals(5000.0, dataItem.getMonitoredItem().getRevisedSamplingInterval());
     }
 
     @Test
@@ -177,6 +194,25 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
             Identifiers.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultTimestamps(), dataItem2.getMonitoredItem().getTimestamps());
+    }
+
+    @Test
+    public void defaultDiscardOldest() throws UaException {
+        ManagedDataItem dataItem1 = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
+        assertTrue(subscription.getDefaultDiscardOldest());
+        assertTrue(dataItem1.getDiscardOldest());
+        assertTrue(dataItem1.getMonitoredItem().getDiscardOldest());
+
+        subscription.setDefaultDiscardOldest(false);
+        assertFalse(subscription.getDefaultDiscardOldest());
+
+        ManagedDataItem dataItem2 = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
+        assertFalse(dataItem2.getDiscardOldest());
+        assertFalse(dataItem2.getMonitoredItem().getDiscardOldest());
     }
 
     @Test

@@ -474,6 +474,15 @@ public class ManagedSubscription {
     //region default monitoring parameters
 
     /**
+     * Get the sampling interval used in calls where it is not specified explicitly.
+     *
+     * @return the sampling interval used in calls where it is not specified explicitly.
+     */
+    public synchronized double getDefaultSamplingInterval() {
+        return defaultSamplingInterval;
+    }
+
+    /**
      * Set the sampling interval used in calls where it is not specified explicitly.
      *
      * @param defaultSamplingInterval the sampling interval used in calls where it is not specified explicitly.
@@ -483,12 +492,12 @@ public class ManagedSubscription {
     }
 
     /**
-     * Get the sampling interval used in calls where it is not specified explicitly.
+     * Get the queue size used when creating {@link ManagedDataItem}s.
      *
-     * @return the sampling interval used in calls where it is not specified explicitly.
+     * @return the queue size used when creating {@link ManagedDataItem}s.
      */
-    public synchronized double getDefaultSamplingInterval() {
-        return defaultSamplingInterval;
+    public synchronized UInteger getDefaultQueueSize() {
+        return defaultQueueSize;
     }
 
     /**
@@ -501,12 +510,13 @@ public class ManagedSubscription {
     }
 
     /**
-     * Get the queue size used when creating {@link ManagedDataItem}s.
+     * Get the encoded {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
      *
-     * @return the queue size used when creating {@link ManagedDataItem}s.
+     * @return the encoded {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
      */
-    public synchronized UInteger getDefaultQueueSize() {
-        return defaultQueueSize;
+    @Nullable
+    public synchronized ExtensionObject getDefaultDataFilter() {
+        return defaultDataFilter;
     }
 
     /**
@@ -523,13 +533,12 @@ public class ManagedSubscription {
     }
 
     /**
-     * Get the encoded {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
+     * Get the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
      *
-     * @return the encoded {@link DataChangeFilter} used when creating {@link ManagedDataItem}s.
+     * @return the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
      */
-    @Nullable
-    public synchronized ExtensionObject getDefaultDataFilter() {
-        return defaultDataFilter;
+    public synchronized TimestampsToReturn getDefaultTimestamps() {
+        return defaultTimestamps;
     }
 
     /**
@@ -542,12 +551,12 @@ public class ManagedSubscription {
     }
 
     /**
-     * Get the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
+     * Get the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
      *
-     * @return the default {@link TimestampsToReturn} used when creating {@link ManagedDataItem}s.
+     * @return the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
      */
-    public synchronized TimestampsToReturn getDefaultTimestamps() {
-        return defaultTimestamps;
+    public synchronized boolean getDefaultDiscardOldest() {
+        return defaultDiscardOldest;
     }
 
     /**
@@ -558,15 +567,6 @@ public class ManagedSubscription {
      */
     public synchronized void setDefaultDiscardOldest(boolean defaultDiscardOldest) {
         this.defaultDiscardOldest = defaultDiscardOldest;
-    }
-
-    /**
-     * Get the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
-     *
-     * @return the default discard policy used when creating {@link ManagedDataItem}s and {@link ManagedEventItem}s.
-     */
-    public synchronized boolean getDefaultDiscardOldest() {
-        return defaultDiscardOldest;
     }
 
     //endregion
