@@ -18,33 +18,19 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ManagedDataItemTest extends AbstractSubscriptionTest {
+public class ManagedDataItemTest extends AbstractManagedItemTest {
 
-    @Test
-    public void delete() throws UaException {
-        ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
-        );
-        assertTrue(dataItem.getStatusCode().isGood());
-
-        StatusCode deleteResult = dataItem.delete();
-
-        assertTrue(deleteResult.isGood());
-        assertFalse(subscription.getSubscription().getMonitoredItems().contains(dataItem.getMonitoredItem()));
+    @Override
+    protected ManagedDataItem createManagedItem() throws UaException {
+        return subscription.createDataItem(Identifiers.Server_ServerStatus_State);
     }
 
     @Test
@@ -58,7 +44,7 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
 
     @Test
     public void samplingInterval() throws Exception {
-        ManagedDataItem dataItem1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem dataItem1 = createManagedItem();
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRevisedSamplingInterval());
@@ -66,61 +52,6 @@ public class ManagedDataItemTest extends AbstractSubscriptionTest {
         assertEquals(5000.0, dataItem1.setSamplingInterval(5000.0));
         assertEquals(5000.0, dataItem1.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(5000.0, dataItem1.getMonitoredItem().getRevisedSamplingInterval());
-    }
-
-    @Test
-    public void monitoringMode() throws UaException {
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
-
-        dataItem.setMonitoringMode(MonitoringMode.Sampling);
-        assertEquals(MonitoringMode.Sampling, dataItem.getMonitoringMode());
-
-        dataItem.setMonitoringMode(MonitoringMode.Disabled);
-        assertEquals(MonitoringMode.Disabled, dataItem.getMonitoringMode());
-
-        dataItem.setMonitoringMode(MonitoringMode.Reporting);
-        assertEquals(MonitoringMode.Reporting, dataItem.getMonitoringMode());
-    }
-
-    @Test
-    public void queueSize() throws UaException {
-        UInteger initialQueueSize = subscription.getDefaultQueueSize();
-
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        assertEquals(initialQueueSize, dataItem.getQueueSize());
-
-        UInteger newQueueSize = initialQueueSize.add(1);
-        assertEquals(newQueueSize, dataItem.setQueueSize(newQueueSize));
-        assertEquals(newQueueSize, dataItem.getQueueSize());
-    }
-
-    @Test
-    public void timestampsToReturn() throws UaException {
-        TimestampsToReturn timestamps = subscription.getDefaultTimestamps();
-
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        assertEquals(timestamps, dataItem.getTimestampsToReturn());
-
-        TimestampsToReturn newTimestamps = TimestampsToReturn.Neither;
-        assertNotEquals(timestamps, newTimestamps);
-
-        dataItem.setTimestampsToReturn(newTimestamps);
-        assertEquals(newTimestamps, dataItem.getTimestampsToReturn());
-    }
-
-    @Test
-    public void discardOldest() throws UaException {
-        boolean defaultDiscardOldest = subscription.getDefaultDiscardOldest();
-
-        ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
-        );
-
-        assertEquals(defaultDiscardOldest, dataItem.getDiscardOldest());
-
-        dataItem.setDiscardOldest(!defaultDiscardOldest);
-        assertEquals(!defaultDiscardOldest, dataItem.getDiscardOldest());
     }
 
     @Test

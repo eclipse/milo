@@ -10,14 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 public class ManagedEventItem extends ManagedItem {
@@ -30,20 +28,12 @@ public class ManagedEventItem extends ManagedItem {
         super(client, subscription, monitoredItem);
     }
 
-    public StatusCode delete() {
-        return null;
-    }
-
-    public CompletableFuture<StatusCode> deleteAsync() {
-        return null;
-    }
-
     //region EventValueListener bookkeeping
 
     /**
      * Add an event field value {@link Consumer} to this {@link ManagedDataItem}.
      * <p>
-     * {@code consumer} will be invoked any time new event field values for this item.
+     * {@code consumer} will be invoked any time new event field values arrive for this item.
      * <p>
      * The Consumer is transformed into the returned {@link EventValueListener} that can later be removed.
      *
@@ -58,6 +48,13 @@ public class ManagedEventItem extends ManagedItem {
         return eventValueListener;
     }
 
+    /**
+     * Add an {@link EventValueListener} to this {@link ManagedEventItem}.
+     * <p>
+     * {code eventValueListener} will be invoked any time new event field values arrive for this item.
+     *
+     * @param eventValueListener the {@link EventValueListener} to add.
+     */
     public synchronized void addEventValueListener(EventValueListener eventValueListener) {
         eventValueListeners.add(eventValueListener);
 
@@ -67,7 +64,13 @@ public class ManagedEventItem extends ManagedItem {
         }
     }
 
-    public synchronized boolean removeDataValueListener(EventValueListener eventValueListener) {
+    /**
+     * Remove an {@link EventValueListener} from this {@link ManagedEventItem}.
+     *
+     * @param eventValueListener the {@link EventValueListener} to remove.
+     * @return {@code true} if the listener was removed.
+     */
+    public synchronized boolean removeEventValueListener(EventValueListener eventValueListener) {
         boolean removed = eventValueListeners.remove(eventValueListener);
 
         if (eventValueListeners.isEmpty()) {

@@ -110,37 +110,6 @@ public class ManagedDataItem extends ManagedItem {
 
     //endregion
 
-    /**
-     * Delete this {@link ManagedDataItem}.
-     *
-     * @return the {@link StatusCode} from the delete operation.
-     * @throws UaException if a service-level error occurs.
-     */
-    public StatusCode delete() throws UaException {
-        try {
-            return deleteAsync().get();
-        } catch (InterruptedException e) {
-            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
-        } catch (ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
-        }
-    }
-
-    /**
-     * Delete this {@link ManagedDataItem}.
-     * <p>
-     * This call completes asynchronously.
-     *
-     * @return a {@link CompletableFuture} that completes successfully with the operation result or completes
-     * exceptionally if a service-level error occurs.
-     */
-    public CompletableFuture<StatusCode> deleteAsync() {
-        return subscription.getSubscription()
-            .deleteMonitoredItems(singletonList(monitoredItem))
-            .thenApply(statusCodes -> statusCodes.get(0));
-    }
-
     //region DataValueListener bookkeeping
 
     /**
