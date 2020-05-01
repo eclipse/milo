@@ -375,14 +375,21 @@ public class ManagedSubscription {
     }
 
     private ManagedEventItem createAndTrackEventItem(UaMonitoredItem item) {
-        ManagedEventItem eventItem = new ManagedEventItem(client, (OpcUaMonitoredItem) item);
+        ManagedEventItem eventItem = new ManagedEventItem(client, this, (OpcUaMonitoredItem) item);
         eventItems.put(item.getClientHandle(), eventItem);
         return eventItem;
     }
 
     //endregion
 
-    //region default monitoring parameters
+    /**
+     * Get this Subscription's current publishing interval.
+     *
+     * @return this Subscription's current publishing interval.
+     */
+    public double getPublishingInterval() {
+        return subscription.getRevisedPublishingInterval();
+    }
 
     /**
      * Request a new publishing interval for this Subscription.
@@ -422,12 +429,12 @@ public class ManagedSubscription {
     }
 
     /**
-     * Get this Subscription's current publishing interval.
+     * Get this Subscription's current publishing mode.
      *
-     * @return this Subscription's current publishing interval.
+     * @return {@code true} if publishing is enabled, {@code false} if publishing is disabled.
      */
-    public double getPublishingInterval() {
-        return subscription.getRevisedPublishingInterval();
+    public boolean isPublishingEnabled() {
+        return subscription.isPublishingEnabled();
     }
 
     /**
@@ -436,7 +443,7 @@ public class ManagedSubscription {
      * @param enabled {@code true} to enable publishing, {@code false} to disable publishing.
      * @throws UaException if a service-level error occurs.
      */
-    public void setPublishingMode(boolean enabled) throws UaException {
+    public void setPublishingEnabled(boolean enabled) throws UaException {
         try {
             setPublishingEnabledAsync(enabled).get();
         } catch (InterruptedException e) {
@@ -464,14 +471,7 @@ public class ManagedSubscription {
         });
     }
 
-    /**
-     * Get this Subscription's current publishing mode.
-     *
-     * @return {@code true} if publishing is enabled, {@code false} if publishing is disabled.
-     */
-    public boolean isPublishingEnabled() {
-        return subscription.isPublishingEnabled();
-    }
+    //region default monitoring parameters
 
     /**
      * Set the sampling interval used in calls where it is not specified explicitly.

@@ -97,10 +97,10 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
     @Test
     public void setPublishingMode() throws UaException {
-        subscription.setPublishingMode(false);
+        subscription.setPublishingEnabled(false);
         assertFalse(subscription.isPublishingEnabled());
 
-        subscription.setPublishingMode(true);
+        subscription.setPublishingEnabled(true);
         assertTrue(subscription.isPublishingEnabled());
     }
 

@@ -11,38 +11,23 @@
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
-public class ManagedEventItem {
+public class ManagedEventItem extends ManagedItem {
 
-    private final OpcUaClient client;
-    private final OpcUaMonitoredItem item;
+    private final CopyOnWriteArrayList<EventValueListener> eventValueListeners = new CopyOnWriteArrayList<>();
 
-    public ManagedEventItem(OpcUaClient client, OpcUaMonitoredItem item) {
-        this.client = client;
-        this.item = item;
-    }
+    private UaMonitoredItem.EventConsumer eventConsumer = null;
 
-    public NodeId getNodeId() {
-        return getReadValueId().getNodeId();
-    }
-
-    public ReadValueId getReadValueId() {
-        return item.getReadValueId();
-    }
-
-    public StatusCode getStatusCode() {
-        return item.getStatusCode();
-    }
-
-    public OpcUaMonitoredItem getMonitoredItem() {
-        return item;
+    public ManagedEventItem(OpcUaClient client, ManagedSubscription subscription, OpcUaMonitoredItem monitoredItem) {
+        super(client, subscription, monitoredItem);
     }
 
     public StatusCode delete() {
@@ -52,6 +37,48 @@ public class ManagedEventItem {
     public CompletableFuture<StatusCode> deleteAsync() {
         return null;
     }
+
+    //region EventValueListener bookkeeping
+
+    /**
+     * Add an event field value {@link Consumer} to this {@link ManagedDataItem}.
+     * <p>
+     * {@code consumer} will be invoked any time new event field values for this item.
+     * <p>
+     * The Consumer is transformed into the returned {@link EventValueListener} that can later be removed.
+     *
+     * @param consumer an event field value {@link Consumer}.
+     * @return an {@link EventValueListener} that can later be removed.
+     */
+    public synchronized EventValueListener addEventValueListener(Consumer<Variant[]> consumer) {
+        EventValueListener eventValueListener = (item, fields) -> consumer.accept(fields);
+
+        addEventValueListener(eventValueListener);
+
+        return eventValueListener;
+    }
+
+    public synchronized void addEventValueListener(EventValueListener eventValueListener) {
+        eventValueListeners.add(eventValueListener);
+
+        if (eventConsumer == null) {
+            eventConsumer = new ManagedEventConsumer();
+            monitoredItem.setEventConsumer(eventConsumer);
+        }
+    }
+
+    public synchronized boolean removeDataValueListener(EventValueListener eventValueListener) {
+        boolean removed = eventValueListeners.remove(eventValueListener);
+
+        if (eventValueListeners.isEmpty()) {
+            monitoredItem.setEventConsumer((UaMonitoredItem.EventConsumer) null);
+            eventConsumer = null;
+        }
+
+        return removed;
+    }
+
+    //endregion
 
     /**
      * A callback that receives notification of new events for a {@link ManagedEventItem}.
@@ -70,6 +97,16 @@ public class ManagedEventItem {
          */
         void onEventValueReceived(ManagedEventItem item, Variant[] eventValues);
 
+    }
+
+    private class ManagedEventConsumer implements UaMonitoredItem.EventConsumer {
+        @Override
+        public void onEventArrived(SerializationContext context, UaMonitoredItem item, Variant[] eventValues) {
+            eventValueListeners.forEach(
+                eventValueListener ->
+                    eventValueListener.onEventValueReceived(ManagedEventItem.this, eventValues)
+            );
+        }
     }
 
 }
