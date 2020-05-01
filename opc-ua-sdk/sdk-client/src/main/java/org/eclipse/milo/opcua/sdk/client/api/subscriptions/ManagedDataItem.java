@@ -149,6 +149,13 @@ public class ManagedDataItem {
         return item.getRevisedSamplingInterval();
     }
 
+    /**
+     * Request a new sampling interval for this item.
+     *
+     * @param samplingInterval the new sampling interval to request.
+     * @return the new sampling interval, possibly revised by the server.
+     * @throws UaException if a service-level error occurs.
+     */
     public double setSamplingInterval(double samplingInterval) throws UaException {
         try {
             return setSamplingIntervalAsync(samplingInterval).get();
@@ -160,6 +167,15 @@ public class ManagedDataItem {
         }
     }
 
+    /**
+     * Request a new sampling interval for this item.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param samplingInterval the new sampling interval to request.
+     * @return a {@link CompletableFuture} that completes successfully with the new sampling interval, possibly revised
+     * by the server, or completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<Double> setSamplingIntervalAsync(double samplingInterval) {
         MonitoringParameters parameters = new MonitoringParameters(
             item.getClientHandle(),
@@ -202,6 +218,13 @@ public class ManagedDataItem {
         return item.getRevisedQueueSize();
     }
 
+    /**
+     * Request a new queue size for this item.
+     *
+     * @param queueSize the new queue size to request.
+     * @return the new queue size, possibly revised by the server.
+     * @throws UaException if a service-level error occurs.
+     */
     public UInteger setQueueSize(UInteger queueSize) throws UaException {
         try {
             return setQueueSizeAsync(queueSize).get();
@@ -213,6 +236,15 @@ public class ManagedDataItem {
         }
     }
 
+    /**
+     * Request a new queue size for this item.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param queueSize the new queue size to request.
+     * @return a {@link CompletableFuture} that completes successfully with the new queue size, possibly revised by the
+     * server, or completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<UInteger> setQueueSizeAsync(UInteger queueSize) {
         MonitoringParameters parameters = new MonitoringParameters(
             item.getClientHandle(),
@@ -243,10 +275,21 @@ public class ManagedDataItem {
 
     //region TimestampToReturn operations
 
+    /**
+     * Get this item's current {@link TimestampsToReturn} parameter.
+     *
+     * @return this item's current {@link TimestampsToReturn} parameter.
+     */
     public TimestampsToReturn getTimestampsToReturn() {
         return item.getTimestamps();
     }
 
+    /**
+     * Set a new {@link TimestampsToReturn} parameter on this item.
+     *
+     * @param timestamps a new {@link TimestampsToReturn} parameter.
+     * @throws UaException if a service-level error occurs.
+     */
     public void setTimestampsToReturn(TimestampsToReturn timestamps) throws UaException {
         try {
             setTimestampsToReturnAsync(timestamps).get();
@@ -258,6 +301,15 @@ public class ManagedDataItem {
         }
     }
 
+    /**
+     * Set a new {@link TimestampsToReturn} parameter on this item.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param timestamps a new {@link TimestampsToReturn} parameter.
+     * @return a {@link CompletableFuture} that completes successfully if the item was modified and completes
+     * exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<Unit> setTimestampsToReturnAsync(TimestampsToReturn timestamps) {
         MonitoringParameters parameters = new MonitoringParameters(
             item.getClientHandle(),
