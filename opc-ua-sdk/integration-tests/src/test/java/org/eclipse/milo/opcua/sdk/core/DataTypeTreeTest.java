@@ -11,12 +11,12 @@
 package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.test.ClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -41,8 +41,8 @@ public class DataTypeTreeTest extends ClientServerTest {
     private DataTypeTree dataTypeTree;
 
     @BeforeAll
-    public void buildDataTypeTree() throws ExecutionException, InterruptedException {
-        dataTypeTree = DataTypeTreeBuilder.build(client).get();
+    public void buildDataTypeTree() throws UaException {
+        dataTypeTree = DataTypeTreeBuilder.build(client);
     }
 
     @Test

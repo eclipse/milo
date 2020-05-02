@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
@@ -21,6 +22,8 @@ import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
@@ -65,11 +68,50 @@ public final class DataTypeTreeBuilder {
      *
      * @param client a connected {@link OpcUaClient}.
      * @return a {@link DataTypeTree}.
+     * @throws UaException if an unrecoverable error occurs while building the tree.
      */
-    public static CompletableFuture<DataTypeTree> build(OpcUaClient client) {
+    public static DataTypeTree build(OpcUaClient client) throws UaException {
+        try {
+            return buildAsync(client).get();
+        } catch (InterruptedException e) {
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
+     * {@link Identifiers#BaseDataType}.
+     *
+     * @param client  a connected {@link UaStackClient}.
+     * @param session an active {@link OpcUaSession}.
+     * @return a {@link DataTypeTree}.
+     * @throws UaException if an unrecoverable error occurs while building the tree.
+     */
+    public static DataTypeTree build(UaStackClient client, OpcUaSession session) throws UaException {
+        try {
+            return buildAsync(client, session).get();
+        } catch (InterruptedException e) {
+            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
+        } catch (ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
+     * {@link Identifiers#BaseDataType}.
+     *
+     * @param client a connected {@link OpcUaClient}.
+     * @return a {@link DataTypeTree}.
+     */
+    public static CompletableFuture<DataTypeTree> buildAsync(OpcUaClient client) {
         return client.getSession().thenCompose(
             session ->
-                build(client.getStackClient(), session)
+                buildAsync(client.getStackClient(), session)
         );
     }
 
@@ -81,7 +123,7 @@ public final class DataTypeTreeBuilder {
      * @param session an active {@link OpcUaSession}.
      * @return a {@link DataTypeTree}.
      */
-    public static CompletableFuture<DataTypeTree> build(UaStackClient client, OpcUaSession session) {
+    public static CompletableFuture<DataTypeTree> buildAsync(UaStackClient client, OpcUaSession session) {
         Tree<DataTypeTree.DataType> root = new Tree<>(
             null,
             new DataTypeTree.DataType(

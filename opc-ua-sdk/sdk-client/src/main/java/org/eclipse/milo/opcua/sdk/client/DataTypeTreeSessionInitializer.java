@@ -33,7 +33,7 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
 
     @Override
     public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {
-        return DataTypeTreeBuilder.build(stackClient, session)
+        return DataTypeTreeBuilder.buildAsync(stackClient, session)
             .thenAccept(tree -> session.setAttribute(SESSION_ATTRIBUTE_KEY, tree))
             .thenApply(v -> Unit.VALUE);
     }
