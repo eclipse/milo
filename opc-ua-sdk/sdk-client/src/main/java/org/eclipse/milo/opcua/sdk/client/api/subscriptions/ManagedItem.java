@@ -272,10 +272,21 @@ public abstract class ManagedItem {
 
     //region DiscardOldest operations
 
+    /**
+     * Get this item's current discard policy.
+     *
+     * @return {@code true} if the oldest are discarded when the queue is full.
+     */
     public boolean getDiscardOldest() {
         return monitoredItem.getDiscardOldest();
     }
 
+    /**
+     * Set this item's discard policy.
+     *
+     * @param discardOldest {@code true} if the oldest are discarded when the queue is full.
+     * @throws UaException if an operation- or service-level error occurs.
+     */
     public void setDiscardOldest(boolean discardOldest) throws UaException {
         try {
             setDiscardOldestAsync(discardOldest).get();
@@ -287,6 +298,15 @@ public abstract class ManagedItem {
         }
     }
 
+    /**
+     * Set this item's discard policy.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param discardOldest {@code true} if the oldest are discarded when the queue is full.
+     * @return a {@link CompletableFuture} that completes successfully if the item was modified and completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
     public CompletableFuture<Unit> setDiscardOldestAsync(boolean discardOldest) {
         MonitoringParameters parameters = new MonitoringParameters(
             monitoredItem.getClientHandle(),
