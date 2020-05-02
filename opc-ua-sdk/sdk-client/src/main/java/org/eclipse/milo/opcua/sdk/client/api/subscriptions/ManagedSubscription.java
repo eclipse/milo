@@ -349,10 +349,26 @@ public class ManagedSubscription {
         );
     }
 
+    /**
+     * Delete a {@link ManagedDataItem}.
+     * <p>
+     * The result of the delete operation can be obtained via {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param dataItem the {@link ManagedDataItem} to delete.
+     * @throws UaException if a service-level error occurs.
+     */
     public void deleteDataItem(ManagedDataItem dataItem) throws UaException {
         deleteDataItems(singletonList(dataItem));
     }
 
+    /**
+     * Delete one or more {@link ManagedDataItem}s.
+     * <p>
+     * The result of the delete operations can be obtained via {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param dataItems the {@link ManagedDataItem}s to delete.
+     * @throws UaException if a service-level error occurs.
+     */
     public void deleteDataItems(List<ManagedDataItem> dataItems) throws UaException {
         try {
             deleteDataItemsAsync(dataItems).get();
@@ -364,10 +380,32 @@ public class ManagedSubscription {
         }
     }
 
+    /**
+     * Delete a {@link ManagedDataItem}.
+     * <p>
+     * The result of the delete operation can be obtained via {@link ManagedDataItem#getStatusCode()}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param dataItem the {@link ManagedDataItem} to delete.
+     * @return a {@link CompletableFuture} that completes successfully if the service completed successfully or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<Unit> deleteDataItemAsync(ManagedDataItem dataItem) {
         return deleteDataItemsAsync(singletonList(dataItem));
     }
 
+    /**
+     * Delete one or more {@link ManagedDataItem}s.
+     * <p>
+     * The result of the delete operations can be obtained via {@link ManagedDataItem#getStatusCode()}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param dataItemsToDelete the {@link ManagedDataItem}s to delete.
+     * @return a {@link CompletableFuture} that completes successfully if the service completed successfully or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<Unit> deleteDataItemsAsync(List<ManagedDataItem> dataItemsToDelete) {
         List<UaMonitoredItem> monitoredItems = dataItemsToDelete.stream()
             .map(ManagedItem::getMonitoredItem)
@@ -392,13 +430,44 @@ public class ManagedSubscription {
 
     //region create/delete ManagedEventItem
 
+    /**
+     * Create a {@link ManagedEventItem}.
+     * <p>
+     * This operation will fail of the Node identified by {@code nodeId} is not an Object Node.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedEventItem#getStatusCode()}.
+     *
+     * @param nodeId      the {@link NodeId} identifying an Object Node.
+     * @param eventFilter the {@link EventFilter} to use.
+     * @return a {@link ManagedEventItem}.
+     * @throws UaException if a service-level error occurs.
+     * @see EventFilterBuilder
+     */
     public ManagedEventItem createEventItem(NodeId nodeId, EventFilter eventFilter) throws UaException {
-        return createEventItems(singletonList(nodeId), eventFilter).get(0);
+        return createEventItems(singletonList(nodeId), singletonList(eventFilter)).get(0);
     }
 
-    public List<ManagedEventItem> createEventItems(List<NodeId> nodeId, EventFilter eventFilter) throws UaException {
+    /**
+     * Create one or more {@link ManagedEventItem}s.
+     * <p>
+     * This operation will fail of the Node identified by {@code nodeId} is not an Object Node.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedEventItem#getStatusCode()}.
+     *
+     * @param nodeIds      the {@link NodeId}s identifying Object Nodes.
+     * @param eventFilters the corresponding {@link EventFilter} to create each item with.
+     * @return a List of {@link ManagedEventItem}s.
+     * @throws UaException if a service-level error occurs.
+     */
+    public List<ManagedEventItem> createEventItems(
+        List<NodeId> nodeIds,
+        List<EventFilter> eventFilters
+    ) throws UaException {
+
         try {
-            CompletableFuture<List<ManagedEventItem>> future = createEventItemsAsync(nodeId, eventFilter);
+            CompletableFuture<List<ManagedEventItem>> future = createEventItemsAsync(nodeIds, eventFilters);
 
             return future.get();
         } catch (InterruptedException e) {
@@ -409,34 +478,49 @@ public class ManagedSubscription {
         }
     }
 
+    /**
+     * Create one or more {@link ManagedEventItem}s.
+     * <p>
+     * This operation will fail of the Node identified by {@code nodeId} is not an Object Node.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedEventItem#getStatusCode()}.
+     * <p>
+     * This operation completes asynchronously.
+     *
+     * @param nodeIds      the {@link NodeId}s identifying Object Nodes.
+     * @param eventFilters the corresponding {@link EventFilter} to create each item with.
+     * @return a {@link CompletableFuture} that completes successfully with the List of {@link ManagedEventItem}s or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<List<ManagedEventItem>> createEventItemsAsync(
         List<NodeId> nodeIds,
-        EventFilter eventFilter
+        List<EventFilter> eventFilters
     ) {
 
         final UInteger queueSize = getDefaultQueueSize();
         final boolean discardOldest = getDefaultDiscardOldest();
 
-        List<MonitoredItemCreateRequest> createRequests = nodeIds.stream()
-            .map(nodeId -> {
-                ReadValueId readValueId = new ReadValueId(
-                    nodeId,
-                    AttributeId.EventNotifier.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                );
+        List<MonitoredItemCreateRequest> createRequests = new ArrayList<>();
 
-                MonitoringParameters parameters = new MonitoringParameters(
-                    subscription.nextClientHandle(),
-                    0.0,
-                    ExtensionObject.encode(client.getSerializationContext(), eventFilter),
-                    queueSize,
-                    discardOldest
-                );
+        for (int i = 0; i < nodeIds.size(); i++) {
+            ReadValueId readValueId = new ReadValueId(
+                nodeIds.get(i),
+                AttributeId.EventNotifier.uid(),
+                null,
+                QualifiedName.NULL_VALUE
+            );
 
-                return new MonitoredItemCreateRequest(readValueId, getDefaultMonitoringMode(), parameters);
-            })
-            .collect(Collectors.toList());
+            MonitoringParameters parameters = new MonitoringParameters(
+                subscription.nextClientHandle(),
+                0.0,
+                ExtensionObject.encode(client.getSerializationContext(), eventFilters.get(i)),
+                queueSize,
+                discardOldest
+            );
+
+            createRequests.add(new MonitoredItemCreateRequest(readValueId, getDefaultMonitoringMode(), parameters));
+        }
 
         CompletableFuture<List<UaMonitoredItem>> monitoredItems = subscription.createMonitoredItems(
             getDefaultTimestamps(),
@@ -451,10 +535,26 @@ public class ManagedSubscription {
         );
     }
 
+    /**
+     * Delete a {@link ManagedEventItem}.
+     * <p>
+     * The result of the delete operation can be obtained via {@link ManagedEventItem#getStatusCode()}.
+     *
+     * @param eventItem the {@link ManagedEventItem} to delete.
+     * @throws UaException if a service-level error occurs.
+     */
     public void deleteEventItem(ManagedEventItem eventItem) throws UaException {
         deleteEventItems(singletonList(eventItem));
     }
 
+    /**
+     * Delete one or more {@link ManagedEventItem}s.
+     * <p>
+     * The result of the delete operations can be obtained via {@link ManagedEventItem#getStatusCode()}.
+     *
+     * @param eventItems the {@link ManagedEventItem}s to delete.
+     * @throws UaException if a service-level error occurs.
+     */
     public void deleteEventItems(List<ManagedEventItem> eventItems) throws UaException {
         try {
             deleteEventItemsAsync(eventItems).get();
@@ -466,10 +566,32 @@ public class ManagedSubscription {
         }
     }
 
+    /**
+     * Delete a {@link ManagedEventItem}.
+     * <p>
+     * The result of the delete operation can be obtained via {@link ManagedEventItem#getStatusCode()}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param eventItem the {@link ManagedEventItem} to delete.
+     * @return a {@link CompletableFuture} that completes successfully if the service completed successfully or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<Unit> deleteEventItemAsync(ManagedEventItem eventItem) {
         return deleteEventItemsAsync(singletonList(eventItem));
     }
 
+    /**
+     * Delete one or more {@link ManagedEventItem}s.
+     * <p>
+     * The result of the delete operations can be obtained via {@link ManagedEventItem#getStatusCode()}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param eventItemsToDelete the {@link ManagedEventItem}s to delete.
+     * @return a {@link CompletableFuture} that completes successfully if the service completed successfully or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<Unit> deleteEventItemsAsync(List<ManagedEventItem> eventItemsToDelete) {
         List<UaMonitoredItem> monitoredItems = eventItemsToDelete.stream()
             .map(ManagedItem::getMonitoredItem)
