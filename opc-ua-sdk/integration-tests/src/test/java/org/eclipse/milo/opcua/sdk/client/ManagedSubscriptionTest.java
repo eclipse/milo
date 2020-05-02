@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
@@ -119,6 +120,31 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
         subscription.setPublishingEnabled(true);
         assertTrue(subscription.isPublishingEnabled());
+    }
+
+    @Test
+    public void defaultMonitoringMode() throws UaException {
+        ManagedDataItem dataItem1 = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
+        assertEquals(MonitoringMode.Reporting, dataItem1.getMonitoringMode());
+        assertEquals(MonitoringMode.Reporting, dataItem1.getMonitoredItem().getMonitoringMode());
+
+        subscription.setDefaultMonitoringMode(MonitoringMode.Sampling);
+
+        ManagedDataItem dataItem2 = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
+        assertEquals(MonitoringMode.Sampling, dataItem2.getMonitoringMode());
+        assertEquals(MonitoringMode.Sampling, dataItem2.getMonitoredItem().getMonitoringMode());
+
+        subscription.setDefaultMonitoringMode(MonitoringMode.Disabled);
+
+        ManagedDataItem dataItem3 = subscription.createDataItem(
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
+        assertEquals(MonitoringMode.Disabled, dataItem3.getMonitoringMode());
+        assertEquals(MonitoringMode.Disabled, dataItem3.getMonitoredItem().getMonitoringMode());
     }
 
     @Test

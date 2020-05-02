@@ -71,6 +71,7 @@ public class ManagedSubscription {
      */
     private final Map<UInteger, ManagedEventItem> eventItems = new ConcurrentHashMap<>();
 
+    private MonitoringMode defaultMonitoringMode = MonitoringMode.Reporting;
     private double defaultSamplingInterval = DEFAULT_SAMPLING_INTERVAL;
     private UInteger defaultQueueSize = DEFAULT_QUEUE_SIZE;
     private TimestampsToReturn defaultTimestamps = TimestampsToReturn.Both;
@@ -248,7 +249,7 @@ public class ManagedSubscription {
                     discardOldest
                 );
 
-                return new MonitoredItemCreateRequest(readValueId, MonitoringMode.Reporting, parameters);
+                return new MonitoredItemCreateRequest(readValueId, getDefaultMonitoringMode(), parameters);
             })
             .collect(Collectors.toList());
 
@@ -337,7 +338,7 @@ public class ManagedSubscription {
                     discardOldest
                 );
 
-                return new MonitoredItemCreateRequest(readValueId, MonitoringMode.Reporting, parameters);
+                return new MonitoredItemCreateRequest(readValueId, getDefaultMonitoringMode(), parameters);
             })
             .collect(Collectors.toList());
 
@@ -471,7 +472,25 @@ public class ManagedSubscription {
         });
     }
 
-    //region default monitoring parameters
+    //region default MonitoredItemCreateRequest values
+
+    /**
+     * Get the default {@link MonitoringMode} new items will be created in.
+     *
+     * @return the default {@link MonitoringMode} new items will be created in.
+     */
+    public synchronized MonitoringMode getDefaultMonitoringMode() {
+        return defaultMonitoringMode;
+    }
+
+    /**
+     * Set the new default {@link MonitoringMode} new items will be created in.
+     *
+     * @param defaultMonitoringMode the new default {@link MonitoringMode} new items will be created in.
+     */
+    public synchronized void setDefaultMonitoringMode(MonitoringMode defaultMonitoringMode) {
+        this.defaultMonitoringMode = defaultMonitoringMode;
+    }
 
     /**
      * Get the sampling interval used in calls where it is not specified explicitly.
