@@ -916,12 +916,11 @@ public class ManagedSubscription {
     /**
      * Delete this {@link ManagedSubscription} and its underlying {@link OpcUaSubscription}.
      *
-     * @return the operation-level {@link StatusCode}.
      * @throws UaException if a service-level error occurs.
      */
-    public StatusCode delete() throws UaException {
+    public void delete() throws UaException {
         try {
-            return deleteAsync().get();
+            deleteAsync().get();
         } catch (InterruptedException e) {
             throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
@@ -935,13 +934,13 @@ public class ManagedSubscription {
      * <p>
      * This call completes asynchronously.
      *
-     * @return a {@link CompletableFuture} that completes successfully with the operation result or completes
-     * exceptionally if a service-level error occurs.
+     * @return a {@link CompletableFuture} that completes successfully if the service completed successfully or
+     * completes exceptionally if a service-level error occurs.
      */
-    public CompletableFuture<StatusCode> deleteAsync() {
+    public CompletableFuture<Unit> deleteAsync() {
         return client.getSubscriptionManager()
             .deleteSubscription(subscription.getSubscriptionId())
-            .thenApply(s -> StatusCode.GOOD);
+            .thenApply(s -> Unit.VALUE);
     }
 
     /**

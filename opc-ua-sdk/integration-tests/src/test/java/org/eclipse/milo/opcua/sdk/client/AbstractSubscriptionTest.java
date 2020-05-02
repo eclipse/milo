@@ -16,8 +16,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public abstract class AbstractSubscriptionTest extends AbstractClientServerTest {
 
     protected ManagedSubscription subscription;
@@ -40,7 +38,7 @@ public abstract class AbstractSubscriptionTest extends AbstractClientServerTest 
                 subscription.getSubscription().getSubscriptionId()
             ));
 
-            assertTrue(subscription.delete().isGood());
+            subscription.delete();
             subscription = null;
         }
     }
