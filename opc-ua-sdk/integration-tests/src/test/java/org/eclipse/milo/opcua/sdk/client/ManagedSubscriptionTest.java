@@ -54,7 +54,9 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         );
 
         assertTrue(dataItem.getStatusCode().isGood());
-        assertTrue(subscription.deleteDataItem(dataItem).isGood());
+
+        subscription.deleteDataItem(dataItem);
+        assertFalse(subscription.getDataItems().contains(dataItem));
     }
 
     @Test
@@ -83,7 +85,9 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
 
         assertTrue(eventItem.getStatusCode().isGood());
-        assertTrue(subscription.deleteEventItem(eventItem).isGood());
+
+        subscription.deleteEventItem(eventItem);
+        assertFalse(subscription.getEventItems().contains(eventItem));
     }
 
     @Test
@@ -95,7 +99,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
             QualifiedName.NULL_VALUE
         );
 
-        ManagedDataItem dataItem = subscription.createDataItem(readValueId, 5000.0);
+        ManagedDataItem dataItem = subscription.createDataItem(5000.0, readValueId);
 
         assertEquals(5000.0, dataItem.getSamplingInterval());
         assertEquals(5000.0, dataItem.getMonitoredItem().getRequestedSamplingInterval());

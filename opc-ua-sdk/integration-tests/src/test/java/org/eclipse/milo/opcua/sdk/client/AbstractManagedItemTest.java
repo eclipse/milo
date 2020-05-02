@@ -33,6 +33,11 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
         managedItem.delete();
 
+        //noinspection SuspiciousMethodCalls
+        assertFalse(subscription.getDataItems().contains(managedItem));
+        //noinspection SuspiciousMethodCalls
+        assertFalse(subscription.getEventItems().contains(managedItem));
+        
         assertFalse(subscription.getSubscription().getMonitoredItems().contains(managedItem.getMonitoredItem()));
     }
 

@@ -13,15 +13,18 @@ package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem.DataValueListener;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -130,7 +133,7 @@ public class ManagedSubscription {
      * Create a {@link ManagedDataItem} monitoring the Value attribute of the Node identified by {@code nodeId}.
      * <p>
      * The operation will fail of the Node is not a Variable or VariableType Node. To create an item that monitors a
-     * different attribute use {@link #createDataItem(ReadValueId, double)}.
+     * different attribute use {@link #createDataItem(double, ReadValueId)}.
      * <p>
      * The operation result should be checked before this item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
@@ -147,7 +150,7 @@ public class ManagedSubscription {
      * Create {@link ManagedDataItem}s monitoring the Value attribute of the Nodes identified by {@code nodeIds}.
      * <p>
      * This operation will fail of the Node is not a Variable or VariableType Node. To create items that monitor
-     * different attributes use {@link #createDataItems(List, double)}.
+     * different attributes use {@link #createDataItems(double, List)}.
      * <p>
      * The operation result should be checked before this item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
@@ -168,44 +171,93 @@ public class ManagedSubscription {
             )
             .collect(Collectors.toList());
 
-        return createDataItems(readValueIds, getDefaultSamplingInterval());
+        return createDataItems(getDefaultSamplingInterval(), readValueIds);
     }
 
     /**
-     * Create a {@link ManagedDataItem} monitoring the Node and attribute identified by {@code readValueId}.
+     * Create a {@link ManagedDataItem} monitoring the Node and Attribute identified by {@code readValueId}.
      * <p>
      * The operation result should be checked before this item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
      *
-     * @param readValueId      the {@link ReadValueId} identifying the Node and attribute to monitor.
-     * @param samplingInterval the rate to request this item is sampled at.
+     * @param samplingInterval the sampling interval to request.
+     * @param readValueId      the {@link ReadValueId} identifying the Node and Attribute.
      * @return a {@link ManagedDataItem}.
      * @throws UaException if a service-level error occurs.
      */
-    public ManagedDataItem createDataItem(ReadValueId readValueId, double samplingInterval) throws UaException {
-        return createDataItems(singletonList(readValueId), samplingInterval).get(0);
+    public ManagedDataItem createDataItem(double samplingInterval, ReadValueId readValueId) throws UaException {
+        return createDataItem(samplingInterval, readValueId, item -> {});
     }
 
     /**
-     * Create {@link ManagedDataItem}s for the Nodes and attributes identified by {@code readValueIds}.
+     * Create a {@link ManagedDataItem} monitoring the Node and Attribute identified by {@code readValueId}.
      * <p>
-     * The operation result of each item should be checked before the item is used further.
+     * {@code consumer} will receive each item as it is created to provide an opportunity to add a
+     * {@link DataValueListener} before the first value change has arrived.
+     * <p>
+     * The operation result should be checked before this item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
      *
-     * @param readValueIds     the {@link ReadValueId}s identifying the Nodes and attributes to monitor.
-     * @param samplingInterval the rate to request these items are sampled at.
-     * @return a List of {@link ManagedDataItem}s.
+     * @param samplingInterval the sampling interval to request.
+     * @param readValueId      the {@link ReadValueId} identifying the Node and Attribute.
+     * @param consumer         a {@link Consumer} that will receive each item as it is created.
+     * @return a {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
+    public ManagedDataItem createDataItem(
+        double samplingInterval,
+        ReadValueId readValueId,
+        Consumer<ManagedDataItem> consumer
+    ) throws UaException {
+
+        return createDataItems(samplingInterval, singletonList(readValueId), consumer).get(0);
+    }
+
+    /**
+     * Create {@link ManagedDataItem}s monitoring the Nodes and Attributes identified by {@code readValueIds}.
+     * <p>
+     * The operation results should be checked before each item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param samplingInterval the sampling interval to request.
+     * @param readValueIds     the {@link ReadValueId}s identifying the Nodes and Attributes.
+     * @return a List of {@link ManagedDataItem}.
      * @throws UaException if a service-level error occurs.
      */
     public List<ManagedDataItem> createDataItems(
+        double samplingInterval,
+        List<ReadValueId> readValueIds
+    ) throws UaException {
+
+        return createDataItems(samplingInterval, readValueIds, item -> {});
+    }
+
+    /**
+     * Create {@link ManagedDataItem}s monitoring the Nodes and Attributes identified by {@code readValueIds}.
+     * <p>
+     * {@code consumer} will receive each item as it is created to provide an opportunity to add a
+     * {@link DataValueListener} before the first value change has arrived.
+     * <p>
+     * The operation results should be checked before each item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param samplingInterval the sampling interval to request.
+     * @param readValueIds     the {@link ReadValueId}s identifying the Nodes and Attributes.
+     * @param consumer         a {@link Consumer} that will receive each item as it is created.
+     * @return a List of {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
+    public List<ManagedDataItem> createDataItems(
+        double samplingInterval,
         List<ReadValueId> readValueIds,
-        double samplingInterval
+        Consumer<ManagedDataItem> consumer
     ) throws UaException {
 
         try {
             CompletableFuture<List<ManagedDataItem>> future = createDataItemsAsync(
+                samplingInterval,
                 readValueIds,
-                samplingInterval
+                consumer
             );
 
             return future.get();
@@ -218,21 +270,47 @@ public class ManagedSubscription {
     }
 
     /**
-     * Create a {@link ManagedDataItem} monitoring the Node and attribute identified by {@code readValueId}.
+     * Create {@link ManagedDataItem}s monitoring the Nodes and Attributes identified by {@code readValueIds}.
      * <p>
-     * The operation result should be checked before this item is used further.
+     * The operation results should be checked before each item is used further.
      * See {@link ManagedDataItem#getStatusCode()}.
      * <p>
      * This call completes asynchronously.
      *
-     * @param readValueIds     the {@link ReadValueId}s identifying the items to create.
-     * @param samplingInterval the rate to request these items are sampled at.
-     * @return a {@link CompletableFuture} that completes successfully if the service call succeeds or completes
-     * exceptionally if a service-level error occurs.
+     * @param samplingInterval the sampling interval to request.
+     * @param readValueIds     the {@link ReadValueId}s identifying the Nodes and Attributes.
+     * @return a {@link CompletableFuture} that completes successfully with a List of {@link ManagedDataItem} or
+     * completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<List<ManagedDataItem>> createDataItemsAsync(
+        double samplingInterval,
+        List<ReadValueId> readValueIds
+    ) {
+
+        return createDataItemsAsync(samplingInterval, readValueIds, item -> {});
+    }
+
+    /**
+     * Create {@link ManagedDataItem}s monitoring the Nodes and Attributes identified by {@code readValueIds}.
+     * <p>
+     * {@code consumer} will receive each item as it is created to provide an opportunity to add a
+     * {@link DataValueListener} before the first value change has arrived.
+     * <p>
+     * The operation results should be checked before each item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param samplingInterval the sampling interval to request.
+     * @param readValueIds     the {@link ReadValueId}s identifying the Nodes and Attributes.
+     * @param consumer         a {@link Consumer} that will receive each item as it is created.
+     * @return a {@link CompletableFuture} that completes successfully with a List of {@link ManagedDataItem} or
+     * completes exceptionally if a service-level error occurs.
+     */
+    public CompletableFuture<List<ManagedDataItem>> createDataItemsAsync(
+        double samplingInterval,
         List<ReadValueId> readValueIds,
-        double samplingInterval
+        Consumer<ManagedDataItem> consumer
     ) {
 
         final ExtensionObject filter = getDefaultDataFilter();
@@ -255,22 +333,25 @@ public class ManagedSubscription {
 
         CompletableFuture<List<UaMonitoredItem>> monitoredItems = subscription.createMonitoredItems(
             getDefaultTimestamps(),
-            createRequests
+            createRequests,
+            (item, id) -> {
+                ManagedDataItem dataItem = createAndTrackDataItem(item);
+                consumer.accept(dataItem);
+            }
         );
 
         return monitoredItems.thenApply(
             items ->
                 items.stream()
-                    .map(this::createAndTrackDataItem)
+                    .map(item -> dataItems.get(item.getClientHandle()))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList())
         );
     }
 
-    public StatusCode deleteDataItem(ManagedDataItem dataItem) throws UaException {
+    public void deleteDataItem(ManagedDataItem dataItem) throws UaException {
         try {
-            CompletableFuture<StatusCode> future = deleteDataItemAsync(dataItem);
-
-            return future.get();
+            deleteDataItemAsync(dataItem).get();
         } catch (InterruptedException e) {
             throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
@@ -279,11 +360,23 @@ public class ManagedSubscription {
         }
     }
 
-    public CompletableFuture<StatusCode> deleteDataItemAsync(ManagedDataItem dataItem) {
-        CompletableFuture<List<StatusCode>> future =
-            subscription.deleteMonitoredItems(singletonList(dataItem.getMonitoredItem()));
+    public CompletableFuture<Unit> deleteDataItemAsync(ManagedDataItem dataItem) {
+        UInteger clientHandle = dataItem.getMonitoredItem().getClientHandle();
 
-        return future.thenApply(results -> results.get(0));
+        if (dataItems.remove(clientHandle) != null) {
+            CompletableFuture<List<StatusCode>> future =
+                subscription.deleteMonitoredItems(singletonList(dataItem.getMonitoredItem()));
+
+            return future.thenApply(results -> results.get(0)).thenCompose(statusCode -> {
+                if (statusCode.isGood()) {
+                    return completedFuture(Unit.VALUE);
+                } else {
+                    return failedUaFuture(statusCode);
+                }
+            });
+        } else {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
     }
 
     private ManagedDataItem createAndTrackDataItem(UaMonitoredItem item) {
@@ -355,11 +448,9 @@ public class ManagedSubscription {
         );
     }
 
-    public StatusCode deleteEventItem(ManagedEventItem eventItem) throws UaException {
+    public void deleteEventItem(ManagedEventItem eventItem) throws UaException {
         try {
-            CompletableFuture<StatusCode> future = deleteEventItemAsync(eventItem);
-
-            return future.get();
+            deleteEventItemAsync(eventItem).get();
         } catch (InterruptedException e) {
             throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
@@ -368,11 +459,23 @@ public class ManagedSubscription {
         }
     }
 
-    public CompletableFuture<StatusCode> deleteEventItemAsync(ManagedEventItem eventItem) {
-        CompletableFuture<List<StatusCode>> future =
-            subscription.deleteMonitoredItems(singletonList(eventItem.getMonitoredItem()));
+    public CompletableFuture<Unit> deleteEventItemAsync(ManagedEventItem eventItem) {
+        UInteger clientHandle = eventItem.getMonitoredItem().getClientHandle();
 
-        return future.thenApply(results -> results.get(0));
+        if (eventItems.remove(clientHandle) != null) {
+            CompletableFuture<List<StatusCode>> future =
+                subscription.deleteMonitoredItems(singletonList(eventItem.getMonitoredItem()));
+
+            return future.thenApply(results -> results.get(0)).thenCompose(statusCode -> {
+                if (statusCode.isGood()) {
+                    return completedFuture(Unit.VALUE);
+                } else {
+                    return failedUaFuture(statusCode);
+                }
+            });
+        } else {
+            return failedUaFuture(StatusCodes.Bad_NothingToDo);
+        }
     }
 
     private ManagedEventItem createAndTrackEventItem(UaMonitoredItem item) {

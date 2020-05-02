@@ -372,17 +372,6 @@ public abstract class ManagedItem {
      * @return a {@link CompletableFuture} that completes successfully if the operation succeeds or completes
      * exceptionally if an operation- or service-level error occurs.
      */
-    public CompletableFuture<Unit> deleteAsync() {
-        return subscription.getSubscription()
-            .deleteMonitoredItems(singletonList(monitoredItem))
-            .thenApply(statusCodes -> statusCodes.get(0))
-            .thenCompose(statusCode -> {
-                if (statusCode.isGood()) {
-                    return completedFuture(Unit.VALUE);
-                } else {
-                    return failedUaFuture(statusCode);
-                }
-            });
-    }
+    public abstract CompletableFuture<Unit> deleteAsync();
 
 }

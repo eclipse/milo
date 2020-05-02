@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
@@ -17,6 +18,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ManagedEventItem extends ManagedItem {
 
@@ -26,6 +28,11 @@ public class ManagedEventItem extends ManagedItem {
 
     public ManagedEventItem(OpcUaClient client, ManagedSubscription subscription, OpcUaMonitoredItem monitoredItem) {
         super(client, subscription, monitoredItem);
+    }
+
+    @Override
+    public CompletableFuture<Unit> deleteAsync() {
+        return subscription.deleteEventItemAsync(this);
     }
 
     //region EventValueListener bookkeeping

@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -39,6 +40,11 @@ public class ManagedDataItem extends ManagedItem {
 
     ManagedDataItem(OpcUaClient client, ManagedSubscription subscription, OpcUaMonitoredItem item) {
         super(client, subscription, item);
+    }
+
+    @Override
+    public CompletableFuture<Unit> deleteAsync() {
+        return subscription.deleteDataItemAsync(this);
     }
 
     //region SamplingInterval operations
