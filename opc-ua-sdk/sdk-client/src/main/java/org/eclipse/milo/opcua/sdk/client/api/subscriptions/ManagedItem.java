@@ -110,6 +110,12 @@ public abstract class ManagedItem {
         return monitoredItem.getMonitoringMode();
     }
 
+    /**
+     * Set this item's {@link MonitoringMode}.
+     *
+     * @param monitoringMode the new {@link MonitoringMode} to set.
+     * @throws UaException if an operation- or service-level error occurs.
+     */
     public void setMonitoringMode(MonitoringMode monitoringMode) throws UaException {
         try {
             setMonitoringModeAsync(monitoringMode).get();
@@ -121,6 +127,13 @@ public abstract class ManagedItem {
         }
     }
 
+    /**
+     * Set this item's {@link MonitoringMode}.
+     *
+     * @param monitoringMode the new {@link MonitoringMode} to set.
+     * @return a {@link CompletableFuture} that completes successfully if the new {@link MonitoringMode} was set and
+     * completes exceptionally if an operation- or service-level error occurs.
+     */
     public CompletableFuture<Unit> setMonitoringModeAsync(MonitoringMode monitoringMode) {
         CompletableFuture<List<StatusCode>> future = subscription.getSubscription().setMonitoringMode(
             monitoringMode,
