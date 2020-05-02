@@ -168,7 +168,7 @@ public abstract class ManagedItem {
      *
      * @param queueSize the new queue size to request.
      * @return the new queue size, possibly revised by the server.
-     * @throws UaException if a service-level error occurs.
+     * @throws UaException if an operation- or service-level error occurs.
      */
     public UInteger setQueueSize(UInteger queueSize) throws UaException {
         try {
@@ -188,7 +188,7 @@ public abstract class ManagedItem {
      *
      * @param queueSize the new queue size to request.
      * @return a {@link CompletableFuture} that completes successfully with the new queue size, possibly revised by the
-     * server, or completes exceptionally if a service-level error occurs.
+     * server, or completes exceptionally if an operation- or service-level error occurs.
      */
     public CompletableFuture<UInteger> setQueueSizeAsync(UInteger queueSize) {
         MonitoringParameters parameters = new MonitoringParameters(
@@ -233,7 +233,7 @@ public abstract class ManagedItem {
      * Set a new {@link TimestampsToReturn} parameter on this item.
      *
      * @param timestamps a new {@link TimestampsToReturn} parameter.
-     * @throws UaException if a service-level error occurs.
+     * @throws UaException if an operation- or service-level error occurs.
      */
     public void setTimestampsToReturn(TimestampsToReturn timestamps) throws UaException {
         try {
@@ -253,7 +253,7 @@ public abstract class ManagedItem {
      *
      * @param timestamps a new {@link TimestampsToReturn} parameter.
      * @return a {@link CompletableFuture} that completes successfully if the item was modified and completes
-     * exceptionally if a service-level error occurs.
+     * exceptionally if an operation- or service-level error occurs.
      */
     public CompletableFuture<Unit> setTimestampsToReturnAsync(TimestampsToReturn timestamps) {
         MonitoringParameters parameters = new MonitoringParameters(
@@ -351,12 +351,11 @@ public abstract class ManagedItem {
     /**
      * Delete this {@link ManagedDataItem}.
      *
-     * @return the {@link StatusCode} from the delete operation.
-     * @throws UaException if a service-level error occurs.
+     * @throws UaException if an operation- or service-level error occurs.
      */
-    public StatusCode delete() throws UaException {
+    public void delete() throws UaException {
         try {
-            return deleteAsync().get();
+            deleteAsync().get();
         } catch (InterruptedException e) {
             throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
@@ -370,13 +369,20 @@ public abstract class ManagedItem {
      * <p>
      * This call completes asynchronously.
      *
-     * @return a {@link CompletableFuture} that completes successfully with the operation result or completes
-     * exceptionally if a service-level error occurs.
+     * @return a {@link CompletableFuture} that completes successfully if the operation succeeds or completes
+     * exceptionally if an operation- or service-level error occurs.
      */
-    public CompletableFuture<StatusCode> deleteAsync() {
+    public CompletableFuture<Unit> deleteAsync() {
         return subscription.getSubscription()
             .deleteMonitoredItems(singletonList(monitoredItem))
-            .thenApply(statusCodes -> statusCodes.get(0));
+            .thenApply(statusCodes -> statusCodes.get(0))
+            .thenCompose(statusCode -> {
+                if (statusCode.isGood()) {
+                    return completedFuture(Unit.VALUE);
+                } else {
+                    return failedUaFuture(statusCode);
+                }
+            });
     }
 
 }

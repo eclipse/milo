@@ -58,7 +58,7 @@ public class ManagedDataItem extends ManagedItem {
      *
      * @param samplingInterval the new sampling interval to request.
      * @return the new sampling interval, possibly revised by the server.
-     * @throws UaException if a service-level error occurs.
+     * @throws UaException if an operation- or service-level error occurs.
      */
     public double setSamplingInterval(double samplingInterval) throws UaException {
         try {
@@ -78,7 +78,7 @@ public class ManagedDataItem extends ManagedItem {
      *
      * @param samplingInterval the new sampling interval to request.
      * @return a {@link CompletableFuture} that completes successfully with the new sampling interval, possibly revised
-     * by the server, or completes exceptionally if a service-level error occurs.
+     * by the server, or completes exceptionally if an operation- or service-level error occurs.
      */
     public CompletableFuture<Double> setSamplingIntervalAsync(double samplingInterval) {
         MonitoringParameters parameters = new MonitoringParameters(

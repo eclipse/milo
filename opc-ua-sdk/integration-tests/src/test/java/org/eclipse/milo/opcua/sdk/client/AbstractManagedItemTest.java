@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedItem;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -32,9 +31,8 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
         ManagedItem managedItem = createManagedItem();
         assertTrue(managedItem.getStatusCode().isGood());
 
-        StatusCode deleteResult = managedItem.delete();
+        managedItem.delete();
 
-        assertTrue(deleteResult.isGood());
         assertFalse(subscription.getSubscription().getMonitoredItems().contains(managedItem.getMonitoredItem()));
     }
 
