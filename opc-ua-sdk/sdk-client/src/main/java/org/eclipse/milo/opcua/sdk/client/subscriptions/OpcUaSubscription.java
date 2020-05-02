@@ -225,9 +225,11 @@ public class OpcUaSubscription implements UaSubscription {
         return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
             List<StatusCode> results = l(response.getResults());
 
-            for (UaMonitoredItem item : itemsToDelete) {
+            for (int i = 0; i < itemsToDelete.size(); i++) {
+                OpcUaMonitoredItem item = (OpcUaMonitoredItem) itemsToDelete.get(i);
                 itemsByClientHandle.remove(item.getClientHandle());
                 itemsByServerHandle.remove(item.getMonitoredItemId());
+                item.setStatusCode(results.get(i));
             }
 
             return results;

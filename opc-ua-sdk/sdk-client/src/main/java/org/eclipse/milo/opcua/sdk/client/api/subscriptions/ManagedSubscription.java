@@ -350,8 +350,12 @@ public class ManagedSubscription {
     }
 
     public void deleteDataItem(ManagedDataItem dataItem) throws UaException {
+        deleteDataItems(singletonList(dataItem));
+    }
+
+    public void deleteDataItems(List<ManagedDataItem> dataItems) throws UaException {
         try {
-            deleteDataItemAsync(dataItem).get();
+            deleteDataItemsAsync(dataItems).get();
         } catch (InterruptedException e) {
             throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
@@ -361,22 +365,21 @@ public class ManagedSubscription {
     }
 
     public CompletableFuture<Unit> deleteDataItemAsync(ManagedDataItem dataItem) {
-        UInteger clientHandle = dataItem.getMonitoredItem().getClientHandle();
+        return deleteDataItemsAsync(singletonList(dataItem));
+    }
 
-        if (dataItems.remove(clientHandle) != null) {
-            CompletableFuture<List<StatusCode>> future =
-                subscription.deleteMonitoredItems(singletonList(dataItem.getMonitoredItem()));
+    public CompletableFuture<Unit> deleteDataItemsAsync(List<ManagedDataItem> dataItemsToDelete) {
+        List<UaMonitoredItem> monitoredItems = dataItemsToDelete.stream()
+            .map(ManagedItem::getMonitoredItem)
+            .collect(Collectors.toList());
 
-            return future.thenApply(results -> results.get(0)).thenCompose(statusCode -> {
-                if (statusCode.isGood()) {
-                    return completedFuture(Unit.VALUE);
-                } else {
-                    return failedUaFuture(statusCode);
-                }
-            });
-        } else {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
-        }
+        return subscription.deleteMonitoredItems(monitoredItems).thenCompose(statusCodes -> {
+            for (UaMonitoredItem monitoredItem : monitoredItems) {
+                this.dataItems.remove(monitoredItem.getClientHandle());
+            }
+
+            return completedFuture(Unit.VALUE);
+        });
     }
 
     private ManagedDataItem createAndTrackDataItem(UaMonitoredItem item) {
@@ -449,8 +452,12 @@ public class ManagedSubscription {
     }
 
     public void deleteEventItem(ManagedEventItem eventItem) throws UaException {
+        deleteEventItems(singletonList(eventItem));
+    }
+
+    public void deleteEventItems(List<ManagedEventItem> eventItems) throws UaException {
         try {
-            deleteEventItemAsync(eventItem).get();
+            deleteEventItemsAsync(eventItems).get();
         } catch (InterruptedException e) {
             throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
@@ -460,22 +467,21 @@ public class ManagedSubscription {
     }
 
     public CompletableFuture<Unit> deleteEventItemAsync(ManagedEventItem eventItem) {
-        UInteger clientHandle = eventItem.getMonitoredItem().getClientHandle();
+        return deleteEventItemsAsync(singletonList(eventItem));
+    }
 
-        if (eventItems.remove(clientHandle) != null) {
-            CompletableFuture<List<StatusCode>> future =
-                subscription.deleteMonitoredItems(singletonList(eventItem.getMonitoredItem()));
+    public CompletableFuture<Unit> deleteEventItemsAsync(List<ManagedEventItem> eventItemsToDelete) {
+        List<UaMonitoredItem> monitoredItems = eventItemsToDelete.stream()
+            .map(ManagedItem::getMonitoredItem)
+            .collect(Collectors.toList());
 
-            return future.thenApply(results -> results.get(0)).thenCompose(statusCode -> {
-                if (statusCode.isGood()) {
-                    return completedFuture(Unit.VALUE);
-                } else {
-                    return failedUaFuture(statusCode);
-                }
-            });
-        } else {
-            return failedUaFuture(StatusCodes.Bad_NothingToDo);
-        }
+        return subscription.deleteMonitoredItems(monitoredItems).thenCompose(statusCodes -> {
+            for (UaMonitoredItem monitoredItem : monitoredItems) {
+                this.eventItems.remove(monitoredItem.getClientHandle());
+            }
+
+            return completedFuture(Unit.VALUE);
+        });
     }
 
     private ManagedEventItem createAndTrackEventItem(UaMonitoredItem item) {
