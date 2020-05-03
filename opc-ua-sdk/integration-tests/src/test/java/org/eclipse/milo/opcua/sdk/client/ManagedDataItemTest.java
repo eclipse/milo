@@ -10,9 +10,15 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -52,6 +58,70 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
         assertEquals(5000.0, dataItem1.setSamplingInterval(5000.0));
         assertEquals(5000.0, dataItem1.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(5000.0, dataItem1.getMonitoredItem().getRevisedSamplingInterval());
+    }
+
+    @Test
+    public void samplingIntervalBatch() throws Exception {
+        subscription.createDataItems(Collections.nCopies(10, Identifiers.Server_ServerStatus_State));
+
+        subscription.getDataItems().forEach(
+            item -> {
+                assertEquals(1000.0, item.getSamplingInterval());
+                assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
+                assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+            }
+        );
+
+        {
+            BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(
+                subscription.getClient(),
+                subscription.getSubscription()
+            );
+
+            List<CompletableFuture<Double>> futures = subscription.getDataItems().stream()
+                .map(
+                    item ->
+                        item.setSamplingIntervalAsync(5000.0, batch)
+                )
+                .collect(Collectors.toList());
+
+            List<ModifyResult> results = batch.execute();
+            results.forEach(r -> assertTrue(r.isOperationResultGood()));
+
+            futures.forEach(f -> {
+                assertTrue(f.isDone() && !f.isCompletedExceptionally());
+                f.thenAccept(v -> assertEquals(5000.0, v));
+            });
+
+            subscription.getDataItems().forEach(
+                item -> {
+                    assertEquals(5000.0, item.getSamplingInterval());
+                    assertEquals(5000.0, item.getMonitoredItem().getRequestedSamplingInterval());
+                    assertEquals(5000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                }
+            );
+        }
+
+        {
+            BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(
+                subscription.getClient(),
+                subscription.getSubscription()
+            );
+
+            subscription.getDataItems().forEach(
+                item ->
+                    item.setSamplingIntervalAsync(1000.0, batch)
+            );
+            batch.execute();
+
+            subscription.getDataItems().forEach(
+                item -> {
+                    assertEquals(1000.0, item.getSamplingInterval());
+                    assertEquals(1000.0, item.getMonitoredItem().getRequestedSamplingInterval());
+                    assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
+                }
+            );
+        }
     }
 
     @Test

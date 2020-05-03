@@ -11,12 +11,14 @@
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -110,6 +112,42 @@ public class ManagedDataItem extends ManagedItem {
                 return completedFuture(monitoredItem.getRevisedSamplingInterval());
             } else {
                 return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    /**
+     * Request a new sampling interval for this item as part of a batch operation.
+     *
+     * @param samplingInterval the new sampling interval to request.
+     * @param batch            the {@link BatchModifyMonitoredItems} operation.
+     * @return a {@link CompletableFuture} that completes successfully with the new sampling interval, possibly revised
+     * by the server, or completes exceptionally if an operation- or service-level error occurred.
+     */
+    public CompletableFuture<Double> setSamplingIntervalAsync(
+        double samplingInterval,
+        BatchModifyMonitoredItems batch
+    ) {
+
+        CompletableFuture<ModifyResult> future = batch.add(
+            getMonitoredItem(),
+            b -> b.setSamplingInterval(samplingInterval)
+        );
+
+        return future.thenCompose(result -> {
+            if (result.isServiceResultGood()) {
+                Optional<CompletableFuture<Double>> ocf = result.operationResult().map(s -> {
+                    if (s.isGood()) {
+                        return completedFuture(getSamplingInterval());
+                    } else {
+                        return failedUaFuture(s);
+                    }
+                });
+
+                // if the service result is good the operation result must be present.
+                return ocf.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
+            } else {
+                return failedUaFuture(result.serviceResult());
             }
         });
     }
