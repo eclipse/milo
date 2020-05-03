@@ -82,6 +82,45 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
                 assertFalse(future.get().isOperationResultGood());
             }
         }
+
+        assertEquals(1, batch.getServiceInvocationCount());
+    }
+
+    @Test
+    public void multipleTimestampsToReturn() throws UaException {
+        ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item4 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+
+        item1.setTimestampsToReturn(TimestampsToReturn.Source);
+        item2.setTimestampsToReturn(TimestampsToReturn.Server);
+        item3.setTimestampsToReturn(TimestampsToReturn.Both);
+        item4.setTimestampsToReturn(TimestampsToReturn.Neither);
+
+        BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(
+            client,
+            subscription.getSubscription()
+        );
+
+        batch.add(item1.getMonitoredItem(), b -> b.setTimestamps(TimestampsToReturn.Server));
+        batch.add(item2.getMonitoredItem(), b -> b.setTimestamps(TimestampsToReturn.Both));
+        batch.add(item3.getMonitoredItem(), b -> b.setTimestamps(TimestampsToReturn.Neither));
+        batch.add(item4.getMonitoredItem(), b -> b.setTimestamps(TimestampsToReturn.Source));
+
+        List<ModifyResult> results = batch.execute();
+
+        for (ModifyResult result : results) {
+            assertTrue(result.isServiceResultGood());
+            assertTrue(result.isOperationResultGood());
+        }
+
+        assertEquals(TimestampsToReturn.Server, item1.getTimestampsToReturn());
+        assertEquals(TimestampsToReturn.Both, item2.getTimestampsToReturn());
+        assertEquals(TimestampsToReturn.Neither, item3.getTimestampsToReturn());
+        assertEquals(TimestampsToReturn.Source, item4.getTimestampsToReturn());
+
+        assertEquals(4, batch.getServiceInvocationCount());
     }
 
     @Test
@@ -105,6 +144,7 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
         // results in underlying modify operation but the batch should return
         // an operation result for each.
         assertEquals(3, batch.execute().size());
+        assertEquals(1, batch.getServiceInvocationCount());
     }
 
 }

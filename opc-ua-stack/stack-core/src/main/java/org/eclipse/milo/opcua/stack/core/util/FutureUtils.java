@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -131,6 +132,22 @@ public class FutureUtils {
      */
     public static <T> CompletionBuilder<T> completeAsync(CompletableFuture<T> future, Executor executor) {
         return new AsyncCompletionBuilder<>(future, executor);
+    }
+
+    /**
+     * Flatten a List of future Lists into a CompletableFuture of List
+     *
+     * @param futures a List of future Lists
+     * @param <T>     the type of item the List holds
+     * @return a flattened CompletableFuture of List.
+     */
+    public static <T> CompletableFuture<List<T>> flatSequence(List<CompletableFuture<List<T>>> futures) {
+        return FutureUtils.sequence(futures).thenApply(
+            listOfListOfT ->
+                listOfListOfT.stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList())
+        );
     }
 
     public static class CompletionBuilder<T> {

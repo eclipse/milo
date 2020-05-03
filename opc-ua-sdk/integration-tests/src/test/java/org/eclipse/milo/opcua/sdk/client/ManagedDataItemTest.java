@@ -73,10 +73,7 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
         );
 
         {
-            BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(
-                subscription.getClient(),
-                subscription.getSubscription()
-            );
+            BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(subscription);
 
             List<CompletableFuture<Double>> futures = subscription.getDataItems().stream()
                 .map(
@@ -100,6 +97,8 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
                     assertEquals(5000.0, item.getMonitoredItem().getRevisedSamplingInterval());
                 }
             );
+
+            assertEquals(1, batch.getServiceInvocationCount());
         }
 
         {
@@ -121,6 +120,8 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
                     assertEquals(1000.0, item.getMonitoredItem().getRevisedSamplingInterval());
                 }
             );
+
+            assertEquals(1, batch.getServiceInvocationCount());
         }
     }
 

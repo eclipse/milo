@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -47,21 +47,36 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class BatchModifyMonitoredItems {
 
-    private final Map<OpcUaMonitoredItem, BatchModifyParametersBuilder> builders =
+    private final Map<OpcUaMonitoredItem, BatchModifyParametersBuilder> buildersByItem =
         Collections.synchronizedMap(new LinkedHashMap<>());
 
     private final ListMultimap<OpcUaMonitoredItem, CompletableFuture<ModifyResult>> futuresByItem =
         Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
 
-    private final List<CompletableFuture<ModifyResult>> futures =
+    private final List<CompletableFuture<ModifyResult>> resultFutures =
         Collections.synchronizedList(new ArrayList<>());
+
+    private final AtomicInteger modifyServiceCount = new AtomicInteger(0);
 
     private final OpcUaClient client;
     private final OpcUaSubscription subscription;
 
+    public BatchModifyMonitoredItems(ManagedSubscription subscription) {
+        this(subscription.getClient(), subscription.getSubscription());
+    }
+
     public BatchModifyMonitoredItems(OpcUaClient client, OpcUaSubscription subscription) {
         this.client = client;
         this.subscription = subscription;
+    }
+
+    /**
+     * Get the number of service invocations that were needed to execute this batch.
+     *
+     * @return the number of service invocations that were needed to execute this batch.
+     */
+    public int getServiceInvocationCount() {
+        return modifyServiceCount.get();
     }
 
     /**
@@ -76,27 +91,17 @@ public class BatchModifyMonitoredItems {
         Consumer<BatchModifyParametersBuilder> builderConsumer
     ) {
 
-        BatchModifyParametersBuilder builder = builders.computeIfAbsent(
+        BatchModifyParametersBuilder builder = buildersByItem.computeIfAbsent(
             monitoredItem,
-            this::parametersBuilderFromItem
+            BatchModifyMonitoredItems::parametersBuilderFromItem
         );
 
         builderConsumer.accept(builder);
 
         CompletableFuture<ModifyResult> future = new CompletableFuture<>();
         futuresByItem.put(monitoredItem, future);
-        futures.add(future);
+        resultFutures.add(future);
         return future;
-    }
-
-    private BatchModifyParametersBuilder parametersBuilderFromItem(OpcUaMonitoredItem item) {
-        return new BatchModifyParametersBuilder(item)
-            .setTimestamps(item.getTimestamps())
-            .setClientHandle(item.getClientHandle())
-            .setSamplingInterval(item.getRevisedSamplingInterval())
-            .setFilter(item.getMonitoringFilter())
-            .setQueueSize(item.getRevisedQueueSize())
-            .setDiscardOldest(item.getDiscardOldest());
     }
 
     public List<ModifyResult> execute() throws UaException {
@@ -111,11 +116,11 @@ public class BatchModifyMonitoredItems {
     }
 
     public CompletableFuture<List<ModifyResult>> executeAsync() {
-        return readOperationLimit().thenCompose(this::executeAsync);
+        return readOperationLimit(client).thenCompose(this::executeAsync);
     }
 
     private CompletableFuture<List<ModifyResult>> executeAsync(UInteger operationLimit) {
-        List<BatchModifyParameters> allMonitoringParameters = builders.values().stream()
+        List<BatchModifyParameters> allMonitoringParameters = buildersByItem.values().stream()
             .map(BatchModifyParametersBuilder::build)
             .collect(Collectors.toList());
 
@@ -142,12 +147,12 @@ public class BatchModifyMonitoredItems {
                         .map(partition -> modifyItems(timestampsKey, partition))
                         .collect(Collectors.toList());
 
-                return flatSequence(partitionFutures);
+                return FutureUtils.flatSequence(partitionFutures);
             }
         );
 
         return resultsFuture.thenCompose(results -> {
-            List<OpcUaMonitoredItem> items = new ArrayList<>(builders.keySet());
+            List<OpcUaMonitoredItem> items = new ArrayList<>(buildersByItem.keySet());
 
             assert items.size() == results.size();
 
@@ -162,7 +167,7 @@ public class BatchModifyMonitoredItems {
                 futures.forEach(f -> f.complete(result));
             }
 
-            return FutureUtils.sequence(futures);
+            return FutureUtils.sequence(resultFutures);
         });
     }
 
@@ -182,6 +187,8 @@ public class BatchModifyMonitoredItems {
         TimestampsToReturn timestamps,
         List<MonitoredItemModifyRequest> itemsToModify
     ) {
+
+        modifyServiceCount.incrementAndGet();
 
         CompletableFuture<List<StatusCode>> modifyResults =
             subscription.modifyMonitoredItems(timestamps, itemsToModify);
@@ -205,7 +212,17 @@ public class BatchModifyMonitoredItems {
         });
     }
 
-    private CompletableFuture<UInteger> readOperationLimit() {
+    private static BatchModifyParametersBuilder parametersBuilderFromItem(OpcUaMonitoredItem item) {
+        return new BatchModifyParametersBuilder(item)
+            .setTimestamps(item.getTimestamps())
+            .setClientHandle(item.getClientHandle())
+            .setSamplingInterval(item.getRevisedSamplingInterval())
+            .setFilter(item.getMonitoringFilter())
+            .setQueueSize(item.getRevisedQueueSize())
+            .setDiscardOldest(item.getDiscardOldest());
+    }
+
+    private static CompletableFuture<UInteger> readOperationLimit(OpcUaClient client) {
         CompletableFuture<VariableNode> nodeFuture = client.getAddressSpace().getVariableNode(
             Identifiers.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall
         );
@@ -215,15 +232,6 @@ public class BatchModifyMonitoredItems {
                 variableNode.getValue()
                     .thenApply(UInteger.class::cast)
                     .exceptionally(ex -> uint(1000))
-        );
-    }
-
-    private static <T> CompletableFuture<List<T>> flatSequence(List<CompletableFuture<List<T>>> futures) {
-        return FutureUtils.sequence(futures).thenApply(
-            listOfListOfT ->
-                listOfListOfT.stream()
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList())
         );
     }
 
