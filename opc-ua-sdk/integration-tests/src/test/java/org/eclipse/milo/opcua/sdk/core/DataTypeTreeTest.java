@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.sdk.core;
 import java.util.Objects;
 
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
-import org.eclipse.milo.opcua.sdk.test.ClientServerTest;
+import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DataTypeTreeTest extends ClientServerTest {
+public class DataTypeTreeTest extends AbstractClientServerTest {
 
     private DataTypeTree dataTypeTree;
 

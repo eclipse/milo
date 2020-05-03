@@ -127,7 +127,9 @@ public class OpcUaSubscription implements UaSubscription {
                     result.getRevisedQueueSize(),
                     result.getFilterResult(),
                     request.getMonitoringMode(),
-                    request.getRequestedParameters().getFilter()
+                    request.getRequestedParameters().getFilter(),
+                    request.getRequestedParameters().getDiscardOldest(),
+                    timestampsToReturn
                 );
 
                 item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
@@ -192,12 +194,18 @@ public class OpcUaSubscription implements UaSubscription {
 
                 if (item != null) {
                     item.setStatusCode(statusCode);
-                    item.setRevisedSamplingInterval(result.getRevisedSamplingInterval());
-                    item.setRevisedQueueSize(result.getRevisedQueueSize());
-                    item.setFilterResult(result.getFilterResult());
 
-                    item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
-                    item.setRequestedQueueSize(request.getRequestedParameters().getQueueSize());
+                    if (statusCode.isGood()) {
+                        item.setTimestamps(timestampsToReturn);
+                        item.setRevisedSamplingInterval(result.getRevisedSamplingInterval());
+                        item.setRevisedQueueSize(result.getRevisedQueueSize());
+                        item.setFilterResult(result.getFilterResult());
+                        item.setDiscardOldest(request.getRequestedParameters().getDiscardOldest());
+
+                        item.setRequestedFilter(request.getRequestedParameters().getFilter());
+                        item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
+                        item.setRequestedQueueSize(request.getRequestedParameters().getQueueSize());
+                    }
                 }
 
                 statusCodes.add(statusCode);
@@ -217,9 +225,11 @@ public class OpcUaSubscription implements UaSubscription {
         return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
             List<StatusCode> results = l(response.getResults());
 
-            for (UaMonitoredItem item : itemsToDelete) {
+            for (int i = 0; i < itemsToDelete.size(); i++) {
+                OpcUaMonitoredItem item = (OpcUaMonitoredItem) itemsToDelete.get(i);
                 itemsByClientHandle.remove(item.getClientHandle());
                 itemsByServerHandle.remove(item.getMonitoredItemId());
+                item.setStatusCode(results.get(i));
             }
 
             return results;
