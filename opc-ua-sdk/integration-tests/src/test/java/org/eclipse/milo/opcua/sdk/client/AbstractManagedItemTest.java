@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
@@ -127,7 +126,7 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
         assertEquals(uint(10), f1.get());
         assertEquals(uint(10), managedItem1.getQueueSize());
-        
+
         assertEquals(uint(20), f2.get());
         assertEquals(uint(20), managedItem2.getQueueSize());
 
@@ -149,8 +148,29 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void timestampsToReturnBatch() throws UaException {
-        fail("not implemented");
+    public void timestampsToReturnBatch() throws UaException, ExecutionException, InterruptedException {
+        ManagedItem managedItem1 = createManagedItem();
+        ManagedItem managedItem2 = createManagedItem();
+
+        BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(subscription);
+
+        CompletableFuture<Unit> f1 = managedItem1.setTimestampsToReturnAsync(TimestampsToReturn.Neither, batch);
+        CompletableFuture<Unit> f2 = managedItem2.setTimestampsToReturnAsync(TimestampsToReturn.Neither, batch);
+
+        List<ModifyResult> results = batch.execute();
+
+        results.forEach(result -> {
+            assertTrue(result.isServiceResultGood());
+            assertTrue(result.isOperationResultGood());
+        });
+
+        assertEquals(Unit.VALUE, f1.get());
+        assertEquals(TimestampsToReturn.Neither, managedItem1.getTimestampsToReturn());
+
+        assertEquals(Unit.VALUE, f2.get());
+        assertEquals(TimestampsToReturn.Neither, managedItem2.getTimestampsToReturn());
+
+        assertEquals(1, batch.getServiceInvocationCount());
     }
 
     @Test
@@ -166,8 +186,29 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void discardOldestBatch() throws UaException {
-        fail("not implemented");
+    public void discardOldestBatch() throws UaException, ExecutionException, InterruptedException {
+        ManagedItem managedItem1 = createManagedItem();
+        ManagedItem managedItem2 = createManagedItem();
+
+        BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(subscription);
+
+        CompletableFuture<Unit> f1 = managedItem1.setDiscardOldestAsync(false, batch);
+        CompletableFuture<Unit> f2 = managedItem2.setDiscardOldestAsync(false, batch);
+
+        List<ModifyResult> results = batch.execute();
+
+        results.forEach(result -> {
+            assertTrue(result.isServiceResultGood());
+            assertTrue(result.isOperationResultGood());
+        });
+
+        assertEquals(Unit.VALUE, f1.get());
+        assertFalse(managedItem1.getDiscardOldest());
+
+        assertEquals(Unit.VALUE, f2.get());
+        assertFalse(managedItem2.getDiscardOldest());
+
+        assertEquals(1, batch.getServiceInvocationCount());
     }
 
 }
