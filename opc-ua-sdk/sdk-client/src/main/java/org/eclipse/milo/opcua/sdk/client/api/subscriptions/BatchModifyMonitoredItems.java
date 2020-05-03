@@ -265,7 +265,7 @@ public class BatchModifyMonitoredItems {
 
     }
 
-    public static class BatchModifyParameters {
+    private static class BatchModifyParameters {
 
         final OpcUaMonitoredItem item;
         final TimestampsToReturn timestamps;
@@ -339,9 +339,10 @@ public class BatchModifyMonitoredItems {
             return this;
         }
 
-        BatchModifyParameters build() {
+        private BatchModifyParameters build() {
             return new BatchModifyParameters(
-                item, timestamps,
+                item,
+                timestamps,
                 clientHandle,
                 samplingInterval,
                 filter,

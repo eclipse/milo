@@ -136,7 +136,7 @@ public class ManagedDataItem extends ManagedItem {
 
         return future.thenCompose(result -> {
             if (result.isServiceResultGood()) {
-                Optional<CompletableFuture<Double>> ocf = result.operationResult().map(s -> {
+                Optional<CompletableFuture<Double>> opt = result.operationResult().map(s -> {
                     if (s.isGood()) {
                         return completedFuture(getSamplingInterval());
                     } else {
@@ -145,7 +145,7 @@ public class ManagedDataItem extends ManagedItem {
                 });
 
                 // if the service result is good the operation result must be present.
-                return ocf.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
+                return opt.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
             } else {
                 return failedUaFuture(result.serviceResult());
             }
