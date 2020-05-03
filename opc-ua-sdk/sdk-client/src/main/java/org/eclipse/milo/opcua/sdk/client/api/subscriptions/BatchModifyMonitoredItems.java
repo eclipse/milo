@@ -47,16 +47,32 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class BatchModifyMonitoredItems {
 
+    /**
+     * MonitoredItems used as a parameter in add() mapped to their builder containing the modifications to make.
+     */
     private final Map<OpcUaMonitoredItem, BatchModifyParametersBuilder> buildersByItem =
         Collections.synchronizedMap(new LinkedHashMap<>());
 
+    /**
+     * Holds possibly multiple CompletableFutures per-item. A MonitoredItem may have multiple futures if it was used as
+     * the parameter in add() more than once, which is expected if multiple monitoring parameters are being modified.
+     * <p>
+     * There will only be as many underlying operation results as there are MonitoredItems, which is potentially less
+     * than the total number futures returned by add(), so this ListMultimap makes it possible to multiplex those
+     * underlying results onto all of the returned futures.
+     */
     private final ListMultimap<OpcUaMonitoredItem, CompletableFuture<ModifyResult>> futuresByItem =
         Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
 
+    /**
+     * Every CompletableFuture returned by a call to add().
+     * <p>
+     * Used to ensure execute() can return CompletableFutures in the same order they were created by add() calls.
+     */
     private final List<CompletableFuture<ModifyResult>> resultFutures =
         Collections.synchronizedList(new ArrayList<>());
 
-    private final AtomicInteger modifyServiceCount = new AtomicInteger(0);
+    private final AtomicInteger serviceInvocationCount = new AtomicInteger(0);
 
     private final OpcUaClient client;
     private final OpcUaSubscription subscription;
@@ -76,7 +92,7 @@ public class BatchModifyMonitoredItems {
      * @return the number of service invocations that were needed to execute this batch.
      */
     public int getServiceInvocationCount() {
-        return modifyServiceCount.get();
+        return serviceInvocationCount.get();
     }
 
     /**
@@ -176,8 +192,8 @@ public class BatchModifyMonitoredItems {
      * <p>
      * The returned CompletableFuture always completes successfully.
      * <p>
-     * The corresponding operation result for each item to modify may be either the StatusCode from the service call if
-     * the call failed or the StatusCode from the operation if the service call succeeded.
+     * The corresponding operation result for each item to modify may be either the StatusCode from the service call
+     * if the call failed or the StatusCode from the operation if the service call succeeded.
      *
      * @param timestamps    the {@link TimestampsToReturn} to use in the  modify call.
      * @param itemsToModify the {@link MonitoredItemModifyRequest} for the items to modify.
@@ -188,7 +204,7 @@ public class BatchModifyMonitoredItems {
         List<MonitoredItemModifyRequest> itemsToModify
     ) {
 
-        modifyServiceCount.incrementAndGet();
+        serviceInvocationCount.incrementAndGet();
 
         CompletableFuture<List<StatusCode>> modifyResults =
             subscription.modifyMonitoredItems(timestamps, itemsToModify);

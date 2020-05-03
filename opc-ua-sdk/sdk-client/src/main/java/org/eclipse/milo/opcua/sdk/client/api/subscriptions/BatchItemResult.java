@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 /**
- * Describes the operation- and service-level results of a batch operation.
+ * Holds the operation- and service-level results of a batch operation.
  *
  * @param <T> the type of the operation result for the batch operation.
  */
