@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -129,7 +129,7 @@ public class ManagedDataItem extends ManagedItem {
         BatchModifyMonitoredItems batch
     ) {
 
-        CompletableFuture<ModifyResult> future = batch.add(
+        CompletableFuture<ModifyMonitoredItemResult> future = batch.add(
             getMonitoredItem(),
             b -> b.setSamplingInterval(samplingInterval)
         );

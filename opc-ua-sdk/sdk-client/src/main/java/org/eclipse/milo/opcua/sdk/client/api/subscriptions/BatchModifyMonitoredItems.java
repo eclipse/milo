@@ -45,6 +45,12 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
+/**
+ * Manages the batch execution of one or more modifications to one or more MonitoredItems.
+ * <p>
+ * Handles splitting the execution into multiple service calls as needed based on the requested modifications and the
+ * operation limits reported by the server.
+ */
 public class BatchModifyMonitoredItems {
 
     /**
@@ -61,7 +67,7 @@ public class BatchModifyMonitoredItems {
      * than the total number futures returned by add(), so this ListMultimap makes it possible to multiplex those
      * underlying results onto all of the returned futures.
      */
-    private final ListMultimap<OpcUaMonitoredItem, CompletableFuture<ModifyResult>> futuresByItem =
+    private final ListMultimap<OpcUaMonitoredItem, CompletableFuture<ModifyMonitoredItemResult>> futuresByItem =
         Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
 
     /**
@@ -69,7 +75,7 @@ public class BatchModifyMonitoredItems {
      * <p>
      * Used to ensure execute() can return CompletableFutures in the same order they were created by add() calls.
      */
-    private final List<CompletableFuture<ModifyResult>> resultFutures =
+    private final List<CompletableFuture<ModifyMonitoredItemResult>> resultFutures =
         Collections.synchronizedList(new ArrayList<>());
 
     private final AtomicInteger serviceInvocationCount = new AtomicInteger(0);
@@ -100,9 +106,9 @@ public class BatchModifyMonitoredItems {
      *
      * @param monitoredItem   the {@link OpcUaMonitoredItem} to modify.
      * @param builderConsumer a consumer that will set changes on a {@link BatchModifyParametersBuilder}.
-     * @return a {@link CompletableFuture} that completes successfully
+     * @return a {@link CompletableFuture} that always completes successfully with a {@link ModifyMonitoredItemResult}.
      */
-    public CompletableFuture<ModifyResult> add(
+    public CompletableFuture<ModifyMonitoredItemResult> add(
         OpcUaMonitoredItem monitoredItem,
         Consumer<BatchModifyParametersBuilder> builderConsumer
     ) {
@@ -114,33 +120,47 @@ public class BatchModifyMonitoredItems {
 
         builderConsumer.accept(builder);
 
-        CompletableFuture<ModifyResult> future = new CompletableFuture<>();
+        CompletableFuture<ModifyMonitoredItemResult> future = new CompletableFuture<>();
         futuresByItem.put(monitoredItem, future);
         resultFutures.add(future);
         return future;
     }
 
-    public List<ModifyResult> execute() throws UaException {
+    /**
+     * Execute this batch operation and return a List of {@link ModifyMonitoredItemResult}s the same size and order as
+     * calls to {@link #add(OpcUaMonitoredItem, Consumer)} were made.
+     *
+     * @return a List of {@link ModifyMonitoredItemResult}s the same size and order as calls to
+     * {@link #add(OpcUaMonitoredItem, Consumer)} were made.
+     */
+    public List<ModifyMonitoredItemResult> execute() throws InterruptedException {
         try {
             return executeAsync().get();
-        } catch (InterruptedException e) {
-            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+            throw new IllegalStateException(e);
         }
     }
 
-    public CompletableFuture<List<ModifyResult>> executeAsync() {
+    /**
+     * Execute this batch operation and return a {@link CompletableFuture} with a List of
+     * {@link ModifyMonitoredItemResult}s the same size and order as calls to
+     * {@link #add(OpcUaMonitoredItem, Consumer)} were made.
+     * <p>
+     * The returned CompletableFuture always completes successfully.
+     *
+     * @return a {@link CompletableFuture} with a List of {@link ModifyMonitoredItemResult}s the same size and order as
+     * calls to {@link #add(OpcUaMonitoredItem, Consumer)} were made.
+     */
+    public CompletableFuture<List<ModifyMonitoredItemResult>> executeAsync() {
         return readOperationLimit(client).thenCompose(this::executeAsync);
     }
 
-    private CompletableFuture<List<ModifyResult>> executeAsync(UInteger operationLimit) {
+    private CompletableFuture<List<ModifyMonitoredItemResult>> executeAsync(UInteger operationLimit) {
         List<BatchModifyParameters> allMonitoringParameters = buildersByItem.values().stream()
             .map(BatchModifyParametersBuilder::build)
             .collect(Collectors.toList());
 
-        CompletableFuture<List<ModifyResult>> resultsFuture = GroupMapCollate.groupMapCollate(
+        CompletableFuture<List<ModifyMonitoredItemResult>> resultsFuture = GroupMapCollate.groupMapCollate(
             allMonitoringParameters,
             parametersItem -> parametersItem.timestamps,
             (TimestampsToReturn timestampsKey) -> parameterGroup -> {
@@ -157,7 +177,7 @@ public class BatchModifyMonitoredItems {
                     ))
                     .collect(Collectors.toList());
 
-                List<CompletableFuture<List<ModifyResult>>> partitionFutures =
+                List<CompletableFuture<List<ModifyMonitoredItemResult>>> partitionFutures =
                     Lists.partition(itemsToModify, operationLimit.intValue())
                         .stream()
                         .map(partition -> modifyItemsAsync(timestampsKey, partition))
@@ -174,9 +194,9 @@ public class BatchModifyMonitoredItems {
 
             for (int i = 0; i < items.size(); i++) {
                 OpcUaMonitoredItem item = items.get(i);
-                ModifyResult result = results.get(i);
+                ModifyMonitoredItemResult result = results.get(i);
 
-                List<CompletableFuture<ModifyResult>> futures;
+                List<CompletableFuture<ModifyMonitoredItemResult>> futures;
                 synchronized (futuresByItem) {
                     futures = new ArrayList<>(futuresByItem.get(item));
                 }
@@ -199,7 +219,7 @@ public class BatchModifyMonitoredItems {
      * @param itemsToModify the {@link MonitoredItemModifyRequest} for the items to modify.
      * @return a {@link CompletableFuture} that is always completed successfully.
      */
-    private CompletableFuture<List<ModifyResult>> modifyItemsAsync(
+    private CompletableFuture<List<ModifyMonitoredItemResult>> modifyItemsAsync(
         TimestampsToReturn timestamps,
         List<MonitoredItemModifyRequest> itemsToModify
     ) {
@@ -209,10 +229,10 @@ public class BatchModifyMonitoredItems {
         CompletableFuture<List<StatusCode>> modifyResults =
             subscription.modifyMonitoredItems(timestamps, itemsToModify);
 
-        CompletableFuture<List<ModifyResult>> batchItemResults =
+        CompletableFuture<List<ModifyMonitoredItemResult>> batchItemResults =
             modifyResults.thenApply(statusCodes ->
                 statusCodes.stream()
-                    .map(statusCode -> new ModifyResult(StatusCode.GOOD, statusCode))
+                    .map(statusCode -> new ModifyMonitoredItemResult(StatusCode.GOOD, statusCode))
                     .collect(Collectors.toList())
             );
 
@@ -221,7 +241,7 @@ public class BatchModifyMonitoredItems {
                 .extractStatusCode(ex)
                 .orElse(new StatusCode(StatusCodes.Bad_UnexpectedError));
 
-            ModifyResult result = new ModifyResult(serviceResult);
+            ModifyMonitoredItemResult result = new ModifyMonitoredItemResult(serviceResult);
 
             return Collections.nCopies(itemsToModify.size(), result);
         });
@@ -250,16 +270,20 @@ public class BatchModifyMonitoredItems {
         );
     }
 
-    public static class ModifyResult implements BatchItemResult<StatusCode> {
+    /**
+     * Holds the operation- and service-level results of an operation that is part of a
+     * {@link BatchModifyMonitoredItems} execution.
+     */
+    public static class ModifyMonitoredItemResult implements BatchItemResult<StatusCode> {
 
         private final StatusCode serviceResult;
         private final StatusCode operationResult;
 
-        public ModifyResult(StatusCode serviceResult) {
+        public ModifyMonitoredItemResult(StatusCode serviceResult) {
             this(serviceResult, null);
         }
 
-        ModifyResult(StatusCode serviceResult, @Nullable StatusCode operationResult) {
+        ModifyMonitoredItemResult(StatusCode serviceResult, @Nullable StatusCode operationResult) {
             this.serviceResult = serviceResult;
             this.operationResult = operationResult;
         }

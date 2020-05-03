@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.AbstractSubscriptionTest;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -56,20 +56,20 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
             subscription.getSubscription()
         );
 
-        List<CompletableFuture<ModifyResult>> futures = new ArrayList<>();
+        List<CompletableFuture<ModifyMonitoredItemResult>> futures = new ArrayList<>();
 
         items.forEach(item -> {
-            CompletableFuture<ModifyResult> future =
+            CompletableFuture<ModifyMonitoredItemResult> future =
                 batch.add(item, b -> b.setSamplingInterval(5000.0));
 
             futures.add(future);
         });
 
-        List<ModifyResult> batchResults = batch.execute();
+        List<ModifyMonitoredItemResult> batchResults = batch.execute();
 
         for (int i = 0; i < 10; i++) {
-            ModifyResult result = batchResults.get(i);
-            CompletableFuture<ModifyResult> future = futures.get(i);
+            ModifyMonitoredItemResult result = batchResults.get(i);
+            CompletableFuture<ModifyMonitoredItemResult> future = futures.get(i);
 
             assertTrue(future.isDone());
 
@@ -87,7 +87,7 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void multipleTimestampsToReturn() throws UaException {
+    public void multipleTimestampsToReturn() throws UaException, InterruptedException {
         ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
@@ -108,9 +108,9 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
         batch.add(item3.getMonitoredItem(), b -> b.setTimestamps(TimestampsToReturn.Neither));
         batch.add(item4.getMonitoredItem(), b -> b.setTimestamps(TimestampsToReturn.Source));
 
-        List<ModifyResult> results = batch.execute();
+        List<ModifyMonitoredItemResult> results = batch.execute();
 
-        for (ModifyResult result : results) {
+        for (ModifyMonitoredItemResult result : results) {
             assertTrue(result.isServiceResultGood());
             assertTrue(result.isOperationResultGood());
         }

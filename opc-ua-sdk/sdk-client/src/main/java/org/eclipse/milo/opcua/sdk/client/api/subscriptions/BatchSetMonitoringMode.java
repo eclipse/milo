@@ -41,6 +41,13 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
+
+/**
+ * Manages the batch execution of one or more {@link MonitoringMode} modifications to one or more MonitoredItems.
+ * <p>
+ * Handles splitting the execution into multiple service calls as needed based on the requested modifications and the
+ * operation limits reported by the server.
+ */
 public class BatchSetMonitoringMode {
 
     private final Map<OpcUaMonitoredItem, MonitoringMode> monitoringModesByItem =
@@ -66,10 +73,22 @@ public class BatchSetMonitoringMode {
         this.subscription = subscription;
     }
 
+    /**
+     * Get the number of service invocations that were needed to execute this batch.
+     *
+     * @return the number of service invocations that were needed to execute this batch.
+     */
     public int getServiceInvocationCount() {
         return serviceInvocationCount.get();
     }
 
+    /**
+     * Add an {@link OpcUaMonitoredItem} to set a new {@link MonitoringMode} on as part of a batch.
+     *
+     * @param monitoredItem  the {@link OpcUaMonitoredItem} to modify.
+     * @param monitoringMode the new {@link MonitoringMode}.
+     * @return a {@link CompletableFuture} that always completes successfully with a {@link SetMonitoringModeResult}.
+     */
     public CompletableFuture<SetMonitoringModeResult> add(
         OpcUaMonitoredItem monitoredItem,
         MonitoringMode monitoringMode
@@ -83,17 +102,31 @@ public class BatchSetMonitoringMode {
         return future;
     }
 
-    public List<SetMonitoringModeResult> execute() throws UaException {
+    /**
+     * Execute this batch operation and return a List of {@link SetMonitoringModeResult}s the same size and order as
+     * calls to {@link #add(OpcUaMonitoredItem, MonitoringMode)} were made.
+     *
+     * @return a List of {@link SetMonitoringModeResult}s the same size and order as calls to
+     * {@link #add(OpcUaMonitoredItem, MonitoringMode)} were made.
+     */
+    public List<SetMonitoringModeResult> execute() throws InterruptedException {
         try {
             return executeAsync().get();
-        } catch (InterruptedException e) {
-            throw new UaException(StatusCodes.Bad_UnexpectedError, e);
         } catch (ExecutionException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+            throw new IllegalStateException(e);
         }
     }
 
+    /**
+     * Execute this batch operation and return a {@link CompletableFuture} with a List of
+     * {@link SetMonitoringModeResult}s the same size and order as calls to
+     * {@link #add(OpcUaMonitoredItem, MonitoringMode)} were made.
+     * <p>
+     * The returned CompletableFuture always completes successfully.
+     *
+     * @return a {@link CompletableFuture} with a List of {@link SetMonitoringModeResult}s the same size and order as
+     * calls to {@link #add(OpcUaMonitoredItem, MonitoringMode)} were made.
+     */
     public CompletableFuture<List<SetMonitoringModeResult>> executeAsync() {
         return readOperationLimit(client).thenCompose(this::executeAsync);
     }

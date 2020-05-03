@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode.SetMonitoringModeResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -264,7 +265,7 @@ public abstract class ManagedItem {
         BatchModifyMonitoredItems batch
     ) {
 
-        CompletableFuture<BatchModifyMonitoredItems.ModifyResult> future = batch.add(
+        CompletableFuture<ModifyMonitoredItemResult> future = batch.add(
             getMonitoredItem(),
             b -> b.setQueueSize(queueSize)
         );
@@ -365,7 +366,7 @@ public abstract class ManagedItem {
         BatchModifyMonitoredItems batch
     ) {
 
-        CompletableFuture<BatchModifyMonitoredItems.ModifyResult> future = batch.add(
+        CompletableFuture<ModifyMonitoredItemResult> future = batch.add(
             getMonitoredItem(),
             b -> b.setTimestamps(timestamps)
         );
@@ -466,7 +467,7 @@ public abstract class ManagedItem {
         BatchModifyMonitoredItems batch
     ) {
 
-        CompletableFuture<BatchModifyMonitoredItems.ModifyResult> future = batch.add(
+        CompletableFuture<ModifyMonitoredItemResult> future = batch.add(
             getMonitoredItem(),
             b -> b.setDiscardOldest(discardOldest)
         );

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -82,7 +82,7 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
                 )
                 .collect(Collectors.toList());
 
-            List<ModifyResult> results = batch.execute();
+            List<ModifyMonitoredItemResult> results = batch.execute();
             results.forEach(r -> assertTrue(r.isOperationResultGood()));
 
             futures.forEach(f -> {

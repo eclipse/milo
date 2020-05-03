@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode.SetMonitoringModeResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedItem;
@@ -117,7 +117,7 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
         CompletableFuture<UInteger> f1 = managedItem1.setQueueSizeAsync(uint(10), batch);
         CompletableFuture<UInteger> f2 = managedItem2.setQueueSizeAsync(uint(20), batch);
 
-        List<ModifyResult> results = batch.execute();
+        List<ModifyMonitoredItemResult> results = batch.execute();
 
         results.forEach(result -> {
             assertTrue(result.isServiceResultGood());
@@ -157,7 +157,7 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
         CompletableFuture<Unit> f1 = managedItem1.setTimestampsToReturnAsync(TimestampsToReturn.Neither, batch);
         CompletableFuture<Unit> f2 = managedItem2.setTimestampsToReturnAsync(TimestampsToReturn.Neither, batch);
 
-        List<ModifyResult> results = batch.execute();
+        List<ModifyMonitoredItemResult> results = batch.execute();
 
         results.forEach(result -> {
             assertTrue(result.isServiceResultGood());
@@ -195,7 +195,7 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
         CompletableFuture<Unit> f1 = managedItem1.setDiscardOldestAsync(false, batch);
         CompletableFuture<Unit> f2 = managedItem2.setDiscardOldestAsync(false, batch);
 
-        List<ModifyResult> results = batch.execute();
+        List<ModifyMonitoredItemResult> results = batch.execute();
 
         results.forEach(result -> {
             assertTrue(result.isServiceResultGood());

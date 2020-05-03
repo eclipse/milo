@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BatchSetMonitoringModeTest extends AbstractSubscriptionTest {
 
     @Test
-    public void multipleOperations() throws UaException {
+    public void multipleOperations() throws UaException, InterruptedException {
         ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
@@ -57,7 +57,7 @@ public class BatchSetMonitoringModeTest extends AbstractSubscriptionTest {
     }
 
     @Test
-    public void multipleServiceInvocations() throws UaException {
+    public void multipleServiceInvocations() throws UaException, InterruptedException {
         ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
         ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
