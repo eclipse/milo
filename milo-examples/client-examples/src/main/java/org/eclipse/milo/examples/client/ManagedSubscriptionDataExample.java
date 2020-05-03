@@ -13,8 +13,8 @@ package org.eclipse.milo.examples.client;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

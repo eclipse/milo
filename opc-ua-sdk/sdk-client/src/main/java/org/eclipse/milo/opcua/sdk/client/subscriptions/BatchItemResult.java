@@ -8,11 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
+package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+
 
 /**
  * Holds the operation- and service-level results of a batch operation.

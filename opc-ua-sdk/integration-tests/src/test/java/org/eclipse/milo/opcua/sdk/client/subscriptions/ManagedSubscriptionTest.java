@@ -8,17 +8,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedDataItem;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedEventItem;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedSubscription.ChangeListener;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription.ChangeListener;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
