@@ -240,20 +240,16 @@ public final class ChunkEncoder {
         }
 
         private void writePadding(int cipherTextBlockSize, int paddingSize, ByteBuf buffer) {
-            if (cipherTextBlockSize > 256) {
-                buffer.writeShortLE(paddingSize);
-            } else {
-                buffer.writeByte(paddingSize);
-            }
+            buffer.writeByte(paddingSize);
 
             for (int i = 0; i < paddingSize; i++) {
                 buffer.writeByte(paddingSize);
             }
 
             if (cipherTextBlockSize > 256) {
-                // Replace the last byte with the MSB of the 2-byte padding length
-                int paddingLengthMsb = paddingSize >> 8;
-                buffer.writerIndex(buffer.writerIndex() - 1);
+                // Add the extra padding byte containing
+                // the MSB of the 2-byte padding length.
+                int paddingLengthMsb = (paddingSize >> 8) & 0xFF;
                 buffer.writeByte(paddingLengthMsb);
             }
         }

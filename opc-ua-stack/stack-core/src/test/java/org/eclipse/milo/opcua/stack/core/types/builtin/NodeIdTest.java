@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -169,6 +170,17 @@ public class NodeIdTest {
         NodeId nodeId2 = NodeId.parse("ns=2;s=foo\n\bar\nbaz");
         assertNotNull(nodeId2);
         assertNotNull(NodeId.parse(nodeId2.toParseableString()));
+    }
+
+    @Test
+    public void testExpandedWithNamespaceTable() {
+        NamespaceTable namespaceTable = new NamespaceTable();
+        namespaceTable.addUri("urn:test");
+
+        NodeId nodeId = new NodeId(1, "foo");
+        ExpandedNodeId xni = nodeId.expanded(namespaceTable);
+
+        assertEquals(xni.getNamespaceUri(), "urn:test");
     }
 
 }

@@ -1184,6 +1184,15 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
+
+        return readArray(field, s -> readEnum(s, enumType), enumType);
+    }
+
+    @Override
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         if (currentNode(field)) {
             Node node = currentNode;

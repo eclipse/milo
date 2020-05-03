@@ -171,8 +171,27 @@ public final class NodeId {
         }
     }
 
+    /**
+     * Convert this NodeId to a relative {@link ExpandedNodeId}.
+     *
+     * @return a relative {@link ExpandedNodeId}.
+     * @see ExpandedNodeId#isRelative()
+     */
     public ExpandedNodeId expanded() {
         return new ExpandedNodeId(namespaceIndex, null, identifier, UInteger.MIN);
+    }
+
+    /**
+     * Convert this NodeId to an absolute {@link ExpandedNodeId}, using {@code namespaceTable} to convert the
+     * namespace index to a namespace URI.
+     *
+     * @param namespaceTable a {@link NamespaceTable} to look up the namespace URI in.
+     * @return an absolute {@link ExpandedNodeId}.
+     * @see ExpandedNodeId#isAbsolute()
+     */
+    public ExpandedNodeId expanded(NamespaceTable namespaceTable) {
+        String namespaceUri = namespaceTable.getUri(namespaceIndex);
+        return new ExpandedNodeId(namespaceIndex, namespaceUri, identifier, UInteger.MIN);
     }
 
     public boolean isNull() {

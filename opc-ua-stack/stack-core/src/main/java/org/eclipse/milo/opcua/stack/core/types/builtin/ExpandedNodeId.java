@@ -363,7 +363,9 @@ public final class ExpandedNodeId {
     public String toParseableString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("svr=").append(serverIndex).append(";");
+        if (serverIndex.intValue() != 0) {
+            sb.append("svr=").append(serverIndex).append(";");
+        }
 
         if (namespaceUri != null) {
             sb.append("nsu=").append(namespaceUri).append(";");

@@ -357,6 +357,11 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeEnum);
+    }
+
+    @Override
     public void writeStructArray(
         String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
 
