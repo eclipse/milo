@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchModifyMonitoredItems.ModifyResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode.SetMonitoringModeResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedItem;
@@ -24,10 +26,12 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.junit.jupiter.api.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
@@ -105,6 +109,32 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
+    public void queueSizeBatch() throws UaException, ExecutionException, InterruptedException {
+        ManagedItem managedItem1 = createManagedItem();
+        ManagedItem managedItem2 = createManagedItem();
+
+        BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(subscription);
+
+        CompletableFuture<UInteger> f1 = managedItem1.setQueueSizeAsync(uint(10), batch);
+        CompletableFuture<UInteger> f2 = managedItem2.setQueueSizeAsync(uint(20), batch);
+
+        List<ModifyResult> results = batch.execute();
+
+        results.forEach(result -> {
+            assertTrue(result.isServiceResultGood());
+            assertTrue(result.isOperationResultGood());
+        });
+
+        assertEquals(uint(10), f1.get());
+        assertEquals(uint(10), managedItem1.getQueueSize());
+        
+        assertEquals(uint(20), f2.get());
+        assertEquals(uint(20), managedItem2.getQueueSize());
+
+        assertEquals(1, batch.getServiceInvocationCount());
+    }
+
+    @Test
     public void timestampsToReturn() throws UaException {
         TimestampsToReturn timestamps = subscription.getDefaultTimestamps();
 
@@ -119,6 +149,11 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
     }
 
     @Test
+    public void timestampsToReturnBatch() throws UaException {
+        fail("not implemented");
+    }
+
+    @Test
     public void discardOldest() throws UaException {
         boolean defaultDiscardOldest = subscription.getDefaultDiscardOldest();
 
@@ -128,6 +163,11 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
         managedItem.setDiscardOldest(!defaultDiscardOldest);
         assertEquals(!defaultDiscardOldest, managedItem.getDiscardOldest());
+    }
+
+    @Test
+    public void discardOldestBatch() throws UaException {
+        fail("not implemented");
     }
 
 }

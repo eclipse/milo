@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimaps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
@@ -52,8 +53,6 @@ public class BatchSetMonitoringMode {
         Collections.synchronizedList(new ArrayList<>());
 
     private final AtomicInteger serviceInvocationCount = new AtomicInteger(0);
-
-    // TODO Use client to read operation limits
 
     private final OpcUaClient client;
     private final OpcUaSubscription subscription;
@@ -96,13 +95,25 @@ public class BatchSetMonitoringMode {
     }
 
     public CompletableFuture<List<SetMonitoringModeResult>> executeAsync() {
+        return readOperationLimit(client).thenCompose(this::executeAsync);
+    }
+
+    private CompletableFuture<List<SetMonitoringModeResult>> executeAsync(UInteger operationLimit) {
         List<Map.Entry<OpcUaMonitoredItem, MonitoringMode>> entries =
             new ArrayList<>(monitoringModesByItem.entrySet());
 
         CompletableFuture<List<SetMonitoringModeResult>> resultsFuture = GroupMapCollate.groupMapCollate(
             entries,
             Map.Entry::getValue,
-            monitoringMode -> this::setMonitoringModeAsync
+            monitoringMode -> itemsAndModes -> {
+                List<CompletableFuture<List<SetMonitoringModeResult>>> partitionFutures =
+                    Lists.partition(itemsAndModes, operationLimit.intValue())
+                        .stream()
+                        .map(this::setMonitoringModeAsync)
+                        .collect(Collectors.toList());
+
+                return FutureUtils.flatSequence(partitionFutures);
+            }
         );
 
         return resultsFuture.thenCompose(results -> {

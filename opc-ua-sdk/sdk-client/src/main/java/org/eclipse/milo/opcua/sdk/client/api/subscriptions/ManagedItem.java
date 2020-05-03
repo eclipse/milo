@@ -251,6 +251,34 @@ public abstract class ManagedItem {
         });
     }
 
+    public CompletableFuture<UInteger> setQueueSizeAsync(
+        UInteger queueSize,
+        BatchModifyMonitoredItems batch
+    ) {
+
+        CompletableFuture<BatchModifyMonitoredItems.ModifyResult> future = batch.add(
+            getMonitoredItem(),
+            b -> b.setQueueSize(queueSize)
+        );
+
+        return future.thenCompose(result -> {
+            if (result.isServiceResultGood()) {
+                Optional<CompletableFuture<UInteger>> opt = result.operationResult().map(s -> {
+                    if (s.isGood()) {
+                        return completedFuture(getQueueSize());
+                    } else {
+                        return failedUaFuture(s);
+                    }
+                });
+
+                // if the service result is good the operation result must be present.
+                return opt.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
+            } else {
+                return failedUaFuture(result.serviceResult());
+            }
+        });
+    }
+
     //endregion
 
     //region TimestampToReturn operations
@@ -316,6 +344,34 @@ public abstract class ManagedItem {
         });
     }
 
+    public CompletableFuture<Unit> setTimestampsToReturnAsync(
+        TimestampsToReturn timestamps,
+        BatchModifyMonitoredItems batch
+    ) {
+
+        CompletableFuture<BatchModifyMonitoredItems.ModifyResult> future = batch.add(
+            getMonitoredItem(),
+            b -> b.setTimestamps(timestamps)
+        );
+
+        return future.thenCompose(result -> {
+            if (result.isServiceResultGood()) {
+                Optional<CompletableFuture<Unit>> opt = result.operationResult().map(s -> {
+                    if (s.isGood()) {
+                        return completedFuture(Unit.VALUE);
+                    } else {
+                        return failedUaFuture(s);
+                    }
+                });
+
+                // if the service result is good the operation result must be present.
+                return opt.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
+            } else {
+                return failedUaFuture(result.serviceResult());
+            }
+        });
+    }
+
     //endregion
 
     //region DiscardOldest operations
@@ -377,6 +433,34 @@ public abstract class ManagedItem {
                 return completedFuture(Unit.VALUE);
             } else {
                 return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    public CompletableFuture<Unit> setDiscardOldestAsync(
+        boolean discardOldest,
+        BatchModifyMonitoredItems batch
+    ) {
+
+        CompletableFuture<BatchModifyMonitoredItems.ModifyResult> future = batch.add(
+            getMonitoredItem(),
+            b -> b.setDiscardOldest(discardOldest)
+        );
+
+        return future.thenCompose(result -> {
+            if (result.isServiceResultGood()) {
+                Optional<CompletableFuture<Unit>> opt = result.operationResult().map(s -> {
+                    if (s.isGood()) {
+                        return completedFuture(Unit.VALUE);
+                    } else {
+                        return failedUaFuture(s);
+                    }
+                });
+
+                // if the service result is good the operation result must be present.
+                return opt.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
+            } else {
+                return failedUaFuture(result.serviceResult());
             }
         });
     }
