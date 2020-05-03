@@ -10,11 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode.SetMonitoringModeResult;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.ManagedItem;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,6 +66,30 @@ public abstract class AbstractManagedItemTest extends AbstractSubscriptionTest {
 
         managedItem.setMonitoringMode(MonitoringMode.Reporting);
         assertEquals(MonitoringMode.Reporting, managedItem.getMonitoringMode());
+    }
+
+    @Test
+    public void monitoringModeBatch() throws UaException, ExecutionException, InterruptedException {
+        ManagedItem managedItem1 = createManagedItem();
+        ManagedItem managedItem2 = createManagedItem();
+
+        BatchSetMonitoringMode batch = new BatchSetMonitoringMode(subscription);
+        CompletableFuture<Unit> f1 = managedItem1.setMonitoringModeAsync(MonitoringMode.Sampling, batch);
+        CompletableFuture<Unit> f2 = managedItem2.setMonitoringModeAsync(MonitoringMode.Sampling, batch);
+
+        List<SetMonitoringModeResult> results = batch.execute();
+
+        results.forEach(result -> {
+            assertTrue(result.isServiceResultGood());
+            assertTrue(result.isOperationResultGood());
+        });
+
+        assertEquals(Unit.VALUE, f1.get());
+        assertEquals(Unit.VALUE, f2.get());
+        assertEquals(MonitoringMode.Sampling, managedItem1.getMonitoringMode());
+        assertEquals(MonitoringMode.Sampling, managedItem2.getMonitoringMode());
+
+        assertEquals(1, batch.getServiceInvocationCount());
     }
 
     @Test

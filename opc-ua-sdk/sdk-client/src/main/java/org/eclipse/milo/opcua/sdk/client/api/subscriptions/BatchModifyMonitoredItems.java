@@ -160,7 +160,7 @@ public class BatchModifyMonitoredItems {
                 List<CompletableFuture<List<ModifyResult>>> partitionFutures =
                     Lists.partition(itemsToModify, operationLimit.intValue())
                         .stream()
-                        .map(partition -> modifyItems(timestampsKey, partition))
+                        .map(partition -> modifyItemsAsync(timestampsKey, partition))
                         .collect(Collectors.toList());
 
                 return FutureUtils.flatSequence(partitionFutures);
@@ -199,7 +199,7 @@ public class BatchModifyMonitoredItems {
      * @param itemsToModify the {@link MonitoredItemModifyRequest} for the items to modify.
      * @return a {@link CompletableFuture} that is always completed successfully.
      */
-    private CompletableFuture<List<ModifyResult>> modifyItems(
+    private CompletableFuture<List<ModifyResult>> modifyItemsAsync(
         TimestampsToReturn timestamps,
         List<MonitoredItemModifyRequest> itemsToModify
     ) {
@@ -221,8 +221,7 @@ public class BatchModifyMonitoredItems {
                 .extractStatusCode(ex)
                 .orElse(new StatusCode(StatusCodes.Bad_UnexpectedError));
 
-
-            ModifyResult result = new ModifyResult(serviceResult, null);
+            ModifyResult result = new ModifyResult(serviceResult);
 
             return Collections.nCopies(itemsToModify.size(), result);
         });
@@ -255,6 +254,10 @@ public class BatchModifyMonitoredItems {
 
         private final StatusCode serviceResult;
         private final StatusCode operationResult;
+
+        public ModifyResult(StatusCode serviceResult) {
+            this(serviceResult, null);
+        }
 
         ModifyResult(StatusCode serviceResult, @Nullable StatusCode operationResult) {
             this.serviceResult = serviceResult;

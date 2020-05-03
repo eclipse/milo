@@ -19,20 +19,26 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscription;
 import org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class BatchSetMonitoringMode {
 
@@ -47,6 +53,8 @@ public class BatchSetMonitoringMode {
 
     private final AtomicInteger serviceInvocationCount = new AtomicInteger(0);
 
+    // TODO Use client to read operation limits
+
     private final OpcUaClient client;
     private final OpcUaSubscription subscription;
 
@@ -57,6 +65,10 @@ public class BatchSetMonitoringMode {
     public BatchSetMonitoringMode(OpcUaClient client, OpcUaSubscription subscription) {
         this.client = client;
         this.subscription = subscription;
+    }
+
+    public int getServiceInvocationCount() {
+        return serviceInvocationCount.get();
     }
 
     public CompletableFuture<SetMonitoringModeResult> add(
@@ -120,13 +132,42 @@ public class BatchSetMonitoringMode {
 
         serviceInvocationCount.incrementAndGet();
 
-        // TODO
+        MonitoringMode monitoringMode = itemsAndModes.get(0).getValue();
 
-        SetMonitoringModeResult result = new SetMonitoringModeResult(
-            new StatusCode(StatusCodes.Bad_NotImplemented)
+        List<UaMonitoredItem> items = itemsAndModes.stream()
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+
+        CompletableFuture<List<SetMonitoringModeResult>> resultsFuture =
+            subscription.setMonitoringMode(monitoringMode, items).thenApply(
+                statusCodes ->
+                    statusCodes.stream()
+                        .map(statusCode -> new SetMonitoringModeResult(StatusCode.GOOD, statusCode))
+                        .collect(Collectors.toList())
+            );
+
+        return resultsFuture.exceptionally(ex -> {
+            StatusCode serviceResult = UaException
+                .extractStatusCode(ex)
+                .orElse(new StatusCode(StatusCodes.Bad_UnexpectedError));
+
+            SetMonitoringModeResult result = new SetMonitoringModeResult(serviceResult);
+
+            return Collections.nCopies(items.size(), result);
+        });
+    }
+
+    private static CompletableFuture<UInteger> readOperationLimit(OpcUaClient client) {
+        CompletableFuture<VariableNode> nodeFuture = client.getAddressSpace().getVariableNode(
+            Identifiers.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall
         );
 
-        return CompletableFuture.completedFuture(Collections.nCopies(itemsAndModes.size(), result));
+        return nodeFuture.thenCompose(
+            variableNode ->
+                variableNode.getValue()
+                    .thenApply(UInteger.class::cast)
+                    .exceptionally(ex -> uint(1000))
+        );
     }
 
     /**

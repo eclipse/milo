@@ -11,10 +11,12 @@
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.BatchSetMonitoringMode.SetMonitoringModeResult;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -145,6 +147,39 @@ public abstract class ManagedItem {
                 return completedFuture(Unit.VALUE);
             } else {
                 return failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    /**
+     * Set this item's {@link MonitoringMode} as part of a batch operation.
+     *
+     * @param monitoringMode the new {@link MonitoringMode} to set.
+     * @param batch          the {@link BatchSetMonitoringMode} operation.
+     * @return a {@link CompletableFuture} that completes successfully if the new {@link MonitoringMode} was set and
+     * completes exceptionally if an operation- or service-level error occurs.
+     */
+    public CompletableFuture<Unit> setMonitoringModeAsync(
+        MonitoringMode monitoringMode,
+        BatchSetMonitoringMode batch
+    ) {
+
+        CompletableFuture<SetMonitoringModeResult> future = batch.add(getMonitoredItem(), monitoringMode);
+
+        return future.thenCompose(result -> {
+            if (result.isServiceResultGood()) {
+                Optional<CompletableFuture<Unit>> opt = result.operationResult().map(s -> {
+                    if (s.isGood()) {
+                        return completedFuture(Unit.VALUE);
+                    } else {
+                        return failedUaFuture(s);
+                    }
+                });
+
+                // if the service result is good the operation result must be present.
+                return opt.orElse(failedUaFuture(new StatusCode(StatusCodes.Bad_InternalError)));
+            } else {
+                return failedUaFuture(result.serviceResult());
             }
         });
     }
