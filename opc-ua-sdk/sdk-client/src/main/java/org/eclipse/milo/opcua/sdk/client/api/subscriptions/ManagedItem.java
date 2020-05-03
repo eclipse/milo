@@ -251,6 +251,14 @@ public abstract class ManagedItem {
         });
     }
 
+    /**
+     * Request a new queue size for this item as part of a batch operation
+     *
+     * @param queueSize the new queue size to request.
+     * @param batch     the {@link BatchModifyMonitoredItems} operation.
+     * @return a {@link CompletableFuture} that completes successfully with the new queue size, possibly revised
+     * by the server, or completes exceptionally if an operation- or service-level error occurred.
+     */
     public CompletableFuture<UInteger> setQueueSizeAsync(
         UInteger queueSize,
         BatchModifyMonitoredItems batch
@@ -344,6 +352,14 @@ public abstract class ManagedItem {
         });
     }
 
+    /**
+     * Set this item's {@link TimestampsToReturn} as part of a batch operation.
+     *
+     * @param timestamps the new {@link TimestampsToReturn} to set.
+     * @param batch      the {@link BatchModifyMonitoredItems} operation.
+     * @return a {@link CompletableFuture} that completes successfully if the new {@link TimestampsToReturn} was set
+     * and completes exceptionally if an operation- or service-level error occurs.
+     */
     public CompletableFuture<Unit> setTimestampsToReturnAsync(
         TimestampsToReturn timestamps,
         BatchModifyMonitoredItems batch
@@ -437,6 +453,14 @@ public abstract class ManagedItem {
         });
     }
 
+    /**
+     * Set this item's discard policy as part of a batch operation.
+     *
+     * @param discardOldest {@code true} if the oldest are discarded when the queue is full.
+     * @param batch         the {@link BatchModifyMonitoredItems} operation.
+     * @return a {@link CompletableFuture} that completes successfully if the item was modified and completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
     public CompletableFuture<Unit> setDiscardOldestAsync(
         boolean discardOldest,
         BatchModifyMonitoredItems batch
