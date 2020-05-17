@@ -13,16 +13,6 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.DataTypeNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.ObjectNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.ReferenceTypeNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableTypeNode;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
@@ -32,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaViewNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -111,7 +102,7 @@ public class DefaultAddressSpace implements AddressSpace {
 
     private CompletableFuture<UaNode> getObjectNodeInstance(NodeId nodeId, UaObjectNode node) {
         return node.getTypeDefinition()
-            .thenCompose(Node::getNodeId)
+            .thenApply(Node::getNodeId)
             .thenCompose(
                 typeDefinition ->
                     client.getObjectTypeManager().getNodeFactory(typeDefinition)
@@ -122,8 +113,8 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     private CompletableFuture<UaNode> getVariableNodeInstance(NodeId nodeId, UaVariableNode node) {
-        return node.getTypeDefinition()
-            .thenCompose(Node::getNodeId)
+        return node.getTypeDefinitionNodeAsync()
+            .thenApply(Node::getNodeId)
             .thenCompose(
                 typeDefinition ->
                     client.getVariableTypeManager().getNodeFactory(typeDefinition)
@@ -134,10 +125,10 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     @Override
-    public CompletableFuture<ObjectNode> getObjectNode(NodeId nodeId) {
+    public CompletableFuture<UaObjectNode> getObjectNode(NodeId nodeId) {
         return getNodeInstance(nodeId).thenCompose(node -> {
-            if (ObjectNode.class.isAssignableFrom(node.getClass())) {
-                return completedFuture((ObjectNode) node);
+            if (UaObjectNode.class.isAssignableFrom(node.getClass())) {
+                return completedFuture((UaObjectNode) node);
             } else {
                 return failedFuture(
                     new UaException(
@@ -149,7 +140,7 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     @Override
-    public <T extends ObjectNode> CompletableFuture<T> getObjectNode(NodeId nodeId, Class<T> nodeClazz) {
+    public <T extends UaObjectNode> CompletableFuture<T> getObjectNode(NodeId nodeId, Class<T> nodeClazz) {
         return getNodeInstance(nodeId).thenCompose(node -> {
             if (nodeClazz.isAssignableFrom(node.getClass())) {
                 return completedFuture(nodeClazz.cast(node));
@@ -164,10 +155,10 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     @Override
-    public CompletableFuture<VariableNode> getVariableNode(NodeId nodeId) {
+    public CompletableFuture<UaVariableNode> getVariableNode(NodeId nodeId) {
         return getNodeInstance(nodeId).thenCompose(node -> {
-            if (VariableNode.class.isAssignableFrom(node.getClass())) {
-                return completedFuture((VariableNode) node);
+            if (UaVariableNode.class.isAssignableFrom(node.getClass())) {
+                return completedFuture((UaVariableNode) node);
             } else {
                 return failedFuture(
                     new UaException(
@@ -179,7 +170,7 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     @Override
-    public <T extends VariableNode> CompletableFuture<T> getVariableNode(NodeId nodeId, Class<T> nodeClazz) {
+    public <T extends UaVariableNode> CompletableFuture<T> getVariableNode(NodeId nodeId, Class<T> nodeClazz) {
         return getNodeInstance(nodeId).thenCompose(node -> {
             if (nodeClazz.isAssignableFrom(node.getClass())) {
                 return completedFuture(nodeClazz.cast(node));
@@ -194,27 +185,27 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     @Override
-    public DataTypeNode createDataTypeNode(NodeId nodeId) {
+    public UaDataTypeNode createDataTypeNode(NodeId nodeId) {
         return new UaDataTypeNode(client, nodeId);
     }
 
     @Override
-    public MethodNode createMethodNode(NodeId nodeId) {
+    public UaMethodNode createMethodNode(NodeId nodeId) {
         return new UaMethodNode(client, nodeId);
     }
 
     @Override
-    public ObjectNode createObjectNode(NodeId nodeId) {
+    public UaObjectNode createObjectNode(NodeId nodeId) {
         return new UaObjectNode(client, nodeId);
     }
 
     @Override
-    public ObjectTypeNode createObjectTypeNode(NodeId nodeId) {
+    public UaObjectTypeNode createObjectTypeNode(NodeId nodeId) {
         return new UaObjectTypeNode(client, nodeId);
     }
 
     @Override
-    public ReferenceTypeNode createReferenceTypeNode(NodeId nodeId) {
+    public UaReferenceTypeNode createReferenceTypeNode(NodeId nodeId) {
         return new UaReferenceTypeNode(client, nodeId);
     }
 
@@ -224,12 +215,12 @@ public class DefaultAddressSpace implements AddressSpace {
     }
 
     @Override
-    public VariableTypeNode createVariableTypeNode(NodeId nodeId) {
+    public UaVariableTypeNode createVariableTypeNode(NodeId nodeId) {
         return new UaVariableTypeNode(client, nodeId);
     }
 
     @Override
-    public ViewNode createViewNode(NodeId nodeId) {
+    public UaViewNode createViewNode(NodeId nodeId) {
         return new UaViewNode(client, nodeId);
     }
 

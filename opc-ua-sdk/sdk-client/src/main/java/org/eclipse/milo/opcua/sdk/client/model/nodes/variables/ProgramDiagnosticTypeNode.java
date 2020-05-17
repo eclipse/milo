@@ -1,147 +1,681 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.variables;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.ProgramDiagnosticType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implements ProgramDiagnosticType {
-    public ProgramDiagnosticTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public ProgramDiagnosticTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                     UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType, int valueRank,
+                                     UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                                     double minimumSamplingInterval, boolean historizing) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
-    public CompletableFuture<PropertyTypeNode> getCreateSessionIdNode() {
-        return getPropertyNode(ProgramDiagnosticType.CREATE_SESSION_ID);
+    @Override
+    public NodeId getCreateSessionId() throws UaException {
+        PropertyTypeNode node = getCreateSessionIdNode();
+        return (NodeId) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<NodeId> getCreateSessionId() {
-        return getProperty(ProgramDiagnosticType.CREATE_SESSION_ID);
+    @Override
+    public void setCreateSessionId(NodeId createSessionId) throws UaException {
+        PropertyTypeNode node = getCreateSessionIdNode();
+        node.setValue(new Variant(createSessionId));
     }
 
-    public CompletableFuture<StatusCode> setCreateSessionId(NodeId value) {
-        return setProperty(ProgramDiagnosticType.CREATE_SESSION_ID, value);
+    @Override
+    public NodeId readCreateSessionId() throws UaException {
+        try {
+            return readCreateSessionIdAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getCreateClientNameNode() {
-        return getPropertyNode(ProgramDiagnosticType.CREATE_CLIENT_NAME);
+    @Override
+    public void writeCreateSessionId(NodeId createSessionId) throws UaException {
+        try {
+            writeCreateSessionIdAsync(createSessionId).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<String> getCreateClientName() {
-        return getProperty(ProgramDiagnosticType.CREATE_CLIENT_NAME);
+    @Override
+    public CompletableFuture<? extends NodeId> readCreateSessionIdAsync() {
+        return getCreateSessionIdNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (NodeId) v.getValue().getValue());
     }
 
-    public CompletableFuture<StatusCode> setCreateClientName(String value) {
-        return setProperty(ProgramDiagnosticType.CREATE_CLIENT_NAME, value);
+    @Override
+    public CompletableFuture<Unit> writeCreateSessionIdAsync(NodeId createSessionId) {
+        DataValue value = DataValue.valueOnly(new Variant(createSessionId));
+        return getCreateSessionIdNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<PropertyTypeNode> getInvocationCreationTimeNode() {
-        return getPropertyNode(ProgramDiagnosticType.INVOCATION_CREATION_TIME);
+    @Override
+    public PropertyTypeNode getCreateSessionIdNode() throws UaException {
+        try {
+            return getCreateSessionIdNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<DateTime> getInvocationCreationTime() {
-        return getProperty(ProgramDiagnosticType.INVOCATION_CREATION_TIME);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getCreateSessionIdNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateSessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<StatusCode> setInvocationCreationTime(DateTime value) {
-        return setProperty(ProgramDiagnosticType.INVOCATION_CREATION_TIME, value);
+    @Override
+    public String getCreateClientName() throws UaException {
+        PropertyTypeNode node = getCreateClientNameNode();
+        return (String) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastTransitionTimeNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_TRANSITION_TIME);
+    @Override
+    public void setCreateClientName(String createClientName) throws UaException {
+        PropertyTypeNode node = getCreateClientNameNode();
+        node.setValue(new Variant(createClientName));
     }
 
-    public CompletableFuture<DateTime> getLastTransitionTime() {
-        return getProperty(ProgramDiagnosticType.LAST_TRANSITION_TIME);
+    @Override
+    public String readCreateClientName() throws UaException {
+        try {
+            return readCreateClientNameAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setLastTransitionTime(DateTime value) {
-        return setProperty(ProgramDiagnosticType.LAST_TRANSITION_TIME, value);
+    @Override
+    public void writeCreateClientName(String createClientName) throws UaException {
+        try {
+            writeCreateClientNameAsync(createClientName).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastMethodCallNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_METHOD_CALL);
+    @Override
+    public CompletableFuture<? extends String> readCreateClientNameAsync() {
+        return getCreateClientNameNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (String) v.getValue().getValue());
     }
 
-    public CompletableFuture<String> getLastMethodCall() {
-        return getProperty(ProgramDiagnosticType.LAST_METHOD_CALL);
+    @Override
+    public CompletableFuture<Unit> writeCreateClientNameAsync(String createClientName) {
+        DataValue value = DataValue.valueOnly(new Variant(createClientName));
+        return getCreateClientNameNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<StatusCode> setLastMethodCall(String value) {
-        return setProperty(ProgramDiagnosticType.LAST_METHOD_CALL, value);
+    @Override
+    public PropertyTypeNode getCreateClientNameNode() throws UaException {
+        try {
+            return getCreateClientNameNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastMethodSessionIdNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_METHOD_SESSION_ID);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getCreateClientNameNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateClientName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<NodeId> getLastMethodSessionId() {
-        return getProperty(ProgramDiagnosticType.LAST_METHOD_SESSION_ID);
+    @Override
+    public DateTime getInvocationCreationTime() throws UaException {
+        PropertyTypeNode node = getInvocationCreationTimeNode();
+        return (DateTime) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<StatusCode> setLastMethodSessionId(NodeId value) {
-        return setProperty(ProgramDiagnosticType.LAST_METHOD_SESSION_ID, value);
+    @Override
+    public void setInvocationCreationTime(DateTime invocationCreationTime) throws UaException {
+        PropertyTypeNode node = getInvocationCreationTimeNode();
+        node.setValue(new Variant(invocationCreationTime));
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastMethodInputArgumentsNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_METHOD_INPUT_ARGUMENTS);
+    @Override
+    public DateTime readInvocationCreationTime() throws UaException {
+        try {
+            return readInvocationCreationTimeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<Argument[]> getLastMethodInputArguments() {
-        return getProperty(ProgramDiagnosticType.LAST_METHOD_INPUT_ARGUMENTS);
+    @Override
+    public void writeInvocationCreationTime(DateTime invocationCreationTime) throws UaException {
+        try {
+            writeInvocationCreationTimeAsync(invocationCreationTime).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setLastMethodInputArguments(Argument[] value) {
-        return setProperty(ProgramDiagnosticType.LAST_METHOD_INPUT_ARGUMENTS, value);
+    @Override
+    public CompletableFuture<? extends DateTime> readInvocationCreationTimeAsync() {
+        return getInvocationCreationTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (DateTime) v.getValue().getValue());
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastMethodOutputArgumentsNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_METHOD_OUTPUT_ARGUMENTS);
+    @Override
+    public CompletableFuture<Unit> writeInvocationCreationTimeAsync(DateTime invocationCreationTime) {
+        DataValue value = DataValue.valueOnly(new Variant(invocationCreationTime));
+        return getInvocationCreationTimeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<Argument[]> getLastMethodOutputArguments() {
-        return getProperty(ProgramDiagnosticType.LAST_METHOD_OUTPUT_ARGUMENTS);
+    @Override
+    public PropertyTypeNode getInvocationCreationTimeNode() throws UaException {
+        try {
+            return getInvocationCreationTimeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setLastMethodOutputArguments(Argument[] value) {
-        return setProperty(ProgramDiagnosticType.LAST_METHOD_OUTPUT_ARGUMENTS, value);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getInvocationCreationTimeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvocationCreationTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastMethodCallTimeNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_METHOD_CALL_TIME);
+    @Override
+    public DateTime getLastTransitionTime() throws UaException {
+        PropertyTypeNode node = getLastTransitionTimeNode();
+        return (DateTime) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<DateTime> getLastMethodCallTime() {
-        return getProperty(ProgramDiagnosticType.LAST_METHOD_CALL_TIME);
+    @Override
+    public void setLastTransitionTime(DateTime lastTransitionTime) throws UaException {
+        PropertyTypeNode node = getLastTransitionTimeNode();
+        node.setValue(new Variant(lastTransitionTime));
     }
 
-    public CompletableFuture<StatusCode> setLastMethodCallTime(DateTime value) {
-        return setProperty(ProgramDiagnosticType.LAST_METHOD_CALL_TIME, value);
+    @Override
+    public DateTime readLastTransitionTime() throws UaException {
+        try {
+            return readLastTransitionTimeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getLastMethodReturnStatusNode() {
-        return getPropertyNode(ProgramDiagnosticType.LAST_METHOD_RETURN_STATUS);
+    @Override
+    public void writeLastTransitionTime(DateTime lastTransitionTime) throws UaException {
+        try {
+            writeLastTransitionTimeAsync(lastTransitionTime).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusResult> getLastMethodReturnStatus() {
-        return getProperty(ProgramDiagnosticType.LAST_METHOD_RETURN_STATUS);
+    @Override
+    public CompletableFuture<? extends DateTime> readLastTransitionTimeAsync() {
+        return getLastTransitionTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (DateTime) v.getValue().getValue());
     }
 
-    public CompletableFuture<StatusCode> setLastMethodReturnStatus(StatusResult value) {
-        return setProperty(ProgramDiagnosticType.LAST_METHOD_RETURN_STATUS, value);
+    @Override
+    public CompletableFuture<Unit> writeLastTransitionTimeAsync(DateTime lastTransitionTime) {
+        DataValue value = DataValue.valueOnly(new Variant(lastTransitionTime));
+        return getLastTransitionTimeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastTransitionTimeNode() throws UaException {
+        try {
+            return getLastTransitionTimeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastTransitionTimeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransitionTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public String getLastMethodCall() throws UaException {
+        PropertyTypeNode node = getLastMethodCallNode();
+        return (String) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastMethodCall(String lastMethodCall) throws UaException {
+        PropertyTypeNode node = getLastMethodCallNode();
+        node.setValue(new Variant(lastMethodCall));
+    }
+
+    @Override
+    public String readLastMethodCall() throws UaException {
+        try {
+            return readLastMethodCallAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastMethodCall(String lastMethodCall) throws UaException {
+        try {
+            writeLastMethodCallAsync(lastMethodCall).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends String> readLastMethodCallAsync() {
+        return getLastMethodCallNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (String) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastMethodCallAsync(String lastMethodCall) {
+        DataValue value = DataValue.valueOnly(new Variant(lastMethodCall));
+        return getLastMethodCallNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastMethodCallNode() throws UaException {
+        try {
+            return getLastMethodCallNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastMethodCallNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public NodeId getLastMethodSessionId() throws UaException {
+        PropertyTypeNode node = getLastMethodSessionIdNode();
+        return (NodeId) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastMethodSessionId(NodeId lastMethodSessionId) throws UaException {
+        PropertyTypeNode node = getLastMethodSessionIdNode();
+        node.setValue(new Variant(lastMethodSessionId));
+    }
+
+    @Override
+    public NodeId readLastMethodSessionId() throws UaException {
+        try {
+            return readLastMethodSessionIdAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastMethodSessionId(NodeId lastMethodSessionId) throws UaException {
+        try {
+            writeLastMethodSessionIdAsync(lastMethodSessionId).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends NodeId> readLastMethodSessionIdAsync() {
+        return getLastMethodSessionIdNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (NodeId) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastMethodSessionIdAsync(NodeId lastMethodSessionId) {
+        DataValue value = DataValue.valueOnly(new Variant(lastMethodSessionId));
+        return getLastMethodSessionIdNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastMethodSessionIdNode() throws UaException {
+        try {
+            return getLastMethodSessionIdNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastMethodSessionIdNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodSessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Argument[] getLastMethodInputArguments() throws UaException {
+        PropertyTypeNode node = getLastMethodInputArgumentsNode();
+        return (Argument[]) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastMethodInputArguments(Argument[] lastMethodInputArguments) throws UaException {
+        PropertyTypeNode node = getLastMethodInputArgumentsNode();
+        node.setValue(new Variant(lastMethodInputArguments));
+    }
+
+    @Override
+    public Argument[] readLastMethodInputArguments() throws UaException {
+        try {
+            return readLastMethodInputArgumentsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastMethodInputArguments(Argument[] lastMethodInputArguments) throws
+        UaException {
+        try {
+            writeLastMethodInputArgumentsAsync(lastMethodInputArguments).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Argument[]> readLastMethodInputArgumentsAsync() {
+        return getLastMethodInputArgumentsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Argument[]) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastMethodInputArgumentsAsync(
+        Argument[] lastMethodInputArguments) {
+        DataValue value = DataValue.valueOnly(new Variant(lastMethodInputArguments));
+        return getLastMethodInputArgumentsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastMethodInputArgumentsNode() throws UaException {
+        try {
+            return getLastMethodInputArgumentsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastMethodInputArgumentsNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodInputArguments", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Argument[] getLastMethodOutputArguments() throws UaException {
+        PropertyTypeNode node = getLastMethodOutputArgumentsNode();
+        return (Argument[]) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastMethodOutputArguments(Argument[] lastMethodOutputArguments) throws
+        UaException {
+        PropertyTypeNode node = getLastMethodOutputArgumentsNode();
+        node.setValue(new Variant(lastMethodOutputArguments));
+    }
+
+    @Override
+    public Argument[] readLastMethodOutputArguments() throws UaException {
+        try {
+            return readLastMethodOutputArgumentsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastMethodOutputArguments(Argument[] lastMethodOutputArguments) throws
+        UaException {
+        try {
+            writeLastMethodOutputArgumentsAsync(lastMethodOutputArguments).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Argument[]> readLastMethodOutputArgumentsAsync() {
+        return getLastMethodOutputArgumentsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Argument[]) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastMethodOutputArgumentsAsync(
+        Argument[] lastMethodOutputArguments) {
+        DataValue value = DataValue.valueOnly(new Variant(lastMethodOutputArguments));
+        return getLastMethodOutputArgumentsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastMethodOutputArgumentsNode() throws UaException {
+        try {
+            return getLastMethodOutputArgumentsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastMethodOutputArgumentsNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodOutputArguments", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public DateTime getLastMethodCallTime() throws UaException {
+        PropertyTypeNode node = getLastMethodCallTimeNode();
+        return (DateTime) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastMethodCallTime(DateTime lastMethodCallTime) throws UaException {
+        PropertyTypeNode node = getLastMethodCallTimeNode();
+        node.setValue(new Variant(lastMethodCallTime));
+    }
+
+    @Override
+    public DateTime readLastMethodCallTime() throws UaException {
+        try {
+            return readLastMethodCallTimeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastMethodCallTime(DateTime lastMethodCallTime) throws UaException {
+        try {
+            writeLastMethodCallTimeAsync(lastMethodCallTime).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends DateTime> readLastMethodCallTimeAsync() {
+        return getLastMethodCallTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (DateTime) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastMethodCallTimeAsync(DateTime lastMethodCallTime) {
+        DataValue value = DataValue.valueOnly(new Variant(lastMethodCallTime));
+        return getLastMethodCallTimeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastMethodCallTimeNode() throws UaException {
+        try {
+            return getLastMethodCallTimeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastMethodCallTimeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodCallTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public StatusResult getLastMethodReturnStatus() throws UaException {
+        PropertyTypeNode node = getLastMethodReturnStatusNode();
+        return (StatusResult) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastMethodReturnStatus(StatusResult lastMethodReturnStatus) throws UaException {
+        PropertyTypeNode node = getLastMethodReturnStatusNode();
+        node.setValue(new Variant(lastMethodReturnStatus));
+    }
+
+    @Override
+    public StatusResult readLastMethodReturnStatus() throws UaException {
+        try {
+            return readLastMethodReturnStatusAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastMethodReturnStatus(StatusResult lastMethodReturnStatus) throws UaException {
+        try {
+            writeLastMethodReturnStatusAsync(lastMethodReturnStatus).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends StatusResult> readLastMethodReturnStatusAsync() {
+        return getLastMethodReturnStatusNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (StatusResult) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastMethodReturnStatusAsync(
+        StatusResult lastMethodReturnStatus) {
+        DataValue value = DataValue.valueOnly(new Variant(lastMethodReturnStatus));
+        return getLastMethodReturnStatusNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLastMethodReturnStatusNode() throws UaException {
+        try {
+            return getLastMethodReturnStatusNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLastMethodReturnStatusNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodReturnStatus", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

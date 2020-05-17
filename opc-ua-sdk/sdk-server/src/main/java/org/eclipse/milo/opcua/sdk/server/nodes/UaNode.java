@@ -478,7 +478,8 @@ public abstract class UaNode implements UaServerNode {
     public Optional<UaNode> findNode(
         QualifiedName browseName,
         Predicate<UaNode> nodePredicate,
-        Predicate<Reference> referencePredicate) {
+        Predicate<Reference> referencePredicate
+    ) {
 
         return getReferences()
             .stream()

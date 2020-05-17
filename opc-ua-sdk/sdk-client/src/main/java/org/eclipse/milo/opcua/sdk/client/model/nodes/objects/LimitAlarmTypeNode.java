@@ -1,73 +1,287 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.objects;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.LimitAlarmType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class LimitAlarmTypeNode extends AlarmConditionTypeNode implements LimitAlarmType {
-    public LimitAlarmTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public LimitAlarmTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                              QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                              UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    public CompletableFuture<PropertyTypeNode> getHighHighLimitNode() {
-        return getPropertyNode(LimitAlarmType.HIGH_HIGH_LIMIT);
+    @Override
+    public Double getHighHighLimit() throws UaException {
+        PropertyTypeNode node = getHighHighLimitNode();
+        return (Double) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<Double> getHighHighLimit() {
-        return getProperty(LimitAlarmType.HIGH_HIGH_LIMIT);
+    @Override
+    public void setHighHighLimit(Double highHighLimit) throws UaException {
+        PropertyTypeNode node = getHighHighLimitNode();
+        node.setValue(new Variant(highHighLimit));
     }
 
-    public CompletableFuture<StatusCode> setHighHighLimit(Double value) {
-        return setProperty(LimitAlarmType.HIGH_HIGH_LIMIT, value);
+    @Override
+    public Double readHighHighLimit() throws UaException {
+        try {
+            return readHighHighLimitAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getHighLimitNode() {
-        return getPropertyNode(LimitAlarmType.HIGH_LIMIT);
+    @Override
+    public void writeHighHighLimit(Double highHighLimit) throws UaException {
+        try {
+            writeHighHighLimitAsync(highHighLimit).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<Double> getHighLimit() {
-        return getProperty(LimitAlarmType.HIGH_LIMIT);
+    @Override
+    public CompletableFuture<? extends Double> readHighHighLimitAsync() {
+        return getHighHighLimitNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Double) v.getValue().getValue());
     }
 
-    public CompletableFuture<StatusCode> setHighLimit(Double value) {
-        return setProperty(LimitAlarmType.HIGH_LIMIT, value);
+    @Override
+    public CompletableFuture<Unit> writeHighHighLimitAsync(Double highHighLimit) {
+        DataValue value = DataValue.valueOnly(new Variant(highHighLimit));
+        return getHighHighLimitNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<PropertyTypeNode> getLowLimitNode() {
-        return getPropertyNode(LimitAlarmType.LOW_LIMIT);
+    @Override
+    public PropertyTypeNode getHighHighLimitNode() throws UaException {
+        try {
+            return getHighHighLimitNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<Double> getLowLimit() {
-        return getProperty(LimitAlarmType.LOW_LIMIT);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getHighHighLimitNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHighLimit", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<StatusCode> setLowLimit(Double value) {
-        return setProperty(LimitAlarmType.LOW_LIMIT, value);
+    @Override
+    public Double getHighLimit() throws UaException {
+        PropertyTypeNode node = getHighLimitNode();
+        return (Double) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<PropertyTypeNode> getLowLowLimitNode() {
-        return getPropertyNode(LimitAlarmType.LOW_LOW_LIMIT);
+    @Override
+    public void setHighLimit(Double highLimit) throws UaException {
+        PropertyTypeNode node = getHighLimitNode();
+        node.setValue(new Variant(highLimit));
     }
 
-    public CompletableFuture<Double> getLowLowLimit() {
-        return getProperty(LimitAlarmType.LOW_LOW_LIMIT);
+    @Override
+    public Double readHighLimit() throws UaException {
+        try {
+            return readHighLimitAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setLowLowLimit(Double value) {
-        return setProperty(LimitAlarmType.LOW_LOW_LIMIT, value);
+    @Override
+    public void writeHighLimit(Double highLimit) throws UaException {
+        try {
+            writeHighLimitAsync(highLimit).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Double> readHighLimitAsync() {
+        return getHighLimitNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Double) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeHighLimitAsync(Double highLimit) {
+        DataValue value = DataValue.valueOnly(new Variant(highLimit));
+        return getHighLimitNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getHighLimitNode() throws UaException {
+        try {
+            return getHighLimitNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getHighLimitNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighLimit", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Double getLowLimit() throws UaException {
+        PropertyTypeNode node = getLowLimitNode();
+        return (Double) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLowLimit(Double lowLimit) throws UaException {
+        PropertyTypeNode node = getLowLimitNode();
+        node.setValue(new Variant(lowLimit));
+    }
+
+    @Override
+    public Double readLowLimit() throws UaException {
+        try {
+            return readLowLimitAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLowLimit(Double lowLimit) throws UaException {
+        try {
+            writeLowLimitAsync(lowLimit).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Double> readLowLimitAsync() {
+        return getLowLimitNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Double) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLowLimitAsync(Double lowLimit) {
+        DataValue value = DataValue.valueOnly(new Variant(lowLimit));
+        return getLowLimitNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLowLimitNode() throws UaException {
+        try {
+            return getLowLimitNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLowLimitNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLimit", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Double getLowLowLimit() throws UaException {
+        PropertyTypeNode node = getLowLowLimitNode();
+        return (Double) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLowLowLimit(Double lowLowLimit) throws UaException {
+        PropertyTypeNode node = getLowLowLimitNode();
+        node.setValue(new Variant(lowLowLimit));
+    }
+
+    @Override
+    public Double readLowLowLimit() throws UaException {
+        try {
+            return readLowLowLimitAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLowLowLimit(Double lowLowLimit) throws UaException {
+        try {
+            writeLowLowLimitAsync(lowLowLimit).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Double> readLowLowLimitAsync() {
+        return getLowLowLimitNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Double) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLowLowLimitAsync(Double lowLowLimit) {
+        DataValue value = DataValue.valueOnly(new Variant(lowLowLimit));
+        return getLowLowLimitNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getLowLowLimitNode() throws UaException {
+        try {
+            return getLowLowLimitNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getLowLowLimitNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLowLimit", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

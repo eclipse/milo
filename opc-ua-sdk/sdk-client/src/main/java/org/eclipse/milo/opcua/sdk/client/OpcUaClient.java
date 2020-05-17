@@ -17,8 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
-import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -212,7 +210,7 @@ public class OpcUaClient implements UaClient {
     private final ExecutionQueue faultNotificationQueue;
 
     private final AddressSpace addressSpace;
-    private final NodeCache nodeCache = new DefaultNodeCache();
+    private final DefaultNodeCache nodeCache = new DefaultNodeCache();
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
@@ -303,7 +301,7 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public NodeCache getNodeCache() {
+    public DefaultNodeCache getNodeCache() {
         return nodeCache;
     }
 

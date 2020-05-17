@@ -19,49 +19,77 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 public interface Node {
 
     /**
-     * See OPC-UA Part 3, section 5.2.2.
+     * Get the NodeId attribute.
+     * <p>
+     * The NodeId is an unambiguous identifier that identifies a Node in a server.
+     * <p>
+     * See OPC UA Part 3, section 5.2.2.
      *
      * @return the NodeId ({@link NodeId}) of this node.
      */
     NodeId getNodeId();
 
     /**
-     * See OPC-UA Part 3, section 5.2.3.
+     * Get the NodeClass attribute.
+     * <p>
+     * The NodeClass attribute identifies the {@link NodeClass} of a Node.
+     * <p>
+     * See OPC UA Part 3, section 5.2.3.
      *
      * @return the NodeClass ({@link NodeClass}) of this node.
      */
     NodeClass getNodeClass();
 
     /**
-     * See OPC-UA Part 3, section 5.2.4.
+     * Get the BrowseName attribute.
+     * <p>
+     * The BrowseName attribute is a non-localized human-readable name for the Node that is used when browsing the
+     * address space.
+     * BrowseNames can be combined to form browse paths for use with the TranslateBrowsePathToNodeId service.
+     * <p>
+     * See OPC UA Part 3, section 5.2.4.
      *
      * @return the BrowseName ({@link QualifiedName}) of this node.
      */
     QualifiedName getBrowseName();
 
     /**
-     * See OPC-UA Part 3, section 5.2.5.
+     * See OPC UA Part 3, section 5.2.5.
      *
      * @return the DisplayName ({@link QualifiedName}) of this node.
      */
     LocalizedText getDisplayName();
 
     /**
-     * See OPC-UA Part 3, section 5.2.6.
+     * Get the Description attribute.
+     * <p>
+     * The optional Description Attribute explains the meaning of the Node in a {@link LocalizedText}.
+     * <p>
+     * See OPC UA Part 3, section 5.2.6.
      *
      * @return if this attribute is present, the Description ({@link LocalizedText}).
      */
     LocalizedText getDescription();
 
     /**
-     * See OPC-UA Part 3, section 5.2.7.
+     * Get the WriteMask attribute.
+     * <p>
+     * The optional WriteMask Attribute exposes the possibilities of a client to write the Attributes of the Node.
+     * The WriteMask Attribute does not take any user access rights into account.
+     * <p>
+     * See OPC UA Part 3, section 5.2.7.
      *
      * @return if this attribute is present, the WriteMask ({@link UInteger}).
      */
     UInteger getWriteMask();
 
     /**
-     * See OPC-UA Part 3, section 5.2.8.
+     * Get the UserWriteMask attribute.
+     * <p>
+     * The optional UserWriteMask Attribute exposes the possibilities of a client to write the Attributes of the Node
+     * taking user access rights into account.
+     * <p>
+     * See OPC UA Part 3, section 5.2.8.
      *
      * @return if this attribute is present, the UserWriteMask ({@link UInteger}).
      */
@@ -71,6 +99,7 @@ public interface Node {
      * Set the NodeId attribute of this Node.
      *
      * @param nodeId the NodeId to set.
+     * @see #getNodeId()
      */
     void setNodeId(NodeId nodeId);
 
@@ -78,6 +107,7 @@ public interface Node {
      * Set the NodeClass attribute of this Node.
      *
      * @param nodeClass the NodeClass to set.
+     * @see #getNodeClass()
      */
     void setNodeClass(NodeClass nodeClass);
 
@@ -85,6 +115,7 @@ public interface Node {
      * Set the BrowseName attribute of this Node.
      *
      * @param browseName the BrowseName to set.
+     * @see #getBrowseName()
      */
     void setBrowseName(QualifiedName browseName);
 
@@ -92,6 +123,7 @@ public interface Node {
      * Set the DisplayName attribute of this Node.
      *
      * @param displayName the DisplayName to set.
+     * @see #getDisplayName()
      */
     void setDisplayName(LocalizedText displayName);
 
@@ -99,6 +131,7 @@ public interface Node {
      * Set the Description attribute of this Node.
      *
      * @param description the Description to set.
+     * @see #getDescription()
      */
     void setDescription(LocalizedText description);
 
@@ -106,6 +139,7 @@ public interface Node {
      * Set the WriteMask attribute of this Node.
      *
      * @param writeMask the WriteMask to set.
+     * @see #getWriteMask()
      */
     void setWriteMask(UInteger writeMask);
 
@@ -113,6 +147,7 @@ public interface Node {
      * Set the UserWriteMask attribute of this Node.
      *
      * @param userWriteMask the UserWriteMask to set.
+     * @see #getUserWriteMask()
      */
     void setUserWriteMask(UInteger userWriteMask);
 

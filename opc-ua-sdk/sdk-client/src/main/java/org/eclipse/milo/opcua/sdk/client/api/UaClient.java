@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.sdk.client.api;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.client.AddressSpace;
+import org.eclipse.milo.opcua.sdk.client.DefaultNodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.services.AttributeServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.MethodServices;
@@ -57,9 +59,9 @@ public interface UaClient extends AttributeServices,
     AddressSpace getAddressSpace();
 
     /**
-     * @return the {@link NodeCache}.
+     * @return the {@link DefaultNodeCache}.
      */
-    NodeCache getNodeCache();
+    DefaultNodeCache getNodeCache();
 
     /**
      * @return the {@link OpcUaSubscriptionManager} for this client.

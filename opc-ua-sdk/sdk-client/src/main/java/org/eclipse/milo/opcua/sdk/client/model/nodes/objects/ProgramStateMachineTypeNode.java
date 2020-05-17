@@ -1,16 +1,7 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.objects;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.FiniteStateVariableTypeNode;
@@ -18,214 +9,853 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.FiniteTransitionV
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ProgramDiagnosticTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ProgramStateMachineType;
-import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode implements ProgramStateMachineType {
-    public ProgramStateMachineTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getCreatableNode() {
-        return getPropertyNode(ProgramStateMachineType.CREATABLE);
-    }
-
-    public CompletableFuture<Boolean> getCreatable() {
-        return getProperty(ProgramStateMachineType.CREATABLE);
-    }
-
-    public CompletableFuture<StatusCode> setCreatable(Boolean value) {
-        return setProperty(ProgramStateMachineType.CREATABLE, value);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getDeletableNode() {
-        return getPropertyNode(ProgramStateMachineType.DELETABLE);
-    }
-
-    public CompletableFuture<Boolean> getDeletable() {
-        return getProperty(ProgramStateMachineType.DELETABLE);
-    }
-
-    public CompletableFuture<StatusCode> setDeletable(Boolean value) {
-        return setProperty(ProgramStateMachineType.DELETABLE, value);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getAutoDeleteNode() {
-        return getPropertyNode(ProgramStateMachineType.AUTO_DELETE);
-    }
-
-    public CompletableFuture<Boolean> getAutoDelete() {
-        return getProperty(ProgramStateMachineType.AUTO_DELETE);
-    }
-
-    public CompletableFuture<StatusCode> setAutoDelete(Boolean value) {
-        return setProperty(ProgramStateMachineType.AUTO_DELETE, value);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getRecycleCountNode() {
-        return getPropertyNode(ProgramStateMachineType.RECYCLE_COUNT);
-    }
-
-    public CompletableFuture<Integer> getRecycleCount() {
-        return getProperty(ProgramStateMachineType.RECYCLE_COUNT);
-    }
-
-    public CompletableFuture<StatusCode> setRecycleCount(Integer value) {
-        return setProperty(ProgramStateMachineType.RECYCLE_COUNT, value);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getInstanceCountNode() {
-        return getPropertyNode(ProgramStateMachineType.INSTANCE_COUNT);
-    }
-
-    public CompletableFuture<UInteger> getInstanceCount() {
-        return getProperty(ProgramStateMachineType.INSTANCE_COUNT);
-    }
-
-    public CompletableFuture<StatusCode> setInstanceCount(UInteger value) {
-        return setProperty(ProgramStateMachineType.INSTANCE_COUNT, value);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getMaxInstanceCountNode() {
-        return getPropertyNode(ProgramStateMachineType.MAX_INSTANCE_COUNT);
-    }
-
-    public CompletableFuture<UInteger> getMaxInstanceCount() {
-        return getProperty(ProgramStateMachineType.MAX_INSTANCE_COUNT);
-    }
-
-    public CompletableFuture<StatusCode> setMaxInstanceCount(UInteger value) {
-        return setProperty(ProgramStateMachineType.MAX_INSTANCE_COUNT, value);
-    }
-
-    public CompletableFuture<PropertyTypeNode> getMaxRecycleCountNode() {
-        return getPropertyNode(ProgramStateMachineType.MAX_RECYCLE_COUNT);
-    }
-
-    public CompletableFuture<UInteger> getMaxRecycleCount() {
-        return getProperty(ProgramStateMachineType.MAX_RECYCLE_COUNT);
-    }
-
-    public CompletableFuture<StatusCode> setMaxRecycleCount(UInteger value) {
-        return setProperty(ProgramStateMachineType.MAX_RECYCLE_COUNT, value);
+    public ProgramStateMachineTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                       QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                       UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
     @Override
-    public CompletableFuture<FiniteStateVariableTypeNode> getCurrentStateNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentState").thenApply(FiniteStateVariableTypeNode.class::cast);
+    public Boolean getCreatable() throws UaException {
+        PropertyTypeNode node = getCreatableNode();
+        return (Boolean) node.getValue().getValue().getValue();
     }
 
     @Override
-    public CompletableFuture<LocalizedText> getCurrentState() {
-        return getCurrentStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
+    public void setCreatable(Boolean creatable) throws UaException {
+        PropertyTypeNode node = getCreatableNode();
+        node.setValue(new Variant(creatable));
     }
 
     @Override
-    public CompletableFuture<StatusCode> setCurrentState(LocalizedText value) {
-        return getCurrentStateNode().thenCompose(node -> node.setValue(value));
+    public Boolean readCreatable() throws UaException {
+        try {
+            return readCreatableAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<FiniteTransitionVariableTypeNode> getLastTransitionNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "LastTransition").thenApply(FiniteTransitionVariableTypeNode.class::cast);
+    public void writeCreatable(Boolean creatable) throws UaException {
+        try {
+            writeCreatableAsync(creatable).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<LocalizedText> getLastTransition() {
-        return getLastTransitionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
+    public CompletableFuture<? extends Boolean> readCreatableAsync() {
+        return getCreatableNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Boolean) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<StatusCode> setLastTransition(LocalizedText value) {
-        return getLastTransitionNode().thenCompose(node -> node.setValue(value));
+    public CompletableFuture<Unit> writeCreatableAsync(Boolean creatable) {
+        DataValue value = DataValue.valueOnly(new Variant(creatable));
+        return getCreatableNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<ProgramDiagnosticTypeNode> getProgramDiagnosticsNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics").thenApply(ProgramDiagnosticTypeNode.class::cast);
+    public PropertyTypeNode getCreatableNode() throws UaException {
+        try {
+            return getCreatableNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<ProgramDiagnosticDataType> getProgramDiagnostics() {
-        return getProgramDiagnosticsNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ProgramDiagnosticDataType.class));
+    public CompletableFuture<? extends PropertyTypeNode> getCreatableNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Creatable", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
-    public CompletableFuture<StatusCode> setProgramDiagnostics(ProgramDiagnosticDataType value) {
-        return getProgramDiagnosticsNode().thenCompose(node -> node.setValue(value));
+    public Boolean getDeletable() throws UaException {
+        PropertyTypeNode node = getDeletableNode();
+        return (Boolean) node.getValue().getValue().getValue();
     }
 
     @Override
-    public CompletableFuture<BaseObjectTypeNode> getFinalResultDataNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "FinalResultData").thenApply(BaseObjectTypeNode.class::cast);
+    public void setDeletable(Boolean deletable) throws UaException {
+        PropertyTypeNode node = getDeletableNode();
+        node.setValue(new Variant(deletable));
     }
 
     @Override
-    public CompletableFuture<StateTypeNode> getReadyNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "Ready").thenApply(StateTypeNode.class::cast);
+    public Boolean readDeletable() throws UaException {
+        try {
+            return readDeletableAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<StateTypeNode> getRunningNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "Running").thenApply(StateTypeNode.class::cast);
+    public void writeDeletable(Boolean deletable) throws UaException {
+        try {
+            writeDeletableAsync(deletable).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<StateTypeNode> getSuspendedNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "Suspended").thenApply(StateTypeNode.class::cast);
+    public CompletableFuture<? extends Boolean> readDeletableAsync() {
+        return getDeletableNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Boolean) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<StateTypeNode> getHaltedNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "Halted").thenApply(StateTypeNode.class::cast);
+    public CompletableFuture<Unit> writeDeletableAsync(Boolean deletable) {
+        DataValue value = DataValue.valueOnly(new Variant(deletable));
+        return getDeletableNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getHaltedToReadyNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "HaltedToReady").thenApply(TransitionTypeNode.class::cast);
+    public PropertyTypeNode getDeletableNode() throws UaException {
+        try {
+            return getDeletableNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getReadyToRunningNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "ReadyToRunning").thenApply(TransitionTypeNode.class::cast);
+    public CompletableFuture<? extends PropertyTypeNode> getDeletableNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Deletable", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getRunningToHaltedNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "RunningToHalted").thenApply(TransitionTypeNode.class::cast);
+    public Boolean getAutoDelete() throws UaException {
+        PropertyTypeNode node = getAutoDeleteNode();
+        return (Boolean) node.getValue().getValue().getValue();
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getRunningToReadyNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "RunningToReady").thenApply(TransitionTypeNode.class::cast);
+    public void setAutoDelete(Boolean autoDelete) throws UaException {
+        PropertyTypeNode node = getAutoDeleteNode();
+        node.setValue(new Variant(autoDelete));
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getRunningToSuspendedNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "RunningToSuspended").thenApply(TransitionTypeNode.class::cast);
+    public Boolean readAutoDelete() throws UaException {
+        try {
+            return readAutoDeleteAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getSuspendedToRunningNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToRunning").thenApply(TransitionTypeNode.class::cast);
+    public void writeAutoDelete(Boolean autoDelete) throws UaException {
+        try {
+            writeAutoDeleteAsync(autoDelete).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getSuspendedToHaltedNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToHalted").thenApply(TransitionTypeNode.class::cast);
+    public CompletableFuture<? extends Boolean> readAutoDeleteAsync() {
+        return getAutoDeleteNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Boolean) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getSuspendedToReadyNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToReady").thenApply(TransitionTypeNode.class::cast);
+    public CompletableFuture<Unit> writeAutoDeleteAsync(Boolean autoDelete) {
+        DataValue value = DataValue.valueOnly(new Variant(autoDelete));
+        return getAutoDeleteNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<TransitionTypeNode> getReadyToHaltedNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "ReadyToHalted").thenApply(TransitionTypeNode.class::cast);
+    public PropertyTypeNode getAutoDeleteNode() throws UaException {
+        try {
+            return getAutoDeleteNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getAutoDeleteNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AutoDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public Integer getRecycleCount() throws UaException {
+        PropertyTypeNode node = getRecycleCountNode();
+        return (Integer) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setRecycleCount(Integer recycleCount) throws UaException {
+        PropertyTypeNode node = getRecycleCountNode();
+        node.setValue(new Variant(recycleCount));
+    }
+
+    @Override
+    public Integer readRecycleCount() throws UaException {
+        try {
+            return readRecycleCountAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeRecycleCount(Integer recycleCount) throws UaException {
+        try {
+            writeRecycleCountAsync(recycleCount).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends Integer> readRecycleCountAsync() {
+        return getRecycleCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Integer) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeRecycleCountAsync(Integer recycleCount) {
+        DataValue value = DataValue.valueOnly(new Variant(recycleCount));
+        return getRecycleCountNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getRecycleCountNode() throws UaException {
+        try {
+            return getRecycleCountNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getRecycleCountNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RecycleCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getInstanceCount() throws UaException {
+        PropertyTypeNode node = getInstanceCountNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setInstanceCount(UInteger instanceCount) throws UaException {
+        PropertyTypeNode node = getInstanceCountNode();
+        node.setValue(new Variant(instanceCount));
+    }
+
+    @Override
+    public UInteger readInstanceCount() throws UaException {
+        try {
+            return readInstanceCountAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeInstanceCount(UInteger instanceCount) throws UaException {
+        try {
+            writeInstanceCountAsync(instanceCount).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readInstanceCountAsync() {
+        return getInstanceCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeInstanceCountAsync(UInteger instanceCount) {
+        DataValue value = DataValue.valueOnly(new Variant(instanceCount));
+        return getInstanceCountNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getInstanceCountNode() throws UaException {
+        try {
+            return getInstanceCountNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getInstanceCountNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InstanceCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxInstanceCount() throws UaException {
+        PropertyTypeNode node = getMaxInstanceCountNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxInstanceCount(UInteger maxInstanceCount) throws UaException {
+        PropertyTypeNode node = getMaxInstanceCountNode();
+        node.setValue(new Variant(maxInstanceCount));
+    }
+
+    @Override
+    public UInteger readMaxInstanceCount() throws UaException {
+        try {
+            return readMaxInstanceCountAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxInstanceCount(UInteger maxInstanceCount) throws UaException {
+        try {
+            writeMaxInstanceCountAsync(maxInstanceCount).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxInstanceCountAsync() {
+        return getMaxInstanceCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxInstanceCountAsync(UInteger maxInstanceCount) {
+        DataValue value = DataValue.valueOnly(new Variant(maxInstanceCount));
+        return getMaxInstanceCountNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxInstanceCountNode() throws UaException {
+        try {
+            return getMaxInstanceCountNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxInstanceCountNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxInstanceCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxRecycleCount() throws UaException {
+        PropertyTypeNode node = getMaxRecycleCountNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxRecycleCount(UInteger maxRecycleCount) throws UaException {
+        PropertyTypeNode node = getMaxRecycleCountNode();
+        node.setValue(new Variant(maxRecycleCount));
+    }
+
+    @Override
+    public UInteger readMaxRecycleCount() throws UaException {
+        try {
+            return readMaxRecycleCountAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxRecycleCount(UInteger maxRecycleCount) throws UaException {
+        try {
+            writeMaxRecycleCountAsync(maxRecycleCount).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxRecycleCountAsync() {
+        return getMaxRecycleCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxRecycleCountAsync(UInteger maxRecycleCount) {
+        DataValue value = DataValue.valueOnly(new Variant(maxRecycleCount));
+        return getMaxRecycleCountNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxRecycleCountNode() throws UaException {
+        try {
+            return getMaxRecycleCountNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxRecycleCountNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxRecycleCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public LocalizedText getCurrentState() throws UaException {
+        FiniteStateVariableTypeNode node = getCurrentStateNode();
+        return (LocalizedText) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setCurrentState(LocalizedText currentState) throws UaException {
+        FiniteStateVariableTypeNode node = getCurrentStateNode();
+        node.setValue(new Variant(currentState));
+    }
+
+    @Override
+    public LocalizedText readCurrentState() throws UaException {
+        try {
+            return readCurrentStateAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeCurrentState(LocalizedText currentState) throws UaException {
+        try {
+            writeCurrentStateAsync(currentState).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends LocalizedText> readCurrentStateAsync() {
+        return getCurrentStateNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (LocalizedText) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeCurrentStateAsync(LocalizedText currentState) {
+        DataValue value = DataValue.valueOnly(new Variant(currentState));
+        return getCurrentStateNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public FiniteStateVariableTypeNode getCurrentStateNode() throws UaException {
+        try {
+            return getCurrentStateNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends FiniteStateVariableTypeNode> getCurrentStateNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2760"), false);
+        return future.thenApply(node -> (FiniteStateVariableTypeNode) node);
+    }
+
+    @Override
+    public LocalizedText getLastTransition() throws UaException {
+        FiniteTransitionVariableTypeNode node = getLastTransitionNode();
+        return (LocalizedText) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setLastTransition(LocalizedText lastTransition) throws UaException {
+        FiniteTransitionVariableTypeNode node = getLastTransitionNode();
+        node.setValue(new Variant(lastTransition));
+    }
+
+    @Override
+    public LocalizedText readLastTransition() throws UaException {
+        try {
+            return readLastTransitionAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeLastTransition(LocalizedText lastTransition) throws UaException {
+        try {
+            writeLastTransitionAsync(lastTransition).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends LocalizedText> readLastTransitionAsync() {
+        return getLastTransitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (LocalizedText) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeLastTransitionAsync(LocalizedText lastTransition) {
+        DataValue value = DataValue.valueOnly(new Variant(lastTransition));
+        return getLastTransitionNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public FiniteTransitionVariableTypeNode getLastTransitionNode() throws UaException {
+        try {
+            return getLastTransitionNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends FiniteTransitionVariableTypeNode> getLastTransitionNodeAsync(
+    ) {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2767"), false);
+        return future.thenApply(node -> (FiniteTransitionVariableTypeNode) node);
+    }
+
+    @Override
+    public ProgramDiagnosticDataType getProgramDiagnostics() throws UaException {
+        ProgramDiagnosticTypeNode node = getProgramDiagnosticsNode();
+        return (ProgramDiagnosticDataType) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setProgramDiagnostics(ProgramDiagnosticDataType programDiagnostics) throws
+        UaException {
+        ProgramDiagnosticTypeNode node = getProgramDiagnosticsNode();
+        node.setValue(new Variant(programDiagnostics));
+    }
+
+    @Override
+    public ProgramDiagnosticDataType readProgramDiagnostics() throws UaException {
+        try {
+            return readProgramDiagnosticsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeProgramDiagnostics(ProgramDiagnosticDataType programDiagnostics) throws
+        UaException {
+        try {
+            writeProgramDiagnosticsAsync(programDiagnostics).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends ProgramDiagnosticDataType> readProgramDiagnosticsAsync() {
+        return getProgramDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ProgramDiagnosticDataType) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeProgramDiagnosticsAsync(
+        ProgramDiagnosticDataType programDiagnostics) {
+        DataValue value = DataValue.valueOnly(new Variant(programDiagnostics));
+        return getProgramDiagnosticsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public ProgramDiagnosticTypeNode getProgramDiagnosticsNode() throws UaException {
+        try {
+            return getProgramDiagnosticsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends ProgramDiagnosticTypeNode> getProgramDiagnosticsNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProgramDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2380"), false);
+        return future.thenApply(node -> (ProgramDiagnosticTypeNode) node);
+    }
+
+    public BaseObjectTypeNode getFinalResultDataNode() throws UaException {
+        try {
+            return getFinalResultDataNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends BaseObjectTypeNode> getFinalResultDataNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "FinalResultData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=58"), false);
+        return future.thenApply(node -> (BaseObjectTypeNode) node);
+    }
+
+    public StateTypeNode getReadyNode() throws UaException {
+        try {
+            return getReadyNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends StateTypeNode> getReadyNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Ready", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
+    }
+
+    public StateTypeNode getRunningNode() throws UaException {
+        try {
+            return getRunningNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends StateTypeNode> getRunningNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Running", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
+    }
+
+    public StateTypeNode getSuspendedNode() throws UaException {
+        try {
+            return getSuspendedNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends StateTypeNode> getSuspendedNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Suspended", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
+    }
+
+    public StateTypeNode getHaltedNode() throws UaException {
+        try {
+            return getHaltedNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends StateTypeNode> getHaltedNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Halted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
+    }
+
+    public TransitionTypeNode getHaltedToReadyNode() throws UaException {
+        try {
+            return getHaltedToReadyNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getHaltedToReadyNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HaltedToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getReadyToRunningNode() throws UaException {
+        try {
+            return getReadyToRunningNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getReadyToRunningNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadyToRunning", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getRunningToHaltedNode() throws UaException {
+        try {
+            return getRunningToHaltedNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getRunningToHaltedNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getRunningToReadyNode() throws UaException {
+        try {
+            return getRunningToReadyNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getRunningToReadyNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getRunningToSuspendedNode() throws UaException {
+        try {
+            return getRunningToSuspendedNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getRunningToSuspendedNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToSuspended", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getSuspendedToRunningNode() throws UaException {
+        try {
+            return getSuspendedToRunningNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getSuspendedToRunningNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToRunning", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getSuspendedToHaltedNode() throws UaException {
+        try {
+            return getSuspendedToHaltedNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getSuspendedToHaltedNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getSuspendedToReadyNode() throws UaException {
+        try {
+            return getSuspendedToReadyNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getSuspendedToReadyNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getReadyToHaltedNode() throws UaException {
+        try {
+            return getReadyToHaltedNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getReadyToHaltedNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadyToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
     }
 }

@@ -1,37 +1,95 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.objects;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditSessionEventType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditSessionEventTypeNode extends AuditSecurityEventTypeNode implements AuditSessionEventType {
-    public AuditSessionEventTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public AuditSessionEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                     UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    public CompletableFuture<PropertyTypeNode> getSessionIdNode() {
-        return getPropertyNode(AuditSessionEventType.SESSION_ID);
+    @Override
+    public NodeId getSessionId() throws UaException {
+        PropertyTypeNode node = getSessionIdNode();
+        return (NodeId) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<NodeId> getSessionId() {
-        return getProperty(AuditSessionEventType.SESSION_ID);
+    @Override
+    public void setSessionId(NodeId sessionId) throws UaException {
+        PropertyTypeNode node = getSessionIdNode();
+        node.setValue(new Variant(sessionId));
     }
 
-    public CompletableFuture<StatusCode> setSessionId(NodeId value) {
-        return setProperty(AuditSessionEventType.SESSION_ID, value);
+    @Override
+    public NodeId readSessionId() throws UaException {
+        try {
+            return readSessionIdAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeSessionId(NodeId sessionId) throws UaException {
+        try {
+            writeSessionIdAsync(sessionId).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends NodeId> readSessionIdAsync() {
+        return getSessionIdNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (NodeId) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeSessionIdAsync(NodeId sessionId) {
+        DataValue value = DataValue.valueOnly(new Variant(sessionId));
+        return getSessionIdNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getSessionIdNode() throws UaException {
+        try {
+            return getSessionIdNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getSessionIdNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

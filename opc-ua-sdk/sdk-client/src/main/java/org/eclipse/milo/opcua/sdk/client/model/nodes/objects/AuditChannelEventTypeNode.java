@@ -1,37 +1,95 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.objects;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditChannelEventType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditChannelEventTypeNode extends AuditSecurityEventTypeNode implements AuditChannelEventType {
-    public AuditChannelEventTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public AuditChannelEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                     UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    public CompletableFuture<PropertyTypeNode> getSecureChannelIdNode() {
-        return getPropertyNode(AuditChannelEventType.SECURE_CHANNEL_ID);
+    @Override
+    public String getSecureChannelId() throws UaException {
+        PropertyTypeNode node = getSecureChannelIdNode();
+        return (String) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<String> getSecureChannelId() {
-        return getProperty(AuditChannelEventType.SECURE_CHANNEL_ID);
+    @Override
+    public void setSecureChannelId(String secureChannelId) throws UaException {
+        PropertyTypeNode node = getSecureChannelIdNode();
+        node.setValue(new Variant(secureChannelId));
     }
 
-    public CompletableFuture<StatusCode> setSecureChannelId(String value) {
-        return setProperty(AuditChannelEventType.SECURE_CHANNEL_ID, value);
+    @Override
+    public String readSecureChannelId() throws UaException {
+        try {
+            return readSecureChannelIdAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeSecureChannelId(String secureChannelId) throws UaException {
+        try {
+            writeSecureChannelIdAsync(secureChannelId).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends String> readSecureChannelIdAsync() {
+        return getSecureChannelIdNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (String) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeSecureChannelIdAsync(String secureChannelId) {
+        DataValue value = DataValue.valueOnly(new Variant(secureChannelId));
+        return getSecureChannelIdNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getSecureChannelIdNode() throws UaException {
+        try {
+            return getSecureChannelIdNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getSecureChannelIdNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecureChannelId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

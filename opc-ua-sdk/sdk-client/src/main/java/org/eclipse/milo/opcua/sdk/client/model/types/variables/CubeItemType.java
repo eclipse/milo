@@ -1,22 +1,13 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface CubeItemType extends ArrayItemType {
     QualifiedProperty<AxisInformation> X_AXIS_DEFINITION = new QualifiedProperty<>(
@@ -43,21 +34,222 @@ public interface CubeItemType extends ArrayItemType {
         AxisInformation.class
     );
 
-    CompletableFuture<? extends PropertyType> getXAxisDefinitionNode();
+    /**
+     * Get the local value of the XAxisDefinition Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the XAxisDefinition Node.
+     * @throws UaException if an error occurs creating or getting the XAxisDefinition Node.
+     */
+    AxisInformation getXAxisDefinition() throws UaException;
 
-    CompletableFuture<AxisInformation> getXAxisDefinition();
+    /**
+     * Set the local value of the XAxisDefinition Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param xAxisDefinition the local value to set for the XAxisDefinition Node.
+     * @throws UaException if an error occurs creating or getting the XAxisDefinition Node.
+     */
+    void setXAxisDefinition(AxisInformation xAxisDefinition) throws UaException;
 
-    CompletableFuture<StatusCode> setXAxisDefinition(AxisInformation value);
+    /**
+     * Read the value of the XAxisDefinition Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link AxisInformation} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    AxisInformation readXAxisDefinition() throws UaException;
 
-    CompletableFuture<? extends PropertyType> getYAxisDefinitionNode();
+    /**
+     * Write a new value for the XAxisDefinition Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param xAxisDefinition the {@link AxisInformation} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeXAxisDefinition(AxisInformation xAxisDefinition) throws UaException;
 
-    CompletableFuture<AxisInformation> getYAxisDefinition();
+    /**
+     * An asynchronous implementation of {@link #readXAxisDefinition()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends AxisInformation> readXAxisDefinitionAsync();
 
-    CompletableFuture<StatusCode> setYAxisDefinition(AxisInformation value);
+    /**
+     * An asynchronous implementation of {@link #writeXAxisDefinition(AxisInformation)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<Unit> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition);
 
-    CompletableFuture<? extends PropertyType> getZAxisDefinitionNode();
+    /**
+     * Get the XAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the XAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getXAxisDefinitionNode() throws UaException;
 
-    CompletableFuture<AxisInformation> getZAxisDefinition();
+    /**
+     * Asynchronous implementation of {@link #getXAxisDefinitionNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getXAxisDefinitionNodeAsync();
 
-    CompletableFuture<StatusCode> setZAxisDefinition(AxisInformation value);
+    /**
+     * Get the local value of the YAxisDefinition Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the YAxisDefinition Node.
+     * @throws UaException if an error occurs creating or getting the YAxisDefinition Node.
+     */
+    AxisInformation getYAxisDefinition() throws UaException;
+
+    /**
+     * Set the local value of the YAxisDefinition Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param yAxisDefinition the local value to set for the YAxisDefinition Node.
+     * @throws UaException if an error occurs creating or getting the YAxisDefinition Node.
+     */
+    void setYAxisDefinition(AxisInformation yAxisDefinition) throws UaException;
+
+    /**
+     * Read the value of the YAxisDefinition Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link AxisInformation} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    AxisInformation readYAxisDefinition() throws UaException;
+
+    /**
+     * Write a new value for the YAxisDefinition Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param yAxisDefinition the {@link AxisInformation} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeYAxisDefinition(AxisInformation yAxisDefinition) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readYAxisDefinition()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends AxisInformation> readYAxisDefinitionAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeYAxisDefinition(AxisInformation)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<Unit> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition);
+
+    /**
+     * Get the YAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the YAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getYAxisDefinitionNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getYAxisDefinitionNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getYAxisDefinitionNodeAsync();
+
+    /**
+     * Get the local value of the ZAxisDefinition Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the ZAxisDefinition Node.
+     * @throws UaException if an error occurs creating or getting the ZAxisDefinition Node.
+     */
+    AxisInformation getZAxisDefinition() throws UaException;
+
+    /**
+     * Set the local value of the ZAxisDefinition Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param zAxisDefinition the local value to set for the ZAxisDefinition Node.
+     * @throws UaException if an error occurs creating or getting the ZAxisDefinition Node.
+     */
+    void setZAxisDefinition(AxisInformation zAxisDefinition) throws UaException;
+
+    /**
+     * Read the value of the ZAxisDefinition Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link AxisInformation} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    AxisInformation readZAxisDefinition() throws UaException;
+
+    /**
+     * Write a new value for the ZAxisDefinition Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param zAxisDefinition the {@link AxisInformation} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeZAxisDefinition(AxisInformation zAxisDefinition) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readZAxisDefinition()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends AxisInformation> readZAxisDefinitionAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeZAxisDefinition(AxisInformation)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<Unit> writeZAxisDefinitionAsync(AxisInformation zAxisDefinition);
+
+    /**
+     * Get the ZAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the ZAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getZAxisDefinitionNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getZAxisDefinitionNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getZAxisDefinitionNodeAsync();
 }

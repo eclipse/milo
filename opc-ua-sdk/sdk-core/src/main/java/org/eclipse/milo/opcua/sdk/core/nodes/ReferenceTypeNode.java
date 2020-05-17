@@ -22,7 +22,7 @@ public interface ReferenceTypeNode extends Node {
 
     void setIsAbstract(Boolean isAbstract);
 
-    void setSymmetric(Boolean isSymmetric);
+    void setSymmetric(Boolean symmetric);
 
     void setInverseName(LocalizedText inverseName);
 

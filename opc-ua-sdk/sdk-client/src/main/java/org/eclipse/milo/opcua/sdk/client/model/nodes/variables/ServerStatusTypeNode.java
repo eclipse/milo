@@ -1,120 +1,419 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.variables;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.ServerStatusType;
-import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements ServerStatusType {
-    public ServerStatusTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public ServerStatusTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType, int valueRank,
+                                UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                                double minimumSamplingInterval, boolean historizing) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
     @Override
-    public CompletableFuture<BaseDataVariableTypeNode> getStartTimeNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "StartTime").thenApply(BaseDataVariableTypeNode.class::cast);
+    public DateTime getStartTime() throws UaException {
+        BaseDataVariableTypeNode node = getStartTimeNode();
+        return (DateTime) node.getValue().getValue().getValue();
     }
 
     @Override
-    public CompletableFuture<DateTime> getStartTime() {
-        return getStartTimeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
+    public void setStartTime(DateTime startTime) throws UaException {
+        BaseDataVariableTypeNode node = getStartTimeNode();
+        node.setValue(new Variant(startTime));
     }
 
     @Override
-    public CompletableFuture<StatusCode> setStartTime(DateTime value) {
-        return getStartTimeNode().thenCompose(node -> node.setValue(value));
+    public DateTime readStartTime() throws UaException {
+        try {
+            return readStartTimeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<BaseDataVariableTypeNode> getCurrentTimeNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentTime").thenApply(BaseDataVariableTypeNode.class::cast);
+    public void writeStartTime(DateTime startTime) throws UaException {
+        try {
+            writeStartTimeAsync(startTime).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<DateTime> getCurrentTime() {
-        return getCurrentTimeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
+    public CompletableFuture<? extends DateTime> readStartTimeAsync() {
+        return getStartTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (DateTime) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<StatusCode> setCurrentTime(DateTime value) {
-        return getCurrentTimeNode().thenCompose(node -> node.setValue(value));
+    public CompletableFuture<Unit> writeStartTimeAsync(DateTime startTime) {
+        DataValue value = DataValue.valueOnly(new Variant(startTime));
+        return getStartTimeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<BaseDataVariableTypeNode> getStateNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "State").thenApply(BaseDataVariableTypeNode.class::cast);
+    public BaseDataVariableTypeNode getStartTimeNode() throws UaException {
+        try {
+            return getStartTimeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<ServerState> getState() {
-        return getStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServerState.class));
+    public CompletableFuture<? extends BaseDataVariableTypeNode> getStartTimeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
-    public CompletableFuture<StatusCode> setState(ServerState value) {
-        return getStateNode().thenCompose(node -> node.setValue(value));
+    public DateTime getCurrentTime() throws UaException {
+        BaseDataVariableTypeNode node = getCurrentTimeNode();
+        return (DateTime) node.getValue().getValue().getValue();
     }
 
     @Override
-    public CompletableFuture<BuildInfoTypeNode> getBuildInfoNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "BuildInfo").thenApply(BuildInfoTypeNode.class::cast);
+    public void setCurrentTime(DateTime currentTime) throws UaException {
+        BaseDataVariableTypeNode node = getCurrentTimeNode();
+        node.setValue(new Variant(currentTime));
     }
 
     @Override
-    public CompletableFuture<BuildInfo> getBuildInfo() {
-        return getBuildInfoNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, BuildInfo.class));
+    public DateTime readCurrentTime() throws UaException {
+        try {
+            return readCurrentTimeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<StatusCode> setBuildInfo(BuildInfo value) {
-        return getBuildInfoNode().thenCompose(node -> node.setValue(value));
+    public void writeCurrentTime(DateTime currentTime) throws UaException {
+        try {
+            writeCurrentTimeAsync(currentTime).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<BaseDataVariableTypeNode> getSecondsTillShutdownNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "SecondsTillShutdown").thenApply(BaseDataVariableTypeNode.class::cast);
+    public CompletableFuture<? extends DateTime> readCurrentTimeAsync() {
+        return getCurrentTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (DateTime) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<UInteger> getSecondsTillShutdown() {
-        return getSecondsTillShutdownNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
+    public CompletableFuture<Unit> writeCurrentTimeAsync(DateTime currentTime) {
+        DataValue value = DataValue.valueOnly(new Variant(currentTime));
+        return getCurrentTimeNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<StatusCode> setSecondsTillShutdown(UInteger value) {
-        return getSecondsTillShutdownNode().thenCompose(node -> node.setValue(value));
+    public BaseDataVariableTypeNode getCurrentTimeNode() throws UaException {
+        try {
+            return getCurrentTimeNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     @Override
-    public CompletableFuture<BaseDataVariableTypeNode> getShutdownReasonNode() {
-        return getVariableComponent("http://opcfoundation.org/UA/", "ShutdownReason").thenApply(BaseDataVariableTypeNode.class::cast);
+    public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentTimeNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
-    public CompletableFuture<LocalizedText> getShutdownReason() {
-        return getShutdownReasonNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
+    public ServerState getState() throws UaException {
+        BaseDataVariableTypeNode node = getStateNode();
+        return (ServerState) node.getValue().getValue().getValue();
     }
 
     @Override
-    public CompletableFuture<StatusCode> setShutdownReason(LocalizedText value) {
-        return getShutdownReasonNode().thenCompose(node -> node.setValue(value));
+    public void setState(ServerState state) throws UaException {
+        BaseDataVariableTypeNode node = getStateNode();
+        node.setValue(new Variant(state));
+    }
+
+    @Override
+    public ServerState readState() throws UaException {
+        try {
+            return readStateAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeState(ServerState state) throws UaException {
+        try {
+            writeStateAsync(state).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends ServerState> readStateAsync() {
+        return getStateNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServerState) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeStateAsync(ServerState state) {
+        DataValue value = DataValue.valueOnly(new Variant(state));
+        return getStateNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public BaseDataVariableTypeNode getStateNode() throws UaException {
+        try {
+            return getStateNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends BaseDataVariableTypeNode> getStateNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "State", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        return future.thenApply(node -> (BaseDataVariableTypeNode) node);
+    }
+
+    @Override
+    public BuildInfo getBuildInfo() throws UaException {
+        BuildInfoTypeNode node = getBuildInfoNode();
+        return (BuildInfo) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setBuildInfo(BuildInfo buildInfo) throws UaException {
+        BuildInfoTypeNode node = getBuildInfoNode();
+        node.setValue(new Variant(buildInfo));
+    }
+
+    @Override
+    public BuildInfo readBuildInfo() throws UaException {
+        try {
+            return readBuildInfoAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeBuildInfo(BuildInfo buildInfo) throws UaException {
+        try {
+            writeBuildInfoAsync(buildInfo).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends BuildInfo> readBuildInfoAsync() {
+        return getBuildInfoNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (BuildInfo) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeBuildInfoAsync(BuildInfo buildInfo) {
+        DataValue value = DataValue.valueOnly(new Variant(buildInfo));
+        return getBuildInfoNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public BuildInfoTypeNode getBuildInfoNode() throws UaException {
+        try {
+            return getBuildInfoNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends BuildInfoTypeNode> getBuildInfoNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildInfo", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=3051"), false);
+        return future.thenApply(node -> (BuildInfoTypeNode) node);
+    }
+
+    @Override
+    public UInteger getSecondsTillShutdown() throws UaException {
+        BaseDataVariableTypeNode node = getSecondsTillShutdownNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setSecondsTillShutdown(UInteger secondsTillShutdown) throws UaException {
+        BaseDataVariableTypeNode node = getSecondsTillShutdownNode();
+        node.setValue(new Variant(secondsTillShutdown));
+    }
+
+    @Override
+    public UInteger readSecondsTillShutdown() throws UaException {
+        try {
+            return readSecondsTillShutdownAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeSecondsTillShutdown(UInteger secondsTillShutdown) throws UaException {
+        try {
+            writeSecondsTillShutdownAsync(secondsTillShutdown).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readSecondsTillShutdownAsync() {
+        return getSecondsTillShutdownNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeSecondsTillShutdownAsync(UInteger secondsTillShutdown) {
+        DataValue value = DataValue.valueOnly(new Variant(secondsTillShutdown));
+        return getSecondsTillShutdownNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public BaseDataVariableTypeNode getSecondsTillShutdownNode() throws UaException {
+        try {
+            return getSecondsTillShutdownNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends BaseDataVariableTypeNode> getSecondsTillShutdownNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecondsTillShutdown", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        return future.thenApply(node -> (BaseDataVariableTypeNode) node);
+    }
+
+    @Override
+    public LocalizedText getShutdownReason() throws UaException {
+        BaseDataVariableTypeNode node = getShutdownReasonNode();
+        return (LocalizedText) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setShutdownReason(LocalizedText shutdownReason) throws UaException {
+        BaseDataVariableTypeNode node = getShutdownReasonNode();
+        node.setValue(new Variant(shutdownReason));
+    }
+
+    @Override
+    public LocalizedText readShutdownReason() throws UaException {
+        try {
+            return readShutdownReasonAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeShutdownReason(LocalizedText shutdownReason) throws UaException {
+        try {
+            writeShutdownReasonAsync(shutdownReason).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends LocalizedText> readShutdownReasonAsync() {
+        return getShutdownReasonNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (LocalizedText) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeShutdownReasonAsync(LocalizedText shutdownReason) {
+        DataValue value = DataValue.valueOnly(new Variant(shutdownReason));
+        return getShutdownReasonNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public BaseDataVariableTypeNode getShutdownReasonNode() throws UaException {
+        try {
+            return getShutdownReasonNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends BaseDataVariableTypeNode> getShutdownReasonNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ShutdownReason", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }
