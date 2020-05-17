@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.FiniteTransitionVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.ProgramTransitionAuditEventType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;

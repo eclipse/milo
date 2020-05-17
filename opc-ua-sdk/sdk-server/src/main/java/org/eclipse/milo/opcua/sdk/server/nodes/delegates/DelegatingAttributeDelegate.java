@@ -12,15 +12,15 @@ package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
 import javax.annotation.Nullable;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ReferenceTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ViewNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;

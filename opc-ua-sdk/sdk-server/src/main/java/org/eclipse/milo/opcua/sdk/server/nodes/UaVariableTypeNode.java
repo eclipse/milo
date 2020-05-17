@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNodeProperties;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;

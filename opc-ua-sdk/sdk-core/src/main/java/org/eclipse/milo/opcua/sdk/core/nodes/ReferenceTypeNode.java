@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.api.nodes;
+package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
