@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryData;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
@@ -52,7 +53,7 @@ public class HistoryReadExampleProsys implements ClientExample {
         );
 
         HistoryReadValueId historyReadValueId = new HistoryReadValueId(
-            new NodeId(5, "Counter1"),
+            new NodeId(3, "Counter"),
             null,
             QualifiedName.NULL_VALUE,
             ByteString.NULL_VALUE
@@ -73,13 +74,19 @@ public class HistoryReadExampleProsys implements ClientExample {
 
         if (historyReadResults != null) {
             HistoryReadResult historyReadResult = historyReadResults[0];
-            HistoryData historyData = (HistoryData) historyReadResult.getHistoryData().decode(
-                client.getSerializationContext()
-            );
+            StatusCode statusCode = historyReadResult.getStatusCode();
 
-            List<DataValue> dataValues = l(historyData.getDataValues());
+            if (statusCode.isGood()) {
+                HistoryData historyData = (HistoryData) historyReadResult.getHistoryData().decode(
+                    client.getSerializationContext()
+                );
 
-            dataValues.forEach(v -> System.out.println("value=" + v));
+                List<DataValue> dataValues = l(historyData.getDataValues());
+
+                dataValues.forEach(v -> System.out.println("value=" + v));
+            } else {
+                System.out.println("History read failed: " + statusCode);
+            }
         }
 
         future.complete(client);
