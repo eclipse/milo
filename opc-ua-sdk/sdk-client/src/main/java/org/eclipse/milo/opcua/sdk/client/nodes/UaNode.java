@@ -851,20 +851,22 @@ public abstract class UaNode implements Node {
         return future.thenCompose(result -> {
             List<ReferenceDescription> references = l(result.getReferences());
 
-            Optional<PropertyTypeNode> node = references.stream()
+            Optional<CompletableFuture<PropertyTypeNode>> node = references.stream()
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
-                    Optional<PropertyTypeNode> opt = r.getNodeId()
+                    Optional<CompletableFuture<PropertyTypeNode>> opt = r.getNodeId()
                         .local(client.getNamespaceTable())
-                        .map(id -> new PropertyTypeNode(client, id));
+                        .map(id ->
+                            client.getAddressSpace()
+                                .getNodeAsync(id)
+                                .thenApply(n -> (PropertyTypeNode) n)
+                        );
 
                     return opt2stream(opt);
                 })
                 .findFirst();
 
-            return node
-                .map(CompletableFuture::completedFuture)
-                .orElse(failedUaFuture(StatusCodes.Bad_NotFound));
+            return node.orElse(failedUaFuture(StatusCodes.Bad_NotFound));
         });
     }
 
