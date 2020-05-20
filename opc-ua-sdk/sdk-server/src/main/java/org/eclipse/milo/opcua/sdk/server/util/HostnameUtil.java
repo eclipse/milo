@@ -66,9 +66,7 @@ public class HostnameUtil {
                     for (NetworkInterface ni : Collections.list(nis)) {
                         Collections.list(ni.getInetAddresses()).forEach(ia -> {
                             if (ia instanceof Inet4Address) {
-                                boolean loopback = ia.isLoopbackAddress();
-
-                                if (!loopback || includeLoopback) {
+                                if (includeLoopback || !ia.isLoopbackAddress()) {
                                     hostnames.add(ia.getHostName());
                                     hostnames.add(ia.getHostAddress());
                                     hostnames.add(ia.getCanonicalHostName());
@@ -81,9 +79,7 @@ public class HostnameUtil {
                         .warn("Failed to NetworkInterfaces for bind address: {}", address, e);
                 }
             } else {
-                boolean loopback = inetAddress.isLoopbackAddress();
-
-                if (!loopback || includeLoopback) {
+                if (includeLoopback || !inetAddress.isLoopbackAddress()) {
                     hostnames.add(inetAddress.getHostName());
                     hostnames.add(inetAddress.getHostAddress());
                     hostnames.add(inetAddress.getCanonicalHostName());
