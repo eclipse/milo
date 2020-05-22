@@ -15,7 +15,13 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class VariableTypeManager {
 
@@ -24,7 +30,8 @@ public class VariableTypeManager {
     public void registerVariableType(
         NodeId typeDefinition,
         Class<? extends UaVariableNode> nodeClass,
-        VariableNodeConstructor variableNodeConstructor) {
+        VariableNodeConstructor variableNodeConstructor
+    ) {
 
         typeDefinitions.put(typeDefinition, new VariableTypeDefinition(nodeClass, variableNodeConstructor));
     }
@@ -51,8 +58,25 @@ public class VariableTypeManager {
     @FunctionalInterface
     public interface VariableNodeConstructor {
 
-        UaVariableNode apply(OpcUaClient client, NodeId nodeId);
-        
+        UaVariableNode apply(
+            OpcUaClient client,
+            NodeId nodeId,
+            NodeClass nodeClass,
+            QualifiedName browseName,
+            LocalizedText displayName,
+            LocalizedText description,
+            UInteger writeMask,
+            UInteger userWriteMask,
+            DataValue value,
+            NodeId dataType,
+            Integer valueRank,
+            UInteger[] arrayDimensions,
+            UByte accessLevel,
+            UByte userAccessLevel,
+            Double minimumSamplingInterval,
+            Boolean historizing
+        );
+
     }
 
 }

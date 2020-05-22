@@ -20,28 +20,75 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public interface AddressSpace {
+public class AddressSpace {
 
-    UaNode getNode(NodeId nodeId);
-    CompletableFuture<UaNode> getNodeAsync(NodeId nodeId);
+    private final OpcUaClient client;
 
-    UaObjectNode getObjectNode(NodeId nodeId);
-    UaObjectNode getObjectNode(NodeId nodeId, NodeId typeDefinitionId);
-    CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId);
-    CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId, NodeId typeDefinitionId);
+    public AddressSpace(OpcUaClient client) {
+        this.client = client;
+    }
 
-    UaVariableNode getVariableNode(NodeId nodeId);
-    UaVariableNode getVariableNode(NodeId nodeId, NodeId typeDefinitionId);
-    CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId);
-    CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId, NodeId typeDefinitionId);
+    public UaNode getNode(NodeId nodeId) {
+        return null;
+    }
+    public CompletableFuture<UaNode> getNodeAsync(NodeId nodeId) {
+        return null;
+    }
 
-    List<UaNode> browseNode(UaNode node);
-    List<UaNode> browseNode(NodeId nodeId);
+    public UaObjectNode getObjectNode(NodeId nodeId) {
+        return null;
+    }
 
-    CompletableFuture<NodeId> localizeAsync(ExpandedNodeId nodeId);
+    public UaObjectNode getObjectNode(NodeId nodeId, NodeId typeDefinitionId) {
+        return null;
+    }
 
-    void setBrowseNodeClassMask(UInteger mask);
-    void setBrowseReferenceType(NodeId referenceTypeId);
-    void setBrowseSubtypes(boolean browseSubtypes);
+    public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId) {
+        return null;
+    }
+
+    public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
+        return null;
+    }
+
+    public UaVariableNode getVariableNode(NodeId nodeId) {
+        return null;
+    }
+
+    public UaVariableNode getVariableNode(NodeId nodeId, NodeId typeDefinitionId) {
+        return null;
+    }
+
+    public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId) {
+        return null;
+    }
+
+    public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
+        return null;
+    }
+
+    public List<UaNode> browseNode(UaNode node) {
+        return null;
+    }
+
+    public List<UaNode> browseNode(NodeId nodeId) {
+        return null;
+    }
+
+    public CompletableFuture<NodeId> localizeAsync(ExpandedNodeId nodeId) {
+        return null;
+    }
+
+    public void setBrowseNodeClassMask(UInteger mask) {
+
+    }
+
+    public void setBrowseReferenceType(NodeId referenceTypeId) {
+
+    }
+
+    public void setBrowseSubtypes(boolean browseSubtypes) {
+
+    }
 
 }

@@ -277,7 +277,7 @@ public class OpcUaClient implements UaClient {
 
         faultNotificationQueue = new ExecutionQueue(config.getExecutor());
 
-        addressSpace = new DefaultAddressSpace(this);
+        addressSpace = new AddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
         ObjectTypeInitializer.initialize(
