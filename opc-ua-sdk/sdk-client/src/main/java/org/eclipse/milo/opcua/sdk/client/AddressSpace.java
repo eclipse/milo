@@ -19,8 +19,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -286,8 +286,12 @@ public class AddressSpace {
     }
 
     public List<? extends UaNode> browseNode(UaNode node) throws UaException {
+        return browseNode(node, getBrowseOptions());
+    }
+
+    public List<? extends UaNode> browseNode(UaNode node, BrowseOptions browseOptions) throws UaException {
         try {
-            return browseNodeAsync(node).get();
+            return browseNodeAsync(node, browseOptions).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
@@ -295,8 +299,12 @@ public class AddressSpace {
     }
 
     public List<? extends UaNode> browseNode(NodeId nodeId) throws UaException {
+        return browseNode(nodeId, getBrowseOptions());
+    }
+
+    public List<? extends UaNode> browseNode(NodeId nodeId, BrowseOptions browseOptions) throws UaException {
         try {
-            return browseNodeAsync(nodeId).get();
+            return browseNodeAsync(nodeId, browseOptions).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
@@ -307,9 +315,15 @@ public class AddressSpace {
         return browseNodeAsync(node.getNodeId());
     }
 
-    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId) {
-        final BrowseOptions browseOptions = getBrowseOptions();
+    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(UaNode node, BrowseOptions browseOptions) {
+        return browseNodeAsync(node.getNodeId());
+    }
 
+    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId) {
+        return browseNodeAsync(nodeId, getBrowseOptions());
+    }
+
+    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
             nodeId,
             BrowseDirection.Forward,
@@ -365,7 +379,7 @@ public class AddressSpace {
         });
     }
 
-    private static CompletionStage<List<? extends UaNode>> sequence(
+    private static CompletableFuture<List<? extends UaNode>> sequence(
         List<CompletableFuture<? extends UaNode>> cfs
     ) {
 
@@ -406,12 +420,23 @@ public class AddressSpace {
         return CompletableFuture.completedFuture(local.orElse(NodeId.NULL_VALUE));
     }
 
-    public synchronized void setBrowseOptions(BrowseOptions browseOptions) {
-
-    }
-
     public synchronized BrowseOptions getBrowseOptions() {
         return browseOptions;
+    }
+
+    public synchronized void modifyBrowseOptions(Consumer<BrowseOptions.Builder> builderConsumer) {
+        BrowseOptions.Builder builder = new BrowseOptions.Builder();
+        builder.setReferenceType(browseOptions.getReferenceTypeId());
+        builder.setIncludeSubtypes(browseOptions.isIncludeSubtypes());
+        builder.setNodeClassMask(browseOptions.getNodeClassMask());
+
+        builderConsumer.accept(builder);
+
+        setBrowseOptions(builder.build());
+    }
+
+    public synchronized void setBrowseOptions(BrowseOptions browseOptions) {
+        this.browseOptions = browseOptions;
     }
 
     private CompletableFuture<NodeId> readTypeDefinition(NodeId nodeId) {
@@ -478,7 +503,7 @@ public class AddressSpace {
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
-        
+
         Integer nodeClassValue = (Integer) baseAttributeValues.get(1).getValue().getValue();
         if (nodeClassValue == null) {
             return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
