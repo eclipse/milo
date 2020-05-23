@@ -36,7 +36,7 @@ public class ObjectTypeManager {
         typeDefinitions.put(typeDefinition, new ObjectTypeDefinition(nodeClass, objectNodeConstructor));
     }
 
-    public Optional<ObjectNodeConstructor> getNodeFactory(NodeId typeDefinition) {
+    public Optional<ObjectNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
         ObjectTypeDefinition def = typeDefinitions.get(typeDefinition);
 
         return Optional.ofNullable(def).map(d -> d.nodeFactory);

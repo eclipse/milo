@@ -745,7 +745,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the DataTypeVersion Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<String> getDataTypeVersion() {
+    public CompletableFuture<String> getDataTypeVersionAsync() {
         return getProperty(VariableNodeProperties.DataTypeVersion);
     }
 
@@ -755,7 +755,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the DictionaryFragment Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<ByteString> getDictionaryFragment() {
+    public CompletableFuture<ByteString> getDictionaryFragmentAsync() {
         return getProperty(VariableNodeProperties.DictionaryFragment);
     }
 
@@ -775,7 +775,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the ValueAsText Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<LocalizedText> getValueAsText() {
+    public CompletableFuture<LocalizedText> getValueAsTextAsync() {
         return getProperty(VariableNodeProperties.ValueAsText);
     }
 
@@ -838,7 +838,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setDataTypeVersion(String dataTypeVersion) {
+    public CompletableFuture<StatusCode> setDataTypeVersionAsync(String dataTypeVersion) {
         return setProperty(VariableNodeProperties.DataTypeVersion, dataTypeVersion);
     }
 
@@ -849,7 +849,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setDictionaryFragment(ByteString dictionaryFragment) {
+    public CompletableFuture<StatusCode> setDictionaryFragmentAsync(ByteString dictionaryFragment) {
         return setProperty(VariableNodeProperties.DictionaryFragment, dictionaryFragment);
     }
 
@@ -871,7 +871,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setValueAsText(LocalizedText valueAsText) {
+    public CompletableFuture<StatusCode> setValueAsTextAsync(LocalizedText valueAsText) {
         return setProperty(VariableNodeProperties.ValueAsText, valueAsText);
     }
 

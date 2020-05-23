@@ -36,7 +36,7 @@ public class VariableTypeManager {
         typeDefinitions.put(typeDefinition, new VariableTypeDefinition(nodeClass, variableNodeConstructor));
     }
 
-    public Optional<VariableNodeConstructor> getNodeFactory(NodeId typeDefinition) {
+    public Optional<VariableNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
         VariableTypeDefinition def = typeDefinitions.get(typeDefinition);
 
         return Optional.ofNullable(def).map(d -> d.nodeFactory);
