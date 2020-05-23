@@ -10,12 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
@@ -37,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -50,6 +53,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
@@ -154,6 +158,36 @@ public class OpcUaClient implements UaClient {
         UaStackClient stackClient = UaStackClient.create(config);
 
         return new OpcUaClient(config, stackClient);
+    }
+
+    /**
+     * Select the first endpoint with no security that allows anonymous connections and create an
+     * {@link OpcUaClient} with the default configuration.
+     * <p>
+     * If the server is not configured with an endpoint with no security or authentication you
+     * must use {@link #create(String, Function, Function)} to select an endpoint and configure
+     * any certificates or identity provider that the selected endpoint would require.
+     *
+     * @param endpointUrl the endpoint URL of the server to connect to and get endpoints from.
+     * @return an {@link OpcUaClient} configured to connect to the server identified by
+     * {@code endpointUrl}.
+     * @throws UaException if the endpoints could not be retrieved or the client could not be
+     *                     created.
+     */
+    public static OpcUaClient create(String endpointUrl) throws UaException {
+        // select the first EndpointDescription with no security and anonymous authentication
+        Predicate<EndpointDescription> predicate = e ->
+            SecurityPolicy.None.getUri().equals(e.getSecurityPolicyUri()) &&
+                Arrays.stream(e.getUserIdentityTokens())
+                    .anyMatch(p -> p.getTokenType() == UserTokenType.Anonymous);
+
+        return create(
+            endpointUrl,
+            endpoints -> endpoints.stream()
+                .filter(predicate)
+                .findFirst(),
+            OpcUaClientConfigBuilder::build
+        );
     }
 
     /**
