@@ -10,9 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.List;
+
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -25,6 +28,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AddressSpaceTest extends AbstractClientServerTest {
+
+    @Test
+    public void browse() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        List<? extends UaNode> children = addressSpace.browseNode(serverNode);
+
+        children.forEach(n -> {
+            System.out.println(String.format("%s (%s) [%s]",
+                n.getBrowseName().toParseableString(),
+                n.getNodeId().toParseableString(),
+                n.getNodeClass()
+            ));
+
+            if (n instanceof UaVariableNode) {
+                System.out.println("\u2514\u2500 value = " +
+                    ((UaVariableNode) n).getValue().getValue());
+            }
+        });
+    }
 
     @Test
     public void getNode() throws UaException {

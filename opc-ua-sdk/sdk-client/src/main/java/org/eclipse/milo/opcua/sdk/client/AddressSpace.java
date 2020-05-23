@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -45,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
@@ -68,12 +71,21 @@ public class AddressSpace {
     private volatile long maximumSize = 1024;
     private final Cache<NodeId, UaNode> cache = buildCache();
 
+    private BrowseOptions browseOptions = new BrowseOptions();
+
     private final OpcUaClient client;
 
     public AddressSpace(OpcUaClient client) {
         this.client = client;
     }
 
+    /**
+     * Get a {@link UaNode} instance for the Node identified by {@code nodeId}.
+     *
+     * @param nodeId the {@link NodeId} identifying the Node to get.
+     * @return a {@link UaNode} instance for the Node identified by {@code nodeId}.
+     * @throws UaException if an error occurs while creating the Node.
+     */
     public UaNode getNode(NodeId nodeId) throws UaException {
         try {
             return getNodeAsync(nodeId).get();
@@ -97,6 +109,17 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId}.
+     * <p>
+     * The type definition will be read when the instance is created. If this type definition is
+     * registered with the {@link ObjectTypeManager} a {@link UaObjectNode} of the appropriate
+     * subclass will be returned.
+     *
+     * @param nodeId the {@link NodeId} identifying the ObjectNode to get.
+     * @return a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId}.
+     * @throws UaException if an error occurs while creating the ObjectNode.
+     */
     public UaObjectNode getObjectNode(NodeId nodeId) throws UaException {
         try {
             return getObjectNodeAsync(nodeId).get();
@@ -106,6 +129,18 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId},
+     * assuming the type definition identified by {@code typeDefinitionId}.
+     * <p>
+     * If this type definition is registered with the {@link ObjectTypeManager} a
+     * {@link UaObjectNode} of the appropriate subclass will be returned.
+     *
+     * @param nodeId           the {@link NodeId} identifying the ObjectNode to get.
+     * @param typeDefinitionId the {@link NodeId} identifying the type definition.
+     * @return a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId}.
+     * @throws UaException if an error occurs while creating the ObjectNode.
+     */
     public UaObjectNode getObjectNode(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
         try {
             return getObjectNodeAsync(nodeId, typeDefinitionId).get();
@@ -162,6 +197,17 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId}.
+     * <p>
+     * The type definition will be read when the instance is created. If this type definition is
+     * registered with the {@link VariableTypeManager} a {@link UaVariableNode} of the appropriate
+     * subclass will be returned.
+     *
+     * @param nodeId the {@link NodeId} identifying the VariableNode to get.
+     * @return a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId}.
+     * @throws UaException if an error occurs while creating the VariableNode.
+     */
     public UaVariableNode getVariableNode(NodeId nodeId) throws UaException {
         try {
             return getVariableNodeAsync(nodeId).get();
@@ -171,6 +217,18 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId},
+     * assuming the type definition identified by {@code typeDefinitionId}.
+     * <p>
+     * If this type definition is registered with the {@link VariableTypeManager} a
+     * {@link UaVariableNode} of the appropriate subclass will be returned.
+     *
+     * @param nodeId           the {@link NodeId} identifying the VariableNode to get.
+     * @param typeDefinitionId the {@link NodeId} identifying the type definition.
+     * @return a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId}.
+     * @throws UaException if an error occurs while creating the VariableNode.
+     */
     public UaVariableNode getVariableNode(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
         try {
             return getVariableNodeAsync(nodeId, typeDefinitionId).get();
@@ -227,20 +285,113 @@ public class AddressSpace {
         }
     }
 
-    public List<UaNode> browseNode(UaNode node) throws UaException {
-        return null;
+    public List<? extends UaNode> browseNode(UaNode node) throws UaException {
+        try {
+            return browseNodeAsync(node).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public List<UaNode> browseNode(NodeId nodeId) throws UaException {
-        return null;
+    public List<? extends UaNode> browseNode(NodeId nodeId) throws UaException {
+        try {
+            return browseNodeAsync(nodeId).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<List<UaNode>> browseNodeAsync(UaNode node) {
-        return null;
+    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(UaNode node) {
+        return browseNodeAsync(node.getNodeId());
     }
 
-    public CompletableFuture<List<UaNode>> browseNodeAsync(NodeId nodeId) {
-        return null;
+    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId) {
+        final BrowseOptions browseOptions = getBrowseOptions();
+
+        BrowseDescription browseDescription = new BrowseDescription(
+            nodeId,
+            BrowseDirection.Forward,
+            browseOptions.getReferenceTypeId(),
+            browseOptions.isIncludeSubtypes(),
+            browseOptions.getNodeClassMask(),
+            uint(BrowseResultMask.All.getValue())
+        );
+
+        CompletableFuture<BrowseResult> browseFuture = client.browse(browseDescription);
+
+        return browseFuture.thenCompose(result -> {
+            StatusCode statusCode = result.getStatusCode();
+
+            // TODO BrowseNext if necessary before processing
+
+            if (statusCode.isGood()) {
+                List<CompletableFuture<? extends UaNode>> cfs = Arrays.stream(result.getReferences())
+                    .map(reference -> {
+                        NodeClass nodeClass = reference.getNodeClass();
+                        ExpandedNodeId xNodeId = reference.getNodeId();
+                        ExpandedNodeId xTypeDefinitionId = reference.getTypeDefinition();
+
+                        switch (nodeClass) {
+                            case Object:
+                            case Variable: {
+                                CompletableFuture<CompletableFuture<? extends UaNode>> ff =
+                                    localizeAsync(xNodeId).thenCombine(
+                                        localizeAsync(xTypeDefinitionId),
+                                        (targetNodeId, typeDefinitionId) -> {
+                                            if (nodeClass == NodeClass.Object) {
+                                                return getObjectNodeAsync(targetNodeId, typeDefinitionId);
+                                            } else {
+                                                return getVariableNodeAsync(targetNodeId, typeDefinitionId);
+                                            }
+                                        }
+                                    );
+
+                                return unwrap(ff);
+                            }
+                            default: {
+                                // TODO specialized getNode for other NodeClasses
+                                return localizeAsync(xNodeId).thenCompose(this::getNodeAsync);
+                            }
+                        }
+                    })
+                    .collect(Collectors.toList());
+
+                return sequence(cfs);
+            } else {
+                return FutureUtils.failedUaFuture(statusCode);
+            }
+        });
+    }
+
+    private static CompletionStage<List<? extends UaNode>> sequence(
+        List<CompletableFuture<? extends UaNode>> cfs
+    ) {
+
+        if (cfs.isEmpty()) {
+            return CompletableFuture.completedFuture(Collections.emptyList());
+        }
+
+        @SuppressWarnings("rawtypes")
+        CompletableFuture[] fa = cfs.toArray(new CompletableFuture[0]);
+
+        return CompletableFuture.allOf(fa).thenApply(v -> {
+            List<UaNode> results = new ArrayList<>(cfs.size());
+
+            for (CompletableFuture<? extends UaNode> cf : cfs) {
+                results.add(cf.join());
+            }
+
+            return results;
+        });
+    }
+
+    private static CompletableFuture<? extends UaNode> unwrap(
+        CompletableFuture<CompletableFuture<? extends UaNode>> future
+    ) {
+
+        return future.thenCompose(node -> node);
     }
 
     public NodeId localize(ExpandedNodeId nodeId) {
@@ -248,27 +399,19 @@ public class AddressSpace {
     }
 
     public CompletableFuture<NodeId> localizeAsync(ExpandedNodeId nodeId) {
-        return null;
+        // TODO read namespace table if not found?
+        // TODO fail with Bad_NodeIdUnknown if still not found?
+        Optional<NodeId> local = nodeId.local(client.getNamespaceTable());
+
+        return CompletableFuture.completedFuture(local.orElse(NodeId.NULL_VALUE));
     }
 
-    public void setBrowseNodeClassMask(UInteger mask) {
-
-    }
-
-    public void setBrowseNodeClassMask(Set<NodeClass> nodeClasses) {
-        int mask = 0;
-        for (NodeClass nodeClass : nodeClasses) {
-            mask |= nodeClass.getValue();
-        }
-        setBrowseNodeClassMask(uint(mask));
-    }
-
-    public void setBrowseReferenceType(NodeId referenceTypeId) {
+    public synchronized void setBrowseOptions(BrowseOptions browseOptions) {
 
     }
 
-    public void setBrowseSubtypes(boolean browseSubtypes) {
-
+    public synchronized BrowseOptions getBrowseOptions() {
+        return browseOptions;
     }
 
     private CompletableFuture<NodeId> readTypeDefinition(NodeId nodeId) {
@@ -327,39 +470,47 @@ public class AddressSpace {
         return future.thenCompose(response -> {
             List<DataValue> results = l(response.getResults());
 
-            Integer nodeClassValue = (Integer) results.get(1).getValue().getValue();
-            if (nodeClassValue == null) {
-                return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
-            }
-            NodeClass nodeClass = NodeClass.from(nodeClassValue);
-            if (nodeClass == null) {
-                return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
-            }
-
-            switch (nodeClass) {
-                case DataType:
-                    return createDataTypeNodeFromBaseAttributes(nodeId, results);
-                case Method:
-                    return createMethodNodeFromBaseAttributes(nodeId, results);
-                case Object:
-                    return createObjectNodeFromBaseAttributes(nodeId, results);
-                case ObjectType:
-                    return createObjectTypeNodeFromBaseAttributes(nodeId, results);
-                case ReferenceType:
-                    return createReferenceTypeNodeFromBaseAttributes(nodeId, results);
-                case Variable:
-                    return createVariableNodeFromBaseAttributes(nodeId, results);
-                case VariableType:
-                    return createVariableTypeNodeFromBaseAttributes(nodeId, results);
-                case View:
-                    return createViewNodeFromBaseAttributes(nodeId, results);
-                default:
-                    throw new IllegalArgumentException("NodeClass: " + nodeClass);
-            }
+            return createNodeFromBaseAttributes(nodeId, results);
         });
     }
 
-    private CompletableFuture<UaNode> createDataTypeNodeFromBaseAttributes(
+    private CompletableFuture<? extends UaNode> createNodeFromBaseAttributes(
+        NodeId nodeId,
+        List<DataValue> baseAttributeValues
+    ) {
+        
+        Integer nodeClassValue = (Integer) baseAttributeValues.get(1).getValue().getValue();
+        if (nodeClassValue == null) {
+            return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
+        }
+        NodeClass nodeClass = NodeClass.from(nodeClassValue);
+        if (nodeClass == null) {
+            return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
+        }
+
+        switch (nodeClass) {
+            case DataType:
+                return createDataTypeNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case Method:
+                return createMethodNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case Object:
+                return createObjectNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case ObjectType:
+                return createObjectTypeNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case ReferenceType:
+                return createReferenceTypeNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case Variable:
+                return createVariableNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case VariableType:
+                return createVariableTypeNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            case View:
+                return createViewNodeFromBaseAttributes(nodeId, baseAttributeValues);
+            default:
+                throw new IllegalArgumentException("NodeClass: " + nodeClass);
+        }
+    }
+
+    private CompletableFuture<UaDataTypeNode> createDataTypeNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -398,7 +549,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createMethodNodeFromBaseAttributes(
+    private CompletableFuture<UaMethodNode> createMethodNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -437,7 +588,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createObjectNodeFromBaseAttributes(
+    private CompletableFuture<UaObjectNode> createObjectNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -478,7 +629,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createObjectTypeNodeFromBaseAttributes(
+    private CompletableFuture<UaObjectTypeNode> createObjectTypeNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -517,7 +668,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createReferenceTypeNodeFromBaseAttributes(
+    private CompletableFuture<UaReferenceTypeNode> createReferenceTypeNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -556,7 +707,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createVariableNodeFromBaseAttributes(
+    private CompletableFuture<UaVariableNode> createVariableNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -597,7 +748,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createVariableTypeNodeFromBaseAttributes(
+    private CompletableFuture<UaVariableTypeNode> createVariableTypeNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -636,7 +787,7 @@ public class AddressSpace {
         });
     }
 
-    private CompletableFuture<UaNode> createViewNodeFromBaseAttributes(
+    private CompletableFuture<UaViewNode> createViewNodeFromBaseAttributes(
         NodeId nodeId,
         List<DataValue> baseAttributeValues
     ) {
@@ -951,6 +1102,73 @@ public class AddressSpace {
             .maximumSize(maximumSize)
             .recordStats()
             .build();
+    }
+
+    public static class BrowseOptions {
+
+        private final NodeId referenceTypeId;
+        private final boolean includeSubtypes;
+        private final UInteger nodeClassMask;
+
+        public BrowseOptions() {
+            this(Identifiers.HierarchicalReferences, true, uint(0xFF));
+        }
+
+        public BrowseOptions(NodeId referenceTypeId, boolean includeSubtypes, UInteger nodeClassMask) {
+            this.referenceTypeId = referenceTypeId;
+            this.includeSubtypes = includeSubtypes;
+            this.nodeClassMask = nodeClassMask;
+        }
+
+        public NodeId getReferenceTypeId() {
+            return referenceTypeId;
+        }
+
+        public boolean isIncludeSubtypes() {
+            return includeSubtypes;
+        }
+
+        public UInteger getNodeClassMask() {
+            return nodeClassMask;
+        }
+
+        public static class Builder {
+            private NodeId referenceTypeId;
+            private boolean includeSubtypes;
+            private UInteger nodeClassMask;
+
+            public Builder setReferenceType(BuiltinReferenceType referenceType) {
+                return setReferenceType(referenceType.getNodeId());
+            }
+
+            public Builder setReferenceType(NodeId referenceTypeId) {
+                this.referenceTypeId = referenceTypeId;
+                return this;
+            }
+
+            public Builder setIncludeSubtypes(boolean includeSubtypes) {
+                this.includeSubtypes = includeSubtypes;
+                return this;
+            }
+
+            public Builder setNodeClassMask(UInteger nodeClassMask) {
+                this.nodeClassMask = nodeClassMask;
+                return this;
+            }
+
+            public Builder setNodeClassMask(Set<NodeClass> nodeClasses) {
+                int mask = 0;
+                for (NodeClass nodeClass : nodeClasses) {
+                    mask |= nodeClass.getValue();
+                }
+                return setNodeClassMask(uint(mask));
+            }
+
+            public BrowseOptions build() {
+                return new BrowseOptions(referenceTypeId, includeSubtypes, nodeClassMask);
+            }
+
+        }
     }
 
 }
