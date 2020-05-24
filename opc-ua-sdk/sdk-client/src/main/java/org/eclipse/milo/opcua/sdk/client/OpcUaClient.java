@@ -210,7 +210,6 @@ public class OpcUaClient implements UaClient {
     private final ExecutionQueue faultNotificationQueue;
 
     private final AddressSpace addressSpace;
-    private final DefaultNodeCache nodeCache = new DefaultNodeCache();
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
@@ -298,11 +297,6 @@ public class OpcUaClient implements UaClient {
 
     public UaStackClient getStackClient() {
         return stackClient;
-    }
-
-    @Override
-    public DefaultNodeCache getNodeCache() {
-        return nodeCache;
     }
 
     @Override

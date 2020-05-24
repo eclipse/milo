@@ -44,7 +44,7 @@ public class BrowseNodeExample implements ClientExample {
 
     private void browseNode(String indent, OpcUaClient client, NodeId browseRoot) {
         try {
-            List<UaNode> nodes = client.getAddressSpace().browseNode(browseRoot);
+            List<? extends UaNode> nodes = client.getAddressSpace().browseNode(browseRoot);
 
             for (UaNode node : nodes) {
                 logger.info("{} Node={}", indent, node.getBrowseName().getName());

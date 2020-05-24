@@ -268,9 +268,9 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         DataValue value = readAttribute(AttributeId.ArrayDimensions);
         StatusCode statusCode = value.getStatusCode();
 
-        if (statusCode != null
-            && statusCode.isBad()
-            && statusCode.getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+        if (statusCode != null &&
+            statusCode.isBad() &&
+            statusCode.getValue() != StatusCodes.Bad_AttributeIdInvalid) {
 
             throw new UaException(statusCode, "read ArrayDimensions failed");
         } else {
