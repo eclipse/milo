@@ -10,18 +10,24 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.EnumSet;
 import java.util.List;
 
+import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
+import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,6 +54,98 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                     ((UaVariableNode) n).getValue().getValue());
             }
         });
+    }
+
+    @Test
+    public void browseWithBrowseDirection() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        {
+            UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+            BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
+                b ->
+                    b.setBrowseDirection(BrowseDirection.Inverse)
+            );
+
+            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+
+            assertEquals(1, children.size());
+            assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.ObjectsFolder)));
+        }
+
+        {
+            UaNode objectsFolderNode = addressSpace.getNode(Identifiers.ObjectsFolder);
+            BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
+                b ->
+                    b.setBrowseDirection(BrowseDirection.Both)
+            );
+
+            List<? extends UaNode> children = addressSpace.browseNode(objectsFolderNode, browseOptions);
+
+            assertEquals(2, children.size());
+            assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.RootFolder)));
+            assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server)));
+        }
+    }
+
+    @Test
+    public void browseWithReferenceType() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+
+        BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
+            b ->
+                b.setReferenceType(BuiltinReferenceType.HasProperty)
+        );
+
+        List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+
+        assertEquals(5, children.size());
+        // TODO
+        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
+    }
+
+    @Test
+    public void browseWithNodeClassMask() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+
+        {
+            BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
+                b ->
+                    b.setNodeClassMask(EnumSet.of(NodeClass.Method))
+            );
+
+            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+
+            assertFalse(children.isEmpty());
+            assertTrue(children.stream().allMatch(n -> n.getNodeClass() == NodeClass.Method));
+        }
+
+        {
+            BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
+                b ->
+                    b.setNodeClassMask(EnumSet.of(NodeClass.Object))
+            );
+
+            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+
+            assertFalse(children.isEmpty());
+            assertTrue(children.stream().allMatch(n -> n.getNodeClass() == NodeClass.Object));
+        }
+
+        {
+            BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
+                b ->
+                    b.setNodeClassMask(EnumSet.of(NodeClass.Variable))
+            );
+
+            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+
+            assertFalse(children.isEmpty());
+            assertTrue(children.stream().allMatch(n -> n.getNodeClass() == NodeClass.Variable));
+        }
     }
 
     @Test

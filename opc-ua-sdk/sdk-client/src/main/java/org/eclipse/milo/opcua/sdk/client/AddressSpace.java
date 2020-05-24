@@ -366,7 +366,7 @@ public class AddressSpace {
     public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
             nodeId,
-            BrowseDirection.Forward,
+            browseOptions.getBrowseDirection(),
             browseOptions.getReferenceTypeId(),
             browseOptions.isIncludeSubtypes(),
             browseOptions.getNodeClassMask(),
@@ -1172,18 +1172,30 @@ public class AddressSpace {
 
     public static class BrowseOptions {
 
+        private final BrowseDirection browseDirection;
         private final NodeId referenceTypeId;
         private final boolean includeSubtypes;
         private final UInteger nodeClassMask;
 
         public BrowseOptions() {
-            this(Identifiers.HierarchicalReferences, true, uint(0xFF));
+            this(BrowseDirection.Forward, Identifiers.HierarchicalReferences, true, uint(0xFF));
         }
 
-        public BrowseOptions(NodeId referenceTypeId, boolean includeSubtypes, UInteger nodeClassMask) {
+        public BrowseOptions(
+            BrowseDirection browseDirection,
+            NodeId referenceTypeId,
+            boolean includeSubtypes,
+            UInteger nodeClassMask
+        ) {
+
+            this.browseDirection = browseDirection;
             this.referenceTypeId = referenceTypeId;
             this.includeSubtypes = includeSubtypes;
             this.nodeClassMask = nodeClassMask;
+        }
+
+        public BrowseDirection getBrowseDirection() {
+            return browseDirection;
         }
 
         public NodeId getReferenceTypeId() {
@@ -1198,10 +1210,25 @@ public class AddressSpace {
             return nodeClassMask;
         }
 
+        public BrowseOptions copy(Consumer<Builder> builderConsumer) {
+            Builder builder = new Builder();
+            builder.setReferenceType(referenceTypeId);
+            builder.setIncludeSubtypes(includeSubtypes);
+            builder.setNodeClassMask(nodeClassMask);
+            builderConsumer.accept(builder);
+            return builder.build();
+        }
+
         public static class Builder {
-            private NodeId referenceTypeId;
-            private boolean includeSubtypes;
-            private UInteger nodeClassMask;
+            private BrowseDirection browseDirection = BrowseDirection.Forward;
+            private NodeId referenceTypeId = Identifiers.HierarchicalReferences;
+            private boolean includeSubtypes = true;
+            private UInteger nodeClassMask = uint(0xFF);
+
+            public Builder setBrowseDirection(BrowseDirection browseDirection) {
+                this.browseDirection = browseDirection;
+                return this;
+            }
 
             public Builder setReferenceType(BuiltinReferenceType referenceType) {
                 return setReferenceType(referenceType.getNodeId());
@@ -1231,7 +1258,7 @@ public class AddressSpace {
             }
 
             public BrowseOptions build() {
-                return new BrowseOptions(referenceTypeId, includeSubtypes, nodeClassMask);
+                return new BrowseOptions(browseDirection, referenceTypeId, includeSubtypes, nodeClassMask);
             }
 
         }
