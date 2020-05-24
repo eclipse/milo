@@ -285,10 +285,30 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Browse from {@code node} using the currently configured {@link BrowseOptions}.
+     *
+     * @param node the {@link UaNode} to start the browse from.
+     * @return a List of {@link UaNode}s referenced by {@code node} given the currently configured
+     * {@link BrowseOptions}.
+     * @throws UaException if an error occurs while browsing or creating Nodes.
+     * @see #browseNode(UaNode, BrowseOptions)
+     * @see #getBrowseOptions()
+     * @see #modifyBrowseOptions(Consumer)
+     * @see #setBrowseOptions(BrowseOptions)
+     */
     public List<? extends UaNode> browseNode(UaNode node) throws UaException {
         return browseNode(node, getBrowseOptions());
     }
 
+    /**
+     * Browse from {@code node} using {@code browseOptions}.
+     *
+     * @param node          the {@link UaNode} to start the browse from.
+     * @param browseOptions the {@link BrowseOptions} to use.
+     * @return a List of {@link UaNode}s referenced by {@code node} given {@code browseOptions}.
+     * @throws UaException if an error occurs while browsing or creating Nodes.
+     */
     public List<? extends UaNode> browseNode(UaNode node, BrowseOptions browseOptions) throws UaException {
         try {
             return browseNodeAsync(node, browseOptions).get();
@@ -298,10 +318,30 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Browse from {@code nodeId} using the currently configured {@link BrowseOptions}.
+     *
+     * @param nodeId the {@link NodeId} to start the browse from.
+     * @return a List of {@link UaNode}s referenced by {@code nodeId} given the currently configured
+     * {@link BrowseOptions}.
+     * @throws UaException if an error occurs while browsing or creating Nodes.
+     * @see #browseNode(UaNode, BrowseOptions)
+     * @see #getBrowseOptions()
+     * @see #modifyBrowseOptions(Consumer)
+     * @see #setBrowseOptions(BrowseOptions)
+     */
     public List<? extends UaNode> browseNode(NodeId nodeId) throws UaException {
         return browseNode(nodeId, getBrowseOptions());
     }
 
+    /**
+     * Browse from {@code nodeId} using {@code browseOptions}.
+     *
+     * @param nodeId        the {@link NodeId} to start the browse from.
+     * @param browseOptions the {@link BrowseOptions} to use.
+     * @return a List of {@link UaNode}s referenced by {@code nodeId} given {@code browseOptions}.
+     * @throws UaException if an error occurs while browsing or creating Nodes.
+     */
     public List<? extends UaNode> browseNode(NodeId nodeId, BrowseOptions browseOptions) throws UaException {
         try {
             return browseNodeAsync(nodeId, browseOptions).get();
@@ -409,6 +449,7 @@ public class AddressSpace {
     }
 
     public NodeId localize(ExpandedNodeId nodeId) {
+        // TODO
         return null;
     }
 
