@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -27,9 +26,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
@@ -37,17 +34,11 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -260,83 +251,8 @@ public final class DataTypeTreeBuilder {
         BrowseDescription browseDescription
     ) {
 
-        return browse(client, session, browseDescription)
+        return BrowseHelper.browse(client, session, browseDescription)
             .exceptionally(ex -> Collections.emptyList());
-    }
-
-    private static CompletableFuture<List<ReferenceDescription>> browse(
-        UaStackClient client,
-        OpcUaSession session,
-        BrowseDescription browseDescription
-    ) {
-
-        BrowseRequest browseRequest = new BrowseRequest(
-            client.newRequestHeader(
-                session.getAuthenticationToken(),
-                client.getConfig().getRequestTimeout()
-            ),
-            new ViewDescription(
-                NodeId.NULL_VALUE,
-                DateTime.MIN_VALUE,
-                uint(0)
-            ),
-            uint(0),
-            new BrowseDescription[]{browseDescription}
-        );
-
-        return client.sendRequest(browseRequest).thenApply(BrowseResponse.class::cast).thenCompose(response -> {
-            BrowseResult result = response.getResults()[0];
-
-            List<ReferenceDescription> references =
-                Collections.synchronizedList(new ArrayList<>());
-
-            return maybeBrowseNext(client, session, references, result);
-        });
-    }
-
-    private static CompletableFuture<List<ReferenceDescription>> maybeBrowseNext(
-        UaStackClient client,
-        OpcUaSession session,
-        List<ReferenceDescription> references,
-        BrowseResult result
-    ) {
-
-        if (result.getStatusCode().isGood()) {
-            Collections.addAll(references, result.getReferences());
-
-            ByteString nextContinuationPoint = result.getContinuationPoint();
-
-            if (nextContinuationPoint == null || nextContinuationPoint.isNull()) {
-                return CompletableFuture.completedFuture(references);
-            } else {
-                return browseNext(client, session, nextContinuationPoint, references);
-            }
-        } else {
-            return CompletableFuture.completedFuture(references);
-        }
-    }
-
-    private static CompletableFuture<List<ReferenceDescription>> browseNext(
-        UaStackClient client,
-        OpcUaSession session,
-        ByteString continuationPoint,
-        List<ReferenceDescription> references
-    ) {
-
-        BrowseNextRequest browseNextRequest = new BrowseNextRequest(
-            client.newRequestHeader(
-                session.getAuthenticationToken(),
-                client.getConfig().getRequestTimeout()
-            ),
-            false,
-            new ByteString[]{continuationPoint}
-        );
-
-        return client.sendRequest(browseNextRequest).thenApply(BrowseNextResponse.class::cast).thenCompose(response -> {
-            BrowseResult result = response.getResults()[0];
-
-            return maybeBrowseNext(client, session, references, result);
-        });
     }
 
 }

@@ -47,7 +47,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
@@ -373,49 +372,41 @@ public class AddressSpace {
             uint(BrowseResultMask.All.getValue())
         );
 
-        CompletableFuture<BrowseResult> browseFuture = client.browse(browseDescription);
+        CompletableFuture<List<ReferenceDescription>> browse = BrowseHelper.browse(client, browseDescription);
 
-        return browseFuture.thenCompose(result -> {
-            StatusCode statusCode = result.getStatusCode();
+        return browse.thenCompose(references -> {
+            List<CompletableFuture<? extends UaNode>> cfs = references.stream()
+                .map(reference -> {
+                    NodeClass nodeClass = reference.getNodeClass();
+                    ExpandedNodeId xNodeId = reference.getNodeId();
+                    ExpandedNodeId xTypeDefinitionId = reference.getTypeDefinition();
 
-            // TODO BrowseNext if necessary before processing
-
-            if (statusCode.isGood()) {
-                List<CompletableFuture<? extends UaNode>> cfs = Arrays.stream(result.getReferences())
-                    .map(reference -> {
-                        NodeClass nodeClass = reference.getNodeClass();
-                        ExpandedNodeId xNodeId = reference.getNodeId();
-                        ExpandedNodeId xTypeDefinitionId = reference.getTypeDefinition();
-
-                        switch (nodeClass) {
-                            case Object:
-                            case Variable: {
-                                CompletableFuture<CompletableFuture<? extends UaNode>> ff =
-                                    localizeAsync(xNodeId).thenCombine(
-                                        localizeAsync(xTypeDefinitionId),
-                                        (targetNodeId, typeDefinitionId) -> {
-                                            if (nodeClass == NodeClass.Object) {
-                                                return getObjectNodeAsync(targetNodeId, typeDefinitionId);
-                                            } else {
-                                                return getVariableNodeAsync(targetNodeId, typeDefinitionId);
-                                            }
+                    switch (nodeClass) {
+                        case Object:
+                        case Variable: {
+                            CompletableFuture<CompletableFuture<? extends UaNode>> ff =
+                                localizeAsync(xNodeId).thenCombine(
+                                    localizeAsync(xTypeDefinitionId),
+                                    (targetNodeId, typeDefinitionId) -> {
+                                        if (nodeClass == NodeClass.Object) {
+                                            return getObjectNodeAsync(targetNodeId, typeDefinitionId);
+                                        } else {
+                                            return getVariableNodeAsync(targetNodeId, typeDefinitionId);
                                         }
-                                    );
+                                    }
+                                );
 
-                                return unwrap(ff);
-                            }
-                            default: {
-                                // TODO specialized getNode for other NodeClasses
-                                return localizeAsync(xNodeId).thenCompose(this::getNodeAsync);
-                            }
+                            return unwrap(ff);
                         }
-                    })
-                    .collect(Collectors.toList());
+                        default: {
+                            // TODO specialized getNode for other NodeClasses
+                            return localizeAsync(xNodeId).thenCompose(this::getNodeAsync);
+                        }
+                    }
+                })
+                .collect(Collectors.toList());
 
-                return sequence(cfs);
-            } else {
-                return FutureUtils.failedUaFuture(statusCode);
-            }
+            return sequence(cfs);
         });
     }
 

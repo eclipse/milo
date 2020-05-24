@@ -102,8 +102,11 @@ public class AddressSpaceTest extends AbstractClientServerTest {
         List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
 
         assertEquals(5, children.size());
-        // TODO
         assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
+        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
+        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
+        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
+        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
     }
 
     @Test
