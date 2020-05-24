@@ -356,7 +356,7 @@ public class AddressSpace {
     }
 
     public CompletableFuture<List<? extends UaNode>> browseNodeAsync(UaNode node, BrowseOptions browseOptions) {
-        return browseNodeAsync(node.getNodeId());
+        return browseNodeAsync(node.getNodeId(), browseOptions);
     }
 
     public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId) {
