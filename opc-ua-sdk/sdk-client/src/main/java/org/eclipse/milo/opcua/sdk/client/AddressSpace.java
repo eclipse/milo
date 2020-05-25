@@ -28,6 +28,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.client.ObjectTypeManager.ObjectNodeConstructor;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
@@ -49,6 +50,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -62,6 +64,7 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class AddressSpace {
@@ -399,7 +402,7 @@ public class AddressSpace {
                             return unwrap(ff);
                         }
                         default: {
-                            // TODO specialized getNode for other NodeClasses
+                            // TODO specialized getNode for other NodeClasses?
                             return localizeAsync(xNodeId).thenCompose(this::getNodeAsync);
                         }
                     }
@@ -415,7 +418,7 @@ public class AddressSpace {
     ) {
 
         if (cfs.isEmpty()) {
-            return CompletableFuture.completedFuture(Collections.emptyList());
+            return completedFuture(Collections.emptyList());
         }
 
         @SuppressWarnings("rawtypes")
@@ -439,17 +442,45 @@ public class AddressSpace {
         return future.thenCompose(node -> node);
     }
 
-    public NodeId localize(ExpandedNodeId nodeId) {
-        // TODO
-        return null;
+    public NodeId localize(ExpandedNodeId nodeId) throws UaException {
+        try {
+            return localizeAsync(nodeId).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     public CompletableFuture<NodeId> localizeAsync(ExpandedNodeId nodeId) {
-        // TODO read namespace table if not found?
-        // TODO fail with Bad_NodeIdUnknown if still not found?
-        Optional<NodeId> local = nodeId.local(client.getNamespaceTable());
+        // TODO should this fail with Bad_NodeIdUnknown instead of returning NodeId.NULL_VALUE?
+        if (nodeId.isLocal()) {
+            Optional<NodeId> local = nodeId.local(client.getNamespaceTable());
 
-        return CompletableFuture.completedFuture(local.orElse(NodeId.NULL_VALUE));
+            if (local.isPresent()) {
+                return completedFuture(local.orElse(NodeId.NULL_VALUE));
+            } else {
+                return getObjectNodeAsync(Identifiers.Server).thenCompose(node -> {
+                    ServerTypeNode serverNode = (ServerTypeNode) node;
+                    return serverNode.readNamespaceArrayAsync();
+                }).thenCompose((String[] namespaceArray) -> {
+                    client.getNamespaceTable().update(uriTable -> {
+                        uriTable.clear();
+
+                        for (int i = 0; i < namespaceArray.length && i < UShort.MAX_VALUE; i++) {
+                            String uri = namespaceArray[i];
+
+                            if (uri != null && !uriTable.containsValue(uri)) {
+                                uriTable.put(ushort(i), uri);
+                            }
+                        }
+                    });
+
+                    return completedFuture(local.orElse(NodeId.NULL_VALUE));
+                });
+            }
+        } else {
+            return completedFuture(NodeId.NULL_VALUE);
+        }
     }
 
     public synchronized BrowseOptions getBrowseOptions() {
