@@ -170,22 +170,7 @@ public class AddressSpace {
         if (cachedNode instanceof UaObjectNode) {
             return completedFuture((UaObjectNode) cachedNode);
         } else {
-            List<ReadValueId> readValueIds = AttributeId.OBJECT_ATTRIBUTES.stream()
-                .map(id ->
-                    new ReadValueId(
-                        nodeId,
-                        id.uid(),
-                        null,
-                        QualifiedName.NULL_VALUE
-                    )
-                )
-                .collect(Collectors.toList());
-
-            CompletableFuture<ReadResponse> future = client.read(
-                0.0,
-                TimestampsToReturn.Neither,
-                readValueIds
-            );
+            CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.OBJECT_ATTRIBUTES);
 
             return future.thenApply(response -> {
                 List<DataValue> attributeValues = l(response.getResults());
@@ -258,22 +243,7 @@ public class AddressSpace {
         if (cachedNode instanceof UaVariableNode) {
             return completedFuture((UaVariableNode) cachedNode);
         } else {
-            List<ReadValueId> readValueIds = AttributeId.VARIABLE_ATTRIBUTES.stream()
-                .map(id ->
-                    new ReadValueId(
-                        nodeId,
-                        id.uid(),
-                        null,
-                        QualifiedName.NULL_VALUE
-                    )
-                )
-                .collect(Collectors.toList());
-
-            CompletableFuture<ReadResponse> future = client.read(
-                0.0,
-                TimestampsToReturn.Neither,
-                readValueIds
-            );
+            CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.VARIABLE_ATTRIBUTES);
 
             return future.thenApply(response -> {
                 List<DataValue> attributeValues = l(response.getResults());
@@ -488,10 +458,7 @@ public class AddressSpace {
     }
 
     public synchronized void modifyBrowseOptions(Consumer<BrowseOptions.Builder> builderConsumer) {
-        BrowseOptions.Builder builder = new BrowseOptions.Builder();
-        builder.setReferenceType(browseOptions.getReferenceTypeId());
-        builder.setIncludeSubtypes(browseOptions.isIncludeSubtypes());
-        builder.setNodeClassMask(browseOptions.getNodeClassMask());
+        BrowseOptions.Builder builder = new BrowseOptions.Builder(browseOptions);
 
         builderConsumer.accept(builder);
 
@@ -519,6 +486,9 @@ public class AddressSpace {
                     .map(ReferenceDescription::getNodeId)
                     .findFirst();
 
+                // typeDefinitionId.map(this::localizeAsync)
+                // .orElse(completedFuture(NodeId.NULL_VALUE));
+
                 // TODO better xni -> local function that looks in the current
                 //  namespace table and reads from server as a fallback.
                 return typeDefinitionId
@@ -538,22 +508,7 @@ public class AddressSpace {
      * @return a {@link UaNode} instance for the Node identified by {@code nodeId}.
      */
     private CompletableFuture<? extends UaNode> createNode(NodeId nodeId) {
-        List<ReadValueId> readValueIds = AttributeId.BASE_ATTRIBUTES.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> future = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.BASE_ATTRIBUTES);
 
         return future.thenCompose(response -> {
             List<DataValue> results = l(response.getResults());
@@ -608,22 +563,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenApply(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
@@ -647,22 +587,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenApply(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
@@ -686,22 +611,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         CompletableFuture<NodeId> typeDefinitionFuture = readTypeDefinition(nodeId);
 
@@ -727,22 +637,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenApply(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
@@ -766,22 +661,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenApply(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
@@ -805,22 +685,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         CompletableFuture<NodeId> typeDefinitionFuture = readTypeDefinition(nodeId);
 
@@ -846,22 +711,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenApply(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
@@ -885,22 +735,7 @@ public class AddressSpace {
             AttributeId.BASE_ATTRIBUTES
         );
 
-        List<ReadValueId> readValueIds = remainingAttributes.stream()
-            .map(id ->
-                new ReadValueId(
-                    nodeId,
-                    id.uid(),
-                    null,
-                    QualifiedName.NULL_VALUE
-                )
-            )
-            .collect(Collectors.toList());
-
-        CompletableFuture<ReadResponse> attributesFuture = client.read(
-            0.0,
-            TimestampsToReturn.Neither,
-            readValueIds
-        );
+        CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
         return attributesFuture.thenApply(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
@@ -912,6 +747,21 @@ public class AddressSpace {
 
             return node;
         });
+    }
+
+    private CompletableFuture<ReadResponse> readAttributes(NodeId nodeId, Set<AttributeId> attributeIds) {
+        List<ReadValueId> readValueIds = attributeIds.stream()
+            .map(id ->
+                new ReadValueId(
+                    nodeId,
+                    id.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                )
+            )
+            .collect(Collectors.toList());
+
+        return client.read(0.0, TimestampsToReturn.Neither, readValueIds);
     }
 
     private UaDataTypeNode newDataTypeNode(NodeId nodeId, List<DataValue> attributeValues) {
@@ -1233,19 +1083,32 @@ public class AddressSpace {
         }
 
         public BrowseOptions copy(Consumer<Builder> builderConsumer) {
-            Builder builder = new Builder();
-            builder.setReferenceType(referenceTypeId);
-            builder.setIncludeSubtypes(includeSubtypes);
-            builder.setNodeClassMask(nodeClassMask);
+            Builder builder = new Builder(this);
+
             builderConsumer.accept(builder);
+
             return builder.build();
         }
 
+        public static Builder builder() {
+            return new Builder();
+        }
+
         public static class Builder {
+
             private BrowseDirection browseDirection = BrowseDirection.Forward;
             private NodeId referenceTypeId = Identifiers.HierarchicalReferences;
             private boolean includeSubtypes = true;
             private UInteger nodeClassMask = uint(0xFF);
+
+            private Builder() {}
+
+            private Builder(BrowseOptions browseOptions) {
+                this.browseDirection = browseOptions.getBrowseDirection();
+                this.referenceTypeId = browseOptions.getReferenceTypeId();
+                this.includeSubtypes = browseOptions.isIncludeSubtypes();
+                this.nodeClassMask = browseOptions.getNodeClassMask();
+            }
 
             public Builder setBrowseDirection(BrowseDirection browseDirection) {
                 this.browseDirection = browseDirection;
@@ -1284,6 +1147,7 @@ public class AddressSpace {
             }
 
         }
+
     }
 
 }
