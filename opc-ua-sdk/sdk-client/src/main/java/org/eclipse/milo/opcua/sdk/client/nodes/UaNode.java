@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
+import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
@@ -621,27 +622,32 @@ public abstract class UaNode implements Node {
     }
 
     /**
-     * Call the Browse service to get this {@link UaNode}s references.
+     * Call the Browse service to get this {@link UaNode}'s references.
      *
-     * @param referenceTypeId the {@link NodeId} of the ReferenceType, including subtypes, to get.
-     * @param forward         {@code true} to get forward references, {@code false} for inverse
-     *                        references..
+     * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a List of {@link ReferenceDescription}s.
      */
-    public List<ReferenceDescription> getReferences(NodeId referenceTypeId, boolean forward) {
-        return null; // TODO
+    public List<ReferenceDescription> browse(BrowseOptions browseOptions) throws UaException {
+        return client.getAddressSpace().browse(this, browseOptions);
     }
 
-    public CompletableFuture<List<ReferenceDescription>> getReferencesAsync(NodeId referenceTypeId, boolean forward) {
-        return null; // TODO
+    /**
+     * Call the Browse service to get this {@link UaNode}'s references.
+     *
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a CompletableFuture that completes successfully with the List of references or
+     * completes exceptionally if a service-level error occurs.
+     */
+    public CompletableFuture<List<ReferenceDescription>> browseAsync(BrowseOptions browseOptions) {
+        return client.getAddressSpace().browseAsync(this, browseOptions);
     }
 
-    public List<UaNode> getReferencedNodes(NodeId referenceTypeId, boolean forward) {
-        return null; // TODO
+    public List<? extends UaNode> browseNodes(BrowseOptions browseOptions) throws UaException {
+        return client.getAddressSpace().browseNodes(this, browseOptions);
     }
 
-    public CompletableFuture<List<UaNode>> getReferencedNodesAsync(NodeId referenceTypeId, boolean forward) {
-        return null; // TODO
+    public CompletableFuture<List<? extends UaNode>> browseNodesAsync(BrowseOptions browseOptions) {
+        return client.getAddressSpace().browseNodesAsync(this, browseOptions);
     }
 
     /**
@@ -672,7 +678,7 @@ public abstract class UaNode implements Node {
         // TODO
     }
 
-    public CompletableFuture<Unit> synchronizeAsync() {
+    public CompletableFuture<Unit> synchronizeAsync(Set<AttributeId> attributeIds) {
         return null; // TODO
     }
 

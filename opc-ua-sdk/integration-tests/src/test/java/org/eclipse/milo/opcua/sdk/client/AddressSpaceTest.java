@@ -40,9 +40,9 @@ public class AddressSpaceTest extends AbstractClientServerTest {
         AddressSpace addressSpace = client.getAddressSpace();
 
         UaNode serverNode = addressSpace.getNode(Identifiers.Server);
-        List<? extends UaNode> children = addressSpace.browseNode(serverNode);
+        List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode);
 
-        children.forEach(n -> {
+        nodes.forEach(n -> {
             System.out.println(String.format("%s (%s) [%s]",
                 n.getBrowseName().toParseableString(),
                 n.getNodeId().toParseableString(),
@@ -67,10 +67,10 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                     b.setBrowseDirection(BrowseDirection.Inverse)
             );
 
-            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-            assertEquals(1, children.size());
-            assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.ObjectsFolder)));
+            assertEquals(1, nodes.size());
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.ObjectsFolder)));
         }
 
         {
@@ -80,11 +80,11 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                     b.setBrowseDirection(BrowseDirection.Both)
             );
 
-            List<? extends UaNode> children = addressSpace.browseNode(objectsFolderNode, browseOptions);
+            List<? extends UaNode> nodes = addressSpace.browseNodes(objectsFolderNode, browseOptions);
 
-            assertEquals(2, children.size());
-            assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.RootFolder)));
-            assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server)));
+            assertEquals(2, nodes.size());
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.RootFolder)));
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server)));
         }
     }
 
@@ -99,14 +99,14 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                 b.setReferenceType(BuiltinReferenceType.HasProperty)
         );
 
-        List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+        List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-        assertEquals(5, children.size());
-        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
-        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
-        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
-        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
-        assertTrue(children.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
+        assertEquals(5, nodes.size());
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
     }
 
     @Test
@@ -120,10 +120,10 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                     b.setNodeClassMask(EnumSet.of(NodeClass.Method))
             );
 
-            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-            assertFalse(children.isEmpty());
-            assertTrue(children.stream().allMatch(n -> n.getNodeClass() == NodeClass.Method));
+            assertFalse(nodes.isEmpty());
+            assertTrue(nodes.stream().allMatch(n -> n.getNodeClass() == NodeClass.Method));
         }
 
         {
@@ -132,10 +132,10 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                     b.setNodeClassMask(EnumSet.of(NodeClass.Object))
             );
 
-            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-            assertFalse(children.isEmpty());
-            assertTrue(children.stream().allMatch(n -> n.getNodeClass() == NodeClass.Object));
+            assertFalse(nodes.isEmpty());
+            assertTrue(nodes.stream().allMatch(n -> n.getNodeClass() == NodeClass.Object));
         }
 
         {
@@ -144,10 +144,10 @@ public class AddressSpaceTest extends AbstractClientServerTest {
                     b.setNodeClassMask(EnumSet.of(NodeClass.Variable))
             );
 
-            List<? extends UaNode> children = addressSpace.browseNode(serverNode, browseOptions);
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-            assertFalse(children.isEmpty());
-            assertTrue(children.stream().allMatch(n -> n.getNodeClass() == NodeClass.Variable));
+            assertFalse(nodes.isEmpty());
+            assertTrue(nodes.stream().allMatch(n -> n.getNodeClass() == NodeClass.Variable));
         }
     }
 

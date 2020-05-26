@@ -58,7 +58,7 @@ public class BrowseAsyncExample implements ClientExample {
     }
 
     private CompletableFuture<Void> browseRecursive(OpcUaClient client, Tree<UaNode> tree) {
-        return client.getAddressSpace().browseNodeAsync(tree.node).thenCompose(nodes -> {
+        return client.getAddressSpace().browseNodesAsync(tree.node).thenCompose(nodes -> {
             // Add each child node to the tree
             nodes.forEach(tree::addChild);
 

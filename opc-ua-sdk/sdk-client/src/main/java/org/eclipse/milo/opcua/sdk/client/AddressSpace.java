@@ -257,6 +257,42 @@ public class AddressSpace {
         }
     }
 
+    public List<ReferenceDescription> browse(UaNode node, BrowseOptions browseOptions) throws UaException {
+        try {
+            return browseAsync(node, browseOptions).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public List<ReferenceDescription> browse(NodeId nodeId, BrowseOptions browseOptions) throws UaException {
+        try {
+            return browseAsync(nodeId, browseOptions).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<List<ReferenceDescription>> browseAsync(UaNode node, BrowseOptions browseOptions) {
+        return browseAsync(node.getNodeId(), browseOptions);
+    }
+
+    public CompletableFuture<List<ReferenceDescription>> browseAsync(NodeId nodeId, BrowseOptions browseOptions) {
+        BrowseDescription browseDescription = new BrowseDescription(
+            nodeId,
+            browseOptions.getBrowseDirection(),
+            browseOptions.getReferenceTypeId(),
+            browseOptions.isIncludeSubtypes(),
+            browseOptions.getNodeClassMask(),
+            uint(BrowseResultMask.All.getValue())
+        );
+
+        return BrowseHelper.browse(client, browseDescription);
+    }
+
+
     /**
      * Browse from {@code node} using the currently configured {@link BrowseOptions}.
      *
@@ -264,13 +300,13 @@ public class AddressSpace {
      * @return a List of {@link UaNode}s referenced by {@code node} given the currently configured
      * {@link BrowseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
-     * @see #browseNode(UaNode, BrowseOptions)
+     * @see #browseNodes(UaNode, BrowseOptions)
      * @see #getBrowseOptions()
      * @see #modifyBrowseOptions(Consumer)
      * @see #setBrowseOptions(BrowseOptions)
      */
-    public List<? extends UaNode> browseNode(UaNode node) throws UaException {
-        return browseNode(node, getBrowseOptions());
+    public List<? extends UaNode> browseNodes(UaNode node) throws UaException {
+        return browseNodes(node, getBrowseOptions());
     }
 
     /**
@@ -281,9 +317,9 @@ public class AddressSpace {
      * @return a List of {@link UaNode}s referenced by {@code node} given {@code browseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
      */
-    public List<? extends UaNode> browseNode(UaNode node, BrowseOptions browseOptions) throws UaException {
+    public List<? extends UaNode> browseNodes(UaNode node, BrowseOptions browseOptions) throws UaException {
         try {
-            return browseNodeAsync(node, browseOptions).get();
+            return browseNodesAsync(node, browseOptions).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
@@ -297,13 +333,13 @@ public class AddressSpace {
      * @return a List of {@link UaNode}s referenced by {@code nodeId} given the currently configured
      * {@link BrowseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
-     * @see #browseNode(UaNode, BrowseOptions)
+     * @see #browseNodes(UaNode, BrowseOptions)
      * @see #getBrowseOptions()
      * @see #modifyBrowseOptions(Consumer)
      * @see #setBrowseOptions(BrowseOptions)
      */
-    public List<? extends UaNode> browseNode(NodeId nodeId) throws UaException {
-        return browseNode(nodeId, getBrowseOptions());
+    public List<? extends UaNode> browseNodes(NodeId nodeId) throws UaException {
+        return browseNodes(nodeId, getBrowseOptions());
     }
 
     /**
@@ -314,28 +350,28 @@ public class AddressSpace {
      * @return a List of {@link UaNode}s referenced by {@code nodeId} given {@code browseOptions}.
      * @throws UaException if an error occurs while browsing or creating Nodes.
      */
-    public List<? extends UaNode> browseNode(NodeId nodeId, BrowseOptions browseOptions) throws UaException {
+    public List<? extends UaNode> browseNodes(NodeId nodeId, BrowseOptions browseOptions) throws UaException {
         try {
-            return browseNodeAsync(nodeId, browseOptions).get();
+            return browseNodesAsync(nodeId, browseOptions).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
     }
 
-    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(UaNode node) {
-        return browseNodeAsync(node.getNodeId());
+    public CompletableFuture<List<? extends UaNode>> browseNodesAsync(UaNode node) {
+        return browseNodesAsync(node.getNodeId());
     }
 
-    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(UaNode node, BrowseOptions browseOptions) {
-        return browseNodeAsync(node.getNodeId(), browseOptions);
+    public CompletableFuture<List<? extends UaNode>> browseNodesAsync(UaNode node, BrowseOptions browseOptions) {
+        return browseNodesAsync(node.getNodeId(), browseOptions);
     }
 
-    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId) {
-        return browseNodeAsync(nodeId, getBrowseOptions());
+    public CompletableFuture<List<? extends UaNode>> browseNodesAsync(NodeId nodeId) {
+        return browseNodesAsync(nodeId, getBrowseOptions());
     }
 
-    public CompletableFuture<List<? extends UaNode>> browseNodeAsync(NodeId nodeId, BrowseOptions browseOptions) {
+    public CompletableFuture<List<? extends UaNode>> browseNodesAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
             nodeId,
             browseOptions.getBrowseDirection(),
@@ -426,10 +462,8 @@ public class AddressSpace {
         if (nodeId.isLocal()) {
             Optional<NodeId> local = nodeId.local(client.getNamespaceTable());
 
-            if (local.isPresent()) {
-                return completedFuture(local.orElse(NodeId.NULL_VALUE));
-            } else {
-                return getObjectNodeAsync(Identifiers.Server).thenCompose(node -> {
+            return local.map(CompletableFuture::completedFuture).orElse(
+                getObjectNodeAsync(Identifiers.Server).thenCompose(node -> {
                     ServerTypeNode serverNode = (ServerTypeNode) node;
                     return serverNode.readNamespaceArrayAsync();
                 }).thenCompose((String[] namespaceArray) -> {
@@ -446,8 +480,8 @@ public class AddressSpace {
                     });
 
                     return completedFuture(local.orElse(NodeId.NULL_VALUE));
-                });
-            }
+                })
+            );
         } else {
             return completedFuture(NodeId.NULL_VALUE);
         }
