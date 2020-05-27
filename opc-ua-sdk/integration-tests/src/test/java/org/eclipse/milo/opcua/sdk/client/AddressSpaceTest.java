@@ -152,6 +152,48 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     }
 
     @Test
+    public void modifyBrowseOptions() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+
+        {
+            addressSpace.modifyBrowseOptions(
+                b ->
+                    b.setNodeClassMask(EnumSet.of(NodeClass.Method))
+            );
+
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode);
+
+            assertFalse(nodes.isEmpty());
+            assertTrue(nodes.stream().allMatch(n -> n.getNodeClass() == NodeClass.Method));
+        }
+
+        {
+            addressSpace.modifyBrowseOptions(
+                b ->
+                    b.setNodeClassMask(EnumSet.of(NodeClass.Object))
+            );
+
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode);
+
+            assertFalse(nodes.isEmpty());
+            assertTrue(nodes.stream().allMatch(n -> n.getNodeClass() == NodeClass.Object));
+        }
+
+        {
+            addressSpace.modifyBrowseOptions(
+                b ->
+                    b.setNodeClassMask(EnumSet.of(NodeClass.Variable))
+            );
+
+            List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode);
+
+            assertFalse(nodes.isEmpty());
+            assertTrue(nodes.stream().allMatch(n -> n.getNodeClass() == NodeClass.Variable));
+        }
+    }
+
+    @Test
     public void getNode() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
