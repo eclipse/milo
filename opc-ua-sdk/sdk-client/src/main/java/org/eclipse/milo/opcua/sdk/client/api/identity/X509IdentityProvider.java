@@ -91,7 +91,7 @@ public class X509IdentityProvider implements IdentityProvider {
             );
 
             signatureData = new SignatureData(
-                securityPolicyUri,
+                securityPolicy.getAsymmetricEncryptionAlgorithm().getUri(),
                 ByteString.of(signature)
             );
         }
