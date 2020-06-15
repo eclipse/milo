@@ -78,11 +78,7 @@ public class X509IdentityProvider implements IdentityProvider {
         } else {
             NonceUtil.validateNonce(serverNonce);
 
-            byte[] serverCertificateBytes = new byte[0];
-            if (!endpoint.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri())) {
-                ByteString serverCertificate = endpoint.getServerCertificate();
-                serverCertificateBytes = serverCertificate.bytesOrEmpty();
-            }
+            byte[] serverCertificateBytes = endpoint.getServerCertificate().bytesOrEmpty();
 
             byte[] serverNonceBytes = serverNonce.bytes();
             if (serverNonceBytes == null) serverNonceBytes = new byte[0];
@@ -95,7 +91,7 @@ public class X509IdentityProvider implements IdentityProvider {
             );
 
             signatureData = new SignatureData(
-                securityPolicy.getAsymmetricSignatureAlgorithm().getUri(),
+                securityPolicyUri,
                 ByteString.of(signature)
             );
         }
