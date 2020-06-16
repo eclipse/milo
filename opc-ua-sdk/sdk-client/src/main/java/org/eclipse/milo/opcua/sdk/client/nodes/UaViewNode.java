@@ -219,4 +219,31 @@ public class UaViewNode extends UaNode implements ViewNode {
         return setProperty(ViewNodeProperties.ViewVersion, viewVersion);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case ContainsNoLoops:
+                return DataValue.valueOnly(new Variant(getContainsNoLoops()));
+            case EventNotifier:
+                return DataValue.valueOnly(new Variant(getEventNotifier()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case ContainsNoLoops: {
+                setContainsNoLoops((Boolean) value.getValue().getValue());
+                break;
+            }
+            case EventNotifier: {
+                setEventNotifier((UByte) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }

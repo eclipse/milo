@@ -347,4 +347,25 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         return setProperty(ObjectNodeProperties.NamingRule, namingRule);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case EventNotifier:
+                return DataValue.valueOnly(new Variant(getEventNotifier()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case EventNotifier: {
+                setEventNotifier((UByte) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }

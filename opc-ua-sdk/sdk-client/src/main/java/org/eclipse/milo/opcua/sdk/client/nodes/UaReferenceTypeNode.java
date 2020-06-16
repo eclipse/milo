@@ -263,4 +263,37 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         return setProperty(ReferenceTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return DataValue.valueOnly(new Variant(getIsAbstract()));
+            case Symmetric:
+                return DataValue.valueOnly(new Variant(getSymmetric()));
+            case InverseName:
+                return DataValue.valueOnly(new Variant(getInverseName()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case IsAbstract: {
+                setIsAbstract((Boolean) value.getValue().getValue());
+                break;
+            }
+            case Symmetric: {
+                setSymmetric((Boolean) value.getValue().getValue());
+                break;
+            }
+            case InverseName: {
+                setInverseName((LocalizedText) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }

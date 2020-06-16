@@ -153,4 +153,25 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         return setProperty(ObjectTypeNodeProperties.Icon, icon);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return DataValue.valueOnly(new Variant(getIsAbstract()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case IsAbstract: {
+                setIsAbstract((Boolean) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }

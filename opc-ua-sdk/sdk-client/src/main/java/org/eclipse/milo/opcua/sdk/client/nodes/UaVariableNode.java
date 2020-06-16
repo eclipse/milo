@@ -908,5 +908,68 @@ public class UaVariableNode extends UaNode implements VariableNode {
         return setProperty(VariableNodeProperties.EngineeringUnits, engineeringUnits);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case Value:
+                return DataValue.valueOnly(new Variant(getValue().getValue().getValue()));
+            case DataType:
+                return DataValue.valueOnly(new Variant(getDataType()));
+            case ValueRank:
+                return DataValue.valueOnly(new Variant(getValueRank()));
+            case ArrayDimensions:
+                return DataValue.valueOnly(new Variant(getArrayDimensions()));
+            case AccessLevel:
+                return DataValue.valueOnly(new Variant(getAccessLevel()));
+            case UserAccessLevel:
+                return DataValue.valueOnly(new Variant(getUserAccessLevel()));
+            case MinimumSamplingInterval:
+                return DataValue.valueOnly(new Variant(getMinimumSamplingInterval()));
+            case Historizing:
+                return DataValue.valueOnly(new Variant(getHistorizing()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case Value: {
+                setValue(value);
+                break;
+            }
+            case DataType: {
+                setDataType((NodeId) value.getValue().getValue());
+                break;
+            }
+            case ValueRank: {
+                setValueRank((Integer) value.getValue().getValue());
+                break;
+            }
+            case ArrayDimensions: {
+                setArrayDimensions((UInteger[]) value.getValue().getValue());
+                break;
+            }
+            case AccessLevel: {
+                setAccessLevel((UByte) value.getValue().getValue());
+                break;
+            }
+            case UserAccessLevel: {
+                setUserAccessLevel((UByte) value.getValue().getValue());
+                break;
+            }
+            case MinimumSamplingInterval: {
+                setMinimumSamplingInterval((Double) value.getValue().getValue());
+                break;
+            }
+            case Historizing: {
+                setHistorizing((Boolean) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }
 

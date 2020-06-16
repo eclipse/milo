@@ -13,11 +13,14 @@ package org.eclipse.milo.opcua.sdk.client.nodes;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
@@ -56,7 +59,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RelativePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -657,15 +659,58 @@ public abstract class UaNode implements Node {
      * @param attributeIds a Set identifying the attributes to refresh.
      * @throws UaException if a service- or operation-level error occurs.
      */
-    public void refresh(Set<AttributeId> attributeIds) throws UaException {
-        // TODO
+    public List<DataValue> refresh(Set<AttributeId> attributeIds) throws UaException {
+        try {
+            return refreshAsync(attributeIds).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
     /**
      * An asynchronous implementation of {@link #refresh(Set)}.
      */
-    public CompletableFuture<Unit> refreshAsync(Set<AttributeId> attributes) {
-        return null; // TODO
+    public CompletableFuture<List<DataValue>> refreshAsync(Set<AttributeId> attributeIds) {
+        List<ReadValueId> readValueIds = attributeIds.stream()
+            .map(id ->
+                new ReadValueId(
+                    nodeId,
+                    id.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                )
+            )
+            .collect(Collectors.toList());
+
+        CompletableFuture<ReadResponse> future = client.read(
+            0.0,
+            TimestampsToReturn.Neither,
+            readValueIds
+        );
+
+        return future.thenApply(response -> {
+            DataValue[] values = response.getResults();
+
+            assert attributeIds.size() == values.length;
+
+            Iterator<AttributeId> ai = attributeIds.iterator();
+            Iterator<DataValue> vi = Arrays.stream(values).iterator();
+
+            synchronized (UaNode.this) {
+                if (ai.hasNext() && vi.hasNext()) {
+                    AttributeId attributeId = ai.next();
+                    DataValue value = vi.next();
+                    StatusCode statusCode = value.getStatusCode();
+
+                    if (statusCode == null || statusCode.isGood()) {
+                        setAttributeValue(attributeId, value);
+                    }
+                }
+            }
+
+            return newArrayList(values);
+        });
     }
 
     /**
@@ -674,12 +719,39 @@ public abstract class UaNode implements Node {
      * @param attributeIds a Set identifying the local attributes to write.
      * @throws UaException if a service- or operation-level error occurs.
      */
-    public void synchronize(Set<AttributeId> attributeIds) throws UaException {
-        // TODO
+    public List<StatusCode> synchronize(Set<AttributeId> attributeIds) throws UaException {
+        try {
+            return synchronizeAsync(attributeIds).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<Unit> synchronizeAsync(Set<AttributeId> attributeIds) {
-        return null; // TODO
+    /**
+     * An asynchronous implementation of {@link #synchronize(Set)}.
+     */
+    public CompletableFuture<List<StatusCode>> synchronizeAsync(Set<AttributeId> attributeIds) {
+        List<WriteValue> writeValues;
+
+        synchronized (this) {
+            writeValues = attributeIds.stream()
+                .map(id ->
+                    new WriteValue(
+                        nodeId,
+                        id.uid(),
+                        null,
+                        getAttributeValue(id)
+                    )
+                )
+                .collect(Collectors.toList());
+        }
+
+        return client.write(writeValues).thenApply(response -> {
+            StatusCode[] results = response.getResults();
+
+            return newArrayList(results);
+        });
     }
 
     /**
@@ -709,6 +781,64 @@ public abstract class UaNode implements Node {
     public UaNode invalidate() {
         // TODO
         return this;
+    }
+
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case NodeId:
+                return DataValue.valueOnly(new Variant(getNodeId()));
+            case NodeClass:
+                return DataValue.valueOnly(new Variant(getNodeClass().getValue()));
+            case BrowseName:
+                return DataValue.valueOnly(new Variant(getBrowseName()));
+            case DisplayName:
+                return DataValue.valueOnly(new Variant(getDisplayName()));
+            case Description:
+                return DataValue.valueOnly(new Variant(getDescription()));
+            case WriteMask:
+                return DataValue.valueOnly(new Variant(getWriteMask()));
+            case UserWriteMask:
+                return DataValue.valueOnly(new Variant(getUserWriteMask()));
+            default:
+                throw new IllegalArgumentException("attributeId: " + attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case NodeId: {
+                setNodeId((NodeId) value.getValue().getValue());
+                break;
+            }
+            case NodeClass: {
+                Integer i = (Integer) value.getValue().getValue();
+                NodeClass nodeClass = NodeClass.from(i);
+                setNodeClass(nodeClass);
+                break;
+            }
+            case BrowseName: {
+                setBrowseName((QualifiedName) value.getValue().getValue());
+                break;
+            }
+            case DisplayName: {
+                setDisplayName((LocalizedText) value.getValue().getValue());
+                break;
+            }
+            case Description: {
+                setDescription((LocalizedText) value.getValue().getValue());
+                break;
+            }
+            case WriteMask: {
+                setWriteMask((UInteger) value.getValue().getValue());
+                break;
+            }
+            case UserWriteMask: {
+                setUserWriteMask((UInteger) value.getValue().getValue());
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("attributeId: " + attributeId);
+        }
     }
 
     protected CompletableFuture<UaObjectNode> getObjectMemberAsync(

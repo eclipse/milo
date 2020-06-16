@@ -261,4 +261,31 @@ public class UaMethodNode extends UaNode implements MethodNode {
         return setProperty(MethodNodeProperties.OutputArguments, outputArguments);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case Executable:
+                return DataValue.valueOnly(new Variant(isExecutable()));
+            case UserExecutable:
+                return DataValue.valueOnly(new Variant(isUserExecutable()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case Executable: {
+                setExecutable((Boolean) value.getValue().getValue());
+                break;
+            }
+            case UserExecutable: {
+                setUserExecutable((Boolean) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }

@@ -424,4 +424,49 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         return setProperty(VariableTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case Value:
+                return DataValue.valueOnly(new Variant(getValue().getValue().getValue()));
+            case DataType:
+                return DataValue.valueOnly(new Variant(getDataType()));
+            case ValueRank:
+                return DataValue.valueOnly(new Variant(getValueRank()));
+            case ArrayDimensions:
+                return DataValue.valueOnly(new Variant(getArrayDimensions()));
+            case IsAbstract:
+                return DataValue.valueOnly(new Variant(getIsAbstract()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case Value: {
+                setValue(value);
+                break;
+            }
+            case DataType: {
+                setDataType((NodeId) value.getValue().getValue());
+                break;
+            }
+            case ValueRank: {
+                setValueRank((Integer) value.getValue().getValue());
+                break;
+            }
+            case ArrayDimensions: {
+                setArrayDimensions((UInteger[]) value.getValue().getValue());
+                break;
+            }
+            case IsAbstract: {
+                setIsAbstract((Boolean) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
+    }
+
 }

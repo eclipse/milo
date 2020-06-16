@@ -10,19 +10,25 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class UaNodeTest extends AbstractClientServerTest {
 
@@ -67,13 +73,32 @@ public class UaNodeTest extends AbstractClientServerTest {
 
     @Test
     public void refresh() throws UaException {
-        fail("not implemented");
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+
+        List<DataValue> values = serverNode.refresh(AttributeId.OBJECT_ATTRIBUTES);
+
+        values.forEach(v -> {
+            assertNotNull(v.getStatusCode());
+            assertTrue(v.getStatusCode().isGood());
+        });
     }
 
 
     @Test
     public void synchronize() throws UaException {
-        fail("not implemented");
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaVariableNode testNode = (UaVariableNode) addressSpace.getNode(
+            new NodeId(2, "TestInt32")
+        );
+
+        testNode.setValue(new Variant(42));
+
+        testNode.synchronize(EnumSet.of(AttributeId.Value));
+
+        assertEquals(42, testNode.readValue().getValue().getValue());
     }
 
 }
