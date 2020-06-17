@@ -487,10 +487,22 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get the default {@link BrowseOptions} used during browse calls that don't have an explicit
+     * {@link BrowseOptions} parameter.
+     *
+     * @return the default {@link BrowseOptions}.
+     */
     public synchronized BrowseOptions getBrowseOptions() {
         return browseOptions;
     }
 
+    /**
+     * Modify the default {@link BrowseOptions} used during browse calls that don't have an
+     * explicit {@link BrowseOptions} parameter.
+     *
+     * @param builderConsumer a {@link Consumer} that receives a {@link BrowseOptions.Builder}.
+     */
     public synchronized void modifyBrowseOptions(Consumer<BrowseOptions.Builder> builderConsumer) {
         BrowseOptions.Builder builder = new BrowseOptions.Builder(browseOptions);
 
@@ -499,6 +511,12 @@ public class AddressSpace {
         setBrowseOptions(builder.build());
     }
 
+    /**
+     * Set a new default {@link BrowseOptions} used during browse calls that don't have an explicit
+     * {@link BrowseOptions} parameter.
+     *
+     * @param browseOptions the new default {@link BrowseOptions}.
+     */
     public synchronized void setBrowseOptions(BrowseOptions browseOptions) {
         this.browseOptions = browseOptions;
     }

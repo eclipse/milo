@@ -869,7 +869,18 @@ public abstract class UaNode implements Node {
         boolean includeSubtypes
     ) {
 
-        return null; // TODO
+        QualifiedName qualifiedName = new QualifiedName(
+            client.getNamespaceTable().getIndex(namespaceUri),
+            name
+        );
+
+        return findMemberNodeId(qualifiedName, referenceTypeId, includeSubtypes).thenCompose(nodeXni -> {
+            AddressSpace addressSpace = client.getAddressSpace();
+
+            return addressSpace.localizeAsync(nodeXni)
+                .thenCompose(addressSpace::getNodeAsync)
+                .thenApply(UaNode.class::cast);
+        });
     }
 
     protected CompletableFuture<ExpandedNodeId> findMemberNodeId(
