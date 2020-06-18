@@ -89,7 +89,7 @@ public class CertificateGroupTypeNode extends BaseObjectTypeNode implements Cert
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCertificateTypesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CertificateTypes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CertificateTypes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -102,7 +102,7 @@ public class CertificateGroupTypeNode extends BaseObjectTypeNode implements Cert
     }
 
     public CompletableFuture<? extends TrustListTypeNode> getTrustListNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TrustList", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12522"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TrustList", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TrustListTypeNode) node);
     }
 }

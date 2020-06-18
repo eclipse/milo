@@ -89,7 +89,7 @@ public class ProgramTransitionAuditEventTypeNode extends AuditUpdateStateEventTy
 
     @Override
     public CompletableFuture<? extends FiniteTransitionVariableTypeNode> getTransitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Transition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2767"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Transition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FiniteTransitionVariableTypeNode) node);
     }
 }

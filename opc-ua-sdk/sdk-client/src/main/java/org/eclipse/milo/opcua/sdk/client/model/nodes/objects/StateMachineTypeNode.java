@@ -90,7 +90,7 @@ public class StateMachineTypeNode extends BaseObjectTypeNode implements StateMac
 
     @Override
     public CompletableFuture<? extends StateVariableTypeNode> getCurrentStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2755"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateVariableTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class StateMachineTypeNode extends BaseObjectTypeNode implements StateMac
 
     @Override
     public CompletableFuture<? extends TransitionVariableTypeNode> getLastTransitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2762"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionVariableTypeNode) node);
     }
 }

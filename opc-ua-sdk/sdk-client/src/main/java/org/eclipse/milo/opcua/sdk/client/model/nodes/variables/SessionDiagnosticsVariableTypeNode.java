@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -93,7 +94,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSessionIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -157,20 +158,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSessionNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ApplicationDescription getClientDescription() throws UaException {
         BaseDataVariableTypeNode node = getClientDescriptionNode();
-        return (ApplicationDescription) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ApplicationDescription.class);
     }
 
     @Override
     public void setClientDescription(ApplicationDescription clientDescription) throws UaException {
         BaseDataVariableTypeNode node = getClientDescriptionNode();
-        node.setValue(new Variant(clientDescription));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), clientDescription);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -222,7 +224,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getClientDescriptionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientDescription", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientDescription", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -286,7 +288,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getServerUriNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -350,7 +352,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getEndpointUrlNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EndpointUrl", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EndpointUrl", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -414,7 +416,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getLocaleIdsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LocaleIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LocaleIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -478,7 +480,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getActualSessionTimeoutNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ActualSessionTimeout", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ActualSessionTimeout", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -543,7 +545,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getMaxResponseMessageSizeNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxResponseMessageSize", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxResponseMessageSize", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -607,7 +609,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getClientConnectionTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientConnectionTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientConnectionTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -671,7 +673,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getClientLastContactTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientLastContactTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientLastContactTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -738,7 +740,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentSubscriptionsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentSubscriptionsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentSubscriptionsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -806,7 +808,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentMonitoredItemsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -874,20 +876,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentPublishRequestsInQueueNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentPublishRequestsInQueue", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentPublishRequestsInQueue", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getTotalRequestCount() throws UaException {
         BaseDataVariableTypeNode node = getTotalRequestCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setTotalRequestCount(ServiceCounterDataType totalRequestCount) throws UaException {
         BaseDataVariableTypeNode node = getTotalRequestCountNode();
-        node.setValue(new Variant(totalRequestCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), totalRequestCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -939,7 +942,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getTotalRequestCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TotalRequestCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TotalRequestCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -1005,20 +1008,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getUnauthorizedRequestCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnauthorizedRequestCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnauthorizedRequestCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getReadCount() throws UaException {
         BaseDataVariableTypeNode node = getReadCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setReadCount(ServiceCounterDataType readCount) throws UaException {
         BaseDataVariableTypeNode node = getReadCountNode();
-        node.setValue(new Variant(readCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), readCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1069,20 +1073,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getReadCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getHistoryReadCount() throws UaException {
         BaseDataVariableTypeNode node = getHistoryReadCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setHistoryReadCount(ServiceCounterDataType historyReadCount) throws UaException {
         BaseDataVariableTypeNode node = getHistoryReadCountNode();
-        node.setValue(new Variant(historyReadCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), historyReadCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1134,20 +1139,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getHistoryReadCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HistoryReadCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HistoryReadCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getWriteCount() throws UaException {
         BaseDataVariableTypeNode node = getWriteCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setWriteCount(ServiceCounterDataType writeCount) throws UaException {
         BaseDataVariableTypeNode node = getWriteCountNode();
-        node.setValue(new Variant(writeCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), writeCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1198,20 +1204,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getWriteCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "WriteCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "WriteCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getHistoryUpdateCount() throws UaException {
         BaseDataVariableTypeNode node = getHistoryUpdateCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setHistoryUpdateCount(ServiceCounterDataType historyUpdateCount) throws UaException {
         BaseDataVariableTypeNode node = getHistoryUpdateCountNode();
-        node.setValue(new Variant(historyUpdateCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), historyUpdateCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1264,20 +1271,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getHistoryUpdateCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HistoryUpdateCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HistoryUpdateCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getCallCount() throws UaException {
         BaseDataVariableTypeNode node = getCallCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setCallCount(ServiceCounterDataType callCount) throws UaException {
         BaseDataVariableTypeNode node = getCallCountNode();
-        node.setValue(new Variant(callCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), callCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1328,21 +1336,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCallCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CallCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CallCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getCreateMonitoredItemsCount() throws UaException {
         BaseDataVariableTypeNode node = getCreateMonitoredItemsCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setCreateMonitoredItemsCount(ServiceCounterDataType createMonitoredItemsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getCreateMonitoredItemsCountNode();
-        node.setValue(new Variant(createMonitoredItemsCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), createMonitoredItemsCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1396,21 +1405,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCreateMonitoredItemsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getModifyMonitoredItemsCount() throws UaException {
         BaseDataVariableTypeNode node = getModifyMonitoredItemsCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setModifyMonitoredItemsCount(ServiceCounterDataType modifyMonitoredItemsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getModifyMonitoredItemsCountNode();
-        node.setValue(new Variant(modifyMonitoredItemsCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), modifyMonitoredItemsCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1464,21 +1474,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getModifyMonitoredItemsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ModifyMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ModifyMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getSetMonitoringModeCount() throws UaException {
         BaseDataVariableTypeNode node = getSetMonitoringModeCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setSetMonitoringModeCount(ServiceCounterDataType setMonitoringModeCount) throws
         UaException {
         BaseDataVariableTypeNode node = getSetMonitoringModeCountNode();
-        node.setValue(new Variant(setMonitoringModeCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), setMonitoringModeCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1532,20 +1543,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSetMonitoringModeCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetMonitoringModeCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetMonitoringModeCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getSetTriggeringCount() throws UaException {
         BaseDataVariableTypeNode node = getSetTriggeringCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setSetTriggeringCount(ServiceCounterDataType setTriggeringCount) throws UaException {
         BaseDataVariableTypeNode node = getSetTriggeringCountNode();
-        node.setValue(new Variant(setTriggeringCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), setTriggeringCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1598,21 +1610,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSetTriggeringCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetTriggeringCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetTriggeringCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getDeleteMonitoredItemsCount() throws UaException {
         BaseDataVariableTypeNode node = getDeleteMonitoredItemsCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setDeleteMonitoredItemsCount(ServiceCounterDataType deleteMonitoredItemsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getDeleteMonitoredItemsCountNode();
-        node.setValue(new Variant(deleteMonitoredItemsCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteMonitoredItemsCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1666,21 +1679,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getDeleteMonitoredItemsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getCreateSubscriptionCount() throws UaException {
         BaseDataVariableTypeNode node = getCreateSubscriptionCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setCreateSubscriptionCount(ServiceCounterDataType createSubscriptionCount) throws
         UaException {
         BaseDataVariableTypeNode node = getCreateSubscriptionCountNode();
-        node.setValue(new Variant(createSubscriptionCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), createSubscriptionCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1734,21 +1748,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCreateSubscriptionCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateSubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateSubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getModifySubscriptionCount() throws UaException {
         BaseDataVariableTypeNode node = getModifySubscriptionCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setModifySubscriptionCount(ServiceCounterDataType modifySubscriptionCount) throws
         UaException {
         BaseDataVariableTypeNode node = getModifySubscriptionCountNode();
-        node.setValue(new Variant(modifySubscriptionCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), modifySubscriptionCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1802,21 +1817,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getModifySubscriptionCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ModifySubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ModifySubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getSetPublishingModeCount() throws UaException {
         BaseDataVariableTypeNode node = getSetPublishingModeCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setSetPublishingModeCount(ServiceCounterDataType setPublishingModeCount) throws
         UaException {
         BaseDataVariableTypeNode node = getSetPublishingModeCountNode();
-        node.setValue(new Variant(setPublishingModeCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), setPublishingModeCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1870,20 +1886,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSetPublishingModeCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetPublishingModeCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetPublishingModeCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getPublishCount() throws UaException {
         BaseDataVariableTypeNode node = getPublishCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setPublishCount(ServiceCounterDataType publishCount) throws UaException {
         BaseDataVariableTypeNode node = getPublishCountNode();
-        node.setValue(new Variant(publishCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), publishCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1934,20 +1951,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getPublishCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PublishCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PublishCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getRepublishCount() throws UaException {
         BaseDataVariableTypeNode node = getRepublishCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setRepublishCount(ServiceCounterDataType republishCount) throws UaException {
         BaseDataVariableTypeNode node = getRepublishCountNode();
-        node.setValue(new Variant(republishCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), republishCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -1998,21 +2016,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getRepublishCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RepublishCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RepublishCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getTransferSubscriptionsCount() throws UaException {
         BaseDataVariableTypeNode node = getTransferSubscriptionsCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setTransferSubscriptionsCount(ServiceCounterDataType transferSubscriptionsCount)
         throws UaException {
         BaseDataVariableTypeNode node = getTransferSubscriptionsCountNode();
-        node.setValue(new Variant(transferSubscriptionsCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), transferSubscriptionsCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2066,21 +2085,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getTransferSubscriptionsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TransferSubscriptionsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TransferSubscriptionsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getDeleteSubscriptionsCount() throws UaException {
         BaseDataVariableTypeNode node = getDeleteSubscriptionsCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setDeleteSubscriptionsCount(ServiceCounterDataType deleteSubscriptionsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getDeleteSubscriptionsCountNode();
-        node.setValue(new Variant(deleteSubscriptionsCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteSubscriptionsCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2134,20 +2154,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getDeleteSubscriptionsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteSubscriptionsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteSubscriptionsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getAddNodesCount() throws UaException {
         BaseDataVariableTypeNode node = getAddNodesCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setAddNodesCount(ServiceCounterDataType addNodesCount) throws UaException {
         BaseDataVariableTypeNode node = getAddNodesCountNode();
-        node.setValue(new Variant(addNodesCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), addNodesCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2198,20 +2219,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getAddNodesCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AddNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AddNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getAddReferencesCount() throws UaException {
         BaseDataVariableTypeNode node = getAddReferencesCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setAddReferencesCount(ServiceCounterDataType addReferencesCount) throws UaException {
         BaseDataVariableTypeNode node = getAddReferencesCountNode();
-        node.setValue(new Variant(addReferencesCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), addReferencesCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2264,20 +2286,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getAddReferencesCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AddReferencesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AddReferencesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getDeleteNodesCount() throws UaException {
         BaseDataVariableTypeNode node = getDeleteNodesCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setDeleteNodesCount(ServiceCounterDataType deleteNodesCount) throws UaException {
         BaseDataVariableTypeNode node = getDeleteNodesCountNode();
-        node.setValue(new Variant(deleteNodesCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteNodesCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2329,21 +2352,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getDeleteNodesCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getDeleteReferencesCount() throws UaException {
         BaseDataVariableTypeNode node = getDeleteReferencesCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setDeleteReferencesCount(ServiceCounterDataType deleteReferencesCount) throws
         UaException {
         BaseDataVariableTypeNode node = getDeleteReferencesCountNode();
-        node.setValue(new Variant(deleteReferencesCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteReferencesCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2396,20 +2420,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getDeleteReferencesCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteReferencesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteReferencesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getBrowseCount() throws UaException {
         BaseDataVariableTypeNode node = getBrowseCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setBrowseCount(ServiceCounterDataType browseCount) throws UaException {
         BaseDataVariableTypeNode node = getBrowseCountNode();
-        node.setValue(new Variant(browseCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), browseCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2460,20 +2485,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getBrowseCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BrowseCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BrowseCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getBrowseNextCount() throws UaException {
         BaseDataVariableTypeNode node = getBrowseNextCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setBrowseNextCount(ServiceCounterDataType browseNextCount) throws UaException {
         BaseDataVariableTypeNode node = getBrowseNextCountNode();
-        node.setValue(new Variant(browseNextCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), browseNextCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2524,21 +2550,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getBrowseNextCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BrowseNextCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BrowseNextCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getTranslateBrowsePathsToNodeIdsCount() throws UaException {
         BaseDataVariableTypeNode node = getTranslateBrowsePathsToNodeIdsCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setTranslateBrowsePathsToNodeIdsCount(
         ServiceCounterDataType translateBrowsePathsToNodeIdsCount) throws UaException {
         BaseDataVariableTypeNode node = getTranslateBrowsePathsToNodeIdsCountNode();
-        node.setValue(new Variant(translateBrowsePathsToNodeIdsCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), translateBrowsePathsToNodeIdsCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2593,20 +2620,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getTranslateBrowsePathsToNodeIdsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TranslateBrowsePathsToNodeIdsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TranslateBrowsePathsToNodeIdsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getQueryFirstCount() throws UaException {
         BaseDataVariableTypeNode node = getQueryFirstCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setQueryFirstCount(ServiceCounterDataType queryFirstCount) throws UaException {
         BaseDataVariableTypeNode node = getQueryFirstCountNode();
-        node.setValue(new Variant(queryFirstCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), queryFirstCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2657,20 +2685,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getQueryFirstCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "QueryFirstCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "QueryFirstCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getQueryNextCount() throws UaException {
         BaseDataVariableTypeNode node = getQueryNextCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setQueryNextCount(ServiceCounterDataType queryNextCount) throws UaException {
         BaseDataVariableTypeNode node = getQueryNextCountNode();
-        node.setValue(new Variant(queryNextCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), queryNextCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2721,20 +2750,21 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getQueryNextCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "QueryNextCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "QueryNextCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getRegisterNodesCount() throws UaException {
         BaseDataVariableTypeNode node = getRegisterNodesCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setRegisterNodesCount(ServiceCounterDataType registerNodesCount) throws UaException {
         BaseDataVariableTypeNode node = getRegisterNodesCountNode();
-        node.setValue(new Variant(registerNodesCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), registerNodesCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2787,21 +2817,22 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getRegisterNodesCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RegisterNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RegisterNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public ServiceCounterDataType getUnregisterNodesCount() throws UaException {
         BaseDataVariableTypeNode node = getUnregisterNodesCountNode();
-        return (ServiceCounterDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServiceCounterDataType.class);
     }
 
     @Override
     public void setUnregisterNodesCount(ServiceCounterDataType unregisterNodesCount) throws
         UaException {
         BaseDataVariableTypeNode node = getUnregisterNodesCountNode();
-        node.setValue(new Variant(unregisterNodesCount));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), unregisterNodesCount);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -2854,7 +2885,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getUnregisterNodesCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnregisterNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnregisterNodesCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }

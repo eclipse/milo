@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -33,13 +34,14 @@ public class AuditDeleteNodesEventTypeNode extends AuditNodeManagementEventTypeN
     @Override
     public DeleteNodesItem[] getNodesToDelete() throws UaException {
         PropertyTypeNode node = getNodesToDeleteNode();
-        return (DeleteNodesItem[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), DeleteNodesItem[].class);
     }
 
     @Override
     public void setNodesToDelete(DeleteNodesItem[] nodesToDelete) throws UaException {
         PropertyTypeNode node = getNodesToDeleteNode();
-        node.setValue(new Variant(nodesToDelete));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToDelete);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -90,7 +92,7 @@ public class AuditDeleteNodesEventTypeNode extends AuditNodeManagementEventTypeN
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNodesToDeleteNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NodesToDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NodesToDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

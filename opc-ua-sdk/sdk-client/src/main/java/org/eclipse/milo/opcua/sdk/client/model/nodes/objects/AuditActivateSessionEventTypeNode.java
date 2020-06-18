@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,14 +35,15 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     @Override
     public SignedSoftwareCertificate[] getClientSoftwareCertificates() throws UaException {
         PropertyTypeNode node = getClientSoftwareCertificatesNode();
-        return (SignedSoftwareCertificate[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SignedSoftwareCertificate[].class);
     }
 
     @Override
     public void setClientSoftwareCertificates(SignedSoftwareCertificate[] clientSoftwareCertificates)
         throws UaException {
         PropertyTypeNode node = getClientSoftwareCertificatesNode();
-        node.setValue(new Variant(clientSoftwareCertificates));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -95,20 +97,21 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getClientSoftwareCertificatesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientSoftwareCertificates", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientSoftwareCertificates", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public UserIdentityToken getUserIdentityToken() throws UaException {
         PropertyTypeNode node = getUserIdentityTokenNode();
-        return (UserIdentityToken) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), UserIdentityToken.class);
     }
 
     @Override
     public void setUserIdentityToken(UserIdentityToken userIdentityToken) throws UaException {
         PropertyTypeNode node = getUserIdentityTokenNode();
-        node.setValue(new Variant(userIdentityToken));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), userIdentityToken);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -159,7 +162,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getUserIdentityTokenNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UserIdentityToken", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UserIdentityToken", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -223,7 +226,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSecureChannelIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecureChannelId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecureChannelId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

@@ -90,7 +90,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getPromptNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Prompt", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Prompt", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getResponseOptionSetNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ResponseOptionSet", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ResponseOptionSet", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -218,7 +218,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDefaultResponseNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DefaultResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DefaultResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -282,7 +282,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getOkResponseNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OkResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OkResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -346,7 +346,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCancelResponseNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CancelResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CancelResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -410,7 +410,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastResponseNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastResponse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -474,7 +474,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getEnabledStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -538,7 +538,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getDialogStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DialogState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DialogState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 }

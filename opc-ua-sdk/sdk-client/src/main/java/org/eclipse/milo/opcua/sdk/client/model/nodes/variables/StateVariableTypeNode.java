@@ -90,7 +90,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Id", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Id", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Name", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Name", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -218,7 +218,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNumberNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Number", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Number", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -283,7 +283,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEffectiveDisplayNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EffectiveDisplayName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EffectiveDisplayName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

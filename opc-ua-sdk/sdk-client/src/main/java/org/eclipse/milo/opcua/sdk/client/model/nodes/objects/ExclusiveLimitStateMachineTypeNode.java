@@ -32,7 +32,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends StateTypeNode> getHighHighNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -45,7 +45,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends StateTypeNode> getHighNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "High", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "High", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -58,7 +58,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends StateTypeNode> getLowNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Low", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Low", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -71,7 +71,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends StateTypeNode> getLowLowNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -84,7 +84,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getLowLowToLowNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLowToLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLowToLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -97,7 +97,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getLowToLowLowNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowToLowLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowToLowLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -110,7 +110,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getHighHighToHighNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHighToHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHighToHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -123,7 +123,7 @@ public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNo
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getHighToHighHighNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighToHighHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighToHighHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 }

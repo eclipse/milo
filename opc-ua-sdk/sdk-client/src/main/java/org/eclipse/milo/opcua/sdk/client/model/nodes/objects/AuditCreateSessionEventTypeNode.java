@@ -90,7 +90,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSecureChannelIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecureChannelId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecureChannelId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getClientCertificateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -221,7 +221,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getClientCertificateThumbprintNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificateThumbprint", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificateThumbprint", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -285,7 +285,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRevisedSessionTimeoutNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RevisedSessionTimeout", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RevisedSessionTimeout", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

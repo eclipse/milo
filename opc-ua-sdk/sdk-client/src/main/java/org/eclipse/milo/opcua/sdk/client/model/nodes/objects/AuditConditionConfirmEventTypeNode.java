@@ -90,7 +90,7 @@ public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeN
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getConditionEventIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionEventId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionEventId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeN
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCommentNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -92,7 +93,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getUpdatedNodeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UpdatedNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UpdatedNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -157,20 +158,21 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getPerformInsertReplaceNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PerformInsertReplace", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PerformInsertReplace", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public EventFilter getFilter() throws UaException {
         PropertyTypeNode node = getFilterNode();
-        return (EventFilter) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), EventFilter.class);
     }
 
     @Override
     public void setFilter(EventFilter filter) throws UaException {
         PropertyTypeNode node = getFilterNode();
-        node.setValue(new Variant(filter));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), filter);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -221,20 +223,21 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getFilterNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Filter", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Filter", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public HistoryEventFieldList[] getNewValues() throws UaException {
         PropertyTypeNode node = getNewValuesNode();
-        return (HistoryEventFieldList[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), HistoryEventFieldList[].class);
     }
 
     @Override
     public void setNewValues(HistoryEventFieldList[] newValues) throws UaException {
         PropertyTypeNode node = getNewValuesNode();
-        node.setValue(new Variant(newValues));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), newValues);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -285,20 +288,21 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNewValuesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NewValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NewValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public HistoryEventFieldList[] getOldValues() throws UaException {
         PropertyTypeNode node = getOldValuesNode();
-        return (HistoryEventFieldList[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), HistoryEventFieldList[].class);
     }
 
     @Override
     public void setOldValues(HistoryEventFieldList[] oldValues) throws UaException {
         PropertyTypeNode node = getOldValuesNode();
-        node.setValue(new Variant(oldValues));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), oldValues);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -349,7 +353,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getOldValuesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OldValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OldValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

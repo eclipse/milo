@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,14 +35,15 @@ public class SessionSecurityDiagnosticsArrayTypeNode extends BaseDataVariableTyp
     @Override
     public SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics() throws UaException {
         SessionSecurityDiagnosticsTypeNode node = getSessionSecurityDiagnosticsNode();
-        return (SessionSecurityDiagnosticsDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SessionSecurityDiagnosticsDataType.class);
     }
 
     @Override
     public void setSessionSecurityDiagnostics(
         SessionSecurityDiagnosticsDataType sessionSecurityDiagnostics) throws UaException {
         SessionSecurityDiagnosticsTypeNode node = getSessionSecurityDiagnosticsNode();
-        node.setValue(new Variant(sessionSecurityDiagnostics));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), sessionSecurityDiagnostics);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -96,7 +98,7 @@ public class SessionSecurityDiagnosticsArrayTypeNode extends BaseDataVariableTyp
     @Override
     public CompletableFuture<? extends SessionSecurityDiagnosticsTypeNode> getSessionSecurityDiagnosticsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2244"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SessionSecurityDiagnosticsTypeNode) node);
     }
 }

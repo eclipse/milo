@@ -15,6 +15,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -95,21 +96,22 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEnabledFlagNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledFlag", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledFlag", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummary() throws UaException {
         ServerDiagnosticsSummaryTypeNode node = getServerDiagnosticsSummaryNode();
-        return (ServerDiagnosticsSummaryDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServerDiagnosticsSummaryDataType.class);
     }
 
     @Override
     public void setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType serverDiagnosticsSummary)
         throws UaException {
         ServerDiagnosticsSummaryTypeNode node = getServerDiagnosticsSummaryNode();
-        node.setValue(new Variant(serverDiagnosticsSummary));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), serverDiagnosticsSummary);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -164,7 +166,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<? extends ServerDiagnosticsSummaryTypeNode> getServerDiagnosticsSummaryNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2150"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ServerDiagnosticsSummaryTypeNode) node);
     }
 
@@ -172,14 +174,15 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     public SamplingIntervalDiagnosticsDataType[] getSamplingIntervalDiagnosticsArray() throws
         UaException {
         SamplingIntervalDiagnosticsArrayTypeNode node = getSamplingIntervalDiagnosticsArrayNode();
-        return (SamplingIntervalDiagnosticsDataType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SamplingIntervalDiagnosticsDataType[].class);
     }
 
     @Override
     public void setSamplingIntervalDiagnosticsArray(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray) throws UaException {
         SamplingIntervalDiagnosticsArrayTypeNode node = getSamplingIntervalDiagnosticsArrayNode();
-        node.setValue(new Variant(samplingIntervalDiagnosticsArray));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -236,21 +239,22 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<? extends SamplingIntervalDiagnosticsArrayTypeNode> getSamplingIntervalDiagnosticsArrayNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2164"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SamplingIntervalDiagnosticsArrayTypeNode) node);
     }
 
     @Override
     public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() throws UaException {
         SubscriptionDiagnosticsArrayTypeNode node = getSubscriptionDiagnosticsArrayNode();
-        return (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SubscriptionDiagnosticsDataType[].class);
     }
 
     @Override
     public void setSubscriptionDiagnosticsArray(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) throws UaException {
         SubscriptionDiagnosticsArrayTypeNode node = getSubscriptionDiagnosticsArrayNode();
-        node.setValue(new Variant(subscriptionDiagnosticsArray));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -306,7 +310,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<? extends SubscriptionDiagnosticsArrayTypeNode> getSubscriptionDiagnosticsArrayNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2171"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SubscriptionDiagnosticsArrayTypeNode) node);
     }
 
@@ -320,7 +324,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
 
     public CompletableFuture<? extends SessionsDiagnosticsSummaryTypeNode> getSessionsDiagnosticsSummaryNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionsDiagnosticsSummary", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2026"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionsDiagnosticsSummary", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SessionsDiagnosticsSummaryTypeNode) node);
     }
 }

@@ -91,7 +91,7 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getExpirationDateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExpirationDate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExpirationDate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -155,7 +155,7 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getExpirationLimitNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExpirationLimit", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExpirationLimit", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -219,7 +219,7 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCertificateTypeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CertificateType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CertificateType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -283,7 +283,7 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCertificateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Certificate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Certificate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

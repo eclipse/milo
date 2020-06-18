@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,13 +35,14 @@ public class NDimensionArrayItemTypeNode extends ArrayItemTypeNode implements ND
     @Override
     public AxisInformation[] getAxisDefinition() throws UaException {
         PropertyTypeNode node = getAxisDefinitionNode();
-        return (AxisInformation[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), AxisInformation[].class);
     }
 
     @Override
     public void setAxisDefinition(AxisInformation[] axisDefinition) throws UaException {
         PropertyTypeNode node = getAxisDefinitionNode();
-        node.setValue(new Variant(axisDefinition));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), axisDefinition);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -91,7 +93,7 @@ public class NDimensionArrayItemTypeNode extends ArrayItemTypeNode implements ND
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getAxisDefinitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

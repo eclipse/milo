@@ -15,6 +15,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -93,7 +94,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCreatableNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Creatable", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Creatable", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -157,7 +158,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDeletableNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Deletable", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Deletable", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -221,7 +222,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getAutoDeleteNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AutoDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AutoDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -285,7 +286,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRecycleCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RecycleCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RecycleCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -349,7 +350,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInstanceCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InstanceCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InstanceCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -413,7 +414,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxInstanceCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxInstanceCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxInstanceCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -477,7 +478,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxRecycleCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxRecycleCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxRecycleCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -541,7 +542,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends FiniteStateVariableTypeNode> getCurrentStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2760"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FiniteStateVariableTypeNode) node);
     }
 
@@ -606,21 +607,22 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     @Override
     public CompletableFuture<? extends FiniteTransitionVariableTypeNode> getLastTransitionNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2767"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FiniteTransitionVariableTypeNode) node);
     }
 
     @Override
     public ProgramDiagnosticDataType getProgramDiagnostics() throws UaException {
         ProgramDiagnosticTypeNode node = getProgramDiagnosticsNode();
-        return (ProgramDiagnosticDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ProgramDiagnosticDataType.class);
     }
 
     @Override
     public void setProgramDiagnostics(ProgramDiagnosticDataType programDiagnostics) throws
         UaException {
         ProgramDiagnosticTypeNode node = getProgramDiagnosticsNode();
-        node.setValue(new Variant(programDiagnostics));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), programDiagnostics);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -673,7 +675,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends ProgramDiagnosticTypeNode> getProgramDiagnosticsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProgramDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2380"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProgramDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ProgramDiagnosticTypeNode) node);
     }
 
@@ -686,7 +688,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends BaseObjectTypeNode> getFinalResultDataNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "FinalResultData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=58"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "FinalResultData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseObjectTypeNode) node);
     }
 
@@ -699,7 +701,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getReadyNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Ready", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Ready", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -712,7 +714,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getRunningNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Running", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Running", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -725,7 +727,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getSuspendedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Suspended", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Suspended", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -738,7 +740,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getHaltedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Halted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Halted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -751,7 +753,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getHaltedToReadyNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HaltedToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HaltedToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -764,7 +766,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getReadyToRunningNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadyToRunning", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadyToRunning", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -777,7 +779,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getRunningToHaltedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -790,7 +792,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getRunningToReadyNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -803,7 +805,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getRunningToSuspendedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToSuspended", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RunningToSuspended", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -816,7 +818,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getSuspendedToRunningNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToRunning", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToRunning", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -829,7 +831,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getSuspendedToHaltedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -842,7 +844,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getSuspendedToReadyNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuspendedToReady", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -855,7 +857,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getReadyToHaltedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadyToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReadyToHalted", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 }

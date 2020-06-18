@@ -91,7 +91,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSteppedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Stepped", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Stepped", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -155,7 +155,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDefinitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Definition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Definition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -219,7 +219,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxTimeIntervalNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxTimeInterval", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxTimeInterval", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -283,7 +283,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMinTimeIntervalNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MinTimeInterval", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MinTimeInterval", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -347,7 +347,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getExceptionDeviationNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExceptionDeviation", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExceptionDeviation", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -414,7 +414,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getExceptionDeviationFormatNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExceptionDeviationFormat", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ExceptionDeviationFormat", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -478,7 +478,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getStartOfArchiveNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartOfArchive", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartOfArchive", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -542,7 +542,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getStartOfOnlineArchiveNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartOfOnlineArchive", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartOfOnlineArchive", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -556,7 +556,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     public CompletableFuture<? extends AggregateConfigurationTypeNode> getAggregateConfigurationNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateConfiguration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11187"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateConfiguration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (AggregateConfigurationTypeNode) node);
     }
 
@@ -569,7 +569,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     public CompletableFuture<? extends FolderTypeNode> getAggregateFunctionsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateFunctions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=61"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateFunctions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FolderTypeNode) node);
     }
 }

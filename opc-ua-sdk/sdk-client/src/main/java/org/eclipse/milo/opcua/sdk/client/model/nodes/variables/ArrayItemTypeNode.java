@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -36,13 +37,14 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     @Override
     public Range getInstrumentRange() throws UaException {
         PropertyTypeNode node = getInstrumentRangeNode();
-        return (Range) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), Range.class);
     }
 
     @Override
     public void setInstrumentRange(Range instrumentRange) throws UaException {
         PropertyTypeNode node = getInstrumentRangeNode();
-        node.setValue(new Variant(instrumentRange));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), instrumentRange);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -93,20 +95,21 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInstrumentRangeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InstrumentRange", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InstrumentRange", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public Range getEuRange() throws UaException {
         PropertyTypeNode node = getEuRangeNode();
-        return (Range) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), Range.class);
     }
 
     @Override
     public void setEuRange(Range euRange) throws UaException {
         PropertyTypeNode node = getEuRangeNode();
-        node.setValue(new Variant(euRange));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), euRange);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -157,20 +160,21 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEuRangeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EURange", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EURange", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public EUInformation getEngineeringUnits() throws UaException {
         PropertyTypeNode node = getEngineeringUnitsNode();
-        return (EUInformation) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), EUInformation.class);
     }
 
     @Override
     public void setEngineeringUnits(EUInformation engineeringUnits) throws UaException {
         PropertyTypeNode node = getEngineeringUnitsNode();
-        node.setValue(new Variant(engineeringUnits));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), engineeringUnits);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -221,7 +225,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEngineeringUnitsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EngineeringUnits", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EngineeringUnits", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -285,7 +289,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getTitleNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Title", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Title", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -349,7 +353,7 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getAxisScaleTypeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AxisScaleType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AxisScaleType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

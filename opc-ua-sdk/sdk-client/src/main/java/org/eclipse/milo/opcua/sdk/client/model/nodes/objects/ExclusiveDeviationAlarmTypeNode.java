@@ -89,7 +89,7 @@ public class ExclusiveDeviationAlarmTypeNode extends ExclusiveLimitAlarmTypeNode
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSetpointNodeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetpointNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SetpointNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -33,13 +34,14 @@ public class AuditAddNodesEventTypeNode extends AuditNodeManagementEventTypeNode
     @Override
     public AddNodesItem[] getNodesToAdd() throws UaException {
         PropertyTypeNode node = getNodesToAddNode();
-        return (AddNodesItem[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), AddNodesItem[].class);
     }
 
     @Override
     public void setNodesToAdd(AddNodesItem[] nodesToAdd) throws UaException {
         PropertyTypeNode node = getNodesToAddNode();
-        node.setValue(new Variant(nodesToAdd));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToAdd);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -90,7 +92,7 @@ public class AuditAddNodesEventTypeNode extends AuditNodeManagementEventTypeNode
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNodesToAddNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NodesToAdd", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NodesToAdd", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

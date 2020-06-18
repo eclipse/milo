@@ -89,7 +89,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerReadNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerRead", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerRead", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -156,7 +156,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryReadDataNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryReadData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryReadData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -223,7 +223,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryReadEventsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryReadEvents", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryReadEvents", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -287,7 +287,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerWriteNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerWrite", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerWrite", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -354,7 +354,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryUpdateDataNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryUpdateData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryUpdateData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -422,7 +422,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryUpdateEventsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryUpdateEvents", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryUpdateEvents", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -486,7 +486,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerMethodCallNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerMethodCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerMethodCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -550,7 +550,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerBrowseNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerBrowse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerBrowse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -615,7 +615,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerRegisterNodesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerRegisterNodes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerRegisterNodes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -683,7 +683,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerTranslateBrowsePathsToNodeIdsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerTranslateBrowsePathsToNodeIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerTranslateBrowsePathsToNodeIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -749,7 +749,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerNodeManagementNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerNodeManagement", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerNodeManagement", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -814,7 +814,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxMonitoredItemsPerCallNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxMonitoredItemsPerCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxMonitoredItemsPerCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

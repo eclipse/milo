@@ -91,7 +91,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNamespaceUriNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -155,7 +155,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNamespaceVersionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -220,7 +220,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNamespacePublicationDateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespacePublicationDate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespacePublicationDate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -284,7 +284,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getIsNamespaceSubsetNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "IsNamespaceSubset", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "IsNamespaceSubset", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -348,7 +348,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getStaticNodeIdTypesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StaticNodeIdTypes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StaticNodeIdTypes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -413,7 +413,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getStaticNumericNodeIdRangeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StaticNumericNodeIdRange", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StaticNumericNodeIdRange", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -478,7 +478,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getStaticStringNodeIdPatternNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StaticStringNodeIdPattern", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StaticStringNodeIdPattern", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -491,7 +491,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     public CompletableFuture<? extends AddressSpaceFileTypeNode> getNamespaceFileNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceFile", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11595"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceFile", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (AddressSpaceFileTypeNode) node);
     }
 }

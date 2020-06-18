@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -90,21 +91,22 @@ public class TransparentRedundancyTypeNode extends ServerRedundancyTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCurrentServerIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentServerId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentServerId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public RedundantServerDataType[] getRedundantServerArray() throws UaException {
         PropertyTypeNode node = getRedundantServerArrayNode();
-        return (RedundantServerDataType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), RedundantServerDataType[].class);
     }
 
     @Override
     public void setRedundantServerArray(RedundantServerDataType[] redundantServerArray) throws
         UaException {
         PropertyTypeNode node = getRedundantServerArrayNode();
-        node.setValue(new Variant(redundantServerArray));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), redundantServerArray);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -157,7 +159,7 @@ public class TransparentRedundancyTypeNode extends ServerRedundancyTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRedundantServerArrayNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RedundantServerArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RedundantServerArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

@@ -89,7 +89,7 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getActiveStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ActiveState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ActiveState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -153,7 +153,7 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getHighHighStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHighState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHighState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -217,7 +217,7 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getHighStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -281,7 +281,7 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getLowStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -345,7 +345,7 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getLowLowStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLowState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLowState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 }

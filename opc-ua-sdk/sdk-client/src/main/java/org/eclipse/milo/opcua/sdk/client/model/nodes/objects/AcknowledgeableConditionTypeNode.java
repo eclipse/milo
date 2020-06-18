@@ -89,7 +89,7 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getEnabledStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -153,7 +153,7 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getAckedStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AckedState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AckedState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -217,7 +217,7 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getConfirmedStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConfirmedState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConfirmedState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 }

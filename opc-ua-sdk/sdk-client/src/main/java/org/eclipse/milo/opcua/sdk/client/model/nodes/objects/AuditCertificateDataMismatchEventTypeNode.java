@@ -89,7 +89,7 @@ public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateE
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInvalidHostnameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvalidHostname", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvalidHostname", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -153,7 +153,7 @@ public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateE
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInvalidUriNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvalidUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvalidUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

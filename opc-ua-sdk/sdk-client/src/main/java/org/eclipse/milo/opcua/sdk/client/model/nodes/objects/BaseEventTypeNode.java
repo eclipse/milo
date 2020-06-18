@@ -14,6 +14,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -93,7 +94,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEventIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -157,7 +158,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEventTypeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -221,7 +222,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSourceNodeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SourceNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SourceNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -285,7 +286,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSourceNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SourceName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SourceName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -349,7 +350,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Time", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Time", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -413,20 +414,21 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getReceiveTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReceiveTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReceiveTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public TimeZoneDataType getLocalTime() throws UaException {
         PropertyTypeNode node = getLocalTimeNode();
-        return (TimeZoneDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), TimeZoneDataType.class);
     }
 
     @Override
     public void setLocalTime(TimeZoneDataType localTime) throws UaException {
         PropertyTypeNode node = getLocalTimeNode();
-        node.setValue(new Variant(localTime));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), localTime);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -477,7 +479,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLocalTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LocalTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LocalTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -541,7 +543,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMessageNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Message", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Message", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -605,7 +607,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSeverityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Severity", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Severity", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

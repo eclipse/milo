@@ -13,6 +13,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -35,14 +36,15 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public SessionDiagnosticsDataType[] getSessionDiagnosticsArray() throws UaException {
         SessionDiagnosticsArrayTypeNode node = getSessionDiagnosticsArrayNode();
-        return (SessionDiagnosticsDataType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SessionDiagnosticsDataType[].class);
     }
 
     @Override
     public void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] sessionDiagnosticsArray)
         throws UaException {
         SessionDiagnosticsArrayTypeNode node = getSessionDiagnosticsArrayNode();
-        node.setValue(new Variant(sessionDiagnosticsArray));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), sessionDiagnosticsArray);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -97,7 +99,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public CompletableFuture<? extends SessionDiagnosticsArrayTypeNode> getSessionDiagnosticsArrayNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2196"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SessionDiagnosticsArrayTypeNode) node);
     }
 
@@ -105,14 +107,15 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     public SessionSecurityDiagnosticsDataType[] getSessionSecurityDiagnosticsArray() throws
         UaException {
         SessionSecurityDiagnosticsArrayTypeNode node = getSessionSecurityDiagnosticsArrayNode();
-        return (SessionSecurityDiagnosticsDataType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SessionSecurityDiagnosticsDataType[].class);
     }
 
     @Override
     public void setSessionSecurityDiagnosticsArray(
         SessionSecurityDiagnosticsDataType[] sessionSecurityDiagnosticsArray) throws UaException {
         SessionSecurityDiagnosticsArrayTypeNode node = getSessionSecurityDiagnosticsArrayNode();
-        node.setValue(new Variant(sessionSecurityDiagnosticsArray));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), sessionSecurityDiagnosticsArray);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -169,7 +172,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public CompletableFuture<? extends SessionSecurityDiagnosticsArrayTypeNode> getSessionSecurityDiagnosticsArrayNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2243"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SessionSecurityDiagnosticsArrayTypeNode) node);
     }
 }

@@ -90,7 +90,7 @@ public class TrustListTypeNode extends FileTypeNode implements TrustListType {
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastUpdateTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastUpdateTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastUpdateTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

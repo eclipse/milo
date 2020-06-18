@@ -90,7 +90,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInputNodeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InputNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InputNode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSuppressedOrShelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuppressedOrShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuppressedOrShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -218,7 +218,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxTimeShelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxTimeShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxTimeShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -282,7 +282,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getEnabledStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -346,7 +346,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getActiveStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ActiveState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ActiveState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -410,7 +410,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getSuppressedStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuppressedState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SuppressedState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -423,7 +423,7 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
     }
 
     public CompletableFuture<? extends ShelvedStateMachineTypeNode> getShelvingStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ShelvingState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2929"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ShelvingState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ShelvedStateMachineTypeNode) node);
     }
 }

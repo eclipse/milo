@@ -89,7 +89,7 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getServerCapabilitiesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerCapabilities", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerCapabilities", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -156,7 +156,7 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSupportedPrivateKeyFormatsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SupportedPrivateKeyFormats", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SupportedPrivateKeyFormats", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -220,7 +220,7 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxTrustListSizeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxTrustListSize", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxTrustListSize", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -284,7 +284,7 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMulticastDnsEnabledNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MulticastDnsEnabled", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MulticastDnsEnabled", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -298,7 +298,7 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
 
     public CompletableFuture<? extends CertificateGroupFolderTypeNode> getCertificateGroupsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CertificateGroups", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=13813"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CertificateGroups", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (CertificateGroupFolderTypeNode) node);
     }
 }

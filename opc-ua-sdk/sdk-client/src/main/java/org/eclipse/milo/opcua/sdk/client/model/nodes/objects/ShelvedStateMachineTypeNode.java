@@ -89,7 +89,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getUnshelveTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnshelveTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnshelveTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -102,7 +102,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getUnshelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Unshelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Unshelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -115,7 +115,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getTimedShelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TimedShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TimedShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -128,7 +128,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends StateTypeNode> getOneShotShelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OneShotShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2307"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OneShotShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateTypeNode) node);
     }
 
@@ -141,7 +141,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getUnshelvedToTimedShelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnshelvedToTimedShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnshelvedToTimedShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getUnshelvedToOneShotShelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnshelvedToOneShotShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UnshelvedToOneShotShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -167,7 +167,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getTimedShelvedToUnshelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TimedShelvedToUnshelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TimedShelvedToUnshelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -181,7 +181,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     public CompletableFuture<? extends TransitionTypeNode> getTimedShelvedToOneShotShelvedNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TimedShelvedToOneShotShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TimedShelvedToOneShotShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -194,7 +194,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     public CompletableFuture<? extends TransitionTypeNode> getOneShotShelvedToUnshelvedNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OneShotShelvedToUnshelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OneShotShelvedToUnshelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 
@@ -208,7 +208,7 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     public CompletableFuture<? extends TransitionTypeNode> getOneShotShelvedToTimedShelvedNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OneShotShelvedToTimedShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2310"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OneShotShelvedToTimedShelved", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionTypeNode) node);
     }
 }

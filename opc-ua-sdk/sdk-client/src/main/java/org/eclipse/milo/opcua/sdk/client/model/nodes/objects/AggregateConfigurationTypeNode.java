@@ -89,7 +89,7 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getTreatUncertainAsBadNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TreatUncertainAsBad", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "TreatUncertainAsBad", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -153,7 +153,7 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getPercentDataBadNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PercentDataBad", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PercentDataBad", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -217,7 +217,7 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getPercentDataGoodNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PercentDataGood", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PercentDataGood", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -281,7 +281,7 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getUseSlopedExtrapolationNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UseSlopedExtrapolation", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UseSlopedExtrapolation", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

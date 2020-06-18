@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -93,7 +94,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getStartTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "StartTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -157,7 +158,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -221,20 +222,21 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "State", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "State", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
     @Override
     public BuildInfo getBuildInfo() throws UaException {
         BuildInfoTypeNode node = getBuildInfoNode();
-        return (BuildInfo) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), BuildInfo.class);
     }
 
     @Override
     public void setBuildInfo(BuildInfo buildInfo) throws UaException {
         BuildInfoTypeNode node = getBuildInfoNode();
-        node.setValue(new Variant(buildInfo));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), buildInfo);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -285,7 +287,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BuildInfoTypeNode> getBuildInfoNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildInfo", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=3051"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildInfo", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BuildInfoTypeNode) node);
     }
 
@@ -349,7 +351,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSecondsTillShutdownNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecondsTillShutdown", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecondsTillShutdown", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -413,7 +415,7 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getShutdownReasonNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ShutdownReason", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ShutdownReason", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }

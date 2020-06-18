@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -33,13 +34,14 @@ public class AuditDeleteReferencesEventTypeNode extends AuditNodeManagementEvent
     @Override
     public DeleteReferencesItem[] getReferencesToDelete() throws UaException {
         PropertyTypeNode node = getReferencesToDeleteNode();
-        return (DeleteReferencesItem[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), DeleteReferencesItem[].class);
     }
 
     @Override
     public void setReferencesToDelete(DeleteReferencesItem[] referencesToDelete) throws UaException {
         PropertyTypeNode node = getReferencesToDeleteNode();
-        node.setValue(new Variant(referencesToDelete));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), referencesToDelete);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -92,7 +94,7 @@ public class AuditDeleteReferencesEventTypeNode extends AuditNodeManagementEvent
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getReferencesToDeleteNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReferencesToDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReferencesToDelete", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

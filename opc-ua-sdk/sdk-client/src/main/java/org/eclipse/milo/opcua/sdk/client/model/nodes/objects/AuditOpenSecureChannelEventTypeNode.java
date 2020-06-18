@@ -92,7 +92,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getClientCertificateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -159,7 +159,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getClientCertificateThumbprintNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificateThumbprint", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientCertificateThumbprint", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -223,7 +223,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRequestTypeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RequestType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RequestType", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -287,7 +287,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSecurityPolicyUriNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityPolicyUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityPolicyUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -351,7 +351,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSecurityModeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityMode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityMode", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -415,7 +415,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRequestedLifetimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RequestedLifetime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RequestedLifetime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

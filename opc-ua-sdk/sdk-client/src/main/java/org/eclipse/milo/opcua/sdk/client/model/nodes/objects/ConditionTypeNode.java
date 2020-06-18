@@ -93,7 +93,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getConditionClassIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionClassId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionClassId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -157,7 +157,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getConditionClassNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionClassName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionClassName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -221,7 +221,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getConditionNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ConditionName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -285,7 +285,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getBranchIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BranchId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BranchId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -349,7 +349,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRetainNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Retain", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Retain", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -413,7 +413,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getClientUserIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientUserId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ClientUserId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -477,7 +477,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends TwoStateVariableTypeNode> getEnabledStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8995"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnabledState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TwoStateVariableTypeNode) node);
     }
 
@@ -541,7 +541,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends ConditionVariableTypeNode> getQualityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Quality", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=9002"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Quality", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ConditionVariableTypeNode) node);
     }
 
@@ -605,7 +605,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends ConditionVariableTypeNode> getLastSeverityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastSeverity", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=9002"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastSeverity", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ConditionVariableTypeNode) node);
     }
 
@@ -669,7 +669,7 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
 
     @Override
     public CompletableFuture<? extends ConditionVariableTypeNode> getCommentNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=9002"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ConditionVariableTypeNode) node);
     }
 }

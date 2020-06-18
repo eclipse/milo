@@ -89,7 +89,7 @@ public class ProgramTransitionEventTypeNode extends TransitionEventTypeNode impl
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getIntermediateResultNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "IntermediateResult", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "IntermediateResult", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

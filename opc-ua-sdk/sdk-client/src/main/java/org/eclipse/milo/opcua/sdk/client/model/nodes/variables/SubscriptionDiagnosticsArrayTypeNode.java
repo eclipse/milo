@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,14 +35,15 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
     @Override
     public SubscriptionDiagnosticsDataType getSubscriptionDiagnostics() throws UaException {
         SubscriptionDiagnosticsTypeNode node = getSubscriptionDiagnosticsNode();
-        return (SubscriptionDiagnosticsDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SubscriptionDiagnosticsDataType.class);
     }
 
     @Override
     public void setSubscriptionDiagnostics(SubscriptionDiagnosticsDataType subscriptionDiagnostics)
         throws UaException {
         SubscriptionDiagnosticsTypeNode node = getSubscriptionDiagnosticsNode();
-        node.setValue(new Variant(subscriptionDiagnostics));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), subscriptionDiagnostics);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -96,7 +98,7 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
     @Override
     public CompletableFuture<? extends SubscriptionDiagnosticsTypeNode> getSubscriptionDiagnosticsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SubscriptionDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2172"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SubscriptionDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SubscriptionDiagnosticsTypeNode) node);
     }
 }

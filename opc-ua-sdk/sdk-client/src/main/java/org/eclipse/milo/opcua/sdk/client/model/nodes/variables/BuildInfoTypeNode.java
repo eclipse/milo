@@ -91,7 +91,7 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getProductUriNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProductUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProductUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -155,7 +155,7 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getManufacturerNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ManufacturerName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ManufacturerName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -219,7 +219,7 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getProductNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProductName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ProductName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -283,7 +283,7 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSoftwareVersionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SoftwareVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SoftwareVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -347,7 +347,7 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getBuildNumberNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildNumber", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildNumber", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -411,7 +411,7 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getBuildDateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildDate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "BuildDate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }

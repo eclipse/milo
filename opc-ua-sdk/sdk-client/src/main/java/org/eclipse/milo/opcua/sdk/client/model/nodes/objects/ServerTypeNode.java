@@ -14,6 +14,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -92,7 +93,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getServerArrayNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -156,7 +157,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNamespaceArrayNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NamespaceArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -220,7 +221,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getServiceLevelNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServiceLevel", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServiceLevel", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -284,7 +285,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getAuditingNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Auditing", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Auditing", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -348,20 +349,21 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEstimatedReturnTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EstimatedReturnTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EstimatedReturnTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public ServerStatusDataType getServerStatus() throws UaException {
         ServerStatusTypeNode node = getServerStatusNode();
-        return (ServerStatusDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ServerStatusDataType.class);
     }
 
     @Override
     public void setServerStatus(ServerStatusDataType serverStatus) throws UaException {
         ServerStatusTypeNode node = getServerStatusNode();
-        node.setValue(new Variant(serverStatus));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), serverStatus);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -412,7 +414,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends ServerStatusTypeNode> getServerStatusNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerStatus", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2138"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerStatus", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ServerStatusTypeNode) node);
     }
 
@@ -425,7 +427,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     public CompletableFuture<? extends ServerCapabilitiesTypeNode> getServerCapabilitiesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerCapabilities", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2013"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerCapabilities", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ServerCapabilitiesTypeNode) node);
     }
 
@@ -438,7 +440,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     public CompletableFuture<? extends ServerDiagnosticsTypeNode> getServerDiagnosticsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2020"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ServerDiagnosticsTypeNode) node);
     }
 
@@ -451,7 +453,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     public CompletableFuture<? extends VendorServerInfoTypeNode> getVendorServerInfoNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "VendorServerInfo", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2033"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "VendorServerInfo", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (VendorServerInfoTypeNode) node);
     }
 
@@ -464,7 +466,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     public CompletableFuture<? extends ServerRedundancyTypeNode> getServerRedundancyNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerRedundancy", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2034"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerRedundancy", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (ServerRedundancyTypeNode) node);
     }
 
@@ -477,7 +479,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     public CompletableFuture<? extends NamespacesTypeNode> getNamespacesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Namespaces", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11645"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Namespaces", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (NamespacesTypeNode) node);
     }
 }

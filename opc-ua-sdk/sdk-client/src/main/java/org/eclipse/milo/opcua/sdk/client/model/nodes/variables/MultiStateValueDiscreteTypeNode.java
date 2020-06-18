@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,13 +35,14 @@ public class MultiStateValueDiscreteTypeNode extends DiscreteItemTypeNode implem
     @Override
     public EnumValueType[] getEnumValues() throws UaException {
         PropertyTypeNode node = getEnumValuesNode();
-        return (EnumValueType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), EnumValueType[].class);
     }
 
     @Override
     public void setEnumValues(EnumValueType[] enumValues) throws UaException {
         PropertyTypeNode node = getEnumValuesNode();
-        node.setValue(new Variant(enumValues));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), enumValues);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -91,7 +93,7 @@ public class MultiStateValueDiscreteTypeNode extends DiscreteItemTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEnumValuesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnumValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EnumValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -155,7 +157,7 @@ public class MultiStateValueDiscreteTypeNode extends DiscreteItemTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getValueAsTextNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ValueAsText", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ValueAsText", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

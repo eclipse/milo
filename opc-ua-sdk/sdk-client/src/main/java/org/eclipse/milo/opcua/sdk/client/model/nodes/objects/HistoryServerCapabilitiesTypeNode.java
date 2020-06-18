@@ -92,7 +92,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getAccessHistoryDataCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AccessHistoryDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AccessHistoryDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -159,7 +159,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getAccessHistoryEventsCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AccessHistoryEventsCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AccessHistoryEventsCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -223,7 +223,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxReturnDataValuesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxReturnDataValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxReturnDataValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -287,7 +287,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxReturnEventValuesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxReturnEventValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxReturnEventValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -351,7 +351,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInsertDataCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InsertDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InsertDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -415,7 +415,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getReplaceDataCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReplaceDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReplaceDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -479,7 +479,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getUpdateDataCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UpdateDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UpdateDataCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -543,7 +543,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDeleteRawCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteRawCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteRawCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -607,7 +607,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDeleteAtTimeCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteAtTimeCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteAtTimeCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -671,7 +671,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInsertEventCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InsertEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InsertEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -735,7 +735,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getReplaceEventCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReplaceEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ReplaceEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -799,7 +799,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getUpdateEventCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UpdateEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "UpdateEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -863,7 +863,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDeleteEventCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DeleteEventCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -929,7 +929,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInsertAnnotationCapabilityNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InsertAnnotationCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InsertAnnotationCapability", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -942,7 +942,7 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     public CompletableFuture<? extends FolderTypeNode> getAggregateFunctionsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateFunctions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=61"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateFunctions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FolderTypeNode) node);
     }
 }

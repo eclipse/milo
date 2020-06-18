@@ -91,7 +91,7 @@ public class DataTypeDescriptionTypeNode extends BaseDataVariableTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDataTypeVersionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DataTypeVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DataTypeVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -155,7 +155,7 @@ public class DataTypeDescriptionTypeNode extends BaseDataVariableTypeNode implem
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getDictionaryFragmentNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DictionaryFragment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DictionaryFragment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

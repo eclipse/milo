@@ -90,7 +90,7 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSamplingIntervalNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SamplingInterval", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SamplingInterval", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -158,7 +158,7 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSampledMonitoredItemsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SampledMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SampledMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -226,7 +226,7 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getMaxSampledMonitoredItemsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxSampledMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxSampledMonitoredItemsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -294,7 +294,7 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getDisabledMonitoredItemsSamplingCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DisabledMonitoredItemsSamplingCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "DisabledMonitoredItemsSamplingCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }

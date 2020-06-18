@@ -157,6 +157,20 @@ public final class ExtensionObject {
         return encodeDefaultBinary(context, struct, encodingId);
     }
 
+    public static ExtensionObject[] encodeArray(
+        SerializationContext context,
+        UaStructure[] structArray
+    ) throws UaSerializationException {
+
+        ExtensionObject[] xos = new ExtensionObject[structArray.length];
+
+        for (int i = 0; i < xos.length; i++) {
+            xos[i] = encode(context, structArray[i]);
+        }
+
+        return xos;
+    }
+
     public static ExtensionObject encodeDefaultBinary(
         SerializationContext context,
         Object object,

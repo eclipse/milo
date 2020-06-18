@@ -13,6 +13,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -91,20 +92,21 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getEventIdsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public HistoryEventFieldList getOldValues() throws UaException {
         PropertyTypeNode node = getOldValuesNode();
-        return (HistoryEventFieldList) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), HistoryEventFieldList.class);
     }
 
     @Override
     public void setOldValues(HistoryEventFieldList oldValues) throws UaException {
         PropertyTypeNode node = getOldValuesNode();
-        node.setValue(new Variant(oldValues));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), oldValues);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -155,7 +157,7 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getOldValuesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OldValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OldValues", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

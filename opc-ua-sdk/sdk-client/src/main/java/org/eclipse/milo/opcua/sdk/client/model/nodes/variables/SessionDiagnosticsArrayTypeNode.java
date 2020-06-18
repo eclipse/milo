@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,14 +35,15 @@ public class SessionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNode im
     @Override
     public SessionDiagnosticsDataType getSessionDiagnostics() throws UaException {
         SessionDiagnosticsVariableTypeNode node = getSessionDiagnosticsNode();
-        return (SessionDiagnosticsDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SessionDiagnosticsDataType.class);
     }
 
     @Override
     public void setSessionDiagnostics(SessionDiagnosticsDataType sessionDiagnostics) throws
         UaException {
         SessionDiagnosticsVariableTypeNode node = getSessionDiagnosticsNode();
-        node.setValue(new Variant(sessionDiagnostics));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), sessionDiagnostics);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -95,7 +97,7 @@ public class SessionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNode im
     @Override
     public CompletableFuture<? extends SessionDiagnosticsVariableTypeNode> getSessionDiagnosticsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2197"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SessionDiagnosticsVariableTypeNode) node);
     }
 }

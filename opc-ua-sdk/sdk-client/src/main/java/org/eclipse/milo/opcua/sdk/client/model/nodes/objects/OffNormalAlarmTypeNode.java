@@ -89,7 +89,7 @@ public class OffNormalAlarmTypeNode extends DiscreteAlarmTypeNode implements Off
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getNormalStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NormalState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "NormalState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

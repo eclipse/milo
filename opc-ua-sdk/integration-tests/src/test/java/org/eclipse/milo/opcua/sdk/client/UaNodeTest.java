@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
@@ -23,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.junit.jupiter.api.Test;
 
@@ -99,6 +101,16 @@ public class UaNodeTest extends AbstractClientServerTest {
         testNode.synchronize(EnumSet.of(AttributeId.Value));
 
         assertEquals(42, testNode.readValue().getValue().getValue());
+    }
+
+    @Test
+    public void serverNode_ServerStatusNode_BuildInfo() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        ServerTypeNode serverTypeNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+
+        BuildInfo buildInfo = serverTypeNode.getServerStatusNode().getBuildInfo();
+        assertNotNull(buildInfo);
     }
 
 }

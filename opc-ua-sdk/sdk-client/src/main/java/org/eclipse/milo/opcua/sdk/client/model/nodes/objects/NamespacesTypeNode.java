@@ -32,7 +32,7 @@ public class NamespacesTypeNode extends BaseObjectTypeNode implements Namespaces
     }
 
     public CompletableFuture<? extends AddressSpaceFileTypeNode> getAddressSpaceFileNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AddressSpaceFile", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11595"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AddressSpaceFile", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (AddressSpaceFileTypeNode) node);
     }
 }

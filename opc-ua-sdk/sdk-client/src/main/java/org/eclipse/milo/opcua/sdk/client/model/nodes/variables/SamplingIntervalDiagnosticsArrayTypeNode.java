@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,14 +35,15 @@ public class SamplingIntervalDiagnosticsArrayTypeNode extends BaseDataVariableTy
     @Override
     public SamplingIntervalDiagnosticsDataType getSamplingIntervalDiagnostics() throws UaException {
         SamplingIntervalDiagnosticsTypeNode node = getSamplingIntervalDiagnosticsNode();
-        return (SamplingIntervalDiagnosticsDataType) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SamplingIntervalDiagnosticsDataType.class);
     }
 
     @Override
     public void setSamplingIntervalDiagnostics(
         SamplingIntervalDiagnosticsDataType samplingIntervalDiagnostics) throws UaException {
         SamplingIntervalDiagnosticsTypeNode node = getSamplingIntervalDiagnosticsNode();
-        node.setValue(new Variant(samplingIntervalDiagnostics));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), samplingIntervalDiagnostics);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -97,7 +99,7 @@ public class SamplingIntervalDiagnosticsArrayTypeNode extends BaseDataVariableTy
     @Override
     public CompletableFuture<? extends SamplingIntervalDiagnosticsTypeNode> getSamplingIntervalDiagnosticsNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SamplingIntervalDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2165"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SamplingIntervalDiagnostics", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (SamplingIntervalDiagnosticsTypeNode) node);
     }
 }

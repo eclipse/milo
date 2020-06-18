@@ -89,7 +89,7 @@ public class AuditCancelEventTypeNode extends AuditSessionEventTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getRequestHandleNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RequestHandle", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RequestHandle", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

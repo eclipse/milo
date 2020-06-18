@@ -89,7 +89,7 @@ public class NonTransparentRedundancyTypeNode extends ServerRedundancyTypeNode i
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getServerUriArrayNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerUriArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerUriArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

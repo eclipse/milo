@@ -11,6 +11,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -34,13 +35,14 @@ public class CubeItemTypeNode extends ArrayItemTypeNode implements CubeItemType 
     @Override
     public AxisInformation getXAxisDefinition() throws UaException {
         PropertyTypeNode node = getXAxisDefinitionNode();
-        return (AxisInformation) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), AxisInformation.class);
     }
 
     @Override
     public void setXAxisDefinition(AxisInformation xAxisDefinition) throws UaException {
         PropertyTypeNode node = getXAxisDefinitionNode();
-        node.setValue(new Variant(xAxisDefinition));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -91,20 +93,21 @@ public class CubeItemTypeNode extends ArrayItemTypeNode implements CubeItemType 
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getXAxisDefinitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "XAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "XAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public AxisInformation getYAxisDefinition() throws UaException {
         PropertyTypeNode node = getYAxisDefinitionNode();
-        return (AxisInformation) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), AxisInformation.class);
     }
 
     @Override
     public void setYAxisDefinition(AxisInformation yAxisDefinition) throws UaException {
         PropertyTypeNode node = getYAxisDefinitionNode();
-        node.setValue(new Variant(yAxisDefinition));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), yAxisDefinition);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -155,20 +158,21 @@ public class CubeItemTypeNode extends ArrayItemTypeNode implements CubeItemType 
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getYAxisDefinitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "YAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "YAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public AxisInformation getZAxisDefinition() throws UaException {
         PropertyTypeNode node = getZAxisDefinitionNode();
-        return (AxisInformation) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), AxisInformation.class);
     }
 
     @Override
     public void setZAxisDefinition(AxisInformation zAxisDefinition) throws UaException {
         PropertyTypeNode node = getZAxisDefinitionNode();
-        node.setValue(new Variant(zAxisDefinition));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), zAxisDefinition);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -219,7 +223,7 @@ public class CubeItemTypeNode extends ArrayItemTypeNode implements CubeItemType 
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getZAxisDefinitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ZAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ZAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

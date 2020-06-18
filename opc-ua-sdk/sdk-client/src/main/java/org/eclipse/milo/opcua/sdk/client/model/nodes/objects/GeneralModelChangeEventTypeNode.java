@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -33,13 +34,14 @@ public class GeneralModelChangeEventTypeNode extends BaseModelChangeEventTypeNod
     @Override
     public ModelChangeStructureDataType[] getChanges() throws UaException {
         PropertyTypeNode node = getChangesNode();
-        return (ModelChangeStructureDataType[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), ModelChangeStructureDataType[].class);
     }
 
     @Override
     public void setChanges(ModelChangeStructureDataType[] changes) throws UaException {
         PropertyTypeNode node = getChangesNode();
-        node.setValue(new Variant(changes));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), changes);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -90,7 +92,7 @@ public class GeneralModelChangeEventTypeNode extends BaseModelChangeEventTypeNod
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getChangesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Changes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Changes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

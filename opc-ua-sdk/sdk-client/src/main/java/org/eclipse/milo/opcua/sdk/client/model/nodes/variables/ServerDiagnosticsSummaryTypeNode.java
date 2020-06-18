@@ -90,7 +90,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getServerViewCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerViewCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerViewCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentSessionCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -218,7 +218,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCumulatedSessionCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CumulatedSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CumulatedSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -286,7 +286,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSecurityRejectedSessionCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityRejectedSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityRejectedSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -350,7 +350,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getRejectedSessionCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RejectedSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RejectedSessionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -414,7 +414,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSessionTimeoutCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionTimeoutCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionTimeoutCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -478,7 +478,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSessionAbortCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionAbortCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SessionAbortCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -544,7 +544,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getPublishingIntervalCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PublishingIntervalCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "PublishingIntervalCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -610,7 +610,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCurrentSubscriptionCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentSubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentSubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -678,7 +678,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getCumulatedSubscriptionCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CumulatedSubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CumulatedSubscriptionCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -746,7 +746,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getSecurityRejectedRequestsCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityRejectedRequestsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SecurityRejectedRequestsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 
@@ -810,7 +810,7 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
 
     @Override
     public CompletableFuture<? extends BaseDataVariableTypeNode> getRejectedRequestsCountNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RejectedRequestsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=63"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "RejectedRequestsCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }

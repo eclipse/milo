@@ -90,7 +90,7 @@ public class TransitionEventTypeNode extends BaseEventTypeNode implements Transi
 
     @Override
     public CompletableFuture<? extends TransitionVariableTypeNode> getTransitionNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Transition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2762"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Transition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (TransitionVariableTypeNode) node);
     }
 
@@ -154,7 +154,7 @@ public class TransitionEventTypeNode extends BaseEventTypeNode implements Transi
 
     @Override
     public CompletableFuture<? extends StateVariableTypeNode> getFromStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "FromState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2755"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "FromState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateVariableTypeNode) node);
     }
 
@@ -218,7 +218,7 @@ public class TransitionEventTypeNode extends BaseEventTypeNode implements Transi
 
     @Override
     public CompletableFuture<? extends StateVariableTypeNode> getToStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ToState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2755"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ToState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (StateVariableTypeNode) node);
     }
 }

@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -93,7 +94,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCreateSessionIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateSessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateSessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -157,7 +158,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getCreateClientNameNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateClientName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CreateClientName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -221,7 +222,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getInvocationCreationTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvocationCreationTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "InvocationCreationTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -285,7 +286,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastTransitionTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransitionTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransitionTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -349,7 +350,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastMethodCallNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -413,20 +414,21 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastMethodSessionIdNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodSessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodSessionId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public Argument[] getLastMethodInputArguments() throws UaException {
         PropertyTypeNode node = getLastMethodInputArgumentsNode();
-        return (Argument[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), Argument[].class);
     }
 
     @Override
     public void setLastMethodInputArguments(Argument[] lastMethodInputArguments) throws UaException {
         PropertyTypeNode node = getLastMethodInputArgumentsNode();
-        node.setValue(new Variant(lastMethodInputArguments));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodInputArguments);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -479,21 +481,22 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastMethodInputArgumentsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodInputArguments", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodInputArguments", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public Argument[] getLastMethodOutputArguments() throws UaException {
         PropertyTypeNode node = getLastMethodOutputArgumentsNode();
-        return (Argument[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), Argument[].class);
     }
 
     @Override
     public void setLastMethodOutputArguments(Argument[] lastMethodOutputArguments) throws
         UaException {
         PropertyTypeNode node = getLastMethodOutputArgumentsNode();
-        node.setValue(new Variant(lastMethodOutputArguments));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodOutputArguments);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -546,7 +549,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastMethodOutputArgumentsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodOutputArguments", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodOutputArguments", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -610,20 +613,21 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastMethodCallTimeNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodCallTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodCallTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public StatusResult getLastMethodReturnStatus() throws UaException {
         PropertyTypeNode node = getLastMethodReturnStatusNode();
-        return (StatusResult) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), StatusResult.class);
     }
 
     @Override
     public void setLastMethodReturnStatus(StatusResult lastMethodReturnStatus) throws UaException {
         PropertyTypeNode node = getLastMethodReturnStatusNode();
-        node.setValue(new Variant(lastMethodReturnStatus));
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), lastMethodReturnStatus);
+        node.setValue(new Variant(value));
     }
 
     @Override
@@ -675,7 +679,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLastMethodReturnStatusNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodReturnStatus", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastMethodReturnStatus", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

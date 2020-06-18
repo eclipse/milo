@@ -90,7 +90,7 @@ public class FiniteStateMachineTypeNode extends StateMachineTypeNode implements 
 
     @Override
     public CompletableFuture<? extends FiniteStateVariableTypeNode> getCurrentStateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2760"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "CurrentState", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FiniteStateVariableTypeNode) node);
     }
 
@@ -155,7 +155,7 @@ public class FiniteStateMachineTypeNode extends StateMachineTypeNode implements 
     @Override
     public CompletableFuture<? extends FiniteTransitionVariableTypeNode> getLastTransitionNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=2767"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LastTransition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FiniteTransitionVariableTypeNode) node);
     }
 }

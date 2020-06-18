@@ -12,6 +12,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -91,7 +92,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getServerProfileArrayNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerProfileArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ServerProfileArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -155,7 +156,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getLocaleIdArrayNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LocaleIdArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LocaleIdArray", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -219,7 +220,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMinSupportedSampleRateNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MinSupportedSampleRate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MinSupportedSampleRate", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -286,7 +287,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxBrowseContinuationPointsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxBrowseContinuationPoints", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxBrowseContinuationPoints", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -352,7 +353,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxQueryContinuationPointsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxQueryContinuationPoints", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxQueryContinuationPoints", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -419,21 +420,22 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxHistoryContinuationPointsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxHistoryContinuationPoints", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxHistoryContinuationPoints", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
     @Override
     public SignedSoftwareCertificate[] getSoftwareCertificates() throws UaException {
         PropertyTypeNode node = getSoftwareCertificatesNode();
-        return (SignedSoftwareCertificate[]) node.getValue().getValue().getValue();
+        return cast(node.getValue().getValue().getValue(), SignedSoftwareCertificate[].class);
     }
 
     @Override
     public void setSoftwareCertificates(SignedSoftwareCertificate[] softwareCertificates) throws
         UaException {
         PropertyTypeNode node = getSoftwareCertificatesNode();
-        node.setValue(new Variant(softwareCertificates));
+        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), softwareCertificates);
+        node.setValue(new Variant(xos));
     }
 
     @Override
@@ -486,7 +488,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getSoftwareCertificatesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SoftwareCertificates", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "SoftwareCertificates", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -550,7 +552,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxArrayLengthNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxArrayLength", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxArrayLength", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -614,7 +616,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxStringLengthNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxStringLength", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxStringLength", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -678,7 +680,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends PropertyTypeNode> getMaxByteStringLengthNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxByteStringLength", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=68"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxByteStringLength", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
         return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
@@ -691,7 +693,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     public CompletableFuture<? extends OperationLimitsTypeNode> getOperationLimitsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OperationLimits", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11564"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "OperationLimits", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (OperationLimitsTypeNode) node);
     }
 
@@ -704,7 +706,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     public CompletableFuture<? extends FolderTypeNode> getModellingRulesNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ModellingRules", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=61"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "ModellingRules", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FolderTypeNode) node);
     }
 
@@ -717,7 +719,7 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     public CompletableFuture<? extends FolderTypeNode> getAggregateFunctionsNodeAsync() {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateFunctions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=61"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "AggregateFunctions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (FolderTypeNode) node);
     }
 }
