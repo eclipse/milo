@@ -23,6 +23,8 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
@@ -71,6 +73,48 @@ public class UaNodeTest extends AbstractClientServerTest {
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
+    }
+
+    @Test
+    public void read() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaVariableNode testNode = (UaVariableNode) addressSpace.getNode(
+            new NodeId(2, "TestInt32")
+        );
+
+        DataValue value = testNode.readValue();
+        assertNotNull(value);
+
+        QualifiedName browseName = testNode.readBrowseName();
+        assertNotNull(browseName);
+
+        DataValue descriptionValue = testNode.readAttribute(AttributeId.Description);
+        assertNotNull(descriptionValue);
+    }
+
+    @Test
+    public void write() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaVariableNode testNode = (UaVariableNode) addressSpace.getNode(
+            new NodeId(2, "TestInt32")
+        );
+
+        Integer i1 = (Integer) testNode.readValue().getValue().getValue();
+
+        testNode.writeValue(new Variant(i1 + 1));
+
+        Integer i2 = (Integer) testNode.readValue().getValue().getValue();
+
+        assertEquals(i1 + 1, i2);
+
+        StatusCode statusCode = testNode.writeAttribute(
+            AttributeId.Value,
+            DataValue.valueOnly(new Variant(42))
+        );
+
+        assertTrue(statusCode.isGood());
     }
 
     @Test
