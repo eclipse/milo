@@ -466,10 +466,20 @@ public class AddressSpace {
         }
     }
 
-    public CompletableFuture<NodeId> localizeAsync(ExpandedNodeId nodeId) {
+    /**
+     * Convert {@code xni} to a {@link NodeId} local to the server, reading the namespace table
+     * from the server if necessary.
+     * <p>
+     * Returns {@link NodeId#NULL_VALUE} if the conversion could not be completed for any reason.
+     *
+     * @param xni the {@link ExpandedNodeId} to convert to a local {@link NodeId}.
+     * @return a {@link NodeId} local to the server, or {@link NodeId#NULL_VALUE} if conversion
+     * could not be completed for any reason.
+     */
+    public CompletableFuture<NodeId> localizeAsync(ExpandedNodeId xni) {
         // TODO should this fail with Bad_NodeIdUnknown instead of returning NodeId.NULL_VALUE?
-        if (nodeId.isLocal()) {
-            Optional<NodeId> local = nodeId.local(client.getNamespaceTable());
+        if (xni.isLocal()) {
+            Optional<NodeId> local = xni.local(client.getNamespaceTable());
 
             return local.map(CompletableFuture::completedFuture).orElse(
                 getObjectNodeAsync(Identifiers.Server).thenCompose(node -> {
@@ -540,23 +550,17 @@ public class AddressSpace {
             uint(BrowseResultMask.All.getValue())
         ));
 
-        return browseFuture.thenApply(result -> {
+        return browseFuture.thenCompose(result -> {
             if (result.getStatusCode().isGood()) {
                 Optional<ExpandedNodeId> typeDefinitionId = Arrays.stream(result.getReferences())
                     .filter(r -> Objects.equals(Identifiers.HasTypeDefinition, r.getReferenceTypeId()))
                     .map(ReferenceDescription::getNodeId)
                     .findFirst();
 
-                // typeDefinitionId.map(this::localizeAsync)
-                // .orElse(completedFuture(NodeId.NULL_VALUE));
-
-                // TODO better xni -> local function that looks in the current
-                //  namespace table and reads from server as a fallback.
-                return typeDefinitionId
-                    .flatMap(xni -> xni.local(client.getNamespaceTable()))
-                    .orElse(NodeId.NULL_VALUE);
+                return typeDefinitionId.map(this::localizeAsync)
+                    .orElse(completedFuture(NodeId.NULL_VALUE));
             } else {
-                return NodeId.NULL_VALUE;
+                return completedFuture(NodeId.NULL_VALUE);
             }
         });
     }
