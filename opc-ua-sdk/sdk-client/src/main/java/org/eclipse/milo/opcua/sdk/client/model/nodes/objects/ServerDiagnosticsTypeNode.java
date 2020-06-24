@@ -136,13 +136,14 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<? extends ServerDiagnosticsSummaryDataType> readServerDiagnosticsSummaryAsync(
     ) {
-        return getServerDiagnosticsSummaryNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServerDiagnosticsSummaryDataType) v.getValue().getValue());
+        return getServerDiagnosticsSummaryNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServerDiagnosticsSummaryDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeServerDiagnosticsSummaryAsync(
         ServerDiagnosticsSummaryDataType serverDiagnosticsSummary) {
-        DataValue value = DataValue.valueOnly(new Variant(serverDiagnosticsSummary));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), serverDiagnosticsSummary);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerDiagnosticsSummaryNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -181,8 +182,8 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     public void setSamplingIntervalDiagnosticsArray(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray) throws UaException {
         SamplingIntervalDiagnosticsArrayTypeNode node = getSamplingIntervalDiagnosticsArrayNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -208,13 +209,14 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<? extends SamplingIntervalDiagnosticsDataType[]> readSamplingIntervalDiagnosticsArrayAsync(
     ) {
-        return getSamplingIntervalDiagnosticsArrayNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SamplingIntervalDiagnosticsDataType[]) v.getValue().getValue());
+        return getSamplingIntervalDiagnosticsArrayNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SamplingIntervalDiagnosticsDataType[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSamplingIntervalDiagnosticsArrayAsync(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray) {
-        DataValue value = DataValue.valueOnly(new Variant(samplingIntervalDiagnosticsArray));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSamplingIntervalDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -253,8 +255,8 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     public void setSubscriptionDiagnosticsArray(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) throws UaException {
         SubscriptionDiagnosticsArrayTypeNode node = getSubscriptionDiagnosticsArrayNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -279,13 +281,14 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<? extends SubscriptionDiagnosticsDataType[]> readSubscriptionDiagnosticsArrayAsync(
     ) {
-        return getSubscriptionDiagnosticsArrayNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SubscriptionDiagnosticsDataType[]) v.getValue().getValue());
+        return getSubscriptionDiagnosticsArrayNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SubscriptionDiagnosticsDataType[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) {
-        DataValue value = DataValue.valueOnly(new Variant(subscriptionDiagnosticsArray));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

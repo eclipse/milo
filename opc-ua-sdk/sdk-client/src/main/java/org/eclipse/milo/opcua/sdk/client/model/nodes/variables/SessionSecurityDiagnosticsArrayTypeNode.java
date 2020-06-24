@@ -68,13 +68,14 @@ public class SessionSecurityDiagnosticsArrayTypeNode extends BaseDataVariableTyp
     @Override
     public CompletableFuture<? extends SessionSecurityDiagnosticsDataType> readSessionSecurityDiagnosticsAsync(
     ) {
-        return getSessionSecurityDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SessionSecurityDiagnosticsDataType) v.getValue().getValue());
+        return getSessionSecurityDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SessionSecurityDiagnosticsDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSessionSecurityDiagnosticsAsync(
         SessionSecurityDiagnosticsDataType sessionSecurityDiagnostics) {
-        DataValue value = DataValue.valueOnly(new Variant(sessionSecurityDiagnostics));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), sessionSecurityDiagnostics);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

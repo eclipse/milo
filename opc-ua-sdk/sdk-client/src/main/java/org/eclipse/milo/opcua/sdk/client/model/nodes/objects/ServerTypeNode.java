@@ -386,12 +386,13 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<? extends ServerStatusDataType> readServerStatusAsync() {
-        return getServerStatusNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServerStatusDataType) v.getValue().getValue());
+        return getServerStatusNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServerStatusDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeServerStatusAsync(ServerStatusDataType serverStatus) {
-        DataValue value = DataValue.valueOnly(new Variant(serverStatus));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), serverStatus);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerStatusNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

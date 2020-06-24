@@ -259,12 +259,13 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends BuildInfo> readBuildInfoAsync() {
-        return getBuildInfoNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (BuildInfo) v.getValue().getValue());
+        return getBuildInfoNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), BuildInfo.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeBuildInfoAsync(BuildInfo buildInfo) {
-        DataValue value = DataValue.valueOnly(new Variant(buildInfo));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), buildInfo);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBuildInfoNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

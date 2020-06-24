@@ -41,8 +41,8 @@ public class MultiStateValueDiscreteTypeNode extends DiscreteItemTypeNode implem
     @Override
     public void setEnumValues(EnumValueType[] enumValues) throws UaException {
         PropertyTypeNode node = getEnumValuesNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), enumValues);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), enumValues);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -65,12 +65,13 @@ public class MultiStateValueDiscreteTypeNode extends DiscreteItemTypeNode implem
 
     @Override
     public CompletableFuture<? extends EnumValueType[]> readEnumValuesAsync() {
-        return getEnumValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (EnumValueType[]) v.getValue().getValue());
+        return getEnumValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), EnumValueType[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeEnumValuesAsync(EnumValueType[] enumValues) {
-        DataValue value = DataValue.valueOnly(new Variant(enumValues));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), enumValues);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEnumValuesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

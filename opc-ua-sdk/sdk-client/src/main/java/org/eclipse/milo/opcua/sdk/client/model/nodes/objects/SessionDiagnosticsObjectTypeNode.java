@@ -70,13 +70,14 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
 
     @Override
     public CompletableFuture<? extends SessionDiagnosticsDataType> readSessionDiagnosticsAsync() {
-        return getSessionDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SessionDiagnosticsDataType) v.getValue().getValue());
+        return getSessionDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SessionDiagnosticsDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSessionDiagnosticsAsync(
         SessionDiagnosticsDataType sessionDiagnostics) {
-        DataValue value = DataValue.valueOnly(new Variant(sessionDiagnostics));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), sessionDiagnostics);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -140,13 +141,14 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     @Override
     public CompletableFuture<? extends SessionSecurityDiagnosticsDataType> readSessionSecurityDiagnosticsAsync(
     ) {
-        return getSessionSecurityDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SessionSecurityDiagnosticsDataType) v.getValue().getValue());
+        return getSessionSecurityDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SessionSecurityDiagnosticsDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSessionSecurityDiagnosticsAsync(
         SessionSecurityDiagnosticsDataType sessionSecurityDiagnostics) {
-        DataValue value = DataValue.valueOnly(new Variant(sessionSecurityDiagnostics));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), sessionSecurityDiagnostics);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -184,8 +186,8 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     public void setSubscriptionDiagnosticsArray(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) throws UaException {
         SubscriptionDiagnosticsArrayTypeNode node = getSubscriptionDiagnosticsArrayNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -210,13 +212,14 @@ public class SessionDiagnosticsObjectTypeNode extends BaseObjectTypeNode impleme
     @Override
     public CompletableFuture<? extends SubscriptionDiagnosticsDataType[]> readSubscriptionDiagnosticsArrayAsync(
     ) {
-        return getSubscriptionDiagnosticsArrayNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SubscriptionDiagnosticsDataType[]) v.getValue().getValue());
+        return getSubscriptionDiagnosticsArrayNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SubscriptionDiagnosticsDataType[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) {
-        DataValue value = DataValue.valueOnly(new Variant(subscriptionDiagnosticsArray));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

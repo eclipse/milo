@@ -66,12 +66,13 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
 
     @Override
     public CompletableFuture<? extends Range> readInstrumentRangeAsync() {
-        return getInstrumentRangeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Range) v.getValue().getValue());
+        return getInstrumentRangeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), Range.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeInstrumentRangeAsync(Range instrumentRange) {
-        DataValue value = DataValue.valueOnly(new Variant(instrumentRange));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), instrumentRange);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getInstrumentRangeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -131,12 +132,13 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
 
     @Override
     public CompletableFuture<? extends Range> readEuRangeAsync() {
-        return getEuRangeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Range) v.getValue().getValue());
+        return getEuRangeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), Range.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeEuRangeAsync(Range euRange) {
-        DataValue value = DataValue.valueOnly(new Variant(euRange));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), euRange);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEuRangeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -196,12 +198,13 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
 
     @Override
     public CompletableFuture<? extends EUInformation> readEngineeringUnitsAsync() {
-        return getEngineeringUnitsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (EUInformation) v.getValue().getValue());
+        return getEngineeringUnitsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), EUInformation.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
-        DataValue value = DataValue.valueOnly(new Variant(engineeringUnits));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), engineeringUnits);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEngineeringUnitsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

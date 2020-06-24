@@ -65,12 +65,13 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
 
     @Override
     public CompletableFuture<? extends AxisInformation> readXAxisDefinitionAsync() {
-        return getXAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (AxisInformation) v.getValue().getValue());
+        return getXAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), AxisInformation.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition) {
-        DataValue value = DataValue.valueOnly(new Variant(xAxisDefinition));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getXAxisDefinitionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -130,12 +131,13 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
 
     @Override
     public CompletableFuture<? extends AxisInformation> readYAxisDefinitionAsync() {
-        return getYAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (AxisInformation) v.getValue().getValue());
+        return getYAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), AxisInformation.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition) {
-        DataValue value = DataValue.valueOnly(new Variant(yAxisDefinition));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), yAxisDefinition);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getYAxisDefinitionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

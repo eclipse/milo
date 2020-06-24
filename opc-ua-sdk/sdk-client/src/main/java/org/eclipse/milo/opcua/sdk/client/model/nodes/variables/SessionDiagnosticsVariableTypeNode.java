@@ -195,13 +195,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ApplicationDescription> readClientDescriptionAsync() {
-        return getClientDescriptionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ApplicationDescription) v.getValue().getValue());
+        return getClientDescriptionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ApplicationDescription.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeClientDescriptionAsync(
         ApplicationDescription clientDescription) {
-        DataValue value = DataValue.valueOnly(new Variant(clientDescription));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), clientDescription);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getClientDescriptionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -913,13 +914,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readTotalRequestCountAsync() {
-        return getTotalRequestCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getTotalRequestCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeTotalRequestCountAsync(
         ServiceCounterDataType totalRequestCount) {
-        DataValue value = DataValue.valueOnly(new Variant(totalRequestCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), totalRequestCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTotalRequestCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1045,12 +1047,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readReadCountAsync() {
-        return getReadCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getReadCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeReadCountAsync(ServiceCounterDataType readCount) {
-        DataValue value = DataValue.valueOnly(new Variant(readCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), readCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getReadCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1110,13 +1113,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readHistoryReadCountAsync() {
-        return getHistoryReadCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getHistoryReadCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeHistoryReadCountAsync(
         ServiceCounterDataType historyReadCount) {
-        DataValue value = DataValue.valueOnly(new Variant(historyReadCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), historyReadCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getHistoryReadCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1176,12 +1180,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readWriteCountAsync() {
-        return getWriteCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getWriteCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeWriteCountAsync(ServiceCounterDataType writeCount) {
-        DataValue value = DataValue.valueOnly(new Variant(writeCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), writeCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getWriteCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1242,13 +1247,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readHistoryUpdateCountAsync() {
-        return getHistoryUpdateCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getHistoryUpdateCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeHistoryUpdateCountAsync(
         ServiceCounterDataType historyUpdateCount) {
-        DataValue value = DataValue.valueOnly(new Variant(historyUpdateCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), historyUpdateCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getHistoryUpdateCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1308,12 +1314,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readCallCountAsync() {
-        return getCallCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getCallCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeCallCountAsync(ServiceCounterDataType callCount) {
-        DataValue value = DataValue.valueOnly(new Variant(callCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), callCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCallCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1375,13 +1382,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readCreateMonitoredItemsCountAsync() {
-        return getCreateMonitoredItemsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getCreateMonitoredItemsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeCreateMonitoredItemsCountAsync(
         ServiceCounterDataType createMonitoredItemsCount) {
-        DataValue value = DataValue.valueOnly(new Variant(createMonitoredItemsCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), createMonitoredItemsCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCreateMonitoredItemsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1444,13 +1452,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readModifyMonitoredItemsCountAsync() {
-        return getModifyMonitoredItemsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getModifyMonitoredItemsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeModifyMonitoredItemsCountAsync(
         ServiceCounterDataType modifyMonitoredItemsCount) {
-        DataValue value = DataValue.valueOnly(new Variant(modifyMonitoredItemsCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), modifyMonitoredItemsCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getModifyMonitoredItemsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1513,13 +1522,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readSetMonitoringModeCountAsync() {
-        return getSetMonitoringModeCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getSetMonitoringModeCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSetMonitoringModeCountAsync(
         ServiceCounterDataType setMonitoringModeCount) {
-        DataValue value = DataValue.valueOnly(new Variant(setMonitoringModeCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), setMonitoringModeCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSetMonitoringModeCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1581,13 +1591,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readSetTriggeringCountAsync() {
-        return getSetTriggeringCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getSetTriggeringCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSetTriggeringCountAsync(
         ServiceCounterDataType setTriggeringCount) {
-        DataValue value = DataValue.valueOnly(new Variant(setTriggeringCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), setTriggeringCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSetTriggeringCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1649,13 +1660,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readDeleteMonitoredItemsCountAsync() {
-        return getDeleteMonitoredItemsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getDeleteMonitoredItemsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeDeleteMonitoredItemsCountAsync(
         ServiceCounterDataType deleteMonitoredItemsCount) {
-        DataValue value = DataValue.valueOnly(new Variant(deleteMonitoredItemsCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteMonitoredItemsCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteMonitoredItemsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1718,13 +1730,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readCreateSubscriptionCountAsync() {
-        return getCreateSubscriptionCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getCreateSubscriptionCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeCreateSubscriptionCountAsync(
         ServiceCounterDataType createSubscriptionCount) {
-        DataValue value = DataValue.valueOnly(new Variant(createSubscriptionCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), createSubscriptionCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCreateSubscriptionCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1787,13 +1800,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readModifySubscriptionCountAsync() {
-        return getModifySubscriptionCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getModifySubscriptionCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeModifySubscriptionCountAsync(
         ServiceCounterDataType modifySubscriptionCount) {
-        DataValue value = DataValue.valueOnly(new Variant(modifySubscriptionCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), modifySubscriptionCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getModifySubscriptionCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1856,13 +1870,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readSetPublishingModeCountAsync() {
-        return getSetPublishingModeCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getSetPublishingModeCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSetPublishingModeCountAsync(
         ServiceCounterDataType setPublishingModeCount) {
-        DataValue value = DataValue.valueOnly(new Variant(setPublishingModeCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), setPublishingModeCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSetPublishingModeCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1923,12 +1938,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readPublishCountAsync() {
-        return getPublishCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getPublishCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writePublishCountAsync(ServiceCounterDataType publishCount) {
-        DataValue value = DataValue.valueOnly(new Variant(publishCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), publishCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getPublishCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -1988,12 +2004,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readRepublishCountAsync() {
-        return getRepublishCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getRepublishCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeRepublishCountAsync(ServiceCounterDataType republishCount) {
-        DataValue value = DataValue.valueOnly(new Variant(republishCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), republishCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getRepublishCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2055,13 +2072,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readTransferSubscriptionsCountAsync() {
-        return getTransferSubscriptionsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getTransferSubscriptionsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeTransferSubscriptionsCountAsync(
         ServiceCounterDataType transferSubscriptionsCount) {
-        DataValue value = DataValue.valueOnly(new Variant(transferSubscriptionsCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), transferSubscriptionsCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTransferSubscriptionsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2124,13 +2142,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readDeleteSubscriptionsCountAsync() {
-        return getDeleteSubscriptionsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getDeleteSubscriptionsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeDeleteSubscriptionsCountAsync(
         ServiceCounterDataType deleteSubscriptionsCount) {
-        DataValue value = DataValue.valueOnly(new Variant(deleteSubscriptionsCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteSubscriptionsCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteSubscriptionsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2191,12 +2210,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readAddNodesCountAsync() {
-        return getAddNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getAddNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeAddNodesCountAsync(ServiceCounterDataType addNodesCount) {
-        DataValue value = DataValue.valueOnly(new Variant(addNodesCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), addNodesCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getAddNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2257,13 +2277,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readAddReferencesCountAsync() {
-        return getAddReferencesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getAddReferencesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeAddReferencesCountAsync(
         ServiceCounterDataType addReferencesCount) {
-        DataValue value = DataValue.valueOnly(new Variant(addReferencesCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), addReferencesCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getAddReferencesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2323,13 +2344,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readDeleteNodesCountAsync() {
-        return getDeleteNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getDeleteNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeDeleteNodesCountAsync(
         ServiceCounterDataType deleteNodesCount) {
-        DataValue value = DataValue.valueOnly(new Variant(deleteNodesCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteNodesCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2391,13 +2413,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readDeleteReferencesCountAsync() {
-        return getDeleteReferencesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getDeleteReferencesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeDeleteReferencesCountAsync(
         ServiceCounterDataType deleteReferencesCount) {
-        DataValue value = DataValue.valueOnly(new Variant(deleteReferencesCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteReferencesCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteReferencesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2457,12 +2480,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readBrowseCountAsync() {
-        return getBrowseCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getBrowseCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeBrowseCountAsync(ServiceCounterDataType browseCount) {
-        DataValue value = DataValue.valueOnly(new Variant(browseCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), browseCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBrowseCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2522,12 +2546,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readBrowseNextCountAsync() {
-        return getBrowseNextCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getBrowseNextCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeBrowseNextCountAsync(ServiceCounterDataType browseNextCount) {
-        DataValue value = DataValue.valueOnly(new Variant(browseNextCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), browseNextCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBrowseNextCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2590,13 +2615,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readTranslateBrowsePathsToNodeIdsCountAsync(
     ) {
-        return getTranslateBrowsePathsToNodeIdsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getTranslateBrowsePathsToNodeIdsCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeTranslateBrowsePathsToNodeIdsCountAsync(
         ServiceCounterDataType translateBrowsePathsToNodeIdsCount) {
-        DataValue value = DataValue.valueOnly(new Variant(translateBrowsePathsToNodeIdsCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), translateBrowsePathsToNodeIdsCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTranslateBrowsePathsToNodeIdsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2657,12 +2683,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readQueryFirstCountAsync() {
-        return getQueryFirstCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getQueryFirstCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeQueryFirstCountAsync(ServiceCounterDataType queryFirstCount) {
-        DataValue value = DataValue.valueOnly(new Variant(queryFirstCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), queryFirstCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getQueryFirstCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2722,12 +2749,13 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readQueryNextCountAsync() {
-        return getQueryNextCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getQueryNextCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeQueryNextCountAsync(ServiceCounterDataType queryNextCount) {
-        DataValue value = DataValue.valueOnly(new Variant(queryNextCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), queryNextCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getQueryNextCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2788,13 +2816,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readRegisterNodesCountAsync() {
-        return getRegisterNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getRegisterNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeRegisterNodesCountAsync(
         ServiceCounterDataType registerNodesCount) {
-        DataValue value = DataValue.valueOnly(new Variant(registerNodesCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), registerNodesCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getRegisterNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -2856,13 +2885,14 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends ServiceCounterDataType> readUnregisterNodesCountAsync() {
-        return getUnregisterNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServiceCounterDataType) v.getValue().getValue());
+        return getUnregisterNodesCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ServiceCounterDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeUnregisterNodesCountAsync(
         ServiceCounterDataType unregisterNodesCount) {
-        DataValue value = DataValue.valueOnly(new Variant(unregisterNodesCount));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), unregisterNodesCount);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUnregisterNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

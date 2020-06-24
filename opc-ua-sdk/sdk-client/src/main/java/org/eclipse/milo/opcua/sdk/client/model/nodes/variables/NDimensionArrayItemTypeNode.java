@@ -41,8 +41,8 @@ public class NDimensionArrayItemTypeNode extends ArrayItemTypeNode implements ND
     @Override
     public void setAxisDefinition(AxisInformation[] axisDefinition) throws UaException {
         PropertyTypeNode node = getAxisDefinitionNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), axisDefinition);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), axisDefinition);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -65,12 +65,13 @@ public class NDimensionArrayItemTypeNode extends ArrayItemTypeNode implements ND
 
     @Override
     public CompletableFuture<? extends AxisInformation[]> readAxisDefinitionAsync() {
-        return getAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (AxisInformation[]) v.getValue().getValue());
+        return getAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), AxisInformation[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeAxisDefinitionAsync(AxisInformation[] axisDefinition) {
-        DataValue value = DataValue.valueOnly(new Variant(axisDefinition));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), axisDefinition);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getAxisDefinitionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

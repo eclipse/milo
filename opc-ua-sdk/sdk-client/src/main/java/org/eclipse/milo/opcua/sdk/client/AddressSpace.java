@@ -97,6 +97,15 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaNode} instance for the Node identified by {@code nodeId}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId the {@link NodeId} identifying the Node to get.
+     * @return a CompletableFuture that completes successfully with the UaNode instance or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<? extends UaNode> getNodeAsync(NodeId nodeId) {
         UaNode cachedNode = cache.getIfPresent(nodeId);
 

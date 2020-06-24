@@ -40,8 +40,8 @@ public class AuditAddNodesEventTypeNode extends AuditNodeManagementEventTypeNode
     @Override
     public void setNodesToAdd(AddNodesItem[] nodesToAdd) throws UaException {
         PropertyTypeNode node = getNodesToAddNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToAdd);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToAdd);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -64,12 +64,13 @@ public class AuditAddNodesEventTypeNode extends AuditNodeManagementEventTypeNode
 
     @Override
     public CompletableFuture<? extends AddNodesItem[]> readNodesToAddAsync() {
-        return getNodesToAddNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (AddNodesItem[]) v.getValue().getValue());
+        return getNodesToAddNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), AddNodesItem[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeNodesToAddAsync(AddNodesItem[] nodesToAdd) {
-        DataValue value = DataValue.valueOnly(new Variant(nodesToAdd));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToAdd);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getNodesToAddNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

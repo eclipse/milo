@@ -40,8 +40,8 @@ public class SemanticChangeEventTypeNode extends BaseModelChangeEventTypeNode im
     @Override
     public void setChanges(SemanticChangeStructureDataType[] changes) throws UaException {
         PropertyTypeNode node = getChangesNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), changes);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), changes);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -64,12 +64,13 @@ public class SemanticChangeEventTypeNode extends BaseModelChangeEventTypeNode im
 
     @Override
     public CompletableFuture<? extends SemanticChangeStructureDataType[]> readChangesAsync() {
-        return getChangesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SemanticChangeStructureDataType[]) v.getValue().getValue());
+        return getChangesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SemanticChangeStructureDataType[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeChangesAsync(SemanticChangeStructureDataType[] changes) {
-        DataValue value = DataValue.valueOnly(new Variant(changes));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), changes);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getChangesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

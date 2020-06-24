@@ -451,12 +451,13 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<? extends TimeZoneDataType> readLocalTimeAsync() {
-        return getLocalTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (TimeZoneDataType) v.getValue().getValue());
+        return getLocalTimeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), TimeZoneDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeLocalTimeAsync(TimeZoneDataType localTime) {
-        DataValue value = DataValue.valueOnly(new Variant(localTime));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), localTime);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLocalTimeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

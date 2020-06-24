@@ -195,12 +195,13 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends EventFilter> readFilterAsync() {
-        return getFilterNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (EventFilter) v.getValue().getValue());
+        return getFilterNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), EventFilter.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeFilterAsync(EventFilter filter) {
-        DataValue value = DataValue.valueOnly(new Variant(filter));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), filter);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getFilterNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -236,8 +237,8 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
     @Override
     public void setNewValues(HistoryEventFieldList[] newValues) throws UaException {
         PropertyTypeNode node = getNewValuesNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), newValues);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), newValues);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -260,12 +261,13 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends HistoryEventFieldList[]> readNewValuesAsync() {
-        return getNewValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (HistoryEventFieldList[]) v.getValue().getValue());
+        return getNewValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), HistoryEventFieldList[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeNewValuesAsync(HistoryEventFieldList[] newValues) {
-        DataValue value = DataValue.valueOnly(new Variant(newValues));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), newValues);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getNewValuesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -301,8 +303,8 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
     @Override
     public void setOldValues(HistoryEventFieldList[] oldValues) throws UaException {
         PropertyTypeNode node = getOldValuesNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), oldValues);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), oldValues);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -325,12 +327,13 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends HistoryEventFieldList[]> readOldValuesAsync() {
-        return getOldValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (HistoryEventFieldList[]) v.getValue().getValue());
+        return getOldValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), HistoryEventFieldList[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeOldValuesAsync(HistoryEventFieldList[] oldValues) {
-        DataValue value = DataValue.valueOnly(new Variant(oldValues));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), oldValues);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getOldValuesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

@@ -109,8 +109,13 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         ServerTypeNode serverTypeNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
 
-        BuildInfo buildInfo = serverTypeNode.getServerStatusNode().getBuildInfo();
-        assertNotNull(buildInfo);
+        BuildInfo buildInfo1 = serverTypeNode.getServerStatusNode().getBuildInfo();
+        assertNotNull(buildInfo1);
+
+        BuildInfo buildInfo2 = serverTypeNode.getServerStatusNode().readBuildInfo();
+        assertNotNull(buildInfo2);
+
+        assertEquals(buildInfo1, buildInfo2);
     }
 
 }

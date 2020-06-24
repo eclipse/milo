@@ -42,8 +42,8 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     public void setClientSoftwareCertificates(SignedSoftwareCertificate[] clientSoftwareCertificates)
         throws UaException {
         PropertyTypeNode node = getClientSoftwareCertificatesNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -68,13 +68,14 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     @Override
     public CompletableFuture<? extends SignedSoftwareCertificate[]> readClientSoftwareCertificatesAsync(
     ) {
-        return getClientSoftwareCertificatesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SignedSoftwareCertificate[]) v.getValue().getValue());
+        return getClientSoftwareCertificatesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SignedSoftwareCertificate[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeClientSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] clientSoftwareCertificates) {
-        DataValue value = DataValue.valueOnly(new Variant(clientSoftwareCertificates));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getClientSoftwareCertificatesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -134,12 +135,13 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public CompletableFuture<? extends UserIdentityToken> readUserIdentityTokenAsync() {
-        return getUserIdentityTokenNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UserIdentityToken) v.getValue().getValue());
+        return getUserIdentityTokenNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), UserIdentityToken.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeUserIdentityTokenAsync(UserIdentityToken userIdentityToken) {
-        DataValue value = DataValue.valueOnly(new Variant(userIdentityToken));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), userIdentityToken);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUserIdentityTokenNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

@@ -105,7 +105,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         if (statusCode != null && statusCode.isBad()) {
             throw new UaException(statusCode, "read EventNotifier failed");
         } else {
-            UByte eventNotifier = (UByte) getGoodValueOrThrow(value);
+            UByte eventNotifier = (UByte) value.getValue().getValue();
             setEventNotifier(eventNotifier);
             return eventNotifier;
         }

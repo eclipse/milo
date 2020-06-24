@@ -129,12 +129,13 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
 
     @Override
     public CompletableFuture<? extends HistoryEventFieldList> readOldValuesAsync() {
-        return getOldValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (HistoryEventFieldList) v.getValue().getValue());
+        return getOldValuesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), HistoryEventFieldList.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeOldValuesAsync(HistoryEventFieldList oldValues) {
-        DataValue value = DataValue.valueOnly(new Variant(oldValues));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), oldValues);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getOldValuesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

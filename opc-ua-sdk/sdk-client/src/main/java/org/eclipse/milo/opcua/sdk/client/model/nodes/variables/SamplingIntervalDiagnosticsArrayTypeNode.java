@@ -68,13 +68,14 @@ public class SamplingIntervalDiagnosticsArrayTypeNode extends BaseDataVariableTy
     @Override
     public CompletableFuture<? extends SamplingIntervalDiagnosticsDataType> readSamplingIntervalDiagnosticsAsync(
     ) {
-        return getSamplingIntervalDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SamplingIntervalDiagnosticsDataType) v.getValue().getValue());
+        return getSamplingIntervalDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SamplingIntervalDiagnosticsDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSamplingIntervalDiagnosticsAsync(
         SamplingIntervalDiagnosticsDataType samplingIntervalDiagnostics) {
-        DataValue value = DataValue.valueOnly(new Variant(samplingIntervalDiagnostics));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), samplingIntervalDiagnostics);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSamplingIntervalDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

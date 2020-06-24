@@ -427,8 +427,8 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     @Override
     public void setLastMethodInputArguments(Argument[] lastMethodInputArguments) throws UaException {
         PropertyTypeNode node = getLastMethodInputArgumentsNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodInputArguments);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodInputArguments);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -452,13 +452,14 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends Argument[]> readLastMethodInputArgumentsAsync() {
-        return getLastMethodInputArgumentsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Argument[]) v.getValue().getValue());
+        return getLastMethodInputArgumentsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), Argument[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeLastMethodInputArgumentsAsync(
         Argument[] lastMethodInputArguments) {
-        DataValue value = DataValue.valueOnly(new Variant(lastMethodInputArguments));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodInputArguments);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodInputArgumentsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -495,8 +496,8 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     public void setLastMethodOutputArguments(Argument[] lastMethodOutputArguments) throws
         UaException {
         PropertyTypeNode node = getLastMethodOutputArgumentsNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodOutputArguments);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodOutputArguments);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -520,13 +521,14 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends Argument[]> readLastMethodOutputArgumentsAsync() {
-        return getLastMethodOutputArgumentsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (Argument[]) v.getValue().getValue());
+        return getLastMethodOutputArgumentsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), Argument[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeLastMethodOutputArgumentsAsync(
         Argument[] lastMethodOutputArguments) {
-        DataValue value = DataValue.valueOnly(new Variant(lastMethodOutputArguments));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodOutputArguments);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodOutputArgumentsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
@@ -650,13 +652,14 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public CompletableFuture<? extends StatusResult> readLastMethodReturnStatusAsync() {
-        return getLastMethodReturnStatusNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (StatusResult) v.getValue().getValue());
+        return getLastMethodReturnStatusNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), StatusResult.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeLastMethodReturnStatusAsync(
         StatusResult lastMethodReturnStatus) {
-        DataValue value = DataValue.valueOnly(new Variant(lastMethodReturnStatus));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), lastMethodReturnStatus);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodReturnStatusNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

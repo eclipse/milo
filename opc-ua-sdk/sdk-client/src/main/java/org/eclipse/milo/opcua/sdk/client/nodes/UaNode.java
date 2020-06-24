@@ -841,27 +841,6 @@ public abstract class UaNode implements Node {
         }
     }
 
-    protected CompletableFuture<UaObjectNode> getObjectMemberAsync(
-        String namespaceUri,
-        String browseName,
-        ExpandedNodeId referenceTypeId,
-        boolean includeSubtypes,
-        ExpandedNodeId typeDefinitionId
-    ) {
-
-        // TODO better namespace index lookup function that checks locally
-        //  and reads from the server if not found locally
-
-        QualifiedName qualifiedName = new QualifiedName(
-            client.getNamespaceTable().getIndex(namespaceUri),
-            browseName
-        );
-
-        return findMemberNodeId(qualifiedName, referenceTypeId, includeSubtypes)
-            .thenCompose(nodeXni -> getObjectMemberAsync(nodeXni, typeDefinitionId));
-    }
-
-
     protected CompletableFuture<UaNode> getMemberNodeAsync(
         String namespaceUri,
         String name,
@@ -869,28 +848,17 @@ public abstract class UaNode implements Node {
         boolean includeSubtypes
     ) {
 
-        QualifiedName qualifiedName = new QualifiedName(
-            client.getNamespaceTable().getIndex(namespaceUri),
-            name
-        );
+        return readNamespaceIndex(namespaceUri).thenCompose(index -> {
+            QualifiedName qualifiedName = new QualifiedName(index, name);
 
-        return findMemberNodeId(qualifiedName, referenceTypeId, includeSubtypes).thenCompose(nodeXni -> {
-            AddressSpace addressSpace = client.getAddressSpace();
+            return findMemberNodeId(qualifiedName, referenceTypeId, includeSubtypes).thenCompose(nodeXni -> {
+                AddressSpace addressSpace = client.getAddressSpace();
 
-            return addressSpace.localizeAsync(nodeXni)
-                .thenCompose(addressSpace::getNodeAsync)
-                .thenApply(UaNode.class::cast);
+                return addressSpace.localizeAsync(nodeXni)
+                    .thenCompose(addressSpace::getNodeAsync)
+                    .thenApply(UaNode.class::cast);
+            });
         });
-    }
-
-    protected CompletableFuture<ExpandedNodeId> findMemberNodeId(
-        String namespaceUri,
-        String name,
-        ExpandedNodeId referenceTypeId,
-        boolean includeSubtypes
-    ) {
-
-        return null; // TODO
     }
 
     protected CompletableFuture<ExpandedNodeId> findMemberNodeId(
@@ -930,38 +898,6 @@ public abstract class UaNode implements Node {
                 return failedUaFuture(result.getStatusCode());
             }
         });
-    }
-
-    protected CompletableFuture<UaObjectNode> getObjectMemberAsync(
-        ExpandedNodeId nodeXni,
-        ExpandedNodeId typeDefinitionXni
-    ) {
-
-        AddressSpace addressSpace = client.getAddressSpace();
-
-        return addressSpace.localizeAsync(nodeXni).thenCompose(
-            nodeId ->
-                addressSpace.localizeAsync(typeDefinitionXni).thenCompose(
-                    typeDefinitionId ->
-                        addressSpace.getObjectNodeAsync(nodeId, typeDefinitionId)
-                )
-        );
-    }
-
-    protected CompletableFuture<UaVariableNode> getVariableMemberAsync(
-        ExpandedNodeId nodeXni,
-        ExpandedNodeId typeDefinitionXni
-    ) {
-
-        AddressSpace addressSpace = client.getAddressSpace();
-
-        return addressSpace.localizeAsync(nodeXni).thenCompose(
-            nodeId ->
-                addressSpace.localizeAsync(typeDefinitionXni).thenCompose(
-                    typeDefinitionId ->
-                        addressSpace.getVariableNodeAsync(nodeId, typeDefinitionId)
-                )
-        );
     }
 
     protected CompletableFuture<UShort> readNamespaceIndex(String namespaceUri) {
@@ -1036,46 +972,6 @@ public abstract class UaNode implements Node {
     protected CompletableFuture<StatusCode> writeProperty(QualifiedProperty<?> property, DataValue value) {
         return getPropertyNodeAsync(property)
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
-    }
-
-    /**
-     * Gets the attribute value out of the {@link DataValue} or fails if the {@link StatusCode} is
-     * bad.
-     *
-     * @param readFuture the {@link CompletableFuture} providing the {@link DataValue}.
-     * @return the attribute value.
-     */
-    protected CompletableFuture<Object> getAttributeOrFail(CompletableFuture<DataValue> readFuture) {
-        return readFuture.thenCompose(value -> {
-            StatusCode statusCode = value.getStatusCode();
-
-            if (statusCode == null || statusCode.isGood()) {
-                try {
-                    return completedFuture(value.getValue().getValue());
-                } catch (Throwable t) {
-                    return failedUaFuture(t, StatusCodes.Bad_UnexpectedError);
-                }
-            } else {
-                return failedUaFuture(statusCode);
-            }
-        });
-    }
-
-    /**
-     * Get the value out of a {@link DataValue}, throwing if the {@link StatusCode} is bad quality.
-     *
-     * @param value the {@link DataValue}.
-     * @return the value Object from a {@link DataValue}.
-     * @throws UaException with any non-good {@link StatusCode} is bad quality.
-     */
-    protected Object getGoodValueOrThrow(DataValue value) throws UaException {
-        StatusCode statusCode = value.getStatusCode();
-
-        if (statusCode == null || statusCode.isGood()) {
-            return value.getValue().getValue();
-        } else {
-            throw new UaException(statusCode);
-        }
     }
 
     /**

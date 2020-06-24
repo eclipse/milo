@@ -646,13 +646,14 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public CompletableFuture<? extends ProgramDiagnosticDataType> readProgramDiagnosticsAsync() {
-        return getProgramDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ProgramDiagnosticDataType) v.getValue().getValue());
+        return getProgramDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), ProgramDiagnosticDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeProgramDiagnosticsAsync(
         ProgramDiagnosticDataType programDiagnostics) {
-        DataValue value = DataValue.valueOnly(new Variant(programDiagnostics));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), programDiagnostics);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getProgramDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

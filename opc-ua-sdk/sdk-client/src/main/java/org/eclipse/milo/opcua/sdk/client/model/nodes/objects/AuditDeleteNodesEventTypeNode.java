@@ -40,8 +40,8 @@ public class AuditDeleteNodesEventTypeNode extends AuditNodeManagementEventTypeN
     @Override
     public void setNodesToDelete(DeleteNodesItem[] nodesToDelete) throws UaException {
         PropertyTypeNode node = getNodesToDeleteNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToDelete);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToDelete);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -64,12 +64,13 @@ public class AuditDeleteNodesEventTypeNode extends AuditNodeManagementEventTypeN
 
     @Override
     public CompletableFuture<? extends DeleteNodesItem[]> readNodesToDeleteAsync() {
-        return getNodesToDeleteNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (DeleteNodesItem[]) v.getValue().getValue());
+        return getNodesToDeleteNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), DeleteNodesItem[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeNodesToDeleteAsync(DeleteNodesItem[] nodesToDelete) {
-        DataValue value = DataValue.valueOnly(new Variant(nodesToDelete));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), nodesToDelete);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getNodesToDeleteNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

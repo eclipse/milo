@@ -68,13 +68,14 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
     @Override
     public CompletableFuture<? extends SubscriptionDiagnosticsDataType> readSubscriptionDiagnosticsAsync(
     ) {
-        return getSubscriptionDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SubscriptionDiagnosticsDataType) v.getValue().getValue());
+        return getSubscriptionDiagnosticsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), SubscriptionDiagnosticsDataType.class));
     }
 
     @Override
     public CompletableFuture<Unit> writeSubscriptionDiagnosticsAsync(
         SubscriptionDiagnosticsDataType subscriptionDiagnostics) {
-        DataValue value = DataValue.valueOnly(new Variant(subscriptionDiagnostics));
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), subscriptionDiagnostics);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {

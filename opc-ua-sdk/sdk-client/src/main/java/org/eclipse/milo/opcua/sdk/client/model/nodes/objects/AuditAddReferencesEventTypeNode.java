@@ -40,8 +40,8 @@ public class AuditAddReferencesEventTypeNode extends AuditNodeManagementEventTyp
     @Override
     public void setReferencesToAdd(AddReferencesItem[] referencesToAdd) throws UaException {
         PropertyTypeNode node = getReferencesToAddNode();
-        ExtensionObject[] xos = ExtensionObject.encodeArray(client.getSerializationContext(), referencesToAdd);
-        node.setValue(new Variant(xos));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), referencesToAdd);
+        node.setValue(new Variant(encoded));
     }
 
     @Override
@@ -64,12 +64,13 @@ public class AuditAddReferencesEventTypeNode extends AuditNodeManagementEventTyp
 
     @Override
     public CompletableFuture<? extends AddReferencesItem[]> readReferencesToAddAsync() {
-        return getReferencesToAddNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (AddReferencesItem[]) v.getValue().getValue());
+        return getReferencesToAddNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), AddReferencesItem[].class));
     }
 
     @Override
     public CompletableFuture<Unit> writeReferencesToAddAsync(AddReferencesItem[] referencesToAdd) {
-        DataValue value = DataValue.valueOnly(new Variant(referencesToAdd));
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), referencesToAdd);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getReferencesToAddNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
             .thenCompose(statusCode -> {
