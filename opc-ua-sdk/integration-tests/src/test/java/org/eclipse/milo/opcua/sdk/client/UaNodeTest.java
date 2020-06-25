@@ -32,6 +32,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UaNodeTest extends AbstractClientServerTest {
@@ -151,15 +153,37 @@ public class UaNodeTest extends AbstractClientServerTest {
     public void serverNode_ServerStatusNode_BuildInfo() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        ServerTypeNode serverTypeNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
 
-        BuildInfo buildInfo1 = serverTypeNode.getServerStatusNode().getBuildInfo();
+        BuildInfo buildInfo1 = serverNode.getServerStatusNode().getBuildInfo();
         assertNotNull(buildInfo1);
 
-        BuildInfo buildInfo2 = serverTypeNode.getServerStatusNode().readBuildInfo();
+        BuildInfo buildInfo2 = serverNode.getServerStatusNode().readBuildInfo();
         assertNotNull(buildInfo2);
 
         assertEquals(buildInfo1, buildInfo2);
+    }
+
+    @Test
+    public void canonicalize() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        assertSame(serverNode, serverNode.canonicalize());
+        assertSame(serverNode, serverNode.canonicalize());
+        assertSame(serverNode, addressSpace.getNode(Identifiers.Server));
+    }
+
+    @Test
+    public void invalidate() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        ServerTypeNode serverNode1 = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        serverNode1.invalidate();
+
+        ServerTypeNode serverNode2 = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+
+        assertNotSame(serverNode1, serverNode2);
     }
 
 }

@@ -768,8 +768,7 @@ public abstract class UaNode implements Node {
      * otherwise the other canonical instance from the NodeCache.
      */
     public UaNode canonicalize() {
-        // TODO
-        return this;
+        return client.getAddressSpace().getNodeCache().canonicalize(this);
     }
 
     /**
@@ -779,7 +778,7 @@ public abstract class UaNode implements Node {
      * @return this {@link UaNode}.
      */
     public UaNode invalidate() {
-        // TODO
+        client.getAddressSpace().getNodeCache().invalidate(nodeId);
         return this;
     }
 

@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,8 +23,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.client.ObjectTypeManager.ObjectNodeConstructor;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
@@ -69,9 +66,7 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class AddressSpace {
 
-    private volatile Duration expireAfter = Duration.ofMinutes(2);
-    private volatile long maximumSize = 1024;
-    private final Cache<NodeId, UaNode> cache = buildCache();
+    private final NodeCache nodeCache = new NodeCache();
 
     private BrowseOptions browseOptions = new BrowseOptions();
 
@@ -107,14 +102,14 @@ public class AddressSpace {
      * completes exceptionally if a service-level error occurs.
      */
     public CompletableFuture<? extends UaNode> getNodeAsync(NodeId nodeId) {
-        UaNode cachedNode = cache.getIfPresent(nodeId);
+        UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
         if (cachedNode != null) {
             return completedFuture(cachedNode);
         } else {
             return createNode(nodeId).whenComplete((node, ex) -> {
                 if (node != null) {
-                    cache.put(nodeId, node);
+                    nodeCache.put(nodeId, node);
                 }
             });
         }
@@ -162,7 +157,7 @@ public class AddressSpace {
     }
 
     public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId) {
-        UaNode cachedNode = cache.getIfPresent(nodeId);
+        UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
         if (cachedNode instanceof UaObjectNode) {
             return completedFuture((UaObjectNode) cachedNode);
@@ -174,7 +169,7 @@ public class AddressSpace {
     }
 
     public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
-        UaNode cachedNode = cache.getIfPresent(nodeId);
+        UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
         if (cachedNode instanceof UaObjectNode) {
             return completedFuture((UaObjectNode) cachedNode);
@@ -186,7 +181,7 @@ public class AddressSpace {
 
                 UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
 
-                cache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
                 return node;
             });
@@ -235,7 +230,7 @@ public class AddressSpace {
     }
 
     public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId) {
-        UaNode cachedNode = cache.getIfPresent(nodeId);
+        UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
         if (cachedNode instanceof UaVariableNode) {
             return completedFuture((UaVariableNode) cachedNode);
@@ -247,7 +242,7 @@ public class AddressSpace {
     }
 
     public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
-        UaNode cachedNode = cache.getIfPresent(nodeId);
+        UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
         if (cachedNode instanceof UaVariableNode) {
             return completedFuture((UaVariableNode) cachedNode);
@@ -259,7 +254,7 @@ public class AddressSpace {
 
                 UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
 
-                cache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
                 return node;
             });
@@ -540,6 +535,10 @@ public class AddressSpace {
         this.browseOptions = browseOptions;
     }
 
+    public NodeCache getNodeCache() {
+        return nodeCache;
+    }
+
     private CompletableFuture<NodeId> readTypeDefinition(NodeId nodeId) {
         CompletableFuture<BrowseResult> browseFuture = client.browse(new BrowseDescription(
             nodeId,
@@ -636,7 +635,7 @@ public class AddressSpace {
 
             UaDataTypeNode node = newDataTypeNode(nodeId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -660,7 +659,7 @@ public class AddressSpace {
 
             UaMethodNode node = newMethodNode(nodeId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -686,7 +685,7 @@ public class AddressSpace {
 
             UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -710,7 +709,7 @@ public class AddressSpace {
 
             UaObjectTypeNode node = newObjectTypeNode(nodeId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -734,7 +733,7 @@ public class AddressSpace {
 
             UaReferenceTypeNode node = newReferenceTypeNode(nodeId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -760,7 +759,7 @@ public class AddressSpace {
 
             UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -784,7 +783,7 @@ public class AddressSpace {
 
             UaVariableTypeNode node = newVariableTypeNode(nodeId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -808,7 +807,7 @@ public class AddressSpace {
 
             UaViewNode node = newViewNode(nodeId, attributeValues);
 
-            cache.put(node.getNodeId(), node);
+            nodeCache.put(node.getNodeId(), node);
 
             return node;
         });
@@ -1097,14 +1096,6 @@ public class AddressSpace {
             containsNoLoops,
             eventNotifier
         );
-    }
-
-    private Cache<NodeId, UaNode> buildCache() {
-        return CacheBuilder.newBuilder()
-            .expireAfterWrite(expireAfter)
-            .maximumSize(maximumSize)
-            .recordStats()
-            .build();
     }
 
     public static class BrowseOptions {
