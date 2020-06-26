@@ -511,6 +511,32 @@ public final class ExpandedNodeId {
     }
 
     /**
+     * Parse {@code s} into an {@link ExpandedNodeId}, or return {@code null} if parsing fails.
+     *
+     * @param s the String to parse.
+     * @return an {@link ExpandedNodeId} or {@code null} if parsing fails.
+     */
+    @Nullable
+    public static ExpandedNodeId parseOrNull(@Nonnull String s) {
+        try {
+            return ExpandedNodeId.parse(s);
+        } catch (UaRuntimeException t) {
+            return null;
+        }
+    }
+
+    /**
+     * Parse {@code s} into an Optional containing an {@link ExpandedNodeId}, or return
+     * {@link Optional#empty()}} if parsing fails.
+     *
+     * @param s the String to parse.
+     * @return an Optional containing an {@link ExpandedNodeId}, or {@link Optional#empty()} if parsing fails.
+     */
+    public static Optional<ExpandedNodeId> parseSafe(@Nonnull String s) {
+        return Optional.ofNullable(parseOrNull(s));
+    }
+
+    /**
      * Return a new {@link ExpandedNodeId.Builder}.
      *
      * @return a new {@link ExpandedNodeId.Builder}.
