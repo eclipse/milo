@@ -447,9 +447,7 @@ public final class ExpandedNodeId {
             sb.append("nsu=").append(namespaceUri).append(";");
         } else {
             int namespaceIndex = getNamespaceIndex().intValue();
-            if (namespaceIndex > 0) {
-                sb.append("ns=").append(getNamespaceIndex().intValue()).append(";");
-            }
+            sb.append("ns=").append(namespaceIndex).append(";");
         }
 
         switch (getType()) {
