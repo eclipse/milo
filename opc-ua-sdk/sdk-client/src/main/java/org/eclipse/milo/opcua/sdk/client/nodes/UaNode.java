@@ -955,7 +955,7 @@ public abstract class UaNode implements Node {
     public <T> CompletableFuture<T> getProperty(QualifiedProperty<T> property) {
         return getPropertyNodeAsync(property)
             .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
-            .thenApply(value -> cast(value, property.getJavaType()));
+            .thenApply(value -> cast(value.getValue().getValue(), property.getJavaType()));
     }
 
     protected <T> CompletableFuture<StatusCode> setProperty(QualifiedProperty<T> property, T value) {

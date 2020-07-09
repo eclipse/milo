@@ -13,8 +13,11 @@ package org.eclipse.milo.opcua.sdk.client.nodes;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
+import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -23,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -35,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
@@ -127,6 +132,69 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         } else {
             throw new UaException(statusCode, "write EventNotifier failed");
         }
+    }
+
+    public Variant[] callMethod(String methodName, Variant[] inputs) throws UaException {
+        return findMethod(methodName).call(inputs);
+    }
+
+    public Variant[] callMethod(QualifiedName methodName, Variant[] inputs) throws UaException {
+        return findMethod(methodName).call(inputs);
+    }
+
+    public CompletableFuture<Variant[]> callMethodAsync(String methodName, Variant[] inputs) {
+        return findMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
+    }
+
+    public CompletableFuture<Variant[]> callMethodAsync(QualifiedName methodName, Variant[] inputs) {
+        return findMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
+    }
+
+    public UaMethod findMethod(String methodName) throws UaException {
+        UShort namespaceIndex = getNodeId().getNamespaceIndex();
+
+        return findMethod(new QualifiedName(namespaceIndex, methodName));
+    }
+
+    public UaMethod findMethod(QualifiedName methodName) throws UaException {
+        try {
+            return findMethodAsync(methodName).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<UaMethod> findMethodAsync(String methodName) {
+        UShort namespaceIndex = getNodeId().getNamespaceIndex();
+
+        return findMethodAsync(new QualifiedName(namespaceIndex, methodName));
+    }
+
+    public CompletableFuture<UaMethod> findMethodAsync(QualifiedName methodName) {
+        // TODO use browse instead of findMemberNodeId so the target can be constrained to method nodes
+
+        CompletableFuture<ExpandedNodeId> memberNodeId =
+            findMemberNodeId(methodName, Identifiers.HasComponent.expanded(), false);
+
+        return memberNodeId.thenCompose(xni -> {
+            AddressSpace addressSpace = client.getAddressSpace();
+
+            return addressSpace.localizeAsync(xni).thenCompose(
+                nodeId ->
+                    addressSpace.getNodeAsync(nodeId).thenCompose(node -> {
+                        UaMethodNode methodNode = (UaMethodNode) node;
+
+                        CompletableFuture<Argument[]> f1 = methodNode.getInputArguments();
+                        CompletableFuture<Argument[]> f2 = methodNode.getOutputArguments();
+
+                        return f1.thenCombine(
+                            f2,
+                            (in, out) -> new UaMethod(client, this, methodNode, in, out)
+                        );
+                    })
+            );
+        });
     }
 
     public CompletableFuture<? extends UaNode> getComponent(QualifiedName browseName) {
