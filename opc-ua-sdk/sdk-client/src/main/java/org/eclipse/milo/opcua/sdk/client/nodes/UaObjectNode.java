@@ -134,28 +134,88 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    /**
+     * Call the method named {@code methodName} on this Object, if it exists, using {@code inputs}
+     * as the input argument values.
+     *
+     * @param methodName the name of the method to call.
+     * @param inputs     the input argument values.
+     * @return the method's output argument values if the call was successful.
+     * @throws UaException if an operation- or service-level error occurs or if a method named
+     *                     {@code methodName} could not be found.
+     */
     public Variant[] callMethod(String methodName, Variant[] inputs) throws UaException {
         return findMethod(methodName).call(inputs);
     }
 
+    /**
+     * Call the method named {@code methodName} on this Object, if it exists, using {@code inputs}
+     * as the input argument values.
+     *
+     * @param methodName the name of the method to call.
+     * @param inputs     the input argument values.
+     * @return the method's output argument values if the call was successful.
+     * @throws UaException if an operation- or service-level error occurs or if a method named
+     *                     {@code methodName} could not be found.
+     */
     public Variant[] callMethod(QualifiedName methodName, Variant[] inputs) throws UaException {
         return findMethod(methodName).call(inputs);
     }
 
+    /**
+     * Call the method named {@code methodName} on this Object, if it exists, using {@code inputs}
+     * as the input argument values.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param methodName the name of the method to call.
+     * @param inputs     the input argument values.
+     * @return a {@link CompletableFuture} that completes successfully with the method's output
+     * argument values if the call was successful, or completes exceptionally if an operation- or
+     * service-level error occurs or if a method named {@code methodName} could not be found.
+     */
     public CompletableFuture<Variant[]> callMethodAsync(String methodName, Variant[] inputs) {
         return findMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
     }
 
+    /**
+     * Call the method named {@code methodName} on this Object, if it exists, using {@code inputs}
+     * as the input argument values.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param methodName the name of the method to call.
+     * @param inputs     the input argument values.
+     * @return a {@link CompletableFuture} that completes successfully with the method's output
+     * argument values if the call was successful, or completes exceptionally if an operation- or
+     * service-level error occurs or if a method named {@code methodName} could not be found.
+     */
     public CompletableFuture<Variant[]> callMethodAsync(QualifiedName methodName, Variant[] inputs) {
         return findMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
     }
 
+    /**
+     * Find the method named {@code methodName} on this Object, if it exists.
+     *
+     * @param methodName the name of the method.
+     * @return a {@link UaMethod} for the method named {@code methodName}.
+     * @throws UaException if an operation- or service-level error occurs or a method named
+     *                     {@code methodName} could not be found.
+     */
     public UaMethod findMethod(String methodName) throws UaException {
         UShort namespaceIndex = getNodeId().getNamespaceIndex();
 
         return findMethod(new QualifiedName(namespaceIndex, methodName));
     }
 
+    /**
+     * Find the method named {@code methodName} on this Object, if it exists.
+     *
+     * @param methodName the name of the method.
+     * @return a {@link UaMethod} for the method named {@code methodName}.
+     * @throws UaException if an operation- or service-level error occurs or a method named
+     *                     {@code methodName} could not be found.
+     */
     public UaMethod findMethod(QualifiedName methodName) throws UaException {
         try {
             return findMethodAsync(methodName).get();
@@ -165,12 +225,32 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    /**
+     * Find the method named {@code methodName} on this Object, if it exists.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param methodName the name of the method.
+     * @return a {@link CompletableFuture} that completes successfully with a {@link UaMethod} or
+     * completes exceptionally if an operation- or service-level error occurs or if a method named
+     * {@code methodName} could not be found.
+     */
     public CompletableFuture<UaMethod> findMethodAsync(String methodName) {
         UShort namespaceIndex = getNodeId().getNamespaceIndex();
 
         return findMethodAsync(new QualifiedName(namespaceIndex, methodName));
     }
 
+    /**
+     * Find the method named {@code methodName} on this Object, if it exists.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param methodName the name of the method.
+     * @return a {@link CompletableFuture} that completes successfully with a {@link UaMethod} or
+     * completes exceptionally if an operation- or service-level error occurs or if a method named
+     * {@code methodName} could not be found.
+     */
     public CompletableFuture<UaMethod> findMethodAsync(QualifiedName methodName) {
         // TODO use browse instead of findMemberNodeId so the target can be constrained to method nodes
 

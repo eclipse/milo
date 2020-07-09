@@ -89,4 +89,13 @@ public class UaMethodTest extends AbstractClientServerTest {
         );
     }
 
+    @Test
+    public void findMethodNotFound() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
+
+        assertThrows(UaException.class, () -> serverNode.findMethod("foo"));
+    }
+
 }
