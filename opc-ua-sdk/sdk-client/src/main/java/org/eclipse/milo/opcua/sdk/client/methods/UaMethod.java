@@ -23,6 +23,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 
+/**
+ * A callable method belonging to an ObjectNode.
+ */
 public class UaMethod {
 
     private final OpcUaClient client;
@@ -46,14 +49,35 @@ public class UaMethod {
         this.outputArguments = outputArguments;
     }
 
+    /**
+     * Get the input arguments for this method.
+     * <p>
+     * The array will be empty if there are no inputs.
+     *
+     * @return the input arguments for this method.
+     */
     public Argument[] getInputArguments() {
         return inputArguments;
     }
 
+    /**
+     * Get the output arguments for this method.
+     * <p>
+     * The array will be empty if there are no outputs.
+     *
+     * @return the output arguments for this method.
+     */
     public Argument[] getOutputArguments() {
         return outputArguments;
     }
 
+    /**
+     * Call this method, passing the values in {@code inputs} for the input arguments.
+     *
+     * @param inputs an array of {@link Variant}s containing the input values.
+     * @return an array of {@link Variant}s containing the output values.
+     * @throws UaException if an operation- or service-level error occurs.
+     */
     public Variant[] call(Variant[] inputs) throws UaException {
         try {
             return callAsync(inputs).get();
@@ -63,6 +87,15 @@ public class UaMethod {
         }
     }
 
+    /**
+     * Call this method, passing the values in {@code inputs} for the input arguments.
+     * <p>
+     * This method completes asynchronously.
+     *
+     * @param inputs an array of {@link Variant}s containing the input values.
+     * @return a {@link CompletableFuture} that completes successfully with the output values or
+     * completes exceptionally if an operation- or service-level error occurs.
+     */
     public CompletableFuture<Variant[]> callAsync(Variant[] inputs) {
         CallMethodRequest request = new CallMethodRequest(
             objectNode.getNodeId(),
