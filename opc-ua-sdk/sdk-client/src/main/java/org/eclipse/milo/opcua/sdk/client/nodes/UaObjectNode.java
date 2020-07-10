@@ -195,7 +195,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     /**
-     * Find the method named {@code methodName} on this Object, if it exists.
+     * Get the method named {@code methodName} on this Object, if it exists.
      *
      * @param methodName the name of the method.
      * @return a {@link UaMethod} for the method named {@code methodName}.
@@ -209,7 +209,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     /**
-     * Find the method named {@code methodName} on this Object, if it exists.
+     * Get the method named {@code methodName} on this Object, if it exists.
      *
      * @param methodName the name of the method.
      * @return a {@link UaMethod} for the method named {@code methodName}.
@@ -226,7 +226,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     /**
-     * Find the method named {@code methodName} on this Object, if it exists.
+     * Get the method named {@code methodName} on this Object, if it exists.
      * <p>
      * This call completes asynchronously.
      *
@@ -242,7 +242,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     /**
-     * Find the method named {@code methodName} on this Object, if it exists.
+     * Get the method named {@code methodName} on this Object, if it exists.
      * <p>
      * This call completes asynchronously.
      *
