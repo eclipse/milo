@@ -36,7 +36,7 @@ public class UaMethodTest extends AbstractClientServerTest {
 
         UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
 
-        UaMethod getMonitoredItems = serverNode.findMethod("GetMonitoredItems");
+        UaMethod getMonitoredItems = serverNode.getMethod("GetMonitoredItems");
 
         assertNotNull(getMonitoredItems);
 
@@ -95,7 +95,7 @@ public class UaMethodTest extends AbstractClientServerTest {
 
         UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
 
-        assertThrows(UaException.class, () -> serverNode.findMethod("foo"));
+        assertThrows(UaException.class, () -> serverNode.getMethod("foo"));
     }
 
 }

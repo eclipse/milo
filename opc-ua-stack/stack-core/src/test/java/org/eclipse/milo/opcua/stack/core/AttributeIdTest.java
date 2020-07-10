@@ -21,7 +21,7 @@ import static org.testng.Assert.assertFalse;
 public class AttributeIdTest {
 
     @Test
-    public void testFrom() throws Exception {
+    public void testFrom() {
         for (AttributeId attributeId : AttributeId.values()) {
             int id = attributeId.id();
 

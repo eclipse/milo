@@ -909,6 +909,39 @@ public abstract class UaNode implements Node {
         }
     }
 
+    protected CompletableFuture<? extends UaNode> getComponentAsync(QualifiedName browseName, NodeClass nodeClass) {
+        UInteger nodeClassMask = uint(nodeClass.getValue());
+        UInteger resultMask = uint(BrowseResultMask.All.getValue());
+
+        CompletableFuture<BrowseResult> future = client.browse(
+            new BrowseDescription(
+                getNodeId(),
+                BrowseDirection.Forward,
+                Identifiers.HasComponent,
+                false,
+                nodeClassMask,
+                resultMask
+            )
+        );
+
+        return future.thenCompose(result -> {
+            List<ReferenceDescription> references = l(result.getReferences());
+
+            Optional<CompletableFuture<? extends UaNode>> node = references.stream()
+                .filter(r -> browseName.equals(r.getBrowseName()))
+                .flatMap(r -> {
+                    Optional<CompletableFuture<? extends UaNode>> opt = r.getNodeId()
+                        .local(client.getNamespaceTable())
+                        .map(id -> client.getAddressSpace().getNodeAsync(id));
+
+                    return opt2stream(opt);
+                })
+                .findFirst();
+
+            return node.orElse(failedUaFuture(StatusCodes.Bad_NotFound));
+        });
+    }
+
     protected CompletableFuture<PropertyTypeNode> getPropertyNodeAsync(QualifiedProperty<?> property) {
         return property.getQualifiedName(client.getNamespaceTable())
             .map(this::getPropertyNodeAsync)

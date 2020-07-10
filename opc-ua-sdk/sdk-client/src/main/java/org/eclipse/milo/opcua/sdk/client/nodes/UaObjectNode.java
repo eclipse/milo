@@ -145,7 +145,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      *                     {@code methodName} could not be found.
      */
     public Variant[] callMethod(String methodName, Variant[] inputs) throws UaException {
-        return findMethod(methodName).call(inputs);
+        return getMethod(methodName).call(inputs);
     }
 
     /**
@@ -159,7 +159,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      *                     {@code methodName} could not be found.
      */
     public Variant[] callMethod(QualifiedName methodName, Variant[] inputs) throws UaException {
-        return findMethod(methodName).call(inputs);
+        return getMethod(methodName).call(inputs);
     }
 
     /**
@@ -175,7 +175,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * service-level error occurs or if a method named {@code methodName} could not be found.
      */
     public CompletableFuture<Variant[]> callMethodAsync(String methodName, Variant[] inputs) {
-        return findMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
+        return getMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
     }
 
     /**
@@ -191,7 +191,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * service-level error occurs or if a method named {@code methodName} could not be found.
      */
     public CompletableFuture<Variant[]> callMethodAsync(QualifiedName methodName, Variant[] inputs) {
-        return findMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
+        return getMethodAsync(methodName).thenCompose(m -> m.callAsync(inputs));
     }
 
     /**
@@ -202,10 +202,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @throws UaException if an operation- or service-level error occurs or a method named
      *                     {@code methodName} could not be found.
      */
-    public UaMethod findMethod(String methodName) throws UaException {
+    public UaMethod getMethod(String methodName) throws UaException {
         UShort namespaceIndex = getNodeId().getNamespaceIndex();
 
-        return findMethod(new QualifiedName(namespaceIndex, methodName));
+        return getMethod(new QualifiedName(namespaceIndex, methodName));
     }
 
     /**
@@ -216,9 +216,9 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @throws UaException if an operation- or service-level error occurs or a method named
      *                     {@code methodName} could not be found.
      */
-    public UaMethod findMethod(QualifiedName methodName) throws UaException {
+    public UaMethod getMethod(QualifiedName methodName) throws UaException {
         try {
-            return findMethodAsync(methodName).get();
+            return getMethodAsync(methodName).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e)
                 .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
@@ -235,10 +235,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * completes exceptionally if an operation- or service-level error occurs or if a method named
      * {@code methodName} could not be found.
      */
-    public CompletableFuture<UaMethod> findMethodAsync(String methodName) {
+    public CompletableFuture<UaMethod> getMethodAsync(String methodName) {
         UShort namespaceIndex = getNodeId().getNamespaceIndex();
 
-        return findMethodAsync(new QualifiedName(namespaceIndex, methodName));
+        return getMethodAsync(new QualifiedName(namespaceIndex, methodName));
     }
 
     /**
@@ -251,7 +251,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * completes exceptionally if an operation- or service-level error occurs or if a method named
      * {@code methodName} could not be found.
      */
-    public CompletableFuture<UaMethod> findMethodAsync(QualifiedName methodName) {
+    public CompletableFuture<UaMethod> getMethodAsync(QualifiedName methodName) {
         // TODO use browse instead of findMemberNodeId so the target can be constrained to method nodes
 
         CompletableFuture<ExpandedNodeId> memberNodeId =
@@ -277,126 +277,106 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         });
     }
 
-    public CompletableFuture<? extends UaNode> getComponent(QualifiedName browseName) {
-        UInteger nodeClassMask = uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue());
-        UInteger resultMask = uint(BrowseResultMask.All.getValue());
-
-        CompletableFuture<BrowseResult> future = client.browse(
-            new BrowseDescription(
-                getNodeId(),
-                BrowseDirection.Forward,
-                Identifiers.HasComponent,
-                false,
-                nodeClassMask,
-                resultMask
-            )
-        );
-
-        return future.thenCompose(result -> {
-            List<ReferenceDescription> references = l(result.getReferences());
-
-            Optional<CompletableFuture<? extends UaNode>> node = references.stream()
-                .filter(r -> browseName.equals(r.getBrowseName()))
-                .flatMap(r -> {
-                    Optional<CompletableFuture<? extends UaNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
-                        .map(id -> client.getAddressSpace().getNodeAsync(id));
-
-                    return opt2stream(opt);
-                })
-                .findFirst();
-
-            return node.orElse(failedUaFuture(StatusCodes.Bad_NotFound));
-        });
+    public UaObjectNode getObjectComponent(String name) throws UaException {
+        try {
+            return getObjectComponentAsync(name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<? extends ObjectNode> getObjectComponent(String namespaceUri, String name) {
+    public UaObjectNode getObjectComponent(String namespaceUri, String name) throws UaException {
+        try {
+            return getObjectComponentAsync(namespaceUri, name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public UaObjectNode getObjectComponent(QualifiedName browseName) throws UaException {
+        try {
+            return getObjectComponentAsync(browseName).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends UaObjectNode> getObjectComponentAsync(String name) {
+        return getObjectComponentAsync(new QualifiedName(getNodeId().getNamespaceIndex(), name));
+    }
+
+    public CompletableFuture<? extends UaObjectNode> getObjectComponentAsync(String namespaceUri, String name) {
         UShort namespaceIndex = client.getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
-            return getObjectComponent(new QualifiedName(namespaceIndex, name));
+            return getObjectComponentAsync(new QualifiedName(namespaceIndex, name));
         } else {
             return failedUaFuture(StatusCodes.Bad_NotFound);
         }
     }
 
-    public CompletableFuture<? extends UaObjectNode> getObjectComponent(QualifiedName browseName) {
-        UInteger nodeClassMask = uint(NodeClass.Object.getValue());
-        UInteger resultMask = uint(BrowseResultMask.All.getValue());
-
-        CompletableFuture<BrowseResult> future = client.browse(
-            new BrowseDescription(
-                getNodeId(),
-                BrowseDirection.Forward,
-                Identifiers.HasComponent,
-                false,
-                nodeClassMask,
-                resultMask
-            )
-        );
-
-        return future.thenCompose(result -> {
-            List<ReferenceDescription> references = l(result.getReferences());
-
-            Optional<CompletableFuture<UaObjectNode>> node = references.stream()
-                .filter(r -> browseName.equals(r.getBrowseName()))
-                .flatMap(r -> {
-                    Optional<CompletableFuture<UaObjectNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
-                        .map(id -> client.getAddressSpace().getObjectNodeAsync(id));
-
-                    return opt2stream(opt);
-                })
-                .findFirst();
-
-            return node.orElse(failedUaFuture(StatusCodes.Bad_NotFound));
-        });
+    public CompletableFuture<? extends UaObjectNode> getObjectComponentAsync(QualifiedName browseName) {
+        return getComponentAsync(browseName, NodeClass.Object).thenApply(UaObjectNode.class::cast);
     }
 
-    public CompletableFuture<? extends UaVariableNode> getVariableComponent(String namespaceUri, String name) {
+    public UaVariableNode getVariableComponent(String name) throws UaException {
+        try {
+            return getVariableComponentAsync(name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public UaVariableNode getVariableComponent(String namespaceUri, String name) throws UaException {
+        try {
+            return getVariableComponentAsync(namespaceUri, name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public UaVariableNode getVariableComponent(QualifiedName browseName) throws UaException {
+        try {
+            return getVariableComponentAsync(browseName).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends UaVariableNode> getVariableComponentAsync(String name) {
+        return getVariableComponentAsync(new QualifiedName(getNodeId().getNamespaceIndex(), name));
+    }
+
+    public CompletableFuture<? extends UaVariableNode> getVariableComponentAsync(String namespaceUri, String name) {
         UShort namespaceIndex = client.getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
-            return getVariableComponent(new QualifiedName(namespaceIndex, name));
+            return getVariableComponentAsync(new QualifiedName(namespaceIndex, name));
         } else {
             return failedUaFuture(StatusCodes.Bad_NotFound);
         }
     }
 
-    public CompletableFuture<? extends UaVariableNode> getVariableComponent(QualifiedName browseName) {
-        UInteger nodeClassMask = uint(NodeClass.Variable.getValue());
-        UInteger resultMask = uint(BrowseResultMask.All.getValue());
-
-        CompletableFuture<BrowseResult> future = client.browse(
-            new BrowseDescription(
-                getNodeId(),
-                BrowseDirection.Forward,
-                Identifiers.HasComponent,
-                false,
-                nodeClassMask,
-                resultMask
-            )
-        );
-
-        return future.thenCompose(result -> {
-            List<ReferenceDescription> references = l(result.getReferences());
-
-            Optional<CompletableFuture<UaVariableNode>> node = references.stream()
-                .filter(r -> browseName.equals(r.getBrowseName()))
-                .flatMap(r -> {
-                    Optional<CompletableFuture<UaVariableNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
-                        .map(id -> client.getAddressSpace().getVariableNodeAsync(id));
-
-                    return opt2stream(opt);
-                })
-                .findFirst();
-
-            return node.orElse(failedUaFuture(StatusCodes.Bad_NotFound));
-        });
+    public CompletableFuture<? extends UaVariableNode> getVariableComponentAsync(QualifiedName browseName) {
+        return getComponentAsync(browseName, NodeClass.Variable).thenApply(UaVariableNode.class::cast);
     }
 
-    public CompletableFuture<? extends UaObjectTypeNode> getTypeDefinition() {
+    public UaObjectTypeNode getTypeDefinition() throws UaException {
+        try {
+            return getTypeDefinitionAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends UaObjectTypeNode> getTypeDefinitionAsync() {
         UInteger nodeClassMask = uint(NodeClass.ObjectType.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
 
