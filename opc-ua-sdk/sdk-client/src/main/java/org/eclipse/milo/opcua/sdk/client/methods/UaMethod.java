@@ -50,6 +50,24 @@ public class UaMethod {
     }
 
     /**
+     * Get the {@link UaObjectNode} this method belongs to.
+     *
+     * @return the {@link UaObjectNode} this method belongs to.
+     */
+    public UaObjectNode getObjectNode() {
+        return objectNode;
+    }
+
+    /**
+     * Get the {@link UaMethodNode} for this method.
+     *
+     * @return the {@link UaMethodNode} for this method.
+     */
+    public UaMethodNode getMethodNode() {
+        return methodNode;
+    }
+
+    /**
      * Get the input arguments for this method.
      * <p>
      * The array will be empty if there are no inputs.
