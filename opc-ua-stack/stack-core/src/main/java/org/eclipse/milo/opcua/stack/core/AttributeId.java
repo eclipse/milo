@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
-import java.util.EnumSet;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableSet;
@@ -45,57 +44,57 @@ public enum AttributeId {
     UserExecutable(22);
 
     public static final ImmutableSet<AttributeId> BASE_ATTRIBUTES = ImmutableSet.copyOf(
-        EnumSet.of(
+        ImmutableSet.of(
             NodeId, NodeClass, BrowseName, DisplayName, Description, WriteMask, UserWriteMask)
     );
 
     public static final ImmutableSet<AttributeId> DATA_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(IsAbstract))
+            ImmutableSet.of(IsAbstract))
     );
 
     public static final ImmutableSet<AttributeId> METHOD_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(Executable, UserExecutable))
+            ImmutableSet.of(Executable, UserExecutable))
     );
 
     public static final ImmutableSet<AttributeId> OBJECT_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(EventNotifier))
+            ImmutableSet.of(EventNotifier))
     );
 
     public static final ImmutableSet<AttributeId> OBJECT_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(IsAbstract))
+            ImmutableSet.of(IsAbstract))
     );
 
     public static final ImmutableSet<AttributeId> REFERENCE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(IsAbstract, Symmetric, InverseName))
+            ImmutableSet.of(IsAbstract, Symmetric, InverseName))
     );
 
     public static final ImmutableSet<AttributeId> VARIABLE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(Value, DataType, ValueRank, ArrayDimensions,
+            ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions,
                 AccessLevel, UserAccessLevel, MinimumSamplingInterval, Historizing))
     );
 
     public static final ImmutableSet<AttributeId> VARIABLE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(Value, DataType, ValueRank, ArrayDimensions, IsAbstract))
+            ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions, IsAbstract))
     );
 
     public static final ImmutableSet<AttributeId> VIEW_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            EnumSet.of(ContainsNoLoops, EventNotifier))
+            ImmutableSet.of(ContainsNoLoops, EventNotifier))
     );
 
     private final int id;

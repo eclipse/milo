@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -28,6 +31,25 @@ public class AttributeIdTest {
         assertFalse(AttributeId.from(-1).isPresent());
         assertFalse(AttributeId.from(0).isPresent());
         assertFalse(AttributeId.from(23).isPresent());
+    }
+
+    @Test
+    public void testOrdering() {
+        List<AttributeId> attributes = Lists.newArrayList(AttributeId.VARIABLE_TYPE_ATTRIBUTES);
+
+        assertEquals(AttributeId.NodeId, attributes.get(0));
+        assertEquals(AttributeId.NodeClass, attributes.get(1));
+        assertEquals(AttributeId.BrowseName, attributes.get(2));
+        assertEquals(AttributeId.DisplayName, attributes.get(3));
+        assertEquals(AttributeId.Description, attributes.get(4));
+        assertEquals(AttributeId.WriteMask, attributes.get(5));
+        assertEquals(AttributeId.UserWriteMask, attributes.get(6));
+
+        assertEquals(AttributeId.Value, attributes.get(7));
+        assertEquals(AttributeId.DataType, attributes.get(8));
+        assertEquals(AttributeId.ValueRank, attributes.get(9));
+        assertEquals(AttributeId.ArrayDimensions, attributes.get(10));
+        assertEquals(AttributeId.IsAbstract, attributes.get(11));
     }
 
 }
