@@ -631,6 +631,15 @@ public class UaVariableNode extends UaNode implements VariableNode {
         }
     }
 
+    /**
+     * Get the {@link UaVariableNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param name the browse name of the {@link UaVariableNode} component.
+     * @return the {@link UaVariableNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaVariableNode getVariableComponent(String name) throws UaException {
         try {
             return getVariableComponentAsync(name).get();
@@ -640,6 +649,16 @@ public class UaVariableNode extends UaNode implements VariableNode {
         }
     }
 
+    /**
+     * Get the {@link UaVariableNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param namespaceUri the namespace URI the browse name belongs to.
+     * @param name         the browse name of the {@link UaVariableNode} component.
+     * @return the {@link UaVariableNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaVariableNode getVariableComponent(String namespaceUri, String name) throws UaException {
         try {
             return getVariableComponentAsync(namespaceUri, name).get();
@@ -649,6 +668,15 @@ public class UaVariableNode extends UaNode implements VariableNode {
         }
     }
 
+    /**
+     * Get the {@link UaVariableNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param browseName the browse name of the {@link UaVariableNode} component.
+     * @return the {@link UaVariableNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaVariableNode getVariableComponent(QualifiedName browseName) throws UaException {
         try {
             return getVariableComponentAsync(browseName).get();

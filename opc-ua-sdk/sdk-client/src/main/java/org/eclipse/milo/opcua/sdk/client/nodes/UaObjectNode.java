@@ -277,6 +277,15 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         });
     }
 
+    /**
+     * Get the {@link UaObjectNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param name the browse name of the {@link UaObjectNode} component.
+     * @return the {@link UaObjectNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaObjectNode getObjectComponent(String name) throws UaException {
         try {
             return getObjectComponentAsync(name).get();
@@ -286,6 +295,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    /**
+     * Get the {@link UaObjectNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param namespaceUri the namespace URI the browse name belongs to.
+     * @param name         the browse name of the {@link UaObjectNode} component.
+     * @return the {@link UaObjectNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaObjectNode getObjectComponent(String namespaceUri, String name) throws UaException {
         try {
             return getObjectComponentAsync(namespaceUri, name).get();
@@ -295,6 +314,15 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    /**
+     * Get the {@link UaObjectNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param browseName the browse name of the {@link UaObjectNode} component.
+     * @return the {@link UaObjectNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaObjectNode getObjectComponent(QualifiedName browseName) throws UaException {
         try {
             return getObjectComponentAsync(browseName).get();
@@ -322,6 +350,15 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         return getComponentAsync(browseName, NodeClass.Object).thenApply(UaObjectNode.class::cast);
     }
 
+    /**
+     * Get the {@link UaVariableNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param name the browse name of the {@link UaVariableNode} component.
+     * @return the {@link UaVariableNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaVariableNode getVariableComponent(String name) throws UaException {
         try {
             return getVariableComponentAsync(name).get();
@@ -331,6 +368,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    /**
+     * Get the {@link UaVariableNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param namespaceUri the namespace URI the browse name belongs to.
+     * @param name         the browse name of the {@link UaVariableNode} component.
+     * @return the {@link UaVariableNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaVariableNode getVariableComponent(String namespaceUri, String name) throws UaException {
         try {
             return getVariableComponentAsync(namespaceUri, name).get();
@@ -340,6 +387,15 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    /**
+     * Get the {@link UaVariableNode} referenced by a HasComponent reference type with a browse name
+     * of {@code name}, if it exists.
+     *
+     * @param browseName the browse name of the {@link UaVariableNode} component.
+     * @return the {@link UaVariableNode} component, if it exists.
+     * @throws UaException if the node could not be found or an operation- or service-level error
+     *                     occurs.
+     */
     public UaVariableNode getVariableComponent(QualifiedName browseName) throws UaException {
         try {
             return getVariableComponentAsync(browseName).get();
