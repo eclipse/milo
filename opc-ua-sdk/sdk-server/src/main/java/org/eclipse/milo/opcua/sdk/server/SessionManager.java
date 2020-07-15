@@ -594,23 +594,49 @@ public class SessionManager implements
 
         if (securityConfiguration.getSecurityPolicy() != SecurityPolicy.None) {
             SignatureData clientSignature = request.getClientSignature();
-
-            byte[] dataBytes = Bytes.concat(
-                securityConfiguration.getServerCertificateBytes().bytesOrEmpty(),
-                session.getLastNonce().bytesOrEmpty()
-            );
-
-            byte[] signatureBytes = clientSignature.getSignature().bytesOrEmpty();
+            ByteString serverCertificateBs = securityConfiguration.getServerCertificateBytes();
+            ByteString lastNonceBs = session.getLastNonce();
 
             try {
-                SignatureUtil.verify(
-                    SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
-                    securityConfiguration.getClientCertificate(),
-                    dataBytes,
-                    signatureBytes
+                byte[] dataBytes = Bytes.concat(
+                    serverCertificateBs.bytesOrEmpty(),
+                    lastNonceBs.bytesOrEmpty()
                 );
+
+                try {
+                    SignatureUtil.verify(
+                        SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
+                        securityConfiguration.getClientCertificate(),
+                        dataBytes,
+                        clientSignature.getSignature().bytesOrEmpty()
+                    );
+                } catch (UaException e) {
+                    throw new UaException(StatusCodes.Bad_ApplicationSignatureInvalid, e);
+                }
             } catch (UaException e) {
-                throw new UaException(StatusCodes.Bad_ApplicationSignatureInvalid, e);
+                // Maybe try again using the full certificate chain bytes instead
+                
+                ByteString serverCertificateChainBs = securityConfiguration.getServerCertificateChainBytes();
+
+                if (serverCertificateBs.equals(serverCertificateChainBs)) {
+                    throw e;
+                } else {
+                    byte[] dataBytes = Bytes.concat(
+                        serverCertificateChainBs.bytesOrEmpty(),
+                        lastNonceBs.bytesOrEmpty()
+                    );
+
+                    try {
+                        SignatureUtil.verify(
+                            SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
+                            securityConfiguration.getClientCertificate(),
+                            dataBytes,
+                            clientSignature.getSignature().bytesOrEmpty()
+                        );
+                    } catch (UaException ex) {
+                        throw new UaException(StatusCodes.Bad_ApplicationSignatureInvalid, e);
+                    }
+                }
             }
         }
     }

@@ -1092,11 +1092,13 @@ public class SessionFsmFactory {
         } else {
             SecurityAlgorithm signatureAlgorithm = securityPolicy.getAsymmetricSignatureAlgorithm();
             PrivateKey privateKey = config.getKeyPair().map(KeyPair::getPrivate).orElse(null);
-            ByteString serverCertificate = endpoint.getServerCertificate();
+            List<X509Certificate> serverCertificates = CertificateUtil.decodeCertificates(
+                endpoint.getServerCertificate().bytesOrEmpty()
+            );
 
             // Signature data is serverCert + serverNonce signed with our private key.
             byte[] serverNonceBytes = serverNonce.bytesOrEmpty();
-            byte[] serverCertificateBytes = serverCertificate.bytesOrEmpty();
+            byte[] serverCertificateBytes = serverCertificates.get(0).getEncoded();
             byte[] dataToSign = Bytes.concat(serverCertificateBytes, serverNonceBytes);
 
             byte[] signature = SignatureUtil.sign(
