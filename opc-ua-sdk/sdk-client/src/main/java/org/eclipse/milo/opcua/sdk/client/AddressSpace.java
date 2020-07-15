@@ -476,6 +476,8 @@ public class AddressSpace {
         if (xni.isLocal()) {
             Optional<NodeId> local = xni.local(client.getNamespaceTable());
 
+            // TODO replace with client.readNamespaceTable() after merge from master
+
             return local.map(CompletableFuture::completedFuture).orElse(
                 getObjectNodeAsync(Identifiers.Server).thenCompose(node -> {
                     ServerTypeNode serverNode = (ServerTypeNode) node;
