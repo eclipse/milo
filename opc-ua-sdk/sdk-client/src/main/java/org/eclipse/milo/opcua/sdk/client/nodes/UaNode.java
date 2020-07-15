@@ -853,7 +853,7 @@ public abstract class UaNode implements Node {
             return findMemberNodeId(qualifiedName, referenceTypeId, includeSubtypes).thenCompose(nodeXni -> {
                 AddressSpace addressSpace = client.getAddressSpace();
 
-                return addressSpace.localizeAsync(nodeXni)
+                return addressSpace.toNodeIdAsync(nodeXni)
                     .thenCompose(addressSpace::getNodeAsync)
                     .thenApply(UaNode.class::cast);
             });

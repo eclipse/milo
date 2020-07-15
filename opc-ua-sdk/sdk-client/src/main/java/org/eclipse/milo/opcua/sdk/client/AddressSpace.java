@@ -395,8 +395,8 @@ public class AddressSpace {
                         case Object:
                         case Variable: {
                             CompletableFuture<CompletableFuture<? extends UaNode>> ff =
-                                localizeAsync(xNodeId).thenCombine(
-                                    localizeAsync(xTypeDefinitionId),
+                                toNodeIdAsync(xNodeId).thenCombine(
+                                    toNodeIdAsync(xTypeDefinitionId),
                                     (targetNodeId, typeDefinitionId) -> {
                                         if (nodeClass == NodeClass.Object) {
                                             return getObjectNodeAsync(targetNodeId, typeDefinitionId);
@@ -410,7 +410,7 @@ public class AddressSpace {
                         }
                         default: {
                             // TODO specialized getNode for other NodeClasses?
-                            return localizeAsync(xNodeId).thenCompose(this::getNodeAsync);
+                            return toNodeIdAsync(xNodeId).thenCompose(this::getNodeAsync);
                         }
                     }
                 })
@@ -449,35 +449,46 @@ public class AddressSpace {
         return future.thenCompose(node -> node);
     }
 
-    public NodeId localize(ExpandedNodeId nodeId) throws UaException {
+    /**
+     * Convert {@code xni} to a {@link NodeId} in the server, reading the namespace table from the
+     * server if necessary.
+     * <p>
+     * Returns {@link NodeId#NULL_VALUE} if the conversion could not be completed for any reason.
+     *
+     * @param xni the {@link ExpandedNodeId} to convert to a {@link NodeId}.
+     * @return a {@link NodeId} local to the server, or {@link NodeId#NULL_VALUE} if conversion
+     * could not be completed for any reason.
+     */
+    public NodeId toNodeId(ExpandedNodeId xni) {
         try {
-            return localizeAsync(nodeId).get();
+            return toNodeIdAsync(xni).get();
         } catch (ExecutionException | InterruptedException e) {
-            throw UaException.extract(e)
-                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+            return NodeId.NULL_VALUE;
         }
     }
 
     /**
-     * Convert {@code xni} to a {@link NodeId} local to the server, reading the namespace table
-     * from the server if necessary.
+     * Convert {@code xni} to a {@link NodeId} in the server, reading the namespace table from the
+     * server if necessary.
      * <p>
      * Returns {@link NodeId#NULL_VALUE} if the conversion could not be completed for any reason.
      *
-     * @param xni the {@link ExpandedNodeId} to convert to a local {@link NodeId}.
+     * @param xni the {@link ExpandedNodeId} to convert to a {@link NodeId}.
      * @return a {@link NodeId} local to the server, or {@link NodeId#NULL_VALUE} if conversion
      * could not be completed for any reason.
      */
-    public CompletableFuture<NodeId> localizeAsync(ExpandedNodeId xni) {
+    public CompletableFuture<NodeId> toNodeIdAsync(ExpandedNodeId xni) {
         // TODO should this fail with Bad_NodeIdUnknown instead of returning NodeId.NULL_VALUE?
         if (xni.isLocal()) {
-            Optional<NodeId> local = xni.local(client.getNamespaceTable());
+            Optional<NodeId> local = xni.toNodeId(client.getNamespaceTable());
 
             return local.map(CompletableFuture::completedFuture).orElse(
-                client.readNamespaceTableAsync().thenCompose(
-                    namespaceTable ->
-                        completedFuture(xni.local(namespaceTable).orElse(NodeId.NULL_VALUE))
-                )
+                client.readNamespaceTableAsync()
+                    .thenCompose(
+                        namespaceTable ->
+                            completedFuture(xni.toNodeId(namespaceTable).orElse(NodeId.NULL_VALUE))
+                    )
+                    .exceptionally(e -> NodeId.NULL_VALUE)
             );
         } else {
             return completedFuture(NodeId.NULL_VALUE);
@@ -539,7 +550,7 @@ public class AddressSpace {
                     .map(ReferenceDescription::getNodeId)
                     .findFirst();
 
-                return typeDefinitionId.map(this::localizeAsync)
+                return typeDefinitionId.map(this::toNodeIdAsync)
                     .orElse(completedFuture(NodeId.NULL_VALUE));
             } else {
                 return completedFuture(NodeId.NULL_VALUE);

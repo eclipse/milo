@@ -260,7 +260,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         return memberNodeId.thenCompose(xni -> {
             AddressSpace addressSpace = client.getAddressSpace();
 
-            return addressSpace.localizeAsync(xni).thenCompose(
+            return addressSpace.toNodeIdAsync(xni).thenCompose(
                 nodeId ->
                     addressSpace.getNodeAsync(nodeId).thenCompose(node -> {
                         UaMethodNode methodNode = (UaMethodNode) node;
