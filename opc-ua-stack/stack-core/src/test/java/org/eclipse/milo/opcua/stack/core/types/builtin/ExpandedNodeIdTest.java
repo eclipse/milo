@@ -20,6 +20,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 public class ExpandedNodeIdTest {
@@ -125,6 +127,42 @@ public class ExpandedNodeIdTest {
 
         String withServerIndex = new ExpandedNodeId(ushort(0), "urn:test", uint(0), uint(1)).toParseableString();
         assertEquals(withServerIndex, "svr=1;nsu=urn:test;i=0");
+    }
+
+    @Test
+    public void absolute() {
+        ExpandedNodeId xni = new ExpandedNodeId(ushort(0), null, "foo");
+        assertTrue(xni.isRelative());
+
+        ExpandedNodeId absolute = xni.absolute(new NamespaceTable()).orElseThrow(RuntimeException::new);
+        assertTrue(absolute.isAbsolute());
+        assertEquals(Namespaces.OPC_UA, absolute.getNamespaceUri());
+    }
+
+    @Test
+    public void relative() {
+        ExpandedNodeId xni = new ExpandedNodeId(ushort(99), Namespaces.OPC_UA, "foo");
+        assertTrue(xni.isAbsolute());
+
+        ExpandedNodeId relative = xni.relative(new NamespaceTable()).orElseThrow(RuntimeException::new);
+        assertTrue(relative.isRelative());
+        assertNull(relative.getNamespaceUri());
+        assertEquals(ushort(0), relative.getNamespaceIndex());
+    }
+
+    @Test
+    public void parseImplicitNamespaceZero() {
+        ExpandedNodeId xni = ExpandedNodeId.parse("i=2256");
+
+        assertNotNull(xni);
+        assertEquals(xni.getNamespaceIndex(), ushort(0));
+    }
+
+    @Test
+    public void toParseableExplicitNamespaceZero() {
+        ExpandedNodeId xni = new ExpandedNodeId(ushort(0), null, "test");
+
+        assertEquals("ns=0;s=test", xni.toParseableString());
     }
 
 }

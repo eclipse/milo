@@ -10,12 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
@@ -35,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -48,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
@@ -155,6 +159,36 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
+     * Select the first endpoint with no security that allows anonymous connections and create an
+     * {@link OpcUaClient} with the default configuration.
+     * <p>
+     * If the server is not configured with an endpoint with no security or authentication you
+     * must use {@link #create(String, Function, Function)} to select an endpoint and configure
+     * any certificates or identity provider that the selected endpoint would require.
+     *
+     * @param endpointUrl the endpoint URL of the server to connect to and get endpoints from.
+     * @return an {@link OpcUaClient} configured to connect to the server identified by
+     * {@code endpointUrl}.
+     * @throws UaException if the endpoints could not be retrieved or the client could not be
+     *                     created.
+     */
+    public static OpcUaClient create(String endpointUrl) throws UaException {
+        // select the first EndpointDescription with no security and anonymous authentication
+        Predicate<EndpointDescription> predicate = e ->
+            SecurityPolicy.None.getUri().equals(e.getSecurityPolicyUri()) &&
+                Arrays.stream(e.getUserIdentityTokens())
+                    .anyMatch(p -> p.getTokenType() == UserTokenType.Anonymous);
+
+        return create(
+            endpointUrl,
+            endpoints -> endpoints.stream()
+                .filter(predicate)
+                .findFirst(),
+            OpcUaClientConfigBuilder::build
+        );
+    }
+
+    /**
      * Create and configure an {@link OpcUaClient} by selecting an {@link EndpointDescription} from a list of endpoints
      * retrieved via the GetEndpoints service from the server at {@code endpointUrl} and building an
      * {@link OpcUaClientConfig} using that endpoint.
@@ -244,28 +278,11 @@ public class OpcUaClient implements UaClient {
                 }
             );
 
-            CompletableFuture<String[]> namespaceArray = client.sendRequest(readRequest)
+            return client.sendRequest(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
-                .thenApply(results -> (String[]) results[0].getValue().getValue());
-
-            return namespaceArray
-                .thenAccept(uris -> getNamespaceTable().update(uriTable -> {
-                    uriTable.clear();
-
-                    if (uris.length > UShort.MAX_VALUE) {
-                        logger.warn("SessionInitializer: NamespaceTable returned by " +
-                            "server contains " + uris.length + " entries");
-                    }
-
-                    for (int i = 0; i < uris.length && i < UShort.MAX_VALUE; i++) {
-                        String uri = uris[i];
-
-                        if (uri != null && !uriTable.containsValue(uri)) {
-                            uriTable.put(ushort(i), uri);
-                        }
-                    }
-                }))
+                .thenApply(results -> (String[]) results[0].getValue().getValue())
+                .thenAccept(this::updateNamespaceTable)
                 .thenApply(v -> Unit.VALUE)
                 .exceptionally(ex -> {
                     logger.warn("SessionInitializer: NamespaceTable", ex);
@@ -316,8 +333,84 @@ public class OpcUaClient implements UaClient {
         return variableTypeManager;
     }
 
+    /**
+     * Get the local copy of the server's NamespaceTable.
+     *
+     * @return the current local value for server's NamespaceTable.
+     */
     public NamespaceTable getNamespaceTable() {
         return stackClient.getNamespaceTable();
+    }
+
+    /**
+     * Read the server's NamespaceTable and update the local copy.
+     *
+     * @return the updated {@link NamespaceTable}.
+     * @throws UaException if an operation- or service-level error occurs.
+     */
+    public NamespaceTable readNamespaceTable() throws UaException {
+        try {
+            return readNamespaceTableAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Read the server's NamespaceTable and update the local copy.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with the updated
+     * {@link NamespaceTable} or completes exceptionally if a service- or operation-level error
+     * occurs.
+     */
+    public CompletableFuture<NamespaceTable> readNamespaceTableAsync() {
+        return getSession().thenCompose(session -> {
+            RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
+
+            ReadRequest readRequest = new ReadRequest(
+                requestHeader,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        Identifiers.Server_NamespaceArray,
+                        AttributeId.Value.uid(),
+                        null,
+                        QualifiedName.NULL_VALUE)
+                }
+            );
+
+            CompletableFuture<String[]> namespaceArray = sendRequest(readRequest)
+                .thenApply(ReadResponse.class::cast)
+                .thenApply(response -> Objects.requireNonNull(response.getResults()))
+                .thenApply(results -> (String[]) results[0].getValue().getValue());
+
+            return namespaceArray
+                .thenAccept(this::updateNamespaceTable)
+                .thenApply(v -> getNamespaceTable());
+        });
+    }
+
+    private void updateNamespaceTable(String[] namespaceArray) {
+        getNamespaceTable().update(uriTable -> {
+            uriTable.clear();
+
+            if (namespaceArray.length > UShort.MAX_VALUE) {
+                logger.warn("NamespaceTable returned by " +
+                    "server contains " + namespaceArray.length + " entries");
+            }
+
+            for (int i = 0; i < namespaceArray.length && i < UShort.MAX_VALUE; i++) {
+                String uri = namespaceArray[i];
+
+                if (uri != null && !uriTable.containsValue(uri)) {
+                    uriTable.put(ushort(i), uri);
+                }
+            }
+        });
     }
 
     public SerializationContext getSerializationContext() {

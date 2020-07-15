@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Bytes;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
@@ -376,6 +377,23 @@ public class CertificateUtil {
         } catch (CertificateEncodingException e) {
             throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
         }
+    }
+
+    public static ByteString getCertificateChainBytes(List<X509Certificate> certificateChain) throws UaException {
+        List<byte[]> certificates = new ArrayList<>(certificateChain.size());
+
+        for (X509Certificate certificate : certificateChain) {
+            try {
+                certificates.add(certificate.getEncoded());
+            } catch (CertificateEncodingException e) {
+                throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+            }
+        }
+
+        byte[] encoded = certificates.stream()
+            .reduce(new byte[0], Bytes::concat);
+
+        return ByteString.of(encoded);
     }
 
 }

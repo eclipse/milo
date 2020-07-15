@@ -40,7 +40,7 @@ public class ManagedSubscriptionDataExample implements ClientExample {
             for (int i = 0; i < items.size(); i++) {
                 logger.info(
                     "subscription value received: item={}, value={}",
-                    items.get(0).getNodeId(), values.get(0).getValue()
+                    items.get(i).getNodeId(), values.get(i).getValue()
                 );
             }
         });
