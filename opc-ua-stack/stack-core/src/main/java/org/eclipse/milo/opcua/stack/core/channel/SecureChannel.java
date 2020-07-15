@@ -16,10 +16,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecretKeys;
@@ -29,6 +27,8 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
+
+import static org.eclipse.milo.opcua.stack.core.util.CertificateUtil.getCertificateChainBytes;
 
 public interface SecureChannel {
 
@@ -298,23 +298,6 @@ public interface SecureChannel {
             default:
                 return 1;
         }
-    }
-
-    static ByteString getCertificateChainBytes(List<X509Certificate> certificateChain) throws UaException {
-        List<byte[]> certificates = new ArrayList<>(certificateChain.size());
-
-        for (X509Certificate certificate : certificateChain) {
-            try {
-                certificates.add(certificate.getEncoded());
-            } catch (CertificateEncodingException e) {
-                throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
-            }
-        }
-
-        byte[] encoded = certificates.stream()
-            .reduce(new byte[0], Bytes::concat);
-
-        return ByteString.of(encoded);
     }
 
 }

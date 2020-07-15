@@ -252,6 +252,70 @@ public final class ExpandedNodeId {
     }
 
     /**
+     * Convert this {@link ExpandedNodeId} to an absolute ExpandedNodeId if not already.
+     * <p>
+     * An absolute ExpandedNodeId is one that defines the namespace URI rather than namespace index.
+     * <p>
+     * Returns {@link Optional#empty()} if the URI is not found in the namespace table.
+     *
+     * @param namespaceTable the {@link NamespaceTable} to use when converting the index to URI.
+     * @return an absolute ExpandedNodeId, or this ExpandedNodeId if it's already absolute.
+     * @see #isAbsolute()
+     */
+    public Optional<ExpandedNodeId> absolute(NamespaceTable namespaceTable) {
+        if (isAbsolute()) {
+            return Optional.of(this);
+        } else {
+            String namespaceUri = namespaceTable.getUri(namespaceIndex);
+
+            if (namespaceUri != null) {
+                ExpandedNodeId xni = new ExpandedNodeId(
+                    UShort.MIN,
+                    namespaceUri,
+                    identifier,
+                    serverIndex
+                );
+
+                return Optional.of(xni);
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    /**
+     * Convert this {@link ExpandedNodeId} to a relative ExpandedNodeId if not already.
+     * <p>
+     * A relative ExpandedNodeId is one that defines the namespace index rather than namespace URI.
+     * <p>
+     * Returns {@link Optional#empty()} if the URI is not found in the namespace table.
+     *
+     * @param namespaceTable the {@link NamespaceTable} to use when converting the URI to index.
+     * @return a relative ExpandedNodeId, or this ExpandedNodeId if it's already relative.
+     * @see #isRelative()
+     */
+    public Optional<ExpandedNodeId> relative(NamespaceTable namespaceTable) {
+        if (isRelative()) {
+            return Optional.of(this);
+        } else {
+            UShort namespaceIndex = namespaceTable.getIndex(namespaceUri);
+
+            if (namespaceIndex != null) {
+                ExpandedNodeId xni = new ExpandedNodeId(
+                    namespaceIndex,
+                    null,
+                    identifier,
+                    serverIndex
+                );
+
+                return Optional.of(xni);
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    /**
      * If this {@link ExpandedNodeId} resides on the local server ({@code serverIndex == 0}), return its representation
      * as a local {@link NodeId}.
      * <p>
@@ -371,9 +435,7 @@ public final class ExpandedNodeId {
             sb.append("nsu=").append(namespaceUri).append(";");
         } else {
             int namespaceIndex = getNamespaceIndex().intValue();
-            if (namespaceIndex > 0) {
-                sb.append("ns=").append(getNamespaceIndex().intValue()).append(";");
-            }
+            sb.append("ns=").append(namespaceIndex).append(";");
         }
 
         switch (getType()) {
@@ -399,6 +461,13 @@ public final class ExpandedNodeId {
         return sb.toString();
     }
 
+    /**
+     * Parse {@code s} into an {@link ExpandedNodeId}.
+     *
+     * @param s the String to parse.
+     * @return an {@link ExpandedNodeId}.
+     * @throws UaRuntimeException if parsing fails.
+     */
     public static ExpandedNodeId parse(String s) {
         try {
             String[] parts = s.split(";");
@@ -425,6 +494,32 @@ public final class ExpandedNodeId {
         } catch (Throwable t) {
             throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, t);
         }
+    }
+
+    /**
+     * Parse {@code s} into an {@link ExpandedNodeId}, or return {@code null} if parsing fails.
+     *
+     * @param s the String to parse.
+     * @return an {@link ExpandedNodeId} or {@code null} if parsing fails.
+     */
+    @Nullable
+    public static ExpandedNodeId parseOrNull(@Nonnull String s) {
+        try {
+            return ExpandedNodeId.parse(s);
+        } catch (UaRuntimeException t) {
+            return null;
+        }
+    }
+
+    /**
+     * Parse {@code s} into an Optional containing an {@link ExpandedNodeId}, or return
+     * {@link Optional#empty()}} if parsing fails.
+     *
+     * @param s the String to parse.
+     * @return an Optional containing an {@link ExpandedNodeId}, or {@link Optional#empty()} if parsing fails.
+     */
+    public static Optional<ExpandedNodeId> parseSafe(@Nonnull String s) {
+        return Optional.ofNullable(parseOrNull(s));
     }
 
     /**

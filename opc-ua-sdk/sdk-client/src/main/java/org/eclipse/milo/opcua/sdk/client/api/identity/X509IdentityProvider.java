@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.sdk.client.api.identity;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -24,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
@@ -35,13 +38,23 @@ public class X509IdentityProvider implements IdentityProvider {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final X509Certificate certificate;
+    private final List<X509Certificate> certificateChain =
+        Collections.synchronizedList(new ArrayList<>());
+
     private final PrivateKey privateKey;
 
     public X509IdentityProvider(X509Certificate certificate, PrivateKey privateKey) {
-        this.certificate = certificate;
         this.privateKey = privateKey;
+
+        certificateChain.add(certificate);
     }
+
+    public X509IdentityProvider(List<X509Certificate> certificateChain, PrivateKey privateKey) {
+        this.privateKey = privateKey;
+
+        this.certificateChain.addAll(certificateChain);
+    }
+
 
     @Override
     public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
@@ -68,7 +81,7 @@ public class X509IdentityProvider implements IdentityProvider {
 
         X509IdentityToken token = new X509IdentityToken(
             tokenPolicy.getPolicyId(),
-            ByteString.of(certificate.getEncoded())
+            CertificateUtil.getCertificateChainBytes(certificateChain)
         );
 
         SignatureData signatureData;
@@ -78,11 +91,7 @@ public class X509IdentityProvider implements IdentityProvider {
         } else {
             NonceUtil.validateNonce(serverNonce);
 
-            byte[] serverCertificateBytes = new byte[0];
-            if (!endpoint.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri())) {
-                ByteString serverCertificate = endpoint.getServerCertificate();
-                serverCertificateBytes = serverCertificate.bytesOrEmpty();
-            }
+            byte[] serverCertificateBytes = endpoint.getServerCertificate().bytesOrEmpty();
 
             byte[] serverNonceBytes = serverNonce.bytes();
             if (serverNonceBytes == null) serverNonceBytes = new byte[0];
