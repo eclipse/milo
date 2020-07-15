@@ -32,6 +32,9 @@ public class UaMethodTest extends AbstractClientServerTest {
 
     @Test
     public void findMethod() throws UaException {
+        ManagedSubscription subscription = ManagedSubscription.create(client);
+        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+
         AddressSpace addressSpace = client.getAddressSpace();
 
         UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
@@ -48,6 +51,17 @@ public class UaMethodTest extends AbstractClientServerTest {
         assertEquals(2, outputArguments.length);
         assertEquals("ServerHandles", outputArguments[0].getName());
         assertEquals("ClientHandles", outputArguments[1].getName());
+
+        Variant[] outputs = getMonitoredItems.call(
+            new Variant[]{
+                new Variant(subscription.getSubscription().getSubscriptionId())
+            }
+        );
+
+        UInteger[] expected0 = {dataItem.getMonitoredItem().getMonitoredItemId()};
+        UInteger[] expected1 = {dataItem.getMonitoredItem().getClientHandle()};
+        assertArrayEquals(expected0, (UInteger[]) outputs[0].getValue());
+        assertArrayEquals(expected1, (UInteger[]) outputs[1].getValue());
     }
 
     @Test
