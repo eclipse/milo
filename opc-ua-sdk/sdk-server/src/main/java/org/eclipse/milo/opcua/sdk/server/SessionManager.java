@@ -248,8 +248,23 @@ public class SessionManager implements
 
         EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
             .stream()
+            .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
             .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
+            .filter(ed -> Objects.equal(endpoint.getTransportProfileUri(), ed.getTransportProfileUri()))
+            .map(SessionManager::stripNonEssentialFields)
             .toArray(EndpointDescription[]::new);
+
+        if (serverEndpoints.length == 0) {
+            // GetEndpoints in UaStackServer returns *all* endpoints regardless of a hostname
+            // match in the endpoint URL if the result after filtering is 0 endpoints. Do the
+            // same here.
+            serverEndpoints = server.getEndpointDescriptions()
+                .stream()
+                .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+                .filter(ed -> Objects.equal(endpoint.getTransportProfileUri(), ed.getTransportProfileUri()))
+                .map(SessionManager::stripNonEssentialFields)
+                .toArray(EndpointDescription[]::new);
+        }
 
         ByteString clientNonce = request.getClientNonce();
 
@@ -426,6 +441,42 @@ public class SessionManager implements
         String requestedHost = EndpointUtil.getHost(nullToEmpty(requestedEndpointUrl));
 
         return nullToEmpty(endpointHost).equalsIgnoreCase(nullToEmpty(requestedHost));
+    }
+
+    /**
+     * Strip the non-essential fields from an EndpointDescription and its ApplicationDescription
+     * for return by the CreateSession service.
+     * <p>
+     * See Part 4, 5.6.6.2 for details.
+     *
+     * @param endpoint the {@link EndpointDescription} to strip non-essential fields from.
+     * @return a new {@link EndpointDescription} with only the essential fields.
+     */
+    private static EndpointDescription stripNonEssentialFields(EndpointDescription endpoint) {
+        // It is recommended that Servers only include the server.applicationUri, endpointUrl,
+        // securityMode, securityPolicyUri, userIdentityTokens, transportProfileUri, and
+        // securityLevel with all other parameters set to null. Only the recommended parameters
+        // shall be verified by the client.
+        ApplicationDescription applicationDescription = endpoint.getServer();
+        ApplicationDescription newApplicationDescription = new ApplicationDescription(
+            applicationDescription.getApplicationUri(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+        return new EndpointDescription(
+            endpoint.getEndpointUrl(),
+            newApplicationDescription,
+            ByteString.NULL_VALUE,
+            endpoint.getSecurityMode(),
+            endpoint.getSecurityPolicyUri(),
+            endpoint.getUserIdentityTokens(),
+            endpoint.getTransportProfileUri(),
+            endpoint.getSecurityLevel()
+        );
     }
 
     @Override
@@ -615,7 +666,7 @@ public class SessionManager implements
                 }
             } catch (UaException e) {
                 // Maybe try again using the full certificate chain bytes instead
-                
+
                 ByteString serverCertificateChainBs = securityConfiguration.getServerCertificateChainBytes();
 
                 if (serverCertificateBs.equals(serverCertificateChainBs)) {
