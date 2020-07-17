@@ -254,6 +254,18 @@ public class SessionManager implements
             .map(SessionManager::stripNonEssentialFields)
             .toArray(EndpointDescription[]::new);
 
+        if (serverEndpoints.length == 0) {
+            // GetEndpoints in UaStackServer returns *all* endpoints regardless of a hostname
+            // match in the endpoint URL if the result after filtering is 0 endpoints. Do the
+            // same here.
+            serverEndpoints = server.getEndpointDescriptions()
+                .stream()
+                .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
+                .filter(ed -> Objects.equal(endpoint.getTransportProfileUri(), ed.getTransportProfileUri()))
+                .map(SessionManager::stripNonEssentialFields)
+                .toArray(EndpointDescription[]::new);
+        }
+
         ByteString clientNonce = request.getClientNonce();
 
         if (securityPolicy != SecurityPolicy.None) {
