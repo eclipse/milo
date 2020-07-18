@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
@@ -120,8 +119,8 @@ public class DataTypeDictionaryGenerator {
             }
 
             marshaller.marshal(typeDictionary, outputStream);
-        } catch (JAXBException e) {
-            throw new IOException("failed to write dictionary to OutputStream", e);
+        } catch (Throwable t) {
+            throw new IOException("failed to write dictionary to OutputStream", t);
         }
     }
 

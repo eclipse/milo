@@ -126,8 +126,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
                     try {
                         return writeDictionaryToFile();
                     } catch (IOException e) {
-                        logger.warn("Failed to write dictionary file", e);
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("failed to write dictionary file", e);
                     }
                 });
 
@@ -145,6 +144,8 @@ public class DataTypeDictionaryManager implements Lifecycle {
                     return new DataValue(new Variant(ByteString.of(bs)));
                 }
             } catch (Throwable t) {
+                logger.warn("Failed to write dictionary file", t);
+
                 return new DataValue(new Variant(ByteString.NULL_VALUE));
             }
         }));
