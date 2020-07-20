@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -48,6 +50,7 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class UaObjectNode extends UaNode implements ObjectNode {
@@ -252,28 +255,52 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * {@code methodName} could not be found.
      */
     public CompletableFuture<UaMethod> getMethodAsync(QualifiedName methodName) {
-        // TODO use browse instead of findMemberNodeId so the target can be constrained to method nodes
+        UInteger nodeClassMask = uint(NodeClass.Method.getValue());
+        UInteger resultMask = uint(BrowseResultMask.All.getValue());
 
-        CompletableFuture<ExpandedNodeId> memberNodeId =
-            findMemberNodeId(methodName, Identifiers.HasComponent.expanded(), false);
+        CompletableFuture<BrowseResult> future = client.browse(
+            new BrowseDescription(
+                getNodeId(),
+                BrowseDirection.Forward,
+                Identifiers.HasComponent,
+                false,
+                nodeClassMask,
+                resultMask
+            )
+        );
 
-        return memberNodeId.thenCompose(xni -> {
-            AddressSpace addressSpace = client.getAddressSpace();
+        return future.thenCompose(result -> {
+            StatusCode statusCode = result.getStatusCode();
 
-            return addressSpace.toNodeIdAsync(xni).thenCompose(
-                nodeId ->
-                    addressSpace.getNodeAsync(nodeId).thenCompose(node -> {
-                        UaMethodNode methodNode = (UaMethodNode) node;
+            if (statusCode != null && statusCode.isGood()) {
+                Optional<ExpandedNodeId> methodNodeId = Arrays.stream(result.getReferences())
+                    .filter(rd -> Objects.equals(methodName, rd.getBrowseName()))
+                    .findFirst()
+                    .map(ReferenceDescription::getNodeId);
 
-                        CompletableFuture<Argument[]> f1 = methodNode.getInputArguments();
-                        CompletableFuture<Argument[]> f2 = methodNode.getOutputArguments();
+                return methodNodeId
+                    .map(xni -> {
+                        AddressSpace addressSpace = client.getAddressSpace();
 
-                        return f1.thenCombine(
-                            f2,
-                            (in, out) -> new UaMethod(client, this, methodNode, in, out)
+                        return addressSpace.toNodeIdAsync(xni).thenCompose(
+                            nodeId ->
+                                addressSpace.getNodeAsync(nodeId).thenCompose(node -> {
+                                    UaMethodNode methodNode = (UaMethodNode) node;
+
+                                    CompletableFuture<Argument[]> f1 = methodNode.getInputArguments();
+                                    CompletableFuture<Argument[]> f2 = methodNode.getOutputArguments();
+
+                                    return f1.thenCombine(
+                                        f2,
+                                        (in, out) -> new UaMethod(client, this, methodNode, in, out)
+                                    );
+                                })
                         );
                     })
-            );
+                    .orElse(failedFuture(new UaException(StatusCodes.Bad_NotFound, "method not found: " + methodName)));
+            } else {
+                return failedFuture(new UaException(statusCode, "browsing for MethodNodes failed"));
+            }
         });
     }
 
