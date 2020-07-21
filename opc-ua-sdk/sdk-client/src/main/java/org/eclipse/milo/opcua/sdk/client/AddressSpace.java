@@ -258,6 +258,14 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Call the Browse service to get a {@link UaNode}'s references.
+     *
+     * @param node          the {@link UaNode} to browse.
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a List of {@link ReferenceDescription}s.
+     * @throws UaException if a service-level error occurs.
+     */
     public List<ReferenceDescription> browse(UaNode node, BrowseOptions browseOptions) throws UaException {
         try {
             return browseAsync(node, browseOptions).get();
@@ -267,6 +275,14 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Call the Browse service to get a Node's references.
+     *
+     * @param nodeId        the {@link NodeId} of the Node to browse.
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a List of {@link ReferenceDescription}s.
+     * @throws UaException if a service-level error occurs.
+     */
     public List<ReferenceDescription> browse(NodeId nodeId, BrowseOptions browseOptions) throws UaException {
         try {
             return browseAsync(nodeId, browseOptions).get();
@@ -276,10 +292,30 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Call the Browse service to get a {@link UaNode}'s references.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param node          the {@link UaNode} to browse.
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a CompletableFuture that completes successfully with the List of references or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<List<ReferenceDescription>> browseAsync(UaNode node, BrowseOptions browseOptions) {
         return browseAsync(node.getNodeId(), browseOptions);
     }
 
+    /**
+     * Call the Browse service to get a Node's references.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId        the {@link NodeId} of the Node to browse.
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a CompletableFuture that completes successfully with the List of references or
+     * completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<List<ReferenceDescription>> browseAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
             nodeId,
@@ -292,7 +328,6 @@ public class AddressSpace {
 
         return BrowseHelper.browse(client, browseDescription);
     }
-
 
     /**
      * Browse from {@code node} using the currently configured {@link BrowseOptions}.
@@ -360,18 +395,68 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Browse from {@code node} using the currently configured {@link BrowseOptions}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param node the {@link UaNode} to start the browse from.
+     * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
+     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     * exceptionally if a service-level error occurs.
+     * @see #browseNodesAsync(UaNode, BrowseOptions)
+     * @see #getBrowseOptions()
+     * @see #modifyBrowseOptions(Consumer)
+     * @see #setBrowseOptions(BrowseOptions)
+     */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(UaNode node) {
         return browseNodesAsync(node.getNodeId());
     }
 
+    /**
+     * Browse from {@code node} using {@code browseOptions}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param node          the {@link UaNode} to start the browse from.
+     * @param browseOptions the {@link BrowseOptions} to use.
+     * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
+     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     * exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(UaNode node, BrowseOptions browseOptions) {
         return browseNodesAsync(node.getNodeId(), browseOptions);
     }
 
+    /**
+     * Browse from {@code nodeId} using the currently configured {@link BrowseOptions}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId the {@link NodeId} to start the browse from.
+     * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
+     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     * exceptionally if a service-level error occurs.
+     * @see #browseNodesAsync(UaNode, BrowseOptions)
+     * @see #getBrowseOptions()
+     * @see #modifyBrowseOptions(Consumer)
+     * @see #setBrowseOptions(BrowseOptions)
+     */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(NodeId nodeId) {
         return browseNodesAsync(nodeId, getBrowseOptions());
     }
 
+    /**
+     * Browse from {@code nodeId} using {@code browseOptions}.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId        the {@link NodeId} to start the browse from.
+     * @param browseOptions the {@link BrowseOptions} to use.
+     * @return a CompletableFuture that completes successfully with a List of {@link UaNode}s
+     * referenced by {@code node} given the currently configured {@link BrowseOptions} or completes
+     * exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(NodeId nodeId, BrowseOptions browseOptions) {
         BrowseDescription browseDescription = new BrowseDescription(
             nodeId,

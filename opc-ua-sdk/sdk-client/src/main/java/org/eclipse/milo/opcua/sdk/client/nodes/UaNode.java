@@ -637,6 +637,8 @@ public abstract class UaNode implements Node {
     /**
      * Call the Browse service to get this {@link UaNode}'s references.
      *
+     * This call completes asynchronously.
+     *
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a CompletableFuture that completes successfully with the List of references or
      * completes exceptionally if a service-level error occurs.
