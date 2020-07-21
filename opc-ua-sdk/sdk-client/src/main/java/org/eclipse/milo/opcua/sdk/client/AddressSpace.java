@@ -153,6 +153,20 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId}.
+     * <p>
+     * The type definition will be read when the instance is created. If this type definition is
+     * registered with the {@link ObjectTypeManager} a {@link UaObjectNode} of the appropriate
+     * subclass will be returned.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId the {@link NodeId} identifying the ObjectNode to get.
+     * @return a CompletableFuture that completes successfully with a {@link UaObjectNode} instance
+     * for the ObjectNode identified by {@code nodeId} or completes exceptionally if an error
+     * occurs creating the ObjectNode.
+     */
     public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
@@ -165,6 +179,21 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaObjectNode} instance for the ObjectNode identified by {@code nodeId},
+     * assuming the type definition identified by {@code typeDefinitionId}.
+     * <p>
+     * If this type definition is registered with the {@link ObjectTypeManager} a
+     * {@link UaObjectNode} of the appropriate subclass will be returned.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId           the {@link NodeId} identifying the ObjectNode to get.
+     * @param typeDefinitionId the {@link NodeId} identifying the type definition.
+     * @return a CompletableFuture that completes successfully with a {@link UaObjectNode} instance
+     * for the ObjectNode identified by {@code nodeId} or completes exceptionally if an error
+     * occurs creating the ObjectNode.
+     */
     public CompletableFuture<UaObjectNode> getObjectNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
@@ -226,6 +255,20 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId}.
+     * <p>
+     * The type definition will be read when the instance is created. If this type definition is
+     * registered with the {@link VariableTypeManager} a {@link UaVariableNode} of the appropriate
+     * subclass will be returned.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId the {@link NodeId} identifying the VariableNode to get.
+     * @return a CompletableFuture that completes successfully with a {@link UaVariableNode}
+     * instance for the VariableNode identified by {@code nodeId} or completes exceptionally if an
+     * error occurs while creating the VariableNode.
+     */
     public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
@@ -238,6 +281,21 @@ public class AddressSpace {
         }
     }
 
+    /**
+     * Get a {@link UaVariableNode} instance for the VariableNode identified by {@code nodeId},
+     * assuming the type definition identified by {@code typeDefinitionId}.
+     * <p>
+     * If this type definition is registered with the {@link VariableTypeManager} a
+     * {@link UaVariableNode} of the appropriate subclass will be returned.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param nodeId           the {@link NodeId} identifying the VariableNode to get.
+     * @param typeDefinitionId the {@link NodeId} identifying the type definition.
+     * @return a CompletableFuture that completes successfully with a {@link UaVariableNode}
+     * instance for the VariableNode identified by {@code nodeId} or completes exceptionally if an
+     * error occurs while creating the VariableNode.
+     */
     public CompletableFuture<UaVariableNode> getVariableNodeAsync(NodeId nodeId, NodeId typeDefinitionId) {
         UaNode cachedNode = nodeCache.getIfPresent(nodeId);
 
