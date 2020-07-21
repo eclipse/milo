@@ -628,6 +628,7 @@ public abstract class UaNode implements Node {
      *
      * @param browseOptions the {@link BrowseOptions} to browse with.
      * @return a List of {@link ReferenceDescription}s.
+     * @throws UaException if a service-level error occurs.
      */
     public List<ReferenceDescription> browse(BrowseOptions browseOptions) throws UaException {
         return client.getAddressSpace().browse(this, browseOptions);
@@ -644,10 +645,26 @@ public abstract class UaNode implements Node {
         return client.getAddressSpace().browseAsync(this, browseOptions);
     }
 
+    /**
+     * Call the Browse service to get the {@link UaNode}s referenced by this Node.
+     *
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a List of {@link UaNode}s referenced by this Node.
+     * @throws UaException if a service-level error occurs.
+     */
     public List<? extends UaNode> browseNodes(BrowseOptions browseOptions) throws UaException {
         return client.getAddressSpace().browseNodes(this, browseOptions);
     }
 
+    /**
+     * Call the Browse service to get the {@link UaNode}s referenced by this Node.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @param browseOptions the {@link BrowseOptions} to browse with.
+     * @return a CompletableFuture that completes successfully with the List of {@link UaNode}s
+     * referenced by this Node or completes exceptionally if a service-level error occurs.
+     */
     public CompletableFuture<List<? extends UaNode>> browseNodesAsync(BrowseOptions browseOptions) {
         return client.getAddressSpace().browseNodesAsync(this, browseOptions);
     }
