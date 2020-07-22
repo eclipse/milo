@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import com.google.common.cache.Cache;
@@ -26,12 +27,18 @@ public class NodeCache {
     private final ConcurrentMap<NodeId, UaNode> canonicalNodes;
 
     public NodeCache() {
-        this.cachedNodes = CacheBuilder.newBuilder()
+        this(b -> {});
+    }
+
+    public NodeCache(Consumer<CacheBuilder<Object, Object>> consumer) {
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder()
             .expireAfterWrite(2, TimeUnit.MINUTES)
             .maximumSize(16384)
-            .recordStats()
-            .build();
+            .recordStats();
 
+        consumer.accept(builder);
+
+        this.cachedNodes = builder.build();
         this.canonicalNodes = new ConcurrentHashMap<>();
     }
 
@@ -68,4 +75,5 @@ public class NodeCache {
         canonicalNodes.remove(nodeId);
         cachedNodes.invalidate(nodeId);
     }
+
 }

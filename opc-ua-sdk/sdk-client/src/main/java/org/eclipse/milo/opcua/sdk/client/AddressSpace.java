@@ -63,7 +63,7 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class AddressSpace {
 
-    private final NodeCache nodeCache = new NodeCache();
+    private NodeCache nodeCache = new NodeCache();
 
     private BrowseOptions browseOptions = new BrowseOptions();
 
@@ -672,8 +672,22 @@ public class AddressSpace {
         this.browseOptions = browseOptions;
     }
 
-    public NodeCache getNodeCache() {
+    /**
+     * Get the current {@link NodeCache}.
+     *
+     * @return the current {@link NodeCache}.
+     */
+    public synchronized NodeCache getNodeCache() {
         return nodeCache;
+    }
+
+    /**
+     * Set a new {@link NodeCache}.
+     *
+     * @param nodeCache a new {@link NodeCache}.
+     */
+    public synchronized void setNodeCache(NodeCache nodeCache) {
+        this.nodeCache = nodeCache;
     }
 
     private CompletableFuture<NodeId> readTypeDefinition(NodeId nodeId) {
