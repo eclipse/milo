@@ -5,8 +5,8 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
     /**
@@ -59,9 +59,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionIdAsync(NodeId sessionId);
+    CompletableFuture<StatusCode> writeSessionIdAsync(NodeId sessionId);
 
     /**
      * Get the SessionId {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -132,9 +132,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeClientUserIdOfSession(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientUserIdOfSessionAsync(String clientUserIdOfSession);
+    CompletableFuture<StatusCode> writeClientUserIdOfSessionAsync(String clientUserIdOfSession);
 
     /**
      * Get the ClientUserIdOfSession {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -205,9 +205,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeClientUserIdHistory(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientUserIdHistoryAsync(String[] clientUserIdHistory);
+    CompletableFuture<StatusCode> writeClientUserIdHistoryAsync(String[] clientUserIdHistory);
 
     /**
      * Get the ClientUserIdHistory {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -278,9 +278,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeAuthenticationMechanism(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAuthenticationMechanismAsync(String authenticationMechanism);
+    CompletableFuture<StatusCode> writeAuthenticationMechanismAsync(String authenticationMechanism);
 
     /**
      * Get the AuthenticationMechanism {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -351,9 +351,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEncoding(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEncodingAsync(String encoding);
+    CompletableFuture<StatusCode> writeEncodingAsync(String encoding);
 
     /**
      * Get the Encoding {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -424,9 +424,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTransportProtocol(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransportProtocolAsync(String transportProtocol);
+    CompletableFuture<StatusCode> writeTransportProtocolAsync(String transportProtocol);
 
     /**
      * Get the TransportProtocol {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -497,9 +497,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSecurityMode(MessageSecurityMode)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecurityModeAsync(MessageSecurityMode securityMode);
+    CompletableFuture<StatusCode> writeSecurityModeAsync(MessageSecurityMode securityMode);
 
     /**
      * Get the SecurityMode {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -570,9 +570,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSecurityPolicyUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecurityPolicyUriAsync(String securityPolicyUri);
+    CompletableFuture<StatusCode> writeSecurityPolicyUriAsync(String securityPolicyUri);
 
     /**
      * Get the SecurityPolicyUri {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -643,9 +643,9 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeClientCertificate(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientCertificateAsync(ByteString clientCertificate);
+    CompletableFuture<StatusCode> writeClientCertificateAsync(ByteString clientCertificate);
 
     /**
      * Get the ClientCertificate {@link BaseDataVariableType} Node, or {@code null} if it does not exist.

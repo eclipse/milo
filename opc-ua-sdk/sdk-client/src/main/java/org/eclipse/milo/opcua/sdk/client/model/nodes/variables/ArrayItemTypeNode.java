@@ -15,6 +15,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -22,8 +23,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType {
     public ArrayItemTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -71,18 +70,11 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     }
 
     @Override
-    public CompletableFuture<Unit> writeInstrumentRangeAsync(Range instrumentRange) {
+    public CompletableFuture<StatusCode> writeInstrumentRangeAsync(Range instrumentRange) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), instrumentRange);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getInstrumentRangeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -137,18 +129,11 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     }
 
     @Override
-    public CompletableFuture<Unit> writeEuRangeAsync(Range euRange) {
+    public CompletableFuture<StatusCode> writeEuRangeAsync(Range euRange) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), euRange);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEuRangeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -203,18 +188,11 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     }
 
     @Override
-    public CompletableFuture<Unit> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
+    public CompletableFuture<StatusCode> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), engineeringUnits);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEngineeringUnitsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -268,17 +246,10 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     }
 
     @Override
-    public CompletableFuture<Unit> writeTitleAsync(LocalizedText title) {
+    public CompletableFuture<StatusCode> writeTitleAsync(LocalizedText title) {
         DataValue value = DataValue.valueOnly(new Variant(title));
         return getTitleNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -332,17 +303,10 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     }
 
     @Override
-    public CompletableFuture<Unit> writeAxisScaleTypeAsync(AxisScaleEnumeration axisScaleType) {
+    public CompletableFuture<StatusCode> writeAxisScaleTypeAsync(AxisScaleEnumeration axisScaleType) {
         DataValue value = DataValue.valueOnly(new Variant(axisScaleType));
         return getAxisScaleTypeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

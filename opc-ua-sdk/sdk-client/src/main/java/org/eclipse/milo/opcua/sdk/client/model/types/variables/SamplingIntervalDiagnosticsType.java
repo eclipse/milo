@@ -3,8 +3,8 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
     /**
@@ -57,9 +57,9 @@ public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSamplingInterval(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSamplingIntervalAsync(Double samplingInterval);
+    CompletableFuture<StatusCode> writeSamplingIntervalAsync(Double samplingInterval);
 
     /**
      * Get the SamplingInterval {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -130,9 +130,10 @@ public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSampledMonitoredItemsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSampledMonitoredItemsCountAsync(UInteger sampledMonitoredItemsCount);
+    CompletableFuture<StatusCode> writeSampledMonitoredItemsCountAsync(
+        UInteger sampledMonitoredItemsCount);
 
     /**
      * Get the SampledMonitoredItemsCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -204,9 +205,9 @@ public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMaxSampledMonitoredItemsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxSampledMonitoredItemsCountAsync(
+    CompletableFuture<StatusCode> writeMaxSampledMonitoredItemsCountAsync(
         UInteger maxSampledMonitoredItemsCount);
 
     /**
@@ -280,9 +281,9 @@ public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDisabledMonitoredItemsSamplingCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDisabledMonitoredItemsSamplingCountAsync(
+    CompletableFuture<StatusCode> writeDisabledMonitoredItemsSamplingCountAsync(
         UInteger disabledMonitoredItemsSamplingCount);
 
     /**

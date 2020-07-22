@@ -6,8 +6,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ImageItemType extends ArrayItemType {
     QualifiedProperty<AxisInformation> X_AXIS_DEFINITION = new QualifiedProperty<>(
@@ -76,9 +76,9 @@ public interface ImageItemType extends ArrayItemType {
      * An asynchronous implementation of {@link #writeXAxisDefinition(AxisInformation)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition);
+    CompletableFuture<StatusCode> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition);
 
     /**
      * Get the XAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface ImageItemType extends ArrayItemType {
      * An asynchronous implementation of {@link #writeYAxisDefinition(AxisInformation)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition);
+    CompletableFuture<StatusCode> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition);
 
     /**
      * Get the YAxisDefinition {@link PropertyType} Node, or {@code null} if it does not exist.

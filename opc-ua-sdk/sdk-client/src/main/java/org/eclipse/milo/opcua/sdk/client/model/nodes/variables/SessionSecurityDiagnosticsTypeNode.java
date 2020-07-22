@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode implements SessionSecurityDiagnosticsType {
     public SessionSecurityDiagnosticsTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -68,17 +67,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeSessionIdAsync(NodeId sessionId) {
+    public CompletableFuture<StatusCode> writeSessionIdAsync(NodeId sessionId) {
         DataValue value = DataValue.valueOnly(new Variant(sessionId));
         return getSessionIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -132,17 +124,11 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientUserIdOfSessionAsync(String clientUserIdOfSession) {
+    public CompletableFuture<StatusCode> writeClientUserIdOfSessionAsync(
+        String clientUserIdOfSession) {
         DataValue value = DataValue.valueOnly(new Variant(clientUserIdOfSession));
         return getClientUserIdOfSessionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -196,17 +182,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientUserIdHistoryAsync(String[] clientUserIdHistory) {
+    public CompletableFuture<StatusCode> writeClientUserIdHistoryAsync(String[] clientUserIdHistory) {
         DataValue value = DataValue.valueOnly(new Variant(clientUserIdHistory));
         return getClientUserIdHistoryNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -260,17 +239,11 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeAuthenticationMechanismAsync(String authenticationMechanism) {
+    public CompletableFuture<StatusCode> writeAuthenticationMechanismAsync(
+        String authenticationMechanism) {
         DataValue value = DataValue.valueOnly(new Variant(authenticationMechanism));
         return getAuthenticationMechanismNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -325,17 +298,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeEncodingAsync(String encoding) {
+    public CompletableFuture<StatusCode> writeEncodingAsync(String encoding) {
         DataValue value = DataValue.valueOnly(new Variant(encoding));
         return getEncodingNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -389,17 +355,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeTransportProtocolAsync(String transportProtocol) {
+    public CompletableFuture<StatusCode> writeTransportProtocolAsync(String transportProtocol) {
         DataValue value = DataValue.valueOnly(new Variant(transportProtocol));
         return getTransportProtocolNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -453,17 +412,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecurityModeAsync(MessageSecurityMode securityMode) {
+    public CompletableFuture<StatusCode> writeSecurityModeAsync(MessageSecurityMode securityMode) {
         DataValue value = DataValue.valueOnly(new Variant(securityMode));
         return getSecurityModeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -517,17 +469,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecurityPolicyUriAsync(String securityPolicyUri) {
+    public CompletableFuture<StatusCode> writeSecurityPolicyUriAsync(String securityPolicyUri) {
         DataValue value = DataValue.valueOnly(new Variant(securityPolicyUri));
         return getSecurityPolicyUriNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -581,17 +526,10 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientCertificateAsync(ByteString clientCertificate) {
+    public CompletableFuture<StatusCode> writeClientCertificateAsync(ByteString clientCertificate) {
         DataValue value = DataValue.valueOnly(new Variant(clientCertificate));
         return getClientCertificateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

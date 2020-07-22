@@ -16,14 +16,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements ServerStatusType {
     public ServerStatusTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -70,17 +69,10 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeStartTimeAsync(DateTime startTime) {
+    public CompletableFuture<StatusCode> writeStartTimeAsync(DateTime startTime) {
         DataValue value = DataValue.valueOnly(new Variant(startTime));
         return getStartTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -134,17 +126,10 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeCurrentTimeAsync(DateTime currentTime) {
+    public CompletableFuture<StatusCode> writeCurrentTimeAsync(DateTime currentTime) {
         DataValue value = DataValue.valueOnly(new Variant(currentTime));
         return getCurrentTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -198,17 +183,10 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeStateAsync(ServerState state) {
+    public CompletableFuture<StatusCode> writeStateAsync(ServerState state) {
         DataValue value = DataValue.valueOnly(new Variant(state));
         return getStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -263,18 +241,11 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeBuildInfoAsync(BuildInfo buildInfo) {
+    public CompletableFuture<StatusCode> writeBuildInfoAsync(BuildInfo buildInfo) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), buildInfo);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBuildInfoNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -328,17 +299,10 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecondsTillShutdownAsync(UInteger secondsTillShutdown) {
+    public CompletableFuture<StatusCode> writeSecondsTillShutdownAsync(UInteger secondsTillShutdown) {
         DataValue value = DataValue.valueOnly(new Variant(secondsTillShutdown));
         return getSecondsTillShutdownNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -392,17 +356,10 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeShutdownReasonAsync(LocalizedText shutdownReason) {
+    public CompletableFuture<StatusCode> writeShutdownReasonAsync(LocalizedText shutdownReason) {
         DataValue value = DataValue.valueOnly(new Variant(shutdownReason));
         return getShutdownReasonNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

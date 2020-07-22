@@ -7,10 +7,10 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ArrayItemType extends DataItemType {
     QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
@@ -103,9 +103,9 @@ public interface ArrayItemType extends DataItemType {
      * An asynchronous implementation of {@link #writeInstrumentRange(Range)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInstrumentRangeAsync(Range instrumentRange);
+    CompletableFuture<StatusCode> writeInstrumentRangeAsync(Range instrumentRange);
 
     /**
      * Get the InstrumentRange {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -176,9 +176,9 @@ public interface ArrayItemType extends DataItemType {
      * An asynchronous implementation of {@link #writeEuRange(Range)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEuRangeAsync(Range euRange);
+    CompletableFuture<StatusCode> writeEuRangeAsync(Range euRange);
 
     /**
      * Get the EURange {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -249,9 +249,9 @@ public interface ArrayItemType extends DataItemType {
      * An asynchronous implementation of {@link #writeEngineeringUnits(EUInformation)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEngineeringUnitsAsync(EUInformation engineeringUnits);
+    CompletableFuture<StatusCode> writeEngineeringUnitsAsync(EUInformation engineeringUnits);
 
     /**
      * Get the EngineeringUnits {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -322,9 +322,9 @@ public interface ArrayItemType extends DataItemType {
      * An asynchronous implementation of {@link #writeTitle(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTitleAsync(LocalizedText title);
+    CompletableFuture<StatusCode> writeTitleAsync(LocalizedText title);
 
     /**
      * Get the Title {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -395,9 +395,9 @@ public interface ArrayItemType extends DataItemType {
      * An asynchronous implementation of {@link #writeAxisScaleType(AxisScaleEnumeration)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAxisScaleTypeAsync(AxisScaleEnumeration axisScaleType);
+    CompletableFuture<StatusCode> writeAxisScaleTypeAsync(AxisScaleEnumeration axisScaleType);
 
     /**
      * Get the AxisScaleType {@link PropertyType} Node, or {@code null} if it does not exist.

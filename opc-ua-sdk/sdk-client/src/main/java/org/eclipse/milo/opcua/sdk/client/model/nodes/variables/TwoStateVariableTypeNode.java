@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class TwoStateVariableTypeNode extends StateVariableTypeNode implements TwoStateVariableType {
     public TwoStateVariableTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
     }
 
     @Override
-    public CompletableFuture<Unit> writeIdAsync(Boolean id) {
+    public CompletableFuture<StatusCode> writeIdAsync(Boolean id) {
         DataValue value = DataValue.valueOnly(new Variant(id));
         return getIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
     }
 
     @Override
-    public CompletableFuture<Unit> writeTransitionTimeAsync(DateTime transitionTime) {
+    public CompletableFuture<StatusCode> writeTransitionTimeAsync(DateTime transitionTime) {
         DataValue value = DataValue.valueOnly(new Variant(transitionTime));
         return getTransitionTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,18 +180,11 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
     }
 
     @Override
-    public CompletableFuture<Unit> writeEffectiveTransitionTimeAsync(
+    public CompletableFuture<StatusCode> writeEffectiveTransitionTimeAsync(
         DateTime effectiveTransitionTime) {
         DataValue value = DataValue.valueOnly(new Variant(effectiveTransitionTime));
         return getEffectiveTransitionTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -260,17 +238,10 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
     }
 
     @Override
-    public CompletableFuture<Unit> writeTrueStateAsync(LocalizedText trueState) {
+    public CompletableFuture<StatusCode> writeTrueStateAsync(LocalizedText trueState) {
         DataValue value = DataValue.valueOnly(new Variant(trueState));
         return getTrueStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -324,17 +295,10 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
     }
 
     @Override
-    public CompletableFuture<Unit> writeFalseStateAsync(LocalizedText falseState) {
+    public CompletableFuture<StatusCode> writeFalseStateAsync(LocalizedText falseState) {
         DataValue value = DataValue.valueOnly(new Variant(falseState));
         return getFalseStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

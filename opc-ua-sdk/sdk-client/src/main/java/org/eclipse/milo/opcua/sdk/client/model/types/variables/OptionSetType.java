@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface OptionSetType extends BaseDataVariableType {
     QualifiedProperty<LocalizedText[]> OPTION_SET_VALUES = new QualifiedProperty<>(
@@ -76,9 +76,9 @@ public interface OptionSetType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeOptionSetValues(LocalizedText[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOptionSetValuesAsync(LocalizedText[] optionSetValues);
+    CompletableFuture<StatusCode> writeOptionSetValuesAsync(LocalizedText[] optionSetValues);
 
     /**
      * Get the OptionSetValues {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface OptionSetType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeBitMask(Boolean[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBitMaskAsync(Boolean[] bitMask);
+    CompletableFuture<StatusCode> writeBitMaskAsync(Boolean[] bitMask);
 
     /**
      * Get the BitMask {@link PropertyType} Node, or {@code null} if it does not exist.

@@ -3,8 +3,8 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SamplingIntervalDiagnosticsArrayType extends BaseDataVariableType {
     /**
@@ -60,9 +60,9 @@ public interface SamplingIntervalDiagnosticsArrayType extends BaseDataVariableTy
      * An asynchronous implementation of {@link #writeSamplingIntervalDiagnostics(SamplingIntervalDiagnosticsDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSamplingIntervalDiagnosticsAsync(
+    CompletableFuture<StatusCode> writeSamplingIntervalDiagnosticsAsync(
         SamplingIntervalDiagnosticsDataType samplingIntervalDiagnostics);
 
     /**

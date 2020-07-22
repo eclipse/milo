@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface TwoStateDiscreteType extends DiscreteItemType {
     QualifiedProperty<LocalizedText> FALSE_STATE = new QualifiedProperty<>(
@@ -76,9 +76,9 @@ public interface TwoStateDiscreteType extends DiscreteItemType {
      * An asynchronous implementation of {@link #writeFalseState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeFalseStateAsync(LocalizedText falseState);
+    CompletableFuture<StatusCode> writeFalseStateAsync(LocalizedText falseState);
 
     /**
      * Get the FalseState {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface TwoStateDiscreteType extends DiscreteItemType {
      * An asynchronous implementation of {@link #writeTrueState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTrueStateAsync(LocalizedText trueState);
+    CompletableFuture<StatusCode> writeTrueStateAsync(LocalizedText trueState);
 
     /**
      * Get the TrueState {@link PropertyType} Node, or {@code null} if it does not exist.

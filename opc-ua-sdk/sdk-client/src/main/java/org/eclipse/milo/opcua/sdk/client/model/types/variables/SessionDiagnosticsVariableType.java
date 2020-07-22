@@ -5,10 +5,10 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
     /**
@@ -61,9 +61,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionIdAsync(NodeId sessionId);
+    CompletableFuture<StatusCode> writeSessionIdAsync(NodeId sessionId);
 
     /**
      * Get the SessionId {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -134,9 +134,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionName(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionNameAsync(String sessionName);
+    CompletableFuture<StatusCode> writeSessionNameAsync(String sessionName);
 
     /**
      * Get the SessionName {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -207,9 +207,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeClientDescription(ApplicationDescription)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientDescriptionAsync(ApplicationDescription clientDescription);
+    CompletableFuture<StatusCode> writeClientDescriptionAsync(
+        ApplicationDescription clientDescription);
 
     /**
      * Get the ClientDescription {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -280,9 +281,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeServerUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerUriAsync(String serverUri);
+    CompletableFuture<StatusCode> writeServerUriAsync(String serverUri);
 
     /**
      * Get the ServerUri {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -353,9 +354,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEndpointUrl(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEndpointUrlAsync(String endpointUrl);
+    CompletableFuture<StatusCode> writeEndpointUrlAsync(String endpointUrl);
 
     /**
      * Get the EndpointUrl {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -426,9 +427,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLocaleIds(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLocaleIdsAsync(String[] localeIds);
+    CompletableFuture<StatusCode> writeLocaleIdsAsync(String[] localeIds);
 
     /**
      * Get the LocaleIds {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -499,9 +500,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeActualSessionTimeout(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeActualSessionTimeoutAsync(Double actualSessionTimeout);
+    CompletableFuture<StatusCode> writeActualSessionTimeoutAsync(Double actualSessionTimeout);
 
     /**
      * Get the ActualSessionTimeout {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -572,9 +573,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMaxResponseMessageSize(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxResponseMessageSizeAsync(UInteger maxResponseMessageSize);
+    CompletableFuture<StatusCode> writeMaxResponseMessageSizeAsync(UInteger maxResponseMessageSize);
 
     /**
      * Get the MaxResponseMessageSize {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -645,9 +646,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeClientConnectionTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientConnectionTimeAsync(DateTime clientConnectionTime);
+    CompletableFuture<StatusCode> writeClientConnectionTimeAsync(DateTime clientConnectionTime);
 
     /**
      * Get the ClientConnectionTime {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -718,9 +719,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeClientLastContactTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientLastContactTimeAsync(DateTime clientLastContactTime);
+    CompletableFuture<StatusCode> writeClientLastContactTimeAsync(DateTime clientLastContactTime);
 
     /**
      * Get the ClientLastContactTime {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -791,9 +792,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentSubscriptionsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentSubscriptionsCountAsync(UInteger currentSubscriptionsCount);
+    CompletableFuture<StatusCode> writeCurrentSubscriptionsCountAsync(
+        UInteger currentSubscriptionsCount);
 
     /**
      * Get the CurrentSubscriptionsCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -864,9 +866,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentMonitoredItemsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentMonitoredItemsCountAsync(UInteger currentMonitoredItemsCount);
+    CompletableFuture<StatusCode> writeCurrentMonitoredItemsCountAsync(
+        UInteger currentMonitoredItemsCount);
 
     /**
      * Get the CurrentMonitoredItemsCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -938,9 +941,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentPublishRequestsInQueue(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentPublishRequestsInQueueAsync(
+    CompletableFuture<StatusCode> writeCurrentPublishRequestsInQueueAsync(
         UInteger currentPublishRequestsInQueue);
 
     /**
@@ -1012,9 +1015,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTotalRequestCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTotalRequestCountAsync(ServiceCounterDataType totalRequestCount);
+    CompletableFuture<StatusCode> writeTotalRequestCountAsync(
+        ServiceCounterDataType totalRequestCount);
 
     /**
      * Get the TotalRequestCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1085,9 +1089,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeUnauthorizedRequestCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUnauthorizedRequestCountAsync(UInteger unauthorizedRequestCount);
+    CompletableFuture<StatusCode> writeUnauthorizedRequestCountAsync(
+        UInteger unauthorizedRequestCount);
 
     /**
      * Get the UnauthorizedRequestCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1158,9 +1163,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeReadCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeReadCountAsync(ServiceCounterDataType readCount);
+    CompletableFuture<StatusCode> writeReadCountAsync(ServiceCounterDataType readCount);
 
     /**
      * Get the ReadCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1231,9 +1236,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeHistoryReadCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeHistoryReadCountAsync(ServiceCounterDataType historyReadCount);
+    CompletableFuture<StatusCode> writeHistoryReadCountAsync(ServiceCounterDataType historyReadCount);
 
     /**
      * Get the HistoryReadCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1304,9 +1309,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeWriteCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeWriteCountAsync(ServiceCounterDataType writeCount);
+    CompletableFuture<StatusCode> writeWriteCountAsync(ServiceCounterDataType writeCount);
 
     /**
      * Get the WriteCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1377,9 +1382,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeHistoryUpdateCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeHistoryUpdateCountAsync(ServiceCounterDataType historyUpdateCount);
+    CompletableFuture<StatusCode> writeHistoryUpdateCountAsync(
+        ServiceCounterDataType historyUpdateCount);
 
     /**
      * Get the HistoryUpdateCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1450,9 +1456,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCallCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCallCountAsync(ServiceCounterDataType callCount);
+    CompletableFuture<StatusCode> writeCallCountAsync(ServiceCounterDataType callCount);
 
     /**
      * Get the CallCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1525,9 +1531,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCreateMonitoredItemsCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCreateMonitoredItemsCountAsync(
+    CompletableFuture<StatusCode> writeCreateMonitoredItemsCountAsync(
         ServiceCounterDataType createMonitoredItemsCount);
 
     /**
@@ -1601,9 +1607,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeModifyMonitoredItemsCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeModifyMonitoredItemsCountAsync(
+    CompletableFuture<StatusCode> writeModifyMonitoredItemsCountAsync(
         ServiceCounterDataType modifyMonitoredItemsCount);
 
     /**
@@ -1676,9 +1682,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSetMonitoringModeCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSetMonitoringModeCountAsync(
+    CompletableFuture<StatusCode> writeSetMonitoringModeCountAsync(
         ServiceCounterDataType setMonitoringModeCount);
 
     /**
@@ -1750,9 +1756,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSetTriggeringCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSetTriggeringCountAsync(ServiceCounterDataType setTriggeringCount);
+    CompletableFuture<StatusCode> writeSetTriggeringCountAsync(
+        ServiceCounterDataType setTriggeringCount);
 
     /**
      * Get the SetTriggeringCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1825,9 +1832,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDeleteMonitoredItemsCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteMonitoredItemsCountAsync(
+    CompletableFuture<StatusCode> writeDeleteMonitoredItemsCountAsync(
         ServiceCounterDataType deleteMonitoredItemsCount);
 
     /**
@@ -1901,9 +1908,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCreateSubscriptionCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCreateSubscriptionCountAsync(
+    CompletableFuture<StatusCode> writeCreateSubscriptionCountAsync(
         ServiceCounterDataType createSubscriptionCount);
 
     /**
@@ -1977,9 +1984,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeModifySubscriptionCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeModifySubscriptionCountAsync(
+    CompletableFuture<StatusCode> writeModifySubscriptionCountAsync(
         ServiceCounterDataType modifySubscriptionCount);
 
     /**
@@ -2052,9 +2059,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSetPublishingModeCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSetPublishingModeCountAsync(
+    CompletableFuture<StatusCode> writeSetPublishingModeCountAsync(
         ServiceCounterDataType setPublishingModeCount);
 
     /**
@@ -2126,9 +2133,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writePublishCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePublishCountAsync(ServiceCounterDataType publishCount);
+    CompletableFuture<StatusCode> writePublishCountAsync(ServiceCounterDataType publishCount);
 
     /**
      * Get the PublishCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2199,9 +2206,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRepublishCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRepublishCountAsync(ServiceCounterDataType republishCount);
+    CompletableFuture<StatusCode> writeRepublishCountAsync(ServiceCounterDataType republishCount);
 
     /**
      * Get the RepublishCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2274,9 +2281,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTransferSubscriptionsCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransferSubscriptionsCountAsync(
+    CompletableFuture<StatusCode> writeTransferSubscriptionsCountAsync(
         ServiceCounterDataType transferSubscriptionsCount);
 
     /**
@@ -2350,9 +2357,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDeleteSubscriptionsCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteSubscriptionsCountAsync(
+    CompletableFuture<StatusCode> writeDeleteSubscriptionsCountAsync(
         ServiceCounterDataType deleteSubscriptionsCount);
 
     /**
@@ -2424,9 +2431,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeAddNodesCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAddNodesCountAsync(ServiceCounterDataType addNodesCount);
+    CompletableFuture<StatusCode> writeAddNodesCountAsync(ServiceCounterDataType addNodesCount);
 
     /**
      * Get the AddNodesCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2497,9 +2504,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeAddReferencesCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAddReferencesCountAsync(ServiceCounterDataType addReferencesCount);
+    CompletableFuture<StatusCode> writeAddReferencesCountAsync(
+        ServiceCounterDataType addReferencesCount);
 
     /**
      * Get the AddReferencesCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2570,9 +2578,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDeleteNodesCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteNodesCountAsync(ServiceCounterDataType deleteNodesCount);
+    CompletableFuture<StatusCode> writeDeleteNodesCountAsync(ServiceCounterDataType deleteNodesCount);
 
     /**
      * Get the DeleteNodesCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2643,9 +2651,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDeleteReferencesCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteReferencesCountAsync(
+    CompletableFuture<StatusCode> writeDeleteReferencesCountAsync(
         ServiceCounterDataType deleteReferencesCount);
 
     /**
@@ -2717,9 +2725,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeBrowseCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBrowseCountAsync(ServiceCounterDataType browseCount);
+    CompletableFuture<StatusCode> writeBrowseCountAsync(ServiceCounterDataType browseCount);
 
     /**
      * Get the BrowseCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2790,9 +2798,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeBrowseNextCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBrowseNextCountAsync(ServiceCounterDataType browseNextCount);
+    CompletableFuture<StatusCode> writeBrowseNextCountAsync(ServiceCounterDataType browseNextCount);
 
     /**
      * Get the BrowseNextCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2865,9 +2873,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTranslateBrowsePathsToNodeIdsCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTranslateBrowsePathsToNodeIdsCountAsync(
+    CompletableFuture<StatusCode> writeTranslateBrowsePathsToNodeIdsCountAsync(
         ServiceCounterDataType translateBrowsePathsToNodeIdsCount);
 
     /**
@@ -2940,9 +2948,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeQueryFirstCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeQueryFirstCountAsync(ServiceCounterDataType queryFirstCount);
+    CompletableFuture<StatusCode> writeQueryFirstCountAsync(ServiceCounterDataType queryFirstCount);
 
     /**
      * Get the QueryFirstCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -3013,9 +3021,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeQueryNextCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeQueryNextCountAsync(ServiceCounterDataType queryNextCount);
+    CompletableFuture<StatusCode> writeQueryNextCountAsync(ServiceCounterDataType queryNextCount);
 
     /**
      * Get the QueryNextCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -3086,9 +3094,10 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRegisterNodesCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRegisterNodesCountAsync(ServiceCounterDataType registerNodesCount);
+    CompletableFuture<StatusCode> writeRegisterNodesCountAsync(
+        ServiceCounterDataType registerNodesCount);
 
     /**
      * Get the RegisterNodesCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -3159,9 +3168,9 @@ public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeUnregisterNodesCount(ServiceCounterDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUnregisterNodesCountAsync(
+    CompletableFuture<StatusCode> writeUnregisterNodesCountAsync(
         ServiceCounterDataType unregisterNodesCount);
 
     /**

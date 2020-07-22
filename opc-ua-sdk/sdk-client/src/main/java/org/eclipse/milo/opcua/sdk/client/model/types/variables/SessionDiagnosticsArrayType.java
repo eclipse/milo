@@ -3,8 +3,8 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SessionDiagnosticsArrayType extends BaseDataVariableType {
     /**
@@ -57,9 +57,9 @@ public interface SessionDiagnosticsArrayType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionDiagnostics(SessionDiagnosticsDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionDiagnosticsAsync(
+    CompletableFuture<StatusCode> writeSessionDiagnosticsAsync(
         SessionDiagnosticsDataType sessionDiagnostics);
 
     /**

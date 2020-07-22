@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface MultiStateValueDiscreteType extends DiscreteItemType {
     QualifiedProperty<EnumValueType[]> ENUM_VALUES = new QualifiedProperty<>(
@@ -77,9 +77,9 @@ public interface MultiStateValueDiscreteType extends DiscreteItemType {
      * An asynchronous implementation of {@link #writeEnumValues(EnumValueType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnumValuesAsync(EnumValueType[] enumValues);
+    CompletableFuture<StatusCode> writeEnumValuesAsync(EnumValueType[] enumValues);
 
     /**
      * Get the EnumValues {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -150,9 +150,9 @@ public interface MultiStateValueDiscreteType extends DiscreteItemType {
      * An asynchronous implementation of {@link #writeValueAsText(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeValueAsTextAsync(LocalizedText valueAsText);
+    CompletableFuture<StatusCode> writeValueAsTextAsync(LocalizedText valueAsText);
 
     /**
      * Get the ValueAsText {@link PropertyType} Node, or {@code null} if it does not exist.

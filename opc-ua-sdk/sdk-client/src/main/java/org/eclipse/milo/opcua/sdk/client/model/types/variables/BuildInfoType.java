@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface BuildInfoType extends BaseDataVariableType {
     /**
@@ -57,9 +57,9 @@ public interface BuildInfoType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeProductUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeProductUriAsync(String productUri);
+    CompletableFuture<StatusCode> writeProductUriAsync(String productUri);
 
     /**
      * Get the ProductUri {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -130,9 +130,9 @@ public interface BuildInfoType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeManufacturerName(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeManufacturerNameAsync(String manufacturerName);
+    CompletableFuture<StatusCode> writeManufacturerNameAsync(String manufacturerName);
 
     /**
      * Get the ManufacturerName {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -203,9 +203,9 @@ public interface BuildInfoType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeProductName(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeProductNameAsync(String productName);
+    CompletableFuture<StatusCode> writeProductNameAsync(String productName);
 
     /**
      * Get the ProductName {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -276,9 +276,9 @@ public interface BuildInfoType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSoftwareVersion(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSoftwareVersionAsync(String softwareVersion);
+    CompletableFuture<StatusCode> writeSoftwareVersionAsync(String softwareVersion);
 
     /**
      * Get the SoftwareVersion {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -349,9 +349,9 @@ public interface BuildInfoType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeBuildNumber(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBuildNumberAsync(String buildNumber);
+    CompletableFuture<StatusCode> writeBuildNumberAsync(String buildNumber);
 
     /**
      * Get the BuildNumber {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -422,9 +422,9 @@ public interface BuildInfoType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeBuildDate(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBuildDateAsync(DateTime buildDate);
+    CompletableFuture<StatusCode> writeBuildDateAsync(DateTime buildDate);
 
     /**
      * Get the BuildDate {@link BaseDataVariableType} Node, or {@code null} if it does not exist.

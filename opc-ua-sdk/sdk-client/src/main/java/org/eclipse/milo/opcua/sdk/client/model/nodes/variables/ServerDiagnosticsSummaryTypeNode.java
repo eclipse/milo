@@ -14,12 +14,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode implements ServerDiagnosticsSummaryType {
     public ServerDiagnosticsSummaryTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerViewCountAsync(UInteger serverViewCount) {
+    public CompletableFuture<StatusCode> writeServerViewCountAsync(UInteger serverViewCount) {
         DataValue value = DataValue.valueOnly(new Variant(serverViewCount));
         return getServerViewCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeCurrentSessionCountAsync(UInteger currentSessionCount) {
+    public CompletableFuture<StatusCode> writeCurrentSessionCountAsync(UInteger currentSessionCount) {
         DataValue value = DataValue.valueOnly(new Variant(currentSessionCount));
         return getCurrentSessionCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -194,17 +179,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeCumulatedSessionCountAsync(UInteger cumulatedSessionCount) {
+    public CompletableFuture<StatusCode> writeCumulatedSessionCountAsync(
+        UInteger cumulatedSessionCount) {
         DataValue value = DataValue.valueOnly(new Variant(cumulatedSessionCount));
         return getCumulatedSessionCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -260,18 +239,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecurityRejectedSessionCountAsync(
+    public CompletableFuture<StatusCode> writeSecurityRejectedSessionCountAsync(
         UInteger securityRejectedSessionCount) {
         DataValue value = DataValue.valueOnly(new Variant(securityRejectedSessionCount));
         return getSecurityRejectedSessionCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -326,17 +298,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeRejectedSessionCountAsync(UInteger rejectedSessionCount) {
+    public CompletableFuture<StatusCode> writeRejectedSessionCountAsync(
+        UInteger rejectedSessionCount) {
         DataValue value = DataValue.valueOnly(new Variant(rejectedSessionCount));
         return getRejectedSessionCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -390,17 +356,10 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeSessionTimeoutCountAsync(UInteger sessionTimeoutCount) {
+    public CompletableFuture<StatusCode> writeSessionTimeoutCountAsync(UInteger sessionTimeoutCount) {
         DataValue value = DataValue.valueOnly(new Variant(sessionTimeoutCount));
         return getSessionTimeoutCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -454,17 +413,10 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeSessionAbortCountAsync(UInteger sessionAbortCount) {
+    public CompletableFuture<StatusCode> writeSessionAbortCountAsync(UInteger sessionAbortCount) {
         DataValue value = DataValue.valueOnly(new Variant(sessionAbortCount));
         return getSessionAbortCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -518,18 +470,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writePublishingIntervalCountAsync(
+    public CompletableFuture<StatusCode> writePublishingIntervalCountAsync(
         UInteger publishingIntervalCount) {
         DataValue value = DataValue.valueOnly(new Variant(publishingIntervalCount));
         return getPublishingIntervalCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -584,18 +529,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeCurrentSubscriptionCountAsync(
+    public CompletableFuture<StatusCode> writeCurrentSubscriptionCountAsync(
         UInteger currentSubscriptionCount) {
         DataValue value = DataValue.valueOnly(new Variant(currentSubscriptionCount));
         return getCurrentSubscriptionCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -652,18 +590,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeCumulatedSubscriptionCountAsync(
+    public CompletableFuture<StatusCode> writeCumulatedSubscriptionCountAsync(
         UInteger cumulatedSubscriptionCount) {
         DataValue value = DataValue.valueOnly(new Variant(cumulatedSubscriptionCount));
         return getCumulatedSubscriptionCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -720,18 +651,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecurityRejectedRequestsCountAsync(
+    public CompletableFuture<StatusCode> writeSecurityRejectedRequestsCountAsync(
         UInteger securityRejectedRequestsCount) {
         DataValue value = DataValue.valueOnly(new Variant(securityRejectedRequestsCount));
         return getSecurityRejectedRequestsCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -786,17 +710,11 @@ public class ServerDiagnosticsSummaryTypeNode extends BaseDataVariableTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeRejectedRequestsCountAsync(UInteger rejectedRequestsCount) {
+    public CompletableFuture<StatusCode> writeRejectedRequestsCountAsync(
+        UInteger rejectedRequestsCount) {
         DataValue value = DataValue.valueOnly(new Variant(rejectedRequestsCount));
         return getRejectedRequestsCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

@@ -41,7 +41,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
@@ -287,11 +286,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
                                 addressSpace.getNodeAsync(nodeId).thenCompose(node -> {
                                     UaMethodNode methodNode = (UaMethodNode) node;
 
-                                    CompletableFuture<Argument[]> f1 = methodNode.getInputArguments();
-                                    CompletableFuture<Argument[]> f2 = methodNode.getOutputArguments();
-
-                                    return f1.thenCombine(
-                                        f2,
+                                    return methodNode.readInputArgumentsAsync().thenCombine(
+                                        methodNode.readOutputArgumentsAsync(),
                                         (in, out) -> new UaMethod(client, this, methodNode, in, out)
                                     );
                                 })

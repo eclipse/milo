@@ -755,7 +755,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(VariableNodeProperties.NodeVersion);
     }
 
@@ -765,7 +765,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the LocalTime Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<TimeZoneDataType> getLocalTime() {
+    public CompletableFuture<? extends TimeZoneDataType> readLocalTimeAsync() {
         return getProperty(VariableNodeProperties.LocalTime);
     }
 
@@ -775,7 +775,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the DataTypeVersion Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<String> getDataTypeVersionAsync() {
+    public CompletableFuture<? extends String> readDataTypeVersionAsync() {
         return getProperty(VariableNodeProperties.DataTypeVersion);
     }
 
@@ -785,7 +785,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the DictionaryFragment Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<ByteString> getDictionaryFragmentAsync() {
+    public CompletableFuture<? extends ByteString> readDictionaryFragmentAsync() {
         return getProperty(VariableNodeProperties.DictionaryFragment);
     }
 
@@ -795,7 +795,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the AllowNulls Property, if it exists.
      * @see VariableNodeProperties#AllowNulls
      */
-    public CompletableFuture<Boolean> getAllowNulls() {
+    public CompletableFuture<? extends Boolean> readAllowNullsAsync() {
         return getProperty(VariableNodeProperties.AllowNulls);
     }
 
@@ -805,7 +805,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the ValueAsText Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<LocalizedText> getValueAsTextAsync() {
+    public CompletableFuture<? extends LocalizedText> readValueAsTextAsync() {
         return getProperty(VariableNodeProperties.ValueAsText);
     }
 
@@ -815,7 +815,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the MaxStringLength Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<UInteger> getMaxStringLength() {
+    public CompletableFuture<? extends UInteger> readMaxStringLengthAsync() {
         return getProperty(VariableNodeProperties.MaxStringLength);
     }
 
@@ -825,7 +825,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the MaxArrayLength Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<UInteger> getMaxArrayLength() {
+    public CompletableFuture<? extends UInteger> readMaxArrayLengthAsync() {
         return getProperty(VariableNodeProperties.MaxArrayLength);
     }
 
@@ -835,7 +835,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return the value of the EngineeringUnits Property, if it exists.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<EUInformation> getEngineeringUnitsAsync() {
+    public CompletableFuture<? extends EUInformation> readEngineeringUnitsAsync() {
         return getProperty(VariableNodeProperties.EngineeringUnits);
     }
 
@@ -846,7 +846,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(VariableNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -857,7 +857,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setLocalTime(TimeZoneDataType localTime) {
+    public CompletableFuture<StatusCode> writeLocalTimeAsync(TimeZoneDataType localTime) {
         return setProperty(VariableNodeProperties.LocalTime, localTime);
     }
 
@@ -868,7 +868,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setDataTypeVersionAsync(String dataTypeVersion) {
+    public CompletableFuture<StatusCode> writeDataTypeVersionAsync(String dataTypeVersion) {
         return setProperty(VariableNodeProperties.DataTypeVersion, dataTypeVersion);
     }
 
@@ -879,7 +879,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setDictionaryFragmentAsync(ByteString dictionaryFragment) {
+    public CompletableFuture<StatusCode> writeDictionaryFragmentAsync(ByteString dictionaryFragment) {
         return setProperty(VariableNodeProperties.DictionaryFragment, dictionaryFragment);
     }
 
@@ -890,7 +890,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setAllowNulls(Boolean allowNulls) {
+    public CompletableFuture<StatusCode> writeAllowNullsAsync(Boolean allowNulls) {
         return setProperty(VariableNodeProperties.AllowNulls, allowNulls);
     }
 
@@ -901,7 +901,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setValueAsTextAsync(LocalizedText valueAsText) {
+    public CompletableFuture<StatusCode> writeValueAsTextAsync(LocalizedText valueAsText) {
         return setProperty(VariableNodeProperties.ValueAsText, valueAsText);
     }
 
@@ -912,7 +912,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setMaxStringLength(UInteger maxStringLength) {
+    public CompletableFuture<StatusCode> writeMaxStringLengthAsync(UInteger maxStringLength) {
         return setProperty(VariableNodeProperties.MaxStringLength, maxStringLength);
     }
 
@@ -923,7 +923,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setMaxArrayLength(UInteger maxArrayLength) {
+    public CompletableFuture<StatusCode> writeMaxArrayLengthAsync(UInteger maxArrayLength) {
         return setProperty(VariableNodeProperties.MaxArrayLength, maxArrayLength);
     }
 
@@ -934,7 +934,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableNodeProperties
      */
-    public CompletableFuture<StatusCode> setEngineeringUnitsAsync(EUInformation engineeringUnits) {
+    public CompletableFuture<StatusCode> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
         return setProperty(VariableNodeProperties.EngineeringUnits, engineeringUnits);
     }
 

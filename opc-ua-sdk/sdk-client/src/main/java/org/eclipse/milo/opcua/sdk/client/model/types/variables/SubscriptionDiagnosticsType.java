@@ -4,9 +4,9 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
     /**
@@ -59,9 +59,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionIdAsync(NodeId sessionId);
+    CompletableFuture<StatusCode> writeSessionIdAsync(NodeId sessionId);
 
     /**
      * Get the SessionId {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -132,9 +132,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSubscriptionId(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSubscriptionIdAsync(UInteger subscriptionId);
+    CompletableFuture<StatusCode> writeSubscriptionIdAsync(UInteger subscriptionId);
 
     /**
      * Get the SubscriptionId {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -205,9 +205,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writePriority(UByte)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePriorityAsync(UByte priority);
+    CompletableFuture<StatusCode> writePriorityAsync(UByte priority);
 
     /**
      * Get the Priority {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -278,9 +278,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writePublishingInterval(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePublishingIntervalAsync(Double publishingInterval);
+    CompletableFuture<StatusCode> writePublishingIntervalAsync(Double publishingInterval);
 
     /**
      * Get the PublishingInterval {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -351,9 +351,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMaxKeepAliveCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxKeepAliveCountAsync(UInteger maxKeepAliveCount);
+    CompletableFuture<StatusCode> writeMaxKeepAliveCountAsync(UInteger maxKeepAliveCount);
 
     /**
      * Get the MaxKeepAliveCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -424,9 +424,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMaxLifetimeCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxLifetimeCountAsync(UInteger maxLifetimeCount);
+    CompletableFuture<StatusCode> writeMaxLifetimeCountAsync(UInteger maxLifetimeCount);
 
     /**
      * Get the MaxLifetimeCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -497,9 +497,10 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMaxNotificationsPerPublish(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNotificationsPerPublishAsync(UInteger maxNotificationsPerPublish);
+    CompletableFuture<StatusCode> writeMaxNotificationsPerPublishAsync(
+        UInteger maxNotificationsPerPublish);
 
     /**
      * Get the MaxNotificationsPerPublish {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -570,9 +571,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writePublishingEnabled(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePublishingEnabledAsync(Boolean publishingEnabled);
+    CompletableFuture<StatusCode> writePublishingEnabledAsync(Boolean publishingEnabled);
 
     /**
      * Get the PublishingEnabled {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -643,9 +644,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeModifyCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeModifyCountAsync(UInteger modifyCount);
+    CompletableFuture<StatusCode> writeModifyCountAsync(UInteger modifyCount);
 
     /**
      * Get the ModifyCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -716,9 +717,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEnableCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnableCountAsync(UInteger enableCount);
+    CompletableFuture<StatusCode> writeEnableCountAsync(UInteger enableCount);
 
     /**
      * Get the EnableCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -789,9 +790,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDisableCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDisableCountAsync(UInteger disableCount);
+    CompletableFuture<StatusCode> writeDisableCountAsync(UInteger disableCount);
 
     /**
      * Get the DisableCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -862,9 +863,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRepublishRequestCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRepublishRequestCountAsync(UInteger republishRequestCount);
+    CompletableFuture<StatusCode> writeRepublishRequestCountAsync(UInteger republishRequestCount);
 
     /**
      * Get the RepublishRequestCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -935,9 +936,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRepublishMessageRequestCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRepublishMessageRequestCountAsync(
+    CompletableFuture<StatusCode> writeRepublishMessageRequestCountAsync(
         UInteger republishMessageRequestCount);
 
     /**
@@ -1009,9 +1010,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRepublishMessageCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRepublishMessageCountAsync(UInteger republishMessageCount);
+    CompletableFuture<StatusCode> writeRepublishMessageCountAsync(UInteger republishMessageCount);
 
     /**
      * Get the RepublishMessageCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1082,9 +1083,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTransferRequestCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransferRequestCountAsync(UInteger transferRequestCount);
+    CompletableFuture<StatusCode> writeTransferRequestCountAsync(UInteger transferRequestCount);
 
     /**
      * Get the TransferRequestCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1155,9 +1156,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTransferredToAltClientCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransferredToAltClientCountAsync(
+    CompletableFuture<StatusCode> writeTransferredToAltClientCountAsync(
         UInteger transferredToAltClientCount);
 
     /**
@@ -1229,9 +1230,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTransferredToSameClientCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransferredToSameClientCountAsync(
+    CompletableFuture<StatusCode> writeTransferredToSameClientCountAsync(
         UInteger transferredToSameClientCount);
 
     /**
@@ -1303,9 +1304,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writePublishRequestCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePublishRequestCountAsync(UInteger publishRequestCount);
+    CompletableFuture<StatusCode> writePublishRequestCountAsync(UInteger publishRequestCount);
 
     /**
      * Get the PublishRequestCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1376,9 +1377,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDataChangeNotificationsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDataChangeNotificationsCountAsync(
+    CompletableFuture<StatusCode> writeDataChangeNotificationsCountAsync(
         UInteger dataChangeNotificationsCount);
 
     /**
@@ -1450,9 +1451,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEventNotificationsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEventNotificationsCountAsync(UInteger eventNotificationsCount);
+    CompletableFuture<StatusCode> writeEventNotificationsCountAsync(UInteger eventNotificationsCount);
 
     /**
      * Get the EventNotificationsCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1523,9 +1524,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeNotificationsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNotificationsCountAsync(UInteger notificationsCount);
+    CompletableFuture<StatusCode> writeNotificationsCountAsync(UInteger notificationsCount);
 
     /**
      * Get the NotificationsCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1596,9 +1597,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLatePublishRequestCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLatePublishRequestCountAsync(UInteger latePublishRequestCount);
+    CompletableFuture<StatusCode> writeLatePublishRequestCountAsync(UInteger latePublishRequestCount);
 
     /**
      * Get the LatePublishRequestCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1669,9 +1670,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentKeepAliveCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentKeepAliveCountAsync(UInteger currentKeepAliveCount);
+    CompletableFuture<StatusCode> writeCurrentKeepAliveCountAsync(UInteger currentKeepAliveCount);
 
     /**
      * Get the CurrentKeepAliveCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1742,9 +1743,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentLifetimeCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentLifetimeCountAsync(UInteger currentLifetimeCount);
+    CompletableFuture<StatusCode> writeCurrentLifetimeCountAsync(UInteger currentLifetimeCount);
 
     /**
      * Get the CurrentLifetimeCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1815,9 +1816,10 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeUnacknowledgedMessageCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUnacknowledgedMessageCountAsync(UInteger unacknowledgedMessageCount);
+    CompletableFuture<StatusCode> writeUnacknowledgedMessageCountAsync(
+        UInteger unacknowledgedMessageCount);
 
     /**
      * Get the UnacknowledgedMessageCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1888,9 +1890,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDiscardedMessageCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDiscardedMessageCountAsync(UInteger discardedMessageCount);
+    CompletableFuture<StatusCode> writeDiscardedMessageCountAsync(UInteger discardedMessageCount);
 
     /**
      * Get the DiscardedMessageCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -1961,9 +1963,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMonitoredItemCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMonitoredItemCountAsync(UInteger monitoredItemCount);
+    CompletableFuture<StatusCode> writeMonitoredItemCountAsync(UInteger monitoredItemCount);
 
     /**
      * Get the MonitoredItemCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2034,9 +2036,10 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDisabledMonitoredItemCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDisabledMonitoredItemCountAsync(UInteger disabledMonitoredItemCount);
+    CompletableFuture<StatusCode> writeDisabledMonitoredItemCountAsync(
+        UInteger disabledMonitoredItemCount);
 
     /**
      * Get the DisabledMonitoredItemCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2107,9 +2110,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeMonitoringQueueOverflowCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMonitoringQueueOverflowCountAsync(
+    CompletableFuture<StatusCode> writeMonitoringQueueOverflowCountAsync(
         UInteger monitoringQueueOverflowCount);
 
     /**
@@ -2181,9 +2184,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeNextSequenceNumber(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNextSequenceNumberAsync(UInteger nextSequenceNumber);
+    CompletableFuture<StatusCode> writeNextSequenceNumberAsync(UInteger nextSequenceNumber);
 
     /**
      * Get the NextSequenceNumber {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -2254,9 +2257,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEventQueueOverFlowCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEventQueueOverFlowCountAsync(UInteger eventQueueOverFlowCount);
+    CompletableFuture<StatusCode> writeEventQueueOverFlowCountAsync(UInteger eventQueueOverFlowCount);
 
     /**
      * Get the EventQueueOverFlowCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.

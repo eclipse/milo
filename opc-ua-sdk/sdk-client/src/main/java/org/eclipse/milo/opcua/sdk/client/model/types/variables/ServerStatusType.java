@@ -5,10 +5,10 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerStatusType extends BaseDataVariableType {
     /**
@@ -61,9 +61,9 @@ public interface ServerStatusType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeStartTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStartTimeAsync(DateTime startTime);
+    CompletableFuture<StatusCode> writeStartTimeAsync(DateTime startTime);
 
     /**
      * Get the StartTime {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -134,9 +134,9 @@ public interface ServerStatusType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentTimeAsync(DateTime currentTime);
+    CompletableFuture<StatusCode> writeCurrentTimeAsync(DateTime currentTime);
 
     /**
      * Get the CurrentTime {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -207,9 +207,9 @@ public interface ServerStatusType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeState(ServerState)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStateAsync(ServerState state);
+    CompletableFuture<StatusCode> writeStateAsync(ServerState state);
 
     /**
      * Get the State {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -280,9 +280,9 @@ public interface ServerStatusType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeBuildInfo(BuildInfo)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBuildInfoAsync(BuildInfo buildInfo);
+    CompletableFuture<StatusCode> writeBuildInfoAsync(BuildInfo buildInfo);
 
     /**
      * Get the BuildInfo {@link BuildInfoType} Node, or {@code null} if it does not exist.
@@ -353,9 +353,9 @@ public interface ServerStatusType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSecondsTillShutdown(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecondsTillShutdownAsync(UInteger secondsTillShutdown);
+    CompletableFuture<StatusCode> writeSecondsTillShutdownAsync(UInteger secondsTillShutdown);
 
     /**
      * Get the SecondsTillShutdown {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -426,9 +426,9 @@ public interface ServerStatusType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeShutdownReason(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeShutdownReasonAsync(LocalizedText shutdownReason);
+    CompletableFuture<StatusCode> writeShutdownReasonAsync(LocalizedText shutdownReason);
 
     /**
      * Get the ShutdownReason {@link BaseDataVariableType} Node, or {@code null} if it does not exist.

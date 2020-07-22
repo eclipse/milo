@@ -14,12 +14,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class DataItemTypeNode extends BaseDataVariableTypeNode implements DataItemType {
     public DataItemTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class DataItemTypeNode extends BaseDataVariableTypeNode implements DataIt
     }
 
     @Override
-    public CompletableFuture<Unit> writeDefinitionAsync(String definition) {
+    public CompletableFuture<StatusCode> writeDefinitionAsync(String definition) {
         DataValue value = DataValue.valueOnly(new Variant(definition));
         return getDefinitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class DataItemTypeNode extends BaseDataVariableTypeNode implements DataIt
     }
 
     @Override
-    public CompletableFuture<Unit> writeValuePrecisionAsync(Double valuePrecision) {
+    public CompletableFuture<StatusCode> writeValuePrecisionAsync(Double valuePrecision) {
         DataValue value = DataValue.valueOnly(new Variant(valuePrecision));
         return getValuePrecisionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

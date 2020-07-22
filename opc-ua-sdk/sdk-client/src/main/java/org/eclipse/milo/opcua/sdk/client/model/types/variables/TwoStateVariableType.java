@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<Boolean> ID = new QualifiedProperty<>(
@@ -101,9 +101,9 @@ public interface TwoStateVariableType extends StateVariableType {
      * An asynchronous implementation of {@link #writeId(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIdAsync(Boolean id);
+    CompletableFuture<StatusCode> writeIdAsync(Boolean id);
 
     /**
      * Get the Id {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -174,9 +174,9 @@ public interface TwoStateVariableType extends StateVariableType {
      * An asynchronous implementation of {@link #writeTransitionTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransitionTimeAsync(DateTime transitionTime);
+    CompletableFuture<StatusCode> writeTransitionTimeAsync(DateTime transitionTime);
 
     /**
      * Get the TransitionTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -247,9 +247,9 @@ public interface TwoStateVariableType extends StateVariableType {
      * An asynchronous implementation of {@link #writeEffectiveTransitionTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEffectiveTransitionTimeAsync(DateTime effectiveTransitionTime);
+    CompletableFuture<StatusCode> writeEffectiveTransitionTimeAsync(DateTime effectiveTransitionTime);
 
     /**
      * Get the EffectiveTransitionTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -320,9 +320,9 @@ public interface TwoStateVariableType extends StateVariableType {
      * An asynchronous implementation of {@link #writeTrueState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTrueStateAsync(LocalizedText trueState);
+    CompletableFuture<StatusCode> writeTrueStateAsync(LocalizedText trueState);
 
     /**
      * Get the TrueState {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -393,9 +393,9 @@ public interface TwoStateVariableType extends StateVariableType {
      * An asynchronous implementation of {@link #writeFalseState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeFalseStateAsync(LocalizedText falseState);
+    CompletableFuture<StatusCode> writeFalseStateAsync(LocalizedText falseState);
 
     /**
      * Get the FalseState {@link PropertyType} Node, or {@code null} if it does not exist.

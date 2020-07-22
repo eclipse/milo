@@ -16,14 +16,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implements ProgramDiagnosticType {
     public ProgramDiagnosticTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -70,17 +69,10 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeCreateSessionIdAsync(NodeId createSessionId) {
+    public CompletableFuture<StatusCode> writeCreateSessionIdAsync(NodeId createSessionId) {
         DataValue value = DataValue.valueOnly(new Variant(createSessionId));
         return getCreateSessionIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -134,17 +126,10 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeCreateClientNameAsync(String createClientName) {
+    public CompletableFuture<StatusCode> writeCreateClientNameAsync(String createClientName) {
         DataValue value = DataValue.valueOnly(new Variant(createClientName));
         return getCreateClientNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -198,17 +183,11 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeInvocationCreationTimeAsync(DateTime invocationCreationTime) {
+    public CompletableFuture<StatusCode> writeInvocationCreationTimeAsync(
+        DateTime invocationCreationTime) {
         DataValue value = DataValue.valueOnly(new Variant(invocationCreationTime));
         return getInvocationCreationTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -262,17 +241,10 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastTransitionTimeAsync(DateTime lastTransitionTime) {
+    public CompletableFuture<StatusCode> writeLastTransitionTimeAsync(DateTime lastTransitionTime) {
         DataValue value = DataValue.valueOnly(new Variant(lastTransitionTime));
         return getLastTransitionTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -326,17 +298,10 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastMethodCallAsync(String lastMethodCall) {
+    public CompletableFuture<StatusCode> writeLastMethodCallAsync(String lastMethodCall) {
         DataValue value = DataValue.valueOnly(new Variant(lastMethodCall));
         return getLastMethodCallNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -390,17 +355,10 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastMethodSessionIdAsync(NodeId lastMethodSessionId) {
+    public CompletableFuture<StatusCode> writeLastMethodSessionIdAsync(NodeId lastMethodSessionId) {
         DataValue value = DataValue.valueOnly(new Variant(lastMethodSessionId));
         return getLastMethodSessionIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -456,19 +414,12 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastMethodInputArgumentsAsync(
+    public CompletableFuture<StatusCode> writeLastMethodInputArgumentsAsync(
         Argument[] lastMethodInputArguments) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodInputArguments);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodInputArgumentsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -525,19 +476,12 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastMethodOutputArgumentsAsync(
+    public CompletableFuture<StatusCode> writeLastMethodOutputArgumentsAsync(
         Argument[] lastMethodOutputArguments) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), lastMethodOutputArguments);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodOutputArgumentsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -591,17 +535,10 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastMethodCallTimeAsync(DateTime lastMethodCallTime) {
+    public CompletableFuture<StatusCode> writeLastMethodCallTimeAsync(DateTime lastMethodCallTime) {
         DataValue value = DataValue.valueOnly(new Variant(lastMethodCallTime));
         return getLastMethodCallTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -656,19 +593,12 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastMethodReturnStatusAsync(
+    public CompletableFuture<StatusCode> writeLastMethodReturnStatusAsync(
         StatusResult lastMethodReturnStatus) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), lastMethodReturnStatus);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLastMethodReturnStatusNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

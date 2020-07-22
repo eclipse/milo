@@ -6,7 +6,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface DataItemType extends BaseDataVariableType {
     QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
@@ -75,9 +75,9 @@ public interface DataItemType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDefinition(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDefinitionAsync(String definition);
+    CompletableFuture<StatusCode> writeDefinitionAsync(String definition);
 
     /**
      * Get the Definition {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -148,9 +148,9 @@ public interface DataItemType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeValuePrecision(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeValuePrecisionAsync(Double valuePrecision);
+    CompletableFuture<StatusCode> writeValuePrecisionAsync(Double valuePrecision);
 
     /**
      * Get the ValuePrecision {@link PropertyType} Node, or {@code null} if it does not exist.

@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNode implements SubscriptionDiagnosticsArrayType {
     public SubscriptionDiagnosticsArrayTypeNode(OpcUaClient client, NodeId nodeId,
@@ -72,19 +71,12 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
     }
 
     @Override
-    public CompletableFuture<Unit> writeSubscriptionDiagnosticsAsync(
+    public CompletableFuture<StatusCode> writeSubscriptionDiagnosticsAsync(
         SubscriptionDiagnosticsDataType subscriptionDiagnostics) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), subscriptionDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

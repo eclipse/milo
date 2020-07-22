@@ -14,12 +14,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNode implements SamplingIntervalDiagnosticsType {
     public SamplingIntervalDiagnosticsTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     }
 
     @Override
-    public CompletableFuture<Unit> writeSamplingIntervalAsync(Double samplingInterval) {
+    public CompletableFuture<StatusCode> writeSamplingIntervalAsync(Double samplingInterval) {
         DataValue value = DataValue.valueOnly(new Variant(samplingInterval));
         return getSamplingIntervalNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -132,18 +124,11 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     }
 
     @Override
-    public CompletableFuture<Unit> writeSampledMonitoredItemsCountAsync(
+    public CompletableFuture<StatusCode> writeSampledMonitoredItemsCountAsync(
         UInteger sampledMonitoredItemsCount) {
         DataValue value = DataValue.valueOnly(new Variant(sampledMonitoredItemsCount));
         return getSampledMonitoredItemsCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -200,18 +185,11 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxSampledMonitoredItemsCountAsync(
+    public CompletableFuture<StatusCode> writeMaxSampledMonitoredItemsCountAsync(
         UInteger maxSampledMonitoredItemsCount) {
         DataValue value = DataValue.valueOnly(new Variant(maxSampledMonitoredItemsCount));
         return getMaxSampledMonitoredItemsCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -268,18 +246,11 @@ public class SamplingIntervalDiagnosticsTypeNode extends BaseDataVariableTypeNod
     }
 
     @Override
-    public CompletableFuture<Unit> writeDisabledMonitoredItemsSamplingCountAsync(
+    public CompletableFuture<StatusCode> writeDisabledMonitoredItemsSamplingCountAsync(
         UInteger disabledMonitoredItemsSamplingCount) {
         DataValue value = DataValue.valueOnly(new Variant(disabledMonitoredItemsSamplingCount));
         return getDisabledMonitoredItemsSamplingCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

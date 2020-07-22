@@ -8,8 +8,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface TransitionVariableType extends BaseDataVariableType {
     QualifiedProperty<Object> ID = new QualifiedProperty<>(
@@ -102,9 +102,9 @@ public interface TransitionVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeId(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIdAsync(Object id);
+    CompletableFuture<StatusCode> writeIdAsync(Object id);
 
     /**
      * Get the Id {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -175,9 +175,9 @@ public interface TransitionVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeName(QualifiedName)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNameAsync(QualifiedName name);
+    CompletableFuture<StatusCode> writeNameAsync(QualifiedName name);
 
     /**
      * Get the Name {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -248,9 +248,9 @@ public interface TransitionVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeNumber(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNumberAsync(UInteger number);
+    CompletableFuture<StatusCode> writeNumberAsync(UInteger number);
 
     /**
      * Get the Number {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -321,9 +321,9 @@ public interface TransitionVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeTransitionTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransitionTimeAsync(DateTime transitionTime);
+    CompletableFuture<StatusCode> writeTransitionTimeAsync(DateTime transitionTime);
 
     /**
      * Get the TransitionTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -394,9 +394,9 @@ public interface TransitionVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEffectiveTransitionTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEffectiveTransitionTimeAsync(DateTime effectiveTransitionTime);
+    CompletableFuture<StatusCode> writeEffectiveTransitionTimeAsync(DateTime effectiveTransitionTime);
 
     /**
      * Get the EffectiveTransitionTime {@link PropertyType} Node, or {@code null} if it does not exist.

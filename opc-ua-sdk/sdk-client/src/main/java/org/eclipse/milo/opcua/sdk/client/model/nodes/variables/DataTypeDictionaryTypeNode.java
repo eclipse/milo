@@ -14,12 +14,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class DataTypeDictionaryTypeNode extends BaseDataVariableTypeNode implements DataTypeDictionaryType {
     public DataTypeDictionaryTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class DataTypeDictionaryTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeDataTypeVersionAsync(String dataTypeVersion) {
+    public CompletableFuture<StatusCode> writeDataTypeVersionAsync(String dataTypeVersion) {
         DataValue value = DataValue.valueOnly(new Variant(dataTypeVersion));
         return getDataTypeVersionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class DataTypeDictionaryTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeNamespaceUriAsync(String namespaceUri) {
+    public CompletableFuture<StatusCode> writeNamespaceUriAsync(String namespaceUri) {
         DataValue value = DataValue.valueOnly(new Variant(namespaceUri));
         return getNamespaceUriNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

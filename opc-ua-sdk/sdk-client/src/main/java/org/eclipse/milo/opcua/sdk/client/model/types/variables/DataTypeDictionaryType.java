@@ -6,7 +6,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface DataTypeDictionaryType extends BaseDataVariableType {
     QualifiedProperty<String> DATA_TYPE_VERSION = new QualifiedProperty<>(
@@ -75,9 +75,9 @@ public interface DataTypeDictionaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDataTypeVersion(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDataTypeVersionAsync(String dataTypeVersion);
+    CompletableFuture<StatusCode> writeDataTypeVersionAsync(String dataTypeVersion);
 
     /**
      * Get the DataTypeVersion {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -148,9 +148,9 @@ public interface DataTypeDictionaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeNamespaceUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNamespaceUriAsync(String namespaceUri);
+    CompletableFuture<StatusCode> writeNamespaceUriAsync(String namespaceUri);
 
     /**
      * Get the NamespaceUri {@link PropertyType} Node, or {@code null} if it does not exist.

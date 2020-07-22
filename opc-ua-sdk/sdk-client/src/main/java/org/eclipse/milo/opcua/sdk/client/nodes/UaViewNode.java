@@ -183,7 +183,7 @@ public class UaViewNode extends UaNode implements ViewNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see ViewNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(ViewNodeProperties.NodeVersion);
     }
 
@@ -193,7 +193,7 @@ public class UaViewNode extends UaNode implements ViewNode {
      * @return the value of the ViewVersion Property, if it exists.
      * @see ViewNodeProperties
      */
-    public CompletableFuture<UInteger> getViewVersion() {
+    public CompletableFuture<? extends UInteger> readViewVersionAsync() {
         return getProperty(ViewNodeProperties.ViewVersion);
     }
 
@@ -204,7 +204,7 @@ public class UaViewNode extends UaNode implements ViewNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ViewNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(ViewNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -215,7 +215,7 @@ public class UaViewNode extends UaNode implements ViewNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ViewNodeProperties
      */
-    public CompletableFuture<StatusCode> setViewVersion(UInteger viewVersion) {
+    public CompletableFuture<StatusCode> writeViewVersionAsync(UInteger viewVersion) {
         return setProperty(ViewNodeProperties.ViewVersion, viewVersion);
     }
 

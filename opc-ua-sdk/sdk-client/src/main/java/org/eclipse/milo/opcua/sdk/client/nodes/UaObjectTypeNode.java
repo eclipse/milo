@@ -117,7 +117,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see ObjectTypeNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(ObjectTypeNodeProperties.NodeVersion);
     }
 
@@ -127,7 +127,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
      * @return the value of the Icon Property, if it exists.
      * @see ObjectTypeNodeProperties
      */
-    public CompletableFuture<ByteString> getIcon() {
+    public CompletableFuture<? extends ByteString> readIconAsync() {
         return getProperty(ObjectTypeNodeProperties.Icon);
     }
 
@@ -138,7 +138,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ObjectTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(ObjectTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -149,7 +149,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ObjectTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setIcon(ByteString icon) {
+    public CompletableFuture<StatusCode> writeIconAsync(ByteString icon) {
         return setProperty(ObjectTypeNodeProperties.Icon, icon);
     }
 

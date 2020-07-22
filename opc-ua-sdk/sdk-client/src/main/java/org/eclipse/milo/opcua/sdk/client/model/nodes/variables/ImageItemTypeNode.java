@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemType {
     public ImageItemTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -69,18 +68,11 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition) {
+    public CompletableFuture<StatusCode> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getXAxisDefinitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -135,18 +127,11 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition) {
+    public CompletableFuture<StatusCode> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), yAxisDefinition);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getYAxisDefinitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

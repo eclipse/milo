@@ -409,7 +409,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see VariableTypeNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(VariableTypeNodeProperties.NodeVersion);
     }
 
@@ -420,7 +420,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see VariableTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(VariableTypeNodeProperties.NodeVersion, nodeVersion);
     }
 

@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements BuildInfoType {
     public BuildInfoTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
     }
 
     @Override
-    public CompletableFuture<Unit> writeProductUriAsync(String productUri) {
+    public CompletableFuture<StatusCode> writeProductUriAsync(String productUri) {
         DataValue value = DataValue.valueOnly(new Variant(productUri));
         return getProductUriNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
     }
 
     @Override
-    public CompletableFuture<Unit> writeManufacturerNameAsync(String manufacturerName) {
+    public CompletableFuture<StatusCode> writeManufacturerNameAsync(String manufacturerName) {
         DataValue value = DataValue.valueOnly(new Variant(manufacturerName));
         return getManufacturerNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,17 +180,10 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
     }
 
     @Override
-    public CompletableFuture<Unit> writeProductNameAsync(String productName) {
+    public CompletableFuture<StatusCode> writeProductNameAsync(String productName) {
         DataValue value = DataValue.valueOnly(new Variant(productName));
         return getProductNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -259,17 +237,10 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
     }
 
     @Override
-    public CompletableFuture<Unit> writeSoftwareVersionAsync(String softwareVersion) {
+    public CompletableFuture<StatusCode> writeSoftwareVersionAsync(String softwareVersion) {
         DataValue value = DataValue.valueOnly(new Variant(softwareVersion));
         return getSoftwareVersionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -323,17 +294,10 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
     }
 
     @Override
-    public CompletableFuture<Unit> writeBuildNumberAsync(String buildNumber) {
+    public CompletableFuture<StatusCode> writeBuildNumberAsync(String buildNumber) {
         DataValue value = DataValue.valueOnly(new Variant(buildNumber));
         return getBuildNumberNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -387,17 +351,10 @@ public class BuildInfoTypeNode extends BaseDataVariableTypeNode implements Build
     }
 
     @Override
-    public CompletableFuture<Unit> writeBuildDateAsync(DateTime buildDate) {
+    public CompletableFuture<StatusCode> writeBuildDateAsync(DateTime buildDate) {
         DataValue value = DataValue.valueOnly(new Variant(buildDate));
         return getBuildDateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

@@ -119,7 +119,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(DataTypeNodeProperties.NodeVersion);
     }
 
@@ -129,7 +129,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the EnumStrings Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<LocalizedText[]> getEnumStrings() {
+    public CompletableFuture<? extends LocalizedText[]> readEnumStringsAsync() {
         return getProperty(DataTypeNodeProperties.EnumStrings);
     }
 
@@ -139,7 +139,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the EnumValues Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<EnumValueType[]> getEnumValues() {
+    public CompletableFuture<? extends EnumValueType[]> readEnumValuesAsync() {
         return getProperty(DataTypeNodeProperties.EnumValues);
     }
 
@@ -149,7 +149,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the OptionSetValues Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<LocalizedText[]> getOptionSetValues() {
+    public CompletableFuture<? extends LocalizedText[]> readOptionSetValuesAsync() {
         return getProperty(DataTypeNodeProperties.OptionSetValues);
     }
 
@@ -160,7 +160,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(NodeVersion, nodeVersion);
     }
 
@@ -171,7 +171,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setEnumStrings(LocalizedText[] enumStrings) {
+    public CompletableFuture<StatusCode> writeEnumStringsAsync(LocalizedText[] enumStrings) {
         return setProperty(DataTypeNodeProperties.EnumStrings, enumStrings);
     }
 
@@ -182,7 +182,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setEnumValues(EnumValueType[] enumValues) {
+    public CompletableFuture<StatusCode> writeEnumValuesAsync(EnumValueType[] enumValues) {
         return setProperty(DataTypeNodeProperties.EnumValues, enumValues);
     }
 
@@ -193,7 +193,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setOptionSetValues(LocalizedText[] optionSetValues) {
+    public CompletableFuture<StatusCode> writeOptionSetValuesAsync(LocalizedText[] optionSetValues) {
         return setProperty(DataTypeNodeProperties.OptionSetValues, optionSetValues);
     }
 

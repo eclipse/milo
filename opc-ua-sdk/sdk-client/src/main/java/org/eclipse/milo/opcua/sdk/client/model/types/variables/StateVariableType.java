@@ -8,8 +8,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface StateVariableType extends BaseDataVariableType {
     QualifiedProperty<Object> ID = new QualifiedProperty<>(
@@ -94,9 +94,9 @@ public interface StateVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeId(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIdAsync(Object id);
+    CompletableFuture<StatusCode> writeIdAsync(Object id);
 
     /**
      * Get the Id {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -167,9 +167,9 @@ public interface StateVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeName(QualifiedName)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNameAsync(QualifiedName name);
+    CompletableFuture<StatusCode> writeNameAsync(QualifiedName name);
 
     /**
      * Get the Name {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -240,9 +240,9 @@ public interface StateVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeNumber(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNumberAsync(UInteger number);
+    CompletableFuture<StatusCode> writeNumberAsync(UInteger number);
 
     /**
      * Get the Number {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -313,9 +313,9 @@ public interface StateVariableType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeEffectiveDisplayName(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEffectiveDisplayNameAsync(LocalizedText effectiveDisplayName);
+    CompletableFuture<StatusCode> writeEffectiveDisplayNameAsync(LocalizedText effectiveDisplayName);
 
     /**
      * Get the EffectiveDisplayName {@link PropertyType} Node, or {@code null} if it does not exist.

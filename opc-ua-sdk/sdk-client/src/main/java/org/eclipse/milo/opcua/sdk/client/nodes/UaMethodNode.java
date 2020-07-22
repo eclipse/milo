@@ -193,7 +193,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(MethodNodeProperties.NodeVersion);
     }
 
@@ -209,7 +209,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the InputArguments Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<Argument[]> getInputArguments() {
+    public CompletableFuture<? extends Argument[]> readInputArgumentsAsync() {
         return getProperty(MethodNodeProperties.InputArguments);
     }
 
@@ -224,7 +224,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the OutputArguments Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<Argument[]> getOutputArguments() {
+    public CompletableFuture<? extends Argument[]> readOutputArgumentsAsync() {
         return getProperty(MethodNodeProperties.OutputArguments);
     }
 
@@ -235,7 +235,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(MethodNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -246,7 +246,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<StatusCode> setInputArguments(Argument[] inputArguments) {
+    public CompletableFuture<StatusCode> writeInputArgumentsAsync(Argument[] inputArguments) {
         return setProperty(MethodNodeProperties.InputArguments, inputArguments);
     }
 
@@ -257,7 +257,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<StatusCode> setOutputArguments(Argument[] outputArguments) {
+    public CompletableFuture<StatusCode> writeOutputArgumentsAsync(Argument[] outputArguments) {
         return setProperty(MethodNodeProperties.OutputArguments, outputArguments);
     }
 

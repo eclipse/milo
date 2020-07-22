@@ -3,8 +3,8 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
     /**
@@ -57,9 +57,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeServerViewCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerViewCountAsync(UInteger serverViewCount);
+    CompletableFuture<StatusCode> writeServerViewCountAsync(UInteger serverViewCount);
 
     /**
      * Get the ServerViewCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -130,9 +130,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentSessionCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentSessionCountAsync(UInteger currentSessionCount);
+    CompletableFuture<StatusCode> writeCurrentSessionCountAsync(UInteger currentSessionCount);
 
     /**
      * Get the CurrentSessionCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -203,9 +203,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCumulatedSessionCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCumulatedSessionCountAsync(UInteger cumulatedSessionCount);
+    CompletableFuture<StatusCode> writeCumulatedSessionCountAsync(UInteger cumulatedSessionCount);
 
     /**
      * Get the CumulatedSessionCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -276,9 +276,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSecurityRejectedSessionCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecurityRejectedSessionCountAsync(
+    CompletableFuture<StatusCode> writeSecurityRejectedSessionCountAsync(
         UInteger securityRejectedSessionCount);
 
     /**
@@ -350,9 +350,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRejectedSessionCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRejectedSessionCountAsync(UInteger rejectedSessionCount);
+    CompletableFuture<StatusCode> writeRejectedSessionCountAsync(UInteger rejectedSessionCount);
 
     /**
      * Get the RejectedSessionCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -423,9 +423,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionTimeoutCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionTimeoutCountAsync(UInteger sessionTimeoutCount);
+    CompletableFuture<StatusCode> writeSessionTimeoutCountAsync(UInteger sessionTimeoutCount);
 
     /**
      * Get the SessionTimeoutCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -496,9 +496,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSessionAbortCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionAbortCountAsync(UInteger sessionAbortCount);
+    CompletableFuture<StatusCode> writeSessionAbortCountAsync(UInteger sessionAbortCount);
 
     /**
      * Get the SessionAbortCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -569,9 +569,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writePublishingIntervalCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePublishingIntervalCountAsync(UInteger publishingIntervalCount);
+    CompletableFuture<StatusCode> writePublishingIntervalCountAsync(UInteger publishingIntervalCount);
 
     /**
      * Get the PublishingIntervalCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -642,9 +642,10 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCurrentSubscriptionCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentSubscriptionCountAsync(UInteger currentSubscriptionCount);
+    CompletableFuture<StatusCode> writeCurrentSubscriptionCountAsync(
+        UInteger currentSubscriptionCount);
 
     /**
      * Get the CurrentSubscriptionCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -715,9 +716,10 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCumulatedSubscriptionCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCumulatedSubscriptionCountAsync(UInteger cumulatedSubscriptionCount);
+    CompletableFuture<StatusCode> writeCumulatedSubscriptionCountAsync(
+        UInteger cumulatedSubscriptionCount);
 
     /**
      * Get the CumulatedSubscriptionCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
@@ -789,9 +791,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeSecurityRejectedRequestsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecurityRejectedRequestsCountAsync(
+    CompletableFuture<StatusCode> writeSecurityRejectedRequestsCountAsync(
         UInteger securityRejectedRequestsCount);
 
     /**
@@ -863,9 +865,9 @@ public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeRejectedRequestsCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRejectedRequestsCountAsync(UInteger rejectedRequestsCount);
+    CompletableFuture<StatusCode> writeRejectedRequestsCountAsync(UInteger rejectedRequestsCount);
 
     /**
      * Get the RejectedRequestsCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.

@@ -8,9 +8,9 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ProgramDiagnosticType extends BaseDataVariableType {
     QualifiedProperty<NodeId> CREATE_SESSION_ID = new QualifiedProperty<>(
@@ -143,9 +143,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCreateSessionId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCreateSessionIdAsync(NodeId createSessionId);
+    CompletableFuture<StatusCode> writeCreateSessionIdAsync(NodeId createSessionId);
 
     /**
      * Get the CreateSessionId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -216,9 +216,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeCreateClientName(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCreateClientNameAsync(String createClientName);
+    CompletableFuture<StatusCode> writeCreateClientNameAsync(String createClientName);
 
     /**
      * Get the CreateClientName {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -289,9 +289,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeInvocationCreationTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInvocationCreationTimeAsync(DateTime invocationCreationTime);
+    CompletableFuture<StatusCode> writeInvocationCreationTimeAsync(DateTime invocationCreationTime);
 
     /**
      * Get the InvocationCreationTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -362,9 +362,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastTransitionTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastTransitionTimeAsync(DateTime lastTransitionTime);
+    CompletableFuture<StatusCode> writeLastTransitionTimeAsync(DateTime lastTransitionTime);
 
     /**
      * Get the LastTransitionTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -435,9 +435,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastMethodCall(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastMethodCallAsync(String lastMethodCall);
+    CompletableFuture<StatusCode> writeLastMethodCallAsync(String lastMethodCall);
 
     /**
      * Get the LastMethodCall {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -508,9 +508,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastMethodSessionId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastMethodSessionIdAsync(NodeId lastMethodSessionId);
+    CompletableFuture<StatusCode> writeLastMethodSessionIdAsync(NodeId lastMethodSessionId);
 
     /**
      * Get the LastMethodSessionId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -581,9 +581,10 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastMethodInputArguments(Argument[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastMethodInputArgumentsAsync(Argument[] lastMethodInputArguments);
+    CompletableFuture<StatusCode> writeLastMethodInputArgumentsAsync(
+        Argument[] lastMethodInputArguments);
 
     /**
      * Get the LastMethodInputArguments {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -654,9 +655,10 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastMethodOutputArguments(Argument[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastMethodOutputArgumentsAsync(Argument[] lastMethodOutputArguments);
+    CompletableFuture<StatusCode> writeLastMethodOutputArgumentsAsync(
+        Argument[] lastMethodOutputArguments);
 
     /**
      * Get the LastMethodOutputArguments {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -727,9 +729,9 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastMethodCallTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastMethodCallTimeAsync(DateTime lastMethodCallTime);
+    CompletableFuture<StatusCode> writeLastMethodCallTimeAsync(DateTime lastMethodCallTime);
 
     /**
      * Get the LastMethodCallTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -800,9 +802,10 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeLastMethodReturnStatus(StatusResult)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastMethodReturnStatusAsync(StatusResult lastMethodReturnStatus);
+    CompletableFuture<StatusCode> writeLastMethodReturnStatusAsync(
+        StatusResult lastMethodReturnStatus);
 
     /**
      * Get the LastMethodReturnStatus {@link PropertyType} Node, or {@code null} if it does not exist.

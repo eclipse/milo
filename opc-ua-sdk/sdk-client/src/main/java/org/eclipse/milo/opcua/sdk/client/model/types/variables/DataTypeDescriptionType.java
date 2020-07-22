@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface DataTypeDescriptionType extends BaseDataVariableType {
     QualifiedProperty<String> DATA_TYPE_VERSION = new QualifiedProperty<>(
@@ -76,9 +76,9 @@ public interface DataTypeDescriptionType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDataTypeVersion(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDataTypeVersionAsync(String dataTypeVersion);
+    CompletableFuture<StatusCode> writeDataTypeVersionAsync(String dataTypeVersion);
 
     /**
      * Get the DataTypeVersion {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface DataTypeDescriptionType extends BaseDataVariableType {
      * An asynchronous implementation of {@link #writeDictionaryFragment(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDictionaryFragmentAsync(ByteString dictionaryFragment);
+    CompletableFuture<StatusCode> writeDictionaryFragmentAsync(ByteString dictionaryFragment);
 
     /**
      * Get the DictionaryFragment {@link PropertyType} Node, or {@code null} if it does not exist.

@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface MultiStateDiscreteType extends DiscreteItemType {
     QualifiedProperty<LocalizedText[]> ENUM_STRINGS = new QualifiedProperty<>(
@@ -68,9 +68,9 @@ public interface MultiStateDiscreteType extends DiscreteItemType {
      * An asynchronous implementation of {@link #writeEnumStrings(LocalizedText[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnumStringsAsync(LocalizedText[] enumStrings);
+    CompletableFuture<StatusCode> writeEnumStringsAsync(LocalizedText[] enumStrings);
 
     /**
      * Get the EnumStrings {@link PropertyType} Node, or {@code null} if it does not exist.

@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class TransitionVariableTypeNode extends BaseDataVariableTypeNode implements TransitionVariableType {
     public TransitionVariableTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeIdAsync(Object id) {
+    public CompletableFuture<StatusCode> writeIdAsync(Object id) {
         DataValue value = DataValue.valueOnly(new Variant(id));
         return getIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeNameAsync(QualifiedName name) {
+    public CompletableFuture<StatusCode> writeNameAsync(QualifiedName name) {
         DataValue value = DataValue.valueOnly(new Variant(name));
         return getNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,17 +180,10 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeNumberAsync(UInteger number) {
+    public CompletableFuture<StatusCode> writeNumberAsync(UInteger number) {
         DataValue value = DataValue.valueOnly(new Variant(number));
         return getNumberNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -259,17 +237,10 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeTransitionTimeAsync(DateTime transitionTime) {
+    public CompletableFuture<StatusCode> writeTransitionTimeAsync(DateTime transitionTime) {
         DataValue value = DataValue.valueOnly(new Variant(transitionTime));
         return getTransitionTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -323,18 +294,11 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
     }
 
     @Override
-    public CompletableFuture<Unit> writeEffectiveTransitionTimeAsync(
+    public CompletableFuture<StatusCode> writeEffectiveTransitionTimeAsync(
         DateTime effectiveTransitionTime) {
         DataValue value = DataValue.valueOnly(new Variant(effectiveTransitionTime));
         return getEffectiveTransitionTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
