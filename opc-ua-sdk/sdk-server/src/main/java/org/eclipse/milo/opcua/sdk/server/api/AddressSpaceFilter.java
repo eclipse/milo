@@ -170,7 +170,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} of the monitored item being created.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onBeforeDataItemCreated(ReadValueId, Double, UInteger, BiConsumer)
+     * @see MonitoredItemServices#onCreateDataItem(ReadValueId, Double, UInteger, BiConsumer)
      */
     boolean filterOnBeforeDataItemCreated(OpcUaServer server, ReadValueId readValueId);
 
@@ -182,7 +182,7 @@ public interface AddressSpaceFilter {
      * @param dataItem the {@link DataItem} that will be modified.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onBeforeDataItemModified(DataItem, Double, UInteger, BiConsumer)
+     * @see MonitoredItemServices#onModifyDataItem(DataItem, Double, UInteger, BiConsumer)
      */
     boolean filterOnBeforeDataItemModified(OpcUaServer server, DataItem dataItem);
 
@@ -194,7 +194,7 @@ public interface AddressSpaceFilter {
      * @param dataItem the {@link DataItem} that was created.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onAfterDataItemsCreated(List)
+     * @see MonitoredItemServices#onDataItemsCreated(List)
      */
     boolean filterOnAfterDataItemsCreated(OpcUaServer server, DataItem dataItem);
 
@@ -206,7 +206,7 @@ public interface AddressSpaceFilter {
      * @param dataItem the {@link DataItem} that was modified.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onAfterDataItemsModified(List)
+     * @see MonitoredItemServices#onDataItemsModified(List)
      */
     boolean filterOnAfterDataItemsModified(OpcUaServer server, DataItem dataItem);
 
@@ -218,7 +218,7 @@ public interface AddressSpaceFilter {
      * @param dataItem the {@link DataItem} that was deleted.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onAfterDataItemsDeleted(List)
+     * @see MonitoredItemServices#onDataItemsDeleted(List)
      */
     boolean filterOnAfterDataItemsDeleted(OpcUaServer server, DataItem dataItem);
 
@@ -230,7 +230,7 @@ public interface AddressSpaceFilter {
      * @param readValueId the {@link ReadValueId} of the monitored item being created.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onBeforeEventItemCreated(ReadValueId, UInteger, Consumer)
+     * @see MonitoredItemServices#onCreateEventItem(ReadValueId, UInteger, Consumer)
      */
     boolean filterOnBeforeEventItemCreated(OpcUaServer server, ReadValueId readValueId);
 
@@ -242,7 +242,7 @@ public interface AddressSpaceFilter {
      * @param eventItem the {@link EventItem} that will be modified.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onBeforeEventItemModified(EventItem, UInteger, Consumer)
+     * @see MonitoredItemServices#onModifyEventItem(EventItem, UInteger, Consumer)
      */
     boolean filterOnBeforeEventItemModified(OpcUaServer server, EventItem eventItem);
 
@@ -254,7 +254,7 @@ public interface AddressSpaceFilter {
      * @param eventItem the {@link EventItem} that was created.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onAfterEventItemsCreated(List)
+     * @see MonitoredItemServices#onEventItemsCreated(List)
      */
     boolean filterOnAfterEventItemsCreated(OpcUaServer server, EventItem eventItem);
 
@@ -266,7 +266,7 @@ public interface AddressSpaceFilter {
      * @param eventItem the {@link EventItem} that was modified.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onAfterEventItemsModified(List)
+     * @see MonitoredItemServices#onEventItemsModified(List)
      */
     boolean filterOnAfterEventItemsModified(OpcUaServer server, EventItem eventItem);
 
@@ -278,7 +278,7 @@ public interface AddressSpaceFilter {
      * @param eventItem the {@link EventItem} that twas deleted.
      * @return {@code true} if the monitored item operation for {@code readValueId} should be handled by the
      * {@link AddressSpace} this filter belongs to.
-     * @see MonitoredItemServices#onAfterEventItemsDeleted(List)
+     * @see MonitoredItemServices#onEventItemsDeleted(List)
      */
     boolean filterOnAfterEventItemsDeleted(OpcUaServer server, EventItem eventItem);
 

@@ -88,18 +88,23 @@ public abstract class ForwardingAddressSpace implements AddressSpace {
         BiConsumer<Double, UInteger> revisionCallback
     ) {
 
-        delegate().onCreateDataItem(itemToMonitor, requestedSamplingInterval, requestedQueueSize, revisionCallback);
+        delegate().onCreateDataItem(
+            itemToMonitor,
+            requestedSamplingInterval,
+            requestedQueueSize,
+            revisionCallback
+        );
     }
 
     @Override
     public void onModifyDataItem(
-        ReadValueId itemToModify,
+        DataItem dataItem,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
         BiConsumer<Double, UInteger> revisionCallback
     ) {
 
-        delegate().onModifyDataItem(itemToModify, requestedSamplingInterval, requestedQueueSize, revisionCallback);
+        delegate().onModifyDataItem(dataItem, requestedSamplingInterval, requestedQueueSize, revisionCallback);
     }
 
     @Override
@@ -114,12 +119,12 @@ public abstract class ForwardingAddressSpace implements AddressSpace {
 
     @Override
     public void onModifyEventItem(
-        ReadValueId itemToModify,
+        EventItem eventItem,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback
     ) {
 
-        delegate().onModifyEventItem(itemToModify, requestedQueueSize, revisionCallback);
+        delegate().onModifyEventItem(eventItem, requestedQueueSize, revisionCallback);
     }
 
     @Override

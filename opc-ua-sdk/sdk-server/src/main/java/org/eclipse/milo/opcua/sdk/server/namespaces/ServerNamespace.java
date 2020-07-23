@@ -33,17 +33,17 @@ public class ServerNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     @Override
-    public void onAfterDataItemsCreated(List<DataItem> dataItems) {
+    public void onDataItemsCreated(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsCreated(dataItems);
     }
 
     @Override
-    public void onAfterDataItemsModified(List<DataItem> dataItems) {
+    public void onDataItemsModified(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsModified(dataItems);
     }
 
     @Override
-    public void onAfterDataItemsDeleted(List<DataItem> dataItems) {
+    public void onDataItemsDeleted(List<DataItem> dataItems) {
         subscriptionModel.onDataItemsDeleted(dataItems);
     }
 

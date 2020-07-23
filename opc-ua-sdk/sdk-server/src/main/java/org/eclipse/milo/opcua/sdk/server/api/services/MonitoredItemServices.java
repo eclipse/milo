@@ -36,7 +36,7 @@ public interface MonitoredItemServices {
      * @param requestedSamplingInterval the requested sampling interval.
      * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
      */
-    default void onBeforeDataItemCreated(
+    default void onCreateDataItem(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
@@ -58,7 +58,7 @@ public interface MonitoredItemServices {
      * @param requestedSamplingInterval the requested sampling interval.
      * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
      */
-    default void onBeforeDataItemModified(
+    default void onModifyDataItem(
         @SuppressWarnings("unused") DataItem dataItem,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
@@ -75,7 +75,7 @@ public interface MonitoredItemServices {
      *
      * @param dataItems the {@link DataItem}s that were created.
      */
-    void onAfterDataItemsCreated(List<DataItem> dataItems);
+    void onDataItemsCreated(List<DataItem> dataItems);
 
     /**
      * {@link DataItem}s have been modified for nodes belonging to this {@link MonitoredItemServices}.
@@ -84,7 +84,7 @@ public interface MonitoredItemServices {
      *
      * @param dataItems the {@link DataItem}s that were modified.
      */
-    void onAfterDataItemsModified(List<DataItem> dataItems);
+    void onDataItemsModified(List<DataItem> dataItems);
 
     /**
      * {@link DataItem}s have been deleted for nodes belonging to this {@link MonitoredItemServices}.
@@ -93,7 +93,7 @@ public interface MonitoredItemServices {
      *
      * @param dataItems the {@link DataItem}s that were deleted.
      */
-    void onAfterDataItemsDeleted(List<DataItem> dataItems);
+    void onDataItemsDeleted(List<DataItem> dataItems);
 
     /**
      * An {@link EventItem} is being created for a Node managed by this {@link MonitoredItemServices}.
@@ -104,7 +104,7 @@ public interface MonitoredItemServices {
      * @param requestedQueueSize the requested queue size.
      * @param revisionCallback   the callback to invoke to revise the queue size.
      */
-    default void onBeforeEventItemCreated(
+    default void onCreateEventItem(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback) {
@@ -121,7 +121,7 @@ public interface MonitoredItemServices {
      * @param requestedQueueSize the requested queue size.
      * @param revisionCallback   the callback to invoke to revise the queue size.
      */
-    default void onBeforeEventItemModified(
+    default void onModifyEventItem(
         @SuppressWarnings("unused") EventItem eventItem,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback) {
@@ -134,21 +134,21 @@ public interface MonitoredItemServices {
      *
      * @param eventItems the {@link EventItem}s that were created.
      */
-    default void onAfterEventItemsCreated(List<EventItem> eventItems) {}
+    default void onEventItemsCreated(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been modified for nodes belonging to this {@link MonitoredItemServices}.
      *
      * @param eventItems the {@link EventItem}s that were modified.
      */
-    default void onAfterEventItemsModified(List<EventItem> eventItems) {}
+    default void onEventItemsModified(List<EventItem> eventItems) {}
 
     /**
      * {@link EventItem}s have been deleted for nodes belonging to this {@link MonitoredItemServices}.
      *
      * @param eventItems the {@link EventItem}s that were deleted.
      */
-    default void onAfterEventItemsDeleted(List<EventItem> eventItems) {}
+    default void onEventItemsDeleted(List<EventItem> eventItems) {}
 
     /**
      * {@link MonitoredItem}s have had their {@link MonitoringMode} modified by a client.

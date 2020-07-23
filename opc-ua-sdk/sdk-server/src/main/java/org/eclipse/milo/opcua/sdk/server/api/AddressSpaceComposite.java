@@ -471,7 +471,7 @@ public class AddressSpaceComposite implements AddressSpace {
     //region MonitoredItemServices
 
     @Override
-    public void onBeforeDataItemCreated(
+    public void onCreateDataItem(
         ReadValueId itemToMonitor,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
@@ -483,7 +483,7 @@ public class AddressSpaceComposite implements AddressSpace {
                 asx.getFilter().filterOnBeforeDataItemCreated(server, itemToMonitor)
         );
 
-        addressSpace.onBeforeDataItemCreated(
+        addressSpace.onCreateDataItem(
             itemToMonitor,
             requestedSamplingInterval,
             requestedQueueSize,
@@ -492,7 +492,7 @@ public class AddressSpaceComposite implements AddressSpace {
     }
 
     @Override
-    public void onBeforeDataItemModified(
+    public void onModifyDataItem(
         DataItem itemToModify,
         Double requestedSamplingInterval,
         UInteger requestedQueueSize,
@@ -504,7 +504,7 @@ public class AddressSpaceComposite implements AddressSpace {
                 asx.getFilter().filterOnBeforeDataItemModified(server, itemToModify)
         );
 
-        addressSpace.onBeforeDataItemModified(
+        addressSpace.onModifyDataItem(
             itemToModify,
             requestedSamplingInterval,
             requestedQueueSize,
@@ -513,7 +513,7 @@ public class AddressSpaceComposite implements AddressSpace {
     }
 
     @Override
-    public void onAfterDataItemsCreated(List<DataItem> dataItems) {
+    public void onDataItemsCreated(List<DataItem> dataItems) {
         Map<AddressSpace, List<DataItem>> byAddressSpace = dataItems.stream().collect(groupingBy(item ->
             getAddressSpace(
                 asx ->
@@ -521,11 +521,11 @@ public class AddressSpaceComposite implements AddressSpace {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onAfterDataItemsCreated);
+        byAddressSpace.forEach(MonitoredItemServices::onDataItemsCreated);
     }
 
     @Override
-    public void onAfterDataItemsModified(List<DataItem> dataItems) {
+    public void onDataItemsModified(List<DataItem> dataItems) {
         Map<AddressSpace, List<DataItem>> byAddressSpace = dataItems.stream().collect(groupingBy(item ->
             getAddressSpace(
                 asx ->
@@ -533,11 +533,11 @@ public class AddressSpaceComposite implements AddressSpace {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onAfterDataItemsModified);
+        byAddressSpace.forEach(MonitoredItemServices::onDataItemsModified);
     }
 
     @Override
-    public void onAfterDataItemsDeleted(List<DataItem> dataItems) {
+    public void onDataItemsDeleted(List<DataItem> dataItems) {
         Map<AddressSpace, List<DataItem>> byAddressSpace = dataItems.stream().collect(groupingBy(item ->
             getAddressSpace(
                 asx ->
@@ -545,11 +545,11 @@ public class AddressSpaceComposite implements AddressSpace {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onAfterDataItemsDeleted);
+        byAddressSpace.forEach(MonitoredItemServices::onDataItemsDeleted);
     }
 
     @Override
-    public void onBeforeEventItemCreated(
+    public void onCreateEventItem(
         ReadValueId itemToMonitor,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback
@@ -560,7 +560,7 @@ public class AddressSpaceComposite implements AddressSpace {
                 asx.getFilter().filterOnBeforeEventItemCreated(server, itemToMonitor)
         );
 
-        addressSpace.onBeforeEventItemCreated(
+        addressSpace.onCreateEventItem(
             itemToMonitor,
             requestedQueueSize,
             revisionCallback
@@ -568,7 +568,7 @@ public class AddressSpaceComposite implements AddressSpace {
     }
 
     @Override
-    public void onBeforeEventItemModified(
+    public void onModifyEventItem(
         EventItem itemToModify,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback
@@ -579,7 +579,7 @@ public class AddressSpaceComposite implements AddressSpace {
                 asx.getFilter().filterOnBeforeEventItemModified(server, itemToModify)
         );
 
-        addressSpace.onBeforeEventItemModified(
+        addressSpace.onModifyEventItem(
             itemToModify,
             requestedQueueSize,
             revisionCallback
@@ -587,7 +587,7 @@ public class AddressSpaceComposite implements AddressSpace {
     }
 
     @Override
-    public void onAfterEventItemsCreated(List<EventItem> eventItems) {
+    public void onEventItemsCreated(List<EventItem> eventItems) {
         Map<AddressSpace, List<EventItem>> byAddressSpace = eventItems.stream().collect(groupingBy(item ->
             getAddressSpace(
                 asx ->
@@ -595,11 +595,11 @@ public class AddressSpaceComposite implements AddressSpace {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onAfterEventItemsCreated);
+        byAddressSpace.forEach(MonitoredItemServices::onEventItemsCreated);
     }
 
     @Override
-    public void onAfterEventItemsModified(List<EventItem> eventItems) {
+    public void onEventItemsModified(List<EventItem> eventItems) {
         Map<AddressSpace, List<EventItem>> byAddressSpace = eventItems.stream().collect(groupingBy(item ->
             getAddressSpace(
                 asx ->
@@ -607,11 +607,11 @@ public class AddressSpaceComposite implements AddressSpace {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onAfterEventItemsModified);
+        byAddressSpace.forEach(MonitoredItemServices::onEventItemsModified);
     }
 
     @Override
-    public void onAfterEventItemsDeleted(List<EventItem> eventItems) {
+    public void onEventItemsDeleted(List<EventItem> eventItems) {
         Map<AddressSpace, List<EventItem>> byAddressSpace = eventItems.stream().collect(groupingBy(item ->
             getAddressSpace(
                 asx ->
@@ -619,7 +619,7 @@ public class AddressSpaceComposite implements AddressSpace {
             )
         ));
 
-        byAddressSpace.forEach(MonitoredItemServices::onAfterEventItemsDeleted);
+        byAddressSpace.forEach(MonitoredItemServices::onEventItemsDeleted);
     }
 
     @Override
@@ -913,13 +913,13 @@ public class AddressSpaceComposite implements AddressSpace {
         }
 
         @Override
-        public void onAfterDataItemsCreated(List<DataItem> dataItems) {}
+        public void onDataItemsCreated(List<DataItem> dataItems) {}
 
         @Override
-        public void onAfterDataItemsModified(List<DataItem> dataItems) {}
+        public void onDataItemsModified(List<DataItem> dataItems) {}
 
         @Override
-        public void onAfterDataItemsDeleted(List<DataItem> dataItems) {}
+        public void onDataItemsDeleted(List<DataItem> dataItems) {}
 
         @Override
         public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {}
