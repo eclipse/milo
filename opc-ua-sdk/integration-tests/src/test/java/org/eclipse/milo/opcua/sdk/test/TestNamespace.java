@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.sdk.test;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.milo.opcua.sdk.core.AccessLevel;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -21,11 +23,14 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +65,29 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                     // ignored
                 }
             }
+        });
+
+        getLifecycleManager().addStartupTask(() -> {
+            UaVariableNode testInt32Node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                .setNodeId(newNodeId("TestInt32"))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
+                .setBrowseName(newQualifiedName("TestInt32"))
+                .setDisplayName(LocalizedText.english("TestInt32"))
+                .setDataType(Identifiers.Int32)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build();
+
+            testInt32Node.setValue(new DataValue(new Variant(0)));
+
+            testInt32Node.addReference(new Reference(
+                testInt32Node.getNodeId(),
+                Identifiers.HasComponent,
+                Identifiers.ObjectsFolder.expanded(),
+                Reference.Direction.INVERSE
+            ));
+
+            getNodeManager().addNode(testInt32Node);
         });
     }
 

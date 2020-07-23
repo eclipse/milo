@@ -1,63 +1,129 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.objects;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ExclusiveLimitStateMachineType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class ExclusiveLimitStateMachineTypeNode extends FiniteStateMachineTypeNode implements ExclusiveLimitStateMachineType {
-    public ExclusiveLimitStateMachineTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public ExclusiveLimitStateMachineTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                              QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                              UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public CompletableFuture<StateTypeNode> getHighHighNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "HighHigh").thenApply(StateTypeNode.class::cast);
+    public StateTypeNode getHighHighNode() throws UaException {
+        try {
+            return getHighHighNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    @Override
-    public CompletableFuture<StateTypeNode> getHighNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "High").thenApply(StateTypeNode.class::cast);
+    public CompletableFuture<? extends StateTypeNode> getHighHighNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
     }
 
-    @Override
-    public CompletableFuture<StateTypeNode> getLowNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "Low").thenApply(StateTypeNode.class::cast);
+    public StateTypeNode getHighNode() throws UaException {
+        try {
+            return getHighNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    @Override
-    public CompletableFuture<StateTypeNode> getLowLowNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "LowLow").thenApply(StateTypeNode.class::cast);
+    public CompletableFuture<? extends StateTypeNode> getHighNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "High", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
     }
 
-    @Override
-    public CompletableFuture<TransitionTypeNode> getLowLowToLowNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "LowLowToLow").thenApply(TransitionTypeNode.class::cast);
+    public StateTypeNode getLowNode() throws UaException {
+        try {
+            return getLowNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    @Override
-    public CompletableFuture<TransitionTypeNode> getLowToLowLowNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "LowToLowLow").thenApply(TransitionTypeNode.class::cast);
+    public CompletableFuture<? extends StateTypeNode> getLowNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "Low", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
     }
 
-    @Override
-    public CompletableFuture<TransitionTypeNode> getHighHighToHighNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "HighHighToHigh").thenApply(TransitionTypeNode.class::cast);
+    public StateTypeNode getLowLowNode() throws UaException {
+        try {
+            return getLowLowNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    @Override
-    public CompletableFuture<TransitionTypeNode> getHighToHighHighNode() {
-        return getObjectComponent("http://opcfoundation.org/UA/", "HighToHighHigh").thenApply(TransitionTypeNode.class::cast);
+    public CompletableFuture<? extends StateTypeNode> getLowLowNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (StateTypeNode) node);
+    }
+
+    public TransitionTypeNode getLowLowToLowNode() throws UaException {
+        try {
+            return getLowLowToLowNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getLowLowToLowNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowLowToLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getLowToLowLowNode() throws UaException {
+        try {
+            return getLowToLowLowNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getLowToLowLowNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "LowToLowLow", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getHighHighToHighNode() throws UaException {
+        try {
+            return getHighHighToHighNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getHighHighToHighNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighHighToHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
+    }
+
+    public TransitionTypeNode getHighToHighHighNode() throws UaException {
+        try {
+            return getHighToHighHighNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    public CompletableFuture<? extends TransitionTypeNode> getHighToHighHighNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "HighToHighHigh", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        return future.thenApply(node -> (TransitionTypeNode) node);
     }
 }

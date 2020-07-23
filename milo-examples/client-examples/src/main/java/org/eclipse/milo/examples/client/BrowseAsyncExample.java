@@ -12,7 +12,6 @@ package org.eclipse.milo.examples.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,21 +40,15 @@ public class BrowseAsyncExample implements ClientExample {
         client.connect().get();
 
         // start browsing at root folder
-        Node rootNode = client.getAddressSpace().getNodeInstance(Identifiers.RootFolder).get();
+        UaNode rootNode = client.getAddressSpace().getNode(Identifiers.RootFolder);
 
-        Tree<Node> tree = new Tree<>(rootNode);
+        Tree<UaNode> tree = new Tree<>(rootNode);
 
         long startTime = System.nanoTime();
         browseRecursive(client, tree).get();
         long endTime = System.nanoTime();
 
-        traverse(tree, 0, (depth, n) -> {
-            try {
-                logger.info(indent(depth) + n.getBrowseName().get().getName());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        });
+        traverse(tree, 0, (depth, n) -> logger.info(indent(depth) + n.getBrowseName().getName()));
 
         logger.info(
             "Browse took {}ms",
@@ -64,8 +57,8 @@ public class BrowseAsyncExample implements ClientExample {
         future.complete(client);
     }
 
-    private CompletableFuture<Void> browseRecursive(OpcUaClient client, Tree<Node> tree) {
-        return client.getAddressSpace().browseNode(tree.node).thenCompose(nodes -> {
+    private CompletableFuture<Void> browseRecursive(OpcUaClient client, Tree<UaNode> tree) {
+        return client.getAddressSpace().browseNodesAsync(tree.node).thenCompose(nodes -> {
             // Add each child node to the tree
             nodes.forEach(tree::addChild);
 

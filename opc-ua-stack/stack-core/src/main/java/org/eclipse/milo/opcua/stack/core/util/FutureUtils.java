@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -148,6 +149,16 @@ public class FutureUtils {
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList())
         );
+    }
+
+    /**
+     * Unwrap a CompletableFuture of CompletableFuture of {@code T} into a CompletableFuture of {@code T}.
+     *
+     * @param future a CompletableFuture of CompletableFuture of {@code T}.
+     * @return an unwrapped CompletableFuture of {@code T}.
+     */
+    public static <T> CompletableFuture<T> unwrap(CompletableFuture<CompletableFuture<T>> future) {
+        return future.thenCompose(Function.identity());
     }
 
     public static class CompletionBuilder<T> {

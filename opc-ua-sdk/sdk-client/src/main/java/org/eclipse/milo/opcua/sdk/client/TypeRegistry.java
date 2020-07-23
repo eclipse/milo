@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class TypeRegistry {

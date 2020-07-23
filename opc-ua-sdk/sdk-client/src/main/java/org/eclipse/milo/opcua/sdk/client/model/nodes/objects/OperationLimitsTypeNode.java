@@ -1,170 +1,820 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.objects;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.OperationLimitsType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class OperationLimitsTypeNode extends FolderTypeNode implements OperationLimitsType {
-    public OperationLimitsTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public OperationLimitsTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                   UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerReadNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_READ);
+    @Override
+    public UInteger getMaxNodesPerRead() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerReadNode();
+        return (UInteger) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerRead() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_READ);
+    @Override
+    public void setMaxNodesPerRead(UInteger maxNodesPerRead) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerReadNode();
+        node.setValue(new Variant(maxNodesPerRead));
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerRead(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_READ, value);
+    @Override
+    public UInteger readMaxNodesPerRead() throws UaException {
+        try {
+            return readMaxNodesPerReadAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerHistoryReadDataNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_DATA);
+    @Override
+    public void writeMaxNodesPerRead(UInteger maxNodesPerRead) throws UaException {
+        try {
+            writeMaxNodesPerReadAsync(maxNodesPerRead).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerHistoryReadData() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_DATA);
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerReadAsync() {
+        return getMaxNodesPerReadNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerHistoryReadData(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_DATA, value);
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerReadAsync(UInteger maxNodesPerRead) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerRead));
+        return getMaxNodesPerReadNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerHistoryReadEventsNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_EVENTS);
+    @Override
+    public PropertyTypeNode getMaxNodesPerReadNode() throws UaException {
+        try {
+            return getMaxNodesPerReadNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerHistoryReadEvents() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_EVENTS);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerReadNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerRead", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerHistoryReadEvents(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_EVENTS, value);
+    @Override
+    public UInteger getMaxNodesPerHistoryReadData() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryReadDataNode();
+        return (UInteger) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerWriteNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_WRITE);
+    @Override
+    public void setMaxNodesPerHistoryReadData(UInteger maxNodesPerHistoryReadData) throws
+        UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryReadDataNode();
+        node.setValue(new Variant(maxNodesPerHistoryReadData));
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerWrite() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_WRITE);
+    @Override
+    public UInteger readMaxNodesPerHistoryReadData() throws UaException {
+        try {
+            return readMaxNodesPerHistoryReadDataAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerWrite(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_WRITE, value);
+    @Override
+    public void writeMaxNodesPerHistoryReadData(UInteger maxNodesPerHistoryReadData) throws
+        UaException {
+        try {
+            writeMaxNodesPerHistoryReadDataAsync(maxNodesPerHistoryReadData).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerHistoryUpdateDataNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_DATA);
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerHistoryReadDataAsync() {
+        return getMaxNodesPerHistoryReadDataNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerHistoryUpdateData() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_DATA);
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerHistoryReadDataAsync(
+        UInteger maxNodesPerHistoryReadData) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryReadData));
+        return getMaxNodesPerHistoryReadDataNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerHistoryUpdateData(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_DATA, value);
+    @Override
+    public PropertyTypeNode getMaxNodesPerHistoryReadDataNode() throws UaException {
+        try {
+            return getMaxNodesPerHistoryReadDataNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerHistoryUpdateEventsNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_EVENTS);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryReadDataNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryReadData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerHistoryUpdateEvents() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_EVENTS);
+    @Override
+    public UInteger getMaxNodesPerHistoryReadEvents() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryReadEventsNode();
+        return (UInteger) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerHistoryUpdateEvents(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_EVENTS, value);
+    @Override
+    public void setMaxNodesPerHistoryReadEvents(UInteger maxNodesPerHistoryReadEvents) throws
+        UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryReadEventsNode();
+        node.setValue(new Variant(maxNodesPerHistoryReadEvents));
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerMethodCallNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_METHOD_CALL);
+    @Override
+    public UInteger readMaxNodesPerHistoryReadEvents() throws UaException {
+        try {
+            return readMaxNodesPerHistoryReadEventsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerMethodCall() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_METHOD_CALL);
+    @Override
+    public void writeMaxNodesPerHistoryReadEvents(UInteger maxNodesPerHistoryReadEvents) throws
+        UaException {
+        try {
+            writeMaxNodesPerHistoryReadEventsAsync(maxNodesPerHistoryReadEvents).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerMethodCall(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_METHOD_CALL, value);
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerHistoryReadEventsAsync() {
+        return getMaxNodesPerHistoryReadEventsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerBrowseNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_BROWSE);
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerHistoryReadEventsAsync(
+        UInteger maxNodesPerHistoryReadEvents) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryReadEvents));
+        return getMaxNodesPerHistoryReadEventsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerBrowse() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_BROWSE);
+    @Override
+    public PropertyTypeNode getMaxNodesPerHistoryReadEventsNode() throws UaException {
+        try {
+            return getMaxNodesPerHistoryReadEventsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerBrowse(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_BROWSE, value);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryReadEventsNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryReadEvents", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerRegisterNodesNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_REGISTER_NODES);
+    @Override
+    public UInteger getMaxNodesPerWrite() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerWriteNode();
+        return (UInteger) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerRegisterNodes() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_REGISTER_NODES);
+    @Override
+    public void setMaxNodesPerWrite(UInteger maxNodesPerWrite) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerWriteNode();
+        node.setValue(new Variant(maxNodesPerWrite));
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerRegisterNodes(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_REGISTER_NODES, value);
+    @Override
+    public UInteger readMaxNodesPerWrite() throws UaException {
+        try {
+            return readMaxNodesPerWriteAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerTranslateBrowsePathsToNodeIdsNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_TRANSLATE_BROWSE_PATHS_TO_NODE_IDS);
+    @Override
+    public void writeMaxNodesPerWrite(UInteger maxNodesPerWrite) throws UaException {
+        try {
+            writeMaxNodesPerWriteAsync(maxNodesPerWrite).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerTranslateBrowsePathsToNodeIds() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_TRANSLATE_BROWSE_PATHS_TO_NODE_IDS);
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerWriteAsync() {
+        return getMaxNodesPerWriteNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerTranslateBrowsePathsToNodeIds(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_TRANSLATE_BROWSE_PATHS_TO_NODE_IDS, value);
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerWriteAsync(UInteger maxNodesPerWrite) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerWrite));
+        return getMaxNodesPerWriteNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxNodesPerNodeManagementNode() {
-        return getPropertyNode(OperationLimitsType.MAX_NODES_PER_NODE_MANAGEMENT);
+    @Override
+    public PropertyTypeNode getMaxNodesPerWriteNode() throws UaException {
+        try {
+            return getMaxNodesPerWriteNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<UInteger> getMaxNodesPerNodeManagement() {
-        return getProperty(OperationLimitsType.MAX_NODES_PER_NODE_MANAGEMENT);
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerWriteNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerWrite", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 
-    public CompletableFuture<StatusCode> setMaxNodesPerNodeManagement(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_NODES_PER_NODE_MANAGEMENT, value);
+    @Override
+    public UInteger getMaxNodesPerHistoryUpdateData() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryUpdateDataNode();
+        return (UInteger) node.getValue().getValue().getValue();
     }
 
-    public CompletableFuture<PropertyTypeNode> getMaxMonitoredItemsPerCallNode() {
-        return getPropertyNode(OperationLimitsType.MAX_MONITORED_ITEMS_PER_CALL);
+    @Override
+    public void setMaxNodesPerHistoryUpdateData(UInteger maxNodesPerHistoryUpdateData) throws
+        UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryUpdateDataNode();
+        node.setValue(new Variant(maxNodesPerHistoryUpdateData));
     }
 
-    public CompletableFuture<UInteger> getMaxMonitoredItemsPerCall() {
-        return getProperty(OperationLimitsType.MAX_MONITORED_ITEMS_PER_CALL);
+    @Override
+    public UInteger readMaxNodesPerHistoryUpdateData() throws UaException {
+        try {
+            return readMaxNodesPerHistoryUpdateDataAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
     }
 
-    public CompletableFuture<StatusCode> setMaxMonitoredItemsPerCall(UInteger value) {
-        return setProperty(OperationLimitsType.MAX_MONITORED_ITEMS_PER_CALL, value);
+    @Override
+    public void writeMaxNodesPerHistoryUpdateData(UInteger maxNodesPerHistoryUpdateData) throws
+        UaException {
+        try {
+            writeMaxNodesPerHistoryUpdateDataAsync(maxNodesPerHistoryUpdateData).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerHistoryUpdateDataAsync() {
+        return getMaxNodesPerHistoryUpdateDataNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerHistoryUpdateDataAsync(
+        UInteger maxNodesPerHistoryUpdateData) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryUpdateData));
+        return getMaxNodesPerHistoryUpdateDataNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerHistoryUpdateDataNode() throws UaException {
+        try {
+            return getMaxNodesPerHistoryUpdateDataNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryUpdateDataNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryUpdateData", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNodesPerHistoryUpdateEvents() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryUpdateEventsNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNodesPerHistoryUpdateEvents(UInteger maxNodesPerHistoryUpdateEvents) throws
+        UaException {
+        PropertyTypeNode node = getMaxNodesPerHistoryUpdateEventsNode();
+        node.setValue(new Variant(maxNodesPerHistoryUpdateEvents));
+    }
+
+    @Override
+    public UInteger readMaxNodesPerHistoryUpdateEvents() throws UaException {
+        try {
+            return readMaxNodesPerHistoryUpdateEventsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNodesPerHistoryUpdateEvents(UInteger maxNodesPerHistoryUpdateEvents) throws
+        UaException {
+        try {
+            writeMaxNodesPerHistoryUpdateEventsAsync(maxNodesPerHistoryUpdateEvents).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerHistoryUpdateEventsAsync() {
+        return getMaxNodesPerHistoryUpdateEventsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerHistoryUpdateEventsAsync(
+        UInteger maxNodesPerHistoryUpdateEvents) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryUpdateEvents));
+        return getMaxNodesPerHistoryUpdateEventsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerHistoryUpdateEventsNode() throws UaException {
+        try {
+            return getMaxNodesPerHistoryUpdateEventsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerHistoryUpdateEventsNodeAsync(
+    ) {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerHistoryUpdateEvents", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNodesPerMethodCall() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerMethodCallNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNodesPerMethodCall(UInteger maxNodesPerMethodCall) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerMethodCallNode();
+        node.setValue(new Variant(maxNodesPerMethodCall));
+    }
+
+    @Override
+    public UInteger readMaxNodesPerMethodCall() throws UaException {
+        try {
+            return readMaxNodesPerMethodCallAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNodesPerMethodCall(UInteger maxNodesPerMethodCall) throws UaException {
+        try {
+            writeMaxNodesPerMethodCallAsync(maxNodesPerMethodCall).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerMethodCallAsync() {
+        return getMaxNodesPerMethodCallNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerMethodCallAsync(UInteger maxNodesPerMethodCall) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerMethodCall));
+        return getMaxNodesPerMethodCallNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerMethodCallNode() throws UaException {
+        try {
+            return getMaxNodesPerMethodCallNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerMethodCallNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerMethodCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNodesPerBrowse() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerBrowseNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNodesPerBrowse(UInteger maxNodesPerBrowse) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerBrowseNode();
+        node.setValue(new Variant(maxNodesPerBrowse));
+    }
+
+    @Override
+    public UInteger readMaxNodesPerBrowse() throws UaException {
+        try {
+            return readMaxNodesPerBrowseAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNodesPerBrowse(UInteger maxNodesPerBrowse) throws UaException {
+        try {
+            writeMaxNodesPerBrowseAsync(maxNodesPerBrowse).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerBrowseAsync() {
+        return getMaxNodesPerBrowseNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerBrowseAsync(UInteger maxNodesPerBrowse) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerBrowse));
+        return getMaxNodesPerBrowseNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerBrowseNode() throws UaException {
+        try {
+            return getMaxNodesPerBrowseNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerBrowseNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerBrowse", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNodesPerRegisterNodes() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerRegisterNodesNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNodesPerRegisterNodes(UInteger maxNodesPerRegisterNodes) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerRegisterNodesNode();
+        node.setValue(new Variant(maxNodesPerRegisterNodes));
+    }
+
+    @Override
+    public UInteger readMaxNodesPerRegisterNodes() throws UaException {
+        try {
+            return readMaxNodesPerRegisterNodesAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNodesPerRegisterNodes(UInteger maxNodesPerRegisterNodes) throws UaException {
+        try {
+            writeMaxNodesPerRegisterNodesAsync(maxNodesPerRegisterNodes).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerRegisterNodesAsync() {
+        return getMaxNodesPerRegisterNodesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerRegisterNodesAsync(
+        UInteger maxNodesPerRegisterNodes) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerRegisterNodes));
+        return getMaxNodesPerRegisterNodesNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerRegisterNodesNode() throws UaException {
+        try {
+            return getMaxNodesPerRegisterNodesNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerRegisterNodesNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerRegisterNodes", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNodesPerTranslateBrowsePathsToNodeIds() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerTranslateBrowsePathsToNodeIdsNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNodesPerTranslateBrowsePathsToNodeIds(
+        UInteger maxNodesPerTranslateBrowsePathsToNodeIds) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerTranslateBrowsePathsToNodeIdsNode();
+        node.setValue(new Variant(maxNodesPerTranslateBrowsePathsToNodeIds));
+    }
+
+    @Override
+    public UInteger readMaxNodesPerTranslateBrowsePathsToNodeIds() throws UaException {
+        try {
+            return readMaxNodesPerTranslateBrowsePathsToNodeIdsAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNodesPerTranslateBrowsePathsToNodeIds(
+        UInteger maxNodesPerTranslateBrowsePathsToNodeIds) throws UaException {
+        try {
+            writeMaxNodesPerTranslateBrowsePathsToNodeIdsAsync(maxNodesPerTranslateBrowsePathsToNodeIds).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerTranslateBrowsePathsToNodeIdsAsync() {
+        return getMaxNodesPerTranslateBrowsePathsToNodeIdsNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerTranslateBrowsePathsToNodeIdsAsync(
+        UInteger maxNodesPerTranslateBrowsePathsToNodeIds) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerTranslateBrowsePathsToNodeIds));
+        return getMaxNodesPerTranslateBrowsePathsToNodeIdsNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerTranslateBrowsePathsToNodeIdsNode() throws UaException {
+        try {
+            return getMaxNodesPerTranslateBrowsePathsToNodeIdsNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerTranslateBrowsePathsToNodeIdsNodeAsync(
+    ) {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerTranslateBrowsePathsToNodeIds", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxNodesPerNodeManagement() throws UaException {
+        PropertyTypeNode node = getMaxNodesPerNodeManagementNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxNodesPerNodeManagement(UInteger maxNodesPerNodeManagement) throws UaException {
+        PropertyTypeNode node = getMaxNodesPerNodeManagementNode();
+        node.setValue(new Variant(maxNodesPerNodeManagement));
+    }
+
+    @Override
+    public UInteger readMaxNodesPerNodeManagement() throws UaException {
+        try {
+            return readMaxNodesPerNodeManagementAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxNodesPerNodeManagement(UInteger maxNodesPerNodeManagement) throws
+        UaException {
+        try {
+            writeMaxNodesPerNodeManagementAsync(maxNodesPerNodeManagement).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxNodesPerNodeManagementAsync() {
+        return getMaxNodesPerNodeManagementNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxNodesPerNodeManagementAsync(
+        UInteger maxNodesPerNodeManagement) {
+        DataValue value = DataValue.valueOnly(new Variant(maxNodesPerNodeManagement));
+        return getMaxNodesPerNodeManagementNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxNodesPerNodeManagementNode() throws UaException {
+        try {
+            return getMaxNodesPerNodeManagementNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxNodesPerNodeManagementNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxNodesPerNodeManagement", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
+    }
+
+    @Override
+    public UInteger getMaxMonitoredItemsPerCall() throws UaException {
+        PropertyTypeNode node = getMaxMonitoredItemsPerCallNode();
+        return (UInteger) node.getValue().getValue().getValue();
+    }
+
+    @Override
+    public void setMaxMonitoredItemsPerCall(UInteger maxMonitoredItemsPerCall) throws UaException {
+        PropertyTypeNode node = getMaxMonitoredItemsPerCallNode();
+        node.setValue(new Variant(maxMonitoredItemsPerCall));
+    }
+
+    @Override
+    public UInteger readMaxMonitoredItemsPerCall() throws UaException {
+        try {
+            return readMaxMonitoredItemsPerCallAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeMaxMonitoredItemsPerCall(UInteger maxMonitoredItemsPerCall) throws UaException {
+        try {
+            writeMaxMonitoredItemsPerCallAsync(maxMonitoredItemsPerCall).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends UInteger> readMaxMonitoredItemsPerCallAsync() {
+        return getMaxMonitoredItemsPerCallNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    }
+
+    @Override
+    public CompletableFuture<Unit> writeMaxMonitoredItemsPerCallAsync(
+        UInteger maxMonitoredItemsPerCall) {
+        DataValue value = DataValue.valueOnly(new Variant(maxMonitoredItemsPerCall));
+        return getMaxMonitoredItemsPerCallNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
+            .thenCompose(statusCode -> {
+                if (statusCode != null && statusCode.isBad()) {
+                    return FutureUtils.failedUaFuture(statusCode);
+                } else {
+                    return CompletableFuture.completedFuture(Unit.VALUE);
+                }
+            });
+    }
+
+    @Override
+    public PropertyTypeNode getMaxMonitoredItemsPerCallNode() throws UaException {
+        try {
+            return getMaxMonitoredItemsPerCallNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getMaxMonitoredItemsPerCallNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "MaxMonitoredItemsPerCall", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

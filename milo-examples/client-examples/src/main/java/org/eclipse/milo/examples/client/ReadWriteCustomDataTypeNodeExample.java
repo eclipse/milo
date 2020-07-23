@@ -14,12 +14,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.examples.server.types.CustomStructType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,14 +43,14 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         registerCustomCodec(client);
 
         // synchronous read request via VariableNode
-        VariableNode node = client.getAddressSpace().createVariableNode(
+        UaVariableNode node = client.getAddressSpace().getVariableNode(
             new NodeId(2, "HelloWorld/CustomStructTypeVariable")
         );
 
-        logger.info("DataType={}", node.getDataType().get());
+        logger.info("DataType={}", node.getDataType());
 
         // Read the current value
-        DataValue value = node.readValue().get();
+        DataValue value = node.readValue();
         logger.info("Value={}", value);
 
         Variant variant = value.getValue();
@@ -75,12 +74,10 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             OpcUaDefaultBinaryEncoding.getInstance()
         );
 
-        StatusCode writeStatus = node.writeValue(new DataValue(new Variant(modifiedXo))).get();
-
-        logger.info("writeStatus={}", writeStatus);
+        node.writeValue(new DataValue(new Variant(modifiedXo)));
 
         // Read the modified value back
-        value = node.readValue().get();
+        value = node.readValue();
         logger.info("Value={}", value);
 
         variant = value.getValue();

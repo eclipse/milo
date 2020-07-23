@@ -1,37 +1,92 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.nodes.variables;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.YArrayItemType;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 
 public class YArrayItemTypeNode extends ArrayItemTypeNode implements YArrayItemType {
-    public YArrayItemTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    public YArrayItemTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
+                              QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                              UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType, int valueRank,
+                              UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                              double minimumSamplingInterval, boolean historizing) {
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
-    public CompletableFuture<PropertyTypeNode> getXAxisDefinitionNode() {
-        return getPropertyNode(YArrayItemType.X_AXIS_DEFINITION);
+    @Override
+    public AxisInformation getXAxisDefinition() throws UaException {
+        PropertyTypeNode node = getXAxisDefinitionNode();
+        return cast(node.getValue().getValue().getValue(), AxisInformation.class);
     }
 
-    public CompletableFuture<AxisInformation> getXAxisDefinition() {
-        return getProperty(YArrayItemType.X_AXIS_DEFINITION);
+    @Override
+    public void setXAxisDefinition(AxisInformation xAxisDefinition) throws UaException {
+        PropertyTypeNode node = getXAxisDefinitionNode();
+        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        node.setValue(new Variant(value));
     }
 
-    public CompletableFuture<StatusCode> setXAxisDefinition(AxisInformation value) {
-        return setProperty(YArrayItemType.X_AXIS_DEFINITION, value);
+    @Override
+    public AxisInformation readXAxisDefinition() throws UaException {
+        try {
+            return readXAxisDefinitionAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public void writeXAxisDefinition(AxisInformation xAxisDefinition) throws UaException {
+        try {
+            writeXAxisDefinitionAsync(xAxisDefinition).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends AxisInformation> readXAxisDefinitionAsync() {
+        return getXAxisDefinitionNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> cast(v.getValue().getValue(), AxisInformation.class));
+    }
+
+    @Override
+    public CompletableFuture<StatusCode> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition) {
+        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        DataValue value = DataValue.valueOnly(new Variant(encoded));
+        return getXAxisDefinitionNodeAsync()
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
+    }
+
+    @Override
+    public PropertyTypeNode getXAxisDefinitionNode() throws UaException {
+        try {
+            return getXAxisDefinitionNodeAsync().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    @Override
+    public CompletableFuture<? extends PropertyTypeNode> getXAxisDefinitionNodeAsync() {
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "XAxisDefinition", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=46"), false);
+        return future.thenApply(node -> (PropertyTypeNode) node);
     }
 }

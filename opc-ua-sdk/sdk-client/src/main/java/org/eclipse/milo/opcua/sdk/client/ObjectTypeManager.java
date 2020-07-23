@@ -16,7 +16,12 @@ import java.util.concurrent.ConcurrentMap;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class ObjectTypeManager {
 
@@ -25,12 +30,13 @@ public class ObjectTypeManager {
     public void registerObjectType(
         NodeId typeDefinition,
         Class<? extends UaObjectNode> nodeClass,
-        ObjectNodeConstructor objectNodeConstructor) {
+        ObjectNodeConstructor objectNodeConstructor
+    ) {
 
         typeDefinitions.put(typeDefinition, new ObjectTypeDefinition(nodeClass, objectNodeConstructor));
     }
 
-    public Optional<ObjectNodeConstructor> getNodeFactory(NodeId typeDefinition) {
+    public Optional<ObjectNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
         ObjectTypeDefinition def = typeDefinitions.get(typeDefinition);
 
         return Optional.ofNullable(def).map(d -> d.nodeFactory);
@@ -52,7 +58,17 @@ public class ObjectTypeManager {
     @FunctionalInterface
     public interface ObjectNodeConstructor {
 
-        UaObjectNode apply(OpcUaClient client, NodeId nodeId);
+        UaObjectNode apply(
+            OpcUaClient client,
+            NodeId nodeId,
+            NodeClass nodeClass,
+            QualifiedName browseName,
+            LocalizedText displayName,
+            LocalizedText description,
+            UInteger writeMask,
+            UInteger userWriteMask,
+            UByte eventNotifier
+        );
 
     }
 
