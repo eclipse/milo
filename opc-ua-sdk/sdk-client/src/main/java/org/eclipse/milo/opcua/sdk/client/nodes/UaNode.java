@@ -636,7 +636,7 @@ public abstract class UaNode implements Node {
 
     /**
      * Call the Browse service to get this {@link UaNode}'s references.
-     *
+     * <p>
      * This call completes asynchronously.
      *
      * @param browseOptions the {@link BrowseOptions} to browse with.
@@ -920,11 +920,18 @@ public abstract class UaNode implements Node {
 
     protected CompletableFuture<UShort> readNamespaceIndex(String namespaceUri) {
         UShort namespaceIndex = client.getNamespaceTable().getIndex(namespaceUri);
+
         if (namespaceIndex != null) {
             return completedFuture(namespaceIndex);
         } else {
-            // TODO read namespace table
-            return failedFuture(new Exception("unknown namespace: " + namespaceUri));
+            return client.readNamespaceTableAsync().thenCompose(namespaceTable -> {
+                UShort index = client.getNamespaceTable().getIndex(namespaceUri);
+                if (index != null) {
+                    return completedFuture(index);
+                } else {
+                    return failedFuture(new Exception("unknown namespace: " + namespaceUri));
+                }
+            });
         }
     }
 
