@@ -901,7 +901,12 @@ public class AddressSpaceComposite implements AddressSpace {
         public AddressSpaceFilter getFilter() {
             return new SimpleAddressSpaceFilter() {
                 @Override
-                protected boolean filter(NodeId nodeId) {
+                protected boolean filterNode(NodeId nodeId) {
+                    return true;
+                }
+
+                @Override
+                protected boolean filterMonitoredItem(NodeId nodeId) {
                     return true;
                 }
             };

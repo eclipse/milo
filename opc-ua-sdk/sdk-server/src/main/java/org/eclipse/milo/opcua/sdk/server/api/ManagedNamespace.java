@@ -46,12 +46,10 @@ public abstract class ManagedNamespace extends ManagedAddressSpace implements Na
         this.namespaceUri = namespaceUri;
         this.namespaceIndex = server.getNamespaceTable().addUri(namespaceUri);
 
-        filter = new SimpleAddressSpaceFilter() {
-            @Override
-            protected boolean filter(NodeId nodeId) {
-                return nodeId.getNamespaceIndex().equals(namespaceIndex);
-            }
-        };
+        filter = SimpleAddressSpaceFilter.create(
+            nodeId ->
+                nodeId.getNamespaceIndex().equals(getNamespaceIndex())
+        );
     }
 
     @Override
