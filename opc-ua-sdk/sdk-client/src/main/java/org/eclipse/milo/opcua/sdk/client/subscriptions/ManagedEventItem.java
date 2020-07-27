@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -44,6 +45,11 @@ public class ManagedEventItem extends ManagedItem {
      * {@code consumer} will be invoked any time new event field values arrive for this item.
      * <p>
      * The Consumer is transformed into the returned {@link EventValueListener} that can later be removed.
+     * <p>
+     * Listeners should be added in the callback that happens during item creation in the
+     * {@link ManagedSubscription#createEventItems(List, List, Consumer)} and
+     * {@link ManagedSubscription#createEventItemsAsync(List, List, Consumer)} to avoid a possible
+     * race condition between the initial value arriving and the listener being registered.
      *
      * @param consumer an event field value {@link Consumer}.
      * @return an {@link EventValueListener} that can later be removed.
@@ -60,6 +66,11 @@ public class ManagedEventItem extends ManagedItem {
      * Add an {@link EventValueListener} to this {@link ManagedEventItem}.
      * <p>
      * {code eventValueListener} will be invoked any time new event field values arrive for this item.
+     * <p>
+     * Listeners should be added in the callback that happens during item creation in the
+     * {@link ManagedSubscription#createEventItems(List, List, Consumer)} and
+     * {@link ManagedSubscription#createEventItemsAsync(List, List, Consumer)} to avoid a possible
+     * race condition between the initial value arriving and the listener being registered.
      *
      * @param eventValueListener the {@link EventValueListener} to add.
      */

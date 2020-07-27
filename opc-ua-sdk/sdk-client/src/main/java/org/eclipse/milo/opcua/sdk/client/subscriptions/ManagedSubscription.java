@@ -468,8 +468,30 @@ public class ManagedSubscription {
         List<EventFilter> eventFilters
     ) throws UaException {
 
+        return createEventItems(nodeIds, eventFilters, item -> {});
+    }
+
+    /**
+     * Create one or more {@link ManagedEventItem}s.
+     * <p>
+     * This operation will fail of the Node identified by {@code nodeId} is not an Object Node.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedEventItem#getStatusCode()}.
+     *
+     * @param nodeIds      the {@link NodeId}s identifying Object Nodes.
+     * @param eventFilters the corresponding {@link EventFilter} to create each item with.
+     * @return a List of {@link ManagedEventItem}s.
+     * @throws UaException if a service-level error occurs.
+     */
+    public List<ManagedEventItem> createEventItems(
+        List<NodeId> nodeIds,
+        List<EventFilter> eventFilters,
+        Consumer<ManagedEventItem> consumer
+    ) throws UaException {
+
         try {
-            CompletableFuture<List<ManagedEventItem>> future = createEventItemsAsync(nodeIds, eventFilters);
+            CompletableFuture<List<ManagedEventItem>> future = createEventItemsAsync(nodeIds, eventFilters, consumer);
 
             return future.get();
         } catch (InterruptedException e) {
@@ -500,6 +522,31 @@ public class ManagedSubscription {
         List<EventFilter> eventFilters
     ) {
 
+        return createEventItemsAsync(nodeIds, eventFilters, item -> {});
+    }
+
+    /**
+     * Create one or more {@link ManagedEventItem}s.
+     * <p>
+     * This operation will fail of the Node identified by {@code nodeId} is not an Object Node.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedEventItem#getStatusCode()}.
+     * <p>
+     * This operation completes asynchronously.
+     *
+     * @param nodeIds      the {@link NodeId}s identifying Object Nodes.
+     * @param eventFilters the corresponding {@link EventFilter} to create each item with.
+     * @param consumer     a {@link Consumer} that will receive each item as it is created.
+     * @return a {@link CompletableFuture} that completes successfully with the List of {@link ManagedEventItem}s or
+     * completes exceptionally if a service-level error occurs.
+     */
+    public CompletableFuture<List<ManagedEventItem>> createEventItemsAsync(
+        List<NodeId> nodeIds,
+        List<EventFilter> eventFilters,
+        Consumer<ManagedEventItem> consumer
+    ) {
+
         final UInteger queueSize = getDefaultQueueSize();
         final boolean discardOldest = getDefaultDiscardOldest();
 
@@ -526,13 +573,18 @@ public class ManagedSubscription {
 
         CompletableFuture<List<UaMonitoredItem>> monitoredItems = subscription.createMonitoredItems(
             getDefaultTimestamps(),
-            createRequests
+            createRequests,
+            (item, id) -> {
+                ManagedEventItem eventItem = createAndTrackEventItem(item);
+                consumer.accept(eventItem);
+            }
         );
 
         return monitoredItems.thenApply(
             items ->
                 items.stream()
-                    .map(this::createAndTrackEventItem)
+                    .map(item -> eventItems.get(item.getClientHandle()))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList())
         );
     }
