@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static java.util.Collections.singletonList;
@@ -162,6 +163,11 @@ public class ManagedDataItem extends ManagedItem {
      * {@code consumer} will be invoked any time a new {@link DataValue} arrives for this item.
      * <p>
      * The Consumer is transformed into the returned {@link DataValueListener} that can later be removed.
+     * <p>
+     * Listeners should be added in the callback that happens during item creation in the
+     * {@link ManagedSubscription#createDataItem(double, ReadValueId, Consumer)} and
+     * {@link ManagedSubscription#createDataItemsAsync(double, List, Consumer)} to avoid a possible
+     * race condition between the initial value arriving and the listener being registered.
      *
      * @param consumer a {@link DataValue} {@link Consumer}.
      * @return a {@link DataValueListener} that can later be removed.
@@ -178,6 +184,11 @@ public class ManagedDataItem extends ManagedItem {
      * Add a {@link DataValueListener} to this {@link ManagedDataItem}.
      * <p>
      * {@code listener} will be invoked any time a new {@link DataValue} arrives for this item.
+     * <p>
+     * Listeners should be added in the callback that happens during item creation in the
+     * {@link ManagedSubscription#createDataItem(double, ReadValueId, Consumer)} and
+     * {@link ManagedSubscription#createDataItemsAsync(double, List, Consumer)} to avoid a possible
+     * race condition between the initial value arriving and the listener being registered.
      *
      * @param dataValueListener the {@link DataValueListener} to add.
      */
