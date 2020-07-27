@@ -240,7 +240,7 @@ public abstract class ManagedItem {
             new MonitoredItemModifyRequest(monitoredItem.getMonitoredItemId(), parameters);
 
         CompletableFuture<List<StatusCode>> future = subscription.getSubscription().modifyMonitoredItems(
-            subscription.getDefaultTimestamps(),
+            monitoredItem.getTimestamps(),
             singletonList(modifyRequest)
         );
 
