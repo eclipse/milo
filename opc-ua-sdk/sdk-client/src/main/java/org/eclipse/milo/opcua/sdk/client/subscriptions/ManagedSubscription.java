@@ -149,6 +149,24 @@ public class ManagedSubscription {
     }
 
     /**
+     * Create a {@link ManagedDataItem} monitoring the Value attribute of the Node identified by {@code nodeId}.
+     * <p>
+     * The operation will fail of the Node is not a Variable or VariableType Node. To create an item that monitors a
+     * different attribute use {@link #createDataItem(double, ReadValueId)}.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param nodeId   the {@link NodeId} identifying a Variable or VariableType Node.
+     * @param consumer a {@link Consumer} that will receive each item as it is created.
+     * @return a {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
+    public ManagedDataItem createDataItem(NodeId nodeId, Consumer<ManagedDataItem> consumer) throws UaException {
+        return createDataItems(singletonList(nodeId), consumer).get(0);
+    }
+
+    /**
      * Create {@link ManagedDataItem}s monitoring the Value attribute of the Nodes identified by {@code nodeIds}.
      * <p>
      * This operation will fail of the Node is not a Variable or VariableType Node. To create items that monitor
@@ -162,6 +180,28 @@ public class ManagedSubscription {
      * @throws UaException if a service-level error occurs.
      */
     public List<ManagedDataItem> createDataItems(List<NodeId> nodeIds) throws UaException {
+        return createDataItems(nodeIds, item -> {});
+    }
+
+    /**
+     * Create {@link ManagedDataItem}s monitoring the Value attribute of the Nodes identified by {@code nodeIds}.
+     * <p>
+     * This operation will fail of the Node is not a Variable or VariableType Node. To create items that monitor
+     * different attributes use {@link #createDataItems(double, List)}.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedDataItem#getStatusCode()}.
+     *
+     * @param nodeIds  the {@link NodeId}s identifying a Variable or VariableType Nodes.
+     * @param consumer a {@link Consumer} that will receive each item as it is created.
+     * @return a List of {@link ManagedDataItem}.
+     * @throws UaException if a service-level error occurs.
+     */
+    public List<ManagedDataItem> createDataItems(
+        List<NodeId> nodeIds,
+        Consumer<ManagedDataItem> consumer
+    ) throws UaException {
+
         List<ReadValueId> readValueIds = nodeIds.stream()
             .map(nodeId ->
                 new ReadValueId(
@@ -173,7 +213,7 @@ public class ManagedSubscription {
             )
             .collect(Collectors.toList());
 
-        return createDataItems(getDefaultSamplingInterval(), readValueIds);
+        return createDataItems(getDefaultSamplingInterval(), readValueIds, consumer);
     }
 
     /**
@@ -447,7 +487,31 @@ public class ManagedSubscription {
      * @see EventFilterBuilder
      */
     public ManagedEventItem createEventItem(NodeId nodeId, EventFilter eventFilter) throws UaException {
-        return createEventItems(singletonList(nodeId), singletonList(eventFilter)).get(0);
+        return createEventItem(nodeId, eventFilter, item -> {});
+    }
+
+    /**
+     * Create a {@link ManagedEventItem}.
+     * <p>
+     * This operation will fail of the Node identified by {@code nodeId} is not an Object Node.
+     * <p>
+     * The operation result should be checked before this item is used further.
+     * See {@link ManagedEventItem#getStatusCode()}.
+     *
+     * @param nodeId      the {@link NodeId} identifying an Object Node.
+     * @param eventFilter the {@link EventFilter} to use.
+     * @param consumer    a {@link Consumer} that will receive each item as it is created.
+     * @return a {@link ManagedEventItem}.
+     * @throws UaException if a service-level error occurs.
+     * @see EventFilterBuilder
+     */
+    public ManagedEventItem createEventItem(
+        NodeId nodeId,
+        EventFilter eventFilter,
+        Consumer<ManagedEventItem> consumer
+    ) throws UaException {
+
+        return createEventItems(singletonList(nodeId), singletonList(eventFilter), consumer).get(0);
     }
 
     /**
@@ -481,6 +545,7 @@ public class ManagedSubscription {
      *
      * @param nodeIds      the {@link NodeId}s identifying Object Nodes.
      * @param eventFilters the corresponding {@link EventFilter} to create each item with.
+     * @param consumer     a {@link Consumer} that will receive each item as it is created.
      * @return a List of {@link ManagedEventItem}s.
      * @throws UaException if a service-level error occurs.
      */

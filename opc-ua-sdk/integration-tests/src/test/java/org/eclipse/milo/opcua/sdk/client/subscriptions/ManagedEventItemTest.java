@@ -72,21 +72,20 @@ public class ManagedEventItemTest extends AbstractManagedItemTest {
 
     @Test
     public void eventValueListener() throws UaException, InterruptedException {
-        ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
-
         final CountDownLatch latch = new CountDownLatch(2);
 
-        eventItem.addEventValueListener((item, value) -> {
-            assertEquals(eventItem, item);
-            latch.countDown();
-        });
+        ManagedEventItem eventItem = subscription.createEventItem(
+            Identifiers.Server,
+            eventFilter,
+            item -> {
+                item.addEventValueListener((i, value) -> latch.countDown());
 
-        ManagedEventItem.EventValueListener eventValueListener = (item, value) -> {
-            assertEquals(eventItem, item);
-            latch.countDown();
-        };
+                ManagedEventItem.EventValueListener eventValueListener = (i, value) -> latch.countDown();
+                item.addEventValueListener(eventValueListener);
+            }
+        );
 
-        eventItem.addEventValueListener(eventValueListener);
+        assertTrue(eventItem.getStatusCode().isGood());
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
