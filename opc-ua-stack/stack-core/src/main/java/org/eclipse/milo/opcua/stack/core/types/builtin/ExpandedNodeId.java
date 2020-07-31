@@ -316,6 +316,39 @@ public final class ExpandedNodeId {
     }
 
     /**
+     * Re-index this {@link ExpandedNodeId} from its current namespace index to the index for
+     * {@code namespaceUri} in {@code namespaceTable}.
+     * <p>
+     * If the target namespace URI is not present in the namespace table this ExpandedNodeId
+     * is returned.
+     *
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @param namespaceUri   the target namespace URI.
+     * @return a new {@link NodeId} in the namespace index indicated by {@code namespaceUri}.
+     */
+    public ExpandedNodeId reindex(NamespaceTable namespaceTable, String namespaceUri) {
+        if (isAbsolute()) {
+            // namespaceUri is specified; namespaceIndex is ignored
+            return this;
+        } else {
+            UShort newNamespaceIndex = namespaceTable.getIndex(namespaceUri);
+
+            if (newNamespaceIndex != null &&
+                !Objects.equals(namespaceIndex, newNamespaceIndex)) {
+
+                return new ExpandedNodeId(
+                    newNamespaceIndex,
+                    null,
+                    identifier,
+                    serverIndex
+                );
+            } else {
+                return this;
+            }
+        }
+    }
+
+    /**
      * If this {@link ExpandedNodeId} resides on the local server ({@code serverIndex == 0}), return its representation
      * as a local {@link NodeId}.
      * <p>
