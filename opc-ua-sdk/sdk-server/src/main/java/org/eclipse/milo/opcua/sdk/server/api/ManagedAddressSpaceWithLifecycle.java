@@ -46,6 +46,24 @@ public abstract class ManagedAddressSpaceWithLifecycle extends ManagedAddressSpa
         });
     }
 
+    public ManagedAddressSpaceWithLifecycle(OpcUaServer server, UaNodeManager nodeManager) {
+        super(server, nodeManager);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                registerAddressSpace(ManagedAddressSpaceWithLifecycle.this);
+                registerNodeManager(getNodeManager());
+            }
+
+            @Override
+            public void shutdown() {
+                unregisterAddressSpace(ManagedAddressSpaceWithLifecycle.this);
+                unregisterNodeManager(getNodeManager());
+            }
+        });
+    }
+
     @Override
     public final void startup() {
         lifecycleManager.startup();
