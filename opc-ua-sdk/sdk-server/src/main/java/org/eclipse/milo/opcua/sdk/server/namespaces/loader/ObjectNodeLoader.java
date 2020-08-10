@@ -1553,10 +1553,6 @@ class ObjectNodeLoader {
     private void loadNode160() {
         ServerRedundancyTypeNode node = new ServerRedundancyTypeNode(this.context, Identifiers.Server_ServerRedundancy, new QualifiedName(0, "ServerRedundancy"), new LocalizedText("en", "ServerRedundancy"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), UByte.valueOf(0));
         node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_RedundancySupport.expanded(), true));
-        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_CurrentServerId.expanded(), true));
-        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_RedundantServerArray.expanded(), true));
-        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_ServerUriArray.expanded(), true));
-        node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasProperty, Identifiers.Server_ServerRedundancy_ServerNetworkGroups.expanded(), true));
         node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasTypeDefinition, Identifiers.ServerRedundancyType.expanded(), true));
         node.addReference(new Reference(Identifiers.Server_ServerRedundancy, Identifiers.HasComponent, Identifiers.Server.expanded(), false));
         this.nodeManager.addNode(node);
