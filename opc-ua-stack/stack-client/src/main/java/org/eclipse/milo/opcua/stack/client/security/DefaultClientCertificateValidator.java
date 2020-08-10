@@ -96,7 +96,18 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
 
         X509Certificate certificate = certificateChain.get(0);
 
-        CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
+        try {
+            CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
+        } catch (UaException e) {
+            if (validationChecks.contains(ValidationCheck.APPLICATION_URI)) {
+                throw e;
+            } else {
+                LOGGER.warn(
+                    "check suppressed: certificate failed application uri check: {} != {}",
+                    applicationUri, CertificateValidationUtil.getSubjectAltNameUri(certificate)
+                );
+            }
+        }
 
         try {
             CertificateValidationUtil.checkHostnameOrIpAddress(certificate, validHostNames);
