@@ -14,9 +14,11 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
@@ -145,7 +147,7 @@ public class PublishQueue {
 
     @Nullable
     public synchronized ServiceRequest poll() {
-        long now = System.currentTimeMillis();
+        long nowNanos = System.nanoTime();
 
         while (true) {
             ServiceRequest serviceRequest = serviceQueue.poll();
@@ -157,10 +159,14 @@ public class PublishQueue {
                     .getRequest()
                     .getRequestHeader();
 
-                long timeoutHint = requestHeader.getTimeoutHint().longValue();
-                long timestamp = requestHeader.getTimestamp().getJavaTime();
+                long millisSinceReceived = TimeUnit.MILLISECONDS.convert(
+                    nowNanos - serviceRequest.getReceivedAtNanos(),
+                    TimeUnit.NANOSECONDS
+                );
 
-                if (timeoutHint == 0 || timestamp + timeoutHint >= now) {
+                long timeoutHint = requestHeader.getTimeoutHint().longValue();
+
+                if (timeoutHint == 0 || millisSinceReceived < timeoutHint) {
                     return serviceRequest;
                 } else {
                     logger.debug(
@@ -169,6 +175,8 @@ public class PublishQueue {
                         requestHeader.getTimestamp().getJavaDate(),
                         timeoutHint
                     );
+
+                    serviceRequest.setServiceFault(StatusCodes.Bad_Timeout);
                 }
             }
         }
