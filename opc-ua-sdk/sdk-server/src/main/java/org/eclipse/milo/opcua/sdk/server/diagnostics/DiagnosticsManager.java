@@ -27,10 +27,11 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.SessionListener;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.ServerDiagnosticsSummaryVariable;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SubscriptionDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionDiagnosticsObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionsDiagnosticsSummaryTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerDiagnosticsSummaryTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsArrayTypeNode;
@@ -210,6 +211,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
 
         private final List<Runnable> registeredTasks = Collections.synchronizedList(new ArrayList<>());
 
+        private SubscriptionDiagnosticsVariableArray subscriptionDiagnosticsVariableArray;
         private SessionsDiagnosticsSummaryObject sessionsDiagnosticsSummaryObject;
 
         private final ServerDiagnosticsTypeNode node;
@@ -227,10 +229,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
 
             configureSubscriptionDiagnosticsArray();
 
-            sessionsDiagnosticsSummaryObject = new SessionsDiagnosticsSummaryObject(
-                node.getSessionsDiagnosticsSummaryNode()
-            );
-            sessionsDiagnosticsSummaryObject.startup();
+            configureSessionDiagnosticsSummary();
         }
 
         @Override
@@ -239,6 +238,11 @@ public class DiagnosticsManager extends AbstractLifecycle {
 
             diagnosticTasks.removeAll(registeredTasks);
             registeredTasks.clear();
+
+            if (subscriptionDiagnosticsVariableArray != null) {
+                subscriptionDiagnosticsVariableArray.shutdown();
+                subscriptionDiagnosticsVariableArray = null;
+            }
 
             if (sessionsDiagnosticsSummaryObject != null) {
                 sessionsDiagnosticsSummaryObject.shutdown();
@@ -249,54 +253,27 @@ public class DiagnosticsManager extends AbstractLifecycle {
             // should be present whether or not diagnostics are enabled.
         }
 
-        private void configureSubscriptionDiagnosticsArray() {
-            node.getSubscriptionDiagnosticsArrayNode().getFilterChain().addLast(
-                new ArrayValueAttributeFilter(Identifiers.SubscriptionDiagnosticsType) {
-                    @Override
-                    protected String getElementNodeName(String arrayNodeName, Object value, int index) {
-                        if (value instanceof SubscriptionDiagnosticsDataType) {
-                            return ((SubscriptionDiagnosticsDataType) value).getSubscriptionId().toString();
-                        } else {
-                            return super.getElementNodeName(arrayNodeName, value, index);
-                        }
-                    }
-                }
+        private void configureServerDiagnosticsSummary() {
+            ServerDiagnosticsSummaryVariable serverDiagnosticsSummary = new ServerDiagnosticsSummaryVariable(
+                server,
+                node.getServerDiagnosticsSummaryNode()
             );
 
-            Runnable updateTask = () -> {
-                SubscriptionDiagnosticsDataType[] value = server.getSubscriptions()
-                    .values()
-                    .stream()
-                    .map(s ->
-                        s.getSubscriptionDiagnostics()
-                            .getSubscriptionDiagnosticsDataType()
-                    )
-                    .toArray(SubscriptionDiagnosticsDataType[]::new);
-
-                node.getSubscriptionDiagnosticsArrayNode().setValue(new DataValue(new Variant(value)));
-            };
-
-            diagnosticTasks.add(updateTask);
-            registeredTasks.add(updateTask);
+            serverDiagnosticsSummary.startup();
         }
 
-        private void configureServerDiagnosticsSummary() {
-            ServerDiagnosticsSummaryTypeNode serverDiagnosticsSummaryNode = node.getServerDiagnosticsSummaryNode();
+        private void configureSubscriptionDiagnosticsArray() {
+            subscriptionDiagnosticsVariableArray = new SubscriptionDiagnosticsVariableArray(
+                node.getSubscriptionDiagnosticsArrayNode()
+            );
+            subscriptionDiagnosticsVariableArray.startup();
+        }
 
-            serverDiagnosticsSummaryNode.getFilterChain().addLast(new ComplexValueAttributeFilter());
-
-            Runnable updateTask = () -> {
-                ExtensionObject xo = ExtensionObject.encode(
-                    getServer().getSerializationContext(),
-                    getServer().getDiagnosticsSummary()
-                        .getServerDiagnosticsSummaryDataType()
-                );
-
-                serverDiagnosticsSummaryNode.setValue(new DataValue(new Variant(xo)));
-            };
-
-            diagnosticTasks.add(updateTask);
-            registeredTasks.add(updateTask);
+        private void configureSessionDiagnosticsSummary() {
+            sessionsDiagnosticsSummaryObject = new SessionsDiagnosticsSummaryObject(
+                node.getSessionsDiagnosticsSummaryNode()
+            );
+            sessionsDiagnosticsSummaryObject.startup();
         }
 
     }
