@@ -58,12 +58,25 @@ public enum ValidationCheck {
     /**
      * CRLs for every non-end-entity CA must be found.
      */
-    REVOCATION_LISTS;
+    REVOCATION_LISTS,
 
     /**
-     * An empty set of {@link ValidationCheck}s.
+     * Check that a remote application's end-entity certificate has a SubjectAlternativeName URI
+     * that matches the application URI in its ApplicationDescription.
+     * <p>
+     * This check is not technically optional or suppressible according to the spec, but because
+     * Java's certificate parsing routine turns invalid URIs into a null/empty String this check
+     * fails more often than it should, since many applications will use whitespace in their URI
+     * without properly URL-encoding it.
      */
-    public static final ImmutableSet<ValidationCheck> NO_OPTIONAL_CHECKS = ImmutableSet.of();
+    APPLICATION_URI;
+
+    /**
+     * A set that includes none of the optional {@link ValidationCheck}s.
+     * <p>
+     * This set *does* still include {@link #APPLICATION_URI}, which is technically not optional.
+     */
+    public static final ImmutableSet<ValidationCheck> NO_OPTIONAL_CHECKS = ImmutableSet.of(APPLICATION_URI);
 
     /**
      * A set the includes all {@link ValidationCheck}s.
