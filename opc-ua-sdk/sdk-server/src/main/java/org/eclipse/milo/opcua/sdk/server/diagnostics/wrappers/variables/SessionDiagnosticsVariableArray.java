@@ -14,19 +14,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.milo.opcua.sdk.core.AccessLevel;
+import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.SessionListener;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.slf4j.Logger;
@@ -43,6 +51,7 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
+    private final NodeManager<UaNode> nodeManager;
 
     private final SessionDiagnosticsArrayTypeNode node;
 
@@ -51,6 +60,7 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 
         this.server = node.getNodeContext().getServer();
         this.nodeFactory = new NodeFactory(node.getNodeContext());
+        this.nodeManager = node.getNodeManager();
     }
 
     @Override
@@ -94,11 +104,38 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private void createSessionDiagnosticsVariable(Session session) {
         try {
+            int index = sessionDiagnosticsVariables.size();
+            String name = node.getBrowseName().getName() + "[" + index + "]";
+            String id = Util.buildBrowseNamePath(node) + "[" + index + "]";
+            NodeId elementNodeId = node.getNodeId().withId(id);
+
             SessionDiagnosticsVariableTypeNode elementNode =
                 (SessionDiagnosticsVariableTypeNode) nodeFactory.createNode(
-                    node.getNodeId(),
-                    Identifiers.SubscriptionDiagnosticsType
+                    elementNodeId,
+                    Identifiers.SessionDiagnosticsVariableType
                 );
+
+            elementNode.setBrowseName(new QualifiedName(
+                node.getBrowseName().getNamespaceIndex(),
+                name
+            ));
+            elementNode.setDisplayName(new LocalizedText(
+                node.getDisplayName().getLocale(),
+                name
+            ));
+            elementNode.setArrayDimensions(null);
+            elementNode.setValueRank(ValueRank.Scalar.getValue());
+            elementNode.setDataType(Identifiers.SubscriptionDiagnosticsDataType);
+            elementNode.setAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
+            elementNode.setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
+
+            elementNode.addReference(new Reference(
+                elementNode.getNodeId(),
+                Identifiers.HasComponent,
+                node.getNodeId().expanded(),
+                Reference.Direction.INVERSE
+            ));
+            nodeManager.addNode(elementNode);
 
             SessionDiagnosticsVariable sessionDiagnosticsVariable =
                 new SessionDiagnosticsVariable(elementNode, session);

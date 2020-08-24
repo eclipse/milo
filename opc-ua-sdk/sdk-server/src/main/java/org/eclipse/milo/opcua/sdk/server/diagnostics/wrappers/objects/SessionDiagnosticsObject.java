@@ -53,20 +53,11 @@ public class SessionDiagnosticsObject extends AbstractLifecycle {
 
     @Override
     protected void onShutdown() {
-        if (sessionDiagnosticsVariable != null) {
-            sessionDiagnosticsVariable.shutdown();
-            sessionDiagnosticsVariable = null;
-        }
+        sessionDiagnosticsVariable.shutdown();
+        sessionSecurityDiagnosticsVariable.shutdown();
+        subscriptionDiagnosticsVariableArray.shutdown();
 
-        if (sessionSecurityDiagnosticsVariable != null) {
-            sessionSecurityDiagnosticsVariable.shutdown();
-            sessionSecurityDiagnosticsVariable = null;
-        }
-
-        if (subscriptionDiagnosticsVariableArray != null) {
-            subscriptionDiagnosticsVariableArray.shutdown();
-            subscriptionDiagnosticsVariableArray = null;
-        }
+        node.delete();
     }
 
 }

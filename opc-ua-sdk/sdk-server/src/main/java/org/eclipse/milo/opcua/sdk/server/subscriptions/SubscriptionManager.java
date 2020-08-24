@@ -169,6 +169,7 @@ public class SubscriptionManager {
         subscriptions.put(subscriptionId, subscription);
         server.getSubscriptions().put(subscriptionId, subscription);
         server.getDiagnosticsSummary().getCumulatedSubscriptionCount().increment();
+        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
@@ -232,6 +233,7 @@ public class SubscriptionManager {
 
             if (subscription != null) {
                 server.getSubscriptions().remove(subscription.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
 
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 

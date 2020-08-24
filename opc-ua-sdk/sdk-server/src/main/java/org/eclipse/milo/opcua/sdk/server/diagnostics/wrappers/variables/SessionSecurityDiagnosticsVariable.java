@@ -36,6 +36,14 @@ public class SessionSecurityDiagnosticsVariable extends AbstractLifecycle {
         this.server = node.getNodeContext().getServer();
     }
 
+    public SessionSecurityDiagnosticsTypeNode getNode() {
+        return node;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
     @Override
     protected void onStartup() {
         node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
@@ -87,7 +95,7 @@ public class SessionSecurityDiagnosticsVariable extends AbstractLifecycle {
 
     @Override
     protected void onShutdown() {
-
+        node.delete();
     }
 
 }

@@ -14,14 +14,17 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.collect.Maps;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.SessionListener;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionSecurityDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionDiagnosticsObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionsDiagnosticsSummaryTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -44,6 +47,7 @@ public class SessionsDiagnosticsSummaryObject extends AbstractLifecycle {
 
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
+    private final NodeManager<UaNode> nodeManager;
 
     private final SessionsDiagnosticsSummaryTypeNode node;
 
@@ -52,6 +56,7 @@ public class SessionsDiagnosticsSummaryObject extends AbstractLifecycle {
 
         this.server = node.getNodeContext().getServer();
         this.nodeFactory = new NodeFactory(node.getNodeContext());
+        this.nodeManager = node.getNodeManager();
     }
 
     @Override
@@ -99,6 +104,14 @@ public class SessionsDiagnosticsSummaryObject extends AbstractLifecycle {
             sdoNode.setBrowseName(new QualifiedName(1, session.getSessionName()));
             sdoNode.setDisplayName(LocalizedText.english(session.getSessionName()));
 
+            sdoNode.addReference(new Reference(
+                sdoNode.getNodeId(),
+                Identifiers.HasComponent,
+                node.getNodeId().expanded(),
+                Reference.Direction.INVERSE
+            ));
+            nodeManager.addNode(sdoNode);
+
             SessionDiagnosticsObject sdo = new SessionDiagnosticsObject(sdoNode, session);
 
             sessionDiagnosticsObjects.put(session.getSessionId(), sdo);
@@ -117,22 +130,14 @@ public class SessionsDiagnosticsSummaryObject extends AbstractLifecycle {
             server.getSessionManager().removeSessionListener(sessionListener);
         }
 
-        if (sessionDiagnosticsVariableArray != null) {
-            sessionDiagnosticsVariableArray.shutdown();
-            sessionDiagnosticsVariableArray = null;
-        }
-
-        if (sessionSecurityDiagnosticsVariableArray != null) {
-            sessionSecurityDiagnosticsVariableArray.shutdown();
-            sessionSecurityDiagnosticsVariableArray = null;
-        }
+        sessionDiagnosticsVariableArray.shutdown();
+        sessionSecurityDiagnosticsVariableArray.shutdown();
 
         sessionDiagnosticsObjects.values()
             .forEach(SessionDiagnosticsObject::shutdown);
         sessionDiagnosticsObjects.clear();
 
-        // The SessionsDiagnosticsSummaryTypeNode is not deleted because it
-        // should be present whether or not diagnostics are enabled.
+        node.delete();
     }
 
 }
