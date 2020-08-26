@@ -10,11 +10,17 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.ServerDiagnosticsSummaryVariable;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SubscriptionDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +30,19 @@ public class ServerDiagnosticsObject extends AbstractLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private ServerDiagnosticsSummaryVariable serverDiagnosticsSummary;
     private SubscriptionDiagnosticsVariableArray subscriptionDiagnosticsVariableArray;
     private SessionsDiagnosticsSummaryObject sessionsDiagnosticsSummaryObject;
 
     private final OpcUaServer server;
 
     private final ServerDiagnosticsTypeNode node;
-    private ServerDiagnosticsSummaryVariable serverDiagnosticsSummary;
+    private final NodeManager<UaNode> diagnosticsNodeManager;
 
-    public ServerDiagnosticsObject(ServerDiagnosticsTypeNode node) {
+    public ServerDiagnosticsObject(ServerDiagnosticsTypeNode node, NodeManager<UaNode> diagnosticsNodeManager) {
         checkNotNull(node, "ServerDiagnosticsTypeNode");
         this.node = node;
+        this.diagnosticsNodeManager = diagnosticsNodeManager;
 
         this.server = node.getNodeContext().getServer();
     }
@@ -48,6 +56,8 @@ public class ServerDiagnosticsObject extends AbstractLifecycle {
         configureSubscriptionDiagnosticsArray();
 
         configureSessionDiagnosticsSummary();
+
+        node.getSamplingIntervalDiagnosticsArrayNode().delete();
     }
 
     @Override
@@ -70,15 +80,24 @@ public class ServerDiagnosticsObject extends AbstractLifecycle {
     }
 
     private void configureSubscriptionDiagnosticsArray() {
-        subscriptionDiagnosticsVariableArray = new SubscriptionDiagnosticsVariableArray(
-            node.getSubscriptionDiagnosticsArrayNode()
-        );
+        subscriptionDiagnosticsVariableArray =
+            new SubscriptionDiagnosticsVariableArray(
+                node.getSubscriptionDiagnosticsArrayNode(),
+                diagnosticsNodeManager
+            ) {
+                @Override
+                protected List<Subscription> getSubscriptions() {
+                    return new ArrayList<>(server.getSubscriptions().values());
+                }
+            };
+
         subscriptionDiagnosticsVariableArray.startup();
     }
 
     private void configureSessionDiagnosticsSummary() {
         sessionsDiagnosticsSummaryObject = new SessionsDiagnosticsSummaryObject(
-            node.getSessionsDiagnosticsSummaryNode()
+            node.getSessionsDiagnosticsSummaryNode(),
+            diagnosticsNodeManager
         );
         sessionsDiagnosticsSummaryObject.startup();
     }

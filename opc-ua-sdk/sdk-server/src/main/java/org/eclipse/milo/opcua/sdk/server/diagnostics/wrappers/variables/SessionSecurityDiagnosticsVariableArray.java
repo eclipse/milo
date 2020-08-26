@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -51,16 +52,31 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
-    private final NodeManager<UaNode> nodeManager;
 
     private final SessionSecurityDiagnosticsArrayTypeNode node;
+    private final NodeManager<UaNode> diagnosticsNodeManager;
 
-    public SessionSecurityDiagnosticsVariableArray(SessionSecurityDiagnosticsArrayTypeNode node) {
+    public SessionSecurityDiagnosticsVariableArray(
+        SessionSecurityDiagnosticsArrayTypeNode node,
+        NodeManager<UaNode> diagnosticsNodeManager
+    ) {
+
         this.node = node;
+        this.diagnosticsNodeManager = diagnosticsNodeManager;
 
         this.server = node.getNodeContext().getServer();
-        this.nodeFactory = new NodeFactory(node.getNodeContext());
-        this.nodeManager = node.getNodeManager();
+
+        this.nodeFactory = new NodeFactory(new UaNodeContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return diagnosticsNodeManager;
+            }
+        });
     }
 
     @Override
@@ -105,9 +121,8 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
     private void createSessionSecurityDiagnosticsVariable(Session session) {
         try {
             int index = sessionSecurityDiagnosticsVariables.size();
-            String name = node.getBrowseName().getName() + "[" + index + "]";
             String id = Util.buildBrowseNamePath(node) + "[" + index + "]";
-            NodeId elementNodeId = node.getNodeId().withId(id);
+            NodeId elementNodeId = new NodeId(1, id);
 
             SessionSecurityDiagnosticsTypeNode elementNode =
                 (SessionSecurityDiagnosticsTypeNode) nodeFactory.createNode(
@@ -115,13 +130,10 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
                     Identifiers.SessionSecurityDiagnosticsType
                 );
 
-            elementNode.setBrowseName(new QualifiedName(
-                node.getBrowseName().getNamespaceIndex(),
-                name
-            ));
+            elementNode.setBrowseName(new QualifiedName(1, "SessionSecurityDiagnostics"));
             elementNode.setDisplayName(new LocalizedText(
                 node.getDisplayName().getLocale(),
-                name
+                "SessionSecurityDiagnostics"
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
@@ -135,7 +147,7 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
                 node.getNodeId().expanded(),
                 Reference.Direction.INVERSE
             ));
-            nodeManager.addNode(elementNode);
+            diagnosticsNodeManager.addNode(elementNode);
 
             SessionSecurityDiagnosticsVariable sessionSecurityDiagnosticsVariable =
                 new SessionSecurityDiagnosticsVariable(elementNode, session);

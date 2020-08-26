@@ -16,20 +16,23 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 
 public class ServerNamespace extends ManagedNamespaceWithLifecycle {
 
     private final SubscriptionModel subscriptionModel;
+    private final DiagnosticsManager diagnosticsManager;
 
     public ServerNamespace(OpcUaServer server) {
         super(server, server.getConfig().getApplicationUri());
 
         subscriptionModel = new SubscriptionModel(server, this);
+        diagnosticsManager = new DiagnosticsManager(server, getNodeFactory(), getNodeManager());
 
         getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
-
         getLifecycleManager().addLifecycle(subscriptionModel);
+        getLifecycleManager().addLifecycle(diagnosticsManager);
     }
 
     @Override

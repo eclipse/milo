@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -51,16 +52,31 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
-    private final NodeManager<UaNode> nodeManager;
 
     private final SessionDiagnosticsArrayTypeNode node;
+    private final NodeManager<UaNode> diagnosticsNodeManager;
 
-    public SessionDiagnosticsVariableArray(SessionDiagnosticsArrayTypeNode node) {
+    public SessionDiagnosticsVariableArray(
+        SessionDiagnosticsArrayTypeNode node,
+        NodeManager<UaNode> diagnosticsNodeManager
+    ) {
+
         this.node = node;
+        this.diagnosticsNodeManager = diagnosticsNodeManager;
 
         this.server = node.getNodeContext().getServer();
-        this.nodeFactory = new NodeFactory(node.getNodeContext());
-        this.nodeManager = node.getNodeManager();
+
+        this.nodeFactory = new NodeFactory(new UaNodeContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return diagnosticsNodeManager;
+            }
+        });
     }
 
     @Override
@@ -105,9 +121,8 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
     private void createSessionDiagnosticsVariable(Session session) {
         try {
             int index = sessionDiagnosticsVariables.size();
-            String name = node.getBrowseName().getName() + "[" + index + "]";
             String id = Util.buildBrowseNamePath(node) + "[" + index + "]";
-            NodeId elementNodeId = node.getNodeId().withId(id);
+            NodeId elementNodeId = new NodeId(1, id);
 
             SessionDiagnosticsVariableTypeNode elementNode =
                 (SessionDiagnosticsVariableTypeNode) nodeFactory.createNode(
@@ -115,13 +130,10 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
                     Identifiers.SessionDiagnosticsVariableType
                 );
 
-            elementNode.setBrowseName(new QualifiedName(
-                node.getBrowseName().getNamespaceIndex(),
-                name
-            ));
+            elementNode.setBrowseName(new QualifiedName(1, "SessionDiagnostics"));
             elementNode.setDisplayName(new LocalizedText(
                 node.getDisplayName().getLocale(),
-                name
+                "SessionDiagnostics"
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
@@ -135,7 +147,7 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
                 node.getNodeId().expanded(),
                 Reference.Direction.INVERSE
             ));
-            nodeManager.addNode(elementNode);
+            diagnosticsNodeManager.addNode(elementNode);
 
             SessionDiagnosticsVariable sessionDiagnosticsVariable =
                 new SessionDiagnosticsVariable(elementNode, session);

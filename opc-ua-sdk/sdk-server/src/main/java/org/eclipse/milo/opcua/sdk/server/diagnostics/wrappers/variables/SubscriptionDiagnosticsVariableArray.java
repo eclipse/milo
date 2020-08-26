@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
+public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -55,26 +56,42 @@ public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
-    private final NodeManager<UaNode> nodeManager;
+    private final NodeManager<UaNode> diagnosticsNodeManager;
 
     private final SubscriptionDiagnosticsArrayTypeNode node;
 
-    public SubscriptionDiagnosticsVariableArray(SubscriptionDiagnosticsArrayTypeNode node) {
+    public SubscriptionDiagnosticsVariableArray(
+        SubscriptionDiagnosticsArrayTypeNode node,
+        NodeManager<UaNode> diagnosticsNodeManager
+    ) {
+
         checkNotNull(node, "SubscriptionDiagnosticsArrayTypeNode");
         this.node = node;
+        this.diagnosticsNodeManager = diagnosticsNodeManager;
 
         this.server = node.getNodeContext().getServer();
-        this.nodeFactory = new NodeFactory(node.getNodeContext());
-        this.nodeManager = node.getNodeManager();
+
+        this.nodeFactory = new NodeFactory(new UaNodeContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return diagnosticsNodeManager;
+            }
+        });
     }
+
+    protected abstract List<Subscription> getSubscriptions();
 
     @Override
     protected void onStartup() {
         node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
                 server.getSerializationContext(),
-                server.getSubscriptions()
-                    .values()
+                getSubscriptions()
                     .stream()
                     .map(s ->
                         s.getSubscriptionDiagnostics()
@@ -85,8 +102,7 @@ public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
             return new DataValue(new Variant(xos));
         }));
 
-        server.getSubscriptions().values()
-            .forEach(this::createSubscriptionDiagnosticsNode);
+        getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
 
         //noinspection UnstableApiUsage
         server.getEventBus().register(this);
@@ -107,6 +123,8 @@ public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
 
     @Subscribe
     public synchronized void onSubscriptionCreated(SubscriptionCreatedEvent event) {
+        logger.info("subscription created: {}", event.getSubscription().getId());
+
         createSubscriptionDiagnosticsNode(event.getSubscription());
 
         assert subscriptions.size() == subscriptionDiagnosticsVariables.size();
@@ -114,6 +132,8 @@ public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
 
     @Subscribe
     public synchronized void onSubscriptionDeleted(SubscriptionDeletedEvent event) {
+        logger.info("subscription deleted: {}", event.getSubscription().getId());
+
         assert subscriptions.size() == subscriptionDiagnosticsVariables.size();
 
         for (int i = 0; i < subscriptions.size(); i++) {
@@ -133,22 +153,18 @@ public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
 
         try {
             int index = subscriptionDiagnosticsVariables.size();
-            String name = node.getBrowseName().getName() + "[" + index + "]";
             String id = Util.buildBrowseNamePath(node) + "[" + index + "]";
-            NodeId elementNodeId = node.getNodeId().withId(id);
+            NodeId elementNodeId = new NodeId(1, id);
 
             SubscriptionDiagnosticsTypeNode elementNode = (SubscriptionDiagnosticsTypeNode) nodeFactory.createNode(
                 elementNodeId,
                 Identifiers.SubscriptionDiagnosticsType
             );
 
-            elementNode.setBrowseName(new QualifiedName(
-                node.getBrowseName().getNamespaceIndex(),
-                name
-            ));
+            elementNode.setBrowseName(new QualifiedName(1, subscription.getId().toString()));
             elementNode.setDisplayName(new LocalizedText(
                 node.getDisplayName().getLocale(),
-                name
+                subscription.getId().toString()
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
@@ -162,7 +178,7 @@ public class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
                 node.getNodeId().expanded(),
                 Reference.Direction.INVERSE
             ));
-            nodeManager.addNode(elementNode);
+            diagnosticsNodeManager.addNode(elementNode);
 
             SubscriptionDiagnosticsVariable diagnosticsVariable = new SubscriptionDiagnosticsVariable(
                 server,

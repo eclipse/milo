@@ -55,7 +55,7 @@ public class DiagnosticsManager extends AbstractLifecycle {
             AccessLevel.toValue(AccessLevel.READ_WRITE)
         );
 
-        serverDiagnosticsObject = new ServerDiagnosticsObject(serverDiagnosticsNode);
+        serverDiagnosticsObject = new ServerDiagnosticsObject(serverDiagnosticsNode, nodeManager);
         serverDiagnosticsObject.startup();
     }
 

@@ -435,6 +435,14 @@ public class SessionManager implements
 
             serviceRequest.setResponse(response);
         } catch (UaException e) {
+            ServerDiagnosticsSummary serverDiagnosticsSummary = server.getDiagnosticsSummary();
+
+            serverDiagnosticsSummary.getRejectedSessionCount().increment();
+
+            if (e.getStatusCode().isSecurityError()) {
+                serverDiagnosticsSummary.getSecurityRejectedSessionCount().increment();
+            }
+
             serviceRequest.setServiceFault(e);
         }
     }

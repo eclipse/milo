@@ -10,12 +10,17 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.objects;
 
+import java.util.List;
+
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionDiagnosticsVariable;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionSecurityDiagnosticsVariable;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SubscriptionDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionDiagnosticsObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 
 public class SessionDiagnosticsObject extends AbstractLifecycle {
 
@@ -26,10 +31,17 @@ public class SessionDiagnosticsObject extends AbstractLifecycle {
 
     private final SessionDiagnosticsObjectTypeNode node;
     private final Session session;
+    private final NodeManager<UaNode> diagnosticsNodeManager;
 
-    public SessionDiagnosticsObject(SessionDiagnosticsObjectTypeNode node, Session session) {
+    public SessionDiagnosticsObject(
+        SessionDiagnosticsObjectTypeNode node,
+        Session session,
+        NodeManager<UaNode> diagnosticsNodeManager
+    ) {
+
         this.node = node;
         this.session = session;
+        this.diagnosticsNodeManager = diagnosticsNodeManager;
     }
 
     @Override
@@ -41,13 +53,21 @@ public class SessionDiagnosticsObject extends AbstractLifecycle {
         sessionDiagnosticsVariable.startup();
 
         sessionSecurityDiagnosticsVariable = new SessionSecurityDiagnosticsVariable(
-            node.getSessionSecurityDiagnosticsNode(), session
+            node.getSessionSecurityDiagnosticsNode(),
+            session
         );
         sessionSecurityDiagnosticsVariable.startup();
 
         subscriptionDiagnosticsVariableArray = new SubscriptionDiagnosticsVariableArray(
-            node.getSubscriptionDiagnosticsArrayNode()
-        );
+            node.getSubscriptionDiagnosticsArrayNode(),
+            diagnosticsNodeManager
+        ) {
+            @Override
+            protected List<Subscription> getSubscriptions() {
+                return session.getSubscriptionManager().getSubscriptions();
+            }
+        };
+
         subscriptionDiagnosticsVariableArray.startup();
     }
 
