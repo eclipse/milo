@@ -10,18 +10,26 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerDiagnosticsSummaryTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
+
+    private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
     private final OpcUaServer server;
     private final ServerDiagnosticsSummaryTypeNode node;
@@ -33,7 +41,23 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
 
     @Override
     protected void onStartup() {
-        node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
+
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+            if (attributeId == AttributeId.Value) {
+                DataValue dataValue = (DataValue) value;
+                Object o = dataValue.getValue().getValue();
+                if (o instanceof Boolean) {
+                    diagnosticsEnabled.set((Boolean) o);
+                }
+            }
+        });
+
+        node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject xo = ExtensionObject.encode(
                 server.getSerializationContext(),
                 server.getDiagnosticsSummary()
@@ -41,50 +65,66 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
             );
             return new DataValue(new Variant(xo));
         }));
-        node.getServerViewCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getServerViewCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(server.getDiagnosticsSummary().getCurrentViewCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getCurrentSessionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getCurrentSessionCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(server.getDiagnosticsSummary().getCurrentSessionCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getCumulatedSessionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getCumulatedSessionCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(server.getDiagnosticsSummary().getCumulatedSessionCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getSecurityRejectedSessionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(server.getDiagnosticsSummary().getSecurityRejectedSessionCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getRejectedSessionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSecurityRejectedSessionCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(server.getDiagnosticsSummary().getSecurityRejectedSessionCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getRejectedSessionCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(server.getDiagnosticsSummary().getRejectedSessionCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getSessionTimeoutCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSessionTimeoutCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(server.getDiagnosticsSummary().getSessionTimeoutCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getSessionAbortCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSessionAbortCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(server.getDiagnosticsSummary().getSessionAbortCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getPublishingIntervalCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(server.getDiagnosticsSummary().getPublishingIntervalCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getCurrentSubscriptionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(server.getDiagnosticsSummary().getCurrentSubscriptionCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getCumulatedSubscriptionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(server.getDiagnosticsSummary().getCumulatedSubscriptionCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getSecurityRejectedRequestsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(server.getDiagnosticsSummary().getSecurityRejectedRequestCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
+        node.getPublishingIntervalCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(server.getDiagnosticsSummary().getPublishingIntervalCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getCurrentSubscriptionCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(server.getDiagnosticsSummary().getCurrentSubscriptionCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getCumulatedSubscriptionCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(server.getDiagnosticsSummary().getCumulatedSubscriptionCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getSecurityRejectedRequestsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = server.getDiagnosticsSummary().getSecurityRejectedRequestCount();
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getRejectedRequestsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = server.getDiagnosticsSummary().getRejectedRequestCount();
+                return new DataValue(new Variant(value));
+            })
+        );
     }
 
     @Override

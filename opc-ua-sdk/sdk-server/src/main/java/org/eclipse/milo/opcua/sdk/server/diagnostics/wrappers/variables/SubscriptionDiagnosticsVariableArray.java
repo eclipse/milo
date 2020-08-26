@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.eventbus.Subscribe;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -21,15 +23,16 @@ import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionCreatedEvent;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionDeletedEvent;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -43,15 +46,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
 
 public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<SubscriptionDiagnosticsVariable> subscriptionDiagnosticsVariables =
-        Collections.synchronizedList(new ArrayList<>());
+    private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
-    private final List<Subscription> subscriptions =
+    private EventSubscriber eventSubscriber;
+
+    private final List<SubscriptionDiagnosticsVariable> subscriptionDiagnosticsVariables =
         Collections.synchronizedList(new ArrayList<>());
 
     private final OpcUaServer server;
@@ -88,7 +93,40 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
     @Override
     protected void onStartup() {
-        node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
+
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+            if (attributeId == AttributeId.Value) {
+                DataValue dataValue = (DataValue) value;
+                Object o = dataValue.getValue().getValue();
+                if (o instanceof Boolean) {
+                    boolean current = (boolean) o;
+                    boolean previous = diagnosticsEnabled.getAndSet(current);
+
+                    if (!previous && current) {
+                        getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
+
+                        //noinspection UnstableApiUsage
+                        server.getEventBus().register(eventSubscriber = new EventSubscriber());
+                    } else if (previous && !current) {
+                        if (eventSubscriber != null) {
+                            //noinspection UnstableApiUsage
+                            server.getEventBus().unregister(eventSubscriber);
+                            eventSubscriber = null;
+                        }
+
+                        subscriptionDiagnosticsVariables.forEach(AbstractLifecycle::shutdown);
+                        subscriptionDiagnosticsVariables.clear();
+                    }
+                }
+            }
+        });
+
+        node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
                 server.getSerializationContext(),
                 getSubscriptions()
@@ -101,56 +139,24 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
             );
             return new DataValue(new Variant(xos));
         }));
-
-        getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
-
-        //noinspection UnstableApiUsage
-        server.getEventBus().register(this);
     }
 
     @Override
     protected void onShutdown() {
-        //noinspection UnstableApiUsage
-        server.getEventBus().unregister(this);
+        if (eventSubscriber != null) {
+            //noinspection UnstableApiUsage
+            server.getEventBus().unregister(eventSubscriber);
+            eventSubscriber = null;
+        }
 
         subscriptionDiagnosticsVariables.forEach(AbstractLifecycle::shutdown);
         subscriptionDiagnosticsVariables.clear();
 
-        subscriptions.clear();
-
         node.delete();
     }
 
-    @Subscribe
-    public synchronized void onSubscriptionCreated(SubscriptionCreatedEvent event) {
-        logger.info("subscription created: {}", event.getSubscription().getId());
-
-        createSubscriptionDiagnosticsNode(event.getSubscription());
-
-        assert subscriptions.size() == subscriptionDiagnosticsVariables.size();
-    }
-
-    @Subscribe
-    public synchronized void onSubscriptionDeleted(SubscriptionDeletedEvent event) {
-        logger.info("subscription deleted: {}", event.getSubscription().getId());
-
-        assert subscriptions.size() == subscriptionDiagnosticsVariables.size();
-
-        for (int i = 0; i < subscriptions.size(); i++) {
-            if (event.getSubscription().getId().equals(subscriptions.get(i).getId())) {
-                subscriptions.remove(i);
-                SubscriptionDiagnosticsVariable diagnosticsVariable = subscriptionDiagnosticsVariables.remove(i);
-                diagnosticsVariable.shutdown();
-                break;
-            }
-        }
-
-        assert subscriptions.size() == subscriptionDiagnosticsVariables.size();
-    }
 
     private void createSubscriptionDiagnosticsNode(Subscription subscription) {
-        subscriptions.add(subscription);
-
         try {
             int index = subscriptionDiagnosticsVariables.size();
             String id = Util.buildBrowseNamePath(node) + "[" + index + "]";
@@ -193,9 +199,32 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                 "Failed to create SubscriptionDiagnosticsTypeNode for subscription id={}",
                 subscription.getId(), e
             );
-
-            subscriptions.remove(subscription);
         }
+    }
+
+    private class EventSubscriber {
+
+        @Subscribe
+        public synchronized void onSubscriptionCreated(SubscriptionCreatedEvent event) {
+            logger.info("subscription created: {}", event.getSubscription().getId());
+
+            createSubscriptionDiagnosticsNode(event.getSubscription());
+        }
+
+        @Subscribe
+        public synchronized void onSubscriptionDeleted(SubscriptionDeletedEvent event) {
+            logger.info("subscription deleted: {}", event.getSubscription().getId());
+
+            for (int i = 0; i < subscriptionDiagnosticsVariables.size(); i++) {
+                Subscription subscription = subscriptionDiagnosticsVariables.get(i).getSubscription();
+                if (event.getSubscription().getId().equals(subscription.getId())) {
+                    SubscriptionDiagnosticsVariable diagnosticsVariable = subscriptionDiagnosticsVariables.remove(i);
+                    diagnosticsVariable.shutdown();
+                    break;
+                }
+            }
+        }
+
     }
 
 }

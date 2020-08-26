@@ -10,11 +10,16 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -22,9 +27,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class SessionDiagnosticsVariable extends AbstractLifecycle {
+
+    private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
     private final OpcUaServer server;
 
@@ -48,7 +56,23 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
 
     @Override
     protected void onStartup() {
-        node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
+
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+            if (attributeId == AttributeId.Value) {
+                DataValue dataValue = (DataValue) value;
+                Object o = dataValue.getValue().getValue();
+                if (o instanceof Boolean) {
+                    diagnosticsEnabled.set((Boolean) o);
+                }
+            }
+        });
+
+        node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject xo = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics()
@@ -57,262 +81,286 @@ public class SessionDiagnosticsVariable extends AbstractLifecycle {
             return new DataValue(new Variant(xo));
         }));
 
-        node.getSessionIdNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSessionIdNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             NodeId value = session.getSessionDiagnostics().getSessionId();
             return new DataValue(new Variant(value));
         }));
-        node.getSessionNameNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSessionNameNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             String value = session.getSessionDiagnostics().getSessionName();
             return new DataValue(new Variant(value));
         }));
-        node.getClientDescriptionNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getClientDescriptionNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getClientDescription()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getServerUriNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getServerUriNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             String value = session.getSessionDiagnostics().getServerUri();
             return new DataValue(new Variant(value));
         }));
-        node.getEndpointUrlNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getEndpointUrlNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             String value = session.getSessionDiagnostics().getEndpointUrl();
             return new DataValue(new Variant(value));
         }));
-        node.getLocaleIdsNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getLocaleIdsNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             String[] value = session.getSessionDiagnostics().getLocaleIds();
             return new DataValue(new Variant(value));
         }));
-        node.getActualSessionTimeoutNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getActualSessionTimeoutNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             Double value = session.getSessionDiagnostics().getActualSessionTimeout();
             return new DataValue(new Variant(value));
         }));
-        node.getMaxResponseMessageSizeNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getMaxResponseMessageSizeNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = session.getSessionDiagnostics().getMaxResponseMessageSize();
             return new DataValue(new Variant(value));
         }));
-        node.getClientConnectionTimeNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getClientConnectionTimeNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             DateTime value = session.getSessionDiagnostics().getClientConnectionTime();
             return new DataValue(new Variant(value));
         }));
-        node.getClientLastContactTimeNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getClientLastContactTimeNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             DateTime value = session.getSessionDiagnostics().getClientLastContactTime();
             return new DataValue(new Variant(value));
         }));
-        node.getCurrentSubscriptionsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = session.getSessionDiagnostics().getCurrentSubscriptionsCount();
-            return new DataValue(new Variant(value));
-        }));
-        node.getCurrentMonitoredItemsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = session.getSessionDiagnostics().getCurrentMonitoredItemsCount();
-            return new DataValue(new Variant(value));
-        }));
-        node.getCurrentPublishRequestsInQueueNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = session.getSessionDiagnostics().getCurrentPublishRequestsInQueue();
-            return new DataValue(new Variant(value));
-        }));
-        node.getTotalRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getCurrentSubscriptionsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = session.getSessionDiagnostics().getCurrentSubscriptionsCount();
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getCurrentMonitoredItemsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = session.getSessionDiagnostics().getCurrentMonitoredItemsCount();
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getCurrentPublishRequestsInQueueNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = session.getSessionDiagnostics().getCurrentPublishRequestsInQueue();
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getTotalRequestCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getTotalRequestCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getUnauthorizedRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(session.getSessionDiagnostics().getUnauthorizedRequestCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getReadCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getUnauthorizedRequestCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(session.getSessionDiagnostics().getUnauthorizedRequestCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getReadCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getReadCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getHistoryReadCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getHistoryReadCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getHistoryReadCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getWriteCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getWriteCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getWriteCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getHistoryUpdateCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getHistoryUpdateCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getHistoryUpdateCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getCallCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getCallCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getCallCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getCreateMonitoredItemsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getCreateMonitoredItemsCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getModifyMonitoredItemsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getModifyMonitoredItemsCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getSetMonitoringModeCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getCreateMonitoredItemsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getCreateMonitoredItemsCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getModifyMonitoredItemsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getModifyMonitoredItemsCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getSetMonitoringModeCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getSetMonitoringModeCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getSetTriggeringCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSetTriggeringCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getSetTriggeringCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getDeleteMonitoredItemsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getDeleteMonitoredItemsCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getCreateSubscriptionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getCreateSubscriptionCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getModifySubscriptionCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getModifySubscriptionCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getSetPublishingModeCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getDeleteMonitoredItemsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getDeleteMonitoredItemsCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getCreateSubscriptionCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getCreateSubscriptionCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getModifySubscriptionCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getModifySubscriptionCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getSetPublishingModeCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getSetPublishingModeCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getPublishCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getPublishCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getPublishCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getRepublishCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getRepublishCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getRepublishCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getTransferSubscriptionsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getTransferSubscriptionsCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getDeleteSubscriptionsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getDeleteSubscriptionsCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getAddNodesCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getTransferSubscriptionsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getTransferSubscriptionsCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getDeleteSubscriptionsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getDeleteSubscriptionsCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getAddNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getAddNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getAddReferencesCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getAddReferencesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getAddReferencesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getDeleteNodesCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getDeleteNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getDeleteNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getDeleteReferencesCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getDeleteReferencesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getDeleteReferencesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getBrowseCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getBrowseCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getBrowseCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getBrowseNextCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getBrowseNextCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getBrowseNextCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getTranslateBrowsePathsToNodeIdsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            ExtensionObject value = ExtensionObject.encode(
-                server.getSerializationContext(),
-                session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().getServiceCounter()
-            );
-            return new DataValue(new Variant(value));
-        }));
-        node.getQueryFirstCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getTranslateBrowsePathsToNodeIdsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                ExtensionObject value = ExtensionObject.encode(
+                    server.getSerializationContext(),
+                    session.getSessionDiagnostics().getTranslateBrowsePathsToNodeIdsCount().getServiceCounter()
+                );
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getQueryFirstCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getQueryFirstCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getQueryNextCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getQueryNextCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getQueryNextCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getRegisterNodesCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getRegisterNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getRegisterNodesCount().getServiceCounter()
             );
             return new DataValue(new Variant(value));
         }));
-        node.getUnregisterNodesCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getUnregisterNodesCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject value = ExtensionObject.encode(
                 server.getSerializationContext(),
                 session.getSessionDiagnostics().getUnregisterNodesCount().getServiceCounter()

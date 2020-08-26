@@ -10,12 +10,17 @@
 
 package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SubscriptionDiagnostics;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,9 +29,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class SubscriptionDiagnosticsVariable extends AbstractLifecycle {
+
+    private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
     private final OpcUaServer server;
     private final SubscriptionDiagnosticsTypeNode node;
@@ -45,11 +53,31 @@ public class SubscriptionDiagnosticsVariable extends AbstractLifecycle {
         this.subscription = subscription;
     }
 
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
     @Override
     protected void onStartup() {
+        ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
+
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+            if (attributeId == AttributeId.Value) {
+                DataValue dataValue = (DataValue) value;
+                Object o = dataValue.getValue().getValue();
+                if (o instanceof Boolean) {
+                    diagnosticsEnabled.set((Boolean) o);
+                }
+            }
+        });
+
         SubscriptionDiagnostics subscriptionDiagnostics = subscription.getSubscriptionDiagnostics();
 
-        node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject xo = ExtensionObject.encode(
                 server.getSerializationContext(),
                 subscriptionDiagnostics
@@ -57,130 +85,152 @@ public class SubscriptionDiagnosticsVariable extends AbstractLifecycle {
             );
             return new DataValue(new Variant(xo));
         }));
-        node.getSessionIdNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSessionIdNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             NodeId value = subscriptionDiagnostics.getSessionId();
             return new DataValue(new Variant(value));
         }));
-        node.getSubscriptionIdNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getSubscriptionIdNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = subscriptionDiagnostics.getSubscriptionId();
             return new DataValue(new Variant(value));
         }));
-        node.getPriorityNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getPriorityNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UByte value = subscriptionDiagnostics.getPriority();
             return new DataValue(new Variant(value));
         }));
-        node.getPublishingIntervalNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getPublishingIntervalNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             Double value = subscriptionDiagnostics.getPublishingInterval();
             return new DataValue(new Variant(value));
         }));
-        node.getMaxKeepAliveCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getMaxKeepAliveCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = subscriptionDiagnostics.getMaxKeepAliveCount();
             return new DataValue(new Variant(value));
         }));
-        node.getMaxLifetimeCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getMaxLifetimeCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = subscriptionDiagnostics.getMaxLifetimeCount();
             return new DataValue(new Variant(value));
         }));
-        node.getMaxNotificationsPerPublishNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = subscriptionDiagnostics.getMaxNotificationsPerPublish();
-            return new DataValue(new Variant(value));
-        }));
-        node.getPublishingEnabledNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getMaxNotificationsPerPublishNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = subscriptionDiagnostics.getMaxNotificationsPerPublish();
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getPublishingEnabledNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             Boolean value = subscriptionDiagnostics.isPublishingEnabled();
             return new DataValue(new Variant(value));
         }));
-        node.getModifyCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getModifyCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getModifyCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getEnableCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getEnableCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getEnableCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getDisableCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getDisableCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getDisableCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getRepublishRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getRepublishRequestCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getRepublishRequestCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getRepublishMessageRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getRepublishMessageRequestCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getRepublishMessageCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getRepublishMessageRequestCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getRepublishMessageRequestCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getRepublishMessageCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getRepublishMessageCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getTransferRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getTransferRequestCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getTransferRequestCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getTransferredToAltClientCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getTransferredToAltClientCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getTransferredToSameClientCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getTransferredToSameClientCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getPublishRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getTransferredToAltClientCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getTransferredToAltClientCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getTransferredToSameClientCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getTransferredToSameClientCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getPublishRequestCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getPublishRequestCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getDataChangeNotificationsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getDataChangeNotificationsCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getEventNotificationsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getEventNotificationsCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getNotificationsCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getDataChangeNotificationsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getDataChangeNotificationsCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getEventNotificationsCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getEventNotificationsCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getNotificationsCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getNotificationsCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getLatePublishRequestCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getLatePublishRequestCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getCurrentKeepAliveCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getLatePublishRequestCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getLatePublishRequestCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getCurrentKeepAliveCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getCurrentKeepAliveCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getCurrentLifetimeCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getCurrentLifetimeCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getCurrentLifetimeCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getUnacknowledgedMessageCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getUnacknowledgedMessageCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getDiscardedMessageCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getUnacknowledgedMessageCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getUnacknowledgedMessageCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getDiscardedMessageCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getDiscardedMessageCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getMonitoredItemCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getMonitoredItemCountNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getMonitoredItemCount().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getDisabledMonitoredItemCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getDisabledMonitoredItemCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getMonitoringQueueOverflowCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getMonitoringQueueOverflowCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
-        node.getNextSequenceNumberNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        node.getDisabledMonitoredItemCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getDisabledMonitoredItemCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getMonitoringQueueOverflowCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getMonitoringQueueOverflowCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
+        node.getNextSequenceNumberNode().getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             UInteger value = uint(subscriptionDiagnostics.getNextSequenceNumber().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getEventQueueOverFlowCountNode().getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
-            UInteger value = uint(subscriptionDiagnostics.getEventQueueOverFlowCount().longValue());
-            return new DataValue(new Variant(value));
-        }));
+        node.getEventQueueOverFlowCountNode().getFilterChain().addLast(
+            diagnosticValueFilter(diagnosticsEnabled, ctx -> {
+                UInteger value = uint(subscriptionDiagnostics.getEventQueueOverFlowCount().longValue());
+                return new DataValue(new Variant(value));
+            })
+        );
     }
 
     @Override

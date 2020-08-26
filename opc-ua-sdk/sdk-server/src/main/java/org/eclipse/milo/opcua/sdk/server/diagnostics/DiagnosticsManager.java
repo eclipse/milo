@@ -57,6 +57,8 @@ public class DiagnosticsManager extends AbstractLifecycle {
 
         serverDiagnosticsObject = new ServerDiagnosticsObject(serverDiagnosticsNode, nodeManager);
         serverDiagnosticsObject.startup();
+
+        serverDiagnosticsNode.setEnabledFlag(true);
     }
 
     @Override

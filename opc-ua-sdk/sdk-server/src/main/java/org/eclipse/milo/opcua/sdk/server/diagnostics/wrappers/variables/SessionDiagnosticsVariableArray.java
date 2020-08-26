@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -23,12 +25,13 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.SessionListener;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -41,9 +44,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
+
 public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
     private final List<SessionDiagnosticsVariable> sessionDiagnosticsVariables =
         Collections.synchronizedList(new ArrayList<>());
@@ -81,7 +88,56 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 
     @Override
     protected void onStartup() {
-        node.getFilterChain().addLast(AttributeFilters.getValue(ctx -> {
+        ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+        diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
+
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+            if (attributeId == AttributeId.Value) {
+                DataValue dataValue = (DataValue) value;
+                Object o = dataValue.getValue().getValue();
+                if (o instanceof Boolean) {
+                    boolean current = (boolean) o;
+                    boolean previous = diagnosticsEnabled.getAndSet(current);
+
+                    if (!previous && current) {
+                        server.getSessionManager().getAllSessions()
+                            .forEach(this::createSessionDiagnosticsVariable);
+
+                        server.getSessionManager().addSessionListener(sessionListener = new SessionListener() {
+                            @Override
+                            public void onSessionCreated(Session session) {
+                                createSessionDiagnosticsVariable(session);
+                            }
+
+                            @Override
+                            public void onSessionClosed(Session session) {
+                                for (int i = 0; i < sessionDiagnosticsVariables.size(); i++) {
+                                    SessionDiagnosticsVariable v = sessionDiagnosticsVariables.get(i);
+                                    if (v.getSession().getSessionId().equals(session.getSessionId())) {
+                                        sessionDiagnosticsVariables.remove(i);
+                                        v.shutdown();
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                    } else if (previous && !current) {
+                        if (sessionListener != null) {
+                            server.getSessionManager().removeSessionListener(sessionListener);
+                            sessionListener = null;
+                        }
+
+                        sessionDiagnosticsVariables.forEach(Lifecycle::shutdown);
+                        sessionDiagnosticsVariables.clear();
+                    }
+                }
+            }
+        });
+
+        node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
                 server.getSerializationContext(),
                 server.getSessionManager()
@@ -95,27 +151,6 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
             );
             return new DataValue(new Variant(xos));
         }));
-
-        server.getSessionManager().getAllSessions().forEach(this::createSessionDiagnosticsVariable);
-
-        server.getSessionManager().addSessionListener(sessionListener = new SessionListener() {
-            @Override
-            public void onSessionCreated(Session session) {
-                createSessionDiagnosticsVariable(session);
-            }
-
-            @Override
-            public void onSessionClosed(Session session) {
-                for (int i = 0; i < sessionDiagnosticsVariables.size(); i++) {
-                    SessionDiagnosticsVariable v = sessionDiagnosticsVariables.get(i);
-                    if (v.getSession().getSessionId().equals(session.getSessionId())) {
-                        sessionDiagnosticsVariables.remove(i);
-                        v.shutdown();
-                        break;
-                    }
-                }
-            }
-        });
     }
 
     private void createSessionDiagnosticsVariable(Session session) {
@@ -170,6 +205,7 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
         }
 
         sessionDiagnosticsVariables.forEach(Lifecycle::shutdown);
+        sessionDiagnosticsVariables.clear();
 
         node.delete();
     }

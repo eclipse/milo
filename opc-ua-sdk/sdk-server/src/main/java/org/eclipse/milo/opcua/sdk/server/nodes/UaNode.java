@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -590,7 +591,8 @@ public abstract class UaNode implements UaServerNode {
     public synchronized void fireAttributeChanged(AttributeId attributeId, Object attributeValue) {
         if (observers == null) return;
 
-        observers.forEach(o -> o.attributeChanged(this, attributeId, attributeValue));
+        List<AttributeObserver> toNotify = new ArrayList<>(observers);
+        toNotify.forEach(o -> o.attributeChanged(this, attributeId, attributeValue));
     }
 
     /**

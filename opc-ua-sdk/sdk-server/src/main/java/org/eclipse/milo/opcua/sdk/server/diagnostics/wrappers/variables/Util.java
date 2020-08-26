@@ -14,10 +14,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 class Util {
 
@@ -49,6 +57,20 @@ class Util {
             );
 
         return buildBrowseNamePath(parentNode.orElse(null), browseNames);
+    }
+
+    public static AttributeFilter diagnosticValueFilter(
+        AtomicBoolean diagnosticsEnabled,
+        Function<GetAttributeContext, DataValue> get
+    ) {
+
+        return AttributeFilters.getValue(ctx -> {
+            if (diagnosticsEnabled.get()) {
+                return get.apply(ctx);
+            } else {
+                return new DataValue(new StatusCode(StatusCodes.Bad_NotReadable));
+            }
+        });
     }
 
 }
