@@ -172,7 +172,7 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
-            elementNode.setDataType(Identifiers.SubscriptionDiagnosticsDataType);
+            elementNode.setDataType(Identifiers.SessionSecurityDiagnosticsDataType);
             elementNode.setAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
             elementNode.setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
 

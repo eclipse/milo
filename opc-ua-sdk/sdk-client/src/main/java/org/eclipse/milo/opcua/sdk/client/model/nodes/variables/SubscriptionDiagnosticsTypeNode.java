@@ -1782,61 +1782,61 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
     }
 
     @Override
-    public UInteger getEventQueueOverFlowCount() throws UaException {
-        BaseDataVariableTypeNode node = getEventQueueOverFlowCountNode();
+    public UInteger getEventQueueOverflowCount() throws UaException {
+        BaseDataVariableTypeNode node = getEventQueueOverflowCountNode();
         return (UInteger) node.getValue().getValue().getValue();
     }
 
     @Override
-    public void setEventQueueOverFlowCount(UInteger eventQueueOverFlowCount) throws UaException {
-        BaseDataVariableTypeNode node = getEventQueueOverFlowCountNode();
-        node.setValue(new Variant(eventQueueOverFlowCount));
+    public void setEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException {
+        BaseDataVariableTypeNode node = getEventQueueOverflowCountNode();
+        node.setValue(new Variant(eventQueueOverflowCount));
     }
 
     @Override
-    public UInteger readEventQueueOverFlowCount() throws UaException {
+    public UInteger readEventQueueOverflowCount() throws UaException {
         try {
-            return readEventQueueOverFlowCountAsync().get();
+            return readEventQueueOverflowCountAsync().get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
     }
 
     @Override
-    public void writeEventQueueOverFlowCount(UInteger eventQueueOverFlowCount) throws UaException {
+    public void writeEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException {
         try {
-            writeEventQueueOverFlowCountAsync(eventQueueOverFlowCount).get();
+            writeEventQueueOverflowCountAsync(eventQueueOverflowCount).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
     }
 
     @Override
-    public CompletableFuture<? extends UInteger> readEventQueueOverFlowCountAsync() {
-        return getEventQueueOverFlowCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
+    public CompletableFuture<? extends UInteger> readEventQueueOverflowCountAsync() {
+        return getEventQueueOverflowCountNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<StatusCode> writeEventQueueOverFlowCountAsync(
-        UInteger eventQueueOverFlowCount) {
-        DataValue value = DataValue.valueOnly(new Variant(eventQueueOverFlowCount));
-        return getEventQueueOverFlowCountNodeAsync()
+    public CompletableFuture<StatusCode> writeEventQueueOverflowCountAsync(
+        UInteger eventQueueOverflowCount) {
+        DataValue value = DataValue.valueOnly(new Variant(eventQueueOverflowCount));
+        return getEventQueueOverflowCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
-    public BaseDataVariableTypeNode getEventQueueOverFlowCountNode() throws UaException {
+    public BaseDataVariableTypeNode getEventQueueOverflowCountNode() throws UaException {
         try {
-            return getEventQueueOverFlowCountNodeAsync().get();
+            return getEventQueueOverflowCountNodeAsync().get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
     }
 
     @Override
-    public CompletableFuture<? extends BaseDataVariableTypeNode> getEventQueueOverFlowCountNodeAsync(
+    public CompletableFuture<? extends BaseDataVariableTypeNode> getEventQueueOverflowCountNodeAsync(
     ) {
-        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventQueueOverFlowCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
+        CompletableFuture<UaNode> future = getMemberNodeAsync("http://opcfoundation.org/UA/", "EventQueueOverflowCount", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=47"), false);
         return future.thenApply(node -> (BaseDataVariableTypeNode) node);
     }
 }

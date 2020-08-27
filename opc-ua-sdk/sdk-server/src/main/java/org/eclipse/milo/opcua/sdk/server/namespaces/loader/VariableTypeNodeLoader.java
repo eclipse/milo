@@ -175,7 +175,7 @@ class VariableTypeNodeLoader {
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType_DisabledMonitoredItemCount.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType_MonitoringQueueOverflowCount.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType_NextSequenceNumber.expanded(), true));
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType_EventQueueOverFlowCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType_EventQueueOverflowCount.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType, Identifiers.HasSubtype, Identifiers.BaseDataVariableType.expanded(), false));
         this.nodeManager.addNode(node);
     }

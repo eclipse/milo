@@ -97,7 +97,7 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
 
     private final UInteger nextSequenceNumber;
 
-    private final UInteger eventQueueOverFlowCount;
+    private final UInteger eventQueueOverflowCount;
 
     public SubscriptionDiagnosticsDataType(NodeId sessionId, UInteger subscriptionId, UByte priority,
                                            Double publishingInterval, UInteger maxKeepAliveCount, UInteger maxLifetimeCount,
@@ -111,7 +111,7 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
                                            UInteger currentLifetimeCount, UInteger unacknowledgedMessageCount,
                                            UInteger discardedMessageCount, UInteger monitoredItemCount,
                                            UInteger disabledMonitoredItemCount, UInteger monitoringQueueOverflowCount,
-                                           UInteger nextSequenceNumber, UInteger eventQueueOverFlowCount) {
+                                           UInteger nextSequenceNumber, UInteger eventQueueOverflowCount) {
         this.sessionId = sessionId;
         this.subscriptionId = subscriptionId;
         this.priority = priority;
@@ -142,7 +142,7 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
         this.disabledMonitoredItemCount = disabledMonitoredItemCount;
         this.monitoringQueueOverflowCount = monitoringQueueOverflowCount;
         this.nextSequenceNumber = nextSequenceNumber;
-        this.eventQueueOverFlowCount = eventQueueOverFlowCount;
+        this.eventQueueOverflowCount = eventQueueOverflowCount;
     }
 
     @Override
@@ -280,8 +280,8 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
         return nextSequenceNumber;
     }
 
-    public UInteger getEventQueueOverFlowCount() {
-        return eventQueueOverFlowCount;
+    public UInteger getEventQueueOverflowCount() {
+        return eventQueueOverflowCount;
     }
 
     public static final class Codec extends GenericDataTypeCodec<SubscriptionDiagnosticsDataType> {
@@ -322,8 +322,8 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
             UInteger disabledMonitoredItemCount = decoder.readUInt32("DisabledMonitoredItemCount");
             UInteger monitoringQueueOverflowCount = decoder.readUInt32("MonitoringQueueOverflowCount");
             UInteger nextSequenceNumber = decoder.readUInt32("NextSequenceNumber");
-            UInteger eventQueueOverFlowCount = decoder.readUInt32("EventQueueOverFlowCount");
-            return new SubscriptionDiagnosticsDataType(sessionId, subscriptionId, priority, publishingInterval, maxKeepAliveCount, maxLifetimeCount, maxNotificationsPerPublish, publishingEnabled, modifyCount, enableCount, disableCount, republishRequestCount, republishMessageRequestCount, republishMessageCount, transferRequestCount, transferredToAltClientCount, transferredToSameClientCount, publishRequestCount, dataChangeNotificationsCount, eventNotificationsCount, notificationsCount, latePublishRequestCount, currentKeepAliveCount, currentLifetimeCount, unacknowledgedMessageCount, discardedMessageCount, monitoredItemCount, disabledMonitoredItemCount, monitoringQueueOverflowCount, nextSequenceNumber, eventQueueOverFlowCount);
+            UInteger eventQueueOverflowCount = decoder.readUInt32("EventQueueOverflowCount");
+            return new SubscriptionDiagnosticsDataType(sessionId, subscriptionId, priority, publishingInterval, maxKeepAliveCount, maxLifetimeCount, maxNotificationsPerPublish, publishingEnabled, modifyCount, enableCount, disableCount, republishRequestCount, republishMessageRequestCount, republishMessageCount, transferRequestCount, transferredToAltClientCount, transferredToSameClientCount, publishRequestCount, dataChangeNotificationsCount, eventNotificationsCount, notificationsCount, latePublishRequestCount, currentKeepAliveCount, currentLifetimeCount, unacknowledgedMessageCount, discardedMessageCount, monitoredItemCount, disabledMonitoredItemCount, monitoringQueueOverflowCount, nextSequenceNumber, eventQueueOverflowCount);
         }
 
         @Override
@@ -359,7 +359,7 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
             encoder.writeUInt32("DisabledMonitoredItemCount", value.getDisabledMonitoredItemCount());
             encoder.writeUInt32("MonitoringQueueOverflowCount", value.getMonitoringQueueOverflowCount());
             encoder.writeUInt32("NextSequenceNumber", value.getNextSequenceNumber());
-            encoder.writeUInt32("EventQueueOverFlowCount", value.getEventQueueOverFlowCount());
+            encoder.writeUInt32("EventQueueOverflowCount", value.getEventQueueOverflowCount());
         }
     }
 }

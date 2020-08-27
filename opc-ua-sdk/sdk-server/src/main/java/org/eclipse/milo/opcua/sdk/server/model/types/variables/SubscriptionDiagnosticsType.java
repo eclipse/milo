@@ -195,9 +195,9 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
 
     void setNextSequenceNumber(UInteger value);
 
-    BaseDataVariableType getEventQueueOverFlowCountNode();
+    BaseDataVariableType getEventQueueOverflowCountNode();
 
-    UInteger getEventQueueOverFlowCount();
+    UInteger getEventQueueOverflowCount();
 
-    void setEventQueueOverFlowCount(UInteger value);
+    void setEventQueueOverflowCount(UInteger value);
 }

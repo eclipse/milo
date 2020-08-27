@@ -225,9 +225,9 @@ public class SubscriptionDiagnosticsVariable extends AbstractLifecycle {
             UInteger value = uint(subscriptionDiagnostics.getNextSequenceNumber().longValue());
             return new DataValue(new Variant(value));
         }));
-        node.getEventQueueOverFlowCountNode().getFilterChain().addLast(
+        node.getEventQueueOverflowCountNode().getFilterChain().addLast(
             diagnosticValueFilter(diagnosticsEnabled, ctx -> {
-                UInteger value = uint(subscriptionDiagnostics.getEventQueueOverFlowCount().longValue());
+                UInteger value = uint(subscriptionDiagnostics.getEventQueueOverflowCount().longValue());
                 return new DataValue(new Variant(value));
             })
         );

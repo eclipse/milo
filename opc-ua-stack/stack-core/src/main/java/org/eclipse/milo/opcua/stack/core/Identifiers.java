@@ -2415,7 +2415,7 @@ public class Identifiers {
     public static final NodeId SubscriptionDiagnosticsType_NextSequenceNumber = init(8897);
     public static final NodeId SessionDiagnosticsObjectType_SessionDiagnostics_TotalRequestCount = init(8898);
     public static final NodeId SessionDiagnosticsVariableType_TotalRequestCount = init(8900);
-    public static final NodeId SubscriptionDiagnosticsType_EventQueueOverFlowCount = init(8902);
+    public static final NodeId SubscriptionDiagnosticsType_EventQueueOverflowCount = init(8902);
     public static final NodeId TimeZoneDataType = init(8912);
     public static final NodeId TimeZoneDataType_Encoding_DefaultXml = init(8913);
     public static final NodeId OpcUa_BinarySchema_TimeZoneDataType = init(8914);
@@ -5078,7 +5078,7 @@ public class Identifiers {
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_DisabledMonitoredItemCount = init(12812);
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_MonitoringQueueOverflowCount = init(12813);
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_NextSequenceNumber = init(12814);
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverFlowCount = init(12815);
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverflowCount = init(12815);
     public static final NodeId SessionDiagnosticsArrayType_SessionDiagnostics = init(12816);
     public static final NodeId SessionDiagnosticsArrayType_SessionDiagnostics_SessionId = init(12817);
     public static final NodeId SessionDiagnosticsArrayType_SessionDiagnostics_SessionName = init(12818);

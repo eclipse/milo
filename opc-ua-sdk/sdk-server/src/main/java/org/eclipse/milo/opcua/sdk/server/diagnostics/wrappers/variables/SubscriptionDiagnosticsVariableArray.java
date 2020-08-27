@@ -206,15 +206,13 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
         @Subscribe
         public synchronized void onSubscriptionCreated(SubscriptionCreatedEvent event) {
-            logger.info("subscription created: {}", event.getSubscription().getId());
-
-            createSubscriptionDiagnosticsNode(event.getSubscription());
+            if (getSubscriptions().stream().anyMatch(s -> s.getId().equals(event.getSubscription().getId()))) {
+                createSubscriptionDiagnosticsNode(event.getSubscription());
+            }
         }
 
         @Subscribe
         public synchronized void onSubscriptionDeleted(SubscriptionDeletedEvent event) {
-            logger.info("subscription deleted: {}", event.getSubscription().getId());
-
             for (int i = 0; i < subscriptionDiagnosticsVariables.size(); i++) {
                 Subscription subscription = subscriptionDiagnosticsVariables.get(i).getSubscription();
                 if (event.getSubscription().getId().equals(subscription.getId())) {
