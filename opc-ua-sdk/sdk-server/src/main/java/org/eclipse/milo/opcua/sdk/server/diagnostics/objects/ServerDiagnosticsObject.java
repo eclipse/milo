@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.objects;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.objects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +16,13 @@ import java.util.List;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.ServerDiagnosticsSummaryVariable;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SubscriptionDiagnosticsVariableArray;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.ServerDiagnosticsSummaryVariable;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SubscriptionDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ServerDiagnosticsObject extends AbstractLifecycle {
 
@@ -40,7 +38,6 @@ public class ServerDiagnosticsObject extends AbstractLifecycle {
     private final NodeManager<UaNode> diagnosticsNodeManager;
 
     public ServerDiagnosticsObject(ServerDiagnosticsTypeNode node, NodeManager<UaNode> diagnosticsNodeManager) {
-        checkNotNull(node, "ServerDiagnosticsTypeNode");
         this.node = node;
         this.diagnosticsNodeManager = diagnosticsNodeManager;
 
@@ -73,7 +70,6 @@ public class ServerDiagnosticsObject extends AbstractLifecycle {
 
     private void configureServerDiagnosticsSummary() {
         serverDiagnosticsSummary = new ServerDiagnosticsSummaryVariable(
-            server,
             node.getServerDiagnosticsSummaryNode()
         );
         serverDiagnosticsSummary.startup();

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.variables;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.variables.Util.diagnosticValueFilter;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
@@ -34,9 +34,10 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
     private final OpcUaServer server;
     private final ServerDiagnosticsSummaryTypeNode node;
 
-    public ServerDiagnosticsSummaryVariable(OpcUaServer server, ServerDiagnosticsSummaryTypeNode node) {
-        this.server = server;
+    public ServerDiagnosticsSummaryVariable(ServerDiagnosticsSummaryTypeNode node) {
         this.node = node;
+
+        this.server = node.getNodeContext().getServer();
     }
 
     @Override

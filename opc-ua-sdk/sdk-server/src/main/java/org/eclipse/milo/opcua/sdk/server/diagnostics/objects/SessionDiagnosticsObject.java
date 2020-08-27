@@ -8,16 +8,16 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.objects;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.objects;
 
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionDiagnosticsVariable;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionSecurityDiagnosticsVariable;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SubscriptionDiagnosticsVariableArray;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SessionDiagnosticsVariable;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SessionSecurityDiagnosticsVariable;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SubscriptionDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionDiagnosticsObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -27,7 +27,6 @@ public class SessionDiagnosticsObject extends AbstractLifecycle {
     private SessionDiagnosticsVariable sessionDiagnosticsVariable;
     private SessionSecurityDiagnosticsVariable sessionSecurityDiagnosticsVariable;
     private SubscriptionDiagnosticsVariableArray subscriptionDiagnosticsVariableArray;
-
 
     private final SessionDiagnosticsObjectTypeNode node;
     private final Session session;

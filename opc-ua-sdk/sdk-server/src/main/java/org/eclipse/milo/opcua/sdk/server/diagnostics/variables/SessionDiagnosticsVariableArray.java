@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.variables;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.variables.Util.diagnosticValueFilter;
 
 public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
 

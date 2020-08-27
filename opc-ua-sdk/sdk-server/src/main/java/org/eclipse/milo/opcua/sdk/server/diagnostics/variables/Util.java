@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.variables;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +31,7 @@ class Util {
 
     private Util() {}
 
-    public static String buildBrowseNamePath(UaNode node) {
+    static String buildBrowseNamePath(UaNode node) {
         return buildBrowseNamePath(node, new ArrayList<>());
     }
 
@@ -59,7 +59,7 @@ class Util {
         return buildBrowseNamePath(parentNode.orElse(null), browseNames);
     }
 
-    public static AttributeFilter diagnosticValueFilter(
+    static AttributeFilter diagnosticValueFilter(
         AtomicBoolean diagnosticsEnabled,
         Function<GetAttributeContext, DataValue> get
     ) {

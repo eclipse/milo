@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.variables;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,8 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.variables.Util.diagnosticValueFilter;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class SubscriptionDiagnosticsVariable extends AbstractLifecycle {
@@ -41,16 +40,14 @@ public class SubscriptionDiagnosticsVariable extends AbstractLifecycle {
     private final Subscription subscription;
 
     public SubscriptionDiagnosticsVariable(
-        OpcUaServer server,
         SubscriptionDiagnosticsTypeNode node,
         Subscription subscription
     ) {
 
-        checkNotNull(node, "SubscriptionDiagnosticsTypeNode");
-
-        this.server = server;
         this.node = node;
         this.subscription = subscription;
+
+        this.server = node.getNodeContext().getServer();
     }
 
     public Subscription getSubscription() {

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.objects;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.objects;
 
 import java.util.Map;
 import java.util.UUID;
@@ -20,8 +20,8 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.SessionListener;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionDiagnosticsVariableArray;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.SessionSecurityDiagnosticsVariableArray;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SessionDiagnosticsVariableArray;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.variables.SessionSecurityDiagnosticsVariableArray;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionDiagnosticsObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.SessionsDiagnosticsSummaryTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;

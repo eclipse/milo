@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables;
+package org.eclipse.milo.opcua.sdk.server.diagnostics.variables;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,22 +16,21 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.eventbus.Subscribe;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
+import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.SessionListener;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsArrayTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
-import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionCreatedEvent;
-import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionDeletedEvent;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -41,36 +40,34 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.milo.opcua.sdk.server.diagnostics.wrappers.variables.Util.diagnosticValueFilter;
+import static org.eclipse.milo.opcua.sdk.server.diagnostics.variables.Util.diagnosticValueFilter;
 
-public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifecycle {
+public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
-    private EventSubscriber eventSubscriber;
-
-    private final List<SubscriptionDiagnosticsVariable> subscriptionDiagnosticsVariables =
+    private final List<SessionSecurityDiagnosticsVariable> sessionSecurityDiagnosticsVariables =
         Collections.synchronizedList(new ArrayList<>());
+
+    private SessionListener sessionListener;
 
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
+
+    private final SessionSecurityDiagnosticsArrayTypeNode node;
     private final NodeManager<UaNode> diagnosticsNodeManager;
 
-    private final SubscriptionDiagnosticsArrayTypeNode node;
-
-    public SubscriptionDiagnosticsVariableArray(
-        SubscriptionDiagnosticsArrayTypeNode node,
+    public SessionSecurityDiagnosticsVariableArray(
+        SessionSecurityDiagnosticsArrayTypeNode node,
         NodeManager<UaNode> diagnosticsNodeManager
     ) {
 
-        checkNotNull(node, "SubscriptionDiagnosticsArrayTypeNode");
         this.node = node;
         this.diagnosticsNodeManager = diagnosticsNodeManager;
 
@@ -89,8 +86,6 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         });
     }
 
-    protected abstract List<Subscription> getSubscriptions();
-
     @Override
     protected void onStartup() {
         ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
@@ -108,19 +103,35 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                     boolean previous = diagnosticsEnabled.getAndSet(current);
 
                     if (!previous && current) {
-                        getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
+                        server.getSessionManager().getAllSessions()
+                            .forEach(this::createSessionSecurityDiagnosticsVariable);
 
-                        //noinspection UnstableApiUsage
-                        server.getEventBus().register(eventSubscriber = new EventSubscriber());
+                        server.getSessionManager().addSessionListener(sessionListener = new SessionListener() {
+                            @Override
+                            public void onSessionCreated(Session session) {
+                                createSessionSecurityDiagnosticsVariable(session);
+                            }
+
+                            @Override
+                            public void onSessionClosed(Session session) {
+                                for (int i = 0; i < sessionSecurityDiagnosticsVariables.size(); i++) {
+                                    SessionSecurityDiagnosticsVariable v = sessionSecurityDiagnosticsVariables.get(i);
+                                    if (v.getSession().getSessionId().equals(session.getSessionId())) {
+                                        sessionSecurityDiagnosticsVariables.remove(i);
+                                        v.shutdown();
+                                        break;
+                                    }
+                                }
+                            }
+                        });
                     } else if (previous && !current) {
-                        if (eventSubscriber != null) {
-                            //noinspection UnstableApiUsage
-                            server.getEventBus().unregister(eventSubscriber);
-                            eventSubscriber = null;
+                        if (sessionListener != null) {
+                            server.getSessionManager().removeSessionListener(sessionListener);
+                            sessionListener = null;
                         }
 
-                        subscriptionDiagnosticsVariables.forEach(AbstractLifecycle::shutdown);
-                        subscriptionDiagnosticsVariables.clear();
+                        sessionSecurityDiagnosticsVariables.forEach(Lifecycle::shutdown);
+                        sessionSecurityDiagnosticsVariables.clear();
                     }
                 }
             }
@@ -129,52 +140,39 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
                 server.getSerializationContext(),
-                getSubscriptions()
+                server.getSessionManager()
+                    .getAllSessions()
                     .stream()
                     .map(s ->
-                        s.getSubscriptionDiagnostics()
-                            .getSubscriptionDiagnosticsDataType()
+                        s.getSessionSecurityDiagnostics()
+                            .getSessionSecurityDiagnosticsDataType()
                     )
-                    .toArray(SubscriptionDiagnosticsDataType[]::new)
+                    .toArray(SessionSecurityDiagnosticsDataType[]::new)
             );
             return new DataValue(new Variant(xos));
         }));
     }
 
-    @Override
-    protected void onShutdown() {
-        if (eventSubscriber != null) {
-            //noinspection UnstableApiUsage
-            server.getEventBus().unregister(eventSubscriber);
-            eventSubscriber = null;
-        }
-
-        subscriptionDiagnosticsVariables.forEach(AbstractLifecycle::shutdown);
-        subscriptionDiagnosticsVariables.clear();
-
-        node.delete();
-    }
-
-
-    private void createSubscriptionDiagnosticsNode(Subscription subscription) {
+    private void createSessionSecurityDiagnosticsVariable(Session session) {
         try {
-            int index = subscriptionDiagnosticsVariables.size();
+            int index = sessionSecurityDiagnosticsVariables.size();
             String id = Util.buildBrowseNamePath(node) + "[" + index + "]";
             NodeId elementNodeId = new NodeId(1, id);
 
-            SubscriptionDiagnosticsTypeNode elementNode = (SubscriptionDiagnosticsTypeNode) nodeFactory.createNode(
-                elementNodeId,
-                Identifiers.SubscriptionDiagnosticsType
-            );
+            SessionSecurityDiagnosticsTypeNode elementNode =
+                (SessionSecurityDiagnosticsTypeNode) nodeFactory.createNode(
+                    elementNodeId,
+                    Identifiers.SessionSecurityDiagnosticsType
+                );
 
-            elementNode.setBrowseName(new QualifiedName(1, subscription.getId().toString()));
+            elementNode.setBrowseName(new QualifiedName(1, "SessionSecurityDiagnostics"));
             elementNode.setDisplayName(new LocalizedText(
                 node.getDisplayName().getLocale(),
-                subscription.getId().toString()
+                "SessionSecurityDiagnostics"
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
-            elementNode.setDataType(Identifiers.SubscriptionDiagnosticsDataType);
+            elementNode.setDataType(Identifiers.SessionSecurityDiagnosticsDataType);
             elementNode.setAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
             elementNode.setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
 
@@ -186,43 +184,30 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
             ));
             diagnosticsNodeManager.addNode(elementNode);
 
-            SubscriptionDiagnosticsVariable diagnosticsVariable = new SubscriptionDiagnosticsVariable(
-                server,
-                elementNode,
-                subscription
-            );
-            diagnosticsVariable.startup();
+            SessionSecurityDiagnosticsVariable sessionSecurityDiagnosticsVariable =
+                new SessionSecurityDiagnosticsVariable(elementNode, session);
+            sessionSecurityDiagnosticsVariable.startup();
 
-            subscriptionDiagnosticsVariables.add(diagnosticsVariable);
+            sessionSecurityDiagnosticsVariables.add(sessionSecurityDiagnosticsVariable);
         } catch (UaException e) {
-            logger.error(
-                "Failed to create SubscriptionDiagnosticsTypeNode for subscription id={}",
-                subscription.getId(), e
+            logger.warn(
+                "Failed to create SessionDiagnosticsVariableTypeNode for session id={}",
+                session.getSessionId(), e
             );
         }
     }
 
-    private class EventSubscriber {
-
-        @Subscribe
-        public synchronized void onSubscriptionCreated(SubscriptionCreatedEvent event) {
-            if (getSubscriptions().stream().anyMatch(s -> s.getId().equals(event.getSubscription().getId()))) {
-                createSubscriptionDiagnosticsNode(event.getSubscription());
-            }
+    @Override
+    protected void onShutdown() {
+        if (sessionListener != null) {
+            server.getSessionManager().removeSessionListener(sessionListener);
+            sessionListener = null;
         }
 
-        @Subscribe
-        public synchronized void onSubscriptionDeleted(SubscriptionDeletedEvent event) {
-            for (int i = 0; i < subscriptionDiagnosticsVariables.size(); i++) {
-                Subscription subscription = subscriptionDiagnosticsVariables.get(i).getSubscription();
-                if (event.getSubscription().getId().equals(subscription.getId())) {
-                    SubscriptionDiagnosticsVariable diagnosticsVariable = subscriptionDiagnosticsVariables.remove(i);
-                    diagnosticsVariable.shutdown();
-                    break;
-                }
-            }
-        }
+        sessionSecurityDiagnosticsVariables.forEach(Lifecycle::shutdown);
+        sessionSecurityDiagnosticsVariables.clear();
 
+        node.delete();
     }
 
 }
