@@ -94,6 +94,10 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
 
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
+        if (diagnosticsEnabled.get()) {
+            addSessionListener();
+        }
+
         diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
             if (attributeId == AttributeId.Value) {
                 DataValue dataValue = (DataValue) value;
@@ -106,24 +110,9 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
                         server.getSessionManager().getAllSessions()
                             .forEach(this::createSessionSecurityDiagnosticsVariable);
 
-                        server.getSessionManager().addSessionListener(sessionListener = new SessionListener() {
-                            @Override
-                            public void onSessionCreated(Session session) {
-                                createSessionSecurityDiagnosticsVariable(session);
-                            }
-
-                            @Override
-                            public void onSessionClosed(Session session) {
-                                for (int i = 0; i < sessionSecurityDiagnosticsVariables.size(); i++) {
-                                    SessionSecurityDiagnosticsVariable v = sessionSecurityDiagnosticsVariables.get(i);
-                                    if (v.getSession().getSessionId().equals(session.getSessionId())) {
-                                        sessionSecurityDiagnosticsVariables.remove(i);
-                                        v.shutdown();
-                                        break;
-                                    }
-                                }
-                            }
-                        });
+                        if (sessionListener == null) {
+                            addSessionListener();
+                        }
                     } else if (previous && !current) {
                         if (sessionListener != null) {
                             server.getSessionManager().removeSessionListener(sessionListener);
@@ -151,6 +140,27 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
             );
             return new DataValue(new Variant(xos));
         }));
+    }
+
+    private void addSessionListener() {
+        server.getSessionManager().addSessionListener(sessionListener = new SessionListener() {
+            @Override
+            public void onSessionCreated(Session session) {
+                createSessionSecurityDiagnosticsVariable(session);
+            }
+
+            @Override
+            public void onSessionClosed(Session session) {
+                for (int i = 0; i < sessionSecurityDiagnosticsVariables.size(); i++) {
+                    SessionSecurityDiagnosticsVariable v = sessionSecurityDiagnosticsVariables.get(i);
+                    if (v.getSession().getSessionId().equals(session.getSessionId())) {
+                        sessionSecurityDiagnosticsVariables.remove(i);
+                        v.shutdown();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     private void createSessionSecurityDiagnosticsVariable(Session session) {

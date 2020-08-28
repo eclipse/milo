@@ -97,6 +97,11 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
+        if (diagnosticsEnabled.get()) {
+            //noinspection UnstableApiUsage
+            server.getEventBus().register(eventSubscriber = new EventSubscriber());
+        }
+
         diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
             if (attributeId == AttributeId.Value) {
                 DataValue dataValue = (DataValue) value;
@@ -108,8 +113,10 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                     if (!previous && current) {
                         getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
 
-                        //noinspection UnstableApiUsage
-                        server.getEventBus().register(eventSubscriber = new EventSubscriber());
+                        if (eventSubscriber == null) {
+                            //noinspection UnstableApiUsage
+                            server.getEventBus().register(eventSubscriber = new EventSubscriber());
+                        }
                     } else if (previous && !current) {
                         if (eventSubscriber != null) {
                             //noinspection UnstableApiUsage
