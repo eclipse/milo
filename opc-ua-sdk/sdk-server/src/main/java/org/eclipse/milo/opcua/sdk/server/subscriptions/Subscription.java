@@ -719,6 +719,8 @@ public class Subscription {
             publishHandler.whenKeepAlive(service);
         } else if (state == State.Late) {
             publishHandler.whenLate(service);
+        } else if (state == State.Closing) {
+            publishHandler.whenClosing(service);
         } else if (state == State.Closed) {
             publishHandler.whenClosed(service);
         } else {
@@ -751,6 +753,8 @@ public class Subscription {
             timerHandler.whenLate();
         } else if (state == State.Closed) {
             logger.debug("[id={}] onPublish(), state={}", subscriptionId, state); // No-op.
+        } else if (state == State.Closing) {
+            logger.debug("[id={}] onPublish(), state={}", subscriptionId, state); // No-op.
         } else {
             throw new RuntimeException("unhandled subscription state: " + state);
         }
@@ -777,12 +781,14 @@ public class Subscription {
     }
 
     private synchronized void startPublishingTimer(long delayNanos) {
-        if (state.get() == State.Closed) return;
+        State s = this.state.get();
+        if (s == State.Closing || s == State.Closed) return;
 
         if (lifetimeCounter < 1) {
             logger.debug("[id={}] lifetime expired.", subscriptionId);
 
-            setState(State.Closed);
+            setState(State.Closing);
+            publishQueue().addSubscription(this);
         } else {
             publishingTimer = subscriptionManager.getServer().getScheduledExecutorService().schedule(
                 this::onPublishingTimer,
@@ -988,7 +994,8 @@ public class Subscription {
         Closed,
         Normal,
         KeepAlive,
-        Late
+        Late,
+        Closing
     }
 
     public interface StateListener {
