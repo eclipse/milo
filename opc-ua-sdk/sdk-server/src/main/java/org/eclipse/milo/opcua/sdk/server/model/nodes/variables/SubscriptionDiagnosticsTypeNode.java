@@ -549,19 +549,19 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
     }
 
     @Override
-    public BaseDataVariableTypeNode getEventQueueOverFlowCountNode() {
-        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverFlowCount");
+    public BaseDataVariableTypeNode getEventQueueOverflowCountNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverflowCount");
         return (BaseDataVariableTypeNode) component.orElse(null);
     }
 
     @Override
-    public UInteger getEventQueueOverFlowCount() {
-        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverFlowCount");
+    public UInteger getEventQueueOverflowCount() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverflowCount");
         return component.map(node -> (UInteger) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
-    public void setEventQueueOverFlowCount(UInteger value) {
-        getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverFlowCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    public void setEventQueueOverflowCount(UInteger value) {
+        getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverflowCount").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

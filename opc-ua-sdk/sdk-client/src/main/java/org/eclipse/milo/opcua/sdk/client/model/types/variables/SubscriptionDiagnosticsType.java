@@ -2208,75 +2208,75 @@ public interface SubscriptionDiagnosticsType extends BaseDataVariableType {
     CompletableFuture<? extends BaseDataVariableType> getNextSequenceNumberNodeAsync();
 
     /**
-     * Get the local value of the EventQueueOverFlowCount Node.
+     * Get the local value of the EventQueueOverflowCount Node.
      * <p>
      * The returned value is the last seen; it is not read live from the server.
      *
-     * @return the local value of the EventQueueOverFlowCount Node.
-     * @throws UaException if an error occurs creating or getting the EventQueueOverFlowCount Node.
+     * @return the local value of the EventQueueOverflowCount Node.
+     * @throws UaException if an error occurs creating or getting the EventQueueOverflowCount Node.
      */
-    UInteger getEventQueueOverFlowCount() throws UaException;
+    UInteger getEventQueueOverflowCount() throws UaException;
 
     /**
-     * Set the local value of the EventQueueOverFlowCount Node.
+     * Set the local value of the EventQueueOverflowCount Node.
      * <p>
      * The value is only updated locally; it is not written to the server.
      *
-     * @param eventQueueOverFlowCount the local value to set for the EventQueueOverFlowCount Node.
-     * @throws UaException if an error occurs creating or getting the EventQueueOverFlowCount Node.
+     * @param eventQueueOverflowCount the local value to set for the EventQueueOverflowCount Node.
+     * @throws UaException if an error occurs creating or getting the EventQueueOverflowCount Node.
      */
-    void setEventQueueOverFlowCount(UInteger eventQueueOverFlowCount) throws UaException;
+    void setEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException;
 
     /**
-     * Read the value of the EventQueueOverFlowCount Node from the server and update the local value if the
+     * Read the value of the EventQueueOverflowCount Node from the server and update the local value if the
      * operation succeeds.
      *
      * @return the {@link UInteger} value read from the server.
      * @throws UaException if a service- or operation-level error occurs.
      */
-    UInteger readEventQueueOverFlowCount() throws UaException;
+    UInteger readEventQueueOverflowCount() throws UaException;
 
     /**
-     * Write a new value for the EventQueueOverFlowCount Node to the server and update the local value if
+     * Write a new value for the EventQueueOverflowCount Node to the server and update the local value if
      * the operation succeeds.
      *
-     * @param eventQueueOverFlowCount the {@link UInteger} value to write to the server.
+     * @param eventQueueOverflowCount the {@link UInteger} value to write to the server.
      * @throws UaException if a service- or operation-level error occurs.
      */
-    void writeEventQueueOverFlowCount(UInteger eventQueueOverFlowCount) throws UaException;
+    void writeEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException;
 
     /**
-     * An asynchronous implementation of {@link #readEventQueueOverFlowCount()}.
+     * An asynchronous implementation of {@link #readEventQueueOverflowCount()}.
      *
      * @return a CompletableFuture that completes successfully with the property value or completes
      * exceptionally if an operation- or service-level error occurs.
      */
-    CompletableFuture<? extends UInteger> readEventQueueOverFlowCountAsync();
+    CompletableFuture<? extends UInteger> readEventQueueOverflowCountAsync();
 
     /**
-     * An asynchronous implementation of {@link #writeEventQueueOverFlowCount(UInteger)}.
+     * An asynchronous implementation of {@link #writeEventQueueOverflowCount(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
      * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<StatusCode> writeEventQueueOverFlowCountAsync(UInteger eventQueueOverFlowCount);
+    CompletableFuture<StatusCode> writeEventQueueOverflowCountAsync(UInteger eventQueueOverflowCount);
 
     /**
-     * Get the EventQueueOverFlowCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
+     * Get the EventQueueOverflowCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
      * <p>
      * The Node is created when first accessed and cached for subsequent calls.
      *
-     * @return the EventQueueOverFlowCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
+     * @return the EventQueueOverflowCount {@link BaseDataVariableType} Node, or {@code null} if it does not exist.
      * @throws UaException if an error occurs creating or getting the Node.
      */
-    BaseDataVariableType getEventQueueOverFlowCountNode() throws UaException;
+    BaseDataVariableType getEventQueueOverflowCountNode() throws UaException;
 
     /**
-     * Asynchronous implementation of {@link #getEventQueueOverFlowCountNode()}.
+     * Asynchronous implementation of {@link #getEventQueueOverflowCountNode()}.
      *
      * @return a CompletableFuture that completes successfully with the
      * ? extends BaseDataVariableType Node or completes exceptionally if an error occurs
      * creating or getting the Node.
      */
-    CompletableFuture<? extends BaseDataVariableType> getEventQueueOverFlowCountNodeAsync();
+    CompletableFuture<? extends BaseDataVariableType> getEventQueueOverflowCountNodeAsync();
 }

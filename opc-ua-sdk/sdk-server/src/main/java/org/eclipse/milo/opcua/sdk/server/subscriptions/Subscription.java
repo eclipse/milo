@@ -704,8 +704,6 @@ public class Subscription {
      * @param service The service request that contains the {@link PublishRequest}.
      */
     synchronized void onPublish(ServiceRequest service) {
-        subscriptionDiagnostics.getPublishRequestCount().increment();
-
         State state = this.state.get();
 
         if (logger.isTraceEnabled()) {
@@ -831,6 +829,8 @@ public class Subscription {
                 /* Subscription State Table Row 4 */
                 publishQueue().addRequest(service);
             } else if (publishingEnabled && moreNotifications) {
+                subscriptionDiagnostics.getPublishRequestCount().increment();
+
                 /* Subscription State Table Row 5 */
                 resetLifetimeCounter();
                 resetKeepAliveCounter();
@@ -846,6 +846,8 @@ public class Subscription {
             boolean notificationsAvailable = notificationsAvailable();
 
             if (publishingEnabled && (notificationsAvailable || moreNotifications)) {
+                subscriptionDiagnostics.getPublishRequestCount().increment();
+
                 /* Subscription State Table Row 10 */
                 setState(State.Normal);
                 resetLifetimeCounter();
@@ -854,6 +856,8 @@ public class Subscription {
                 returnNotifications(service);
             } else if (!publishingEnabled ||
                 (publishingEnabled && !notificationsAvailable && !moreNotifications)) {
+                subscriptionDiagnostics.getPublishRequestCount().increment();
+
                 /* Subscription State Table Row 11 */
                 setState(State.KeepAlive);
                 resetLifetimeCounter();
@@ -871,6 +875,8 @@ public class Subscription {
         }
 
         private void whenClosing(ServiceRequest service) {
+            subscriptionDiagnostics.getPublishRequestCount().increment();
+
             returnStatusChangeNotification(service, new StatusCode(StatusCodes.Bad_Timeout));
 
             setState(State.Closed);
@@ -892,6 +898,8 @@ public class Subscription {
                 ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
+                    subscriptionDiagnostics.getPublishRequestCount().increment();
+
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
                     messageSent = true;
@@ -905,6 +913,8 @@ public class Subscription {
                 ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
+                    subscriptionDiagnostics.getPublishRequestCount().increment();
+
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
                     messageSent = true;
@@ -946,6 +956,8 @@ public class Subscription {
                 ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
+                    subscriptionDiagnostics.getPublishRequestCount().increment();
+
                     setState(State.Normal);
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
@@ -961,6 +973,8 @@ public class Subscription {
                 ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
+                    subscriptionDiagnostics.getPublishRequestCount().increment();
+
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
                     returnKeepAlive(service);

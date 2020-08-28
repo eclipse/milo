@@ -169,11 +169,13 @@ public class SubscriptionManager {
         subscriptions.put(subscriptionId, subscription);
         server.getSubscriptions().put(subscriptionId, subscription);
         server.getDiagnosticsSummary().getCumulatedSubscriptionCount().increment();
+        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
             }
         });
 
@@ -232,6 +234,7 @@ public class SubscriptionManager {
 
             if (subscription != null) {
                 server.getSubscriptions().remove(subscription.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
 
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
@@ -1202,6 +1205,7 @@ public class SubscriptionManager {
 
             if (deleteSubscriptions) {
                 server.getSubscriptions().remove(s.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(s));
 
                 List<BaseMonitoredItem<?>> deletedItems = s.deleteSubscription();
 
@@ -1227,11 +1231,13 @@ public class SubscriptionManager {
      */
     public void addSubscription(Subscription subscription) {
         subscriptions.put(subscription.getId(), subscription);
+        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(s));
             }
         });
     }
@@ -1244,6 +1250,7 @@ public class SubscriptionManager {
      */
     public Subscription removeSubscription(UInteger subscriptionId) {
         Subscription subscription = subscriptions.remove(subscriptionId);
+        server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
 
         if (subscription != null) {
             subscription.setStateListener(null);
