@@ -109,15 +109,37 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
 
         ByteString lastNonceBs = session.getLastNonce();
 
-        byte[] dataBytes = Bytes.concat(serverCertificateBs.bytesOrEmpty(), lastNonceBs.bytesOrEmpty());
-        byte[] signatureBytes = tokenSignature.getSignature().bytesOrEmpty();
+        try {
+            byte[] dataBytes = Bytes.concat(serverCertificateBs.bytesOrEmpty(), lastNonceBs.bytesOrEmpty());
+            byte[] signatureBytes = tokenSignature.getSignature().bytesOrEmpty();
 
-        SignatureUtil.verify(
-            algorithm,
-            identityCertificate,
-            dataBytes,
-            signatureBytes
-        );
+            SignatureUtil.verify(
+                algorithm,
+                identityCertificate,
+                dataBytes,
+                signatureBytes
+            );
+        } catch (UaException e) {
+            // Maybe try again using the full certificate chain bytes instead
+
+            ByteString serverCertificateChainBs = session
+                .getSecurityConfiguration()
+                .getServerCertificateChainBytes();
+
+            if (serverCertificateBs.equals(serverCertificateChainBs)) {
+                throw e;
+            } else {
+                byte[] dataBytes = Bytes.concat(serverCertificateChainBs.bytesOrEmpty(), lastNonceBs.bytesOrEmpty());
+                byte[] signatureBytes = tokenSignature.getSignature().bytesOrEmpty();
+
+                SignatureUtil.verify(
+                    algorithm,
+                    identityCertificate,
+                    dataBytes,
+                    signatureBytes
+                );
+            }
+        }
     }
 
 }

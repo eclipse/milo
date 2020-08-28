@@ -125,6 +125,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -397,13 +398,14 @@ public class OpcUaClient implements UaClient {
     private void updateNamespaceTable(String[] namespaceArray) {
         getNamespaceTable().update(uriTable -> {
             uriTable.clear();
+            uriTable.put(ushort(0), Namespaces.OPC_UA);
 
             if (namespaceArray.length > UShort.MAX_VALUE) {
                 logger.warn("NamespaceTable returned by " +
                     "server contains " + namespaceArray.length + " entries");
             }
 
-            for (int i = 0; i < namespaceArray.length && i < UShort.MAX_VALUE; i++) {
+            for (int i = 1; i < namespaceArray.length && i < UShort.MAX_VALUE; i++) {
                 String uri = namespaceArray[i];
 
                 if (uri != null && !uriTable.containsValue(uri)) {

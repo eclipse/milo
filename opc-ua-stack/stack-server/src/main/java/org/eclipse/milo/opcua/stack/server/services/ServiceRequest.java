@@ -32,6 +32,8 @@ public class ServiceRequest extends DefaultAttributeMap {
 
     private final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
 
+    private final long receivedAtNanos = System.nanoTime();
+
     private final UaStackServer server;
     private final UaRequestMessage request;
     private final EndpointDescription endpoint;
@@ -91,6 +93,10 @@ public class ServiceRequest extends DefaultAttributeMap {
 
     public CompletableFuture<UaResponseMessage> getFuture() {
         return future;
+    }
+
+    public long getReceivedAtNanos() {
+        return receivedAtNanos;
     }
 
     public void setResponse(UaResponseMessage response) {

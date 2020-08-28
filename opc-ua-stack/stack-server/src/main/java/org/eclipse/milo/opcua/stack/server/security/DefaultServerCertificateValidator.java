@@ -21,13 +21,17 @@ import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
+import org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.validation.ValidationCheck;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
-import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.checkApplicationUri;
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
 
 public class DefaultServerCertificateValidator implements ServerCertificateValidator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServerCertificateValidator.class);
 
     private final TrustListManager trustListManager;
     private final ImmutableSet<ValidationCheck> validationChecks;
@@ -121,6 +125,17 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
         X509Certificate certificate = certificateChain.get(0);
 
-        checkApplicationUri(certificate, applicationUri);
+        try {
+            CertificateValidationUtil.checkApplicationUri(certificate, applicationUri);
+        } catch (UaException e) {
+            if (validationChecks.contains(ValidationCheck.APPLICATION_URI)) {
+                throw e;
+            } else {
+                LOGGER.warn(
+                    "check suppressed: certificate failed application uri check: {} != {}",
+                    applicationUri, CertificateValidationUtil.getSubjectAltNameUri(certificate)
+                );
+            }
+        }
     }
 }

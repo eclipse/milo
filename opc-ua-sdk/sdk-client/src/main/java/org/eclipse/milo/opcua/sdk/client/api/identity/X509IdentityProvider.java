@@ -91,7 +91,10 @@ public class X509IdentityProvider implements IdentityProvider {
         } else {
             NonceUtil.validateNonce(serverNonce);
 
-            byte[] serverCertificateBytes = endpoint.getServerCertificate().bytesOrEmpty();
+            List<X509Certificate> serverCertificates = CertificateUtil.decodeCertificates(
+                endpoint.getServerCertificate().bytesOrEmpty()
+            );
+            byte[] serverCertificateBytes = serverCertificates.get(0).getEncoded();
 
             byte[] serverNonceBytes = serverNonce.bytes();
             if (serverNonceBytes == null) serverNonceBytes = new byte[0];
