@@ -23,9 +23,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
- * A {@link ManagedAddressSpace} for all Nodes belonging to a namespace index / URI.
+ * A {@link ManagedAddressSpaceFragment} for all Nodes belonging to a namespace index / URI.
  */
-public abstract class ManagedNamespace extends ManagedAddressSpace implements Namespace {
+public abstract class ManagedNamespace extends ManagedAddressSpaceFragment implements Namespace {
 
     private final AddressSpaceFilter filter;
 

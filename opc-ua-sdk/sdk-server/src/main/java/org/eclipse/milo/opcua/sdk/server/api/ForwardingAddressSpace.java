@@ -34,16 +34,6 @@ public abstract class ForwardingAddressSpace implements AddressSpace {
     protected abstract AddressSpace delegate();
 
     @Override
-    public AddressSpaceFilter getFilter() {
-        return delegate().getFilter();
-    }
-
-    @Override
-    public UInteger getViewCount() {
-        return delegate().getViewCount();
-    }
-
-    @Override
     public void read(
         ReadContext context,
         Double maxAge,
@@ -200,6 +190,11 @@ public abstract class ForwardingAddressSpace implements AddressSpace {
     @Override
     public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
         delegate().unregisterNodes(context, nodeIds);
+    }
+
+    @Override
+    public UInteger getViewCount() {
+        return delegate().getViewCount();
     }
 
 }

@@ -15,23 +15,51 @@ import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 
-public abstract class ManagedNamespaceWithLifecycle extends ManagedNamespace implements Lifecycle {
+/**
+ * A {@link ManagedAddressSpace} that has a {@link Lifecycle} associated with it.
+ * <p>
+ * This AddressSpace and its {@link UaNodeManager} will be registered with the server on startup and unregistered on
+ * shutdown.
+ * <p>
+ * Subclasses can register additional startup/shutdown tasks with the {@link LifecycleManager} obtained from
+ * {@link #getLifecycleManager()}.
+ */
+public abstract class ManagedAddressSpaceFragmentWithLifecycle
+    extends ManagedAddressSpaceFragment implements Lifecycle {
 
     private final LifecycleManager lifecycleManager = new LifecycleManager();
 
-    public ManagedNamespaceWithLifecycle(OpcUaServer server, String namespaceUri) {
-        super(server, namespaceUri);
+    public ManagedAddressSpaceFragmentWithLifecycle(OpcUaServer server) {
+        super(server);
 
         getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                registerAddressSpace(ManagedNamespaceWithLifecycle.this);
+                registerAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
                 registerNodeManager(getNodeManager());
             }
 
             @Override
             public void shutdown() {
-                unregisterAddressSpace(ManagedNamespaceWithLifecycle.this);
+                unregisterAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
+                unregisterNodeManager(getNodeManager());
+            }
+        });
+    }
+
+    public ManagedAddressSpaceFragmentWithLifecycle(OpcUaServer server, UaNodeManager nodeManager) {
+        super(server, nodeManager);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                registerAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
+                registerNodeManager(getNodeManager());
+            }
+
+            @Override
+            public void shutdown() {
+                unregisterAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
                 unregisterNodeManager(getNodeManager());
             }
         });

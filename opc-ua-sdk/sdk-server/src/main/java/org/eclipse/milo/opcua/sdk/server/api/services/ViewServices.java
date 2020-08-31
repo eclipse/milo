@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
@@ -96,6 +97,15 @@ public interface ViewServices {
      */
     default void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
         context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
+    }
+
+    /**
+     * Get the number of views, if any, managed by this {@link ViewServices} implementation.
+     *
+     * @return the number of views, if any, managed by this {@link ViewServices} implementation.
+     */
+    default UInteger getViewCount() {
+        return uint(0);
     }
 
 

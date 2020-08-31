@@ -57,15 +57,16 @@ import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCol
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
- * An {@link AddressSpace} that is composed of one or more registered sub-AddressSpaces.
+ * An {@link AddressSpace} that is composed of {@link AddressSpaceFragment}s.
  * <p>
- * Service call operations are executed by the first sub-AddressSpace that matches on the NodeId in the operation.
+ * Service call operations are executed by the first fragment that matches on the NodeId in the
+ * operation.
  */
-public class AddressSpaceComposite implements AddressSpace {
+public class AddressSpaceComposite implements AddressSpaceFragment {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final CopyOnWriteArrayList<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<AddressSpaceFragment> addressSpaces = new CopyOnWriteArrayList<>();
 
     private final CompositeAddressSpaceFilter filter = new CompositeAddressSpaceFilter(addressSpaces);
 
@@ -87,7 +88,7 @@ public class AddressSpaceComposite implements AddressSpace {
      *
      * @param addressSpace the {@link AddressSpace} to register.
      */
-    public synchronized void register(AddressSpace addressSpace) {
+    public synchronized void register(AddressSpaceFragment addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(addressSpace);
 
@@ -104,7 +105,7 @@ public class AddressSpaceComposite implements AddressSpace {
      *
      * @param addressSpace the {@link AddressSpace} to register.
      */
-    public synchronized void registerFirst(AddressSpace addressSpace) {
+    public synchronized void registerFirst(AddressSpaceFragment addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(0, addressSpace);
 
@@ -119,7 +120,7 @@ public class AddressSpaceComposite implements AddressSpace {
      *
      * @param addressSpace the {@link AddressSpace} to unregister.
      */
-    public synchronized void unregister(AddressSpace addressSpace) {
+    public synchronized void unregister(AddressSpaceFragment addressSpace) {
         if (addressSpaces.contains(addressSpace)) {
             addressSpaces.remove(addressSpace);
 
@@ -143,29 +144,22 @@ public class AddressSpaceComposite implements AddressSpace {
      *
      * @return a copy of the current {@link AddressSpace} list.
      */
-    protected List<AddressSpace> getAddressSpaces() {
+    protected List<AddressSpaceFragment> getAddressSpaces() {
         return new ArrayList<>(addressSpaces);
     }
 
-    private AddressSpace getAddressSpace(Predicate<AddressSpace> filter) {
+    private AddressSpaceFragment getAddressSpace(Predicate<AddressSpaceFragment> filter) {
         return addressSpaces.stream()
             .filter(filter)
             .findFirst()
-            .orElse(new EmptyAddressSpace(server));
-    }
-
-    @Override
-    public UInteger getViewCount() {
-        return addressSpaces.stream()
-            .map(AddressSpace::getViewCount)
-            .reduce(uint(0), UInteger::add);
+            .orElse(new EmptyAddressSpaceFragment(server));
     }
 
     //region ViewServices
 
     @Override
     public void browse(BrowseContext context, ViewDescription view, NodeId nodeId) {
-        List<AddressSpace> addressSpaces = getAddressSpaces();
+        List<AddressSpaceFragment> addressSpaces = getAddressSpaces();
 
         AddressSpace firstMatch;
         try {
@@ -299,6 +293,13 @@ public class AddressSpaceComposite implements AddressSpace {
         );
 
         units.thenAccept(context::success);
+    }
+
+    @Override
+    public UInteger getViewCount() {
+        return addressSpaces.stream()
+            .map(AddressSpace::getViewCount)
+            .reduce(uint(0), UInteger::add);
     }
 
     //endregion
@@ -742,9 +743,9 @@ public class AddressSpaceComposite implements AddressSpace {
 
     private static class CompositeAddressSpaceFilter implements AddressSpaceFilter {
 
-        private final List<AddressSpace> addressSpaces;
+        private final List<AddressSpaceFragment> addressSpaces;
 
-        CompositeAddressSpaceFilter(List<AddressSpace> addressSpaces) {
+        CompositeAddressSpaceFilter(List<AddressSpaceFragment> addressSpaces) {
             this.addressSpaces = addressSpaces;
         }
 
@@ -891,9 +892,9 @@ public class AddressSpaceComposite implements AddressSpace {
     /**
      * EmptyAddressSpace is used ephemerally and should never be registered.
      */
-    private static class EmptyAddressSpace extends ManagedAddressSpace {
+    private static class EmptyAddressSpaceFragment extends ManagedAddressSpace implements AddressSpaceFragment {
 
-        EmptyAddressSpace(OpcUaServer server) {
+        EmptyAddressSpaceFragment(OpcUaServer server) {
             super(server);
         }
 
