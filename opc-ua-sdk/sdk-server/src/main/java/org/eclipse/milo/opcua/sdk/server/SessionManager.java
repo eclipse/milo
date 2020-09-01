@@ -95,8 +95,6 @@ public class SessionManager implements
     SubscriptionServiceSet,
     ViewServiceSet {
 
-    private static final int MAX_SESSION_TIMEOUT_MS = 120000;
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<NodeId, Session> createdSessions = Maps.newConcurrentMap();
@@ -237,7 +235,7 @@ public class SessionManager implements
         long maxRequestMessageSize = serviceRequest.getServer().getConfig().getMessageLimits().getMaxMessageSize();
         double revisedSessionTimeout = Math.max(
             5000,
-            Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
+            Math.min(server.getConfig().getLimits().getMaxSessionTimeout(), request.getRequestedSessionTimeout())
         );
 
         ApplicationDescription clientDescription = request.getClientDescription();
