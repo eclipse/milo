@@ -31,6 +31,17 @@ public interface OpcUaServerConfigLimits {
     }
 
     /**
+     * Get the maximum session timeout, in milliseconds, allowed by the server.
+     * <p>
+     * Requests by clients for larger timeouts will be revised down to this limit.
+     *
+     * @return the maximum session timeout, in milliseconds, allowed by the server.
+     */
+    default Double getMaxSessionTimeout() {
+        return 2d * 60_000d;
+    }
+
+    /**
      * Get the minimum allowed publishing interval.
      *
      * @return the minimum allowed publishing interval.
