@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
@@ -132,6 +133,18 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         return this;
     }
 
+    @Override
+    public OpcUaServerConfigBuilder setMinimumSecureChannelLifetime(UInteger minimumSecureChannelLifetime) {
+        super.setMinimumSecureChannelLifetime(minimumSecureChannelLifetime);
+        return this;
+    }
+
+    @Override
+    public OpcUaServerConfigBuilder setMaximumSecureChannelLifetime(UInteger maximumSecureChannelLifetime) {
+        super.setMaximumSecureChannelLifetime(maximumSecureChannelLifetime);
+        return this;
+    }
+
     public OpcUaServerConfig build() {
         UaStackServerConfig stackServerConfig = super.build();
 
@@ -156,7 +169,8 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
             UaStackServerConfig stackServerConfig,
             IdentityValidator<?> identityValidator,
             BuildInfo buildInfo,
-            OpcUaServerConfigLimits limits) {
+            OpcUaServerConfigLimits limits
+        ) {
 
             this.stackServerConfig = stackServerConfig;
             this.identityValidator = identityValidator;
@@ -237,6 +251,16 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         @Override
         public EncodingLimits getEncodingLimits() {
             return stackServerConfig.getEncodingLimits();
+        }
+
+        @Override
+        public UInteger getMinimumSecureChannelLifetime() {
+            return stackServerConfig.getMinimumSecureChannelLifetime();
+        }
+
+        @Override
+        public UInteger getMaximumSecureChannelLifetime() {
+            return stackServerConfig.getMaximumSecureChannelLifetime();
         }
 
     }
