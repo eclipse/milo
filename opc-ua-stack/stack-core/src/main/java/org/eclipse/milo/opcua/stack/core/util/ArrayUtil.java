@@ -69,16 +69,15 @@ public class ArrayUtil {
     }
 
     private static Object unflatten(Class<?> type, Object array, int[] dimensions, int offset) {
+        Object a;
         if (dimensions.length == 1) {
-            Object a = Array.newInstance(type, dimensions[0]);
+            a = Array.newInstance(type, dimensions[0]);
 
             for (int i = 0; i < dimensions[0]; i++) {
                 Array.set(a, i, Array.get(array, offset + i));
             }
-
-            return a;
         } else {
-            Object a = Array.newInstance(type, dimensions);
+            a = Array.newInstance(type, dimensions);
 
             int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
 
@@ -86,9 +85,8 @@ public class ArrayUtil {
                 Object element = unflatten(type, array, tail, offset + i * length(tail));
                 Array.set(a, i, element);
             }
-
-            return a;
         }
+        return a;
     }
 
     public static int[] getDimensions(Object array) {

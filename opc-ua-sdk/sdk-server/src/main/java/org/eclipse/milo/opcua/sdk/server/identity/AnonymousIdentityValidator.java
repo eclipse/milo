@@ -20,13 +20,7 @@ public final class AnonymousIdentityValidator extends AbstractIdentityValidator<
     /**
      * A static instance implementing AnonymousIdentityValidator
      */
-    public static final IdentityValidator INSTANCE = new AnonymousIdentityValidator();
-
-    /**
-     * @deprecated Use {@link #INSTANCE} instead
-     */
-    @Deprecated
-    public AnonymousIdentityValidator() {}
+    public static final IdentityValidator<String> INSTANCE = new AnonymousIdentityValidator();
 
     @Override
     public String validateAnonymousToken(

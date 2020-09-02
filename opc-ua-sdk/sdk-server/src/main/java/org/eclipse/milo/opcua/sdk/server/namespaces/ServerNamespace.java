@@ -11,15 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.namespaces;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.objects.ServerDiagnosticsObject;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 
-@SuppressWarnings("restriction")
-public class ServerNamespace extends ManagedNamespace {
+public class ServerNamespace extends ManagedNamespaceWithLifecycle {
 
     private final SubscriptionModel subscriptionModel;
 
@@ -27,22 +31,23 @@ public class ServerNamespace extends ManagedNamespace {
         super(server, server.getConfig().getApplicationUri());
 
         subscriptionModel = new SubscriptionModel(server, this);
-    }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
+        ServerDiagnosticsTypeNode serverDiagnosticsNode = (ServerDiagnosticsTypeNode) getServer()
+            .getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
 
-        subscriptionModel.startup();
+        serverDiagnosticsNode.getEnabledFlagNode().setUserAccessLevel(
+            AccessLevel.toValue(AccessLevel.READ_WRITE)
+        );
 
-        VendorServerInfoNodes.add(getNodeContext());
-    }
+        ServerDiagnosticsObject serverDiagnosticsObject = new ServerDiagnosticsObject(
+            serverDiagnosticsNode, getNodeManager()
+        );
 
-    @Override
-    protected void onShutdown() {
-        super.onShutdown();
-
-        subscriptionModel.shutdown();
+        getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
+        getLifecycleManager().addLifecycle(subscriptionModel);
+        getLifecycleManager().addLifecycle(serverDiagnosticsObject);
     }
 
     @Override

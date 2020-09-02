@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.slf4j.LoggerFactory;
 
 public class Reference {
@@ -36,33 +35,6 @@ public class Reference {
     private final NodeId referenceTypeId;
     private final ExpandedNodeId targetNodeId;
     private final Direction direction;
-
-    @Deprecated
-    public Reference(
-        NodeId sourceNodeId,
-        NodeId referenceTypeId,
-        ExpandedNodeId targetNodeId,
-        NodeClass targetNodeClass,
-        boolean forward) {
-
-        this(
-            sourceNodeId,
-            referenceTypeId,
-            targetNodeId,
-            targetNodeClass,
-            forward ? Direction.FORWARD : Direction.INVERSE);
-    }
-
-    @Deprecated
-    public Reference(
-        NodeId sourceNodeId,
-        NodeId referenceTypeId,
-        ExpandedNodeId targetNodeId,
-        NodeClass targetNodeClass,
-        Direction direction) {
-
-        this(sourceNodeId, referenceTypeId, targetNodeId, direction);
-    }
 
     public Reference(
         NodeId sourceNodeId,
@@ -111,24 +83,6 @@ public class Reference {
 
     public boolean isInverse() {
         return direction == Direction.INVERSE;
-    }
-
-    /**
-     * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
-     *
-     * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
-     * @deprecated use {@link #invert(NamespaceTable)}
-     */
-    @Deprecated
-    public Optional<Reference> invert() {
-        return getTargetNodeId().local().map(
-            sourceNodeId -> new Reference(
-                sourceNodeId,
-                getReferenceTypeId(),
-                getSourceNodeId().expanded(),
-                !isForward()
-            )
-        );
     }
 
     /**

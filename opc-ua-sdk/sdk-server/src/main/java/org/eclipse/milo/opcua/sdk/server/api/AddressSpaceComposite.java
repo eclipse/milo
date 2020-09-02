@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -58,15 +57,16 @@ import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCol
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
- * An {@link AddressSpace} that is composed of one or more registered sub-AddressSpaces.
+ * An {@link AddressSpace} that is composed of {@link AddressSpaceFragment}s.
  * <p>
- * Service call operations are executed by the first sub-AddressSpace that matches on the NodeId in the operation.
+ * Service call operations are executed by the first fragment that matches on the NodeId in the
+ * operation.
  */
-public abstract class AddressSpaceComposite extends AbstractLifecycle implements AddressSpace {
+public class AddressSpaceComposite implements AddressSpaceFragment {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final CopyOnWriteArrayList<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<AddressSpaceFragment> addressSpaces = new CopyOnWriteArrayList<>();
 
     private final CompositeAddressSpaceFilter filter = new CompositeAddressSpaceFilter(addressSpaces);
 
@@ -75,12 +75,6 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public AddressSpaceComposite(OpcUaServer server) {
         this.server = server;
     }
-
-    @Override
-    protected void onStartup() {}
-
-    @Override
-    protected void onShutdown() {}
 
     @Override
     public AddressSpaceFilter getFilter() {
@@ -94,7 +88,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
      *
      * @param addressSpace the {@link AddressSpace} to register.
      */
-    public synchronized void register(AddressSpace addressSpace) {
+    public synchronized void register(AddressSpaceFragment addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(addressSpace);
 
@@ -111,7 +105,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
      *
      * @param addressSpace the {@link AddressSpace} to register.
      */
-    public synchronized void registerFirst(AddressSpace addressSpace) {
+    public synchronized void registerFirst(AddressSpaceFragment addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(0, addressSpace);
 
@@ -126,7 +120,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
      *
      * @param addressSpace the {@link AddressSpace} to unregister.
      */
-    public synchronized void unregister(AddressSpace addressSpace) {
+    public synchronized void unregister(AddressSpaceFragment addressSpace) {
         if (addressSpaces.contains(addressSpace)) {
             addressSpaces.remove(addressSpace);
 
@@ -150,29 +144,22 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
      *
      * @return a copy of the current {@link AddressSpace} list.
      */
-    protected List<AddressSpace> getAddressSpaces() {
+    protected List<AddressSpaceFragment> getAddressSpaces() {
         return new ArrayList<>(addressSpaces);
     }
 
-    private AddressSpace getAddressSpace(Predicate<AddressSpace> filter) {
+    private AddressSpaceFragment getAddressSpace(Predicate<AddressSpaceFragment> filter) {
         return addressSpaces.stream()
             .filter(filter)
             .findFirst()
-            .orElse(new EmptyAddressSpace(server));
-    }
-
-    @Override
-    public UInteger getViewCount() {
-        return addressSpaces.stream()
-            .map(AddressSpace::getViewCount)
-            .reduce(uint(0), UInteger::add);
+            .orElse(new EmptyAddressSpaceFragment(server));
     }
 
     //region ViewServices
 
     @Override
     public void browse(BrowseContext context, ViewDescription view, NodeId nodeId) {
-        List<AddressSpace> addressSpaces = getAddressSpaces();
+        List<AddressSpaceFragment> addressSpaces = getAddressSpaces();
 
         AddressSpace firstMatch;
         try {
@@ -306,6 +293,13 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         );
 
         units.thenAccept(context::success);
+    }
+
+    @Override
+    public UInteger getViewCount() {
+        return addressSpaces.stream()
+            .map(AddressSpace::getViewCount)
+            .reduce(uint(0), UInteger::add);
     }
 
     //endregion
@@ -749,9 +743,9 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
     private static class CompositeAddressSpaceFilter implements AddressSpaceFilter {
 
-        private final List<AddressSpace> addressSpaces;
+        private final List<AddressSpaceFragment> addressSpaces;
 
-        CompositeAddressSpaceFilter(List<AddressSpace> addressSpaces) {
+        CompositeAddressSpaceFilter(List<AddressSpaceFragment> addressSpaces) {
             this.addressSpaces = addressSpaces;
         }
 
@@ -895,29 +889,25 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
     }
 
-    private static class EmptyAddressSpace extends ManagedAddressSpace {
+    /**
+     * EmptyAddressSpace is used ephemerally and should never be registered.
+     */
+    private static class EmptyAddressSpaceFragment extends ManagedAddressSpace implements AddressSpaceFragment {
 
-        EmptyAddressSpace(OpcUaServer server) {
+        EmptyAddressSpaceFragment(OpcUaServer server) {
             super(server);
-        }
-
-        // EmptyAddressSpace is used ephemerally and should never be started/registered
-
-        @Override
-        protected void onStartup() {
-            throw new IllegalStateException("EmptyAddressSpace onStartup()");
-        }
-
-        @Override
-        protected void onShutdown() {
-            throw new IllegalStateException("EmptyAddressSpace onShutdown()");
         }
 
         @Override
         public AddressSpaceFilter getFilter() {
             return new SimpleAddressSpaceFilter() {
                 @Override
-                protected boolean filter(NodeId nodeId) {
+                protected boolean filterNode(NodeId nodeId) {
+                    return true;
+                }
+
+                @Override
+                protected boolean filterMonitoredItem(NodeId nodeId) {
                     return true;
                 }
             };

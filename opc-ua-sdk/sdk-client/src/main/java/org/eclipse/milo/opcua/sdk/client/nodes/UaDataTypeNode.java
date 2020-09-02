@@ -13,43 +13,104 @@ package org.eclipse.milo.opcua.sdk.client.nodes;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.DataTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 
 import static org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNodeProperties.NodeVersion;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.DataValue.valueOnly;
 
 public class UaDataTypeNode extends UaNode implements DataTypeNode {
 
-    public UaDataTypeNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    private Boolean isAbstract;
+
+    public UaDataTypeNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        Boolean isAbstract
+    ) {
+
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.isAbstract = isAbstract;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readIsAbstract()
+     */
     @Override
-    public CompletableFuture<Boolean> getIsAbstract() {
-        return getAttributeOrFail(readIsAbstract());
+    public synchronized Boolean getIsAbstract() {
+        return isAbstract;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeIsAbstract(Boolean)
+     */
     @Override
-    public CompletableFuture<StatusCode> setIsAbstract(boolean isAbstract) {
-        return writeIsAbstract(valueOnly(new Variant(isAbstract)));
+    public synchronized void setIsAbstract(Boolean isAbstract) {
+        this.isAbstract = isAbstract;
     }
 
-    @Override
-    public CompletableFuture<DataValue> readIsAbstract() {
-        return readAttribute(AttributeId.IsAbstract);
+    /**
+     * Read the IsAbstract attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link Boolean} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.s
+     */
+    public Boolean readIsAbstract() throws UaException {
+        DataValue value = readAttribute(AttributeId.IsAbstract);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read IsAbstract failed");
+        } else {
+            Boolean isAbstract = (Boolean) value.getValue().getValue();
+            setIsAbstract(isAbstract);
+            return isAbstract;
+        }
     }
 
-    @Override
-    public CompletableFuture<StatusCode> writeIsAbstract(DataValue value) {
-        return writeAttribute(AttributeId.IsAbstract, value);
+    /**
+     * Write a new IsAbstract attribute for this Node to the server and update the local attribute
+     * if the operation succeeds.
+     *
+     * @param isAbstract the {@link Boolean} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeIsAbstract(Boolean isAbstract) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(isAbstract));
+        StatusCode statusCode = writeAttribute(AttributeId.IsAbstract, value);
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "write IsAbstract failed");
+        } else {
+            setIsAbstract(isAbstract);
+        }
     }
 
     /**
@@ -58,7 +119,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(DataTypeNodeProperties.NodeVersion);
     }
 
@@ -68,7 +129,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the EnumStrings Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<LocalizedText[]> getEnumStrings() {
+    public CompletableFuture<? extends LocalizedText[]> readEnumStringsAsync() {
         return getProperty(DataTypeNodeProperties.EnumStrings);
     }
 
@@ -78,7 +139,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the EnumValues Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<EnumValueType[]> getEnumValues() {
+    public CompletableFuture<? extends EnumValueType[]> readEnumValuesAsync() {
         return getProperty(DataTypeNodeProperties.EnumValues);
     }
 
@@ -88,7 +149,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return the value of the OptionSetValues Property, if it exists.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<LocalizedText[]> getOptionSetValues() {
+    public CompletableFuture<? extends LocalizedText[]> readOptionSetValuesAsync() {
         return getProperty(DataTypeNodeProperties.OptionSetValues);
     }
 
@@ -99,7 +160,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(NodeVersion, nodeVersion);
     }
 
@@ -110,7 +171,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setEnumStrings(LocalizedText[] enumStrings) {
+    public CompletableFuture<StatusCode> writeEnumStringsAsync(LocalizedText[] enumStrings) {
         return setProperty(DataTypeNodeProperties.EnumStrings, enumStrings);
     }
 
@@ -121,7 +182,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setEnumValues(EnumValueType[] enumValues) {
+    public CompletableFuture<StatusCode> writeEnumValuesAsync(EnumValueType[] enumValues) {
         return setProperty(DataTypeNodeProperties.EnumValues, enumValues);
     }
 
@@ -132,8 +193,29 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see DataTypeNodeProperties
      */
-    public CompletableFuture<StatusCode> setOptionSetValues(LocalizedText[] optionSetValues) {
+    public CompletableFuture<StatusCode> writeOptionSetValuesAsync(LocalizedText[] optionSetValues) {
         return setProperty(DataTypeNodeProperties.OptionSetValues, optionSetValues);
+    }
+
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return DataValue.valueOnly(new Variant(getIsAbstract()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case IsAbstract: {
+                setIsAbstract((Boolean) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
     }
 
 }

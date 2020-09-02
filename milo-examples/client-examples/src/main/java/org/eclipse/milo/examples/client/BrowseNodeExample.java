@@ -12,11 +12,11 @@ package org.eclipse.milo.examples.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +44,15 @@ public class BrowseNodeExample implements ClientExample {
 
     private void browseNode(String indent, OpcUaClient client, NodeId browseRoot) {
         try {
-            List<Node> nodes = client.getAddressSpace().browse(browseRoot).get();
+            List<? extends UaNode> nodes = client.getAddressSpace().browseNodes(browseRoot);
 
-            for (Node node : nodes) {
-                logger.info("{} Node={}", indent, node.getBrowseName().get().getName());
+            for (UaNode node : nodes) {
+                logger.info("{} Node={}", indent, node.getBrowseName().getName());
 
                 // recursively browse to children
-                browseNode(indent + "  ", client, node.getNodeId().get());
+                browseNode(indent + "  ", client, node.getNodeId());
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (UaException e) {
             logger.error("Browsing nodeId={} failed: {}", browseRoot, e.getMessage(), e);
         }
     }

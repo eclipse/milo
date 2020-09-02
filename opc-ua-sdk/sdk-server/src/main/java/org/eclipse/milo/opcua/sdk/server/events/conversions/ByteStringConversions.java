@@ -29,8 +29,8 @@ final class ByteStringConversions {
             return null;
         } else {
             ByteBuffer byteBuffer = ByteBuffer.wrap(bs.bytesOrEmpty());
-            Long high = byteBuffer.getLong();
-            Long low = byteBuffer.getLong();
+            long high = byteBuffer.getLong();
+            long low = byteBuffer.getLong();
             return new UUID(high, low);
         }
     }

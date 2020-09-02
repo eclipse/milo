@@ -24,10 +24,11 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.DataTypeDictionaryManager;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
@@ -71,7 +72,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class ExampleNamespace extends ManagedNamespace {
+public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
@@ -140,17 +141,33 @@ public class ExampleNamespace extends ManagedNamespace {
         super(server, NAMESPACE_URI);
 
         subscriptionModel = new SubscriptionModel(server, this);
-
         dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
+
+        getLifecycleManager().addLifecycle(dictionaryManager);
+        getLifecycleManager().addLifecycle(subscriptionModel);
+
+        getLifecycleManager().addStartupTask(this::createAndAddNodes);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                startBogusEventNotifier();
+            }
+
+            @Override
+            public void shutdown() {
+                try {
+                    keepPostingEvents = false;
+                    eventThread.interrupt();
+                    eventThread.join();
+                } catch (InterruptedException ignored) {
+                    // ignored
+                }
+            }
+        });
     }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
-
-        dictionaryManager.startup();
-        subscriptionModel.startup();
-
+    private void createAndAddNodes() {
         // Create a "HelloWorld" folder and add it to the node manager
         NodeId folderNodeId = newNodeId("HelloWorld");
 
@@ -200,7 +217,9 @@ public class ExampleNamespace extends ManagedNamespace {
         }
 
         addCustomObjectTypeAndInstance(folderNode);
+    }
 
+    private void startBogusEventNotifier() {
         // Set the EventNotifier bit on Server Node for Events.
         UaNode serverNode = getServer()
             .getAddressSpaceManager()
@@ -230,6 +249,7 @@ public class ExampleNamespace extends ManagedNamespace {
                         eventNode.setMessage(LocalizedText.english("event message!"));
                         eventNode.setSeverity(ushort(2));
 
+                        //noinspection UnstableApiUsage
                         getServer().getEventBus().post(eventNode);
 
                         eventNode.delete();
@@ -238,6 +258,7 @@ public class ExampleNamespace extends ManagedNamespace {
                     }
 
                     try {
+                        //noinspection BusyWait
                         Thread.sleep(2_000);
                     } catch (InterruptedException ignored) {
                         // ignored
@@ -247,22 +268,6 @@ public class ExampleNamespace extends ManagedNamespace {
 
             eventThread.start();
         }
-    }
-
-    @Override
-    protected void onShutdown() {
-        dictionaryManager.shutdown();
-        subscriptionModel.shutdown();
-
-        try {
-            keepPostingEvents = false;
-            eventThread.interrupt();
-            eventThread.join();
-        } catch (InterruptedException ignored) {
-            // ignored
-        }
-
-        super.onShutdown();
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {
@@ -298,8 +303,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -335,8 +340,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/ScalarTypes/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -366,8 +371,8 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/WriteOnly/" + name))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
-            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
+            .setAccessLevel(AccessLevel.WRITE_ONLY)
+            .setUserAccessLevel(AccessLevel.WRITE_ONLY)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -394,7 +399,7 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/OnlyAdminCanRead/" + name))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -429,7 +434,7 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/OnlyAdminCanWrite/" + name))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -469,7 +474,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -498,7 +503,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -527,7 +532,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -647,7 +652,7 @@ public class ExampleNamespace extends ManagedNamespace {
         // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
         UaVariableNode foo = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("ObjectTypes/MyObjectType.Foo"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("Foo"))
             .setDisplayName(LocalizedText.english("Foo"))
             .setDataType(Identifiers.Int16)
@@ -666,7 +671,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode bar = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("ObjectTypes/MyObjectType.Bar"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("Bar"))
             .setDisplayName(LocalizedText.english("Bar"))
             .setDataType(Identifiers.String)
@@ -905,8 +910,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
             .setDataType(dataTypeId)
@@ -934,8 +939,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
             .setDataType(dataTypeId)
@@ -975,8 +980,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode customUnionTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
             .setDataType(dataTypeId)

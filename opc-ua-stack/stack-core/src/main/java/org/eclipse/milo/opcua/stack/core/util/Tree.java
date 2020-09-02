@@ -54,10 +54,28 @@ public class Tree<A> {
     /**
      * Traverse this tree consuming the {@code value} at each node.
      *
-     * @param c the {@link BiConsumer}.
+     * @param c the value {@link Consumer}.
      */
     public void traverse(Consumer<A> c) {
-        traverse(this, c);
+        traverse(this, (a, integer) -> c.accept(a), 0);
+    }
+
+    /**
+     * Traverse this tree consuming each {@link Tree} node.
+     *
+     * @param c the node {@link Consumer}.
+     */
+    public void traverseNodes(Consumer<Tree<A>> c) {
+        traverseNodes(this, (t, integer) -> c.accept(t), 0);
+    }
+
+    /**
+     * Traverse this tree consuming the {@code value} and current depth at each node.
+     *
+     * @param c the value and depth {@link BiConsumer}.
+     */
+    public void traverseWithDepth(BiConsumer<A, Integer> c) {
+        traverse(this, c, 0);
     }
 
     /**
@@ -67,7 +85,7 @@ public class Tree<A> {
      *
      * @param c the {@link BiConsumer}.
      */
-    public void traverse(BiConsumer<A, A> c) {
+    public void traverseWithParent(BiConsumer<A, A> c) {
         traverse(this, c);
     }
 
@@ -83,7 +101,7 @@ public class Tree<A> {
     }
 
     private static <A, B> Tree<B> map(Tree<A> tA, Function<A, B> f) {
-        Tree<B> tB = new Tree<B>(null, f.apply(tA.value));
+        Tree<B> tB = new Tree<>(null, f.apply(tA.value));
 
         map(tA, tB, f);
 
@@ -97,10 +115,15 @@ public class Tree<A> {
         });
     }
 
-    private static <T> void traverse(Tree<T> tree, Consumer<T> c) {
+    private static <T> void traverse(Tree<T> tree, BiConsumer<T, Integer> c, int depth) {
         T value = tree.value;
-        c.accept(value);
-        tree.children.forEach(t -> traverse(t, c));
+        c.accept(value, depth);
+        tree.children.forEach(t -> traverse(t, c, depth + 1));
+    }
+
+    private static <T> void traverseNodes(Tree<T> tree, BiConsumer<Tree<T>, Integer> c, int depth) {
+        c.accept(tree, depth);
+        tree.children.forEach(t -> traverseNodes(t, c, depth + 1));
     }
 
     private static <T> void traverse(Tree<T> tree, BiConsumer<T, T> c) {

@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ConditionVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.TwoStateVariableTypeNode;

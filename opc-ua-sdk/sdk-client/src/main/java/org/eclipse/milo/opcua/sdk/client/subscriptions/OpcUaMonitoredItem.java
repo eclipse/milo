@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -41,6 +42,8 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     private volatile ExtensionObject filterResult;
     private volatile MonitoringMode monitoringMode = MonitoringMode.Disabled;
     private volatile ExtensionObject monitoringFilter;
+    private volatile boolean discardOldest;
+    private volatile TimestampsToReturn timestamps;
 
     private final UInteger clientHandle;
     private final ReadValueId readValueId;
@@ -56,7 +59,10 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         UInteger revisedQueueSize,
         ExtensionObject filterResult,
         MonitoringMode monitoringMode,
-        ExtensionObject monitoringFilter) {
+        ExtensionObject monitoringFilter,
+        boolean discardOldest,
+        TimestampsToReturn timestamps
+    ) {
 
         this.client = client;
         this.clientHandle = clientHandle;
@@ -68,6 +74,8 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.filterResult = filterResult;
         this.monitoringMode = monitoringMode;
         this.monitoringFilter = monitoringFilter;
+        this.discardOldest = discardOldest;
+        this.timestamps = timestamps;
     }
 
     @Override
@@ -126,6 +134,16 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     }
 
     @Override
+    public boolean getDiscardOldest() {
+        return discardOldest;
+    }
+
+    @Override
+    public TimestampsToReturn getTimestamps() {
+        return timestamps;
+    }
+
+    @Override
     public void setValueConsumer(Consumer<DataValue> consumer) {
         this.valueConsumer = (context, item, value) -> consumer.accept(value);
     }
@@ -163,6 +181,10 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.filterResult = filterResult;
     }
 
+    void setRequestedFilter(ExtensionObject filter) {
+        this.monitoringFilter = filter;
+    }
+
     void setRequestedSamplingInterval(double requestedSamplingInterval) {
         this.requestedSamplingInterval = requestedSamplingInterval;
     }
@@ -181,6 +203,14 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     void setMonitoringMode(MonitoringMode monitoringMode) {
         this.monitoringMode = monitoringMode;
+    }
+
+    void setTimestamps(TimestampsToReturn timestamps) {
+        this.timestamps = timestamps;
+    }
+
+    void setDiscardOldest(boolean discardOldest) {
+        this.discardOldest = discardOldest;
     }
 
     void onValueArrived(DataValue value) {

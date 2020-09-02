@@ -169,11 +169,13 @@ public class SubscriptionManager {
         subscriptions.put(subscriptionId, subscription);
         server.getSubscriptions().put(subscriptionId, subscription);
         server.getDiagnosticsSummary().getCumulatedSubscriptionCount().increment();
+        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
             }
         });
 
@@ -232,6 +234,7 @@ public class SubscriptionManager {
 
             if (subscription != null) {
                 server.getSubscriptions().remove(subscription.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
 
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
@@ -460,8 +463,8 @@ public class SubscriptionManager {
                 UByte userAccessLevel = attributeGroup.getUserAccessLevel();
                 if (userAccessLevel == null) userAccessLevel = ubyte(0);
 
-                EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
-                EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
+                EnumSet<AccessLevel> accessLevels = AccessLevel.fromValue(accessLevel);
+                EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromValue(userAccessLevel);
 
                 if (!accessLevels.contains(AccessLevel.CurrentRead)) {
                     throw new UaException(StatusCodes.Bad_NotReadable);
@@ -785,7 +788,11 @@ public class SubscriptionManager {
                     minimumSamplingInterval = server.getConfig().getLimits().getMinSupportedSampleRate();
                 }
             } catch (UaException e) {
-                if (e.getStatusCode().getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+                long statusCodeValue = e.getStatusCode().getValue();
+
+                if (statusCodeValue != StatusCodes.Bad_AttributeIdInvalid &&
+                    statusCodeValue != StatusCodes.Bad_NodeIdUnknown) {
+
                     throw e;
                 }
             }
@@ -1198,6 +1205,7 @@ public class SubscriptionManager {
 
             if (deleteSubscriptions) {
                 server.getSubscriptions().remove(s.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(s));
 
                 List<BaseMonitoredItem<?>> deletedItems = s.deleteSubscription();
 
@@ -1223,11 +1231,13 @@ public class SubscriptionManager {
      */
     public void addSubscription(Subscription subscription) {
         subscriptions.put(subscription.getId(), subscription);
+        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
+                server.getEventBus().post(new SubscriptionDeletedEvent(s));
             }
         });
     }
@@ -1240,6 +1250,7 @@ public class SubscriptionManager {
      */
     public Subscription removeSubscription(UInteger subscriptionId) {
         Subscription subscription = subscriptions.remove(subscriptionId);
+        server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
 
         if (subscription != null) {
             subscription.setStateListener(null);

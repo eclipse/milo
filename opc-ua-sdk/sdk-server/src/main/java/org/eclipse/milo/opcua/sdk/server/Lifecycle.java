@@ -13,12 +13,12 @@ package org.eclipse.milo.opcua.sdk.server;
 public interface Lifecycle {
 
     /**
-     * Call to start this Lifecycle.
+     * Execute startup logic, if there is any.
      */
     void startup();
 
     /**
-     * Call to stop this Lifecycle.
+     * Execute shutdown logic, if there is any.
      */
     void shutdown();
 

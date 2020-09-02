@@ -39,7 +39,7 @@ public class SubscriptionDiagnostics {
     private final LongAdder latePublishRequestCount = new LongAdder();
     private final LongAdder discardedMessageCount = new LongAdder();
     private final LongAdder monitoringQueueOverflowCount = new LongAdder();
-    private final LongAdder eventQueueOverFlowCount = new LongAdder();
+    private final LongAdder eventQueueOverflowCount = new LongAdder();
 
     private final Subscription subscription;
 
@@ -167,8 +167,8 @@ public class SubscriptionDiagnostics {
         return subscription.getNextSequenceNumber();
     }
 
-    public LongAdder getEventQueueOverFlowCount() {
-        return eventQueueOverFlowCount;
+    public LongAdder getEventQueueOverflowCount() {
+        return eventQueueOverflowCount;
     }
 
     /**
@@ -206,7 +206,7 @@ public class SubscriptionDiagnostics {
             getDisabledMonitoredItemCount(),
             uint(getMonitoringQueueOverflowCount().sum()),
             getNextSequenceNumber(),
-            uint(getEventQueueOverFlowCount().sum())
+            uint(getEventQueueOverflowCount().sum())
         );
     }
 

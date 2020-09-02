@@ -71,9 +71,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
     static final AttributeKey<EndpointDescription> ENDPOINT_KEY = AttributeKey.valueOf("endpoint");
 
-    private static final long SecureChannelLifetimeMin = 60000L * 60;
-    private static final long SecureChannelLifetimeMax = 60000L * 60 * 24;
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ServerSecureChannel secureChannel;
@@ -421,8 +418,15 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         }
 
         long channelLifetime = request.getRequestedLifetime().longValue();
-        channelLifetime = Math.min(SecureChannelLifetimeMax, channelLifetime);
-        channelLifetime = Math.max(SecureChannelLifetimeMin, channelLifetime);
+
+        channelLifetime = Math.min(
+            channelLifetime,
+            stackServer.getConfig().getMaximumSecureChannelLifetime().longValue()
+        );
+        channelLifetime = Math.max(
+            channelLifetime,
+            stackServer.getConfig().getMinimumSecureChannelLifetime().longValue()
+        );
 
         ChannelSecurityToken newToken = new ChannelSecurityToken(
             uint(secureChannel.getChannelId()),
@@ -517,7 +521,8 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
         if (cause instanceof IOException) {
             ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed");
+            logger.debug("[remote={}] IOException caught; channel closed",
+                ctx.channel().remoteAddress(), cause);
         } else {
             ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
 

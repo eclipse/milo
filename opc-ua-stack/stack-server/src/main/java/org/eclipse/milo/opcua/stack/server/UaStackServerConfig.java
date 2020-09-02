@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
 
@@ -70,6 +71,16 @@ public interface UaStackServerConfig {
      * @return the configured {@link EncodingLimits}.
      */
     EncodingLimits getEncodingLimits();
+
+    /**
+     * @return the minimum allowable secure channel lifetime, in milliseconds.
+     */
+    UInteger getMinimumSecureChannelLifetime();
+
+    /**
+     * @return the maximum allowable secure channel lifetime, in milliseconds.
+     */
+    UInteger getMaximumSecureChannelLifetime();
 
     /**
      * @return the {@link CertificateManager} for this server.
@@ -126,6 +137,8 @@ public interface UaStackServerConfig {
         builder.setProductUri(config.getProductUri());
         builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
+        builder.setMinimumSecureChannelLifetime(config.getMinimumSecureChannelLifetime());
+        builder.setMaximumSecureChannelLifetime(config.getMaximumSecureChannelLifetime());
         builder.setCertificateManager(config.getCertificateManager());
         builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());

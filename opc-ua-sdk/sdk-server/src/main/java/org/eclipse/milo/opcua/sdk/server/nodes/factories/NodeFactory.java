@@ -20,11 +20,11 @@ import javax.annotation.Nullable;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -334,7 +334,7 @@ public class NodeFactory {
     }
 
     protected void notifyInstantiationCallback(Tree<UaNode> nodeTree, InstantiationCallback instantiationCallback) {
-        nodeTree.traverse((node, parentNode) -> {
+        nodeTree.traverseWithParent((node, parentNode) -> {
             if (parentNode instanceof UaObjectNode && node instanceof UaMethodNode) {
                 UaMethodNode methodNode = (UaMethodNode) node;
 

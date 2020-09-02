@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -20,10 +21,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -256,9 +257,9 @@ public abstract class UaNode implements UaServerNode {
     public final void delete() {
         NodeManager<UaNode> nodeManager = context.getNodeManager();
 
-        nodeManager.removeNode(nodeId);
+        nodeManager.removeNode(getNodeId());
 
-        for (Reference reference : nodeManager.getReferences(nodeId)) {
+        for (Reference reference : nodeManager.getReferences(getNodeId())) {
             if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
                 Optional<UaNode> targetNode = nodeManager.getNode(
                     reference.getTargetNodeId(),
@@ -295,7 +296,7 @@ public abstract class UaNode implements UaServerNode {
         return ImmutableList.copyOf(
             context.getServer()
                 .getAddressSpaceManager()
-                .getManagedReferences(nodeId)
+                .getManagedReferences(getNodeId())
         );
     }
 
@@ -478,7 +479,8 @@ public abstract class UaNode implements UaServerNode {
     public Optional<UaNode> findNode(
         QualifiedName browseName,
         Predicate<UaNode> nodePredicate,
-        Predicate<Reference> referencePredicate) {
+        Predicate<Reference> referencePredicate
+    ) {
 
         return getReferences()
             .stream()
@@ -589,7 +591,8 @@ public abstract class UaNode implements UaServerNode {
     public synchronized void fireAttributeChanged(AttributeId attributeId, Object attributeValue) {
         if (observers == null) return;
 
-        observers.forEach(o -> o.attributeChanged(this, attributeId, attributeValue));
+        List<AttributeObserver> toNotify = new ArrayList<>(observers);
+        toNotify.forEach(o -> o.attributeChanged(this, attributeId, attributeValue));
     }
 
     /**

@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.ServerConfigurationType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;

@@ -165,4 +165,17 @@ public class ExpandedNodeIdTest {
         assertEquals("ns=0;s=test", xni.toParseableString());
     }
 
+    @Test
+    public void reindex() {
+        NamespaceTable namespaceTable = new NamespaceTable();
+        namespaceTable.addUri("test1");
+        namespaceTable.addUri("test2");
+
+        ExpandedNodeId xni1 = new ExpandedNodeId(ushort(1), null, "test");
+
+        ExpandedNodeId xni2 = xni1.reindex(namespaceTable, "test2");
+
+        assertEquals(ushort(2), xni2.getNamespaceIndex());
+    }
+
 }

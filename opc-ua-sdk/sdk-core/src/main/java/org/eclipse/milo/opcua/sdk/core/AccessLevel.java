@@ -95,46 +95,4 @@ public enum AccessLevel {
         return ubyte(result);
     }
 
-    /**
-     * @deprecated use {@link #fromValue(int)} instead.
-     */
-    @Deprecated
-    public static EnumSet<AccessLevel> fromMask(int accessLevel) {
-        EnumSet<AccessLevel> e = EnumSet.noneOf(AccessLevel.class);
-        for (AccessLevel al : values()) {
-            if ((al.value & accessLevel) != 0) {
-                e.add(al);
-            }
-        }
-        return e;
-    }
-
-    /**
-     * @deprecated use {@link #fromValue(UByte)} instead.
-     */
-    @Deprecated
-    public static EnumSet<AccessLevel> fromMask(UByte accessLevel) {
-        return fromMask(accessLevel.intValue());
-    }
-
-    /**
-     * @deprecated use {@link #toValue(AccessLevel...)} instead.
-     */
-    @Deprecated
-    public static int getMask(AccessLevel... levels) {
-        short result = 0;
-        for (AccessLevel level : levels) result |= level.value;
-        return result;
-    }
-
-    /**
-     * @deprecated use {@link #toValue(Set)} instead.
-     */
-    @Deprecated
-    public static int getMask(Set<AccessLevel> levels) {
-        int result = 0;
-        for (AccessLevel level : levels) result |= level.value;
-        return result;
-    }
-
 }

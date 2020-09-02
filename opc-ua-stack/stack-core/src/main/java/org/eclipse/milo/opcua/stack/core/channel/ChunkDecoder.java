@@ -196,9 +196,7 @@ public final class ChunkDecoder {
                 long sequenceNumber = sequenceHeader.getSequenceNumber();
                 requestId = sequenceHeader.getRequestId();
 
-                if (lastSequenceNumber == -1) {
-                    lastSequenceNumber = sequenceNumber;
-                } else {
+                if (lastSequenceNumber != -1) {
                     if (lastSequenceNumber + 1 != sequenceNumber) {
                         String message = String.format(
                             "expected sequence number %s but received %s",
@@ -206,9 +204,9 @@ public final class ChunkDecoder {
 
                         throw new UaException(StatusCodes.Bad_SequenceNumberInvalid, message);
                     }
-
-                    lastSequenceNumber = sequenceNumber;
                 }
+
+                lastSequenceNumber = sequenceNumber;
 
                 ByteBuf bodyBuffer = chunkBuffer.readSlice(bodyEnd - chunkBuffer.readerIndex());
 

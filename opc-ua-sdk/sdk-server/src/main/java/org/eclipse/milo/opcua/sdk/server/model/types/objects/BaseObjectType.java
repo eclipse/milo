@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 
 public interface BaseObjectType extends ObjectNode {
 }

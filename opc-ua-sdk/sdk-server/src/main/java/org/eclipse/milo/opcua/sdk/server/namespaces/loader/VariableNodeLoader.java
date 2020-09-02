@@ -1685,7 +1685,7 @@ class VariableNodeLoader {
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_DisabledMonitoredItemCount.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_MonitoringQueueOverflowCount.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_NextSequenceNumber.expanded(), true));
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverFlowCount.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverflowCount.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasTypeDefinition, Identifiers.SubscriptionDiagnosticsType.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasModellingRule, Identifiers.ModellingRule_ExposesItsArray.expanded(), true));
         node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType.expanded(), false));
@@ -1975,10 +1975,10 @@ class VariableNodeLoader {
     }
 
     private void loadNode155() {
-        BaseDataVariableTypeNode node = new BaseDataVariableTypeNode(this.context, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverFlowCount, new QualifiedName(0, "EventQueueOverFlowCount"), new LocalizedText("en", "EventQueueOverFlowCount"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), new DataValue(Variant.NULL_VALUE), Identifiers.UInt32, -1, new UInteger[]{}, UByte.valueOf(1), UByte.valueOf(1), 0.0, false);
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverFlowCount, Identifiers.HasTypeDefinition, Identifiers.BaseDataVariableType.expanded(), true));
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverFlowCount, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverFlowCount, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics.expanded(), false));
+        BaseDataVariableTypeNode node = new BaseDataVariableTypeNode(this.context, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverflowCount, new QualifiedName(0, "EventQueueOverflowCount"), new LocalizedText("en", "EventQueueOverflowCount"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), new DataValue(Variant.NULL_VALUE), Identifiers.UInt32, -1, new UInteger[]{}, UByte.valueOf(1), UByte.valueOf(1), 0.0, false);
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverflowCount, Identifiers.HasTypeDefinition, Identifiers.BaseDataVariableType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverflowCount, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventQueueOverflowCount, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics.expanded(), false));
         this.nodeManager.addNode(node);
     }
 
@@ -2938,10 +2938,10 @@ class VariableNodeLoader {
     }
 
     private void loadNode251() {
-        BaseDataVariableTypeNode node = new BaseDataVariableTypeNode(this.context, Identifiers.SubscriptionDiagnosticsType_EventQueueOverFlowCount, new QualifiedName(0, "EventQueueOverFlowCount"), new LocalizedText("en", "EventQueueOverFlowCount"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), new DataValue(Variant.NULL_VALUE), Identifiers.UInt32, -1, new UInteger[]{}, UByte.valueOf(1), UByte.valueOf(1), 0.0, false);
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType_EventQueueOverFlowCount, Identifiers.HasTypeDefinition, Identifiers.BaseDataVariableType.expanded(), true));
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType_EventQueueOverFlowCount, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
-        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType_EventQueueOverFlowCount, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType.expanded(), false));
+        BaseDataVariableTypeNode node = new BaseDataVariableTypeNode(this.context, Identifiers.SubscriptionDiagnosticsType_EventQueueOverflowCount, new QualifiedName(0, "EventQueueOverflowCount"), new LocalizedText("en", "EventQueueOverflowCount"), LocalizedText.NULL_VALUE, UInteger.valueOf(0), UInteger.valueOf(0), new DataValue(Variant.NULL_VALUE), Identifiers.UInt32, -1, new UInteger[]{}, UByte.valueOf(1), UByte.valueOf(1), 0.0, false);
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType_EventQueueOverflowCount, Identifiers.HasTypeDefinition, Identifiers.BaseDataVariableType.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType_EventQueueOverflowCount, Identifiers.HasModellingRule, Identifiers.ModellingRule_Mandatory.expanded(), true));
+        node.addReference(new Reference(Identifiers.SubscriptionDiagnosticsType_EventQueueOverflowCount, Identifiers.HasComponent, Identifiers.SubscriptionDiagnosticsType.expanded(), false));
         this.nodeManager.addNode(node);
     }
 

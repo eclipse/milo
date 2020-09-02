@@ -316,15 +316,65 @@ public final class ExpandedNodeId {
     }
 
     /**
+     * Re-index this {@link ExpandedNodeId} from its current namespace index to the index for
+     * {@code namespaceUri} in {@code namespaceTable}.
+     * <p>
+     * If the target namespace URI is not present in the namespace table this ExpandedNodeId
+     * is returned.
+     *
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @param namespaceUri   the target namespace URI.
+     * @return a new {@link NodeId} in the namespace index indicated by {@code namespaceUri}.
+     */
+    public ExpandedNodeId reindex(NamespaceTable namespaceTable, String namespaceUri) {
+        if (isAbsolute()) {
+            // namespaceUri is specified; namespaceIndex is ignored
+            return this;
+        } else {
+            UShort newNamespaceIndex = namespaceTable.getIndex(namespaceUri);
+
+            if (newNamespaceIndex != null &&
+                !Objects.equals(namespaceIndex, newNamespaceIndex)) {
+
+                return new ExpandedNodeId(
+                    newNamespaceIndex,
+                    null,
+                    identifier,
+                    serverIndex
+                );
+            } else {
+                return this;
+            }
+        }
+    }
+
+    /**
      * If this {@link ExpandedNodeId} resides on the local server ({@code serverIndex == 0}), return its representation
      * as a local {@link NodeId}.
+     * <p>
+     * If this ExpandedNodeId specifies a namespace URI instead of a namespace index then the URI must exist in
+     * {@code namespaceTable} or {@link Optional#empty()} is returned.
      *
-     * @return a local {@link NodeId}, if {@code serverIndex == 0}.
-     * @deprecated use {@link #local(NamespaceTable)}, which correctly handles a namespace URI being specified.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return a local {@link NodeId}, if {@code serverIndex == 0} and the namespace index can be determined.
+     * @deprecated use {@link #toNodeId(NamespaceTable)} instead.
      */
     @Deprecated
-    public Optional<NodeId> local() {
-        return isLocal() ? Optional.of(new NodeId(namespaceIndex, identifier)) : Optional.empty();
+    public Optional<NodeId> local(NamespaceTable namespaceTable) {
+        return toNodeId(namespaceTable);
+    }
+
+    /**
+     * Like {@link #local(NamespaceTable)}, but throws if the node is not local or the namespace is not registered.
+     *
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return a local {@link NodeId}.
+     * @throws Exception if the node is not local or the namespace is not registered.
+     * @deprecated use {@link #toNodeIdOrThrow(NamespaceTable)} instead.
+     */
+    @Deprecated
+    public NodeId localOrThrow(NamespaceTable namespaceTable) throws Exception {
+        return toNodeIdOrThrow(namespaceTable);
     }
 
     /**
@@ -337,7 +387,7 @@ public final class ExpandedNodeId {
      * @param namespaceTable the {@link NamespaceTable}.
      * @return a local {@link NodeId}, if {@code serverIndex == 0} and the namespace index can be determined.
      */
-    public Optional<NodeId> local(NamespaceTable namespaceTable) {
+    public Optional<NodeId> toNodeId(NamespaceTable namespaceTable) {
         if (isLocal()) {
             if (namespaceUri == null || namespaceUri.isEmpty()) {
                 NodeId nodeId = new NodeId(namespaceIndex, identifier);
@@ -360,15 +410,15 @@ public final class ExpandedNodeId {
     }
 
     /**
-     * Like {@link #local(NamespaceTable)}, but throws if the node is not local or the namespace is not registered.
+     * Like {@link #toNodeId(NamespaceTable)}, but throws if the node is not local or the namespace is not registered.
      *
      * @param namespaceTable the {@link NamespaceTable}.
      * @return a local {@link NodeId}.
      * @throws Exception if the node is not local or the namespace is not registered.
      */
-    public NodeId localOrThrow(NamespaceTable namespaceTable) throws Exception {
+    public NodeId toNodeIdOrThrow(NamespaceTable namespaceTable) throws Exception {
         if (isLocal()) {
-            return local(namespaceTable)
+            return toNodeId(namespaceTable)
                 .orElseThrow(() -> new Exception("namespace not registered: " + namespaceUri));
         } else {
             throw new Exception("not a local node (serverIndex = " + serverIndex + ")");

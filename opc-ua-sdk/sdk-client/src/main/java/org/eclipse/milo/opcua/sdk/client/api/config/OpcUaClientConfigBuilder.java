@@ -33,9 +33,9 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
-    private LocalizedText applicationName = LocalizedText.english("client application name not configured");
-    private String applicationUri = "client application uri not configured";
-    private String productUri = "client product uri not configured";
+    private LocalizedText applicationName = LocalizedText.english("Eclipse Milo application name not configured");
+    private String applicationUri = "urn:eclipse:milo:client:applicationUriNotConfigured";
+    private String productUri = "https://github.com/eclipse/milo";
 
     private Supplier<String> sessionName;
     private String[] sessionLocaleIds = new String[0];

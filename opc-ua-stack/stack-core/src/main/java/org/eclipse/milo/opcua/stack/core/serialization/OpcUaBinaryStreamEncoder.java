@@ -50,10 +50,10 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
 
-    private volatile ByteBuf buffer;
+    private ByteBuf buffer;
 
-    private volatile int currentByte;
-    private volatile int bitCount;
+    private int currentByte;
+    private int bitCount;
 
     private final SerializationContext context;
 
@@ -193,16 +193,14 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     public void writeUtf8NullTerminatedString(String value) throws UaSerializationException {
-        if (value == null) {
-            buffer.writeByte(0);
-        } else {
+        if (value != null) {
             byte[] bytes = value.getBytes(CHARSET_UTF8);
             for (byte b : bytes) {
                 buffer.writeByte(b);
                 if (b == 0) return;
             }
-            buffer.writeByte(0);
         }
+        buffer.writeByte(0);
     }
 
     public void writeUtf8CharArray(String value) throws UaSerializationException {

@@ -20,8 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-
 public class RestrictedAccessFilter implements AttributeFilter {
 
     private static final Set<AccessLevel> INTERNAL_ACCESS = AccessLevel.READ_WRITE;
@@ -39,7 +37,7 @@ public class RestrictedAccessFilter implements AttributeFilter {
 
             Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
 
-            return ubyte(AccessLevel.getMask(accessLevels));
+            return AccessLevel.toValue(accessLevels);
         } else {
             return ctx.getAttribute(attributeId);
         }

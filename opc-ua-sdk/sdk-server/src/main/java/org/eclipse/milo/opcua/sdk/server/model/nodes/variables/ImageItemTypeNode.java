@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.ImageItemType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;

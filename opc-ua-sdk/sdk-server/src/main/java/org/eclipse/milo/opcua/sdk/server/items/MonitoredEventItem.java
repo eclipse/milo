@@ -144,7 +144,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
                 Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
 
                 if (subscription != null) {
-                    subscription.getSubscriptionDiagnostics().getEventQueueOverFlowCount().increment();
+                    subscription.getSubscriptionDiagnostics().getEventQueueOverflowCount().increment();
                 }
             }
 

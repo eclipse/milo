@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -32,7 +32,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
 
 public class AttributeDelegateChainTest {
@@ -93,7 +92,7 @@ public class AttributeDelegateChainTest {
 
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
             .setNodeId(NodeId.NULL_VALUE)
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(QualifiedName.NULL_VALUE)
             .setDisplayName(LocalizedText.NULL_VALUE)
             .setDataType(Identifiers.String)

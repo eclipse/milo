@@ -21,12 +21,11 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
-import org.eclipse.milo.opcua.sdk.server.diagnostics.DiagnosticsManager;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
@@ -68,13 +67,12 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class OpcUaNamespace extends ManagedNamespace {
+public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
     private static final double MIN_SAMPLING_INTERVAL = 100.0;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final DiagnosticsManager diagnosticsManager;
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -84,38 +82,23 @@ public class OpcUaNamespace extends ManagedNamespace {
 
         this.server = server;
 
-        diagnosticsManager = new DiagnosticsManager(server, getNodeFactory(), getNodeManager());
         subscriptionModel = new SubscriptionModel(server, this);
-    }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
+        getLifecycleManager().addStartupTask(() -> {
+            loadNodes();
+            configureServerObject();
+            configureConditionRefresh();
 
-        subscriptionModel.startup();
+            // Set a reasonable value for the MinimumSamplingInterval
+            // attribute on all VariableNodes, otherwise it defaults to 0.
+            getNodeManager().getNodes()
+                .stream()
+                .filter(node -> node instanceof UaVariableNode)
+                .map(UaVariableNode.class::cast)
+                .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
+        });
 
-        loadNodes();
-        configureServerObject();
-        configureConditionRefresh();
-
-        // Set a reasonable value for the MinimumSamplingInterval
-        // attribute on all VariableNodes, otherwise it defaults to 0.
-        getNodeManager().getNodes()
-            .stream()
-            .filter(node -> node instanceof UaVariableNode)
-            .map(UaVariableNode.class::cast)
-            .forEach(n -> n.setMinimumSamplingInterval(MIN_SAMPLING_INTERVAL));
-
-        diagnosticsManager.startup();
-    }
-
-    @Override
-    protected void onShutdown() {
-        super.onShutdown();
-
-        subscriptionModel.shutdown();
-
-        diagnosticsManager.shutdown();
+        getLifecycleManager().addLifecycle(subscriptionModel);
     }
 
     @Override

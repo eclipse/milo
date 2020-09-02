@@ -13,63 +13,169 @@ package org.eclipse.milo.opcua.sdk.client.nodes;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.DataValue.valueOnly;
 
 public class UaMethodNode extends UaNode implements MethodNode {
 
-    public UaMethodNode(OpcUaClient client, NodeId nodeId) {
-        super(client, nodeId);
+    private Boolean executable;
+    private Boolean userExecutable;
+
+    public UaMethodNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        Boolean executable,
+        Boolean userExecutable
+    ) {
+
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.executable = executable;
+        this.userExecutable = userExecutable;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readExecutable()
+     */
     @Override
-    public CompletableFuture<Boolean> getExecutable() {
-        return getAttributeOrFail(readExecutable());
+    public synchronized Boolean isExecutable() {
+        return executable;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readUserExecutable()
+     */
     @Override
-    public CompletableFuture<Boolean> getUserExecutable() {
-        return getAttributeOrFail(readUserExecutable());
+    public synchronized Boolean isUserExecutable() {
+        return userExecutable;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeExecutable(Boolean)
+     */
     @Override
-    public CompletableFuture<StatusCode> setExecutable(boolean executable) {
-        return writeExecutable(valueOnly(new Variant(executable)));
+    public synchronized void setExecutable(Boolean executable) {
+        this.executable = executable;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeUserExecutable(Boolean)
+     */
     @Override
-    public CompletableFuture<StatusCode> setUserExecutable(boolean userExecutable) {
-        return writeUserExecutable(valueOnly(new Variant(userExecutable)));
+    public synchronized void setUserExecutable(Boolean userExecutable) {
+        this.userExecutable = userExecutable;
     }
 
-    @Override
-    public CompletableFuture<DataValue> readExecutable() {
-        return readAttribute(AttributeId.Executable);
+    /**
+     * Read the Executable attribute for this Node from the server and update the local attribute
+     * if the operation succeeds.
+     *
+     * @return the {@link Boolean} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.s
+     */
+    public Boolean readExecutable() throws UaException {
+        DataValue value = readAttribute(AttributeId.Executable);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read Executable failed");
+        } else {
+            Boolean executable = (Boolean) value.getValue().getValue();
+            setExecutable(executable);
+            return executable;
+        }
     }
 
-    @Override
-    public CompletableFuture<DataValue> readUserExecutable() {
-        return readAttribute(AttributeId.UserExecutable);
+    /**
+     * Read the UserExecutable attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link Boolean} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.s
+     */
+    public Boolean readUserExecutable() throws UaException {
+        DataValue value = readAttribute(AttributeId.UserExecutable);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read UserExecutable failed");
+        } else {
+            Boolean userExecutable = (Boolean) value.getValue().getValue();
+            setUserExecutable(userExecutable);
+            return userExecutable;
+        }
     }
 
-    @Override
-    public CompletableFuture<StatusCode> writeExecutable(DataValue value) {
-        return writeAttribute(AttributeId.Executable, value);
+    /**
+     * Write a new Executable attribute for this Node to the server and update the local attribute
+     * if the operation succeeds.
+     *
+     * @param executable the {@link Boolean} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeExecutable(Boolean executable) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(executable));
+        StatusCode statusCode = writeAttribute(AttributeId.Executable, value);
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "write Executable failed");
+        } else {
+            setExecutable(executable);
+        }
     }
 
-    @Override
-    public CompletableFuture<StatusCode> writeUserExecutable(DataValue value) {
-        return writeAttribute(AttributeId.UserExecutable, value);
+    /**
+     * Write a new UserExecutable attribute for this Node to the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @param userExecutable the {@link Boolean} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeUserExecutable(Boolean userExecutable) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(userExecutable));
+        StatusCode statusCode = writeAttribute(AttributeId.UserExecutable, value);
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "write UserExecutable failed");
+        } else {
+            setUserExecutable(userExecutable);
+        }
     }
 
     /**
@@ -87,7 +193,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<? extends String> readNodeVersionAsync() {
         return getProperty(MethodNodeProperties.NodeVersion);
     }
 
@@ -103,7 +209,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the InputArguments Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<Argument[]> getInputArguments() {
+    public CompletableFuture<? extends Argument[]> readInputArgumentsAsync() {
         return getProperty(MethodNodeProperties.InputArguments);
     }
 
@@ -118,7 +224,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the OutputArguments Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<Argument[]> getOutputArguments() {
+    public CompletableFuture<? extends Argument[]> readOutputArgumentsAsync() {
         return getProperty(MethodNodeProperties.OutputArguments);
     }
 
@@ -129,7 +235,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> writeNodeVersionAsync(String nodeVersion) {
         return setProperty(MethodNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -140,7 +246,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<StatusCode> setInputArguments(Argument[] inputArguments) {
+    public CompletableFuture<StatusCode> writeInputArgumentsAsync(Argument[] inputArguments) {
         return setProperty(MethodNodeProperties.InputArguments, inputArguments);
     }
 
@@ -151,8 +257,35 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<StatusCode> setOutputArguments(Argument[] outputArguments) {
+    public CompletableFuture<StatusCode> writeOutputArgumentsAsync(Argument[] outputArguments) {
         return setProperty(MethodNodeProperties.OutputArguments, outputArguments);
+    }
+
+    protected DataValue getAttributeValue(AttributeId attributeId) {
+        switch (attributeId) {
+            case Executable:
+                return DataValue.valueOnly(new Variant(isExecutable()));
+            case UserExecutable:
+                return DataValue.valueOnly(new Variant(isUserExecutable()));
+            default:
+                return super.getAttributeValue(attributeId);
+        }
+    }
+
+    protected void setAttributeValue(AttributeId attributeId, DataValue value) {
+        switch (attributeId) {
+            case Executable: {
+                setExecutable((Boolean) value.getValue().getValue());
+                break;
+            }
+            case UserExecutable: {
+                setUserExecutable((Boolean) value.getValue().getValue());
+                break;
+            }
+            default: {
+                super.setAttributeValue(attributeId, value);
+            }
+        }
     }
 
 }

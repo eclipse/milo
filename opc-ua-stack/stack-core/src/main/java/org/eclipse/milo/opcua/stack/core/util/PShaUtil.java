@@ -77,17 +77,13 @@ public class PShaUtil {
             mac.update(a);
             mac.update(seed);
             tmp = mac.doFinal();
-            toCopy = min(required, tmp.length);
+            toCopy = Math.min(required, tmp.length);
             System.arraycopy(tmp, 0, out, offset, toCopy);
             offset += toCopy;
             required -= toCopy;
         }
 
         return out;
-    }
-
-    private static int min(int a, int b) {
-        return (a > b) ? b : a;
     }
 
 }
