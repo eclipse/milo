@@ -21,10 +21,34 @@ public abstract class ManagedAddressSpaceWithLifecycle extends ManagedAddressSpa
 
     public ManagedAddressSpaceWithLifecycle(OpcUaServer server) {
         super(server);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                registerNodeManager(getNodeManager());
+            }
+
+            @Override
+            public void shutdown() {
+                unregisterNodeManager(getNodeManager());
+            }
+        });
     }
 
     public ManagedAddressSpaceWithLifecycle(OpcUaServer server, UaNodeManager nodeManager) {
         super(server, nodeManager);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                registerNodeManager(getNodeManager());
+            }
+
+            @Override
+            public void shutdown() {
+                unregisterNodeManager(getNodeManager());
+            }
+        });
     }
 
     @Override
@@ -44,6 +68,28 @@ public abstract class ManagedAddressSpaceWithLifecycle extends ManagedAddressSpa
      */
     protected LifecycleManager getLifecycleManager() {
         return lifecycleManager;
+    }
+
+    /**
+     * Register this AddressSpace's {@link UaNodeManager} with its managing entity.
+     * <p>
+     * The default implementation registers it with the server's {@link AddressSpaceManager}.
+     *
+     * @param nodeManager the {@link UaNodeManager} to register.
+     */
+    protected void registerNodeManager(UaNodeManager nodeManager) {
+        getServer().getAddressSpaceManager().register(nodeManager);
+    }
+
+    /**
+     * Unregister this AddressSpace's {@link UaNodeManager} with its managing entity.
+     * <p>
+     * The default implementation unregisters it with the server's {@link AddressSpaceManager}.
+     *
+     * @param nodeManager the {@link UaNodeManager} to unregister.
+     */
+    protected void unregisterNodeManager(UaNodeManager nodeManager) {
+        getServer().getAddressSpaceManager().unregister(nodeManager);
     }
 
 }
