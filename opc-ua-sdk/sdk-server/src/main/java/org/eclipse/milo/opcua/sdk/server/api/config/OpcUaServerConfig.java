@@ -101,6 +101,8 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
         builder.setProductUri(config.getProductUri());
         builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
+        builder.setMinimumSecureChannelLifetime(config.getMinimumSecureChannelLifetime());
+        builder.setMaximumSecureChannelLifetime(config.getMaximumSecureChannelLifetime());
         builder.setCertificateManager(config.getCertificateManager());
         builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());
