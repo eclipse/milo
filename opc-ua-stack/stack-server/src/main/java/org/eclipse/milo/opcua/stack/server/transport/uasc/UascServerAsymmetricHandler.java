@@ -536,4 +536,14 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         }
     }
 
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        if (secureChannelTimeout != null) {
+            secureChannelTimeout.cancel();
+            secureChannelTimeout = null;
+        }
+
+        super.channelInactive(ctx);
+    }
+
 }

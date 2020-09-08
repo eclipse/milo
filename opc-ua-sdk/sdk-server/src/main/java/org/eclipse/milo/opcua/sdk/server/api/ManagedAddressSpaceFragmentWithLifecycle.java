@@ -16,50 +16,93 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 
 /**
- * A {@link ManagedAddressSpace} that has a {@link Lifecycle} associated with it.
+ * A {@link ManagedAddressSpace} fragment that has a {@link Lifecycle} associated with it.
  * <p>
- * This AddressSpace and its {@link UaNodeManager} will be registered with the server on startup and unregistered on
- * shutdown.
+ * This fragment will be registered with the provided composite and its {@link UaNodeManager} will
+ * be registered with the server on startup and unregistered on shutdown.
  * <p>
- * Subclasses can register additional startup/shutdown tasks with the {@link LifecycleManager} obtained from
- * {@link #getLifecycleManager()}.
+ * Subclasses can register additional startup/shutdown tasks with the {@link LifecycleManager}
+ * obtained from {@link #getLifecycleManager()}.
  */
 public abstract class ManagedAddressSpaceFragmentWithLifecycle
     extends ManagedAddressSpaceFragment implements Lifecycle {
 
     private final LifecycleManager lifecycleManager = new LifecycleManager();
 
+    private final AddressSpaceComposite composite;
+
+    /**
+     * Create a managed fragment using the server's {@link AddressSpaceManager} as the composite.
+     *
+     * @param server the {@link OpcUaServer} instance.
+     */
     public ManagedAddressSpaceFragmentWithLifecycle(OpcUaServer server) {
+        this(server, server.getAddressSpaceManager());
+    }
+
+    /**
+     * Create a managed fragment using {@code composite}.
+     *
+     * @param server    the {@link OpcUaServer} instance.
+     * @param composite the {@link AddressSpaceComposite} this fragment is part of.
+     */
+    public ManagedAddressSpaceFragmentWithLifecycle(OpcUaServer server, AddressSpaceComposite composite) {
         super(server);
+
+        this.composite = composite;
 
         getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                registerAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
+                composite.register(ManagedAddressSpaceFragmentWithLifecycle.this);
                 registerNodeManager(getNodeManager());
             }
 
             @Override
             public void shutdown() {
-                unregisterAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
+                composite.unregister(ManagedAddressSpaceFragmentWithLifecycle.this);
                 unregisterNodeManager(getNodeManager());
             }
         });
     }
 
+    /**
+     * Create a managed fragment using the server's {@link AddressSpaceManager} as the composite.
+     *
+     * @param server      the {@link OpcUaServer} instance.
+     * @param nodeManager the {@link UaNodeManager} to manage nodes with.
+     */
     public ManagedAddressSpaceFragmentWithLifecycle(OpcUaServer server, UaNodeManager nodeManager) {
+        this(server, nodeManager, server.getAddressSpaceManager());
+    }
+
+    /**
+     * Create a managed fragment using {@code composite}.
+     *
+     * @param server      the {@link OpcUaServer} instance.
+     * @param nodeManager the {@link UaNodeManager} to manage nodes with.
+     * @param composite   the {@link AddressSpaceComposite} this fragment is part of.
+     */
+    public ManagedAddressSpaceFragmentWithLifecycle(
+        OpcUaServer server,
+        UaNodeManager nodeManager,
+        AddressSpaceComposite composite
+    ) {
+
         super(server, nodeManager);
+
+        this.composite = composite;
 
         getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                registerAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
+                composite.register(ManagedAddressSpaceFragmentWithLifecycle.this);
                 registerNodeManager(getNodeManager());
             }
 
             @Override
             public void shutdown() {
-                unregisterAddressSpace(ManagedAddressSpaceFragmentWithLifecycle.this);
+                composite.unregister(ManagedAddressSpaceFragmentWithLifecycle.this);
                 unregisterNodeManager(getNodeManager());
             }
         });
@@ -76,40 +119,21 @@ public abstract class ManagedAddressSpaceFragmentWithLifecycle
     }
 
     /**
+     * Get the {@link AddressSpaceComposite} this fragment registers with.
+     *
+     * @return the {@link AddressSpaceComposite} this fragment registers with.
+     */
+    public AddressSpaceComposite getComposite() {
+        return composite;
+    }
+
+    /**
      * Get the {@link LifecycleManager} for this {@link ManagedAddressSpaceFragmentWithLifecycle}.
      *
      * @return the {@link LifecycleManager} for this {@link ManagedAddressSpaceFragmentWithLifecycle}.
      */
     protected LifecycleManager getLifecycleManager() {
         return lifecycleManager;
-    }
-
-    /**
-     * Register this {@link ManagedAddressSpace} with its managing entity.
-     * <p>
-     * The default implementation registers it with the Server's {@link AddressSpaceManager}.
-     * <p>
-     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
-     * should override this to register with that composite.
-     *
-     * @param addressSpace the {@link AddressSpace} to register.
-     */
-    protected void registerAddressSpace(AddressSpaceFragment addressSpace) {
-        getServer().getAddressSpaceManager().register(addressSpace);
-    }
-
-    /**
-     * Unregister this {@link ManagedAddressSpace} with its managing entity.
-     * <p>
-     * The default implementation unregisters it with the Server's {@link AddressSpaceManager}.
-     * <p>
-     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
-     * should override this to unregister with that composite.
-     *
-     * @param addressSpace the {@link AddressSpace} to unregister.
-     */
-    protected void unregisterAddressSpace(AddressSpaceFragment addressSpace) {
-        getServer().getAddressSpaceManager().unregister(addressSpace);
     }
 
     /**
