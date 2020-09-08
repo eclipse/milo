@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceComposite;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFilter;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFragment;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedAddressSpaceFragmentWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -91,7 +90,7 @@ public class ServerNamespace extends AddressSpaceComposite implements Lifecycle,
         private final SubscriptionModel subscriptionModel;
 
         public DiagnosticsFragment(OpcUaServer server) {
-            super(server);
+            super(server, ServerNamespace.this);
 
             subscriptionModel = new SubscriptionModel(server, this);
 
@@ -116,16 +115,6 @@ public class ServerNamespace extends AddressSpaceComposite implements Lifecycle,
         @Override
         public AddressSpaceFilter getFilter() {
             return filter;
-        }
-
-        @Override
-        protected void registerAddressSpace(AddressSpaceFragment addressSpace) {
-            ServerNamespace.this.registerFirst(addressSpace);
-        }
-
-        @Override
-        protected void unregisterAddressSpace(AddressSpaceFragment addressSpace) {
-            ServerNamespace.this.unregister(addressSpace);
         }
 
         @Override
@@ -158,7 +147,7 @@ public class ServerNamespace extends AddressSpaceComposite implements Lifecycle,
         private final SubscriptionModel subscriptionModel;
 
         public VendorServerInfoFragment(OpcUaServer server) {
-            super(server);
+            super(server, ServerNamespace.this);
 
             subscriptionModel = new SubscriptionModel(server, this);
 
@@ -170,16 +159,6 @@ public class ServerNamespace extends AddressSpaceComposite implements Lifecycle,
         @Override
         public AddressSpaceFilter getFilter() {
             return filter;
-        }
-
-        @Override
-        protected void registerAddressSpace(AddressSpaceFragment addressSpace) {
-            ServerNamespace.this.registerFirst(addressSpace);
-        }
-
-        @Override
-        protected void unregisterAddressSpace(AddressSpaceFragment addressSpace) {
-            ServerNamespace.this.unregister(addressSpace);
         }
 
         @Override
