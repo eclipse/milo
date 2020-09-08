@@ -14,60 +14,194 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
+import org.eclipse.milo.opcua.sdk.server.Lifecycle;
+import org.eclipse.milo.opcua.sdk.server.LifecycleManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceComposite;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFilter;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFragment;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedAddressSpaceFragmentWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
+import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.SimpleAddressSpaceFilter;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.objects.ServerDiagnosticsObject;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-public class ServerNamespace extends ManagedNamespaceWithLifecycle {
+public class ServerNamespace extends AddressSpaceComposite implements Lifecycle, Namespace {
 
-    private final SubscriptionModel subscriptionModel;
+    private final LifecycleManager lifecycleManager = new LifecycleManager();
+
+    private final String namespaceUri;
+    private final UShort namespaceIndex;
 
     public ServerNamespace(OpcUaServer server) {
-        super(server, server.getConfig().getApplicationUri());
+        super(server);
 
-        subscriptionModel = new SubscriptionModel(server, this);
+        this.namespaceUri = server.getConfig().getApplicationUri();
+        this.namespaceIndex = server.getNamespaceTable().addUri(namespaceUri);
 
-        ServerDiagnosticsTypeNode serverDiagnosticsNode = (ServerDiagnosticsTypeNode) getServer()
-            .getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server_ServerDiagnostics)
-            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+        lifecycleManager.addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                server.getAddressSpaceManager().register(ServerNamespace.this);
+            }
 
-        serverDiagnosticsNode.getEnabledFlagNode().setUserAccessLevel(
-            AccessLevel.toValue(AccessLevel.READ_WRITE)
-        );
+            @Override
+            public void shutdown() {
+                server.getAddressSpaceManager().unregister(ServerNamespace.this);
+            }
+        });
 
-        ServerDiagnosticsObject serverDiagnosticsObject = new ServerDiagnosticsObject(
-            serverDiagnosticsNode, getNodeManager()
-        );
+        DiagnosticsFragment diagnosticsFragment = new DiagnosticsFragment(server);
+        lifecycleManager.addLifecycle(diagnosticsFragment);
 
-        getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
-        getLifecycleManager().addLifecycle(subscriptionModel);
-        getLifecycleManager().addLifecycle(serverDiagnosticsObject);
+        VendorServerInfoFragment vendorServerInfoFragment = new VendorServerInfoFragment(server);
+        lifecycleManager.addLifecycle(vendorServerInfoFragment);
     }
 
     @Override
-    public void onDataItemsCreated(List<DataItem> dataItems) {
-        subscriptionModel.onDataItemsCreated(dataItems);
+    public final void startup() {
+        lifecycleManager.startup();
     }
 
     @Override
-    public void onDataItemsModified(List<DataItem> dataItems) {
-        subscriptionModel.onDataItemsModified(dataItems);
+    public final void shutdown() {
+        lifecycleManager.shutdown();
     }
 
     @Override
-    public void onDataItemsDeleted(List<DataItem> dataItems) {
-        subscriptionModel.onDataItemsDeleted(dataItems);
+    public String getNamespaceUri() {
+        return namespaceUri;
     }
 
     @Override
-    public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
-        subscriptionModel.onMonitoringModeChanged(monitoredItems);
+    public UShort getNamespaceIndex() {
+        return namespaceIndex;
+    }
+
+    private class DiagnosticsFragment extends ManagedAddressSpaceFragmentWithLifecycle {
+
+        private final AddressSpaceFilter filter =
+            SimpleAddressSpaceFilter.create(getNodeManager()::containsNode);
+
+        private final SubscriptionModel subscriptionModel;
+
+        public DiagnosticsFragment(OpcUaServer server) {
+            super(server);
+
+            subscriptionModel = new SubscriptionModel(server, this);
+
+            ServerDiagnosticsTypeNode serverDiagnosticsNode = (ServerDiagnosticsTypeNode) getServer()
+                .getAddressSpaceManager()
+                .getManagedNode(Identifiers.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+            serverDiagnosticsNode.getEnabledFlagNode().setUserAccessLevel(
+                AccessLevel.toValue(AccessLevel.READ_WRITE)
+            );
+
+            ServerDiagnosticsObject serverDiagnosticsObject = new ServerDiagnosticsObject(
+                serverDiagnosticsNode,
+                getNodeManager()
+            );
+
+            getLifecycleManager().addLifecycle(subscriptionModel);
+            getLifecycleManager().addLifecycle(serverDiagnosticsObject);
+        }
+
+        @Override
+        public AddressSpaceFilter getFilter() {
+            return filter;
+        }
+
+        @Override
+        protected void registerAddressSpace(AddressSpaceFragment addressSpace) {
+            ServerNamespace.this.registerFirst(addressSpace);
+        }
+
+        @Override
+        protected void unregisterAddressSpace(AddressSpaceFragment addressSpace) {
+            ServerNamespace.this.unregister(addressSpace);
+        }
+
+        @Override
+        public void onDataItemsCreated(List<DataItem> dataItems) {
+            subscriptionModel.onDataItemsCreated(dataItems);
+        }
+
+        @Override
+        public void onDataItemsModified(List<DataItem> dataItems) {
+            subscriptionModel.onDataItemsModified(dataItems);
+        }
+
+        @Override
+        public void onDataItemsDeleted(List<DataItem> dataItems) {
+            subscriptionModel.onDataItemsDeleted(dataItems);
+        }
+
+        @Override
+        public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
+            subscriptionModel.onMonitoringModeChanged(monitoredItems);
+        }
+
+    }
+
+    private class VendorServerInfoFragment extends ManagedAddressSpaceFragmentWithLifecycle {
+
+        private final AddressSpaceFilter filter =
+            SimpleAddressSpaceFilter.create(getNodeManager()::containsNode);
+
+        private final SubscriptionModel subscriptionModel;
+
+        public VendorServerInfoFragment(OpcUaServer server) {
+            super(server);
+
+            subscriptionModel = new SubscriptionModel(server, this);
+
+            getLifecycleManager().addLifecycle(subscriptionModel);
+
+            getLifecycleManager().addStartupTask(() -> VendorServerInfoNodes.add(getNodeContext()));
+        }
+
+        @Override
+        public AddressSpaceFilter getFilter() {
+            return filter;
+        }
+
+        @Override
+        protected void registerAddressSpace(AddressSpaceFragment addressSpace) {
+            ServerNamespace.this.registerFirst(addressSpace);
+        }
+
+        @Override
+        protected void unregisterAddressSpace(AddressSpaceFragment addressSpace) {
+            ServerNamespace.this.unregister(addressSpace);
+        }
+
+        @Override
+        public void onDataItemsCreated(List<DataItem> dataItems) {
+            subscriptionModel.onDataItemsCreated(dataItems);
+        }
+
+        @Override
+        public void onDataItemsModified(List<DataItem> dataItems) {
+            subscriptionModel.onDataItemsModified(dataItems);
+        }
+
+        @Override
+        public void onDataItemsDeleted(List<DataItem> dataItems) {
+            subscriptionModel.onDataItemsDeleted(dataItems);
+        }
+
+        @Override
+        public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
+            subscriptionModel.onMonitoringModeChanged(monitoredItems);
+        }
+
     }
 
 }
