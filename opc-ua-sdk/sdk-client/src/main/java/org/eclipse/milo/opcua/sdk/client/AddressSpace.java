@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -766,7 +765,8 @@ public class AddressSpace {
 
         return browseFuture.thenCompose(result -> {
             if (result.getStatusCode().isGood()) {
-                Optional<ExpandedNodeId> typeDefinitionId = Arrays.stream(result.getReferences())
+                Optional<ExpandedNodeId> typeDefinitionId = l(result.getReferences())
+                    .stream()
                     .filter(r -> Objects.equals(Identifiers.HasTypeDefinition, r.getReferenceTypeId()))
                     .map(ReferenceDescription::getNodeId)
                     .findFirst();

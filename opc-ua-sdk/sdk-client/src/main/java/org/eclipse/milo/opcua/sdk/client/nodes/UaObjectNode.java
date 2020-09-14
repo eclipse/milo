@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -272,7 +271,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             StatusCode statusCode = result.getStatusCode();
 
             if (statusCode != null && statusCode.isGood()) {
-                Optional<ExpandedNodeId> methodNodeId = Arrays.stream(result.getReferences())
+                Optional<ExpandedNodeId> methodNodeId = l(result.getReferences())
+                    .stream()
                     .filter(rd -> Objects.equals(methodName, rd.getBrowseName()))
                     .findFirst()
                     .map(ReferenceDescription::getNodeId);
