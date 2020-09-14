@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 /**
  * "Helper" functions for doing a Browse followed by as many BrowseNext calls as are necessary
@@ -87,7 +88,7 @@ public class BrowseHelper {
     ) {
 
         if (result.getStatusCode().isGood()) {
-            Collections.addAll(references, result.getReferences());
+            references.addAll(l(result.getReferences()));
 
             ByteString nextContinuationPoint = result.getContinuationPoint();
 
