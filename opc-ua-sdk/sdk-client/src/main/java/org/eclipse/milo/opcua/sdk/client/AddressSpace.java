@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -43,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
@@ -416,7 +418,7 @@ public class AddressSpace {
      * <p>
      * This call completes asynchronously.
      *
-     * @param nodeId        the {@link NodeId} of the Node to browse.
+     * @param nodeId the {@link NodeId} of the Node to browse.
      * @return a CompletableFuture that completes successfully with the List of references or
      * completes exceptionally if a service-level error occurs.
      * @see #getBrowseOptions()
@@ -1053,9 +1055,9 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
 
@@ -1082,9 +1084,9 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         Boolean executable = (Boolean) attributeValues.get(7).getValue().getValue();
         Boolean userExecutable = (Boolean) attributeValues.get(8).getValue().getValue();
@@ -1113,9 +1115,9 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         UByte eventNotifier = (UByte) attributeValues.get(7).getValue().getValue();
 
@@ -1146,9 +1148,9 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
 
@@ -1175,13 +1177,13 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
         Boolean symmetric = (Boolean) attributeValues.get(8).getValue().getValue();
-        LocalizedText inverseName = (LocalizedText) attributeValues.get(9).getValue().getValue();
+        LocalizedText inverseName = getAttributeOrNull(attributeValues.get(9), LocalizedText.class);
 
         return new UaReferenceTypeNode(
             client,
@@ -1208,17 +1210,17 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         DataValue value = attributeValues.get(7);
         NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
         Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-        UInteger[] arrayDimensions = (UInteger[]) attributeValues.get(10).getValue().getValue();
+        UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
         UByte accessLevel = (UByte) attributeValues.get(11).getValue().getValue();
         UByte userAccessLevel = (UByte) attributeValues.get(12).getValue().getValue();
-        Double minimumSamplingInterval = (Double) attributeValues.get(13).getValue().getValue();
+        Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(13), Double.class);
         Boolean historizing = (Boolean) attributeValues.get(14).getValue().getValue();
 
         VariableTypeManager.VariableNodeConstructor constructor = client.getVariableTypeManager()
@@ -1255,14 +1257,14 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         DataValue value = attributeValues.get(7);
         NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
         Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-        UInteger[] arrayDimensions = (UInteger[]) attributeValues.get(10).getValue().getValue();
+        UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
         Boolean isAbstract = (Boolean) attributeValues.get(11).getValue().getValue();
 
         return new UaVariableTypeNode(
@@ -1292,9 +1294,9 @@ public class AddressSpace {
 
         QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
         LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = (LocalizedText) attributeValues.get(4).getValue().getValue();
-        UInteger writeMask = (UInteger) attributeValues.get(5).getValue().getValue();
-        UInteger userWriteMask = (UInteger) attributeValues.get(6).getValue().getValue();
+        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
         Boolean containsNoLoops = (Boolean) attributeValues.get(7).getValue().getValue();
         UByte eventNotifier = (UByte) attributeValues.get(8).getValue().getValue();
@@ -1311,6 +1313,23 @@ public class AddressSpace {
             containsNoLoops,
             eventNotifier
         );
+    }
+
+    @Nullable
+    private static <T> T getAttributeOrNull(DataValue value, Class<T> attributeClazz) {
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            return null;
+        } else {
+            Object attributeValue = value.getValue().getValue();
+
+            try {
+                return attributeClazz.cast(attributeValue);
+            } catch (ClassCastException e) {
+                return null;
+            }
+        }
     }
 
     public static class BrowseOptions {

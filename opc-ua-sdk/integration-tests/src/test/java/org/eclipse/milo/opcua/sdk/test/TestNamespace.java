@@ -12,17 +12,20 @@ package org.eclipse.milo.opcua.sdk.test;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -160,6 +163,10 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
     @Override
     public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
 
+    }
+
+    public void configureNode(BiConsumer<UaNodeContext, UaNodeManager> consumer) {
+        consumer.accept(getNodeContext(), getNodeManager());
     }
 
 }
