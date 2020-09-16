@@ -23,9 +23,9 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode implements SubscriptionDiagnosticsType {
     public SubscriptionDiagnosticsTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType, int valueRank,
-                                           UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                           double minimumSamplingInterval, boolean historizing) {
+                                           UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType,
+                                           Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                                           Double minimumSamplingInterval, Boolean historizing) {
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
@@ -1788,9 +1788,9 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
     }
 
     @Override
-    public void setEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException {
+    public void setEventQueueOverflowCount(UInteger eventQueueOverFlowCount) throws UaException {
         BaseDataVariableTypeNode node = getEventQueueOverflowCountNode();
-        node.setValue(new Variant(eventQueueOverflowCount));
+        node.setValue(new Variant(eventQueueOverFlowCount));
     }
 
     @Override
@@ -1803,9 +1803,9 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
     }
 
     @Override
-    public void writeEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException {
+    public void writeEventQueueOverflowCount(UInteger eventQueueOverFlowCount) throws UaException {
         try {
-            writeEventQueueOverflowCountAsync(eventQueueOverflowCount).get();
+            writeEventQueueOverflowCountAsync(eventQueueOverFlowCount).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
@@ -1818,8 +1818,8 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
 
     @Override
     public CompletableFuture<StatusCode> writeEventQueueOverflowCountAsync(
-        UInteger eventQueueOverflowCount) {
-        DataValue value = DataValue.valueOnly(new Variant(eventQueueOverflowCount));
+        UInteger eventQueueOverFlowCount) {
+        DataValue value = DataValue.valueOnly(new Variant(eventQueueOverFlowCount));
         return getEventQueueOverflowCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }

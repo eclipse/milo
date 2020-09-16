@@ -25,9 +25,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemType {
     public ImageItemTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
                              QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                             UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType, int valueRank,
-                             UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                             double minimumSamplingInterval, boolean historizing) {
+                             UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType,
+                             Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                             Double minimumSamplingInterval, Boolean historizing) {
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
