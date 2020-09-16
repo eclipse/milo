@@ -13,9 +13,9 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 public class BaseDataVariableTypeNode extends BaseVariableTypeNode implements BaseDataVariableType {
     public BaseDataVariableTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType, int valueRank,
-                                    UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                    double minimumSamplingInterval, boolean historizing) {
+                                    UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType,
+                                    Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                                    Double minimumSamplingInterval, Boolean historizing) {
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 }
