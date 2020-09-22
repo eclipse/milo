@@ -132,7 +132,7 @@ public final class LifecycleManager extends AbstractLifecycle {
     /**
      * Modes that control the order in which registered {@link Lifecycle}s are shutdown.
      */
-    enum ShutdownOrder {
+    public enum ShutdownOrder {
         /**
          * Lifecycles are shutdown in the same order they were added.
          */
