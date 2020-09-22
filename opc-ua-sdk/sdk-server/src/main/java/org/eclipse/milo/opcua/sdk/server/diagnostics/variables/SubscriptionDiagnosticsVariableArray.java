@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SubscriptionDiagnosticsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
@@ -53,6 +54,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
     private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
 
+    private AttributeObserver attributeObserver;
     private EventSubscriber eventSubscriber;
 
     private final List<SubscriptionDiagnosticsVariable> subscriptionDiagnosticsVariables =
@@ -102,7 +104,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
             server.getEventBus().register(eventSubscriber = new EventSubscriber());
         }
 
-        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+        attributeObserver = (node, attributeId, value) -> {
             if (attributeId == AttributeId.Value) {
                 DataValue dataValue = (DataValue) value;
                 Object o = dataValue.getValue().getValue();
@@ -129,7 +131,8 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                     }
                 }
             }
-        });
+        };
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver(attributeObserver);
 
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
@@ -148,6 +151,16 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
 
     @Override
     protected void onShutdown() {
+        AttributeObserver observer = attributeObserver;
+        if (observer != null) {
+            ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+                .getManagedNode(Identifiers.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+            diagnosticsNode.getEnabledFlagNode().removeAttributeObserver(observer);
+            attributeObserver = null;
+        }
+
         if (eventSubscriber != null) {
             //noinspection UnstableApiUsage
             server.getEventBus().unregister(eventSubscriber);

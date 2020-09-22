@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsArrayTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionSecurityDiagnosticsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
@@ -55,6 +56,7 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
     private final List<SessionSecurityDiagnosticsVariable> sessionSecurityDiagnosticsVariables =
         Collections.synchronizedList(new ArrayList<>());
 
+    private AttributeObserver attributeObserver;
     private SessionListener sessionListener;
 
     private final OpcUaServer server;
@@ -98,7 +100,7 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
             addSessionListener();
         }
 
-        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+        attributeObserver = (node, attributeId, value) -> {
             if (attributeId == AttributeId.Value) {
                 DataValue dataValue = (DataValue) value;
                 Object o = dataValue.getValue().getValue();
@@ -124,7 +126,8 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
                     }
                 }
             }
-        });
+        };
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver(attributeObserver);
 
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject[] xos = ExtensionObject.encodeArray(
@@ -209,6 +212,16 @@ public class SessionSecurityDiagnosticsVariableArray extends AbstractLifecycle {
 
     @Override
     protected void onShutdown() {
+        AttributeObserver observer = attributeObserver;
+        if (observer != null) {
+            ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+                .getManagedNode(Identifiers.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+            diagnosticsNode.getEnabledFlagNode().removeAttributeObserver(observer);
+            attributeObserver = null;
+        }
+
         if (sessionListener != null) {
             server.getSessionManager().removeSessionListener(sessionListener);
             sessionListener = null;
