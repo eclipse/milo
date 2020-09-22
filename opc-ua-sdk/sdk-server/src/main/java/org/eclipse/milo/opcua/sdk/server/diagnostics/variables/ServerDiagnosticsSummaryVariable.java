@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerDiagnosticsSummaryTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -30,6 +31,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
 
     private final AtomicBoolean diagnosticsEnabled = new AtomicBoolean(false);
+
+    private AttributeObserver attributeObserver;
 
     private final OpcUaServer server;
     private final ServerDiagnosticsSummaryTypeNode node;
@@ -48,7 +51,7 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
 
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
-        diagnosticsNode.getEnabledFlagNode().addAttributeObserver((node, attributeId, value) -> {
+        attributeObserver = (node, attributeId, value) -> {
             if (attributeId == AttributeId.Value) {
                 DataValue dataValue = (DataValue) value;
                 Object o = dataValue.getValue().getValue();
@@ -56,7 +59,8 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
                     diagnosticsEnabled.set((Boolean) o);
                 }
             }
-        });
+        };
+        diagnosticsNode.getEnabledFlagNode().addAttributeObserver(attributeObserver);
 
         node.getFilterChain().addLast(diagnosticValueFilter(diagnosticsEnabled, ctx -> {
             ExtensionObject xo = ExtensionObject.encode(
@@ -130,6 +134,16 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
 
     @Override
     protected void onShutdown() {
+        AttributeObserver observer = attributeObserver;
+        if (observer != null) {
+            ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
+                .getManagedNode(Identifiers.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+
+            diagnosticsNode.getEnabledFlagNode().removeAttributeObserver(observer);
+            attributeObserver = null;
+        }
+
         node.delete();
     }
 
