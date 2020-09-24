@@ -388,9 +388,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             Arrays.stream(files).forEach(f -> stableLastModified.put(f, f.lastModified()));
 
             Arrays.stream(files)
-                .sorted(
-                    (f1, f2) ->
-                        (int) (stableLastModified.get(f1) - stableLastModified.get(f2)))
+                .sorted((f1, f2) -> Long.compareUnsigned(stableLastModified.get(f1), stableLastModified.get(f2)))
                 .limit(excessCount + 1)
                 .forEach(file -> {
                     if (!file.delete()) {
