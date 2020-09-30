@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ModellingRuleTypeNode extends BaseObjectTypeNode implements ModellingRuleType {
     public ModellingRuleTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -33,7 +32,14 @@ public class ModellingRuleTypeNode extends BaseObjectTypeNode implements Modelli
     @Override
     public NamingRuleType getNamingRule() throws UaException {
         PropertyTypeNode node = getNamingRuleNode();
-        return (NamingRuleType) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return NamingRuleType.from((Integer) value);
+        } else if (value instanceof NamingRuleType) {
+            return (NamingRuleType) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -62,21 +68,23 @@ public class ModellingRuleTypeNode extends BaseObjectTypeNode implements Modelli
 
     @Override
     public CompletableFuture<? extends NamingRuleType> readNamingRuleAsync() {
-        return getNamingRuleNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (NamingRuleType) v.getValue().getValue());
+        return getNamingRuleNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return NamingRuleType.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeNamingRuleAsync(NamingRuleType namingRule) {
+    public CompletableFuture<StatusCode> writeNamingRuleAsync(NamingRuleType namingRule) {
         DataValue value = DataValue.valueOnly(new Variant(namingRule));
         return getNamingRuleNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

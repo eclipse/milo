@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditDeleteNodesEventType extends AuditNodeManagementEventType {
     QualifiedProperty<DeleteNodesItem[]> NODES_TO_DELETE = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface AuditDeleteNodesEventType extends AuditNodeManagementEventType 
      * An asynchronous implementation of {@link #writeNodesToDelete(DeleteNodesItem[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNodesToDeleteAsync(DeleteNodesItem[] nodesToDelete);
+    CompletableFuture<StatusCode> writeNodesToDeleteAsync(DeleteNodesItem[] nodesToDelete);
 
     /**
      * Get the NodesToDelete {@link PropertyType} Node, or {@code null} if it does not exist.

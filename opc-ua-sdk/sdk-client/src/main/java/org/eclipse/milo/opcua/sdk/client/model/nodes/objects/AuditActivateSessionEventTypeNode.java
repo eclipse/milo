@@ -16,14 +16,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode implements AuditActivateSessionEventType {
     public AuditActivateSessionEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -72,19 +71,12 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientSoftwareCertificatesAsync(
+    public CompletableFuture<StatusCode> writeClientSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] clientSoftwareCertificates) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getClientSoftwareCertificatesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -139,18 +131,12 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeUserIdentityTokenAsync(UserIdentityToken userIdentityToken) {
+    public CompletableFuture<StatusCode> writeUserIdentityTokenAsync(
+        UserIdentityToken userIdentityToken) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), userIdentityToken);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUserIdentityTokenNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -204,17 +190,10 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecureChannelIdAsync(String secureChannelId) {
+    public CompletableFuture<StatusCode> writeSecureChannelIdAsync(String secureChannelId) {
         DataValue value = DataValue.valueOnly(new Variant(secureChannelId));
         return getSecureChannelIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

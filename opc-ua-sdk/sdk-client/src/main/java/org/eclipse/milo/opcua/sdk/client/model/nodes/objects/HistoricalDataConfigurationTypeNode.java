@@ -16,13 +16,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode implements HistoricalDataConfigurationType {
     public HistoricalDataConfigurationTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeSteppedAsync(Boolean stepped) {
+    public CompletableFuture<StatusCode> writeSteppedAsync(Boolean stepped) {
         DataValue value = DataValue.valueOnly(new Variant(stepped));
         return getSteppedNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeDefinitionAsync(String definition) {
+    public CompletableFuture<StatusCode> writeDefinitionAsync(String definition) {
         DataValue value = DataValue.valueOnly(new Variant(definition));
         return getDefinitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,17 +180,10 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxTimeIntervalAsync(Double maxTimeInterval) {
+    public CompletableFuture<StatusCode> writeMaxTimeIntervalAsync(Double maxTimeInterval) {
         DataValue value = DataValue.valueOnly(new Variant(maxTimeInterval));
         return getMaxTimeIntervalNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -259,17 +237,10 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeMinTimeIntervalAsync(Double minTimeInterval) {
+    public CompletableFuture<StatusCode> writeMinTimeIntervalAsync(Double minTimeInterval) {
         DataValue value = DataValue.valueOnly(new Variant(minTimeInterval));
         return getMinTimeIntervalNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -323,17 +294,10 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeExceptionDeviationAsync(Double exceptionDeviation) {
+    public CompletableFuture<StatusCode> writeExceptionDeviationAsync(Double exceptionDeviation) {
         DataValue value = DataValue.valueOnly(new Variant(exceptionDeviation));
         return getExceptionDeviationNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -354,7 +318,14 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     @Override
     public ExceptionDeviationFormat getExceptionDeviationFormat() throws UaException {
         PropertyTypeNode node = getExceptionDeviationFormatNode();
-        return (ExceptionDeviationFormat) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return ExceptionDeviationFormat.from((Integer) value);
+        } else if (value instanceof ExceptionDeviationFormat) {
+            return (ExceptionDeviationFormat) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -385,22 +356,24 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public CompletableFuture<? extends ExceptionDeviationFormat> readExceptionDeviationFormatAsync() {
-        return getExceptionDeviationFormatNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ExceptionDeviationFormat) v.getValue().getValue());
+        return getExceptionDeviationFormatNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return ExceptionDeviationFormat.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeExceptionDeviationFormatAsync(
+    public CompletableFuture<StatusCode> writeExceptionDeviationFormatAsync(
         ExceptionDeviationFormat exceptionDeviationFormat) {
         DataValue value = DataValue.valueOnly(new Variant(exceptionDeviationFormat));
         return getExceptionDeviationFormatNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -454,17 +427,10 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeStartOfArchiveAsync(DateTime startOfArchive) {
+    public CompletableFuture<StatusCode> writeStartOfArchiveAsync(DateTime startOfArchive) {
         DataValue value = DataValue.valueOnly(new Variant(startOfArchive));
         return getStartOfArchiveNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -518,17 +484,11 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeStartOfOnlineArchiveAsync(DateTime startOfOnlineArchive) {
+    public CompletableFuture<StatusCode> writeStartOfOnlineArchiveAsync(
+        DateTime startOfOnlineArchive) {
         DataValue value = DataValue.valueOnly(new Variant(startOfOnlineArchive));
         return getStartOfOnlineArchiveNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

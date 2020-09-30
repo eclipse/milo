@@ -8,8 +8,8 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditHistoryEventDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<ByteString[]> EVENT_IDS = new QualifiedProperty<>(
@@ -78,9 +78,9 @@ public interface AuditHistoryEventDeleteEventType extends AuditHistoryDeleteEven
      * An asynchronous implementation of {@link #writeEventIds(ByteString[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEventIdsAsync(ByteString[] eventIds);
+    CompletableFuture<StatusCode> writeEventIdsAsync(ByteString[] eventIds);
 
     /**
      * Get the EventIds {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -151,9 +151,9 @@ public interface AuditHistoryEventDeleteEventType extends AuditHistoryDeleteEven
      * An asynchronous implementation of {@link #writeOldValues(HistoryEventFieldList)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldValuesAsync(HistoryEventFieldList oldValues);
+    CompletableFuture<StatusCode> writeOldValuesAsync(HistoryEventFieldList oldValues);
 
     /**
      * Get the OldValues {@link PropertyType} Node, or {@code null} if it does not exist.

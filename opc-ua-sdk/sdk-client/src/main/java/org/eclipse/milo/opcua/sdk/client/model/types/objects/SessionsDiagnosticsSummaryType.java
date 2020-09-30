@@ -5,9 +5,9 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionSecurityDiagnosticsArrayType;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
     /**
@@ -62,9 +62,9 @@ public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSessionDiagnosticsArray(SessionDiagnosticsDataType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionDiagnosticsArrayAsync(
+    CompletableFuture<StatusCode> writeSessionDiagnosticsArrayAsync(
         SessionDiagnosticsDataType[] sessionDiagnosticsArray);
 
     /**
@@ -139,9 +139,9 @@ public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionSecurityDiagnosticsArrayAsync(
+    CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsArrayAsync(
         SessionSecurityDiagnosticsDataType[] sessionSecurityDiagnosticsArray);
 
     /**

@@ -16,12 +16,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode implements AuditCreateSessionEventType {
     public AuditCreateSessionEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecureChannelIdAsync(String secureChannelId) {
+    public CompletableFuture<StatusCode> writeSecureChannelIdAsync(String secureChannelId) {
         DataValue value = DataValue.valueOnly(new Variant(secureChannelId));
         return getSecureChannelIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientCertificateAsync(ByteString clientCertificate) {
+    public CompletableFuture<StatusCode> writeClientCertificateAsync(ByteString clientCertificate) {
         DataValue value = DataValue.valueOnly(new Variant(clientCertificate));
         return getClientCertificateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -196,18 +181,11 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientCertificateThumbprintAsync(
+    public CompletableFuture<StatusCode> writeClientCertificateThumbprintAsync(
         String clientCertificateThumbprint) {
         DataValue value = DataValue.valueOnly(new Variant(clientCertificateThumbprint));
         return getClientCertificateThumbprintNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -261,17 +239,11 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
     }
 
     @Override
-    public CompletableFuture<Unit> writeRevisedSessionTimeoutAsync(Double revisedSessionTimeout) {
+    public CompletableFuture<StatusCode> writeRevisedSessionTimeoutAsync(
+        Double revisedSessionTimeout) {
         DataValue value = DataValue.valueOnly(new Variant(revisedSessionTimeout));
         return getRevisedSessionTimeoutNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

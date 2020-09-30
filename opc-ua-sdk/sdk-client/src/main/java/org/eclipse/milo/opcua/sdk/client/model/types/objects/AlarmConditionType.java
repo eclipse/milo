@@ -10,7 +10,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AlarmConditionType extends AcknowledgeableConditionType {
     QualifiedProperty<NodeId> INPUT_NODE = new QualifiedProperty<>(
@@ -87,9 +87,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
      * An asynchronous implementation of {@link #writeInputNode(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInputNodeAsync(NodeId inputNode);
+    CompletableFuture<StatusCode> writeInputNodeAsync(NodeId inputNode);
 
     /**
      * Get the InputNode {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -160,9 +160,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
      * An asynchronous implementation of {@link #writeSuppressedOrShelved(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSuppressedOrShelvedAsync(Boolean suppressedOrShelved);
+    CompletableFuture<StatusCode> writeSuppressedOrShelvedAsync(Boolean suppressedOrShelved);
 
     /**
      * Get the SuppressedOrShelved {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -233,9 +233,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
      * An asynchronous implementation of {@link #writeMaxTimeShelved(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxTimeShelvedAsync(Double maxTimeShelved);
+    CompletableFuture<StatusCode> writeMaxTimeShelvedAsync(Double maxTimeShelved);
 
     /**
      * Get the MaxTimeShelved {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -306,9 +306,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
      * An asynchronous implementation of {@link #writeEnabledState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState);
+    CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState);
 
     /**
      * Get the EnabledState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -379,9 +379,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
      * An asynchronous implementation of {@link #writeActiveState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeActiveStateAsync(LocalizedText activeState);
+    CompletableFuture<StatusCode> writeActiveStateAsync(LocalizedText activeState);
 
     /**
      * Get the ActiveState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -452,9 +452,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
      * An asynchronous implementation of {@link #writeSuppressedState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSuppressedStateAsync(LocalizedText suppressedState);
+    CompletableFuture<StatusCode> writeSuppressedStateAsync(LocalizedText suppressedState);
 
     /**
      * Get the SuppressedState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.

@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements ServerConfigurationType {
     public ServerConfigurationTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerCapabilitiesAsync(String[] serverCapabilities) {
+    public CompletableFuture<StatusCode> writeServerCapabilitiesAsync(String[] serverCapabilities) {
         DataValue value = DataValue.valueOnly(new Variant(serverCapabilities));
         return getServerCapabilitiesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,18 +123,11 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
-    public CompletableFuture<Unit> writeSupportedPrivateKeyFormatsAsync(
+    public CompletableFuture<StatusCode> writeSupportedPrivateKeyFormatsAsync(
         String[] supportedPrivateKeyFormats) {
         DataValue value = DataValue.valueOnly(new Variant(supportedPrivateKeyFormats));
         return getSupportedPrivateKeyFormatsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -196,17 +181,10 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxTrustListSizeAsync(UInteger maxTrustListSize) {
+    public CompletableFuture<StatusCode> writeMaxTrustListSizeAsync(UInteger maxTrustListSize) {
         DataValue value = DataValue.valueOnly(new Variant(maxTrustListSize));
         return getMaxTrustListSizeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -260,17 +238,10 @@ public class ServerConfigurationTypeNode extends BaseObjectTypeNode implements S
     }
 
     @Override
-    public CompletableFuture<Unit> writeMulticastDnsEnabledAsync(Boolean multicastDnsEnabled) {
+    public CompletableFuture<StatusCode> writeMulticastDnsEnabledAsync(Boolean multicastDnsEnabled) {
         DataValue value = DataValue.valueOnly(new Variant(multicastDnsEnabled));
         return getMulticastDnsEnabledNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditAddNodesEventType extends AuditNodeManagementEventType {
     QualifiedProperty<AddNodesItem[]> NODES_TO_ADD = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface AuditAddNodesEventType extends AuditNodeManagementEventType {
      * An asynchronous implementation of {@link #writeNodesToAdd(AddNodesItem[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNodesToAddAsync(AddNodesItem[] nodesToAdd);
+    CompletableFuture<StatusCode> writeNodesToAddAsync(AddNodesItem[] nodesToAdd);
 
     /**
      * Get the NodesToAdd {@link PropertyType} Node, or {@code null} if it does not exist.

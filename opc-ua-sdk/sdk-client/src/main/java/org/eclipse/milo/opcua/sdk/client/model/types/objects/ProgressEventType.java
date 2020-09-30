@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ProgressEventType extends BaseEventType {
     QualifiedProperty<Object> CONTEXT = new QualifiedProperty<>(
@@ -77,9 +77,9 @@ public interface ProgressEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeContext(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeContextAsync(Object context);
+    CompletableFuture<StatusCode> writeContextAsync(Object context);
 
     /**
      * Get the Context {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -150,9 +150,9 @@ public interface ProgressEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeProgress(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeProgressAsync(UShort progress);
+    CompletableFuture<StatusCode> writeProgressAsync(UShort progress);
 
     /**
      * Get the Progress {@link PropertyType} Node, or {@code null} if it does not exist.

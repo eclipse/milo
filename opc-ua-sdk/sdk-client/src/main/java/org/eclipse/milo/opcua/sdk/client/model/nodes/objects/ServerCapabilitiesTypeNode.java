@@ -16,14 +16,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements ServerCapabilitiesType {
     public ServerCapabilitiesTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -68,17 +67,10 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerProfileArrayAsync(String[] serverProfileArray) {
+    public CompletableFuture<StatusCode> writeServerProfileArrayAsync(String[] serverProfileArray) {
         DataValue value = DataValue.valueOnly(new Variant(serverProfileArray));
         return getServerProfileArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -132,17 +124,10 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeLocaleIdArrayAsync(String[] localeIdArray) {
+    public CompletableFuture<StatusCode> writeLocaleIdArrayAsync(String[] localeIdArray) {
         DataValue value = DataValue.valueOnly(new Variant(localeIdArray));
         return getLocaleIdArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -196,17 +181,11 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMinSupportedSampleRateAsync(Double minSupportedSampleRate) {
+    public CompletableFuture<StatusCode> writeMinSupportedSampleRateAsync(
+        Double minSupportedSampleRate) {
         DataValue value = DataValue.valueOnly(new Variant(minSupportedSampleRate));
         return getMinSupportedSampleRateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -262,18 +241,11 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxBrowseContinuationPointsAsync(
+    public CompletableFuture<StatusCode> writeMaxBrowseContinuationPointsAsync(
         UShort maxBrowseContinuationPoints) {
         DataValue value = DataValue.valueOnly(new Variant(maxBrowseContinuationPoints));
         return getMaxBrowseContinuationPointsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -328,18 +300,11 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxQueryContinuationPointsAsync(
+    public CompletableFuture<StatusCode> writeMaxQueryContinuationPointsAsync(
         UShort maxQueryContinuationPoints) {
         DataValue value = DataValue.valueOnly(new Variant(maxQueryContinuationPoints));
         return getMaxQueryContinuationPointsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -395,18 +360,11 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxHistoryContinuationPointsAsync(
+    public CompletableFuture<StatusCode> writeMaxHistoryContinuationPointsAsync(
         UShort maxHistoryContinuationPoints) {
         DataValue value = DataValue.valueOnly(new Variant(maxHistoryContinuationPoints));
         return getMaxHistoryContinuationPointsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -463,19 +421,12 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeSoftwareCertificatesAsync(
+    public CompletableFuture<StatusCode> writeSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] softwareCertificates) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), softwareCertificates);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSoftwareCertificatesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -529,17 +480,10 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxArrayLengthAsync(UInteger maxArrayLength) {
+    public CompletableFuture<StatusCode> writeMaxArrayLengthAsync(UInteger maxArrayLength) {
         DataValue value = DataValue.valueOnly(new Variant(maxArrayLength));
         return getMaxArrayLengthNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -593,17 +537,10 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxStringLengthAsync(UInteger maxStringLength) {
+    public CompletableFuture<StatusCode> writeMaxStringLengthAsync(UInteger maxStringLength) {
         DataValue value = DataValue.valueOnly(new Variant(maxStringLength));
         return getMaxStringLengthNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -657,17 +594,10 @@ public class ServerCapabilitiesTypeNode extends BaseObjectTypeNode implements Se
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxByteStringLengthAsync(UInteger maxByteStringLength) {
+    public CompletableFuture<StatusCode> writeMaxByteStringLengthAsync(UInteger maxByteStringLength) {
         DataValue value = DataValue.valueOnly(new Variant(maxByteStringLength));
         return getMaxByteStringLengthNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

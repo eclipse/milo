@@ -17,12 +17,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmTypeNode implements CertificateExpirationAlarmType {
     public CertificateExpirationAlarmTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
     }
 
     @Override
-    public CompletableFuture<Unit> writeExpirationDateAsync(DateTime expirationDate) {
+    public CompletableFuture<StatusCode> writeExpirationDateAsync(DateTime expirationDate) {
         DataValue value = DataValue.valueOnly(new Variant(expirationDate));
         return getExpirationDateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
     }
 
     @Override
-    public CompletableFuture<Unit> writeExpirationLimitAsync(Double expirationLimit) {
+    public CompletableFuture<StatusCode> writeExpirationLimitAsync(Double expirationLimit) {
         DataValue value = DataValue.valueOnly(new Variant(expirationLimit));
         return getExpirationLimitNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,17 +180,10 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
     }
 
     @Override
-    public CompletableFuture<Unit> writeCertificateTypeAsync(NodeId certificateType) {
+    public CompletableFuture<StatusCode> writeCertificateTypeAsync(NodeId certificateType) {
         DataValue value = DataValue.valueOnly(new Variant(certificateType));
         return getCertificateTypeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -259,17 +237,10 @@ public class CertificateExpirationAlarmTypeNode extends SystemOffNormalAlarmType
     }
 
     @Override
-    public CompletableFuture<Unit> writeCertificateAsync(ByteString certificate) {
+    public CompletableFuture<StatusCode> writeCertificateAsync(ByteString certificate) {
         DataValue value = DataValue.valueOnly(new Variant(certificate));
         return getCertificateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

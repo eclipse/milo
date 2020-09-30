@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -26,8 +27,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements ServerDiagnosticsType {
     public ServerDiagnosticsTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -72,17 +71,10 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     }
 
     @Override
-    public CompletableFuture<Unit> writeEnabledFlagAsync(Boolean enabledFlag) {
+    public CompletableFuture<StatusCode> writeEnabledFlagAsync(Boolean enabledFlag) {
         DataValue value = DataValue.valueOnly(new Variant(enabledFlag));
         return getEnabledFlagNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -140,19 +132,12 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerDiagnosticsSummaryAsync(
+    public CompletableFuture<StatusCode> writeServerDiagnosticsSummaryAsync(
         ServerDiagnosticsSummaryDataType serverDiagnosticsSummary) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), serverDiagnosticsSummary);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerDiagnosticsSummaryNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -213,19 +198,12 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     }
 
     @Override
-    public CompletableFuture<Unit> writeSamplingIntervalDiagnosticsArrayAsync(
+    public CompletableFuture<StatusCode> writeSamplingIntervalDiagnosticsArrayAsync(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSamplingIntervalDiagnosticsArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -285,19 +263,12 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     }
 
     @Override
-    public CompletableFuture<Unit> writeSubscriptionDiagnosticsArrayAsync(
+    public CompletableFuture<StatusCode> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

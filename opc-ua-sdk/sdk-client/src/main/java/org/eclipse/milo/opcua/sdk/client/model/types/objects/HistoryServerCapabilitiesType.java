@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface HistoryServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<Boolean> ACCESS_HISTORY_DATA_CAPABILITY = new QualifiedProperty<>(
@@ -173,9 +173,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeAccessHistoryDataCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAccessHistoryDataCapabilityAsync(
+    CompletableFuture<StatusCode> writeAccessHistoryDataCapabilityAsync(
         Boolean accessHistoryDataCapability);
 
     /**
@@ -247,9 +247,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeAccessHistoryEventsCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAccessHistoryEventsCapabilityAsync(
+    CompletableFuture<StatusCode> writeAccessHistoryEventsCapabilityAsync(
         Boolean accessHistoryEventsCapability);
 
     /**
@@ -321,9 +321,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxReturnDataValues(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxReturnDataValuesAsync(UInteger maxReturnDataValues);
+    CompletableFuture<StatusCode> writeMaxReturnDataValuesAsync(UInteger maxReturnDataValues);
 
     /**
      * Get the MaxReturnDataValues {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -394,9 +394,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxReturnEventValues(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxReturnEventValuesAsync(UInteger maxReturnEventValues);
+    CompletableFuture<StatusCode> writeMaxReturnEventValuesAsync(UInteger maxReturnEventValues);
 
     /**
      * Get the MaxReturnEventValues {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -467,9 +467,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeInsertDataCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInsertDataCapabilityAsync(Boolean insertDataCapability);
+    CompletableFuture<StatusCode> writeInsertDataCapabilityAsync(Boolean insertDataCapability);
 
     /**
      * Get the InsertDataCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -540,9 +540,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeReplaceDataCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeReplaceDataCapabilityAsync(Boolean replaceDataCapability);
+    CompletableFuture<StatusCode> writeReplaceDataCapabilityAsync(Boolean replaceDataCapability);
 
     /**
      * Get the ReplaceDataCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -613,9 +613,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeUpdateDataCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUpdateDataCapabilityAsync(Boolean updateDataCapability);
+    CompletableFuture<StatusCode> writeUpdateDataCapabilityAsync(Boolean updateDataCapability);
 
     /**
      * Get the UpdateDataCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -686,9 +686,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeDeleteRawCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteRawCapabilityAsync(Boolean deleteRawCapability);
+    CompletableFuture<StatusCode> writeDeleteRawCapabilityAsync(Boolean deleteRawCapability);
 
     /**
      * Get the DeleteRawCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -759,9 +759,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeDeleteAtTimeCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteAtTimeCapabilityAsync(Boolean deleteAtTimeCapability);
+    CompletableFuture<StatusCode> writeDeleteAtTimeCapabilityAsync(Boolean deleteAtTimeCapability);
 
     /**
      * Get the DeleteAtTimeCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -832,9 +832,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeInsertEventCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInsertEventCapabilityAsync(Boolean insertEventCapability);
+    CompletableFuture<StatusCode> writeInsertEventCapabilityAsync(Boolean insertEventCapability);
 
     /**
      * Get the InsertEventCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -905,9 +905,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeReplaceEventCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeReplaceEventCapabilityAsync(Boolean replaceEventCapability);
+    CompletableFuture<StatusCode> writeReplaceEventCapabilityAsync(Boolean replaceEventCapability);
 
     /**
      * Get the ReplaceEventCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -978,9 +978,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeUpdateEventCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUpdateEventCapabilityAsync(Boolean updateEventCapability);
+    CompletableFuture<StatusCode> writeUpdateEventCapabilityAsync(Boolean updateEventCapability);
 
     /**
      * Get the UpdateEventCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -1051,9 +1051,9 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeDeleteEventCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDeleteEventCapabilityAsync(Boolean deleteEventCapability);
+    CompletableFuture<StatusCode> writeDeleteEventCapabilityAsync(Boolean deleteEventCapability);
 
     /**
      * Get the DeleteEventCapability {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -1124,9 +1124,10 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeInsertAnnotationCapability(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInsertAnnotationCapabilityAsync(Boolean insertAnnotationCapability);
+    CompletableFuture<StatusCode> writeInsertAnnotationCapabilityAsync(
+        Boolean insertAnnotationCapability);
 
     /**
      * Get the InsertAnnotationCapability {@link PropertyType} Node, or {@code null} if it does not exist.

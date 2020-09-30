@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditUpdateMethodEventType extends AuditEventType {
     QualifiedProperty<NodeId> METHOD_ID = new QualifiedProperty<>(
@@ -77,9 +77,9 @@ public interface AuditUpdateMethodEventType extends AuditEventType {
      * An asynchronous implementation of {@link #writeMethodId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMethodIdAsync(NodeId methodId);
+    CompletableFuture<StatusCode> writeMethodIdAsync(NodeId methodId);
 
     /**
      * Get the MethodId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -150,9 +150,9 @@ public interface AuditUpdateMethodEventType extends AuditEventType {
      * An asynchronous implementation of {@link #writeInputArguments(Object[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInputArgumentsAsync(Object[] inputArguments);
+    CompletableFuture<StatusCode> writeInputArgumentsAsync(Object[] inputArguments);
 
     /**
      * Get the InputArguments {@link PropertyType} Node, or {@code null} if it does not exist.

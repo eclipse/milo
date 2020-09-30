@@ -9,7 +9,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditConditionAcknowledgeEventType extends AuditConditionEventType {
     QualifiedProperty<ByteString> CONDITION_EVENT_ID = new QualifiedProperty<>(
@@ -78,9 +78,9 @@ public interface AuditConditionAcknowledgeEventType extends AuditConditionEventT
      * An asynchronous implementation of {@link #writeConditionEventId(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeConditionEventIdAsync(ByteString conditionEventId);
+    CompletableFuture<StatusCode> writeConditionEventIdAsync(ByteString conditionEventId);
 
     /**
      * Get the ConditionEventId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -151,9 +151,9 @@ public interface AuditConditionAcknowledgeEventType extends AuditConditionEventT
      * An asynchronous implementation of {@link #writeComment(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCommentAsync(LocalizedText comment);
+    CompletableFuture<StatusCode> writeCommentAsync(LocalizedText comment);
 
     /**
      * Get the Comment {@link PropertyType} Node, or {@code null} if it does not exist.

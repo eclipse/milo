@@ -11,9 +11,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
@@ -138,9 +138,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeEventId(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEventIdAsync(ByteString eventId);
+    CompletableFuture<StatusCode> writeEventIdAsync(ByteString eventId);
 
     /**
      * Get the EventId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -211,9 +211,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeEventType(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEventTypeAsync(NodeId eventType);
+    CompletableFuture<StatusCode> writeEventTypeAsync(NodeId eventType);
 
     /**
      * Get the EventType {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -284,9 +284,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSourceNode(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSourceNodeAsync(NodeId sourceNode);
+    CompletableFuture<StatusCode> writeSourceNodeAsync(NodeId sourceNode);
 
     /**
      * Get the SourceNode {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -357,9 +357,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSourceName(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSourceNameAsync(String sourceName);
+    CompletableFuture<StatusCode> writeSourceNameAsync(String sourceName);
 
     /**
      * Get the SourceName {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -430,9 +430,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTimeAsync(DateTime time);
+    CompletableFuture<StatusCode> writeTimeAsync(DateTime time);
 
     /**
      * Get the Time {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -503,9 +503,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeReceiveTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeReceiveTimeAsync(DateTime receiveTime);
+    CompletableFuture<StatusCode> writeReceiveTimeAsync(DateTime receiveTime);
 
     /**
      * Get the ReceiveTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -576,9 +576,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeLocalTime(TimeZoneDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLocalTimeAsync(TimeZoneDataType localTime);
+    CompletableFuture<StatusCode> writeLocalTimeAsync(TimeZoneDataType localTime);
 
     /**
      * Get the LocalTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -649,9 +649,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMessage(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMessageAsync(LocalizedText message);
+    CompletableFuture<StatusCode> writeMessageAsync(LocalizedText message);
 
     /**
      * Get the Message {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -722,9 +722,9 @@ public interface BaseEventType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSeverity(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSeverityAsync(UShort severity);
+    CompletableFuture<StatusCode> writeSeverityAsync(UShort severity);
 
     /**
      * Get the Severity {@link PropertyType} Node, or {@code null} if it does not exist.

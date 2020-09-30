@@ -17,13 +17,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEventTypeNode implements AuditHistoryEventDeleteEventType {
     public AuditHistoryEventDeleteEventTypeNode(OpcUaClient client, NodeId nodeId,
@@ -68,17 +67,10 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
     }
 
     @Override
-    public CompletableFuture<Unit> writeEventIdsAsync(ByteString[] eventIds) {
+    public CompletableFuture<StatusCode> writeEventIdsAsync(ByteString[] eventIds) {
         DataValue value = DataValue.valueOnly(new Variant(eventIds));
         return getEventIdsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -133,18 +125,11 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
     }
 
     @Override
-    public CompletableFuture<Unit> writeOldValuesAsync(HistoryEventFieldList oldValues) {
+    public CompletableFuture<StatusCode> writeOldValuesAsync(HistoryEventFieldList oldValues) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), oldValues);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getOldValuesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

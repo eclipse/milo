@@ -15,14 +15,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     public FileTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeSizeAsync(ULong size) {
+    public CompletableFuture<StatusCode> writeSizeAsync(ULong size) {
         DataValue value = DataValue.valueOnly(new Variant(size));
         return getSizeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeWritableAsync(Boolean writable) {
+    public CompletableFuture<StatusCode> writeWritableAsync(Boolean writable) {
         DataValue value = DataValue.valueOnly(new Variant(writable));
         return getWritableNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,17 +180,10 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeUserWritableAsync(Boolean userWritable) {
+    public CompletableFuture<StatusCode> writeUserWritableAsync(Boolean userWritable) {
         DataValue value = DataValue.valueOnly(new Variant(userWritable));
         return getUserWritableNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -259,17 +237,10 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeOpenCountAsync(UShort openCount) {
+    public CompletableFuture<StatusCode> writeOpenCountAsync(UShort openCount) {
         DataValue value = DataValue.valueOnly(new Variant(openCount));
         return getOpenCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -323,17 +294,10 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeMimeTypeAsync(String mimeType) {
+    public CompletableFuture<StatusCode> writeMimeTypeAsync(String mimeType) {
         DataValue value = DataValue.valueOnly(new Variant(mimeType));
         return getMimeTypeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

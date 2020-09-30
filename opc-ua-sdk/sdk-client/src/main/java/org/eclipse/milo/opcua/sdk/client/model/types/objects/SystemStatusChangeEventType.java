@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SystemStatusChangeEventType extends SystemEventType {
     QualifiedProperty<ServerState> SYSTEM_STATE = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface SystemStatusChangeEventType extends SystemEventType {
      * An asynchronous implementation of {@link #writeSystemState(ServerState)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSystemStateAsync(ServerState systemState);
+    CompletableFuture<StatusCode> writeSystemStateAsync(ServerState systemState);
 
     /**
      * Get the SystemState {@link PropertyType} Node, or {@code null} if it does not exist.

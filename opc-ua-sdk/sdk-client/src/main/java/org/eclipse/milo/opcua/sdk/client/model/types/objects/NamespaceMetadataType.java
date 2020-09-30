@@ -8,8 +8,8 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface NamespaceMetadataType extends BaseObjectType {
     QualifiedProperty<String> NAMESPACE_URI = new QualifiedProperty<>(
@@ -118,9 +118,9 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeNamespaceUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNamespaceUriAsync(String namespaceUri);
+    CompletableFuture<StatusCode> writeNamespaceUriAsync(String namespaceUri);
 
     /**
      * Get the NamespaceUri {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -191,9 +191,9 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeNamespaceVersion(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNamespaceVersionAsync(String namespaceVersion);
+    CompletableFuture<StatusCode> writeNamespaceVersionAsync(String namespaceVersion);
 
     /**
      * Get the NamespaceVersion {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -264,9 +264,10 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeNamespacePublicationDate(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNamespacePublicationDateAsync(DateTime namespacePublicationDate);
+    CompletableFuture<StatusCode> writeNamespacePublicationDateAsync(
+        DateTime namespacePublicationDate);
 
     /**
      * Get the NamespacePublicationDate {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -337,9 +338,9 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeIsNamespaceSubset(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIsNamespaceSubsetAsync(Boolean isNamespaceSubset);
+    CompletableFuture<StatusCode> writeIsNamespaceSubsetAsync(Boolean isNamespaceSubset);
 
     /**
      * Get the IsNamespaceSubset {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -410,9 +411,9 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStaticNodeIdTypes(IdType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStaticNodeIdTypesAsync(IdType[] staticNodeIdTypes);
+    CompletableFuture<StatusCode> writeStaticNodeIdTypesAsync(IdType[] staticNodeIdTypes);
 
     /**
      * Get the StaticNodeIdTypes {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -483,9 +484,10 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStaticNumericNodeIdRange(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStaticNumericNodeIdRangeAsync(String[] staticNumericNodeIdRange);
+    CompletableFuture<StatusCode> writeStaticNumericNodeIdRangeAsync(
+        String[] staticNumericNodeIdRange);
 
     /**
      * Get the StaticNumericNodeIdRange {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -556,9 +558,10 @@ public interface NamespaceMetadataType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStaticStringNodeIdPattern(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStaticStringNodeIdPatternAsync(String staticStringNodeIdPattern);
+    CompletableFuture<StatusCode> writeStaticStringNodeIdPatternAsync(
+        String staticStringNodeIdPattern);
 
     /**
      * Get the StaticStringNodeIdPattern {@link PropertyType} Node, or {@code null} if it does not exist.

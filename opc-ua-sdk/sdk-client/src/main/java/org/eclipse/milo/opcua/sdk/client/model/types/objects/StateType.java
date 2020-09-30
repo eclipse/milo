@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface StateType extends BaseObjectType {
     QualifiedProperty<UInteger> STATE_NUMBER = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface StateType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStateNumber(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStateNumberAsync(UInteger stateNumber);
+    CompletableFuture<StatusCode> writeStateNumberAsync(UInteger stateNumber);
 
     /**
      * Get the StateNumber {@link PropertyType} Node, or {@code null} if it does not exist.

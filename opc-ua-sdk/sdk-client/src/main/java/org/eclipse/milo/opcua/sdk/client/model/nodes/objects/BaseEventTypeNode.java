@@ -18,14 +18,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventType {
     public BaseEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -70,17 +69,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeEventIdAsync(ByteString eventId) {
+    public CompletableFuture<StatusCode> writeEventIdAsync(ByteString eventId) {
         DataValue value = DataValue.valueOnly(new Variant(eventId));
         return getEventIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -134,17 +126,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeEventTypeAsync(NodeId eventType) {
+    public CompletableFuture<StatusCode> writeEventTypeAsync(NodeId eventType) {
         DataValue value = DataValue.valueOnly(new Variant(eventType));
         return getEventTypeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -198,17 +183,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeSourceNodeAsync(NodeId sourceNode) {
+    public CompletableFuture<StatusCode> writeSourceNodeAsync(NodeId sourceNode) {
         DataValue value = DataValue.valueOnly(new Variant(sourceNode));
         return getSourceNodeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -262,17 +240,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeSourceNameAsync(String sourceName) {
+    public CompletableFuture<StatusCode> writeSourceNameAsync(String sourceName) {
         DataValue value = DataValue.valueOnly(new Variant(sourceName));
         return getSourceNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -326,17 +297,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeTimeAsync(DateTime time) {
+    public CompletableFuture<StatusCode> writeTimeAsync(DateTime time) {
         DataValue value = DataValue.valueOnly(new Variant(time));
         return getTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -390,17 +354,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeReceiveTimeAsync(DateTime receiveTime) {
+    public CompletableFuture<StatusCode> writeReceiveTimeAsync(DateTime receiveTime) {
         DataValue value = DataValue.valueOnly(new Variant(receiveTime));
         return getReceiveTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -455,18 +412,11 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeLocalTimeAsync(TimeZoneDataType localTime) {
+    public CompletableFuture<StatusCode> writeLocalTimeAsync(TimeZoneDataType localTime) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), localTime);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLocalTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -520,17 +470,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeMessageAsync(LocalizedText message) {
+    public CompletableFuture<StatusCode> writeMessageAsync(LocalizedText message) {
         DataValue value = DataValue.valueOnly(new Variant(message));
         return getMessageNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -584,17 +527,10 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     }
 
     @Override
-    public CompletableFuture<Unit> writeSeverityAsync(UShort severity) {
+    public CompletableFuture<StatusCode> writeSeverityAsync(UShort severity) {
         DataValue value = DataValue.valueOnly(new Variant(severity));
         return getSeverityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

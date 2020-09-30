@@ -16,12 +16,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class FiniteStateMachineTypeNode extends StateMachineTypeNode implements FiniteStateMachineType {
     public FiniteStateMachineTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class FiniteStateMachineTypeNode extends StateMachineTypeNode implements 
     }
 
     @Override
-    public CompletableFuture<Unit> writeCurrentStateAsync(LocalizedText currentState) {
+    public CompletableFuture<StatusCode> writeCurrentStateAsync(LocalizedText currentState) {
         DataValue value = DataValue.valueOnly(new Variant(currentState));
         return getCurrentStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class FiniteStateMachineTypeNode extends StateMachineTypeNode implements 
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastTransitionAsync(LocalizedText lastTransition) {
+    public CompletableFuture<StatusCode> writeLastTransitionAsync(LocalizedText lastTransition) {
         DataValue value = DataValue.valueOnly(new Variant(lastTransition));
         return getLastTransitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

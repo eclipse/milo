@@ -23,8 +23,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ConditionTypeNode extends BaseEventTypeNode implements ConditionType {
     public ConditionTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -69,17 +67,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeConditionClassIdAsync(NodeId conditionClassId) {
+    public CompletableFuture<StatusCode> writeConditionClassIdAsync(NodeId conditionClassId) {
         DataValue value = DataValue.valueOnly(new Variant(conditionClassId));
         return getConditionClassIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -133,17 +124,11 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeConditionClassNameAsync(LocalizedText conditionClassName) {
+    public CompletableFuture<StatusCode> writeConditionClassNameAsync(
+        LocalizedText conditionClassName) {
         DataValue value = DataValue.valueOnly(new Variant(conditionClassName));
         return getConditionClassNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -197,17 +182,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeConditionNameAsync(String conditionName) {
+    public CompletableFuture<StatusCode> writeConditionNameAsync(String conditionName) {
         DataValue value = DataValue.valueOnly(new Variant(conditionName));
         return getConditionNameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -261,17 +239,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeBranchIdAsync(NodeId branchId) {
+    public CompletableFuture<StatusCode> writeBranchIdAsync(NodeId branchId) {
         DataValue value = DataValue.valueOnly(new Variant(branchId));
         return getBranchIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -325,17 +296,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeRetainAsync(Boolean retain) {
+    public CompletableFuture<StatusCode> writeRetainAsync(Boolean retain) {
         DataValue value = DataValue.valueOnly(new Variant(retain));
         return getRetainNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -389,17 +353,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientUserIdAsync(String clientUserId) {
+    public CompletableFuture<StatusCode> writeClientUserIdAsync(String clientUserId) {
         DataValue value = DataValue.valueOnly(new Variant(clientUserId));
         return getClientUserIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -453,17 +410,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState) {
+    public CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState) {
         DataValue value = DataValue.valueOnly(new Variant(enabledState));
         return getEnabledStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -517,17 +467,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeQualityAsync(StatusCode quality) {
+    public CompletableFuture<StatusCode> writeQualityAsync(StatusCode quality) {
         DataValue value = DataValue.valueOnly(new Variant(quality));
         return getQualityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -581,17 +524,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastSeverityAsync(UShort lastSeverity) {
+    public CompletableFuture<StatusCode> writeLastSeverityAsync(UShort lastSeverity) {
         DataValue value = DataValue.valueOnly(new Variant(lastSeverity));
         return getLastSeverityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -645,17 +581,10 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public CompletableFuture<Unit> writeCommentAsync(LocalizedText comment) {
+    public CompletableFuture<StatusCode> writeCommentAsync(LocalizedText comment) {
         DataValue value = DataValue.valueOnly(new Variant(comment));
         return getCommentNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

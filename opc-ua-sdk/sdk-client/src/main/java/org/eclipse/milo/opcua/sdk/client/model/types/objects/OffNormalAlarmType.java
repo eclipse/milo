@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface OffNormalAlarmType extends DiscreteAlarmType {
     QualifiedProperty<NodeId> NORMAL_STATE = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface OffNormalAlarmType extends DiscreteAlarmType {
      * An asynchronous implementation of {@link #writeNormalState(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNormalStateAsync(NodeId normalState);
+    CompletableFuture<StatusCode> writeNormalStateAsync(NodeId normalState);
 
     /**
      * Get the NormalState {@link PropertyType} Node, or {@code null} if it does not exist.

@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
     /**
@@ -58,9 +58,9 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
      * An asynchronous implementation of {@link #writeActiveState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeActiveStateAsync(LocalizedText activeState);
+    CompletableFuture<StatusCode> writeActiveStateAsync(LocalizedText activeState);
 
     /**
      * Get the ActiveState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -131,9 +131,9 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
      * An asynchronous implementation of {@link #writeHighHighState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeHighHighStateAsync(LocalizedText highHighState);
+    CompletableFuture<StatusCode> writeHighHighStateAsync(LocalizedText highHighState);
 
     /**
      * Get the HighHighState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -204,9 +204,9 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
      * An asynchronous implementation of {@link #writeHighState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeHighStateAsync(LocalizedText highState);
+    CompletableFuture<StatusCode> writeHighStateAsync(LocalizedText highState);
 
     /**
      * Get the HighState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -277,9 +277,9 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
      * An asynchronous implementation of {@link #writeLowState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLowStateAsync(LocalizedText lowState);
+    CompletableFuture<StatusCode> writeLowStateAsync(LocalizedText lowState);
 
     /**
      * Get the LowState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -350,9 +350,9 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
      * An asynchronous implementation of {@link #writeLowLowState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLowLowStateAsync(LocalizedText lowLowState);
+    CompletableFuture<StatusCode> writeLowLowStateAsync(LocalizedText lowLowState);
 
     /**
      * Get the LowLowState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.

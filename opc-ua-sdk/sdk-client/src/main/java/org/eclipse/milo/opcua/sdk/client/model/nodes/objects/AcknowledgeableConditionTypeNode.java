@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implements AcknowledgeableConditionType {
     public AcknowledgeableConditionTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState) {
+    public CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState) {
         DataValue value = DataValue.valueOnly(new Variant(enabledState));
         return getEnabledStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -129,17 +121,10 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeAckedStateAsync(LocalizedText ackedState) {
+    public CompletableFuture<StatusCode> writeAckedStateAsync(LocalizedText ackedState) {
         DataValue value = DataValue.valueOnly(new Variant(ackedState));
         return getAckedStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -193,17 +178,10 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
     }
 
     @Override
-    public CompletableFuture<Unit> writeConfirmedStateAsync(LocalizedText confirmedState) {
+    public CompletableFuture<StatusCode> writeConfirmedStateAsync(LocalizedText confirmedState) {
         DataValue value = DataValue.valueOnly(new Variant(confirmedState));
         return getConfirmedStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

@@ -6,10 +6,10 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionDiagnostic
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionSecurityDiagnosticsType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SubscriptionDiagnosticsArrayType;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface SessionDiagnosticsObjectType extends BaseObjectType {
     /**
@@ -62,9 +62,9 @@ public interface SessionDiagnosticsObjectType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSessionDiagnostics(SessionDiagnosticsDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionDiagnosticsAsync(
+    CompletableFuture<StatusCode> writeSessionDiagnosticsAsync(
         SessionDiagnosticsDataType sessionDiagnostics);
 
     /**
@@ -139,9 +139,9 @@ public interface SessionDiagnosticsObjectType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSessionSecurityDiagnosticsAsync(
+    CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsAsync(
         SessionSecurityDiagnosticsDataType sessionSecurityDiagnostics);
 
     /**
@@ -217,9 +217,9 @@ public interface SessionDiagnosticsObjectType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSubscriptionDiagnosticsArrayAsync(
+    CompletableFuture<StatusCode> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray);
 
     /**

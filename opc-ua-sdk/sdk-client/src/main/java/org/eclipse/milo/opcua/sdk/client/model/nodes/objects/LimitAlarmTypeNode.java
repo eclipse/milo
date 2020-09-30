@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class LimitAlarmTypeNode extends AlarmConditionTypeNode implements LimitAlarmType {
     public LimitAlarmTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class LimitAlarmTypeNode extends AlarmConditionTypeNode implements LimitA
     }
 
     @Override
-    public CompletableFuture<Unit> writeHighHighLimitAsync(Double highHighLimit) {
+    public CompletableFuture<StatusCode> writeHighHighLimitAsync(Double highHighLimit) {
         DataValue value = DataValue.valueOnly(new Variant(highHighLimit));
         return getHighHighLimitNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -129,17 +121,10 @@ public class LimitAlarmTypeNode extends AlarmConditionTypeNode implements LimitA
     }
 
     @Override
-    public CompletableFuture<Unit> writeHighLimitAsync(Double highLimit) {
+    public CompletableFuture<StatusCode> writeHighLimitAsync(Double highLimit) {
         DataValue value = DataValue.valueOnly(new Variant(highLimit));
         return getHighLimitNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -193,17 +178,10 @@ public class LimitAlarmTypeNode extends AlarmConditionTypeNode implements LimitA
     }
 
     @Override
-    public CompletableFuture<Unit> writeLowLimitAsync(Double lowLimit) {
+    public CompletableFuture<StatusCode> writeLowLimitAsync(Double lowLimit) {
         DataValue value = DataValue.valueOnly(new Variant(lowLimit));
         return getLowLimitNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -257,17 +235,10 @@ public class LimitAlarmTypeNode extends AlarmConditionTypeNode implements LimitA
     }
 
     @Override
-    public CompletableFuture<Unit> writeLowLowLimitAsync(Double lowLowLimit) {
+    public CompletableFuture<StatusCode> writeLowLowLimitAsync(Double lowLowLimit) {
         DataValue value = DataValue.valueOnly(new Variant(lowLowLimit));
         return getLowLowLimitNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

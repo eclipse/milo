@@ -16,13 +16,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.NetworkGroupDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class NonTransparentNetworkRedundancyTypeNode extends NonTransparentRedundancyTypeNode implements NonTransparentNetworkRedundancyType {
     public NonTransparentNetworkRedundancyTypeNode(OpcUaClient client, NodeId nodeId,
@@ -70,19 +69,12 @@ public class NonTransparentNetworkRedundancyTypeNode extends NonTransparentRedun
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerNetworkGroupsAsync(
+    public CompletableFuture<StatusCode> writeServerNetworkGroupsAsync(
         NetworkGroupDataType[] serverNetworkGroups) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), serverNetworkGroups);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerNetworkGroupsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

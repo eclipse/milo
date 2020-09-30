@@ -8,8 +8,8 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface HistoricalDataConfigurationType extends BaseObjectType {
     QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
@@ -126,9 +126,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStepped(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSteppedAsync(Boolean stepped);
+    CompletableFuture<StatusCode> writeSteppedAsync(Boolean stepped);
 
     /**
      * Get the Stepped {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -199,9 +199,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeDefinition(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDefinitionAsync(String definition);
+    CompletableFuture<StatusCode> writeDefinitionAsync(String definition);
 
     /**
      * Get the Definition {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -272,9 +272,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxTimeInterval(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxTimeIntervalAsync(Double maxTimeInterval);
+    CompletableFuture<StatusCode> writeMaxTimeIntervalAsync(Double maxTimeInterval);
 
     /**
      * Get the MaxTimeInterval {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -345,9 +345,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMinTimeInterval(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMinTimeIntervalAsync(Double minTimeInterval);
+    CompletableFuture<StatusCode> writeMinTimeIntervalAsync(Double minTimeInterval);
 
     /**
      * Get the MinTimeInterval {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -418,9 +418,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeExceptionDeviation(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeExceptionDeviationAsync(Double exceptionDeviation);
+    CompletableFuture<StatusCode> writeExceptionDeviationAsync(Double exceptionDeviation);
 
     /**
      * Get the ExceptionDeviation {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -493,9 +493,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeExceptionDeviationFormat(ExceptionDeviationFormat)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeExceptionDeviationFormatAsync(
+    CompletableFuture<StatusCode> writeExceptionDeviationFormatAsync(
         ExceptionDeviationFormat exceptionDeviationFormat);
 
     /**
@@ -567,9 +567,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStartOfArchive(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStartOfArchiveAsync(DateTime startOfArchive);
+    CompletableFuture<StatusCode> writeStartOfArchiveAsync(DateTime startOfArchive);
 
     /**
      * Get the StartOfArchive {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -640,9 +640,9 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeStartOfOnlineArchive(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStartOfOnlineArchiveAsync(DateTime startOfOnlineArchive);
+    CompletableFuture<StatusCode> writeStartOfOnlineArchiveAsync(DateTime startOfOnlineArchive);
 
     /**
      * Get the StartOfOnlineArchive {@link PropertyType} Node, or {@code null} if it does not exist.

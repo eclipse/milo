@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface ProgramTransitionEventType extends TransitionEventType {
     QualifiedProperty<Object> INTERMEDIATE_RESULT = new QualifiedProperty<>(
@@ -68,9 +68,9 @@ public interface ProgramTransitionEventType extends TransitionEventType {
      * An asynchronous implementation of {@link #writeIntermediateResult(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIntermediateResultAsync(Object intermediateResult);
+    CompletableFuture<StatusCode> writeIntermediateResultAsync(Object intermediateResult);
 
     /**
      * Get the IntermediateResult {@link PropertyType} Node, or {@code null} if it does not exist.

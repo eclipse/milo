@@ -10,10 +10,10 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerDiagnosticsType extends BaseObjectType {
     QualifiedProperty<Boolean> ENABLED_FLAG = new QualifiedProperty<>(
@@ -74,9 +74,9 @@ public interface ServerDiagnosticsType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeEnabledFlag(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnabledFlagAsync(Boolean enabledFlag);
+    CompletableFuture<StatusCode> writeEnabledFlagAsync(Boolean enabledFlag);
 
     /**
      * Get the EnabledFlag {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface ServerDiagnosticsType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerDiagnosticsSummaryAsync(
+    CompletableFuture<StatusCode> writeServerDiagnosticsSummaryAsync(
         ServerDiagnosticsSummaryDataType serverDiagnosticsSummary);
 
     /**
@@ -226,9 +226,9 @@ public interface ServerDiagnosticsType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSamplingIntervalDiagnosticsArray(SamplingIntervalDiagnosticsDataType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSamplingIntervalDiagnosticsArrayAsync(
+    CompletableFuture<StatusCode> writeSamplingIntervalDiagnosticsArrayAsync(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray);
 
     /**
@@ -304,9 +304,9 @@ public interface ServerDiagnosticsType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSubscriptionDiagnosticsArrayAsync(
+    CompletableFuture<StatusCode> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray);
 
     /**

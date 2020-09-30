@@ -16,14 +16,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNode implements AuditOpenSecureChannelEventType {
     public AuditOpenSecureChannelEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -68,17 +67,10 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientCertificateAsync(ByteString clientCertificate) {
+    public CompletableFuture<StatusCode> writeClientCertificateAsync(ByteString clientCertificate) {
         DataValue value = DataValue.valueOnly(new Variant(clientCertificate));
         return getClientCertificateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -134,18 +126,11 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientCertificateThumbprintAsync(
+    public CompletableFuture<StatusCode> writeClientCertificateThumbprintAsync(
         String clientCertificateThumbprint) {
         DataValue value = DataValue.valueOnly(new Variant(clientCertificateThumbprint));
         return getClientCertificateThumbprintNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -166,7 +151,14 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
     @Override
     public SecurityTokenRequestType getRequestType() throws UaException {
         PropertyTypeNode node = getRequestTypeNode();
-        return (SecurityTokenRequestType) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return SecurityTokenRequestType.from((Integer) value);
+        } else if (value instanceof SecurityTokenRequestType) {
+            return (SecurityTokenRequestType) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -195,21 +187,23 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends SecurityTokenRequestType> readRequestTypeAsync() {
-        return getRequestTypeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (SecurityTokenRequestType) v.getValue().getValue());
+        return getRequestTypeNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return SecurityTokenRequestType.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeRequestTypeAsync(SecurityTokenRequestType requestType) {
+    public CompletableFuture<StatusCode> writeRequestTypeAsync(SecurityTokenRequestType requestType) {
         DataValue value = DataValue.valueOnly(new Variant(requestType));
         return getRequestTypeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -263,17 +257,10 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecurityPolicyUriAsync(String securityPolicyUri) {
+    public CompletableFuture<StatusCode> writeSecurityPolicyUriAsync(String securityPolicyUri) {
         DataValue value = DataValue.valueOnly(new Variant(securityPolicyUri));
         return getSecurityPolicyUriNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -294,7 +281,14 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
     @Override
     public MessageSecurityMode getSecurityMode() throws UaException {
         PropertyTypeNode node = getSecurityModeNode();
-        return (MessageSecurityMode) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return MessageSecurityMode.from((Integer) value);
+        } else if (value instanceof MessageSecurityMode) {
+            return (MessageSecurityMode) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -323,21 +317,23 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public CompletableFuture<? extends MessageSecurityMode> readSecurityModeAsync() {
-        return getSecurityModeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (MessageSecurityMode) v.getValue().getValue());
+        return getSecurityModeNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return MessageSecurityMode.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeSecurityModeAsync(MessageSecurityMode securityMode) {
+    public CompletableFuture<StatusCode> writeSecurityModeAsync(MessageSecurityMode securityMode) {
         DataValue value = DataValue.valueOnly(new Variant(securityMode));
         return getSecurityModeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -391,17 +387,10 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
     }
 
     @Override
-    public CompletableFuture<Unit> writeRequestedLifetimeAsync(Double requestedLifetime) {
+    public CompletableFuture<StatusCode> writeRequestedLifetimeAsync(Double requestedLifetime) {
         DataValue value = DataValue.valueOnly(new Variant(requestedLifetime));
         return getRequestedLifetimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

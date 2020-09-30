@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface LimitAlarmType extends AlarmConditionType {
     QualifiedProperty<Double> HIGH_HIGH_LIMIT = new QualifiedProperty<>(
@@ -92,9 +92,9 @@ public interface LimitAlarmType extends AlarmConditionType {
      * An asynchronous implementation of {@link #writeHighHighLimit(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeHighHighLimitAsync(Double highHighLimit);
+    CompletableFuture<StatusCode> writeHighHighLimitAsync(Double highHighLimit);
 
     /**
      * Get the HighHighLimit {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -165,9 +165,9 @@ public interface LimitAlarmType extends AlarmConditionType {
      * An asynchronous implementation of {@link #writeHighLimit(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeHighLimitAsync(Double highLimit);
+    CompletableFuture<StatusCode> writeHighLimitAsync(Double highLimit);
 
     /**
      * Get the HighLimit {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -238,9 +238,9 @@ public interface LimitAlarmType extends AlarmConditionType {
      * An asynchronous implementation of {@link #writeLowLimit(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLowLimitAsync(Double lowLimit);
+    CompletableFuture<StatusCode> writeLowLimitAsync(Double lowLimit);
 
     /**
      * Get the LowLimit {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -311,9 +311,9 @@ public interface LimitAlarmType extends AlarmConditionType {
      * An asynchronous implementation of {@link #writeLowLowLimit(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLowLowLimitAsync(Double lowLowLimit);
+    CompletableFuture<StatusCode> writeLowLowLimitAsync(Double lowLowLimit);
 
     /**
      * Get the LowLowLimit {@link PropertyType} Node, or {@code null} if it does not exist.

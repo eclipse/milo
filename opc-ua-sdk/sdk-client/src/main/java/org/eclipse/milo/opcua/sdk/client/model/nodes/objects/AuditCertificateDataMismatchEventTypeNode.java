@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateEventTypeNode implements AuditCertificateDataMismatchEventType {
     public AuditCertificateDataMismatchEventTypeNode(OpcUaClient client, NodeId nodeId,
@@ -65,17 +64,10 @@ public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateE
     }
 
     @Override
-    public CompletableFuture<Unit> writeInvalidHostnameAsync(String invalidHostname) {
+    public CompletableFuture<StatusCode> writeInvalidHostnameAsync(String invalidHostname) {
         DataValue value = DataValue.valueOnly(new Variant(invalidHostname));
         return getInvalidHostnameNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -129,17 +121,10 @@ public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateE
     }
 
     @Override
-    public CompletableFuture<Unit> writeInvalidUriAsync(String invalidUri) {
+    public CompletableFuture<StatusCode> writeInvalidUriAsync(String invalidUri) {
         DataValue value = DataValue.valueOnly(new Variant(invalidUri));
         return getInvalidUriNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

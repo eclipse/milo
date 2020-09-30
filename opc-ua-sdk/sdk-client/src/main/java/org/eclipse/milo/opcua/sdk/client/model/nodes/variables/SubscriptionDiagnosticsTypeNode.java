@@ -1788,9 +1788,9 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
     }
 
     @Override
-    public void setEventQueueOverflowCount(UInteger eventQueueOverFlowCount) throws UaException {
+    public void setEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException {
         BaseDataVariableTypeNode node = getEventQueueOverflowCountNode();
-        node.setValue(new Variant(eventQueueOverFlowCount));
+        node.setValue(new Variant(eventQueueOverflowCount));
     }
 
     @Override
@@ -1803,9 +1803,9 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
     }
 
     @Override
-    public void writeEventQueueOverflowCount(UInteger eventQueueOverFlowCount) throws UaException {
+    public void writeEventQueueOverflowCount(UInteger eventQueueOverflowCount) throws UaException {
         try {
-            writeEventQueueOverflowCountAsync(eventQueueOverFlowCount).get();
+            writeEventQueueOverflowCountAsync(eventQueueOverflowCount).get();
         } catch (ExecutionException | InterruptedException e) {
             throw UaException.extract(e).orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
         }
@@ -1818,8 +1818,8 @@ public class SubscriptionDiagnosticsTypeNode extends BaseDataVariableTypeNode im
 
     @Override
     public CompletableFuture<StatusCode> writeEventQueueOverflowCountAsync(
-        UInteger eventQueueOverFlowCount) {
-        DataValue value = DataValue.valueOnly(new Variant(eventQueueOverFlowCount));
+        UInteger eventQueueOverflowCount) {
+        DataValue value = DataValue.valueOnly(new Variant(eventQueueOverflowCount));
         return getEventQueueOverflowCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }

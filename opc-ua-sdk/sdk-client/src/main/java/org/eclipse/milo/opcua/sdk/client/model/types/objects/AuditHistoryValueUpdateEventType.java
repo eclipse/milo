@@ -9,8 +9,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
@@ -95,9 +95,9 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeUpdatedNode(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUpdatedNodeAsync(NodeId updatedNode);
+    CompletableFuture<StatusCode> writeUpdatedNodeAsync(NodeId updatedNode);
 
     /**
      * Get the UpdatedNode {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -168,9 +168,10 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writePerformInsertReplace(PerformUpdateType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePerformInsertReplaceAsync(PerformUpdateType performInsertReplace);
+    CompletableFuture<StatusCode> writePerformInsertReplaceAsync(
+        PerformUpdateType performInsertReplace);
 
     /**
      * Get the PerformInsertReplace {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -241,9 +242,9 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeNewValues(DataValue[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNewValuesAsync(DataValue[] newValues);
+    CompletableFuture<StatusCode> writeNewValuesAsync(DataValue[] newValues);
 
     /**
      * Get the NewValues {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -314,9 +315,9 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeOldValues(DataValue[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldValuesAsync(DataValue[] oldValues);
+    CompletableFuture<StatusCode> writeOldValuesAsync(DataValue[] oldValues);
 
     /**
      * Get the OldValues {@link PropertyType} Node, or {@code null} if it does not exist.

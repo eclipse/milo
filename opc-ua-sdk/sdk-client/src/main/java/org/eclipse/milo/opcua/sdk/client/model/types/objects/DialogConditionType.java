@@ -9,7 +9,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface DialogConditionType extends ConditionType {
     QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
@@ -110,9 +110,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writePrompt(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePromptAsync(LocalizedText prompt);
+    CompletableFuture<StatusCode> writePromptAsync(LocalizedText prompt);
 
     /**
      * Get the Prompt {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -183,9 +183,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeResponseOptionSet(LocalizedText[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeResponseOptionSetAsync(LocalizedText[] responseOptionSet);
+    CompletableFuture<StatusCode> writeResponseOptionSetAsync(LocalizedText[] responseOptionSet);
 
     /**
      * Get the ResponseOptionSet {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -256,9 +256,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeDefaultResponse(Integer)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDefaultResponseAsync(Integer defaultResponse);
+    CompletableFuture<StatusCode> writeDefaultResponseAsync(Integer defaultResponse);
 
     /**
      * Get the DefaultResponse {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -329,9 +329,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeOkResponse(Integer)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOkResponseAsync(Integer okResponse);
+    CompletableFuture<StatusCode> writeOkResponseAsync(Integer okResponse);
 
     /**
      * Get the OkResponse {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -402,9 +402,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeCancelResponse(Integer)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCancelResponseAsync(Integer cancelResponse);
+    CompletableFuture<StatusCode> writeCancelResponseAsync(Integer cancelResponse);
 
     /**
      * Get the CancelResponse {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -475,9 +475,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeLastResponse(Integer)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastResponseAsync(Integer lastResponse);
+    CompletableFuture<StatusCode> writeLastResponseAsync(Integer lastResponse);
 
     /**
      * Get the LastResponse {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -548,9 +548,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeEnabledState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState);
+    CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState);
 
     /**
      * Get the EnabledState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -621,9 +621,9 @@ public interface DialogConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeDialogState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeDialogStateAsync(LocalizedText dialogState);
+    CompletableFuture<StatusCode> writeDialogStateAsync(LocalizedText dialogState);
 
     /**
      * Get the DialogState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.

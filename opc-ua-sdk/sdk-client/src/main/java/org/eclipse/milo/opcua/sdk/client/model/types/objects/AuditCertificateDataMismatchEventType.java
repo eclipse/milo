@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditCertificateDataMismatchEventType extends AuditCertificateEventType {
     QualifiedProperty<String> INVALID_HOSTNAME = new QualifiedProperty<>(
@@ -76,9 +76,9 @@ public interface AuditCertificateDataMismatchEventType extends AuditCertificateE
      * An asynchronous implementation of {@link #writeInvalidHostname(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInvalidHostnameAsync(String invalidHostname);
+    CompletableFuture<StatusCode> writeInvalidHostnameAsync(String invalidHostname);
 
     /**
      * Get the InvalidHostname {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface AuditCertificateDataMismatchEventType extends AuditCertificateE
      * An asynchronous implementation of {@link #writeInvalidUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeInvalidUriAsync(String invalidUri);
+    CompletableFuture<StatusCode> writeInvalidUriAsync(String invalidUri);
 
     /**
      * Get the InvalidUri {@link PropertyType} Node, or {@code null} if it does not exist.

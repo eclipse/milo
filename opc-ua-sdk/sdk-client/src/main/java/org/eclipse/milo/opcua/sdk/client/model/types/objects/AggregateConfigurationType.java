@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AggregateConfigurationType extends BaseObjectType {
     QualifiedProperty<Boolean> TREAT_UNCERTAIN_AS_BAD = new QualifiedProperty<>(
@@ -93,9 +93,9 @@ public interface AggregateConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeTreatUncertainAsBad(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTreatUncertainAsBadAsync(Boolean treatUncertainAsBad);
+    CompletableFuture<StatusCode> writeTreatUncertainAsBadAsync(Boolean treatUncertainAsBad);
 
     /**
      * Get the TreatUncertainAsBad {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -166,9 +166,9 @@ public interface AggregateConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writePercentDataBad(UByte)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePercentDataBadAsync(UByte percentDataBad);
+    CompletableFuture<StatusCode> writePercentDataBadAsync(UByte percentDataBad);
 
     /**
      * Get the PercentDataBad {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -239,9 +239,9 @@ public interface AggregateConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writePercentDataGood(UByte)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePercentDataGoodAsync(UByte percentDataGood);
+    CompletableFuture<StatusCode> writePercentDataGoodAsync(UByte percentDataGood);
 
     /**
      * Get the PercentDataGood {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -312,9 +312,9 @@ public interface AggregateConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeUseSlopedExtrapolation(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUseSlopedExtrapolationAsync(Boolean useSlopedExtrapolation);
+    CompletableFuture<StatusCode> writeUseSlopedExtrapolationAsync(Boolean useSlopedExtrapolation);
 
     /**
      * Get the UseSlopedExtrapolation {@link PropertyType} Node, or {@code null} if it does not exist.

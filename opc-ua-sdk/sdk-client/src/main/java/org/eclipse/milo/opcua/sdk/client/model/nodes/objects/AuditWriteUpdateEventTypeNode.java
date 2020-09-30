@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditWriteUpdateEventTypeNode extends AuditUpdateEventTypeNode implements AuditWriteUpdateEventType {
     public AuditWriteUpdateEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class AuditWriteUpdateEventTypeNode extends AuditUpdateEventTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeAttributeIdAsync(UInteger attributeId) {
+    public CompletableFuture<StatusCode> writeAttributeIdAsync(UInteger attributeId) {
         DataValue value = DataValue.valueOnly(new Variant(attributeId));
         return getAttributeIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -129,17 +121,10 @@ public class AuditWriteUpdateEventTypeNode extends AuditUpdateEventTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeIndexRangeAsync(String indexRange) {
+    public CompletableFuture<StatusCode> writeIndexRangeAsync(String indexRange) {
         DataValue value = DataValue.valueOnly(new Variant(indexRange));
         return getIndexRangeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -193,17 +178,10 @@ public class AuditWriteUpdateEventTypeNode extends AuditUpdateEventTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeOldValueAsync(Object oldValue) {
+    public CompletableFuture<StatusCode> writeOldValueAsync(Object oldValue) {
         DataValue value = DataValue.valueOnly(new Variant(oldValue));
         return getOldValueNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -257,17 +235,10 @@ public class AuditWriteUpdateEventTypeNode extends AuditUpdateEventTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeNewValueAsync(Object newValue) {
+    public CompletableFuture<StatusCode> writeNewValueAsync(Object newValue) {
         DataValue value = DataValue.valueOnly(new Variant(newValue));
         return getNewValueNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

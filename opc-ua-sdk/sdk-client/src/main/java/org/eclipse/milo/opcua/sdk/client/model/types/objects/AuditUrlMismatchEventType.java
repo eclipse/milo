@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditUrlMismatchEventType extends AuditCreateSessionEventType {
     QualifiedProperty<String> ENDPOINT_URL = new QualifiedProperty<>(
@@ -68,9 +68,9 @@ public interface AuditUrlMismatchEventType extends AuditCreateSessionEventType {
      * An asynchronous implementation of {@link #writeEndpointUrl(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEndpointUrlAsync(String endpointUrl);
+    CompletableFuture<StatusCode> writeEndpointUrlAsync(String endpointUrl);
 
     /**
      * Get the EndpointUrl {@link PropertyType} Node, or {@code null} if it does not exist.

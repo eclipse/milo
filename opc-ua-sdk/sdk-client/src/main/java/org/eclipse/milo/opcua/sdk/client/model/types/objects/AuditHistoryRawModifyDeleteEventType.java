@@ -9,7 +9,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<Boolean> IS_DELETE_MODIFIED = new QualifiedProperty<>(
@@ -94,9 +94,9 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
      * An asynchronous implementation of {@link #writeIsDeleteModified(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIsDeleteModifiedAsync(Boolean isDeleteModified);
+    CompletableFuture<StatusCode> writeIsDeleteModifiedAsync(Boolean isDeleteModified);
 
     /**
      * Get the IsDeleteModified {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -167,9 +167,9 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
      * An asynchronous implementation of {@link #writeStartTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStartTimeAsync(DateTime startTime);
+    CompletableFuture<StatusCode> writeStartTimeAsync(DateTime startTime);
 
     /**
      * Get the StartTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -240,9 +240,9 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
      * An asynchronous implementation of {@link #writeEndTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEndTimeAsync(DateTime endTime);
+    CompletableFuture<StatusCode> writeEndTimeAsync(DateTime endTime);
 
     /**
      * Get the EndTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -313,9 +313,9 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
      * An asynchronous implementation of {@link #writeOldValues(DataValue[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldValuesAsync(DataValue[] oldValues);
+    CompletableFuture<StatusCode> writeOldValuesAsync(DataValue[] oldValues);
 
     /**
      * Get the OldValues {@link PropertyType} Node, or {@code null} if it does not exist.

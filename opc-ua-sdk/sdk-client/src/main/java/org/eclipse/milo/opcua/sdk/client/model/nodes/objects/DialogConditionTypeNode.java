@@ -16,12 +16,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class DialogConditionTypeNode extends ConditionTypeNode implements DialogConditionType {
     public DialogConditionTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writePromptAsync(LocalizedText prompt) {
+    public CompletableFuture<StatusCode> writePromptAsync(LocalizedText prompt) {
         DataValue value = DataValue.valueOnly(new Variant(prompt));
         return getPromptNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,11 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeResponseOptionSetAsync(LocalizedText[] responseOptionSet) {
+    public CompletableFuture<StatusCode> writeResponseOptionSetAsync(
+        LocalizedText[] responseOptionSet) {
         DataValue value = DataValue.valueOnly(new Variant(responseOptionSet));
         return getResponseOptionSetNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -194,17 +180,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeDefaultResponseAsync(Integer defaultResponse) {
+    public CompletableFuture<StatusCode> writeDefaultResponseAsync(Integer defaultResponse) {
         DataValue value = DataValue.valueOnly(new Variant(defaultResponse));
         return getDefaultResponseNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -258,17 +237,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeOkResponseAsync(Integer okResponse) {
+    public CompletableFuture<StatusCode> writeOkResponseAsync(Integer okResponse) {
         DataValue value = DataValue.valueOnly(new Variant(okResponse));
         return getOkResponseNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -322,17 +294,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeCancelResponseAsync(Integer cancelResponse) {
+    public CompletableFuture<StatusCode> writeCancelResponseAsync(Integer cancelResponse) {
         DataValue value = DataValue.valueOnly(new Variant(cancelResponse));
         return getCancelResponseNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -386,17 +351,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastResponseAsync(Integer lastResponse) {
+    public CompletableFuture<StatusCode> writeLastResponseAsync(Integer lastResponse) {
         DataValue value = DataValue.valueOnly(new Variant(lastResponse));
         return getLastResponseNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -450,17 +408,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState) {
+    public CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState) {
         DataValue value = DataValue.valueOnly(new Variant(enabledState));
         return getEnabledStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -514,17 +465,10 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public CompletableFuture<Unit> writeDialogStateAsync(LocalizedText dialogState) {
+    public CompletableFuture<StatusCode> writeDialogStateAsync(LocalizedText dialogState) {
         DataValue value = DataValue.valueOnly(new Variant(dialogState));
         return getDialogStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
