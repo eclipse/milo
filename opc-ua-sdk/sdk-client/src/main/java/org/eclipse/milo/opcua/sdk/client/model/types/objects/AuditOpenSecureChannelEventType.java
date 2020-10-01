@@ -8,9 +8,9 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
     QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
@@ -111,9 +111,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
      * An asynchronous implementation of {@link #writeClientCertificate(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientCertificateAsync(ByteString clientCertificate);
+    CompletableFuture<StatusCode> writeClientCertificateAsync(ByteString clientCertificate);
 
     /**
      * Get the ClientCertificate {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -184,9 +184,10 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
      * An asynchronous implementation of {@link #writeClientCertificateThumbprint(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientCertificateThumbprintAsync(String clientCertificateThumbprint);
+    CompletableFuture<StatusCode> writeClientCertificateThumbprintAsync(
+        String clientCertificateThumbprint);
 
     /**
      * Get the ClientCertificateThumbprint {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -257,9 +258,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
      * An asynchronous implementation of {@link #writeRequestType(SecurityTokenRequestType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRequestTypeAsync(SecurityTokenRequestType requestType);
+    CompletableFuture<StatusCode> writeRequestTypeAsync(SecurityTokenRequestType requestType);
 
     /**
      * Get the RequestType {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -330,9 +331,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
      * An asynchronous implementation of {@link #writeSecurityPolicyUri(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecurityPolicyUriAsync(String securityPolicyUri);
+    CompletableFuture<StatusCode> writeSecurityPolicyUriAsync(String securityPolicyUri);
 
     /**
      * Get the SecurityPolicyUri {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -403,9 +404,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
      * An asynchronous implementation of {@link #writeSecurityMode(MessageSecurityMode)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecurityModeAsync(MessageSecurityMode securityMode);
+    CompletableFuture<StatusCode> writeSecurityModeAsync(MessageSecurityMode securityMode);
 
     /**
      * Get the SecurityMode {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -476,9 +477,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
      * An asynchronous implementation of {@link #writeRequestedLifetime(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRequestedLifetimeAsync(Double requestedLifetime);
+    CompletableFuture<StatusCode> writeRequestedLifetimeAsync(Double requestedLifetime);
 
     /**
      * Get the RequestedLifetime {@link PropertyType} Node, or {@code null} if it does not exist.

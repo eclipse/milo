@@ -379,7 +379,14 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
     @Override
     public MessageSecurityMode getSecurityMode() throws UaException {
         BaseDataVariableTypeNode node = getSecurityModeNode();
-        return (MessageSecurityMode) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return MessageSecurityMode.from((Integer) value);
+        } else if (value instanceof MessageSecurityMode) {
+            return (MessageSecurityMode) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -408,7 +415,16 @@ public class SessionSecurityDiagnosticsTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<? extends MessageSecurityMode> readSecurityModeAsync() {
-        return getSecurityModeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (MessageSecurityMode) v.getValue().getValue());
+        return getSecurityModeNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return MessageSecurityMode.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override

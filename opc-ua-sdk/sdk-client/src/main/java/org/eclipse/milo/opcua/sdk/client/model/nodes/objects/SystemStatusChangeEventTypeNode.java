@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class SystemStatusChangeEventTypeNode extends SystemEventTypeNode implements SystemStatusChangeEventType {
     public SystemStatusChangeEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -33,7 +32,14 @@ public class SystemStatusChangeEventTypeNode extends SystemEventTypeNode impleme
     @Override
     public ServerState getSystemState() throws UaException {
         PropertyTypeNode node = getSystemStateNode();
-        return (ServerState) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return ServerState.from((Integer) value);
+        } else if (value instanceof ServerState) {
+            return (ServerState) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -62,21 +68,23 @@ public class SystemStatusChangeEventTypeNode extends SystemEventTypeNode impleme
 
     @Override
     public CompletableFuture<? extends ServerState> readSystemStateAsync() {
-        return getSystemStateNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServerState) v.getValue().getValue());
+        return getSystemStateNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return ServerState.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeSystemStateAsync(ServerState systemState) {
+    public CompletableFuture<StatusCode> writeSystemStateAsync(ServerState systemState) {
         DataValue value = DataValue.valueOnly(new Variant(systemState));
         return getSystemStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

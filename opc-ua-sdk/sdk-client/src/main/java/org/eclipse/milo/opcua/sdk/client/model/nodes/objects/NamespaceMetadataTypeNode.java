@@ -16,13 +16,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements NamespaceMetadataType {
     public NamespaceMetadataTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,17 +66,10 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     @Override
-    public CompletableFuture<Unit> writeNamespaceUriAsync(String namespaceUri) {
+    public CompletableFuture<StatusCode> writeNamespaceUriAsync(String namespaceUri) {
         DataValue value = DataValue.valueOnly(new Variant(namespaceUri));
         return getNamespaceUriNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,17 +123,10 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     @Override
-    public CompletableFuture<Unit> writeNamespaceVersionAsync(String namespaceVersion) {
+    public CompletableFuture<StatusCode> writeNamespaceVersionAsync(String namespaceVersion) {
         DataValue value = DataValue.valueOnly(new Variant(namespaceVersion));
         return getNamespaceVersionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,18 +180,11 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     @Override
-    public CompletableFuture<Unit> writeNamespacePublicationDateAsync(
+    public CompletableFuture<StatusCode> writeNamespacePublicationDateAsync(
         DateTime namespacePublicationDate) {
         DataValue value = DataValue.valueOnly(new Variant(namespacePublicationDate));
         return getNamespacePublicationDateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -260,17 +238,10 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     @Override
-    public CompletableFuture<Unit> writeIsNamespaceSubsetAsync(Boolean isNamespaceSubset) {
+    public CompletableFuture<StatusCode> writeIsNamespaceSubsetAsync(Boolean isNamespaceSubset) {
         DataValue value = DataValue.valueOnly(new Variant(isNamespaceSubset));
         return getIsNamespaceSubsetNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -291,7 +262,20 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     @Override
     public IdType[] getStaticNodeIdTypes() throws UaException {
         PropertyTypeNode node = getStaticNodeIdTypesNode();
-        return (IdType[]) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+
+        if (value instanceof Integer[]) {
+            Integer[] values = (Integer[]) value;
+            IdType[] staticNodeIdTypes = new IdType[values.length];
+            for (int i = 0; i < values.length; i++) {
+                staticNodeIdTypes[i] = IdType.from(values[i]);
+            }
+            return staticNodeIdTypes;
+        } else if (value instanceof IdType[]) {
+            return (IdType[]) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -320,21 +304,31 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public CompletableFuture<? extends IdType[]> readStaticNodeIdTypesAsync() {
-        return getStaticNodeIdTypesNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (IdType[]) v.getValue().getValue());
+        return getStaticNodeIdTypesNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+
+                if (value instanceof Integer[]) {
+                    Integer[] values = (Integer[]) value;
+                    IdType[] staticNodeIdTypes = new IdType[values.length];
+                    for (int i = 0; i < values.length; i++) {
+                        staticNodeIdTypes[i] = IdType.from(values[i]);
+                    }
+                    return staticNodeIdTypes;
+                } else if (value instanceof IdType[]) {
+                    return (IdType[]) value;
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeStaticNodeIdTypesAsync(IdType[] staticNodeIdTypes) {
+    public CompletableFuture<StatusCode> writeStaticNodeIdTypesAsync(IdType[] staticNodeIdTypes) {
         DataValue value = DataValue.valueOnly(new Variant(staticNodeIdTypes));
         return getStaticNodeIdTypesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -388,18 +382,11 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     @Override
-    public CompletableFuture<Unit> writeStaticNumericNodeIdRangeAsync(
+    public CompletableFuture<StatusCode> writeStaticNumericNodeIdRangeAsync(
         String[] staticNumericNodeIdRange) {
         DataValue value = DataValue.valueOnly(new Variant(staticNumericNodeIdRange));
         return getStaticNumericNodeIdRangeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -453,18 +440,11 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
     }
 
     @Override
-    public CompletableFuture<Unit> writeStaticStringNodeIdPatternAsync(
+    public CompletableFuture<StatusCode> writeStaticStringNodeIdPatternAsync(
         String staticStringNodeIdPattern) {
         DataValue value = DataValue.valueOnly(new Variant(staticStringNodeIdPattern));
         return getStaticStringNodeIdPatternNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

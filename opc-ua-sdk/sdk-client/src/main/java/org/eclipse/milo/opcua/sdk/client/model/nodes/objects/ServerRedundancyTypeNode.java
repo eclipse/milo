@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerRedundancyTypeNode extends BaseObjectTypeNode implements ServerRedundancyType {
     public ServerRedundancyTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -33,7 +32,14 @@ public class ServerRedundancyTypeNode extends BaseObjectTypeNode implements Serv
     @Override
     public RedundancySupport getRedundancySupport() throws UaException {
         PropertyTypeNode node = getRedundancySupportNode();
-        return (RedundancySupport) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return RedundancySupport.from((Integer) value);
+        } else if (value instanceof RedundancySupport) {
+            return (RedundancySupport) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -62,21 +68,24 @@ public class ServerRedundancyTypeNode extends BaseObjectTypeNode implements Serv
 
     @Override
     public CompletableFuture<? extends RedundancySupport> readRedundancySupportAsync() {
-        return getRedundancySupportNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (RedundancySupport) v.getValue().getValue());
+        return getRedundancySupportNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return RedundancySupport.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writeRedundancySupportAsync(RedundancySupport redundancySupport) {
+    public CompletableFuture<StatusCode> writeRedundancySupportAsync(
+        RedundancySupport redundancySupport) {
         DataValue value = DataValue.valueOnly(new Variant(redundancySupport));
         return getRedundancySupportNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

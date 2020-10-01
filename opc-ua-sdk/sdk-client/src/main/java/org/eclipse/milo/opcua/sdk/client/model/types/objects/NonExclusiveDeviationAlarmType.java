@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface NonExclusiveDeviationAlarmType extends NonExclusiveLimitAlarmType {
     QualifiedProperty<NodeId> SETPOINT_NODE = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface NonExclusiveDeviationAlarmType extends NonExclusiveLimitAlarmTy
      * An asynchronous implementation of {@link #writeSetpointNode(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSetpointNodeAsync(NodeId setpointNode);
+    CompletableFuture<StatusCode> writeSetpointNodeAsync(NodeId setpointNode);
 
     /**
      * Get the SetpointNode {@link PropertyType} Node, or {@code null} if it does not exist.

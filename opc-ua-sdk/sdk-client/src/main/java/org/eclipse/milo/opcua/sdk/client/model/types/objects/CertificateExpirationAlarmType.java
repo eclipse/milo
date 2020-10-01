@@ -10,7 +10,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType {
     QualifiedProperty<DateTime> EXPIRATION_DATE = new QualifiedProperty<>(
@@ -95,9 +95,9 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
      * An asynchronous implementation of {@link #writeExpirationDate(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeExpirationDateAsync(DateTime expirationDate);
+    CompletableFuture<StatusCode> writeExpirationDateAsync(DateTime expirationDate);
 
     /**
      * Get the ExpirationDate {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -168,9 +168,9 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
      * An asynchronous implementation of {@link #writeExpirationLimit(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeExpirationLimitAsync(Double expirationLimit);
+    CompletableFuture<StatusCode> writeExpirationLimitAsync(Double expirationLimit);
 
     /**
      * Get the ExpirationLimit {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -241,9 +241,9 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
      * An asynchronous implementation of {@link #writeCertificateType(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCertificateTypeAsync(NodeId certificateType);
+    CompletableFuture<StatusCode> writeCertificateTypeAsync(NodeId certificateType);
 
     /**
      * Get the CertificateType {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -314,9 +314,9 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
      * An asynchronous implementation of {@link #writeCertificate(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCertificateAsync(ByteString certificate);
+    CompletableFuture<StatusCode> writeCertificateAsync(ByteString certificate);
 
     /**
      * Get the Certificate {@link PropertyType} Node, or {@code null} if it does not exist.

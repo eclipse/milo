@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditEventType extends BaseEventType {
     QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
@@ -101,9 +101,9 @@ public interface AuditEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeActionTimeStamp(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeActionTimeStampAsync(DateTime actionTimeStamp);
+    CompletableFuture<StatusCode> writeActionTimeStampAsync(DateTime actionTimeStamp);
 
     /**
      * Get the ActionTimeStamp {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -174,9 +174,9 @@ public interface AuditEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeStatus(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeStatusAsync(Boolean status);
+    CompletableFuture<StatusCode> writeStatusAsync(Boolean status);
 
     /**
      * Get the Status {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -247,9 +247,9 @@ public interface AuditEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeServerId(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerIdAsync(String serverId);
+    CompletableFuture<StatusCode> writeServerIdAsync(String serverId);
 
     /**
      * Get the ServerId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -320,9 +320,9 @@ public interface AuditEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeClientAuditEntryId(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientAuditEntryIdAsync(String clientAuditEntryId);
+    CompletableFuture<StatusCode> writeClientAuditEntryIdAsync(String clientAuditEntryId);
 
     /**
      * Get the ClientAuditEntryId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -393,9 +393,9 @@ public interface AuditEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeClientUserId(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientUserIdAsync(String clientUserId);
+    CompletableFuture<StatusCode> writeClientUserIdAsync(String clientUserId);
 
     /**
      * Get the ClientUserId {@link PropertyType} Node, or {@code null} if it does not exist.

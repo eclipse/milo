@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
     QualifiedProperty<Object> OLD_STATE_ID = new QualifiedProperty<>(
@@ -76,9 +76,9 @@ public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
      * An asynchronous implementation of {@link #writeOldStateId(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldStateIdAsync(Object oldStateId);
+    CompletableFuture<StatusCode> writeOldStateIdAsync(Object oldStateId);
 
     /**
      * Get the OldStateId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -149,9 +149,9 @@ public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
      * An asynchronous implementation of {@link #writeNewStateId(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNewStateIdAsync(Object newStateId);
+    CompletableFuture<StatusCode> writeNewStateIdAsync(Object newStateId);
 
     /**
      * Get the NewStateId {@link PropertyType} Node, or {@code null} if it does not exist.

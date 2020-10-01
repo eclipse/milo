@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface OperationLimitsType extends FolderType {
     QualifiedProperty<UInteger> MAX_NODES_PER_READ = new QualifiedProperty<>(
@@ -157,9 +157,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerRead(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerReadAsync(UInteger maxNodesPerRead);
+    CompletableFuture<StatusCode> writeMaxNodesPerReadAsync(UInteger maxNodesPerRead);
 
     /**
      * Get the MaxNodesPerRead {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -230,9 +230,10 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerHistoryReadData(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerHistoryReadDataAsync(UInteger maxNodesPerHistoryReadData);
+    CompletableFuture<StatusCode> writeMaxNodesPerHistoryReadDataAsync(
+        UInteger maxNodesPerHistoryReadData);
 
     /**
      * Get the MaxNodesPerHistoryReadData {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -303,9 +304,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerHistoryReadEvents(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerHistoryReadEventsAsync(
+    CompletableFuture<StatusCode> writeMaxNodesPerHistoryReadEventsAsync(
         UInteger maxNodesPerHistoryReadEvents);
 
     /**
@@ -377,9 +378,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerWrite(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerWriteAsync(UInteger maxNodesPerWrite);
+    CompletableFuture<StatusCode> writeMaxNodesPerWriteAsync(UInteger maxNodesPerWrite);
 
     /**
      * Get the MaxNodesPerWrite {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -450,9 +451,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerHistoryUpdateData(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerHistoryUpdateDataAsync(
+    CompletableFuture<StatusCode> writeMaxNodesPerHistoryUpdateDataAsync(
         UInteger maxNodesPerHistoryUpdateData);
 
     /**
@@ -526,9 +527,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerHistoryUpdateEvents(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerHistoryUpdateEventsAsync(
+    CompletableFuture<StatusCode> writeMaxNodesPerHistoryUpdateEventsAsync(
         UInteger maxNodesPerHistoryUpdateEvents);
 
     /**
@@ -600,9 +601,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerMethodCall(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerMethodCallAsync(UInteger maxNodesPerMethodCall);
+    CompletableFuture<StatusCode> writeMaxNodesPerMethodCallAsync(UInteger maxNodesPerMethodCall);
 
     /**
      * Get the MaxNodesPerMethodCall {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -673,9 +674,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerBrowse(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerBrowseAsync(UInteger maxNodesPerBrowse);
+    CompletableFuture<StatusCode> writeMaxNodesPerBrowseAsync(UInteger maxNodesPerBrowse);
 
     /**
      * Get the MaxNodesPerBrowse {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -746,9 +747,10 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerRegisterNodes(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerRegisterNodesAsync(UInteger maxNodesPerRegisterNodes);
+    CompletableFuture<StatusCode> writeMaxNodesPerRegisterNodesAsync(
+        UInteger maxNodesPerRegisterNodes);
 
     /**
      * Get the MaxNodesPerRegisterNodes {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -821,9 +823,9 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerTranslateBrowsePathsToNodeIds(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerTranslateBrowsePathsToNodeIdsAsync(
+    CompletableFuture<StatusCode> writeMaxNodesPerTranslateBrowsePathsToNodeIdsAsync(
         UInteger maxNodesPerTranslateBrowsePathsToNodeIds);
 
     /**
@@ -895,9 +897,10 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxNodesPerNodeManagement(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxNodesPerNodeManagementAsync(UInteger maxNodesPerNodeManagement);
+    CompletableFuture<StatusCode> writeMaxNodesPerNodeManagementAsync(
+        UInteger maxNodesPerNodeManagement);
 
     /**
      * Get the MaxNodesPerNodeManagement {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -968,9 +971,10 @@ public interface OperationLimitsType extends FolderType {
      * An asynchronous implementation of {@link #writeMaxMonitoredItemsPerCall(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxMonitoredItemsPerCallAsync(UInteger maxMonitoredItemsPerCall);
+    CompletableFuture<StatusCode> writeMaxMonitoredItemsPerCallAsync(
+        UInteger maxMonitoredItemsPerCall);
 
     /**
      * Get the MaxMonitoredItemsPerCall {@link PropertyType} Node, or {@code null} if it does not exist.

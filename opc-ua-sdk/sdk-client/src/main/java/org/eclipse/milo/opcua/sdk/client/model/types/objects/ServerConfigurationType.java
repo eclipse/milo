@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerConfigurationType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_CAPABILITIES = new QualifiedProperty<>(
@@ -93,9 +93,9 @@ public interface ServerConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeServerCapabilities(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerCapabilitiesAsync(String[] serverCapabilities);
+    CompletableFuture<StatusCode> writeServerCapabilitiesAsync(String[] serverCapabilities);
 
     /**
      * Get the ServerCapabilities {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -166,9 +166,10 @@ public interface ServerConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSupportedPrivateKeyFormats(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSupportedPrivateKeyFormatsAsync(String[] supportedPrivateKeyFormats);
+    CompletableFuture<StatusCode> writeSupportedPrivateKeyFormatsAsync(
+        String[] supportedPrivateKeyFormats);
 
     /**
      * Get the SupportedPrivateKeyFormats {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -239,9 +240,9 @@ public interface ServerConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxTrustListSize(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxTrustListSizeAsync(UInteger maxTrustListSize);
+    CompletableFuture<StatusCode> writeMaxTrustListSizeAsync(UInteger maxTrustListSize);
 
     /**
      * Get the MaxTrustListSize {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -312,9 +313,9 @@ public interface ServerConfigurationType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMulticastDnsEnabled(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMulticastDnsEnabledAsync(Boolean multicastDnsEnabled);
+    CompletableFuture<StatusCode> writeMulticastDnsEnabledAsync(Boolean multicastDnsEnabled);
 
     /**
      * Get the MulticastDnsEnabled {@link PropertyType} Node, or {@code null} if it does not exist.

@@ -8,10 +8,10 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
@@ -104,9 +104,9 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeUpdatedNode(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUpdatedNodeAsync(NodeId updatedNode);
+    CompletableFuture<StatusCode> writeUpdatedNodeAsync(NodeId updatedNode);
 
     /**
      * Get the UpdatedNode {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -177,9 +177,10 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writePerformInsertReplace(PerformUpdateType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writePerformInsertReplaceAsync(PerformUpdateType performInsertReplace);
+    CompletableFuture<StatusCode> writePerformInsertReplaceAsync(
+        PerformUpdateType performInsertReplace);
 
     /**
      * Get the PerformInsertReplace {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -250,9 +251,9 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeFilter(EventFilter)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeFilterAsync(EventFilter filter);
+    CompletableFuture<StatusCode> writeFilterAsync(EventFilter filter);
 
     /**
      * Get the Filter {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -323,9 +324,9 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeNewValues(HistoryEventFieldList[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNewValuesAsync(HistoryEventFieldList[] newValues);
+    CompletableFuture<StatusCode> writeNewValuesAsync(HistoryEventFieldList[] newValues);
 
     /**
      * Get the NewValues {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -396,9 +397,9 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
      * An asynchronous implementation of {@link #writeOldValues(HistoryEventFieldList[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldValuesAsync(HistoryEventFieldList[] oldValues);
+    CompletableFuture<StatusCode> writeOldValuesAsync(HistoryEventFieldList[] oldValues);
 
     /**
      * Get the OldValues {@link PropertyType} Node, or {@code null} if it does not exist.

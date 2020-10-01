@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditCertificateEventType extends AuditSecurityEventType {
     QualifiedProperty<ByteString> CERTIFICATE = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface AuditCertificateEventType extends AuditSecurityEventType {
      * An asynchronous implementation of {@link #writeCertificate(ByteString)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCertificateAsync(ByteString certificate);
+    CompletableFuture<StatusCode> writeCertificateAsync(ByteString certificate);
 
     /**
      * Get the Certificate {@link PropertyType} Node, or {@code null} if it does not exist.

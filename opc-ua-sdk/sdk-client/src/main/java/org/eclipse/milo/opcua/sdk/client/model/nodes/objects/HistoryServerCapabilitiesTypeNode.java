@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implements HistoryServerCapabilitiesType {
     public HistoryServerCapabilitiesTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -67,18 +66,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeAccessHistoryDataCapabilityAsync(
+    public CompletableFuture<StatusCode> writeAccessHistoryDataCapabilityAsync(
         Boolean accessHistoryDataCapability) {
         DataValue value = DataValue.valueOnly(new Variant(accessHistoryDataCapability));
         return getAccessHistoryDataCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -134,18 +126,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeAccessHistoryEventsCapabilityAsync(
+    public CompletableFuture<StatusCode> writeAccessHistoryEventsCapabilityAsync(
         Boolean accessHistoryEventsCapability) {
         DataValue value = DataValue.valueOnly(new Variant(accessHistoryEventsCapability));
         return getAccessHistoryEventsCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -199,17 +184,10 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxReturnDataValuesAsync(UInteger maxReturnDataValues) {
+    public CompletableFuture<StatusCode> writeMaxReturnDataValuesAsync(UInteger maxReturnDataValues) {
         DataValue value = DataValue.valueOnly(new Variant(maxReturnDataValues));
         return getMaxReturnDataValuesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -263,17 +241,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxReturnEventValuesAsync(UInteger maxReturnEventValues) {
+    public CompletableFuture<StatusCode> writeMaxReturnEventValuesAsync(
+        UInteger maxReturnEventValues) {
         DataValue value = DataValue.valueOnly(new Variant(maxReturnEventValues));
         return getMaxReturnEventValuesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -327,17 +299,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeInsertDataCapabilityAsync(Boolean insertDataCapability) {
+    public CompletableFuture<StatusCode> writeInsertDataCapabilityAsync(
+        Boolean insertDataCapability) {
         DataValue value = DataValue.valueOnly(new Variant(insertDataCapability));
         return getInsertDataCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -391,17 +357,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeReplaceDataCapabilityAsync(Boolean replaceDataCapability) {
+    public CompletableFuture<StatusCode> writeReplaceDataCapabilityAsync(
+        Boolean replaceDataCapability) {
         DataValue value = DataValue.valueOnly(new Variant(replaceDataCapability));
         return getReplaceDataCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -455,17 +415,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeUpdateDataCapabilityAsync(Boolean updateDataCapability) {
+    public CompletableFuture<StatusCode> writeUpdateDataCapabilityAsync(
+        Boolean updateDataCapability) {
         DataValue value = DataValue.valueOnly(new Variant(updateDataCapability));
         return getUpdateDataCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -519,17 +473,10 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeDeleteRawCapabilityAsync(Boolean deleteRawCapability) {
+    public CompletableFuture<StatusCode> writeDeleteRawCapabilityAsync(Boolean deleteRawCapability) {
         DataValue value = DataValue.valueOnly(new Variant(deleteRawCapability));
         return getDeleteRawCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -583,17 +530,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeDeleteAtTimeCapabilityAsync(Boolean deleteAtTimeCapability) {
+    public CompletableFuture<StatusCode> writeDeleteAtTimeCapabilityAsync(
+        Boolean deleteAtTimeCapability) {
         DataValue value = DataValue.valueOnly(new Variant(deleteAtTimeCapability));
         return getDeleteAtTimeCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -647,17 +588,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeInsertEventCapabilityAsync(Boolean insertEventCapability) {
+    public CompletableFuture<StatusCode> writeInsertEventCapabilityAsync(
+        Boolean insertEventCapability) {
         DataValue value = DataValue.valueOnly(new Variant(insertEventCapability));
         return getInsertEventCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -711,17 +646,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeReplaceEventCapabilityAsync(Boolean replaceEventCapability) {
+    public CompletableFuture<StatusCode> writeReplaceEventCapabilityAsync(
+        Boolean replaceEventCapability) {
         DataValue value = DataValue.valueOnly(new Variant(replaceEventCapability));
         return getReplaceEventCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -775,17 +704,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeUpdateEventCapabilityAsync(Boolean updateEventCapability) {
+    public CompletableFuture<StatusCode> writeUpdateEventCapabilityAsync(
+        Boolean updateEventCapability) {
         DataValue value = DataValue.valueOnly(new Variant(updateEventCapability));
         return getUpdateEventCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -839,17 +762,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeDeleteEventCapabilityAsync(Boolean deleteEventCapability) {
+    public CompletableFuture<StatusCode> writeDeleteEventCapabilityAsync(
+        Boolean deleteEventCapability) {
         DataValue value = DataValue.valueOnly(new Variant(deleteEventCapability));
         return getDeleteEventCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -904,18 +821,11 @@ public class HistoryServerCapabilitiesTypeNode extends BaseObjectTypeNode implem
     }
 
     @Override
-    public CompletableFuture<Unit> writeInsertAnnotationCapabilityAsync(
+    public CompletableFuture<StatusCode> writeInsertAnnotationCapabilityAsync(
         Boolean insertAnnotationCapability) {
         DataValue value = DataValue.valueOnly(new Variant(insertAnnotationCapability));
         return getInsertAnnotationCapabilityNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

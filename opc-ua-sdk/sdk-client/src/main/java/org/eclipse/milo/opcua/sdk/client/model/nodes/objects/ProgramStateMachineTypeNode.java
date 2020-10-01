@@ -19,13 +19,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode implements ProgramStateMachineType {
     public ProgramStateMachineTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -70,17 +69,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeCreatableAsync(Boolean creatable) {
+    public CompletableFuture<StatusCode> writeCreatableAsync(Boolean creatable) {
         DataValue value = DataValue.valueOnly(new Variant(creatable));
         return getCreatableNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -134,17 +126,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeDeletableAsync(Boolean deletable) {
+    public CompletableFuture<StatusCode> writeDeletableAsync(Boolean deletable) {
         DataValue value = DataValue.valueOnly(new Variant(deletable));
         return getDeletableNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -198,17 +183,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeAutoDeleteAsync(Boolean autoDelete) {
+    public CompletableFuture<StatusCode> writeAutoDeleteAsync(Boolean autoDelete) {
         DataValue value = DataValue.valueOnly(new Variant(autoDelete));
         return getAutoDeleteNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -262,17 +240,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeRecycleCountAsync(Integer recycleCount) {
+    public CompletableFuture<StatusCode> writeRecycleCountAsync(Integer recycleCount) {
         DataValue value = DataValue.valueOnly(new Variant(recycleCount));
         return getRecycleCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -326,17 +297,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeInstanceCountAsync(UInteger instanceCount) {
+    public CompletableFuture<StatusCode> writeInstanceCountAsync(UInteger instanceCount) {
         DataValue value = DataValue.valueOnly(new Variant(instanceCount));
         return getInstanceCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -390,17 +354,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxInstanceCountAsync(UInteger maxInstanceCount) {
+    public CompletableFuture<StatusCode> writeMaxInstanceCountAsync(UInteger maxInstanceCount) {
         DataValue value = DataValue.valueOnly(new Variant(maxInstanceCount));
         return getMaxInstanceCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -454,17 +411,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxRecycleCountAsync(UInteger maxRecycleCount) {
+    public CompletableFuture<StatusCode> writeMaxRecycleCountAsync(UInteger maxRecycleCount) {
         DataValue value = DataValue.valueOnly(new Variant(maxRecycleCount));
         return getMaxRecycleCountNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -518,17 +468,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeCurrentStateAsync(LocalizedText currentState) {
+    public CompletableFuture<StatusCode> writeCurrentStateAsync(LocalizedText currentState) {
         DataValue value = DataValue.valueOnly(new Variant(currentState));
         return getCurrentStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -582,17 +525,10 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeLastTransitionAsync(LocalizedText lastTransition) {
+    public CompletableFuture<StatusCode> writeLastTransitionAsync(LocalizedText lastTransition) {
         DataValue value = DataValue.valueOnly(new Variant(lastTransition));
         return getLastTransitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -650,19 +586,12 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeProgramDiagnosticsAsync(
+    public CompletableFuture<StatusCode> writeProgramDiagnosticsAsync(
         ProgramDiagnosticDataType programDiagnostics) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), programDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getProgramDiagnosticsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

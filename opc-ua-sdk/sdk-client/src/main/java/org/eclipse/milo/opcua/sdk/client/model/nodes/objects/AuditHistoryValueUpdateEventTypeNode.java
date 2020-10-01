@@ -15,13 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditHistoryValueUpdateEventTypeNode extends AuditHistoryUpdateEventTypeNode implements AuditHistoryValueUpdateEventType {
     public AuditHistoryValueUpdateEventTypeNode(OpcUaClient client, NodeId nodeId,
@@ -66,17 +65,10 @@ public class AuditHistoryValueUpdateEventTypeNode extends AuditHistoryUpdateEven
     }
 
     @Override
-    public CompletableFuture<Unit> writeUpdatedNodeAsync(NodeId updatedNode) {
+    public CompletableFuture<StatusCode> writeUpdatedNodeAsync(NodeId updatedNode) {
         DataValue value = DataValue.valueOnly(new Variant(updatedNode));
         return getUpdatedNodeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -97,7 +89,14 @@ public class AuditHistoryValueUpdateEventTypeNode extends AuditHistoryUpdateEven
     @Override
     public PerformUpdateType getPerformInsertReplace() throws UaException {
         PropertyTypeNode node = getPerformInsertReplaceNode();
-        return (PerformUpdateType) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return PerformUpdateType.from((Integer) value);
+        } else if (value instanceof PerformUpdateType) {
+            return (PerformUpdateType) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -126,22 +125,24 @@ public class AuditHistoryValueUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public CompletableFuture<? extends PerformUpdateType> readPerformInsertReplaceAsync() {
-        return getPerformInsertReplaceNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (PerformUpdateType) v.getValue().getValue());
+        return getPerformInsertReplaceNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return PerformUpdateType.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override
-    public CompletableFuture<Unit> writePerformInsertReplaceAsync(
+    public CompletableFuture<StatusCode> writePerformInsertReplaceAsync(
         PerformUpdateType performInsertReplace) {
         DataValue value = DataValue.valueOnly(new Variant(performInsertReplace));
         return getPerformInsertReplaceNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -195,17 +196,10 @@ public class AuditHistoryValueUpdateEventTypeNode extends AuditHistoryUpdateEven
     }
 
     @Override
-    public CompletableFuture<Unit> writeNewValuesAsync(DataValue[] newValues) {
+    public CompletableFuture<StatusCode> writeNewValuesAsync(DataValue[] newValues) {
         DataValue value = DataValue.valueOnly(new Variant(newValues));
         return getNewValuesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -259,17 +253,10 @@ public class AuditHistoryValueUpdateEventTypeNode extends AuditHistoryUpdateEven
     }
 
     @Override
-    public CompletableFuture<Unit> writeOldValuesAsync(DataValue[] oldValues) {
+    public CompletableFuture<StatusCode> writeOldValuesAsync(DataValue[] oldValues) {
         DataValue value = DataValue.valueOnly(new Variant(oldValues));
         return getOldValuesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

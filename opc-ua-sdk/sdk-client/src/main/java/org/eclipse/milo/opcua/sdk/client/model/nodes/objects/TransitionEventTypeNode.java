@@ -16,12 +16,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class TransitionEventTypeNode extends BaseEventTypeNode implements TransitionEventType {
     public TransitionEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class TransitionEventTypeNode extends BaseEventTypeNode implements Transi
     }
 
     @Override
-    public CompletableFuture<Unit> writeTransitionAsync(LocalizedText transition) {
+    public CompletableFuture<StatusCode> writeTransitionAsync(LocalizedText transition) {
         DataValue value = DataValue.valueOnly(new Variant(transition));
         return getTransitionNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class TransitionEventTypeNode extends BaseEventTypeNode implements Transi
     }
 
     @Override
-    public CompletableFuture<Unit> writeFromStateAsync(LocalizedText fromState) {
+    public CompletableFuture<StatusCode> writeFromStateAsync(LocalizedText fromState) {
         DataValue value = DataValue.valueOnly(new Variant(fromState));
         return getFromStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -194,17 +179,10 @@ public class TransitionEventTypeNode extends BaseEventTypeNode implements Transi
     }
 
     @Override
-    public CompletableFuture<Unit> writeToStateAsync(LocalizedText toState) {
+    public CompletableFuture<StatusCode> writeToStateAsync(LocalizedText toState) {
         DataValue value = DataValue.valueOnly(new Variant(toState));
         return getToStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

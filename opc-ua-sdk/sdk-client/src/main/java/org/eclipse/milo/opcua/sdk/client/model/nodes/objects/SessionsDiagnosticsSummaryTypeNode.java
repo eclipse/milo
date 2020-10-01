@@ -17,14 +17,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode implements SessionsDiagnosticsSummaryType {
     public SessionsDiagnosticsSummaryTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -73,19 +72,12 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     }
 
     @Override
-    public CompletableFuture<Unit> writeSessionDiagnosticsArrayAsync(
+    public CompletableFuture<StatusCode> writeSessionDiagnosticsArrayAsync(
         SessionDiagnosticsDataType[] sessionDiagnosticsArray) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), sessionDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionDiagnosticsArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -146,19 +138,12 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     }
 
     @Override
-    public CompletableFuture<Unit> writeSessionSecurityDiagnosticsArrayAsync(
+    public CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsArrayAsync(
         SessionSecurityDiagnosticsDataType[] sessionSecurityDiagnosticsArray) {
         ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), sessionSecurityDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

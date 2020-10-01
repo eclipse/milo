@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
     QualifiedProperty<UInteger> ATTRIBUTE_ID = new QualifiedProperty<>(
@@ -93,9 +93,9 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
      * An asynchronous implementation of {@link #writeAttributeId(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAttributeIdAsync(UInteger attributeId);
+    CompletableFuture<StatusCode> writeAttributeIdAsync(UInteger attributeId);
 
     /**
      * Get the AttributeId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -166,9 +166,9 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
      * An asynchronous implementation of {@link #writeIndexRange(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeIndexRangeAsync(String indexRange);
+    CompletableFuture<StatusCode> writeIndexRangeAsync(String indexRange);
 
     /**
      * Get the IndexRange {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -239,9 +239,9 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
      * An asynchronous implementation of {@link #writeOldValue(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldValueAsync(Object oldValue);
+    CompletableFuture<StatusCode> writeOldValueAsync(Object oldValue);
 
     /**
      * Get the OldValue {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -312,9 +312,9 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
      * An asynchronous implementation of {@link #writeNewValue(Object)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNewValueAsync(Object newValue);
+    CompletableFuture<StatusCode> writeNewValueAsync(Object newValue);
 
     /**
      * Get the NewValue {@link PropertyType} Node, or {@code null} if it does not exist.

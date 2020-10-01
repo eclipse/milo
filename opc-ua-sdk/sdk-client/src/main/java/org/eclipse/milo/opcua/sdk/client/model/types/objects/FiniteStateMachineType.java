@@ -6,7 +6,7 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteStateVariab
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface FiniteStateMachineType extends StateMachineType {
     /**
@@ -59,9 +59,9 @@ public interface FiniteStateMachineType extends StateMachineType {
      * An asynchronous implementation of {@link #writeCurrentState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCurrentStateAsync(LocalizedText currentState);
+    CompletableFuture<StatusCode> writeCurrentStateAsync(LocalizedText currentState);
 
     /**
      * Get the CurrentState {@link FiniteStateVariableType} Node, or {@code null} if it does not exist.
@@ -132,9 +132,9 @@ public interface FiniteStateMachineType extends StateMachineType {
      * An asynchronous implementation of {@link #writeLastTransition(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastTransitionAsync(LocalizedText lastTransition);
+    CompletableFuture<StatusCode> writeLastTransitionAsync(LocalizedText lastTransition);
 
     /**
      * Get the LastTransition {@link FiniteTransitionVariableType} Node, or {@code null} if it does not exist.

@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface ProgramTransitionAuditEventType extends AuditUpdateStateEventType {
     /**
@@ -58,9 +58,9 @@ public interface ProgramTransitionAuditEventType extends AuditUpdateStateEventTy
      * An asynchronous implementation of {@link #writeTransition(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransitionAsync(LocalizedText transition);
+    CompletableFuture<StatusCode> writeTransitionAsync(LocalizedText transition);
 
     /**
      * Get the Transition {@link FiniteTransitionVariableType} Node, or {@code null} if it does not exist.

@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModelChangeStructureDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface GeneralModelChangeEventType extends BaseModelChangeEventType {
     QualifiedProperty<ModelChangeStructureDataType[]> CHANGES = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface GeneralModelChangeEventType extends BaseModelChangeEventType {
      * An asynchronous implementation of {@link #writeChanges(ModelChangeStructureDataType[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeChangesAsync(ModelChangeStructureDataType[] changes);
+    CompletableFuture<StatusCode> writeChangesAsync(ModelChangeStructureDataType[] changes);
 
     /**
      * Get the Changes {@link PropertyType} Node, or {@code null} if it does not exist.

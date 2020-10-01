@@ -7,9 +7,9 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface AuditActivateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<SignedSoftwareCertificate[]> CLIENT_SOFTWARE_CERTIFICATES = new QualifiedProperty<>(
@@ -88,9 +88,9 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
      * An asynchronous implementation of {@link #writeClientSoftwareCertificates(SignedSoftwareCertificate[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientSoftwareCertificatesAsync(
+    CompletableFuture<StatusCode> writeClientSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] clientSoftwareCertificates);
 
     /**
@@ -162,9 +162,9 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
      * An asynchronous implementation of {@link #writeUserIdentityToken(UserIdentityToken)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUserIdentityTokenAsync(UserIdentityToken userIdentityToken);
+    CompletableFuture<StatusCode> writeUserIdentityTokenAsync(UserIdentityToken userIdentityToken);
 
     /**
      * Get the UserIdentityToken {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -235,9 +235,9 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
      * An asynchronous implementation of {@link #writeSecureChannelId(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSecureChannelIdAsync(String secureChannelId);
+    CompletableFuture<StatusCode> writeSecureChannelIdAsync(String secureChannelId);
 
     /**
      * Get the SecureChannelId {@link PropertyType} Node, or {@code null} if it does not exist.

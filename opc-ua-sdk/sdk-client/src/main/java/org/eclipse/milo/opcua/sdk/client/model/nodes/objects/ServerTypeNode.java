@@ -18,13 +18,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     public ServerTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -69,17 +68,10 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerArrayAsync(String[] serverArray) {
+    public CompletableFuture<StatusCode> writeServerArrayAsync(String[] serverArray) {
         DataValue value = DataValue.valueOnly(new Variant(serverArray));
         return getServerArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -133,17 +125,10 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeNamespaceArrayAsync(String[] namespaceArray) {
+    public CompletableFuture<StatusCode> writeNamespaceArrayAsync(String[] namespaceArray) {
         DataValue value = DataValue.valueOnly(new Variant(namespaceArray));
         return getNamespaceArrayNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -197,17 +182,10 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeServiceLevelAsync(UByte serviceLevel) {
+    public CompletableFuture<StatusCode> writeServiceLevelAsync(UByte serviceLevel) {
         DataValue value = DataValue.valueOnly(new Variant(serviceLevel));
         return getServiceLevelNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -261,17 +239,10 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeAuditingAsync(Boolean auditing) {
+    public CompletableFuture<StatusCode> writeAuditingAsync(Boolean auditing) {
         DataValue value = DataValue.valueOnly(new Variant(auditing));
         return getAuditingNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -325,17 +296,10 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeEstimatedReturnTimeAsync(DateTime estimatedReturnTime) {
+    public CompletableFuture<StatusCode> writeEstimatedReturnTimeAsync(DateTime estimatedReturnTime) {
         DataValue value = DataValue.valueOnly(new Variant(estimatedReturnTime));
         return getEstimatedReturnTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -390,18 +354,11 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerStatusAsync(ServerStatusDataType serverStatus) {
+    public CompletableFuture<StatusCode> writeServerStatusAsync(ServerStatusDataType serverStatus) {
         ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), serverStatus);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerStatusNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode implements ShelvedStateMachineType {
     public ShelvedStateMachineTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public CompletableFuture<Unit> writeUnshelveTimeAsync(Double unshelveTime) {
+    public CompletableFuture<StatusCode> writeUnshelveTimeAsync(Double unshelveTime) {
         DataValue value = DataValue.valueOnly(new Variant(unshelveTime));
         return getUnshelveTimeNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

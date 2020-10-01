@@ -9,9 +9,9 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
@@ -104,9 +104,9 @@ public interface ServerType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeServerArray(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerArrayAsync(String[] serverArray);
+    CompletableFuture<StatusCode> writeServerArrayAsync(String[] serverArray);
 
     /**
      * Get the ServerArray {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -177,9 +177,9 @@ public interface ServerType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeNamespaceArray(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeNamespaceArrayAsync(String[] namespaceArray);
+    CompletableFuture<StatusCode> writeNamespaceArrayAsync(String[] namespaceArray);
 
     /**
      * Get the NamespaceArray {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -250,9 +250,9 @@ public interface ServerType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeServiceLevel(UByte)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServiceLevelAsync(UByte serviceLevel);
+    CompletableFuture<StatusCode> writeServiceLevelAsync(UByte serviceLevel);
 
     /**
      * Get the ServiceLevel {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -323,9 +323,9 @@ public interface ServerType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeAuditing(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAuditingAsync(Boolean auditing);
+    CompletableFuture<StatusCode> writeAuditingAsync(Boolean auditing);
 
     /**
      * Get the Auditing {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -396,9 +396,9 @@ public interface ServerType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeEstimatedReturnTime(DateTime)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEstimatedReturnTimeAsync(DateTime estimatedReturnTime);
+    CompletableFuture<StatusCode> writeEstimatedReturnTimeAsync(DateTime estimatedReturnTime);
 
     /**
      * Get the EstimatedReturnTime {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -469,9 +469,9 @@ public interface ServerType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeServerStatus(ServerStatusDataType)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerStatusAsync(ServerStatusDataType serverStatus);
+    CompletableFuture<StatusCode> writeServerStatusAsync(ServerStatusDataType serverStatus);
 
     /**
      * Get the ServerStatus {@link ServerStatusType} Node, or {@code null} if it does not exist.

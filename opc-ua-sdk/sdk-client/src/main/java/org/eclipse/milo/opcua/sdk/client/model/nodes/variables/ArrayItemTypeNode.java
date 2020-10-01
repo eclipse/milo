@@ -270,7 +270,14 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
     @Override
     public AxisScaleEnumeration getAxisScaleType() throws UaException {
         PropertyTypeNode node = getAxisScaleTypeNode();
-        return (AxisScaleEnumeration) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return AxisScaleEnumeration.from((Integer) value);
+        } else if (value instanceof AxisScaleEnumeration) {
+            return (AxisScaleEnumeration) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -299,7 +306,16 @@ public class ArrayItemTypeNode extends DataItemTypeNode implements ArrayItemType
 
     @Override
     public CompletableFuture<? extends AxisScaleEnumeration> readAxisScaleTypeAsync() {
-        return getAxisScaleTypeNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (AxisScaleEnumeration) v.getValue().getValue());
+        return getAxisScaleTypeNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return AxisScaleEnumeration.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override

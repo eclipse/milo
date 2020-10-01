@@ -7,8 +7,8 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerRedundancyType extends BaseObjectType {
     QualifiedProperty<RedundancySupport> REDUNDANCY_SUPPORT = new QualifiedProperty<>(
@@ -69,9 +69,9 @@ public interface ServerRedundancyType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeRedundancySupport(RedundancySupport)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRedundancySupportAsync(RedundancySupport redundancySupport);
+    CompletableFuture<StatusCode> writeRedundancySupportAsync(RedundancySupport redundancySupport);
 
     /**
      * Get the RedundancySupport {@link PropertyType} Node, or {@code null} if it does not exist.

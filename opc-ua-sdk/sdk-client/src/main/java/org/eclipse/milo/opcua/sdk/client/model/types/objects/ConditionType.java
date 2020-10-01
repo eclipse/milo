@@ -13,7 +13,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ConditionType extends BaseEventType {
     QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
@@ -114,9 +113,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeConditionClassId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeConditionClassIdAsync(NodeId conditionClassId);
+    CompletableFuture<StatusCode> writeConditionClassIdAsync(NodeId conditionClassId);
 
     /**
      * Get the ConditionClassId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -187,9 +186,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeConditionClassName(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeConditionClassNameAsync(LocalizedText conditionClassName);
+    CompletableFuture<StatusCode> writeConditionClassNameAsync(LocalizedText conditionClassName);
 
     /**
      * Get the ConditionClassName {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -260,9 +259,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeConditionName(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeConditionNameAsync(String conditionName);
+    CompletableFuture<StatusCode> writeConditionNameAsync(String conditionName);
 
     /**
      * Get the ConditionName {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -333,9 +332,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeBranchId(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeBranchIdAsync(NodeId branchId);
+    CompletableFuture<StatusCode> writeBranchIdAsync(NodeId branchId);
 
     /**
      * Get the BranchId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -406,9 +405,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeRetain(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeRetainAsync(Boolean retain);
+    CompletableFuture<StatusCode> writeRetainAsync(Boolean retain);
 
     /**
      * Get the Retain {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -479,9 +478,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeClientUserId(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeClientUserIdAsync(String clientUserId);
+    CompletableFuture<StatusCode> writeClientUserIdAsync(String clientUserId);
 
     /**
      * Get the ClientUserId {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -552,9 +551,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeEnabledState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState);
+    CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState);
 
     /**
      * Get the EnabledState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -625,9 +624,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeQuality(StatusCode)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeQualityAsync(StatusCode quality);
+    CompletableFuture<StatusCode> writeQualityAsync(StatusCode quality);
 
     /**
      * Get the Quality {@link ConditionVariableType} Node, or {@code null} if it does not exist.
@@ -698,9 +697,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeLastSeverity(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLastSeverityAsync(UShort lastSeverity);
+    CompletableFuture<StatusCode> writeLastSeverityAsync(UShort lastSeverity);
 
     /**
      * Get the LastSeverity {@link ConditionVariableType} Node, or {@code null} if it does not exist.
@@ -771,9 +770,9 @@ public interface ConditionType extends BaseEventType {
      * An asynchronous implementation of {@link #writeComment(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCommentAsync(LocalizedText comment);
+    CompletableFuture<StatusCode> writeCommentAsync(LocalizedText comment);
 
     /**
      * Get the Comment {@link ConditionVariableType} Node, or {@code null} if it does not exist.

@@ -150,7 +150,14 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
     @Override
     public ServerState getState() throws UaException {
         BaseDataVariableTypeNode node = getStateNode();
-        return (ServerState) node.getValue().getValue().getValue();
+        Object value = node.getValue().getValue().getValue();
+        if (value instanceof Integer) {
+            return ServerState.from((Integer) value);
+        } else if (value instanceof ServerState) {
+            return (ServerState) value;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -179,7 +186,16 @@ public class ServerStatusTypeNode extends BaseDataVariableTypeNode implements Se
 
     @Override
     public CompletableFuture<? extends ServerState> readStateAsync() {
-        return getStateNodeAsync().thenCompose(node -> node.readAttributeAsync(AttributeId.Value)).thenApply(v -> (ServerState) v.getValue().getValue());
+        return getStateNodeAsync()
+            .thenCompose(node -> node.readAttributeAsync(AttributeId.Value))
+            .thenApply(v -> {
+                Object value = v.getValue().getValue();
+                if (value instanceof Integer) {
+                    return ServerState.from((Integer) value);
+                } else {
+                    return null;
+                }
+            });
     }
 
     @Override

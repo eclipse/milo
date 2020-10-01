@@ -7,9 +7,9 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface FileType extends BaseObjectType {
     QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
@@ -102,9 +102,9 @@ public interface FileType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSize(ULong)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSizeAsync(ULong size);
+    CompletableFuture<StatusCode> writeSizeAsync(ULong size);
 
     /**
      * Get the Size {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -175,9 +175,9 @@ public interface FileType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeWritable(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeWritableAsync(Boolean writable);
+    CompletableFuture<StatusCode> writeWritableAsync(Boolean writable);
 
     /**
      * Get the Writable {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -248,9 +248,9 @@ public interface FileType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeUserWritable(Boolean)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeUserWritableAsync(Boolean userWritable);
+    CompletableFuture<StatusCode> writeUserWritableAsync(Boolean userWritable);
 
     /**
      * Get the UserWritable {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -321,9 +321,9 @@ public interface FileType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeOpenCount(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOpenCountAsync(UShort openCount);
+    CompletableFuture<StatusCode> writeOpenCountAsync(UShort openCount);
 
     /**
      * Get the OpenCount {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -394,9 +394,9 @@ public interface FileType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMimeType(String)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMimeTypeAsync(String mimeType);
+    CompletableFuture<StatusCode> writeMimeTypeAsync(String mimeType);
 
     /**
      * Get the MimeType {@link PropertyType} Node, or {@code null} if it does not exist.

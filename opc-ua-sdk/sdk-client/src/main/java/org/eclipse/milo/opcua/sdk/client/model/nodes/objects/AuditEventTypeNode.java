@@ -16,12 +16,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditEventTypeNode extends BaseEventTypeNode implements AuditEventType {
     public AuditEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class AuditEventTypeNode extends BaseEventTypeNode implements AuditEventT
     }
 
     @Override
-    public CompletableFuture<Unit> writeActionTimeStampAsync(DateTime actionTimeStamp) {
+    public CompletableFuture<StatusCode> writeActionTimeStampAsync(DateTime actionTimeStamp) {
         DataValue value = DataValue.valueOnly(new Variant(actionTimeStamp));
         return getActionTimeStampNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class AuditEventTypeNode extends BaseEventTypeNode implements AuditEventT
     }
 
     @Override
-    public CompletableFuture<Unit> writeStatusAsync(Boolean status) {
+    public CompletableFuture<StatusCode> writeStatusAsync(Boolean status) {
         DataValue value = DataValue.valueOnly(new Variant(status));
         return getStatusNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -194,17 +179,10 @@ public class AuditEventTypeNode extends BaseEventTypeNode implements AuditEventT
     }
 
     @Override
-    public CompletableFuture<Unit> writeServerIdAsync(String serverId) {
+    public CompletableFuture<StatusCode> writeServerIdAsync(String serverId) {
         DataValue value = DataValue.valueOnly(new Variant(serverId));
         return getServerIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -258,17 +236,10 @@ public class AuditEventTypeNode extends BaseEventTypeNode implements AuditEventT
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientAuditEntryIdAsync(String clientAuditEntryId) {
+    public CompletableFuture<StatusCode> writeClientAuditEntryIdAsync(String clientAuditEntryId) {
         DataValue value = DataValue.valueOnly(new Variant(clientAuditEntryId));
         return getClientAuditEntryIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -322,17 +293,10 @@ public class AuditEventTypeNode extends BaseEventTypeNode implements AuditEventT
     }
 
     @Override
-    public CompletableFuture<Unit> writeClientUserIdAsync(String clientUserId) {
+    public CompletableFuture<StatusCode> writeClientUserIdAsync(String clientUserId) {
         DataValue value = DataValue.valueOnly(new Variant(clientUserId));
         return getClientUserIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

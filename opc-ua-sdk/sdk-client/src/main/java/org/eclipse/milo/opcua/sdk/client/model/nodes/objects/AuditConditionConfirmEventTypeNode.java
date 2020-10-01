@@ -16,12 +16,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeNode implements AuditConditionConfirmEventType {
     public AuditConditionConfirmEventTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -66,17 +65,10 @@ public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeN
     }
 
     @Override
-    public CompletableFuture<Unit> writeConditionEventIdAsync(ByteString conditionEventId) {
+    public CompletableFuture<StatusCode> writeConditionEventIdAsync(ByteString conditionEventId) {
         DataValue value = DataValue.valueOnly(new Variant(conditionEventId));
         return getConditionEventIdNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -130,17 +122,10 @@ public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeN
     }
 
     @Override
-    public CompletableFuture<Unit> writeCommentAsync(LocalizedText comment) {
+    public CompletableFuture<StatusCode> writeCommentAsync(LocalizedText comment) {
         DataValue value = DataValue.valueOnly(new Variant(comment));
         return getCommentNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

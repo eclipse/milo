@@ -8,7 +8,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEventType {
     QualifiedProperty<NodeId> CERTIFICATE_GROUP = new QualifiedProperty<>(
@@ -77,9 +77,9 @@ public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEvent
      * An asynchronous implementation of {@link #writeCertificateGroup(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCertificateGroupAsync(NodeId certificateGroup);
+    CompletableFuture<StatusCode> writeCertificateGroupAsync(NodeId certificateGroup);
 
     /**
      * Get the CertificateGroup {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -150,9 +150,9 @@ public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEvent
      * An asynchronous implementation of {@link #writeCertificateType(NodeId)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeCertificateTypeAsync(NodeId certificateType);
+    CompletableFuture<StatusCode> writeCertificateTypeAsync(NodeId certificateType);
 
     /**
      * Get the CertificateType {@link PropertyType} Node, or {@code null} if it does not exist.

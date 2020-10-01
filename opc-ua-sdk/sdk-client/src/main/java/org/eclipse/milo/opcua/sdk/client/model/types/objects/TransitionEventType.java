@@ -6,7 +6,7 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.StateVariableType
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.TransitionVariableType;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface TransitionEventType extends BaseEventType {
     /**
@@ -59,9 +59,9 @@ public interface TransitionEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeTransition(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeTransitionAsync(LocalizedText transition);
+    CompletableFuture<StatusCode> writeTransitionAsync(LocalizedText transition);
 
     /**
      * Get the Transition {@link TransitionVariableType} Node, or {@code null} if it does not exist.
@@ -132,9 +132,9 @@ public interface TransitionEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeFromState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeFromStateAsync(LocalizedText fromState);
+    CompletableFuture<StatusCode> writeFromStateAsync(LocalizedText fromState);
 
     /**
      * Get the FromState {@link StateVariableType} Node, or {@code null} if it does not exist.
@@ -205,9 +205,9 @@ public interface TransitionEventType extends BaseEventType {
      * An asynchronous implementation of {@link #writeToState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeToStateAsync(LocalizedText toState);
+    CompletableFuture<StatusCode> writeToStateAsync(LocalizedText toState);
 
     /**
      * Get the ToState {@link StateVariableType} Node, or {@code null} if it does not exist.

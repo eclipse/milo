@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class OperationLimitsTypeNode extends FolderTypeNode implements OperationLimitsType {
     public OperationLimitsTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerReadAsync(UInteger maxNodesPerRead) {
+    public CompletableFuture<StatusCode> writeMaxNodesPerReadAsync(UInteger maxNodesPerRead) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerRead));
         return getMaxNodesPerReadNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -131,18 +123,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerHistoryReadDataAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerHistoryReadDataAsync(
         UInteger maxNodesPerHistoryReadData) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryReadData));
         return getMaxNodesPerHistoryReadDataNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -198,18 +183,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerHistoryReadEventsAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerHistoryReadEventsAsync(
         UInteger maxNodesPerHistoryReadEvents) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryReadEvents));
         return getMaxNodesPerHistoryReadEventsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -263,17 +241,10 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerWriteAsync(UInteger maxNodesPerWrite) {
+    public CompletableFuture<StatusCode> writeMaxNodesPerWriteAsync(UInteger maxNodesPerWrite) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerWrite));
         return getMaxNodesPerWriteNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -329,18 +300,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerHistoryUpdateDataAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerHistoryUpdateDataAsync(
         UInteger maxNodesPerHistoryUpdateData) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryUpdateData));
         return getMaxNodesPerHistoryUpdateDataNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -396,18 +360,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerHistoryUpdateEventsAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerHistoryUpdateEventsAsync(
         UInteger maxNodesPerHistoryUpdateEvents) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerHistoryUpdateEvents));
         return getMaxNodesPerHistoryUpdateEventsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -462,17 +419,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerMethodCallAsync(UInteger maxNodesPerMethodCall) {
+    public CompletableFuture<StatusCode> writeMaxNodesPerMethodCallAsync(
+        UInteger maxNodesPerMethodCall) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerMethodCall));
         return getMaxNodesPerMethodCallNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -526,17 +477,10 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerBrowseAsync(UInteger maxNodesPerBrowse) {
+    public CompletableFuture<StatusCode> writeMaxNodesPerBrowseAsync(UInteger maxNodesPerBrowse) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerBrowse));
         return getMaxNodesPerBrowseNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -590,18 +534,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerRegisterNodesAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerRegisterNodesAsync(
         UInteger maxNodesPerRegisterNodes) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerRegisterNodes));
         return getMaxNodesPerRegisterNodesNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -657,18 +594,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerTranslateBrowsePathsToNodeIdsAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerTranslateBrowsePathsToNodeIdsAsync(
         UInteger maxNodesPerTranslateBrowsePathsToNodeIds) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerTranslateBrowsePathsToNodeIds));
         return getMaxNodesPerTranslateBrowsePathsToNodeIdsNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -724,18 +654,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxNodesPerNodeManagementAsync(
+    public CompletableFuture<StatusCode> writeMaxNodesPerNodeManagementAsync(
         UInteger maxNodesPerNodeManagement) {
         DataValue value = DataValue.valueOnly(new Variant(maxNodesPerNodeManagement));
         return getMaxNodesPerNodeManagementNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -789,18 +712,11 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
     }
 
     @Override
-    public CompletableFuture<Unit> writeMaxMonitoredItemsPerCallAsync(
+    public CompletableFuture<StatusCode> writeMaxMonitoredItemsPerCallAsync(
         UInteger maxMonitoredItemsPerCall) {
         DataValue value = DataValue.valueOnly(new Variant(maxMonitoredItemsPerCall));
         return getMaxMonitoredItemsPerCallNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

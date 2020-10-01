@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implements NonExclusiveLimitAlarmType {
     public NonExclusiveLimitAlarmTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeActiveStateAsync(LocalizedText activeState) {
+    public CompletableFuture<StatusCode> writeActiveStateAsync(LocalizedText activeState) {
         DataValue value = DataValue.valueOnly(new Variant(activeState));
         return getActiveStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -129,17 +121,10 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeHighHighStateAsync(LocalizedText highHighState) {
+    public CompletableFuture<StatusCode> writeHighHighStateAsync(LocalizedText highHighState) {
         DataValue value = DataValue.valueOnly(new Variant(highHighState));
         return getHighHighStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -193,17 +178,10 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeHighStateAsync(LocalizedText highState) {
+    public CompletableFuture<StatusCode> writeHighStateAsync(LocalizedText highState) {
         DataValue value = DataValue.valueOnly(new Variant(highState));
         return getHighStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -257,17 +235,10 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeLowStateAsync(LocalizedText lowState) {
+    public CompletableFuture<StatusCode> writeLowStateAsync(LocalizedText lowState) {
         DataValue value = DataValue.valueOnly(new Variant(lowState));
         return getLowStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -321,17 +292,10 @@ public class NonExclusiveLimitAlarmTypeNode extends LimitAlarmTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeLowLowStateAsync(LocalizedText lowLowState) {
+    public CompletableFuture<StatusCode> writeLowLowStateAsync(LocalizedText lowLowState) {
         DataValue value = DataValue.valueOnly(new Variant(lowLowState));
         return getLowLowStateNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

@@ -15,12 +15,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implements AggregateConfigurationType {
     public AggregateConfigurationTypeNode(OpcUaClient client, NodeId nodeId, NodeClass nodeClass,
@@ -65,17 +64,10 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeTreatUncertainAsBadAsync(Boolean treatUncertainAsBad) {
+    public CompletableFuture<StatusCode> writeTreatUncertainAsBadAsync(Boolean treatUncertainAsBad) {
         DataValue value = DataValue.valueOnly(new Variant(treatUncertainAsBad));
         return getTreatUncertainAsBadNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -129,17 +121,10 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writePercentDataBadAsync(UByte percentDataBad) {
+    public CompletableFuture<StatusCode> writePercentDataBadAsync(UByte percentDataBad) {
         DataValue value = DataValue.valueOnly(new Variant(percentDataBad));
         return getPercentDataBadNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -193,17 +178,10 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writePercentDataGoodAsync(UByte percentDataGood) {
+    public CompletableFuture<StatusCode> writePercentDataGoodAsync(UByte percentDataGood) {
         DataValue value = DataValue.valueOnly(new Variant(percentDataGood));
         return getPercentDataGoodNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override
@@ -257,17 +235,11 @@ public class AggregateConfigurationTypeNode extends BaseObjectTypeNode implement
     }
 
     @Override
-    public CompletableFuture<Unit> writeUseSlopedExtrapolationAsync(Boolean useSlopedExtrapolation) {
+    public CompletableFuture<StatusCode> writeUseSlopedExtrapolationAsync(
+        Boolean useSlopedExtrapolation) {
         DataValue value = DataValue.valueOnly(new Variant(useSlopedExtrapolation));
         return getUseSlopedExtrapolationNodeAsync()
-            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value))
-            .thenCompose(statusCode -> {
-                if (statusCode != null && statusCode.isBad()) {
-                    return FutureUtils.failedUaFuture(statusCode);
-                } else {
-                    return CompletableFuture.completedFuture(Unit.VALUE);
-                }
-            });
+            .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
     }
 
     @Override

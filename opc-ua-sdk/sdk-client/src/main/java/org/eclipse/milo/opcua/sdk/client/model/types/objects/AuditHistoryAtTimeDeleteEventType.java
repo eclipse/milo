@@ -9,7 +9,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<DateTime[]> REQ_TIMES = new QualifiedProperty<>(
@@ -78,9 +78,9 @@ public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEve
      * An asynchronous implementation of {@link #writeReqTimes(DateTime[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeReqTimesAsync(DateTime[] reqTimes);
+    CompletableFuture<StatusCode> writeReqTimesAsync(DateTime[] reqTimes);
 
     /**
      * Get the ReqTimes {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -151,9 +151,9 @@ public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEve
      * An asynchronous implementation of {@link #writeOldValues(DataValue[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeOldValuesAsync(DataValue[] oldValues);
+    CompletableFuture<StatusCode> writeOldValuesAsync(DataValue[] oldValues);
 
     /**
      * Get the OldValues {@link PropertyType} Node, or {@code null} if it does not exist.

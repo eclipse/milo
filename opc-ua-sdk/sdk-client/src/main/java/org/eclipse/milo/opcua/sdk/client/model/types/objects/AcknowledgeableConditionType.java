@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AcknowledgeableConditionType extends ConditionType {
     /**
@@ -58,9 +58,9 @@ public interface AcknowledgeableConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeEnabledState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeEnabledStateAsync(LocalizedText enabledState);
+    CompletableFuture<StatusCode> writeEnabledStateAsync(LocalizedText enabledState);
 
     /**
      * Get the EnabledState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -131,9 +131,9 @@ public interface AcknowledgeableConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeAckedState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeAckedStateAsync(LocalizedText ackedState);
+    CompletableFuture<StatusCode> writeAckedStateAsync(LocalizedText ackedState);
 
     /**
      * Get the AckedState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.
@@ -204,9 +204,9 @@ public interface AcknowledgeableConditionType extends ConditionType {
      * An asynchronous implementation of {@link #writeConfirmedState(LocalizedText)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeConfirmedStateAsync(LocalizedText confirmedState);
+    CompletableFuture<StatusCode> writeConfirmedStateAsync(LocalizedText confirmedState);
 
     /**
      * Get the ConfirmedState {@link TwoStateVariableType} Node, or {@code null} if it does not exist.

@@ -7,10 +7,10 @@ import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
-import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_PROFILE_ARRAY = new QualifiedProperty<>(
@@ -143,9 +143,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeServerProfileArray(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeServerProfileArrayAsync(String[] serverProfileArray);
+    CompletableFuture<StatusCode> writeServerProfileArrayAsync(String[] serverProfileArray);
 
     /**
      * Get the ServerProfileArray {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -216,9 +216,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeLocaleIdArray(String[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeLocaleIdArrayAsync(String[] localeIdArray);
+    CompletableFuture<StatusCode> writeLocaleIdArrayAsync(String[] localeIdArray);
 
     /**
      * Get the LocaleIdArray {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -289,9 +289,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMinSupportedSampleRate(Double)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMinSupportedSampleRateAsync(Double minSupportedSampleRate);
+    CompletableFuture<StatusCode> writeMinSupportedSampleRateAsync(Double minSupportedSampleRate);
 
     /**
      * Get the MinSupportedSampleRate {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -362,9 +362,10 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxBrowseContinuationPoints(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxBrowseContinuationPointsAsync(UShort maxBrowseContinuationPoints);
+    CompletableFuture<StatusCode> writeMaxBrowseContinuationPointsAsync(
+        UShort maxBrowseContinuationPoints);
 
     /**
      * Get the MaxBrowseContinuationPoints {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -435,9 +436,10 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxQueryContinuationPoints(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxQueryContinuationPointsAsync(UShort maxQueryContinuationPoints);
+    CompletableFuture<StatusCode> writeMaxQueryContinuationPointsAsync(
+        UShort maxQueryContinuationPoints);
 
     /**
      * Get the MaxQueryContinuationPoints {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -508,9 +510,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxHistoryContinuationPoints(UShort)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxHistoryContinuationPointsAsync(
+    CompletableFuture<StatusCode> writeMaxHistoryContinuationPointsAsync(
         UShort maxHistoryContinuationPoints);
 
     /**
@@ -583,9 +585,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeSoftwareCertificates(SignedSoftwareCertificate[])}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeSoftwareCertificatesAsync(
+    CompletableFuture<StatusCode> writeSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] softwareCertificates);
 
     /**
@@ -657,9 +659,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxArrayLength(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxArrayLengthAsync(UInteger maxArrayLength);
+    CompletableFuture<StatusCode> writeMaxArrayLengthAsync(UInteger maxArrayLength);
 
     /**
      * Get the MaxArrayLength {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -730,9 +732,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxStringLength(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxStringLengthAsync(UInteger maxStringLength);
+    CompletableFuture<StatusCode> writeMaxStringLengthAsync(UInteger maxStringLength);
 
     /**
      * Get the MaxStringLength {@link PropertyType} Node, or {@code null} if it does not exist.
@@ -803,9 +805,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
      * An asynchronous implementation of {@link #writeMaxByteStringLength(UInteger)}.
      *
      * @return a CompletableFuture that completes successfully with the operation result or
-     * completes exceptionally if an operation- or service-level error occurs.
+     * completes exceptionally if a service-level error occurs.
      */
-    CompletableFuture<Unit> writeMaxByteStringLengthAsync(UInteger maxByteStringLength);
+    CompletableFuture<StatusCode> writeMaxByteStringLengthAsync(UInteger maxByteStringLength);
 
     /**
      * Get the MaxByteStringLength {@link PropertyType} Node, or {@code null} if it does not exist.
