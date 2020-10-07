@@ -44,15 +44,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
 
-    private final ServiceCounter addNodesMetric = new ServiceCounter();
-    private final ServiceCounter deleteNodesMetric = new ServiceCounter();
-    private final ServiceCounter addReferencesMetric = new ServiceCounter();
-    private final ServiceCounter deleteReferencesMetric = new ServiceCounter();
-
     @Override
     public void onAddNodes(ServiceRequest service) {
-        addNodesMetric.record(service);
-
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
@@ -93,8 +86,6 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
     @Override
     public void onDeleteNodes(ServiceRequest service) {
-        deleteNodesMetric.record(service);
-
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
@@ -135,8 +126,6 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
     @Override
     public void onAddReferences(ServiceRequest service) {
-        addReferencesMetric.record(service);
-
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
@@ -177,8 +166,6 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
 
     @Override
     public void onDeleteReferences(ServiceRequest service) {
-        deleteReferencesMetric.record(service);
-
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
