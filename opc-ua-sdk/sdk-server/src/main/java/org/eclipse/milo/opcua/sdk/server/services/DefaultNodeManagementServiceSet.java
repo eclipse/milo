@@ -10,11 +10,26 @@
 
 package org.eclipse.milo.opcua.sdk.server.services;
 
+import java.util.List;
+
+import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.AddNodesContext;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupported;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
 
@@ -24,10 +39,45 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     private final ServiceCounter deleteReferencesMetric = new ServiceCounter();
 
     @Override
-    public void onAddNodes(ServiceRequest service) throws UaException {
+    public void onAddNodes(ServiceRequest service) {
         addNodesMetric.record(service);
 
-        service.setServiceFault(Bad_ServiceUnsupported);
+        OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+        Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
+
+        AddNodesRequest request = (AddNodesRequest) service.getRequest();
+
+        List<AddNodesItem> nodesToAdd = l(request.getNodesToAdd());
+
+        if (nodesToAdd.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NothingToDo);
+            return;
+        }
+
+        if (nodesToAdd.size() > server.getConfig().getLimits().getMaxNodesPerNodeManagement().longValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
+            return;
+        }
+
+        AddNodesContext context = new AddNodesContext(
+            server,
+            session,
+            new DiagnosticsContext<>()
+        );
+
+        server.getAddressSpaceManager().addNodes(context, nodesToAdd);
+
+        context.getFuture().thenAccept(results -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            AddNodesResponse response = new AddNodesResponse(
+                header,
+                a(results, AddNodesResult.class),
+                new DiagnosticInfo[0]
+            );
+
+            service.setResponse(response);
+        });
     }
 
     @Override
