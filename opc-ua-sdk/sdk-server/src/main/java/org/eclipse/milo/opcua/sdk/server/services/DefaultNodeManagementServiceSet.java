@@ -16,13 +16,18 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.AddNodesContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices.DeleteNodesContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
@@ -84,7 +89,42 @@ public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet
     public void onDeleteNodes(ServiceRequest service) throws UaException {
         deleteNodesMetric.record(service);
 
-        service.setServiceFault(Bad_ServiceUnsupported);
+        OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+        Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
+
+        DeleteNodesRequest request = (DeleteNodesRequest) service.getRequest();
+
+        List<DeleteNodesItem> nodesToDelete = l(request.getNodesToDelete());
+
+        if (nodesToDelete.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NothingToDo);
+            return;
+        }
+
+        if (nodesToDelete.size() > server.getConfig().getLimits().getMaxNodesPerNodeManagement().longValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
+            return;
+        }
+
+        DeleteNodesContext context = new DeleteNodesContext(
+            server,
+            session,
+            new DiagnosticsContext<>()
+        );
+
+        server.getAddressSpaceManager().deleteNodes(context, nodesToDelete);
+
+        context.getFuture().thenAccept(results -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            DeleteNodesResponse response = new DeleteNodesResponse(
+                header,
+                a(results, StatusCode.class),
+                new DiagnosticInfo[0]
+            );
+
+            service.setResponse(response);
+        });
     }
 
     @Override
