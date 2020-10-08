@@ -44,6 +44,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
@@ -652,7 +656,34 @@ public class CertificateValidationUtil {
      */
     public static void checkApplicationUri(X509Certificate certificate, String applicationUri) throws UaException {
         if (!checkSubjectAltNameField(certificate, SUBJECT_ALT_NAME_URI, applicationUri::equals)) {
-            throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
+            // First check failed, maybe it was because Java's X509Certificate represents the
+            // SAN URI extension as a java.net.URI and therefore can't handle an invalid URI.
+            // Try again Using BouncyCastle to read and compare the URIs.
+            try {
+                X509CertificateHolder certificateHolder =
+                    new X509CertificateHolder(certificate.getEncoded());
+
+                GeneralNames generalNames = GeneralNames.fromExtensions(
+                    certificateHolder.getExtensions(),
+                    Extension.subjectAlternativeName
+                );
+
+                if (generalNames != null) {
+                    for (GeneralName generalName : generalNames.getNames()) {
+                        if (generalName.getTagNo() == GeneralName.uniformResourceIdentifier) {
+                            String uri = generalName.getName().toString();
+                            if (!Objects.equals(applicationUri, uri)) {
+                                throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
+                            }
+                            return;
+                        }
+                    }
+                }
+
+                throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
+            } catch (Exception e) {
+                throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
+            }
         }
     }
 

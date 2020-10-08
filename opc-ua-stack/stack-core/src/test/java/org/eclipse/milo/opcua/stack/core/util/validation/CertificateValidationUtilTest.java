@@ -57,12 +57,14 @@ public class CertificateValidationUtilTest {
     private static final String ALIAS_CA_ROOT = "ca-root";
     private static final String ALIAS_LEAF_INTERMEDIATE_SIGNED = "leaf-intermediate-signed";
     private static final String ALIAS_LEAF_SELF_SIGNED = "leaf-self-signed";
+    private static final String ALIAS_URI_WITH_SPACES = "uri-with-spaces";
 
     private KeyStore keyStore;
     private X509Certificate caIntermediate;
     private X509Certificate caRoot;
     private X509Certificate leafSelfSigned;
     private X509Certificate leafIntermediateSigned;
+    private X509Certificate uriWithSpaces;
 
     @BeforeSuite
     public void loadKeyStore() throws Exception {
@@ -79,6 +81,7 @@ public class CertificateValidationUtilTest {
         caRoot = getCertificate(ALIAS_CA_ROOT);
         leafSelfSigned = getCertificate(ALIAS_LEAF_SELF_SIGNED);
         leafIntermediateSigned = getCertificate(ALIAS_LEAF_INTERMEDIATE_SIGNED);
+        uriWithSpaces = getCertificate(ALIAS_URI_WITH_SPACES);
     }
 
     @Test
@@ -400,6 +403,14 @@ public class CertificateValidationUtilTest {
         assertTrue(CertificateValidationUtil.certificateIsCa(getCertificate("no-key-usage-yes-ca")));
         assertTrue(CertificateValidationUtil.certificateIsCa(getCertificate("yes-key-usage-no-ca")));
         assertFalse(CertificateValidationUtil.certificateIsCa(getCertificate("no-key-usage-no-ca")));
+    }
+
+    @Test
+    public void testUriWithSpaces() throws Exception {
+        CertificateValidationUtil.checkApplicationUri(
+            uriWithSpaces,
+            "this URI has spaces"
+        );
     }
 
     private X509CRL generateCrl(X509Certificate ca, PrivateKey caPrivateKey, X509Certificate... revoked) throws Exception {
