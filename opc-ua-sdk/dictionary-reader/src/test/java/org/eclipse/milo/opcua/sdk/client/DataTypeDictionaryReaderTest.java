@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -26,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -36,11 +39,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DataTypeDictionaryReaderTest {
 
     private final UaStackClient stackClient = Mockito.mock(UaStackClient.class);
+    private final UaStackClientConfig config = Mockito.mock(UaStackClientConfig.class);
     private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
     private final BsdParser bsdParser = Mockito.mock(BsdParser.class);
 
     private final DataTypeDictionaryReader dictionaryReader =
         new DataTypeDictionaryReader(stackClient, session, bsdParser);
+
+    @BeforeEach
+    void setUp() {
+        Mockito.when(stackClient.getConfig()).thenReturn(config);
+        Mockito.when(config.getExecutor()).thenReturn(Stack.sharedExecutor());
+    }
 
     @Test
     void testReadDataTypeDictionaryBytes() throws Exception {

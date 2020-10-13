@@ -241,7 +241,7 @@ public class DataTypeDictionaryReader {
 
                 return completedFuture(fragmentBuffer);
             }
-        });
+        }, stackClient.getConfig().getExecutor());
     }
 
     private CompletableFuture<DataTypeDictionary<?>> createDataTypeDictionary(NodeId dictionaryNodeId, ByteString bs) {
