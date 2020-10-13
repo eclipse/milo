@@ -196,7 +196,7 @@ public class DataTypeDictionaryReader {
             )
         );
 
-        return valueFuture.thenCompose(value -> {
+        return valueFuture.thenComposeAsync(value -> {
             StatusCode statusCode = value.getStatusCode();
 
             if (statusCode == null || statusCode.isGood()) {
