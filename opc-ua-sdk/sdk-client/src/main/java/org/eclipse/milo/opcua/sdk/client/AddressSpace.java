@@ -1276,7 +1276,11 @@ public class AddressSpace {
         }
     }
 
-    private UaReferenceTypeNode newReferenceTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+    private UaReferenceTypeNode newReferenceTypeNode(
+        NodeId nodeId,
+        List<DataValue> attributeValues
+    ) throws UaException {
+
         DataValue nodeIdDataValue = attributeValues.get(0);
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
