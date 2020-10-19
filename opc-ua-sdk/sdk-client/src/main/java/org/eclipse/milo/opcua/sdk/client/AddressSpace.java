@@ -56,13 +56,18 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class AddressSpace {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private NodeCache nodeCache = new NodeCache();
 
@@ -203,14 +208,18 @@ public class AddressSpace {
         } else {
             CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.OBJECT_ATTRIBUTES);
 
-            return future.thenApply(response -> {
+            return future.thenCompose(response -> {
                 List<DataValue> attributeValues = l(response.getResults());
 
-                UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
+                try {
+                    UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
 
-                nodeCache.put(node.getNodeId(), node);
+                    nodeCache.put(node.getNodeId(), node);
 
-                return node;
+                    return completedFuture(node);
+                } catch (UaException e) {
+                    return failedFuture(e);
+                }
             });
         }
     }
@@ -305,14 +314,18 @@ public class AddressSpace {
         } else {
             CompletableFuture<ReadResponse> future = readAttributes(nodeId, AttributeId.VARIABLE_ATTRIBUTES);
 
-            return future.thenApply(response -> {
+            return future.thenCompose(response -> {
                 List<DataValue> attributeValues = l(response.getResults());
 
-                UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
+                try {
+                    UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
 
-                nodeCache.put(node.getNodeId(), node);
+                    nodeCache.put(node.getNodeId(), node);
 
-                return node;
+                    return completedFuture(node);
+                } catch (UaException e) {
+                    return failedFuture(e);
+                }
             });
         }
     }
@@ -643,7 +656,10 @@ public class AddressSpace {
             List<UaNode> results = new ArrayList<>(cfs.size());
 
             for (CompletableFuture<? extends UaNode> cf : cfs) {
-                results.add(cf.join());
+                UaNode node = cf.join();
+                if (node != null) {
+                    results.add(node);
+                }
             }
 
             return results;
@@ -805,11 +821,11 @@ public class AddressSpace {
 
         Integer nodeClassValue = (Integer) baseAttributeValues.get(1).getValue().getValue();
         if (nodeClassValue == null) {
-            return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
+            return failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
         }
         NodeClass nodeClass = NodeClass.from(nodeClassValue);
         if (nodeClass == null) {
-            return FutureUtils.failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
+            return failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
         }
 
         switch (nodeClass) {
@@ -846,15 +862,19 @@ public class AddressSpace {
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
-        return attributesFuture.thenApply(response -> {
+        return attributesFuture.thenCompose(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
             Collections.addAll(attributeValues, response.getResults());
 
-            UaDataTypeNode node = newDataTypeNode(nodeId, attributeValues);
+            try {
+                UaDataTypeNode node = newDataTypeNode(nodeId, attributeValues);
 
-            nodeCache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
-            return node;
+                return completedFuture(node);
+            } catch (UaException e) {
+                return failedFuture(e);
+            }
         });
     }
 
@@ -870,15 +890,19 @@ public class AddressSpace {
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
-        return attributesFuture.thenApply(response -> {
+        return attributesFuture.thenCompose(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
             Collections.addAll(attributeValues, response.getResults());
 
-            UaMethodNode node = newMethodNode(nodeId, attributeValues);
+            try {
+                UaMethodNode node = newMethodNode(nodeId, attributeValues);
 
-            nodeCache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
-            return node;
+                return completedFuture(node);
+            } catch (UaException e) {
+                return failedFuture(e);
+            }
         });
     }
 
@@ -893,19 +917,26 @@ public class AddressSpace {
         );
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
-
         CompletableFuture<NodeId> typeDefinitionFuture = readTypeDefinition(nodeId);
 
-        return attributesFuture.thenCombine(typeDefinitionFuture, (response, typeDefinitionId) -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+        return CompletableFuture.allOf(attributesFuture, typeDefinitionFuture)
+            .thenCompose(ignored -> {
+                ReadResponse response = attributesFuture.join();
+                NodeId typeDefinitionId = typeDefinitionFuture.join();
 
-            UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
+                List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
+                Collections.addAll(attributeValues, response.getResults());
 
-            nodeCache.put(node.getNodeId(), node);
+                try {
+                    UaObjectNode node = newObjectNode(nodeId, typeDefinitionId, attributeValues);
 
-            return node;
-        });
+                    nodeCache.put(node.getNodeId(), node);
+
+                    return completedFuture(node);
+                } catch (UaException e) {
+                    return failedFuture(e);
+                }
+            });
     }
 
     private CompletableFuture<UaObjectTypeNode> createObjectTypeNodeFromBaseAttributes(
@@ -920,15 +951,19 @@ public class AddressSpace {
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
-        return attributesFuture.thenApply(response -> {
+        return attributesFuture.thenCompose(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
             Collections.addAll(attributeValues, response.getResults());
 
-            UaObjectTypeNode node = newObjectTypeNode(nodeId, attributeValues);
+            try {
+                UaObjectTypeNode node = newObjectTypeNode(nodeId, attributeValues);
 
-            nodeCache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
-            return node;
+                return completedFuture(node);
+            } catch (UaException e) {
+                return failedFuture(e);
+            }
         });
     }
 
@@ -944,15 +979,19 @@ public class AddressSpace {
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
-        return attributesFuture.thenApply(response -> {
+        return attributesFuture.thenCompose(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
             Collections.addAll(attributeValues, response.getResults());
 
-            UaReferenceTypeNode node = newReferenceTypeNode(nodeId, attributeValues);
+            try {
+                UaReferenceTypeNode node = newReferenceTypeNode(nodeId, attributeValues);
 
-            nodeCache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
-            return node;
+                return completedFuture(node);
+            } catch (UaException e) {
+                return failedFuture(e);
+            }
         });
     }
 
@@ -967,19 +1006,26 @@ public class AddressSpace {
         );
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
-
         CompletableFuture<NodeId> typeDefinitionFuture = readTypeDefinition(nodeId);
 
-        return attributesFuture.thenCombine(typeDefinitionFuture, (response, typeDefinitionId) -> {
-            List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
-            Collections.addAll(attributeValues, response.getResults());
+        return CompletableFuture.allOf(attributesFuture, typeDefinitionFuture)
+            .thenCompose(ignored -> {
+                ReadResponse response = attributesFuture.join();
+                NodeId typeDefinitionId = typeDefinitionFuture.join();
 
-            UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
+                List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
+                Collections.addAll(attributeValues, response.getResults());
 
-            nodeCache.put(node.getNodeId(), node);
+                try {
+                    UaVariableNode node = newVariableNode(nodeId, typeDefinitionId, attributeValues);
 
-            return node;
-        });
+                    nodeCache.put(node.getNodeId(), node);
+
+                    return completedFuture(node);
+                } catch (UaException e) {
+                    return failedFuture(e);
+                }
+            });
     }
 
     private CompletableFuture<UaVariableTypeNode> createVariableTypeNodeFromBaseAttributes(
@@ -994,15 +1040,19 @@ public class AddressSpace {
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
-        return attributesFuture.thenApply(response -> {
+        return attributesFuture.thenCompose(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
             Collections.addAll(attributeValues, response.getResults());
 
-            UaVariableTypeNode node = newVariableTypeNode(nodeId, attributeValues);
+            try {
+                UaVariableTypeNode node = newVariableTypeNode(nodeId, attributeValues);
 
-            nodeCache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
-            return node;
+                return completedFuture(node);
+            } catch (UaException e) {
+                return failedFuture(e);
+            }
         });
     }
 
@@ -1018,15 +1068,19 @@ public class AddressSpace {
 
         CompletableFuture<ReadResponse> attributesFuture = readAttributes(nodeId, remainingAttributes);
 
-        return attributesFuture.thenApply(response -> {
+        return attributesFuture.thenCompose(response -> {
             List<DataValue> attributeValues = new ArrayList<>(baseAttributeValues);
             Collections.addAll(attributeValues, response.getResults());
 
-            UaViewNode node = newViewNode(nodeId, attributeValues);
+            try {
+                UaViewNode node = newViewNode(nodeId, attributeValues);
 
-            nodeCache.put(node.getNodeId(), node);
+                nodeCache.put(node.getNodeId(), node);
 
-            return node;
+                return completedFuture(node);
+            } catch (UaException e) {
+                return failedFuture(e);
+            }
         });
     }
 
@@ -1045,274 +1099,372 @@ public class AddressSpace {
         return client.read(0.0, TimestampsToReturn.Neither, readValueIds);
     }
 
-    private UaDataTypeNode newDataTypeNode(NodeId nodeId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaDataTypeNode newDataTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.DataType,
-            "expected NodeClass.DataType, got NodeClass." + nodeClass
-        );
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.DataType,
+                "expected NodeClass.DataType, got NodeClass." + nodeClass
+            );
 
-        Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return new UaDataTypeNode(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            isAbstract
-        );
+            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+
+            return new UaDataTypeNode(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                isAbstract
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaMethodNode newMethodNode(NodeId nodeId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaMethodNode newMethodNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.Method,
-            "expected NodeClass.Method, got NodeClass." + nodeClass
-        );
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.Method,
+                "expected NodeClass.Method, got NodeClass." + nodeClass
+            );
 
-        Boolean executable = (Boolean) attributeValues.get(7).getValue().getValue();
-        Boolean userExecutable = (Boolean) attributeValues.get(8).getValue().getValue();
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return new UaMethodNode(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            executable,
-            userExecutable
-        );
+            Boolean executable = (Boolean) attributeValues.get(7).getValue().getValue();
+            Boolean userExecutable = (Boolean) attributeValues.get(8).getValue().getValue();
+
+            return new UaMethodNode(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                executable,
+                userExecutable
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaObjectNode newObjectNode(NodeId nodeId, NodeId typeDefinitionId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaObjectNode newObjectNode(
+        NodeId nodeId,
+        NodeId typeDefinitionId,
+        List<DataValue> attributeValues
+    ) throws UaException {
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.Object,
-            "expected NodeClass.Object, got NodeClass." + nodeClass
-        );
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        UByte eventNotifier = (UByte) attributeValues.get(7).getValue().getValue();
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.Object,
+                "expected NodeClass.Object, got NodeClass." + nodeClass
+            );
 
-        ObjectNodeConstructor constructor = client.getObjectTypeManager()
-            .getNodeConstructor(typeDefinitionId)
-            .orElse(UaObjectNode::new);
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return constructor.apply(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            eventNotifier
-        );
+            UByte eventNotifier = (UByte) attributeValues.get(7).getValue().getValue();
+
+            ObjectNodeConstructor constructor = client.getObjectTypeManager()
+                .getNodeConstructor(typeDefinitionId)
+                .orElse(UaObjectNode::new);
+
+            return constructor.apply(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                eventNotifier
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaObjectTypeNode newObjectTypeNode(NodeId nodeId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaObjectTypeNode newObjectTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.ObjectType,
-            "expected NodeClass.ObjectType, got NodeClass." + nodeClass
-        );
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.ObjectType,
+                "expected NodeClass.ObjectType, got NodeClass." + nodeClass
+            );
 
-        Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return new UaObjectTypeNode(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            isAbstract
-        );
+            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+
+            return new UaObjectTypeNode(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                isAbstract
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaReferenceTypeNode newReferenceTypeNode(NodeId nodeId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaReferenceTypeNode newReferenceTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.ReferenceType,
-            "expected NodeClass.ReferenceType, got NodeClass." + nodeClass
-        );
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.ReferenceType,
+                "expected NodeClass.ReferenceType, got NodeClass." + nodeClass
+            );
 
-        Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
-        Boolean symmetric = (Boolean) attributeValues.get(8).getValue().getValue();
-        LocalizedText inverseName = getAttributeOrNull(attributeValues.get(9), LocalizedText.class);
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return new UaReferenceTypeNode(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            isAbstract,
-            symmetric,
-            inverseName
-        );
+            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            Boolean symmetric = (Boolean) attributeValues.get(8).getValue().getValue();
+            LocalizedText inverseName = getAttributeOrNull(attributeValues.get(9), LocalizedText.class);
+
+            return new UaReferenceTypeNode(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                isAbstract,
+                symmetric,
+                inverseName
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaVariableNode newVariableNode(NodeId nodeId, NodeId typeDefinitionId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaVariableNode newVariableNode(
+        NodeId nodeId,
+        NodeId typeDefinitionId,
+        List<DataValue> attributeValues
+    ) throws UaException {
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.Variable,
-            "expected NodeClass.Variable, got NodeClass." + nodeClass
-        );
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        DataValue value = attributeValues.get(7);
-        NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-        Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-        UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-        UByte accessLevel = (UByte) attributeValues.get(11).getValue().getValue();
-        UByte userAccessLevel = (UByte) attributeValues.get(12).getValue().getValue();
-        Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(13), Double.class);
-        Boolean historizing = (Boolean) attributeValues.get(14).getValue().getValue();
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.Variable,
+                "expected NodeClass.Variable, got NodeClass." + nodeClass
+            );
 
-        VariableTypeManager.VariableNodeConstructor constructor = client.getVariableTypeManager()
-            .getNodeConstructor(typeDefinitionId)
-            .orElse(UaVariableNode::new);
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return constructor.apply(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            value,
-            dataType,
-            valueRank,
-            arrayDimensions,
-            accessLevel,
-            userAccessLevel,
-            minimumSamplingInterval,
-            historizing
-        );
+            DataValue value = attributeValues.get(7);
+            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
+            UByte accessLevel = (UByte) attributeValues.get(11).getValue().getValue();
+            UByte userAccessLevel = (UByte) attributeValues.get(12).getValue().getValue();
+            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(13), Double.class);
+            Boolean historizing = (Boolean) attributeValues.get(14).getValue().getValue();
+
+            VariableTypeManager.VariableNodeConstructor constructor = client.getVariableTypeManager()
+                .getNodeConstructor(typeDefinitionId)
+                .orElse(UaVariableNode::new);
+
+            return constructor.apply(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                value,
+                dataType,
+                valueRank,
+                arrayDimensions,
+                accessLevel,
+                userAccessLevel,
+                minimumSamplingInterval,
+                historizing
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaVariableTypeNode newVariableTypeNode(NodeId nodeId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaVariableTypeNode newVariableTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.VariableType,
-            "expected NodeClass.VariableType, got NodeClass." + nodeClass
-        );
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.VariableType,
+                "expected NodeClass.VariableType, got NodeClass." + nodeClass
+            );
 
-        DataValue value = attributeValues.get(7);
-        NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-        Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-        UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-        Boolean isAbstract = (Boolean) attributeValues.get(11).getValue().getValue();
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return new UaVariableTypeNode(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            value,
-            dataType,
-            valueRank,
-            arrayDimensions,
-            isAbstract
-        );
+            DataValue value = attributeValues.get(7);
+            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
+            Boolean isAbstract = (Boolean) attributeValues.get(11).getValue().getValue();
+
+            return new UaVariableTypeNode(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                value,
+                dataType,
+                valueRank,
+                arrayDimensions,
+                isAbstract
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
-    private UaViewNode newViewNode(NodeId nodeId, List<DataValue> attributeValues) {
-        NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+    private UaViewNode newViewNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+        DataValue nodeIdDataValue = attributeValues.get(0);
+        StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            throw new UaException(nodeIdStatusCode);
+        }
 
-        Preconditions.checkArgument(
-            nodeClass == NodeClass.View,
-            "expected NodeClass.View, got NodeClass." + nodeClass
-        );
+        try {
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
 
-        QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-        LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-        LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-        UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-        UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            Preconditions.checkArgument(
+                nodeClass == NodeClass.View,
+                "expected NodeClass.View, got NodeClass." + nodeClass
+            );
 
-        Boolean containsNoLoops = (Boolean) attributeValues.get(7).getValue().getValue();
-        UByte eventNotifier = (UByte) attributeValues.get(8).getValue().getValue();
+            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
 
-        return new UaViewNode(
-            client,
-            nodeId,
-            nodeClass,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            containsNoLoops,
-            eventNotifier
-        );
+            Boolean containsNoLoops = (Boolean) attributeValues.get(7).getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues.get(8).getValue().getValue();
+
+            return new UaViewNode(
+                client,
+                nodeId,
+                nodeClass,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                containsNoLoops,
+                eventNotifier
+            );
+        } catch (Throwable t) {
+            throw UaException.extract(t)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, t));
+        }
     }
 
     @Nullable
