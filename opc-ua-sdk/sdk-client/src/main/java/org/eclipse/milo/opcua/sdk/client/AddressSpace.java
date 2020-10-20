@@ -627,11 +627,17 @@ public class AddressSpace {
                                     }
                                 );
 
-                            return unwrap(ff);
+                            return unwrap(ff).exceptionally(ex -> {
+                                logger.warn("Failed to create Node from Reference to {}", reference.getNodeId(), ex);
+                                return null;
+                            });
                         }
                         default: {
                             // TODO specialized getNode for other NodeClasses?
-                            return toNodeIdAsync(xNodeId).thenCompose(this::getNodeAsync);
+                            return toNodeIdAsync(xNodeId).thenCompose(this::getNodeAsync).exceptionally(ex -> {
+                                logger.warn("Failed to create Node from Reference to {}", reference.getNodeId(), ex);
+                                return null;
+                            });
                         }
                     }
                 })
@@ -1270,7 +1276,11 @@ public class AddressSpace {
         }
     }
 
-    private UaReferenceTypeNode newReferenceTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
+    private UaReferenceTypeNode newReferenceTypeNode(
+        NodeId nodeId,
+        List<DataValue> attributeValues
+    ) throws UaException {
+
         DataValue nodeIdDataValue = attributeValues.get(0);
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
