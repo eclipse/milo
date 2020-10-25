@@ -542,7 +542,7 @@ public final class ExpandedNodeId {
             Object identifier = nodeId.getIdentifier();
 
             for (String part : parts) {
-                String[] ss = part.split("=");
+                String[] ss = part.split("=", 2);
                 if ("svr".equals(ss[0])) {
                     serverIndex = uint(Integer.parseInt(ss[1]));
                 } else if ("ns".equals(ss[0])) {

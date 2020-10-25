@@ -166,6 +166,20 @@ public class ExpandedNodeIdTest {
     }
 
     @Test
+    public void parseNamespaceUriContainingEquals() {
+        ExpandedNodeId xni = ExpandedNodeId.parse(
+            "nsu=http://softing.com/dataFEEDSIS/nsuri?conn=Demo&uri=http://opcfoundation.org/UA/;i=85"
+        );
+
+        assertEquals(
+            xni.getNamespaceUri(),
+            "http://softing.com/dataFEEDSIS/nsuri?conn=Demo&uri=http://opcfoundation.org/UA/"
+        );
+
+        assertEquals(xni.getIdentifier(), uint(85));
+    }
+
+    @Test
     public void reindex() {
         NamespaceTable namespaceTable = new NamespaceTable();
         namespaceTable.addUri("test1");
