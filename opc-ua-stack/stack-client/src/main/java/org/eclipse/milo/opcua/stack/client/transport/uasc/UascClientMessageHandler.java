@@ -468,8 +468,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
         AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(
             buffer,
-            config.getEncodingLimits().getMaxArrayLength(),
-            config.getEncodingLimits().getMaxStringLength()
+            config.getEncodingLimits()
         );
 
         if (headerRef.compareAndSet(null, securityHeader)) {

@@ -18,10 +18,9 @@ import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -122,8 +121,8 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     }
 
     @Override
-    public OpcUaServerConfigBuilder setMessageLimits(MessageLimits messageLimits) {
-        super.setMessageLimits(messageLimits);
+    public OpcUaServerConfigBuilder setMessageLimits(EncodingLimits encodingLimits) {
+        super.setMessageLimits(encodingLimits);
         return this;
     }
 
@@ -244,7 +243,7 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         }
 
         @Override
-        public MessageLimits getMessageLimits() {
+        public EncodingLimits getMessageLimits() {
             return stackServerConfig.getMessageLimits();
         }
 

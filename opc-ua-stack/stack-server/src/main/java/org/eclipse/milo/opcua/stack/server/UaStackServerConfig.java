@@ -17,10 +17,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
@@ -63,9 +62,9 @@ public interface UaStackServerConfig {
     String getProductUri();
 
     /**
-     * @return the {@link MessageLimits}.
+     * @return the {@link EncodingLimits}.
      */
-    MessageLimits getMessageLimits();
+    EncodingLimits getMessageLimits();
 
     /**
      * @return the configured {@link EncodingLimits}.

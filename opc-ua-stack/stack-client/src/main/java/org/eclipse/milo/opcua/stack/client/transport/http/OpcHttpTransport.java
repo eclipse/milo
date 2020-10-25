@@ -137,7 +137,7 @@ public class OpcHttpTransport extends AbstractTransport {
                         channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
                     }
 
-                    int maxMessageSize = client.getConfig().getMessageLimits().getMaxMessageSize();
+                    int maxMessageSize = client.getConfig().getEncodingLimits().getMaxMessageSize();
 
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());

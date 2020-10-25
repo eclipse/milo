@@ -21,8 +21,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
@@ -44,7 +43,6 @@ public class UaStackClientConfigBuilder {
     private UInteger connectTimeout = uint(5_000);
     private UInteger acknowledgeTimeout = uint(5_000);
     private UInteger requestTimeout = uint(60_000);
-    private MessageLimits messageLimits = MessageLimits.DEFAULT;
     private UInteger channelLifetime = uint(60 * 60 * 1000);
 
     public UaStackClientConfigBuilder setEndpoint(EndpointDescription endpoint) {
@@ -107,11 +105,6 @@ public class UaStackClientConfigBuilder {
         return this;
     }
 
-    public UaStackClientConfigBuilder setMessageLimits(MessageLimits messageLimits) {
-        this.messageLimits = messageLimits;
-        return this;
-    }
-
     public UaStackClientConfigBuilder setChannelLifetime(UInteger channelLifetime) {
         this.channelLifetime = channelLifetime;
         return this;
@@ -143,7 +136,6 @@ public class UaStackClientConfigBuilder {
             connectTimeout,
             acknowledgeTimeout,
             requestTimeout,
-            messageLimits,
             channelLifetime
         );
     }
@@ -163,7 +155,6 @@ public class UaStackClientConfigBuilder {
         private final UInteger connectTimeout;
         private final UInteger acknowledgeTimeout;
         private final UInteger requestTimeout;
-        private final MessageLimits messageLimits;
         private final UInteger channelLifetime;
 
         UaStackClientConfigImpl(
@@ -179,8 +170,8 @@ public class UaStackClientConfigBuilder {
             UInteger connectTimeout,
             UInteger acknowledgeTimeout,
             UInteger requestTimeout,
-            MessageLimits messageLimits,
-            UInteger channelLifetime) {
+            UInteger channelLifetime
+        ) {
 
             this.endpoint = endpoint;
             this.keyPair = keyPair;
@@ -194,7 +185,6 @@ public class UaStackClientConfigBuilder {
             this.connectTimeout = connectTimeout;
             this.acknowledgeTimeout = acknowledgeTimeout;
             this.requestTimeout = requestTimeout;
-            this.messageLimits = messageLimits;
             this.channelLifetime = channelLifetime;
         }
 
@@ -229,11 +219,6 @@ public class UaStackClientConfigBuilder {
         @Override
         public ClientCertificateValidator getCertificateValidator() {
             return certificateValidator;
-        }
-
-        @Override
-        public MessageLimits getMessageLimits() {
-            return messageLimits;
         }
 
         @Override

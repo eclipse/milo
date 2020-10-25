@@ -82,8 +82,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
     private final AtomicReference<AsymmetricSecurityHeader> headerRef = new AtomicReference<>();
 
-    private final int maxArrayLength;
-    private final int maxStringLength;
     private final int maxChunkCount;
     private final int maxChunkSize;
 
@@ -94,14 +92,13 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     UascServerAsymmetricHandler(
         UaStackServer stackServer,
         TransportProfile transportProfile,
-        SerializationQueue serializationQueue) {
+        SerializationQueue serializationQueue
+    ) {
 
         this.stackServer = stackServer;
         this.transportProfile = transportProfile;
         this.serializationQueue = serializationQueue;
 
-        maxArrayLength = stackServer.getConfig().getEncodingLimits().getMaxArrayLength();
-        maxStringLength = stackServer.getConfig().getEncodingLimits().getMaxStringLength();
         maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
         maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
     }
@@ -160,8 +157,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             final AsymmetricSecurityHeader header = AsymmetricSecurityHeader.decode(
                 buffer,
-                maxArrayLength,
-                maxStringLength
+                stackServer.getConfig().getEncodingLimits()
             );
 
             if (!headerRef.compareAndSet(null, header)) {

@@ -19,10 +19,9 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
@@ -40,7 +39,6 @@ public class UaStackServerConfigBuilder {
 
     private String productUri = "server product uri not configured";
 
-    private MessageLimits messageLimits = MessageLimits.DEFAULT;
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
     private UInteger minimumSecureChannelLifetime = uint(60_000);
@@ -75,8 +73,8 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
-    public UaStackServerConfigBuilder setMessageLimits(MessageLimits messageLimits) {
-        this.messageLimits = messageLimits;
+    public UaStackServerConfigBuilder setMessageLimits(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
         return this;
     }
 
@@ -135,7 +133,6 @@ public class UaStackServerConfigBuilder {
             applicationName,
             applicationUri,
             productUri,
-            messageLimits,
             encodingLimits,
             minimumSecureChannelLifetime,
             maximumSecureChannelLifetime,
@@ -157,7 +154,6 @@ public class UaStackServerConfigBuilder {
         private final String applicationUri;
         private final String productUri;
 
-        private final MessageLimits messageLimits;
         private final EncodingLimits encodingLimits;
 
         private final UInteger minimumSecureChannelLifetime;
@@ -177,7 +173,6 @@ public class UaStackServerConfigBuilder {
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
-            MessageLimits messageLimits,
             EncodingLimits encodingLimits,
             UInteger minimumSecureChannelLifetime,
             UInteger maximumSecureChannelLifetime,
@@ -193,7 +188,6 @@ public class UaStackServerConfigBuilder {
             this.applicationName = applicationName;
             this.applicationUri = applicationUri;
             this.productUri = productUri;
-            this.messageLimits = messageLimits;
             this.encodingLimits = encodingLimits;
             this.minimumSecureChannelLifetime = minimumSecureChannelLifetime;
             this.maximumSecureChannelLifetime = maximumSecureChannelLifetime;
@@ -226,8 +220,8 @@ public class UaStackServerConfigBuilder {
         }
 
         @Override
-        public MessageLimits getMessageLimits() {
-            return messageLimits;
+        public EncodingLimits getMessageLimits() {
+            return encodingLimits;
         }
 
         @Override

@@ -18,6 +18,7 @@ import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public class AsymmetricSecurityHeader {
@@ -117,13 +118,14 @@ public class AsymmetricSecurityHeader {
         }
     }
 
-    public static AsymmetricSecurityHeader decode(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
+    public static AsymmetricSecurityHeader decode(ByteBuf buffer, EncodingLimits encodingLimits) {
         /* SecurityPolicyUri */
         int securityPolicyUriLength = buffer.readIntLE();
-        if (securityPolicyUriLength > maxStringLength) {
+        if (securityPolicyUriLength > encodingLimits.getMaxMessageSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max array length exceeded");
+                "SecurityPolicy URI length exceeds max message size"
+            );
         }
 
         byte[] securityPolicyUriBytes = new byte[securityPolicyUriLength];
@@ -136,10 +138,11 @@ public class AsymmetricSecurityHeader {
 
         /* SenderCertificate */
         int senderCertificateLength = buffer.readIntLE();
-        if (senderCertificateLength > maxArrayLength) {
+        if (senderCertificateLength > encodingLimits.getMaxMessageSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max array length exceeded");
+                "sender certificate length exceeds max message size"
+            );
         }
 
         byte[] senderCertificate = null;
@@ -150,10 +153,11 @@ public class AsymmetricSecurityHeader {
 
         /* ReceiverCertificateThumbprint */
         int thumbprintLength = buffer.readIntLE();
-        if (thumbprintLength > maxArrayLength) {
+        if (thumbprintLength > encodingLimits.getMaxMessageSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max array length exceeded");
+                "receiver thumbprint length exceeds max message size"
+            );
         }
 
         byte[] receiverCertificateThumbprint = null;

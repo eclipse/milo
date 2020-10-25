@@ -1257,12 +1257,12 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {
-        if (length > context.getEncodingLimits().getMaxArrayLength()) {
+        if (length > context.getEncodingLimits().getMaxMessageSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
                 String.format(
-                    "max array length exceeded (length=%s, max=%s)",
-                    length, context.getEncodingLimits().getMaxArrayLength())
+                    "array length exceeds max message size (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxMessageSize())
             );
         }
     }

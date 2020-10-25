@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
