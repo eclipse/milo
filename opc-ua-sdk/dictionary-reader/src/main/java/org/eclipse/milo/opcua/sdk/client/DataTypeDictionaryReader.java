@@ -112,7 +112,7 @@ public class DataTypeDictionaryReader {
                 references.stream()
                     .filter(r -> r.getNodeId().getNamespaceIndex().intValue() != 0)
                     .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType))
-                    .flatMap(r -> opt2stream(r.getNodeId().local(stackClient.getNamespaceTable())))
+                    .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
         );
 
         return dictionaryNodeIds
@@ -363,7 +363,7 @@ public class DataTypeDictionaryReader {
         return browseResult.thenApply(references ->
             references.stream()
                 .filter(r -> Identifiers.DataTypeDescriptionType.equals(r.getTypeDefinition()))
-                .flatMap(r -> opt2stream(r.getNodeId().local(stackClient.getNamespaceTable())))
+                .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
                 .collect(Collectors.toList())
         );
     }
@@ -428,7 +428,7 @@ public class DataTypeDictionaryReader {
 
                 return ref.map(r ->
                     r.getNodeId()
-                        .local(stackClient.getNamespaceTable())
+                        .toNodeId(stackClient.getNamespaceTable())
                         .orElse(NodeId.NULL_VALUE)
                 ).orElse(NodeId.NULL_VALUE);
             });
@@ -453,7 +453,7 @@ public class DataTypeDictionaryReader {
 
                 return ref.map(r ->
                     r.getNodeId()
-                        .local(stackClient.getNamespaceTable())
+                        .toNodeId(stackClient.getNamespaceTable())
                         .orElse(NodeId.NULL_VALUE)
                 ).orElse(NodeId.NULL_VALUE);
             });

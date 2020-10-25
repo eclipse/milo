@@ -1345,7 +1345,7 @@ public class SubscriptionManager {
             return dataTypeNode.getReferences()
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local(server.getNamespaceTable())))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
                 .findFirst()
                 .orElse(null);
         } else {

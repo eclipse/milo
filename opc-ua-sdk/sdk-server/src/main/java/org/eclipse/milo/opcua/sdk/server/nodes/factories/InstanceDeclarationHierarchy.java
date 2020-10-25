@@ -87,7 +87,7 @@ public class InstanceDeclarationHierarchy {
                 .stream()
                 .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
-                .flatMap(r -> r.getTargetNodeId().local(namespaceTable))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(namespaceTable))
                 .map(parentTypeId -> InstanceDeclarationHierarchy
                     .create(addressSpaceManager, namespaceTable, parentTypeId));
 

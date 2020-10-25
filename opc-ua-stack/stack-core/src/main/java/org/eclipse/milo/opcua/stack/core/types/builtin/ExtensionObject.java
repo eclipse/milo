@@ -145,7 +145,7 @@ public final class ExtensionObject {
     ) throws UaSerializationException {
 
         NodeId encodingId = struct.getBinaryEncodingId()
-            .local(context.getNamespaceTable())
+            .toNodeId(context.getNamespaceTable())
             .orElseThrow(
                 () ->
                     new UaSerializationException(
@@ -206,8 +206,7 @@ public final class ExtensionObject {
         DataTypeEncoding encoding
     ) throws UaSerializationException {
 
-        NodeId encodingId = xEncodingId
-            .local(context.getNamespaceTable())
+        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable())
             .orElseThrow(
                 () ->
                     new UaSerializationException(

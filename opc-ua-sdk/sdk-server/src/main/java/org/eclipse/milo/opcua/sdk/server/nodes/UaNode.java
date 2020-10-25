@@ -371,7 +371,7 @@ public abstract class UaNode implements UaServerNode {
             );
 
             NodeId dataType = property.getDataType()
-                .local(context.getNamespaceTable())
+                .toNodeId(context.getNamespaceTable())
                 .orElse(NodeId.NULL_VALUE);
 
             propertyNode.setDataType(dataType);

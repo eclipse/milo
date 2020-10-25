@@ -476,7 +476,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             Optional<CompletableFuture<UaObjectTypeNode>> node = references.stream()
                 .flatMap(r -> {
                     Optional<CompletableFuture<UaObjectTypeNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
+                        .toNodeId(client.getNamespaceTable())
                         .map(
                             id ->
                                 client.getAddressSpace().getNodeAsync(id)

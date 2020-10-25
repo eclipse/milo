@@ -91,7 +91,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public boolean containsNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.local(namespaceTable)
+        return nodeId.toNodeId(namespaceTable)
             .map(this::containsNode)
             .orElse(false);
     }
@@ -108,7 +108,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public Optional<T> getNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.local(namespaceTable).flatMap(this::getNode);
+        return nodeId.toNodeId(namespaceTable).flatMap(this::getNode);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public Optional<T> removeNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.local(namespaceTable).flatMap(this::removeNode);
+        return nodeId.toNodeId(namespaceTable).flatMap(this::removeNode);
     }
 
     @Override

@@ -147,7 +147,7 @@ public class AttributeReader {
         if (dataTypeNode != null) {
             Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
                 .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(Identifiers.HasSubtype))
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local(server.getNamespaceTable())))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
                 .findFirst();
 
             return superTypeId

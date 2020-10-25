@@ -93,7 +93,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
     private void registerCustomCodec(OpcUaClient client) {
         NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
-            .local(client.getNamespaceTable())
+            .toNodeId(client.getNamespaceTable())
             .orElseThrow(() -> new IllegalStateException("namespace not found"));
 
         // Register codec with the client DataTypeManager instance

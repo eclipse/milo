@@ -956,7 +956,7 @@ public abstract class UaNode implements Node {
                 new RelativePath(
                     new RelativePathElement[]{
                         new RelativePathElement(
-                            referenceTypeId.localOrThrow(client.getNamespaceTable()),
+                            referenceTypeId.toNodeIdOrThrow(client.getNamespaceTable()),
                             false,
                             includeSubtypes,
                             name
@@ -1018,7 +1018,7 @@ public abstract class UaNode implements Node {
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
                     Optional<CompletableFuture<? extends UaNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
+                        .toNodeId(client.getNamespaceTable())
                         .map(id -> client.getAddressSpace().getNodeAsync(id));
 
                     return opt2stream(opt);
@@ -1057,7 +1057,7 @@ public abstract class UaNode implements Node {
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
                     Optional<CompletableFuture<PropertyTypeNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
+                        .toNodeId(client.getNamespaceTable())
                         .map(id ->
                             client.getAddressSpace()
                                 .getNodeAsync(id)

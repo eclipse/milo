@@ -734,7 +734,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
             Optional<CompletableFuture<UaVariableTypeNode>> node = references.stream()
                 .flatMap(r -> {
                     Optional<CompletableFuture<UaVariableTypeNode>> opt = r.getNodeId()
-                        .local(client.getNamespaceTable())
+                        .toNodeId(client.getNamespaceTable())
                         .map(
                             id ->
                                 client.getAddressSpace().getNodeAsync(id)

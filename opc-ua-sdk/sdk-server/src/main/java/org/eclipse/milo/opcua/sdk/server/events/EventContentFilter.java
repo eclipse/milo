@@ -508,7 +508,7 @@ public class EventContentFilter {
         return addressSpaceManager.getManagedReferences(node.getNodeId())
             .stream()
             .filter(Reference.SUBTYPE_OF)
-            .flatMap(r -> opt2stream(r.getTargetNodeId().local(namespaceTable)))
+            .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(namespaceTable)))
             .findFirst()
             .flatMap(addressSpaceManager::getManagedNode);
     }

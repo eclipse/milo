@@ -184,7 +184,7 @@ public class BrowsePathsHelper {
 
                 List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
-                Optional<NodeId> nextId = nextExId.local(server.getNamespaceTable());
+                Optional<NodeId> nextId = nextExId.toNodeId(server.getNamespaceTable());
 
                 if (nextId.isPresent()) {
                     return follow(nextId.get(), nextElements);
@@ -308,7 +308,7 @@ public class BrowsePathsHelper {
         List<CompletableFuture<List<DataValue>>> futures = newArrayListWithCapacity(targetNodeIds.size());
 
         for (ExpandedNodeId xni : targetNodeIds) {
-            CompletableFuture<List<DataValue>> future = xni.local(server.getNamespaceTable())
+            CompletableFuture<List<DataValue>> future = xni.toNodeId(server.getNamespaceTable())
                 .map(nodeId -> {
                     ReadValueId readValueId = new ReadValueId(
                         nodeId,

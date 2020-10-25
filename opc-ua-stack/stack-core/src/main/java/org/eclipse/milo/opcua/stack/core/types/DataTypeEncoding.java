@@ -42,8 +42,7 @@ public interface DataTypeEncoding {
         ExpandedNodeId xEncodingId
     ) {
 
-        NodeId encodingId = xEncodingId
-            .local(context.getNamespaceTable())
+        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable())
             .orElseThrow(
                 () ->
                     new UaSerializationException(
@@ -61,8 +60,7 @@ public interface DataTypeEncoding {
         ExpandedNodeId xEncodingId
     ) {
 
-        NodeId encodingId = xEncodingId
-            .local(context.getNamespaceTable())
+        NodeId encodingId = xEncodingId.toNodeId(context.getNamespaceTable())
             .orElseThrow(
                 () ->
                     new UaSerializationException(

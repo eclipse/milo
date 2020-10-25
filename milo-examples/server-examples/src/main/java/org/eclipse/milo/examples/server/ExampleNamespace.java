@@ -735,8 +735,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void registerCustomEnumType() throws Exception {
-        NodeId dataTypeId = CustomEnumType.TYPE_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
         dictionaryManager.registerEnumCodec(
             new CustomEnumType.Codec().asBinaryCodec(),
@@ -780,11 +779,9 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     private void registerCustomStructType() throws Exception {
         // Get the NodeId for the DataType and encoding Nodes.
 
-        NodeId dataTypeId = CustomStructType.TYPE_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId dataTypeId = CustomStructType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
         // At a minimum, custom types must have their codec registered.
         // If clients don't need to dynamically discover types and will
@@ -854,11 +851,9 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void registerCustomUnionType() throws Exception {
-        NodeId dataTypeId = CustomUnionType.TYPE_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId dataTypeId = CustomUnionType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
         dictionaryManager.registerUnionCodec(
             new CustomUnionType.Codec().asBinaryCodec(),
@@ -905,8 +900,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void addCustomEnumTypeVariable(UaFolderNode rootFolder) throws Exception {
-        NodeId dataTypeId = CustomEnumType.TYPE_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
         UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
@@ -931,11 +925,9 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void addCustomStructTypeVariable(UaFolderNode rootFolder) throws Exception {
-        NodeId dataTypeId = CustomStructType.TYPE_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId dataTypeId = CustomStructType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
         UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
@@ -972,11 +964,9 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void addCustomUnionTypeVariable(UaFolderNode rootFolder) throws Exception {
-        NodeId dataTypeId = CustomUnionType.TYPE_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId dataTypeId = CustomUnionType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID
-            .localOrThrow(getServer().getNamespaceTable());
+        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
         UaVariableNode customUnionTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))

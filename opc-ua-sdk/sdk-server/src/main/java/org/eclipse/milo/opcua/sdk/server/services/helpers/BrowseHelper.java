@@ -270,7 +270,7 @@ public class BrowseHelper {
 
             boolean forward = masks.contains(BrowseResultMask.IsForward) && reference.isForward();
 
-            return targetNodeId.local(server.getNamespaceTable()).map(nodeId -> {
+            return targetNodeId.toNodeId(server.getNamespaceTable()).map(nodeId -> {
                 CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
 
                 CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {

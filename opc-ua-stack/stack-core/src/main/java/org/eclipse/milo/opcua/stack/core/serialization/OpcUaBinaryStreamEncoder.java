@@ -893,8 +893,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     public void writeMessage(String field, UaMessage message) throws UaSerializationException {
         ExpandedNodeId xBinaryEncodingId = message.getBinaryEncodingId();
 
-        NodeId encodingId = xBinaryEncodingId
-            .local(context.getNamespaceTable())
+        NodeId encodingId = xBinaryEncodingId.toNodeId(context.getNamespaceTable())
             .orElseThrow(
                 () ->
                     new UaSerializationException(
@@ -947,8 +946,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     @Override
     public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        NodeId localDateTypeId = dataTypeId
-            .local(context.getNamespaceTable())
+        NodeId localDateTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "no codec registered: " + dataTypeId
@@ -1116,8 +1114,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         ExpandedNodeId dataTypeId
     ) throws UaSerializationException {
 
-        NodeId localDateTypeId = dataTypeId
-            .local(context.getNamespaceTable())
+        NodeId localDateTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "no codec registered: " + dataTypeId

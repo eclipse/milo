@@ -185,7 +185,7 @@ public final class DataTypeTreeBuilder {
             Stream<CompletableFuture<DataTypeTree.DataType>> dataTypeFutures =
                 references.stream().map(dataTypeReference -> {
                     NodeId dataTypeId = dataTypeReference.getNodeId()
-                        .local(namespaceTable)
+                        .toNodeId(namespaceTable)
                         .orElse(NodeId.NULL_VALUE);
 
                     CompletableFuture<List<ReferenceDescription>> encodings = browseSafe(
@@ -207,9 +207,9 @@ public final class DataTypeTreeBuilder {
 
                         for (ReferenceDescription r : encodingReferences) {
                             if (r.getBrowseName().equals(OpcUaDefaultBinaryEncoding.ENCODING_NAME)) {
-                                binaryEncodingId = r.getNodeId().local(namespaceTable).orElse(null);
+                                binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
                             } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
-                                xmlEncodingId = r.getNodeId().local(namespaceTable).orElse(null);
+                                xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
                             }
                         }
 

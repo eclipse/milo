@@ -69,7 +69,7 @@ public class BrowseExample implements ClientExample {
                 logger.info("{} Node={}", indent, rd.getBrowseName().getName());
 
                 // recursively browse to children
-                rd.getNodeId().local(client.getNamespaceTable())
+                rd.getNodeId().toNodeId(client.getNamespaceTable())
                     .ifPresent(nodeId -> browseNode(indent + "  ", client, nodeId));
             }
         } catch (InterruptedException | ExecutionException e) {

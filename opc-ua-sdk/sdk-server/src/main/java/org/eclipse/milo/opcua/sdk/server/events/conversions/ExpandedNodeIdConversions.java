@@ -25,7 +25,7 @@ final class ExpandedNodeIdConversions {
     @Nullable
     static NodeId expandedNodeIdToNodeId(@Nonnull ExpandedNodeId e) {
         // TODO need a real NamespaceTable here
-        return e.local(new NamespaceTable()).orElse(null);
+        return e.toNodeId(new NamespaceTable()).orElse(null);
     }
 
     @Nonnull

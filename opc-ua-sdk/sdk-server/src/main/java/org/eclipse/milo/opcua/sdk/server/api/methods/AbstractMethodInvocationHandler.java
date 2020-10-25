@@ -76,7 +76,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 //  extract subtype logic from AttributeWriter...
                 boolean dataTypeMatch = value == null ||
                     variant.getDataType()
-                        .flatMap(xni -> xni.local(node.getNodeContext().getNamespaceTable()))
+                        .flatMap(xni -> xni.toNodeId(node.getNodeContext().getNamespaceTable()))
                         .map(type -> type.equals(argument.getDataType()))
                         .orElse(false);
 

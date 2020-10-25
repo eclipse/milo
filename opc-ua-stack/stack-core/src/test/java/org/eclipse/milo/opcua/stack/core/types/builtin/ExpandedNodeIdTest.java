@@ -33,19 +33,19 @@ public class ExpandedNodeIdTest {
         namespaceTable.addUri("uri:test");
 
         ExpandedNodeId xni0 = new ExpandedNodeId(ushort(0), null, "test");
-        assertTrue(xni0.local(namespaceTable).isPresent());
+        assertTrue(xni0.toNodeId(namespaceTable).isPresent());
 
         ExpandedNodeId xni1 = new ExpandedNodeId(ushort(1), null, "test");
-        assertTrue(xni1.local(namespaceTable).isPresent());
+        assertTrue(xni1.toNodeId(namespaceTable).isPresent());
 
         ExpandedNodeId xni2 = new ExpandedNodeId(ushort(99), namespaceTable.getUri(0), "test");
-        assertTrue(xni2.local(namespaceTable).isPresent());
+        assertTrue(xni2.toNodeId(namespaceTable).isPresent());
 
         ExpandedNodeId xni3 = new ExpandedNodeId(ushort(99), namespaceTable.getUri(1), "test");
-        assertTrue(xni3.local(namespaceTable).isPresent());
+        assertTrue(xni3.toNodeId(namespaceTable).isPresent());
 
         ExpandedNodeId xni4 = new ExpandedNodeId(ushort(99), "uri:notpresent", "test");
-        assertFalse(xni4.local(namespaceTable).isPresent());
+        assertFalse(xni4.toNodeId(namespaceTable).isPresent());
     }
 
     @Test

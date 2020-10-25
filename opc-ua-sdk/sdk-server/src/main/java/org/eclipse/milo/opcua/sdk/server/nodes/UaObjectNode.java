@@ -191,7 +191,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             NodeId parentTypeId = asm.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local(namespaceTable)))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(namespaceTable)))
                 .findFirst()
                 .orElse(null);
 

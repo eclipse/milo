@@ -708,8 +708,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId
-            .local(context.getNamespaceTable())
+        return dataTypeId.toNodeId(context.getNamespaceTable())
             .map(id -> readStruct(field, id))
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
@@ -1216,8 +1215,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        NodeId dataTypeNodeId = dataTypeId
-            .local(context.getNamespaceTable())
+        NodeId dataTypeNodeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElse(null);
 
         if (dataTypeNodeId != null) {

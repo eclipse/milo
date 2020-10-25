@@ -118,8 +118,7 @@ public class NodeFactory {
         InstantiationCallback instantiationCallback
     ) throws UaException {
 
-        NodeId localTypeDefinitionId = typeDefinitionId
-            .local(context.getNamespaceTable())
+        NodeId localTypeDefinitionId = typeDefinitionId.toNodeId(context.getNamespaceTable())
             .orElseThrow(
                 () ->
                     new UaException(
