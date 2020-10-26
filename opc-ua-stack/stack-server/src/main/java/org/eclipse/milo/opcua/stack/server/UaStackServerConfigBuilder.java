@@ -73,11 +73,6 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
-    public UaStackServerConfigBuilder setMessageLimits(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
-        return this;
-    }
-
     public UaStackServerConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
         this.encodingLimits = encodingLimits;
         return this;
@@ -217,11 +212,6 @@ public class UaStackServerConfigBuilder {
         @Override
         public String getProductUri() {
             return productUri;
-        }
-
-        @Override
-        public EncodingLimits getMessageLimits() {
-            return encodingLimits;
         }
 
         @Override

@@ -62,11 +62,6 @@ public interface UaStackServerConfig {
     String getProductUri();
 
     /**
-     * @return the {@link EncodingLimits}.
-     */
-    EncodingLimits getMessageLimits();
-
-    /**
      * @return the configured {@link EncodingLimits}.
      */
     EncodingLimits getEncodingLimits();
@@ -134,7 +129,6 @@ public interface UaStackServerConfig {
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
-        builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
         builder.setMinimumSecureChannelLifetime(config.getMinimumSecureChannelLifetime());
         builder.setMaximumSecureChannelLifetime(config.getMaximumSecureChannelLifetime());

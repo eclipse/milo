@@ -155,7 +155,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
                 "unsupported protocol version: " + remoteProtocolVersion);
         }
 
-        EncodingLimits config = stackServer.getConfig().getMessageLimits();
+        EncodingLimits config = stackServer.getConfig().getEncodingLimits();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
         long localReceiveBufferSize = Math.min(remoteSendBufferSize, config.getMaxChunkSize());

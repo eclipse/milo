@@ -121,12 +121,6 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     }
 
     @Override
-    public OpcUaServerConfigBuilder setMessageLimits(EncodingLimits encodingLimits) {
-        super.setMessageLimits(encodingLimits);
-        return this;
-    }
-
-    @Override
     public OpcUaServerConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
         super.setEncodingLimits(encodingLimits);
         return this;
@@ -240,11 +234,6 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         @Override
         public ExecutorService getExecutor() {
             return stackServerConfig.getExecutor();
-        }
-
-        @Override
-        public EncodingLimits getMessageLimits() {
-            return stackServerConfig.getMessageLimits();
         }
 
         @Override
