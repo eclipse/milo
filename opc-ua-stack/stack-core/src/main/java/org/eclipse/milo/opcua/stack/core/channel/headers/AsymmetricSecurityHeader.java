@@ -29,12 +29,12 @@ public class AsymmetricSecurityHeader {
 
     /**
      * @param securityPolicyUri  the URI of the Security Policy used to secure the Message.
-     * @param senderCertificate  the DER-encoded X509v3 Certificate assigned to the sending Application
-     *                           Instance. This field shall be null if the Message is not signed.
+     * @param senderCertificate  the DER-encoded X509v3 Certificate assigned to the sending Application Instance. This
+     *                           field shall be null if the Message is not signed.
      * @param receiverThumbprint the thumbprint of the X509v3 Certificate assigned to the receiving Application
-     *                           Instance. The thumbprint is the SHA1 digest of the DER encoded form of the
-     *                           Certificate. This indicates what public key was used to encrypt the MessageChunk. This
-     *                           field shall be null if the Message is not encrypted.
+     *                           Instance. The thumbprint is the SHA1 digest of the DER encoded form of the Certificate.
+     *                           This indicates what public key was used to encrypt the MessageChunk. This field shall
+     *                           be null if the Message is not encrypted.
      */
     public AsymmetricSecurityHeader(@Nonnull String securityPolicyUri,
                                     @Nonnull ByteString senderCertificate,
@@ -121,10 +121,10 @@ public class AsymmetricSecurityHeader {
     public static AsymmetricSecurityHeader decode(ByteBuf buffer, EncodingLimits encodingLimits) {
         /* SecurityPolicyUri */
         int securityPolicyUriLength = buffer.readIntLE();
-        if (securityPolicyUriLength > encodingLimits.getMaxMessageSize()) {
+        if (securityPolicyUriLength > encodingLimits.getMaxChunkSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "SecurityPolicy URI length exceeds max message size"
+                "SecurityPolicy URI length exceeds max chunk size"
             );
         }
 
@@ -138,10 +138,10 @@ public class AsymmetricSecurityHeader {
 
         /* SenderCertificate */
         int senderCertificateLength = buffer.readIntLE();
-        if (senderCertificateLength > encodingLimits.getMaxMessageSize()) {
+        if (senderCertificateLength > encodingLimits.getMaxChunkSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "sender certificate length exceeds max message size"
+                "sender certificate length exceeds max chunk size"
             );
         }
 
@@ -153,10 +153,10 @@ public class AsymmetricSecurityHeader {
 
         /* ReceiverCertificateThumbprint */
         int thumbprintLength = buffer.readIntLE();
-        if (thumbprintLength > encodingLimits.getMaxMessageSize()) {
+        if (thumbprintLength > encodingLimits.getMaxChunkSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "receiver thumbprint length exceeds max message size"
+                "receiver thumbprint length exceeds max chunk size"
             );
         }
 
