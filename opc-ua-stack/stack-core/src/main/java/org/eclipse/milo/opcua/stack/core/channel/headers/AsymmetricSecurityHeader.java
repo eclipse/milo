@@ -121,10 +121,10 @@ public class AsymmetricSecurityHeader {
     public static AsymmetricSecurityHeader decode(ByteBuf buffer, EncodingLimits encodingLimits) {
         /* SecurityPolicyUri */
         int securityPolicyUriLength = buffer.readIntLE();
-        if (securityPolicyUriLength > encodingLimits.getMaxChunkSize()) {
+        if (securityPolicyUriLength > 255) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "SecurityPolicy URI length exceeds max chunk size"
+                "SecurityPolicy URI length exceeds 255 bytes"
             );
         }
 
@@ -153,10 +153,10 @@ public class AsymmetricSecurityHeader {
 
         /* ReceiverCertificateThumbprint */
         int thumbprintLength = buffer.readIntLE();
-        if (thumbprintLength > encodingLimits.getMaxChunkSize()) {
+        if (thumbprintLength > 20) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "receiver thumbprint length exceeds max chunk size"
+                "receiver thumbprint length exceeds 20 bytes"
             );
         }
 
