@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +59,8 @@ public class OpcUaSubscription implements UaSubscription {
     private final ClientHandleSequence clientHandleSequence = new ClientHandleSequence(
         itemsByClientHandle::containsKey
     );
+
+    final List<UInteger> availableAcknowledgements = Collections.synchronizedList(new ArrayList<>());
 
     private volatile long lastSequenceNumber = 0L;
 
