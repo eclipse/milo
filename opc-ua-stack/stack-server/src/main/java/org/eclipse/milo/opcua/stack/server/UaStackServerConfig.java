@@ -17,10 +17,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
@@ -61,11 +60,6 @@ public interface UaStackServerConfig {
      * @return the product uri for the server.
      */
     String getProductUri();
-
-    /**
-     * @return the {@link MessageLimits}.
-     */
-    MessageLimits getMessageLimits();
 
     /**
      * @return the configured {@link EncodingLimits}.
@@ -135,7 +129,6 @@ public interface UaStackServerConfig {
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
-        builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
         builder.setMinimumSecureChannelLifetime(config.getMinimumSecureChannelLifetime());
         builder.setMaximumSecureChannelLifetime(config.getMaximumSecureChannelLifetime());

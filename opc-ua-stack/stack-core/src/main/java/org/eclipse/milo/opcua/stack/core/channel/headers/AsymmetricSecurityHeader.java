@@ -18,6 +18,7 @@ import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public class AsymmetricSecurityHeader {
@@ -28,12 +29,12 @@ public class AsymmetricSecurityHeader {
 
     /**
      * @param securityPolicyUri  the URI of the Security Policy used to secure the Message.
-     * @param senderCertificate  the DER-encoded X509v3 Certificate assigned to the sending Application
-     *                           Instance. This field shall be null if the Message is not signed.
+     * @param senderCertificate  the DER-encoded X509v3 Certificate assigned to the sending Application Instance. This
+     *                           field shall be null if the Message is not signed.
      * @param receiverThumbprint the thumbprint of the X509v3 Certificate assigned to the receiving Application
-     *                           Instance. The thumbprint is the SHA1 digest of the DER encoded form of the
-     *                           Certificate. This indicates what public key was used to encrypt the MessageChunk. This
-     *                           field shall be null if the Message is not encrypted.
+     *                           Instance. The thumbprint is the SHA1 digest of the DER encoded form of the Certificate.
+     *                           This indicates what public key was used to encrypt the MessageChunk. This field shall
+     *                           be null if the Message is not encrypted.
      */
     public AsymmetricSecurityHeader(@Nonnull String securityPolicyUri,
                                     @Nonnull ByteString senderCertificate,
@@ -117,13 +118,14 @@ public class AsymmetricSecurityHeader {
         }
     }
 
-    public static AsymmetricSecurityHeader decode(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
+    public static AsymmetricSecurityHeader decode(ByteBuf buffer, EncodingLimits encodingLimits) {
         /* SecurityPolicyUri */
         int securityPolicyUriLength = buffer.readIntLE();
-        if (securityPolicyUriLength > maxStringLength) {
+        if (securityPolicyUriLength > 255) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max array length exceeded");
+                "SecurityPolicy URI length exceeds 255 bytes"
+            );
         }
 
         byte[] securityPolicyUriBytes = new byte[securityPolicyUriLength];
@@ -136,10 +138,11 @@ public class AsymmetricSecurityHeader {
 
         /* SenderCertificate */
         int senderCertificateLength = buffer.readIntLE();
-        if (senderCertificateLength > maxArrayLength) {
+        if (senderCertificateLength > encodingLimits.getMaxChunkSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max array length exceeded");
+                "sender certificate length exceeds max chunk size"
+            );
         }
 
         byte[] senderCertificate = null;
@@ -150,10 +153,11 @@ public class AsymmetricSecurityHeader {
 
         /* ReceiverCertificateThumbprint */
         int thumbprintLength = buffer.readIntLE();
-        if (thumbprintLength > maxArrayLength) {
+        if (thumbprintLength > 20) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max array length exceeded");
+                "receiver thumbprint length exceeds 20 bytes"
+            );
         }
 
         byte[] receiverCertificateThumbprint = null;

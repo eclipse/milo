@@ -232,7 +232,7 @@ public class SessionManager implements
 
         ByteString serverNonce = NonceUtil.generateNonce(32);
         NodeId authenticationToken = new NodeId(0, NonceUtil.generateNonce(32));
-        long maxRequestMessageSize = serviceRequest.getServer().getConfig().getMessageLimits().getMaxMessageSize();
+        long maxRequestMessageSize = serviceRequest.getServer().getConfig().getEncodingLimits().getMaxMessageSize();
         double revisedSessionTimeout = Math.max(
             5000,
             Math.min(server.getConfig().getLimits().getMaxSessionTimeout(), request.getRequestedSessionTimeout())

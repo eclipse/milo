@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.AcknowledgeMessage;
@@ -111,10 +111,10 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
 
         HelloMessage hello = new HelloMessage(
             PROTOCOL_VERSION,
-            config.getMessageLimits().getMaxChunkSize(),
-            config.getMessageLimits().getMaxChunkSize(),
-            config.getMessageLimits().getMaxMessageSize(),
-            config.getMessageLimits().getMaxChunkCount(),
+            config.getEncodingLimits().getMaxChunkSize(),
+            config.getEncodingLimits().getMaxChunkSize(),
+            config.getEncodingLimits().getMaxMessageSize(),
+            config.getEncodingLimits().getMaxChunkCount(),
             endpointUrl
         );
 
@@ -148,7 +148,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        int maxChunkSize = config.getMessageLimits().getMaxChunkSize();
+        int maxChunkSize = config.getEncodingLimits().getMaxChunkSize();
 
         if (buffer.readableBytes() >= HEADER_LENGTH) {
             int messageLength = getMessageLength(buffer, maxChunkSize);
@@ -201,19 +201,19 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
                 PROTOCOL_VERSION, remoteProtocolVersion);
         }
 
-        MessageLimits messageLimits = config.getMessageLimits();
+        EncodingLimits encodingLimits = config.getEncodingLimits();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
-        long localReceiveBufferSize = Math.min(remoteSendBufferSize, messageLimits.getMaxChunkSize());
+        long localReceiveBufferSize = Math.min(remoteSendBufferSize, encodingLimits.getMaxChunkSize());
 
         /* Our send buffer size is determined by the remote receive buffer size. */
-        long localSendBufferSize = Math.min(remoteReceiveBufferSize, messageLimits.getMaxChunkSize());
+        long localSendBufferSize = Math.min(remoteReceiveBufferSize, encodingLimits.getMaxChunkSize());
 
         /* Max message size the remote can send us; not influenced by remote configuration. */
-        long localMaxMessageSize = messageLimits.getMaxMessageSize();
+        long localMaxMessageSize = encodingLimits.getMaxMessageSize();
 
         /* Max chunk count the remote can send us; not influenced by remote configuration. */
-        long localMaxChunkCount = messageLimits.getMaxChunkCount();
+        long localMaxChunkCount = encodingLimits.getMaxChunkCount();
 
         ChannelParameters parameters = new ChannelParameters(
             Ints.saturatedCast(localMaxMessageSize),

@@ -18,10 +18,9 @@ import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -118,12 +117,6 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     @Override
     public OpcUaServerConfigBuilder setExecutor(ExecutorService executor) {
         super.setExecutor(executor);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setMessageLimits(MessageLimits messageLimits) {
-        super.setMessageLimits(messageLimits);
         return this;
     }
 
@@ -241,11 +234,6 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         @Override
         public ExecutorService getExecutor() {
             return stackServerConfig.getExecutor();
-        }
-
-        @Override
-        public MessageLimits getMessageLimits() {
-            return stackServerConfig.getMessageLimits();
         }
 
         @Override

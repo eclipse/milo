@@ -22,12 +22,11 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
@@ -37,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.channel.MessageLimits.DEFAULT_MAX_CHUNK_SIZE;
-import static org.eclipse.milo.opcua.stack.core.channel.MessageLimits.DEFAULT_MAX_MESSAGE_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_CHUNK_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -74,24 +73,24 @@ public class ChunkSerializationTest extends SecureChannelFixture {
     );
 
     private ChannelParameters unlimitedChunkCountParameters = new ChannelParameters(
-        MessageLimits.DEFAULT_MAX_MESSAGE_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0,
-        MessageLimits.DEFAULT_MAX_MESSAGE_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0
     );
 
     private ChannelParameters unlimitedMessageSizeParameters = new ChannelParameters(
         0,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0,
         0,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0
     );
 
@@ -133,8 +132,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
         ChunkDecoder decoder = new ChunkDecoder(
             parameters,
-            EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-            EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+            EncodingLimits.DEFAULT
         );
 
         SecureChannel[] channels = generateChannels4096();
@@ -202,8 +200,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
         ChunkDecoder decoder = new ChunkDecoder(
             parameters,
-            EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-            EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+            EncodingLimits.DEFAULT
         );
 
         SecureChannel[] channels = generateChannels4096();
@@ -284,8 +281,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             ChunkDecoder decoder = new ChunkDecoder(
                 parameters,
-                EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-                EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+                EncodingLimits.DEFAULT
             );
 
             SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
@@ -388,8 +384,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
                 ChunkDecoder decoder = new ChunkDecoder(
                     parameters,
-                    EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-                    EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+                    EncodingLimits.DEFAULT
                 );
 
                 SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
