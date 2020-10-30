@@ -36,9 +36,10 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
-import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
+import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
@@ -224,54 +225,47 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
                 checkMessageSize(messageBuffer);
 
-                chunkEncoder.encodeAsymmetric(
+                EncodedMessage encodedMessage = chunkEncoder.encodeAsymmetric(
                     secureChannel,
                     requestIdSequence.getAndIncrement(),
                     messageBuffer,
-                    MessageType.OpenSecureChannel,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding {}: {}", request, ex.getMessage(), ex);
-
-                            ctx.close();
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-
-                            ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
-
-                            long currentTokenId = -1L;
-                            if (channelSecurity != null) {
-                                currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
-                            }
-
-                            long previousTokenId = -1L;
-                            if (channelSecurity != null) {
-                                previousTokenId = channelSecurity.getPreviousToken()
-                                    .map(token -> token.getTokenId().longValue())
-                                    .orElse(-1L);
-                            }
-
-                            logger.debug(
-                                "Sent OpenSecureChannelRequest ({}, id={}, currentToken={}, previousToken={}).",
-                                request.getRequestType(),
-                                secureChannel.getChannelId(),
-                                currentTokenId,
-                                previousTokenId
-                            );
-                        }
-                    }
+                    MessageType.OpenSecureChannel
                 );
+
+                CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
+                    chunkComposite.addComponent(chunk);
+                    chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                }
+
+                ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+
+                ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
+
+                long currentTokenId = -1L;
+                if (channelSecurity != null) {
+                    currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
+                }
+
+                long previousTokenId = -1L;
+                if (channelSecurity != null) {
+                    previousTokenId = channelSecurity.getPreviousToken()
+                        .map(token -> token.getTokenId().longValue())
+                        .orElse(-1L);
+                }
+
+                logger.debug(
+                    "Sent OpenSecureChannelRequest ({}, id={}, currentToken={}, previousToken={}).",
+                    request.getRequestType(),
+                    secureChannel.getChannelId(),
+                    currentTokenId,
+                    previousTokenId
+                );
+            } catch (MessageEncodeException e) {
+                logger.error("Error encoding {}: {}", request, e.getMessage(), e);
+
+                ctx.close();
             } finally {
                 messageBuffer.release();
             }
@@ -300,35 +294,29 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
                 checkMessageSize(messageBuffer);
 
-                chunkEncoder.encodeSymmetric(
+                EncodedMessage encodedMessage = chunkEncoder.encodeSymmetric(
                     secureChannel,
                     requestIdSequence.getAndIncrement(),
                     messageBuffer,
-                    MessageType.CloseSecureChannel,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding {}: {}", request, ex.getMessage(), ex);
-
-                            ctx.close();
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite).addListener(future -> ctx.close());
-
-                            secureChannel.setChannelId(0);
-                        }
-                    }
+                    MessageType.CloseSecureChannel
                 );
+
+                CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
+                    chunkComposite.addComponent(chunk);
+                    chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                }
+
+                ctx.writeAndFlush(chunkComposite).addListener(future -> ctx.close());
+
+                secureChannel.setChannelId(0);
+            } catch (MessageEncodeException e) {
+                logger.error("Error encoding {}: {}", request, e.getMessage(), e);
+                handshakeFuture.completeExceptionally(e);
+                ctx.close();
             } catch (UaSerializationException e) {
+                logger.error("Error serializing {}: {}", request, e.getMessage(), e);
                 handshakeFuture.completeExceptionally(e);
                 ctx.close();
             } finally {
@@ -348,41 +336,37 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
                 checkMessageSize(messageBuffer);
 
-                chunkEncoder.encodeSymmetric(
+                EncodedMessage encodedMessage = chunkEncoder.encodeSymmetric(
                     secureChannel,
                     requestIdSequence.getAndIncrement(),
                     messageBuffer,
-                    MessageType.SecureMessage,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding {}: {}",
-                                request.getRequest(), ex.getMessage(), ex);
-
-                            ctx.close();
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            pending.put(requestId, request);
-
-                            // No matter how we complete, make sure the entry in pending is removed.
-                            // This covers the case where the request fails due to a timeout in the
-                            // transport layer as well as normal completion.
-                            request.getFuture().whenComplete((r, x) -> pending.remove(requestId));
-
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-                        }
-                    }
+                    MessageType.SecureMessage
                 );
+
+                long requestId = encodedMessage.getRequestId();
+                List<ByteBuf> messageChunks = encodedMessage.getMessageChunks();
+
+                pending.put(requestId, request);
+
+                // No matter how we complete, make sure the entry in pending is removed.
+                // This covers the case where the request fails due to a timeout in the
+                // transport layer as well as normal completion.
+                request.getFuture().whenComplete((r, x) -> pending.remove(requestId));
+
+                CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                for (ByteBuf chunk : messageChunks) {
+                    chunkComposite.addComponent(chunk);
+                    chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                }
+
+                ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+            } catch (MessageEncodeException e) {
+                logger.error("Error encoding {}: {}", request.getRequest(), e.getMessage(), e);
+                request.getFuture().completeExceptionally(e);
+                ctx.close();
             } catch (UaSerializationException e) {
+                logger.error("Error serializing {}: {}", request.getRequest(), e.getMessage(), e);
                 request.getFuture().completeExceptionally(e);
             } finally {
                 messageBuffer.release();
