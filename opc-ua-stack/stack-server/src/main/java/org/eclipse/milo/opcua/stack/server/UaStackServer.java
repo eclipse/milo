@@ -60,6 +60,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
@@ -472,6 +473,7 @@ public class UaStackServer {
     public void addServiceSet(String path, DiscoveryServiceSet serviceSet) {
         addServiceHandler(path, GetEndpointsRequest.TYPE_ID, serviceSet::onGetEndpoints);
         addServiceHandler(path, FindServersRequest.TYPE_ID, serviceSet::onFindServers);
+        addServiceHandler(path, FindServersOnNetworkRequest.TYPE_ID, serviceSet::onFindServersOnNetwork);
         addServiceHandler(path, RegisterServerRequest.TYPE_ID, serviceSet::onRegisterServer);
         addServiceHandler(path, RegisterServer2Request.TYPE_ID, serviceSet::onRegisterServer2);
     }

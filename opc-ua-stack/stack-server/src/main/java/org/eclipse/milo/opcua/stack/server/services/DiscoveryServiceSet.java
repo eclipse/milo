@@ -19,6 +19,10 @@ public interface DiscoveryServiceSet {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
+    default void onFindServersOnNetwork(ServiceRequest serviceRequest) throws UaException {
+        serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+    }
+
     default void onGetEndpoints(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
