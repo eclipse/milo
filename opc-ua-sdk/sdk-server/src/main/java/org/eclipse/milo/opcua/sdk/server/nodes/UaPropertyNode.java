@@ -16,6 +16,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
+/**
+ * @deprecated create a {@link org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode} instead.
+ */
+@Deprecated
 public class UaPropertyNode extends UaVariableNode {
 
     public UaPropertyNode(
