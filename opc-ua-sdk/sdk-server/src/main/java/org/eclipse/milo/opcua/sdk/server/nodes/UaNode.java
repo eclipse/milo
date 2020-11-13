@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -45,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public abstract class UaNode implements UaServerNode {
 
@@ -363,11 +365,14 @@ public abstract class UaNode implements UaServerNode {
                 String.format("%s.%s", getNodeId().getIdentifier().toString(), browseName)
             );
 
-            UaPropertyNode propertyNode = new UaPropertyNode(
+            PropertyTypeNode propertyNode = new PropertyTypeNode(
                 context,
                 propertyNodeId,
                 new QualifiedName(namespaceIndex, browseName),
-                LocalizedText.english(browseName)
+                LocalizedText.english(browseName),
+                LocalizedText.NULL_VALUE,
+                uint(0),
+                uint(0)
             );
 
             NodeId dataType = property.getDataType()
@@ -377,6 +382,13 @@ public abstract class UaNode implements UaServerNode {
             propertyNode.setDataType(dataType);
             propertyNode.setValueRank(property.getValueRank());
             propertyNode.setArrayDimensions(property.getArrayDimensions());
+
+            propertyNode.addReference(new Reference(
+                propertyNode.getNodeId(),
+                Identifiers.HasTypeDefinition,
+                Identifiers.PropertyType.expanded(),
+                true
+            ));
 
             addProperty(propertyNode);
 
