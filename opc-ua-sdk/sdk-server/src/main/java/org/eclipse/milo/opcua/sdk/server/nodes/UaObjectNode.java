@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -423,6 +424,18 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
             references.forEach(node::addReference);
 
+            return node;
+        }
+
+        /**
+         * Build the {@link UaObjectNode} using the configured values and add it to the {@link NodeManager} from the
+         * {@link UaNodeContext}.
+         *
+         * @return a {@link UaObjectNode} built from the configured values.
+         */
+        public UaObjectNode buildAndAdd() {
+            UaObjectNode node = build();
+            context.getNodeManager().addNode(node);
             return node;
         }
 
