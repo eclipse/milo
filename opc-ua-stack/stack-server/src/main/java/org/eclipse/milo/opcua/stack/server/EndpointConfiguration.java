@@ -157,11 +157,11 @@ public class EndpointConfiguration {
     }
 
     public static class Builder {
-        
+
         /**
          * A {@link UserTokenPolicy} for anonymous access.
          */
-        private static final UserTokenPolicy USER_TOKEN_POLICY_ANONYMOUS = new UserTokenPolicy(
+        static final UserTokenPolicy USER_TOKEN_POLICY_ANONYMOUS = new UserTokenPolicy(
             "anonymous",
             UserTokenType.Anonymous,
             null,
