@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
 public class EndpointConfiguration {
@@ -156,6 +157,17 @@ public class EndpointConfiguration {
     }
 
     public static class Builder {
+        
+        /**
+         * A {@link UserTokenPolicy} for anonymous access.
+         */
+        private static final UserTokenPolicy USER_TOKEN_POLICY_ANONYMOUS = new UserTokenPolicy(
+            "anonymous",
+            UserTokenType.Anonymous,
+            null,
+            null,
+            null
+        );
 
         TransportProfile transportProfile = TransportProfile.TCP_UASC_UABINARY;
         String bindAddress = "localhost";
@@ -255,10 +267,6 @@ public class EndpointConfiguration {
                 }
             }
 
-            if (tokenPolicies.isEmpty()) {
-                throw new IllegalStateException("no UserTokenPolicy");
-            }
-
             switch (transportProfile) {
                 case HTTPS_UAXML:
                 case HTTPS_UAJSON:
@@ -269,6 +277,12 @@ public class EndpointConfiguration {
 
                 default:
                     break;
+            }
+
+            List<UserTokenPolicy> tokenPolicies = this.tokenPolicies;
+
+            if (tokenPolicies.isEmpty()) {
+                tokenPolicies.add(USER_TOKEN_POLICY_ANONYMOUS);
             }
 
             return new EndpointConfiguration(
