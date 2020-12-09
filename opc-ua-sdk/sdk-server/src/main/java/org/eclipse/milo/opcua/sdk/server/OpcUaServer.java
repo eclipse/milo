@@ -75,17 +75,17 @@ public class OpcUaServer {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
-    private final ServerTable serverTable = new ServerTable();
+    private final ServerTable serverTable = createServerTable();
 
-    private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
-    private final SessionManager sessionManager = new SessionManager(this);
-    private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
-    private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+    private final AddressSpaceManager addressSpaceManager = createAddressSpaceManager();
+    private final SessionManager sessionManager = createSessionManager();
+    private final ObjectTypeManager objectTypeManager = createObjectTypeManager();
+    private final VariableTypeManager variableTypeManager = createVariableTypeManager();
 
-    private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
+    private final ServerDiagnosticsSummary diagnosticsSummary = createServerDiagnosticsSummary();
 
     private final EventBus eventBus = new EventBus("server");
-    private final EventFactory eventFactory = new EventFactory(this);
+    private final EventFactory eventFactory = createEventFactory();
 
     private final UaStackServer stackServer;
 
@@ -130,6 +130,34 @@ public class OpcUaServer {
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
         }
+    }
+
+    protected ServerTable createServerTable() {
+        return new ServerTable();
+    }
+
+    protected AddressSpaceManager createAddressSpaceManager() {
+        return new AddressSpaceManager(this);
+    }
+
+    protected SessionManager createSessionManager() {
+        return new SessionManager(this);
+    }
+
+    protected ObjectTypeManager createObjectTypeManager() {
+        return new ObjectTypeManager();
+    }
+
+    protected VariableTypeManager createVariableTypeManager() {
+        return new VariableTypeManager();
+    }
+
+    protected ServerDiagnosticsSummary createServerDiagnosticsSummary() {
+        return new ServerDiagnosticsSummary(this);
+    }
+
+    protected EventFactory createEventFactory() {
+        return new EventFactory(this);
     }
 
     public OpcUaServerConfig getConfig() {
