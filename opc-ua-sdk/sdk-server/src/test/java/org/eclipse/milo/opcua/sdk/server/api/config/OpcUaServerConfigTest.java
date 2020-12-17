@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.google.common.io.Files;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
@@ -29,6 +31,8 @@ public class OpcUaServerConfigTest {
     public void testCopy() throws IOException {
         DefaultTrustListManager trustListManager = new DefaultTrustListManager(Files.createTempDir());
 
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
         OpcUaServerConfig original = OpcUaServerConfig.builder()
             .setCertificateManager(new DefaultCertificateManager())
             .setTrustListManager(trustListManager)
@@ -36,6 +40,7 @@ public class OpcUaServerConfigTest {
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})
+            .setScheduledExecutorService(scheduledExecutorService)
             .build();
 
         OpcUaServerConfig copy = OpcUaServerConfig.copy(original).build();
@@ -43,6 +48,7 @@ public class OpcUaServerConfigTest {
         assertEquals(copy.getIdentityValidator(), original.getIdentityValidator());
         assertEquals(copy.getBuildInfo(), original.getBuildInfo());
         assertEquals(copy.getLimits(), original.getLimits());
+        assertEquals(copy.getScheduledExecutorService(), original.getScheduledExecutorService());
     }
 
 }

@@ -67,8 +67,6 @@ public class OpcUaServer {
         logger.info("Eclipse Milo OPC UA Server SDK version: {}", SDK_VERSION);
     }
 
-    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Stack.sharedScheduledExecutor();
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
@@ -245,7 +243,7 @@ public class OpcUaServer {
     }
 
     public ScheduledExecutorService getScheduledExecutorService() {
-        return SCHEDULED_EXECUTOR_SERVICE;
+        return config.getScheduledExecutorService();
     }
 
     public ImmutableList<EndpointDescription> getEndpointDescriptions() {
