@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -605,71 +606,73 @@ public class AddressSpace {
 
         CompletableFuture<List<ReferenceDescription>> browse = BrowseHelper.browse(client, browseDescription);
 
-        return browse.thenCompose(references -> {
-            List<CompletableFuture<? extends UaNode>> cfs = references.stream()
-                .map(reference -> {
-                    NodeClass nodeClass = reference.getNodeClass();
-                    ExpandedNodeId xNodeId = reference.getNodeId();
-                    ExpandedNodeId xTypeDefinitionId = reference.getTypeDefinition();
-
-                    switch (nodeClass) {
-                        case Object:
-                        case Variable: {
-                            CompletableFuture<CompletableFuture<? extends UaNode>> ff =
-                                toNodeIdAsync(xNodeId).thenCombine(
-                                    toNodeIdAsync(xTypeDefinitionId),
-                                    (targetNodeId, typeDefinitionId) -> {
-                                        if (nodeClass == NodeClass.Object) {
-                                            return getObjectNodeAsync(targetNodeId, typeDefinitionId);
-                                        } else {
-                                            return getVariableNodeAsync(targetNodeId, typeDefinitionId);
-                                        }
-                                    }
-                                );
-
-                            return unwrap(ff).exceptionally(ex -> {
-                                logger.warn("Failed to create Node from Reference to {}", reference.getNodeId(), ex);
-                                return null;
-                            });
-                        }
-                        default: {
-                            // TODO specialized getNode for other NodeClasses?
-                            return toNodeIdAsync(xNodeId).thenCompose(this::getNodeAsync).exceptionally(ex -> {
-                                logger.warn("Failed to create Node from Reference to {}", reference.getNodeId(), ex);
-                                return null;
-                            });
-                        }
-                    }
-                })
-                .collect(Collectors.toList());
-
-            return sequence(cfs);
-        });
+        return browse.thenCompose(this::createNodesFromReferences);
     }
 
-    private static CompletableFuture<List<? extends UaNode>> sequence(
-        List<CompletableFuture<? extends UaNode>> cfs
+    private CompletableFuture<List<? extends UaNode>> createNodesFromReferences(
+        List<ReferenceDescription> references
     ) {
 
-        if (cfs.isEmpty()) {
-            return completedFuture(Collections.emptyList());
+        return createNodesFromReferences(
+            Collections.synchronizedList(new LinkedList<>(references)),
+            Collections.synchronizedList(new ArrayList<>())
+        );
+    }
+
+    private CompletableFuture<List<? extends UaNode>> createNodesFromReferences(
+        List<ReferenceDescription> references,
+        List<UaNode> nodes
+    ) {
+
+        if (references.isEmpty()) {
+            return CompletableFuture.completedFuture(nodes);
+        } else {
+            ReferenceDescription reference = references.remove(0);
+
+            logger.info("Creating UaNode for {}...", reference.getNodeId());
+
+            return createNodeFromReference(reference).thenCompose(node -> {
+                logger.info("...Created UaNode for {}", reference.getNodeId());
+                nodes.add(node);
+
+                return createNodesFromReferences(references, nodes);
+            });
         }
+    }
 
-        @SuppressWarnings("rawtypes")
-        CompletableFuture[] fa = cfs.toArray(new CompletableFuture[0]);
+    private CompletableFuture<? extends UaNode> createNodeFromReference(ReferenceDescription reference) {
+        NodeClass nodeClass = reference.getNodeClass();
+        ExpandedNodeId xNodeId = reference.getNodeId();
+        ExpandedNodeId xTypeDefinitionId = reference.getTypeDefinition();
 
-        return CompletableFuture.allOf(fa).thenApply(v -> {
-            List<UaNode> results = new ArrayList<>(cfs.size());
+        switch (nodeClass) {
+            case Object:
+            case Variable: {
+                CompletableFuture<CompletableFuture<? extends UaNode>> ff =
+                    toNodeIdAsync(xNodeId).thenCombine(
+                        toNodeIdAsync(xTypeDefinitionId),
+                        (targetNodeId, typeDefinitionId) -> {
+                            if (nodeClass == NodeClass.Object) {
+                                return getObjectNodeAsync(targetNodeId, typeDefinitionId);
+                            } else {
+                                return getVariableNodeAsync(targetNodeId, typeDefinitionId);
+                            }
+                        }
+                    );
 
-            for (CompletableFuture<? extends UaNode> cf : cfs) {
-                UaNode node = cf.join();
-                if (node != null) {
-                    results.add(node);
-                }
+                return unwrap(ff).exceptionally(ex -> {
+                    logger.warn("Failed to create Node from Reference to {}", reference.getNodeId(), ex);
+                    return null;
+                });
             }
-
-            return results;
-        });
+            default: {
+                // TODO specialized getNode for other NodeClasses?
+                return toNodeIdAsync(xNodeId).thenCompose(this::getNodeAsync).exceptionally(ex -> {
+                    logger.warn("Failed to create Node from Reference to {}", reference.getNodeId(), ex);
+                    return null;
+                });
+            }
+        }
     }
 
     private static CompletableFuture<? extends UaNode> unwrap(
