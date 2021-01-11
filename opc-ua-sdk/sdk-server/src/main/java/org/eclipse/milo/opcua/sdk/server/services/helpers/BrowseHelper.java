@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
@@ -27,7 +28,6 @@ import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -63,14 +63,6 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class BrowseHelper {
 
-    /**
-     * Browsing is a relatively expensive operation, so limit the concurrency based on the available CPU cores.
-     */
-    private static final ExecutionQueue BROWSE_EXECUTION_QUEUE = new ExecutionQueue(
-        Stack.sharedExecutor(),
-        Runtime.getRuntime().availableProcessors()
-    );
-
     private static final StatusCode BAD_CONTINUATION_POINT_INVALID =
         new StatusCode(StatusCodes.Bad_ContinuationPointInvalid);
 
@@ -87,23 +79,19 @@ public class BrowseHelper {
         ByteString.NULL_VALUE, new ReferenceDescription[0]
     );
 
-    public void browseNext(ServiceRequest service) {
-        OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+    /**
+     * Browsing is a relatively expensive operation, so limit the concurrency based on the available CPU cores.
+     */
+    private final ExecutionQueue browseQueue;
 
-        BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
-
-        List<ByteString> continuationPoints = l(request.getContinuationPoints());
-
-        if (continuationPoints.size() >
-            server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
-
-            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
-        } else {
-            server.getExecutorService().execute(new BrowseNext(server, service));
-        }
+    public BrowseHelper(ExecutorService executor) {
+        browseQueue = new ExecutionQueue(
+            executor,
+            Runtime.getRuntime().availableProcessors()
+        );
     }
 
-    public static CompletableFuture<BrowseResult> browse(
+    public CompletableFuture<BrowseResult> browse(
         AccessContext context,
         OpcUaServer server,
         ViewDescription viewDescription,
@@ -121,7 +109,23 @@ public class BrowseHelper {
         return browse.browse();
     }
 
-    private static class Browse {
+    public void browseNext(ServiceRequest service) {
+        OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+
+        BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
+
+        List<ByteString> continuationPoints = l(request.getContinuationPoints());
+
+        if (continuationPoints.size() >
+            server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
+
+            service.setServiceFault(StatusCodes.Bad_TooManyOperations);
+        } else {
+            server.getExecutorService().execute(new BrowseNext(server, service));
+        }
+    }
+
+    private class Browse {
 
         private final CompletableFuture<BrowseResult> future = new CompletableFuture<>();
 
@@ -152,7 +156,7 @@ public class BrowseHelper {
         }
 
         public CompletableFuture<BrowseResult> browse() {
-            BROWSE_EXECUTION_QUEUE.submit(() -> {
+            browseQueue.submit(() -> {
                 NodeId referenceTypeId = browseDescription.getReferenceTypeId();
 
                 if (referenceTypeId.isNotNull() && !server.getReferenceTypes().containsKey(referenceTypeId)) {

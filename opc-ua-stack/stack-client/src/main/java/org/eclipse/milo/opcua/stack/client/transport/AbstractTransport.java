@@ -19,7 +19,6 @@ import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
@@ -87,7 +86,7 @@ public abstract class AbstractTransport implements UaTransport {
                 if (cause instanceof ClosedChannelException && firstAttempt) {
                     logger.debug("Write failed, channel closed; retrying...");
 
-                    Stack.sharedScheduledExecutor().schedule(
+                    config.getScheduledExecutor().schedule(
                         () -> config.getExecutor().execute(() -> {
                             CompletableFuture<UaResponseMessage> sendAgain =
                                 channel().thenCompose(ch -> sendRequest(request, ch, false));
