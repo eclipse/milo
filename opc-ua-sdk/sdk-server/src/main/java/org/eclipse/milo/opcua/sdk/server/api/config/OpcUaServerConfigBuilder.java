@@ -15,9 +15,11 @@ import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
@@ -46,6 +48,8 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
 
     private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
 
+    private ScheduledExecutorService scheduledExecutorService;
+
     public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator<?> identityValidator) {
         this.identityValidator = identityValidator;
         return this;
@@ -58,6 +62,11 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
 
     public OpcUaServerConfigBuilder setLimits(OpcUaServerConfigLimits limits) {
         this.limits = limits;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+        this.scheduledExecutorService = scheduledExecutorService;
         return this;
     }
 
@@ -148,11 +157,17 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     public OpcUaServerConfig build() {
         UaStackServerConfig stackServerConfig = super.build();
 
+        ScheduledExecutorService scheduledExecutorService = this.scheduledExecutorService;
+        if (scheduledExecutorService == null) {
+            scheduledExecutorService = Stack.sharedScheduledExecutor();
+        }
+
         return new OpcUaServerConfigImpl(
             stackServerConfig,
             identityValidator,
             buildInfo,
-            limits
+            limits,
+            scheduledExecutorService
         );
     }
 
@@ -164,18 +179,21 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         private final IdentityValidator<?> identityValidator;
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
+        private final ScheduledExecutorService scheduledExecutorService;
 
         public OpcUaServerConfigImpl(
             UaStackServerConfig stackServerConfig,
             IdentityValidator<?> identityValidator,
             BuildInfo buildInfo,
-            OpcUaServerConfigLimits limits
+            OpcUaServerConfigLimits limits,
+            ScheduledExecutorService scheduledExecutorService
         ) {
 
             this.stackServerConfig = stackServerConfig;
             this.identityValidator = identityValidator;
             this.buildInfo = buildInfo;
             this.limits = limits;
+            this.scheduledExecutorService = scheduledExecutorService;
         }
 
         @Override
@@ -191,6 +209,11 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         @Override
         public OpcUaServerConfigLimits getLimits() {
             return limits;
+        }
+
+        @Override
+        public ScheduledExecutorService getScheduledExecutorService() {
+            return scheduledExecutorService;
         }
 
         @Override
