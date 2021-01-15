@@ -14,6 +14,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Supplier;
 
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -250,7 +251,8 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             IdentityProvider identityProvider,
             UInteger keepAliveFailuresAllowed,
             UInteger keepAliveInterval,
-            UInteger keepAliveTimeout) {
+            UInteger keepAliveTimeout
+        ) {
 
             this.stackClientConfig = stackClientConfig;
             this.applicationName = applicationName;
@@ -370,6 +372,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public ExecutorService getExecutor() {
             return stackClientConfig.getExecutor();
+        }
+
+        @Override
+        public ScheduledExecutorService getScheduledExecutor() {
+            return stackClientConfig.getScheduledExecutor();
         }
 
         @Override

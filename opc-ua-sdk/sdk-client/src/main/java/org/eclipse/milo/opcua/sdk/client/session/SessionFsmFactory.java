@@ -41,7 +41,6 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -210,7 +209,7 @@ public class SessionFsmFactory {
                 }
                 KEY_WAIT_TIME.set(ctx, waitTime);
 
-                ScheduledFuture<?> waitFuture = Stack.sharedScheduledExecutor().schedule(
+                ScheduledFuture<?> waitFuture = client.getConfig().getScheduledExecutor().schedule(
                     () -> ctx.fireEvent(new Event.CreatingWaitExpired()),
                     waitTime,
                     TimeUnit.SECONDS
@@ -507,7 +506,7 @@ public class SessionFsmFactory {
                 long keepAliveInterval = client.getConfig().getKeepAliveInterval().longValue();
                 KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, 0L);
 
-                ScheduledFuture<?> scheduledFuture = Stack.sharedScheduledExecutor().scheduleWithFixedDelay(
+                ScheduledFuture<?> scheduledFuture = client.getConfig().getScheduledExecutor().scheduleWithFixedDelay(
                     () -> ctx.fireEvent(new Event.KeepAlive(event.session)),
                     keepAliveInterval,
                     keepAliveInterval,
