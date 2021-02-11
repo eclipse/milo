@@ -439,7 +439,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
             if (dataTypeId.getNamespaceIndex().intValue() == 0) {
                 long id = ((UInteger) dataTypeId.getIdentifier()).longValue();
-                String uri = id <= 25L ? Namespaces.OPC_UA_BSD : Namespaces.OPC_UA;
+                String uri = id <= 15L ? Namespaces.OPC_UA_BSD : Namespaces.OPC_UA;
                 return new DataTypeLocation(dataTypeNode.getBrowseName().getName(), uri);
             }
 
