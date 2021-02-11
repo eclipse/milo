@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDescription;
@@ -437,10 +438,9 @@ public class DataTypeDictionaryManager implements Lifecycle {
             checkNotNull(dataTypeNode, "dataTypeNode for dataTypeId=" + dataTypeId);
 
             if (dataTypeId.getNamespaceIndex().intValue() == 0) {
-                return new DataTypeLocation(
-                    dataTypeNode.getBrowseName().getName(),
-                    Namespaces.OPC_UA_BSD
-                );
+                long id = ((UInteger) dataTypeId.getIdentifier()).longValue();
+                String uri = id <= 25L ? Namespaces.OPC_UA_BSD : Namespaces.OPC_UA;
+                return new DataTypeLocation(dataTypeNode.getBrowseName().getName(), uri);
             }
 
             UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
