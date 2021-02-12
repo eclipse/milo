@@ -631,7 +631,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
          */
         public UaVariableNode buildAndAdd() {
             UaVariableNode node = build();
-            node.getNodeContext().getNodeManager().addNode(node);
+            context.getNodeManager().addNode(node);
             return node;
         }
 

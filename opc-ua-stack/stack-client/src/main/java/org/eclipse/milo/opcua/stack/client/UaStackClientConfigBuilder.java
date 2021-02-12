@@ -14,6 +14,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
@@ -36,6 +37,7 @@ public class UaStackClientConfigBuilder {
     private ClientCertificateValidator certificateValidator = new ClientCertificateValidator.InsecureValidator();
 
     private ExecutorService executor;
+    private ScheduledExecutorService scheduledExecutor;
     private NioEventLoopGroup eventLoop;
     private HashedWheelTimer wheelTimer;
 
@@ -72,6 +74,11 @@ public class UaStackClientConfigBuilder {
 
     public UaStackClientConfigBuilder setExecutor(ExecutorService executor) {
         this.executor = executor;
+        return this;
+    }
+
+    public UaStackClientConfigBuilder setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
+        this.scheduledExecutor = scheduledExecutor;
         return this;
     }
 
@@ -116,6 +123,9 @@ public class UaStackClientConfigBuilder {
         if (executor == null) {
             executor = Stack.sharedExecutor();
         }
+        if (scheduledExecutor == null) {
+            scheduledExecutor = Stack.sharedScheduledExecutor();
+        }
         if (eventLoop == null) {
             eventLoop = Stack.sharedEventLoop();
         }
@@ -131,6 +141,7 @@ public class UaStackClientConfigBuilder {
             certificateValidator,
             encodingLimits,
             executor,
+            scheduledExecutor,
             eventLoop,
             wheelTimer,
             connectTimeout,
@@ -150,6 +161,7 @@ public class UaStackClientConfigBuilder {
 
         private final EncodingLimits encodingLimits;
         private final ExecutorService executor;
+        private final ScheduledExecutorService scheduledExecutor;
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
         private final UInteger connectTimeout;
@@ -165,6 +177,7 @@ public class UaStackClientConfigBuilder {
             ClientCertificateValidator certificateValidator,
             EncodingLimits encodingLimits,
             ExecutorService executor,
+            ScheduledExecutorService scheduledExecutor,
             NioEventLoopGroup eventLoop,
             HashedWheelTimer wheelTimer,
             UInteger connectTimeout,
@@ -180,6 +193,7 @@ public class UaStackClientConfigBuilder {
             this.certificateValidator = certificateValidator;
             this.encodingLimits = encodingLimits;
             this.executor = executor;
+            this.scheduledExecutor = scheduledExecutor;
             this.eventLoop = eventLoop;
             this.wheelTimer = wheelTimer;
             this.connectTimeout = connectTimeout;
@@ -234,6 +248,11 @@ public class UaStackClientConfigBuilder {
         @Override
         public ExecutorService getExecutor() {
             return executor;
+        }
+
+        @Override
+        public ScheduledExecutorService getScheduledExecutor() {
+            return scheduledExecutor;
         }
 
         @Override

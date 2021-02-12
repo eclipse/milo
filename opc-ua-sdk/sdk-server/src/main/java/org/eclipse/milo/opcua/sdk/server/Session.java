@@ -144,7 +144,7 @@ public class Session implements SessionServiceSet {
         nodeManagementServiceSet = new DefaultNodeManagementServiceSet();
         queryServiceSet = new DefaultQueryServiceSet();
         subscriptionServiceSet = new DefaultSubscriptionServiceSet(subscriptionManager);
-        viewServiceSet = new DefaultViewServiceSet();
+        viewServiceSet = new DefaultViewServiceSet(server.getConfig().getExecutor());
 
         checkTimeoutFuture = server.getScheduledExecutorService().schedule(
             this::checkTimeout, sessionTimeout.toNanos(), TimeUnit.NANOSECONDS);

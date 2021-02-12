@@ -41,7 +41,6 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -210,7 +209,7 @@ public class SessionFsmFactory {
                 }
                 KEY_WAIT_TIME.set(ctx, waitTime);
 
-                ScheduledFuture<?> waitFuture = Stack.sharedScheduledExecutor().schedule(
+                ScheduledFuture<?> waitFuture = client.getConfig().getScheduledExecutor().schedule(
                     () -> ctx.fireEvent(new Event.CreatingWaitExpired()),
                     waitTime,
                     TimeUnit.SECONDS
@@ -507,7 +506,7 @@ public class SessionFsmFactory {
                 long keepAliveInterval = client.getConfig().getKeepAliveInterval().longValue();
                 KEY_KEEP_ALIVE_FAILURE_COUNT.set(ctx, 0L);
 
-                ScheduledFuture<?> scheduledFuture = Stack.sharedScheduledExecutor().scheduleWithFixedDelay(
+                ScheduledFuture<?> scheduledFuture = client.getConfig().getScheduledExecutor().scheduleWithFixedDelay(
                     () -> ctx.fireEvent(new Event.KeepAlive(event.session)),
                     keepAliveInterval,
                     keepAliveInterval,
@@ -1003,26 +1002,36 @@ public class SessionFsmFactory {
                         .map(UaException::getStatusCode)
                         .orElse(StatusCode.BAD);
 
-                    // Bad_ServiceUnsupported is the correct response when transfers aren't supported but
-                    // server implementations tend to interpret the spec in their own unique way...
+                    LOGGER.debug("[{}] TransferSubscriptions not supported: {}", ctx.getInstanceId(), statusCode);
+
+                    client.getConfig().getExecutor().execute(() -> {
+                        // transferFailed() will remove the subscription, but that is okay
+                        // because the list from getSubscriptions() above is a copy.
+                        for (UaSubscription subscription : subscriptions) {
+                            subscriptionManager.transferFailed(
+                                subscription.getSubscriptionId(), statusCode);
+                        }
+                    });
+
+                    // Bad_ServiceUnsupported is the correct response when transfers aren't
+                    // supported but server implementations interpret the spec differently.
                     if (statusCode.getValue() == StatusCodes.Bad_NotImplemented ||
                         statusCode.getValue() == StatusCodes.Bad_NotSupported ||
                         statusCode.getValue() == StatusCodes.Bad_OutOfService ||
                         statusCode.getValue() == StatusCodes.Bad_ServiceUnsupported) {
 
-                        LOGGER.debug("[{}] TransferSubscriptions not supported: {}", ctx.getInstanceId(), statusCode);
-
-                        client.getConfig().getExecutor().execute(() -> {
-                            // transferFailed() will remove the subscription, but that is okay
-                            // because the list from getSubscriptions() above is a copy.
-                            for (UaSubscription subscription : subscriptions) {
-                                subscriptionManager.transferFailed(
-                                    subscription.getSubscriptionId(), statusCode);
-                            }
-                        });
+                        // One of the expected responses; continue moving through the FSM.
 
                         transferFuture.complete(Unit.VALUE);
                     } else {
+                        // An unexpected response; complete exceptionally and start over.
+                        // Subsequent runs through the FSM will not attempt transfer because
+                        // transferFailed() has been called for all the existing subscriptions.
+                        // This will prevent us from getting stuck in a "loop" attempting to
+                        // reconnect to a defective server that responds with a channel-level
+                        // Error message to subscription transfer requests instead of an
+                        // application-level ServiceFault.
+
                         transferFuture.completeExceptionally(ex);
                     }
                 }

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -62,7 +61,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newLinkedList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -79,8 +77,6 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private final List<SubscriptionListener> subscriptionListeners = Lists.newCopyOnWriteArrayList();
 
     private final ConcurrentMap<NodeId, AtomicLong> pendingCountMap = Maps.newConcurrentMap();
-
-    private final LinkedList<SubscriptionAcknowledgement> acknowledgements = newLinkedList();
 
     private final ExecutionQueue deliveryQueue;
     private final ExecutionQueue processingQueue;
@@ -441,17 +437,19 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     }
 
     private void sendPublishRequest(UaSession session, AtomicLong pendingCount) {
-        SubscriptionAcknowledgement[] subscriptionAcknowledgements;
+        List<SubscriptionAcknowledgement> subscriptionAcknowledgements = new ArrayList<>();
 
-        synchronized (acknowledgements) {
-            List<SubscriptionAcknowledgement> ackSubList = acknowledgements
-                .subList(0, Math.min(acknowledgements.size(), 1024));
-
-            subscriptionAcknowledgements = ackSubList.toArray(new SubscriptionAcknowledgement[0]);
-
-            ackSubList.clear();
-        }
-
+        subscriptions.values().forEach(subscription -> {
+            synchronized (subscription.availableAcknowledgements) {
+                subscription.availableAcknowledgements.forEach(sequenceNumber ->
+                    subscriptionAcknowledgements.add(new SubscriptionAcknowledgement(
+                        subscription.getSubscriptionId(),
+                        sequenceNumber
+                    ))
+                );
+                subscription.availableAcknowledgements.clear();
+            }
+        });
 
         RequestHeader requestHeader = client.getStackClient().newRequestHeader(
             session.getAuthenticationToken(),
@@ -462,11 +460,11 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         PublishRequest request = new PublishRequest(
             requestHeader,
-            subscriptionAcknowledgements
+            subscriptionAcknowledgements.toArray(new SubscriptionAcknowledgement[0])
         );
 
         if (logger.isDebugEnabled()) {
-            String[] ackStrings = Arrays.stream(subscriptionAcknowledgements)
+            String[] ackStrings = subscriptionAcknowledgements.stream()
                 .map(ack -> String.format("id=%s/seq=%s",
                     ack.getSubscriptionId(), ack.getSequenceNumber()))
                 .toArray(String[]::new);
@@ -495,10 +493,6 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                     statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
 
                     maybeSendPublishRequests();
-                }
-
-                synchronized (this.acknowledgements) {
-                    Collections.addAll(this.acknowledgements, subscriptionAcknowledgements);
                 }
 
                 UaException uax = UaException.extract(ex).orElse(new UaException(ex));
@@ -559,22 +553,22 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         UInteger[] availableSequenceNumbers = response.getAvailableSequenceNumbers();
 
-        if (availableSequenceNumbers != null && availableSequenceNumbers.length > 0) {
-            synchronized (acknowledgements) {
-                for (UInteger available : availableSequenceNumbers) {
-                    acknowledgements.add(new SubscriptionAcknowledgement(subscriptionId, available));
-                }
-            }
+        synchronized (subscription.availableAcknowledgements) {
+            subscription.availableAcknowledgements.clear();
 
-            if (logger.isDebugEnabled()) {
-                String[] seqStrings = Arrays.stream(availableSequenceNumbers)
-                    .map(sequence -> String.format("id=%s/seq=%s", subscriptionId, sequence))
-                    .toArray(String[]::new);
-
-                logger.debug(
-                    "[id={}] PublishResponse sequence={}, available sequences={}",
-                    subscriptionId, sequenceNumber, Arrays.toString(seqStrings));
+            if (availableSequenceNumbers != null && availableSequenceNumbers.length > 0) {
+                Collections.addAll(subscription.availableAcknowledgements, availableSequenceNumbers);
             }
+        }
+
+        if (logger.isDebugEnabled() && availableSequenceNumbers != null) {
+            String[] seqStrings = Arrays.stream(availableSequenceNumbers)
+                .map(sequence -> String.format("id=%s/seq=%s", subscriptionId, sequence))
+                .toArray(String[]::new);
+
+            logger.debug(
+                "[id={}] PublishResponse sequence={}, available sequences={}",
+                subscriptionId, sequenceNumber, Arrays.toString(seqStrings));
         }
 
         DateTime publishTime = notificationMessage.getPublishTime();

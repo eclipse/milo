@@ -14,6 +14,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -70,17 +71,22 @@ public interface UaStackClientConfig {
     EncodingLimits getEncodingLimits();
 
     /**
-     * @return the {@link ExecutorService} the transport will use.
+     * @return the {@link ExecutorService} used by the client.
      */
     ExecutorService getExecutor();
 
     /**
-     * @return the {@link NioEventLoopGroup} the transport will use.
+     * @return the {@link ScheduledExecutorService} used by the client.
+     */
+    ScheduledExecutorService getScheduledExecutor();
+
+    /**
+     * @return the {@link NioEventLoopGroup} used by the client.
      */
     NioEventLoopGroup getEventLoop();
 
     /**
-     * @return the {@link HashedWheelTimer} the transport will use.
+     * @return the {@link HashedWheelTimer} used by the client.
      */
     HashedWheelTimer getWheelTimer();
 
@@ -128,6 +134,7 @@ public interface UaStackClientConfig {
         builder.setEncodingLimits(config.getEncodingLimits());
         builder.setChannelLifetime(config.getChannelLifetime());
         builder.setExecutor(config.getExecutor());
+        builder.setScheduledExecutor(config.getScheduledExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
         builder.setConnectTimeout(config.getConnectTimeout());

@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcClientTcpChannelInitializer;
 import org.eclipse.milo.opcua.stack.client.transport.websocket.OpcClientWebSocketChannelInitializer;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -64,8 +63,8 @@ public class ClientChannelFsm {
             .setMaxReconnectDelaySeconds(16)
             .setPersistent(true)
             .setChannelActions(new ClientChannelActions(client))
-            .setExecutor(Stack.sharedExecutor())
-            .setScheduler(Stack.sharedScheduledExecutor())
+            .setExecutor(client.getConfig().getExecutor())
+            .setScheduler(client.getConfig().getScheduledExecutor())
             .setLoggerName(CHANNEL_FSM_LOGGER_NAME)
             .build();
 

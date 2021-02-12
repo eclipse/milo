@@ -10,8 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
@@ -77,6 +79,11 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
     OpcUaServerConfigLimits getLimits();
 
     /**
+     * @return the {@link ScheduledExecutorService} used by the {@link OpcUaServer} being configured.
+     */
+    ScheduledExecutorService getScheduledExecutorService();
+
+    /**
      * @return a {@link OpcUaServerConfigBuilder}.
      */
     static OpcUaServerConfigBuilder builder() {
@@ -113,6 +120,7 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
         builder.setIdentityValidator(config.getIdentityValidator());
         builder.setBuildInfo(config.getBuildInfo());
         builder.setLimits(config.getLimits());
+        builder.setScheduledExecutorService(config.getScheduledExecutorService());
 
         return builder;
     }
