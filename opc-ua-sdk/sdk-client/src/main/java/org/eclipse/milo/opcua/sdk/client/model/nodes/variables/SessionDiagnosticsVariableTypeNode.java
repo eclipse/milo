@@ -156,7 +156,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setClientDescription(ApplicationDescription clientDescription) throws UaException {
         BaseDataVariableTypeNode node = getClientDescriptionNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), clientDescription);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), clientDescription);
         node.setValue(new Variant(value));
     }
 
@@ -186,7 +186,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeClientDescriptionAsync(
         ApplicationDescription clientDescription) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), clientDescription);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), clientDescription);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getClientDescriptionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -801,7 +801,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setTotalRequestCount(ServiceCounterDataType totalRequestCount) throws UaException {
         BaseDataVariableTypeNode node = getTotalRequestCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), totalRequestCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), totalRequestCount);
         node.setValue(new Variant(value));
     }
 
@@ -831,7 +831,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeTotalRequestCountAsync(
         ServiceCounterDataType totalRequestCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), totalRequestCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), totalRequestCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTotalRequestCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -920,7 +920,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setReadCount(ServiceCounterDataType readCount) throws UaException {
         BaseDataVariableTypeNode node = getReadCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), readCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), readCount);
         node.setValue(new Variant(value));
     }
 
@@ -949,7 +949,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<StatusCode> writeReadCountAsync(ServiceCounterDataType readCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), readCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), readCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getReadCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -979,7 +979,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setHistoryReadCount(ServiceCounterDataType historyReadCount) throws UaException {
         BaseDataVariableTypeNode node = getHistoryReadCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), historyReadCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), historyReadCount);
         node.setValue(new Variant(value));
     }
 
@@ -1009,7 +1009,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeHistoryReadCountAsync(
         ServiceCounterDataType historyReadCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), historyReadCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), historyReadCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getHistoryReadCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1039,7 +1039,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setWriteCount(ServiceCounterDataType writeCount) throws UaException {
         BaseDataVariableTypeNode node = getWriteCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), writeCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), writeCount);
         node.setValue(new Variant(value));
     }
 
@@ -1068,7 +1068,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<StatusCode> writeWriteCountAsync(ServiceCounterDataType writeCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), writeCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), writeCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getWriteCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1098,7 +1098,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setHistoryUpdateCount(ServiceCounterDataType historyUpdateCount) throws UaException {
         BaseDataVariableTypeNode node = getHistoryUpdateCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), historyUpdateCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), historyUpdateCount);
         node.setValue(new Variant(value));
     }
 
@@ -1129,7 +1129,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeHistoryUpdateCountAsync(
         ServiceCounterDataType historyUpdateCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), historyUpdateCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), historyUpdateCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getHistoryUpdateCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1159,7 +1159,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setCallCount(ServiceCounterDataType callCount) throws UaException {
         BaseDataVariableTypeNode node = getCallCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), callCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), callCount);
         node.setValue(new Variant(value));
     }
 
@@ -1188,7 +1188,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<StatusCode> writeCallCountAsync(ServiceCounterDataType callCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), callCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), callCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCallCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1219,7 +1219,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setCreateMonitoredItemsCount(ServiceCounterDataType createMonitoredItemsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getCreateMonitoredItemsCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), createMonitoredItemsCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), createMonitoredItemsCount);
         node.setValue(new Variant(value));
     }
 
@@ -1250,7 +1250,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeCreateMonitoredItemsCountAsync(
         ServiceCounterDataType createMonitoredItemsCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), createMonitoredItemsCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), createMonitoredItemsCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCreateMonitoredItemsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1282,7 +1282,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setModifyMonitoredItemsCount(ServiceCounterDataType modifyMonitoredItemsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getModifyMonitoredItemsCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), modifyMonitoredItemsCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), modifyMonitoredItemsCount);
         node.setValue(new Variant(value));
     }
 
@@ -1313,7 +1313,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeModifyMonitoredItemsCountAsync(
         ServiceCounterDataType modifyMonitoredItemsCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), modifyMonitoredItemsCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), modifyMonitoredItemsCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getModifyMonitoredItemsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1345,7 +1345,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setSetMonitoringModeCount(ServiceCounterDataType setMonitoringModeCount) throws
         UaException {
         BaseDataVariableTypeNode node = getSetMonitoringModeCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), setMonitoringModeCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), setMonitoringModeCount);
         node.setValue(new Variant(value));
     }
 
@@ -1376,7 +1376,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeSetMonitoringModeCountAsync(
         ServiceCounterDataType setMonitoringModeCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), setMonitoringModeCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), setMonitoringModeCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSetMonitoringModeCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1407,7 +1407,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setSetTriggeringCount(ServiceCounterDataType setTriggeringCount) throws UaException {
         BaseDataVariableTypeNode node = getSetTriggeringCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), setTriggeringCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), setTriggeringCount);
         node.setValue(new Variant(value));
     }
 
@@ -1438,7 +1438,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeSetTriggeringCountAsync(
         ServiceCounterDataType setTriggeringCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), setTriggeringCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), setTriggeringCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSetTriggeringCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1469,7 +1469,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setDeleteMonitoredItemsCount(ServiceCounterDataType deleteMonitoredItemsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getDeleteMonitoredItemsCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteMonitoredItemsCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), deleteMonitoredItemsCount);
         node.setValue(new Variant(value));
     }
 
@@ -1500,7 +1500,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeDeleteMonitoredItemsCountAsync(
         ServiceCounterDataType deleteMonitoredItemsCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteMonitoredItemsCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), deleteMonitoredItemsCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteMonitoredItemsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1532,7 +1532,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setCreateSubscriptionCount(ServiceCounterDataType createSubscriptionCount) throws
         UaException {
         BaseDataVariableTypeNode node = getCreateSubscriptionCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), createSubscriptionCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), createSubscriptionCount);
         node.setValue(new Variant(value));
     }
 
@@ -1563,7 +1563,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeCreateSubscriptionCountAsync(
         ServiceCounterDataType createSubscriptionCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), createSubscriptionCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), createSubscriptionCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getCreateSubscriptionCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1595,7 +1595,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setModifySubscriptionCount(ServiceCounterDataType modifySubscriptionCount) throws
         UaException {
         BaseDataVariableTypeNode node = getModifySubscriptionCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), modifySubscriptionCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), modifySubscriptionCount);
         node.setValue(new Variant(value));
     }
 
@@ -1626,7 +1626,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeModifySubscriptionCountAsync(
         ServiceCounterDataType modifySubscriptionCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), modifySubscriptionCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), modifySubscriptionCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getModifySubscriptionCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1658,7 +1658,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setSetPublishingModeCount(ServiceCounterDataType setPublishingModeCount) throws
         UaException {
         BaseDataVariableTypeNode node = getSetPublishingModeCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), setPublishingModeCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), setPublishingModeCount);
         node.setValue(new Variant(value));
     }
 
@@ -1689,7 +1689,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeSetPublishingModeCountAsync(
         ServiceCounterDataType setPublishingModeCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), setPublishingModeCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), setPublishingModeCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSetPublishingModeCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1720,7 +1720,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setPublishCount(ServiceCounterDataType publishCount) throws UaException {
         BaseDataVariableTypeNode node = getPublishCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), publishCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), publishCount);
         node.setValue(new Variant(value));
     }
 
@@ -1749,7 +1749,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<StatusCode> writePublishCountAsync(ServiceCounterDataType publishCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), publishCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), publishCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getPublishCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1779,7 +1779,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setRepublishCount(ServiceCounterDataType republishCount) throws UaException {
         BaseDataVariableTypeNode node = getRepublishCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), republishCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), republishCount);
         node.setValue(new Variant(value));
     }
 
@@ -1809,7 +1809,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeRepublishCountAsync(
         ServiceCounterDataType republishCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), republishCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), republishCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getRepublishCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1840,7 +1840,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setTransferSubscriptionsCount(ServiceCounterDataType transferSubscriptionsCount)
         throws UaException {
         BaseDataVariableTypeNode node = getTransferSubscriptionsCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), transferSubscriptionsCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), transferSubscriptionsCount);
         node.setValue(new Variant(value));
     }
 
@@ -1871,7 +1871,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeTransferSubscriptionsCountAsync(
         ServiceCounterDataType transferSubscriptionsCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), transferSubscriptionsCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), transferSubscriptionsCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTransferSubscriptionsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1903,7 +1903,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setDeleteSubscriptionsCount(ServiceCounterDataType deleteSubscriptionsCount) throws
         UaException {
         BaseDataVariableTypeNode node = getDeleteSubscriptionsCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteSubscriptionsCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), deleteSubscriptionsCount);
         node.setValue(new Variant(value));
     }
 
@@ -1934,7 +1934,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeDeleteSubscriptionsCountAsync(
         ServiceCounterDataType deleteSubscriptionsCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteSubscriptionsCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), deleteSubscriptionsCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteSubscriptionsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -1965,7 +1965,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setAddNodesCount(ServiceCounterDataType addNodesCount) throws UaException {
         BaseDataVariableTypeNode node = getAddNodesCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), addNodesCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), addNodesCount);
         node.setValue(new Variant(value));
     }
 
@@ -1995,7 +1995,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeAddNodesCountAsync(
         ServiceCounterDataType addNodesCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), addNodesCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), addNodesCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getAddNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2025,7 +2025,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setAddReferencesCount(ServiceCounterDataType addReferencesCount) throws UaException {
         BaseDataVariableTypeNode node = getAddReferencesCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), addReferencesCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), addReferencesCount);
         node.setValue(new Variant(value));
     }
 
@@ -2056,7 +2056,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeAddReferencesCountAsync(
         ServiceCounterDataType addReferencesCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), addReferencesCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), addReferencesCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getAddReferencesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2086,7 +2086,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setDeleteNodesCount(ServiceCounterDataType deleteNodesCount) throws UaException {
         BaseDataVariableTypeNode node = getDeleteNodesCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteNodesCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), deleteNodesCount);
         node.setValue(new Variant(value));
     }
 
@@ -2116,7 +2116,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeDeleteNodesCountAsync(
         ServiceCounterDataType deleteNodesCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteNodesCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), deleteNodesCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2147,7 +2147,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setDeleteReferencesCount(ServiceCounterDataType deleteReferencesCount) throws
         UaException {
         BaseDataVariableTypeNode node = getDeleteReferencesCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), deleteReferencesCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), deleteReferencesCount);
         node.setValue(new Variant(value));
     }
 
@@ -2178,7 +2178,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeDeleteReferencesCountAsync(
         ServiceCounterDataType deleteReferencesCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), deleteReferencesCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), deleteReferencesCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getDeleteReferencesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2208,7 +2208,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setBrowseCount(ServiceCounterDataType browseCount) throws UaException {
         BaseDataVariableTypeNode node = getBrowseCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), browseCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), browseCount);
         node.setValue(new Variant(value));
     }
 
@@ -2237,7 +2237,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
 
     @Override
     public CompletableFuture<StatusCode> writeBrowseCountAsync(ServiceCounterDataType browseCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), browseCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), browseCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBrowseCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2267,7 +2267,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setBrowseNextCount(ServiceCounterDataType browseNextCount) throws UaException {
         BaseDataVariableTypeNode node = getBrowseNextCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), browseNextCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), browseNextCount);
         node.setValue(new Variant(value));
     }
 
@@ -2297,7 +2297,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeBrowseNextCountAsync(
         ServiceCounterDataType browseNextCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), browseNextCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), browseNextCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getBrowseNextCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2328,7 +2328,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setTranslateBrowsePathsToNodeIdsCount(
         ServiceCounterDataType translateBrowsePathsToNodeIdsCount) throws UaException {
         BaseDataVariableTypeNode node = getTranslateBrowsePathsToNodeIdsCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), translateBrowsePathsToNodeIdsCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), translateBrowsePathsToNodeIdsCount);
         node.setValue(new Variant(value));
     }
 
@@ -2360,7 +2360,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeTranslateBrowsePathsToNodeIdsCountAsync(
         ServiceCounterDataType translateBrowsePathsToNodeIdsCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), translateBrowsePathsToNodeIdsCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), translateBrowsePathsToNodeIdsCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getTranslateBrowsePathsToNodeIdsCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2391,7 +2391,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setQueryFirstCount(ServiceCounterDataType queryFirstCount) throws UaException {
         BaseDataVariableTypeNode node = getQueryFirstCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), queryFirstCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), queryFirstCount);
         node.setValue(new Variant(value));
     }
 
@@ -2421,7 +2421,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeQueryFirstCountAsync(
         ServiceCounterDataType queryFirstCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), queryFirstCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), queryFirstCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getQueryFirstCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2451,7 +2451,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setQueryNextCount(ServiceCounterDataType queryNextCount) throws UaException {
         BaseDataVariableTypeNode node = getQueryNextCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), queryNextCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), queryNextCount);
         node.setValue(new Variant(value));
     }
 
@@ -2481,7 +2481,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeQueryNextCountAsync(
         ServiceCounterDataType queryNextCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), queryNextCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), queryNextCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getQueryNextCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2511,7 +2511,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public void setRegisterNodesCount(ServiceCounterDataType registerNodesCount) throws UaException {
         BaseDataVariableTypeNode node = getRegisterNodesCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), registerNodesCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), registerNodesCount);
         node.setValue(new Variant(value));
     }
 
@@ -2542,7 +2542,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeRegisterNodesCountAsync(
         ServiceCounterDataType registerNodesCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), registerNodesCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), registerNodesCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getRegisterNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -2573,7 +2573,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     public void setUnregisterNodesCount(ServiceCounterDataType unregisterNodesCount) throws
         UaException {
         BaseDataVariableTypeNode node = getUnregisterNodesCountNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), unregisterNodesCount);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), unregisterNodesCount);
         node.setValue(new Variant(value));
     }
 
@@ -2604,7 +2604,7 @@ public class SessionDiagnosticsVariableTypeNode extends BaseDataVariableTypeNode
     @Override
     public CompletableFuture<StatusCode> writeUnregisterNodesCountAsync(
         ServiceCounterDataType unregisterNodesCount) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), unregisterNodesCount);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), unregisterNodesCount);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUnregisterNodesCountNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

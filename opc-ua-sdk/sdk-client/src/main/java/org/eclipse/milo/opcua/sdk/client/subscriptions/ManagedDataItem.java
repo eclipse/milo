@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
@@ -241,7 +240,7 @@ public class ManagedDataItem extends ManagedItem {
 
     private class ManagedValueConsumer implements UaMonitoredItem.ValueConsumer {
         @Override
-        public void onValueArrived(SerializationContext context, UaMonitoredItem item, DataValue value) {
+        public void onValueArrived(UaMonitoredItem item, DataValue value) {
             dataValueListeners.forEach(
                 dataValueListener ->
                     dataValueListener.onDataValueReceived(ManagedDataItem.this, value)

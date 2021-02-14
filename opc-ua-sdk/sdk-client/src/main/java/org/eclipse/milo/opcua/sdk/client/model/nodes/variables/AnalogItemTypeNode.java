@@ -41,7 +41,7 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
     @Override
     public void setInstrumentRange(Range instrumentRange) throws UaException {
         PropertyTypeNode node = getInstrumentRangeNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), instrumentRange);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), instrumentRange);
         node.setValue(new Variant(value));
     }
 
@@ -70,7 +70,7 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
 
     @Override
     public CompletableFuture<StatusCode> writeInstrumentRangeAsync(Range instrumentRange) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), instrumentRange);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), instrumentRange);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getInstrumentRangeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -100,7 +100,7 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
     @Override
     public void setEuRange(Range euRange) throws UaException {
         PropertyTypeNode node = getEuRangeNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), euRange);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), euRange);
         node.setValue(new Variant(value));
     }
 
@@ -129,7 +129,7 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
 
     @Override
     public CompletableFuture<StatusCode> writeEuRangeAsync(Range euRange) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), euRange);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), euRange);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEuRangeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -159,7 +159,7 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
     @Override
     public void setEngineeringUnits(EUInformation engineeringUnits) throws UaException {
         PropertyTypeNode node = getEngineeringUnitsNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), engineeringUnits);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), engineeringUnits);
         node.setValue(new Variant(value));
     }
 
@@ -188,7 +188,7 @@ public class AnalogItemTypeNode extends DataItemTypeNode implements AnalogItemTy
 
     @Override
     public CompletableFuture<StatusCode> writeEngineeringUnitsAsync(EUInformation engineeringUnits) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), engineeringUnits);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), engineeringUnits);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getEngineeringUnitsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

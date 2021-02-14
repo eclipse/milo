@@ -557,7 +557,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     public void setProgramDiagnostics(ProgramDiagnosticDataType programDiagnostics) throws
         UaException {
         ProgramDiagnosticTypeNode node = getProgramDiagnosticsNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), programDiagnostics);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), programDiagnostics);
         node.setValue(new Variant(value));
     }
 
@@ -588,7 +588,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     @Override
     public CompletableFuture<StatusCode> writeProgramDiagnosticsAsync(
         ProgramDiagnosticDataType programDiagnostics) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), programDiagnostics);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), programDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getProgramDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

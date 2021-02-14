@@ -78,7 +78,7 @@ public class HistoryReadExampleProsys implements ClientExample {
 
             if (statusCode.isGood()) {
                 HistoryData historyData = (HistoryData) historyReadResult.getHistoryData().decode(
-                    client.getSerializationContext()
+                    client.getStaticSerializationContext()
                 );
 
                 List<DataValue> dataValues = l(historyData.getDataValues());

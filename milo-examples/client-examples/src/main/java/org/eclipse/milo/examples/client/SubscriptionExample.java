@@ -12,7 +12,6 @@ package org.eclipse.milo.examples.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
@@ -79,7 +78,7 @@ public class SubscriptionExample implements ClientExample {
         // when creating items in MonitoringMode.Reporting this callback is where each item needs to have its
         // value/event consumer hooked up. The alternative is to create the item in sampling mode, hook up the
         // consumer after the creation call completes, and then change the mode for all items to reporting.
-        BiConsumer<UaMonitoredItem, Integer> onItemCreated =
+        UaSubscription.ItemCreationCallback onItemCreated =
             (item, id) -> item.setValueConsumer(this::onSubscriptionValue);
 
         List<UaMonitoredItem> items = subscription.createMonitoredItems(

@@ -102,7 +102,7 @@ public class EventSubscriptionExample implements ClientExample {
         MonitoringParameters parameters = new MonitoringParameters(
             clientHandle,
             0.0,
-            ExtensionObject.encode(client.getSerializationContext(), eventFilter),
+            ExtensionObject.encode(client.getStaticSerializationContext(), eventFilter),
             uint(10),
             true
         );
