@@ -110,7 +110,6 @@ public class DataTypeDictionaryReader {
         CompletableFuture<Stream<NodeId>> dictionaryNodeIds = browseFuture.thenApply(
             references ->
                 references.stream()
-                    .filter(r -> r.getNodeId().getNamespaceIndex().intValue() != 0)
                     .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType))
                     .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
         );
@@ -325,7 +324,15 @@ public class DataTypeDictionaryReader {
                                 NodeId dataTypeId = dataTypeIdMap.get(description);
 
                                 if (encodingId == null || encodingId.isNull()) {
-                                    logger.warn("encodingId is null for description={}", description);
+                                    if (dataTypeId != null && dataTypeId.getNamespaceIndex().intValue() != 0) {
+                                        logger.warn("encodingId is null for description={}", description);
+                                    } else {
+                                        // Theres a number of missing structures in the built-in type dictionary;
+                                        // namely the service request and response structures. It's expected that
+                                        // we won't be able to create codecs for these.
+                                        logger.debug(
+                                            "dataTypeId and encodingId is null for description={}", description);
+                                    }
                                 } else if (dataTypeId == null || dataTypeId.isNull()) {
                                     logger.warn("dataTypeId is null for description={}", description);
                                 } else {
