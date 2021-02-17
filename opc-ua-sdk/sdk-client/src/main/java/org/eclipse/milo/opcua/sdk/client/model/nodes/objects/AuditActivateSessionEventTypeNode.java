@@ -41,7 +41,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     public void setClientSoftwareCertificates(SignedSoftwareCertificate[] clientSoftwareCertificates)
         throws UaException {
         PropertyTypeNode node = getClientSoftwareCertificatesNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), clientSoftwareCertificates);
         node.setValue(new Variant(encoded));
     }
 
@@ -73,7 +73,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     @Override
     public CompletableFuture<StatusCode> writeClientSoftwareCertificatesAsync(
         SignedSoftwareCertificate[] clientSoftwareCertificates) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), clientSoftwareCertificates);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), clientSoftwareCertificates);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getClientSoftwareCertificatesNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -103,7 +103,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     @Override
     public void setUserIdentityToken(UserIdentityToken userIdentityToken) throws UaException {
         PropertyTypeNode node = getUserIdentityTokenNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), userIdentityToken);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), userIdentityToken);
         node.setValue(new Variant(value));
     }
 
@@ -133,7 +133,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
     @Override
     public CompletableFuture<StatusCode> writeUserIdentityTokenAsync(
         UserIdentityToken userIdentityToken) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), userIdentityToken);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), userIdentityToken);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getUserIdentityTokenNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

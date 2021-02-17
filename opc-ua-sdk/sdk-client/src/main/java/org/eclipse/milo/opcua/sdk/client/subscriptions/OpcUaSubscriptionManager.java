@@ -673,7 +673,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 }
 
                 for (ExtensionObject xo : notificationData) {
-                    Object o = xo.decode(client.getSerializationContext());
+                    Object o = xo.decode(client.getStaticSerializationContext());
 
                     if (o instanceof DataChangeNotification) {
                         DataChangeNotification dcn = (DataChangeNotification) o;

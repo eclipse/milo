@@ -326,7 +326,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     @Override
     public void setServerStatus(ServerStatusDataType serverStatus) throws UaException {
         ServerStatusTypeNode node = getServerStatusNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), serverStatus);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), serverStatus);
         node.setValue(new Variant(value));
     }
 
@@ -355,7 +355,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public CompletableFuture<StatusCode> writeServerStatusAsync(ServerStatusDataType serverStatus) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), serverStatus);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), serverStatus);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerStatusNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -57,7 +57,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         ExtensionObject xo = (ExtensionObject) variant.getValue();
 
         CustomStructType decoded = (CustomStructType) xo.decode(
-            client.getSerializationContext()
+            client.getStaticSerializationContext()
         );
         logger.info("Decoded={}", decoded);
 
@@ -68,7 +68,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             !decoded.isBaz()
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
-            client.getSerializationContext(),
+            client.getStaticSerializationContext(),
             modified,
             xo.getEncodingId(),
             OpcUaDefaultBinaryEncoding.getInstance()
@@ -84,7 +84,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         xo = (ExtensionObject) variant.getValue();
 
         decoded = (CustomStructType) xo.decode(
-            client.getSerializationContext()
+            client.getStaticSerializationContext()
         );
         logger.info("Decoded={}", decoded);
 
@@ -97,7 +97,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             .orElseThrow(() -> new IllegalStateException("namespace not found"));
 
         // Register codec with the client DataTypeManager instance
-        client.getDataTypeManager().registerCodec(
+        client.getStaticDataTypeManager().registerCodec(
             binaryEncodingId,
             new CustomStructType.Codec().asBinaryCodec()
         );

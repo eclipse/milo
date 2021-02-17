@@ -40,7 +40,7 @@ public class NonTransparentNetworkRedundancyTypeNode extends NonTransparentRedun
     public void setServerNetworkGroups(NetworkGroupDataType[] serverNetworkGroups) throws
         UaException {
         PropertyTypeNode node = getServerNetworkGroupsNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), serverNetworkGroups);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), serverNetworkGroups);
         node.setValue(new Variant(encoded));
     }
 
@@ -71,7 +71,7 @@ public class NonTransparentNetworkRedundancyTypeNode extends NonTransparentRedun
     @Override
     public CompletableFuture<StatusCode> writeServerNetworkGroupsAsync(
         NetworkGroupDataType[] serverNetworkGroups) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), serverNetworkGroups);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), serverNetworkGroups);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerNetworkGroupsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

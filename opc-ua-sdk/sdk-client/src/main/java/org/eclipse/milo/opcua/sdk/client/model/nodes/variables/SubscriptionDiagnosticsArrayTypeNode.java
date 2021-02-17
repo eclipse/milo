@@ -41,7 +41,7 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
     public void setSubscriptionDiagnostics(SubscriptionDiagnosticsDataType subscriptionDiagnostics)
         throws UaException {
         SubscriptionDiagnosticsTypeNode node = getSubscriptionDiagnosticsNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), subscriptionDiagnostics);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), subscriptionDiagnostics);
         node.setValue(new Variant(value));
     }
 
@@ -73,7 +73,7 @@ public class SubscriptionDiagnosticsArrayTypeNode extends BaseDataVariableTypeNo
     @Override
     public CompletableFuture<StatusCode> writeSubscriptionDiagnosticsAsync(
         SubscriptionDiagnosticsDataType subscriptionDiagnostics) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), subscriptionDiagnostics);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), subscriptionDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

@@ -78,7 +78,8 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
         switch (transportProfile) {
             case HTTPS_UABINARY: {
-                OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(client.getSerializationContext());
+                OpcUaBinaryStreamEncoder encoder =
+                    new OpcUaBinaryStreamEncoder(client.getStaticSerializationContext());
                 encoder.setBuffer(content);
                 encoder.writeMessage(null, transportRequest.getRequest());
                 break;
@@ -140,7 +141,8 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                             "unexpected content-type: " + contentType);
                     }
 
-                    OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(client.getSerializationContext());
+                    OpcUaBinaryStreamDecoder decoder =
+                        new OpcUaBinaryStreamDecoder(client.getStaticSerializationContext());
                     decoder.setBuffer(content);
                     responseMessage = (UaResponseMessage) decoder.readMessage(null);
                     break;

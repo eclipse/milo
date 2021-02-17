@@ -40,7 +40,7 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
     @Override
     public void setXAxisDefinition(AxisInformation xAxisDefinition) throws UaException {
         PropertyTypeNode node = getXAxisDefinitionNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), xAxisDefinition);
         node.setValue(new Variant(value));
     }
 
@@ -69,7 +69,7 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
 
     @Override
     public CompletableFuture<StatusCode> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), xAxisDefinition);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getXAxisDefinitionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -99,7 +99,7 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
     @Override
     public void setYAxisDefinition(AxisInformation yAxisDefinition) throws UaException {
         PropertyTypeNode node = getYAxisDefinitionNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), yAxisDefinition);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), yAxisDefinition);
         node.setValue(new Variant(value));
     }
 
@@ -128,7 +128,7 @@ public class ImageItemTypeNode extends ArrayItemTypeNode implements ImageItemTyp
 
     @Override
     public CompletableFuture<StatusCode> writeYAxisDefinitionAsync(AxisInformation yAxisDefinition) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), yAxisDefinition);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), yAxisDefinition);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getYAxisDefinitionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

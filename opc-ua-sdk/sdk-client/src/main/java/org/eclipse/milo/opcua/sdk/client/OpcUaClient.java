@@ -322,16 +322,40 @@ public class OpcUaClient implements UaClient {
         return addressSpace;
     }
 
-    public DataTypeManager getDataTypeManager() {
-        return stackClient.getDataTypeManager();
-    }
-
     public ObjectTypeManager getObjectTypeManager() {
         return objectTypeManager;
     }
 
     public VariableTypeManager getVariableTypeManager() {
         return variableTypeManager;
+    }
+
+    /**
+     * @see UaStackClient#getStaticDataTypeManager()
+     */
+    public DataTypeManager getStaticDataTypeManager() {
+        return stackClient.getStaticDataTypeManager();
+    }
+
+    /**
+     * @see UaStackClient#getDynamicDataTypeManager()
+     */
+    public DataTypeManager getDynamicDataTypeManager() {
+        return stackClient.getDynamicDataTypeManager();
+    }
+
+    /**
+     * @see UaStackClient#getStaticSerializationContext()
+     */
+    public SerializationContext getStaticSerializationContext() {
+        return stackClient.getStaticSerializationContext();
+    }
+
+    /**
+     * @see UaStackClient#getDynamicSerializationContext()
+     */
+    public SerializationContext getDynamicSerializationContext() {
+        return stackClient.getDynamicSerializationContext();
     }
 
     /**
@@ -413,10 +437,6 @@ public class OpcUaClient implements UaClient {
                 }
             }
         });
-    }
-
-    public SerializationContext getSerializationContext() {
-        return stackClient.getSerializationContext();
     }
 
     /**
@@ -522,7 +542,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             HistoryReadRequest request = new HistoryReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                ExtensionObject.encode(getSerializationContext(), historyReadDetails),
+                ExtensionObject.encode(getStaticSerializationContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
                 a(nodesToRead, HistoryReadValueId.class)
@@ -536,7 +556,7 @@ public class OpcUaClient implements UaClient {
     public CompletableFuture<HistoryUpdateResponse> historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails) {
         return getSession().thenCompose(session -> {
             ExtensionObject[] details = historyUpdateDetails.stream()
-                .map(hud -> ExtensionObject.encode(getSerializationContext(), hud))
+                .map(hud -> ExtensionObject.encode(getStaticSerializationContext(), hud))
                 .toArray(ExtensionObject[]::new);
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(

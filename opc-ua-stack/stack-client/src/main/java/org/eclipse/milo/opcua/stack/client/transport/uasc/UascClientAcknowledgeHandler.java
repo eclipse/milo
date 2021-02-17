@@ -232,7 +232,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
             SerializationQueue serializationQueue = new SerializationQueue(
                 config.getExecutor(),
                 parameters,
-                client.getSerializationContext()
+                client.getStaticSerializationContext()
             );
 
             UascClientMessageHandler handler = new UascClientMessageHandler(

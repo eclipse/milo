@@ -42,7 +42,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     public void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] sessionDiagnosticsArray)
         throws UaException {
         SessionDiagnosticsArrayTypeNode node = getSessionDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), sessionDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), sessionDiagnosticsArray);
         node.setValue(new Variant(encoded));
     }
 
@@ -74,7 +74,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public CompletableFuture<StatusCode> writeSessionDiagnosticsArrayAsync(
         SessionDiagnosticsDataType[] sessionDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), sessionDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), sessionDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -107,7 +107,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     public void setSessionSecurityDiagnosticsArray(
         SessionSecurityDiagnosticsDataType[] sessionSecurityDiagnosticsArray) throws UaException {
         SessionSecurityDiagnosticsArrayTypeNode node = getSessionSecurityDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), sessionSecurityDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), sessionSecurityDiagnosticsArray);
         node.setValue(new Variant(encoded));
     }
 
@@ -140,7 +140,7 @@ public class SessionsDiagnosticsSummaryTypeNode extends BaseObjectTypeNode imple
     @Override
     public CompletableFuture<StatusCode> writeSessionSecurityDiagnosticsArrayAsync(
         SessionSecurityDiagnosticsDataType[] sessionSecurityDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), sessionSecurityDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), sessionSecurityDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSessionSecurityDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

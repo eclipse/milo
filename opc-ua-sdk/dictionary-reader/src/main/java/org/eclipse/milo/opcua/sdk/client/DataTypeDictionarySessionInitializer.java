@@ -42,7 +42,7 @@ public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionI
         return reader.readDataTypeDictionaries()
             .thenAccept(dictionaries ->
                 dictionaries.forEach(
-                    client.getDataTypeManager()::registerTypeDictionary)
+                    client.getDynamicDataTypeManager()::registerTypeDictionary)
             )
             .thenApply(v -> Unit.VALUE)
             .exceptionally(ex -> {

@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
@@ -115,7 +114,7 @@ public class TriggeringExample implements ClientExample {
             parameters
         );
 
-        BiConsumer<UaMonitoredItem, Integer> onItemCreated =
+        UaSubscription.ItemCreationCallback onItemCreated =
             (item, id) -> item.setValueConsumer(this::onSubscriptionValue);
 
         List<UaMonitoredItem> items = subscription.createMonitoredItems(

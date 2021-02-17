@@ -24,16 +24,21 @@ import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +96,32 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
             ));
 
             getNodeManager().addNode(testInt32Node);
+        });
+
+        getLifecycleManager().addStartupTask(() -> {
+            try {
+                AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
+                    newNodeId("TestAnalogValue"),
+                    Identifiers.AnalogItemType,
+                    new NodeFactory.InstantiationCallback() {
+                        @Override
+                        public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                            return true;
+                        }
+                    }
+                );
+
+                node.setBrowseName(newQualifiedName("TestAnalogValue"));
+                node.setDisplayName(LocalizedText.english("TestAnalogValue"));
+                node.setDataType(Identifiers.Double);
+                node.setValue(new DataValue(new Variant(3.14d)));
+
+                node.setEURange(new Range(0.0, 100.0));
+
+                getNodeManager().addNode(node);
+            } catch (UaException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

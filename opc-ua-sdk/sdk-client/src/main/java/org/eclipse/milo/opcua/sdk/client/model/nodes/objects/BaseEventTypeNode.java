@@ -384,7 +384,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
     @Override
     public void setLocalTime(TimeZoneDataType localTime) throws UaException {
         PropertyTypeNode node = getLocalTimeNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), localTime);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), localTime);
         node.setValue(new Variant(value));
     }
 
@@ -413,7 +413,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public CompletableFuture<StatusCode> writeLocalTimeAsync(TimeZoneDataType localTime) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), localTime);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), localTime);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getLocalTimeNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
