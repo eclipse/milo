@@ -104,8 +104,8 @@ public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityV
     ) throws UaException {
 
         ByteString serverCertificateBs = session
-            .getSecurityConfiguration()
-            .getServerCertificateBytes();
+            .getEndpoint()
+            .getServerCertificate();
 
         ByteString lastNonceBs = session.getLastNonce();
 
