@@ -60,6 +60,8 @@ public class OpcUaSubscription implements UaSubscription {
         itemsByClientHandle::containsKey
     );
 
+    final List<UInteger> availableAcknowledgements = Collections.synchronizedList(new ArrayList<>());
+
     private volatile long lastSequenceNumber = 0L;
 
     private volatile double requestedPublishingInterval = 0.0;
