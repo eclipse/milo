@@ -21,7 +21,9 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.junit.jupiter.api.Test;
@@ -249,6 +251,16 @@ public class AddressSpaceTest extends AbstractClientServerTest {
             UaException.class,
             () -> addressSpace.getVariableNode(Identifiers.Server)
         );
+    }
+
+    @Test
+    public void getNodeThatDoesNotExist() {
+        UaException exception = assertThrows(
+            UaException.class,
+            () -> client.getAddressSpace().getNode(NodeId.parse("ns=2;s=DoesNotExist"))
+        );
+
+        assertEquals(StatusCodes.Bad_NodeIdUnknown, exception.getStatusCode().getValue());
     }
 
 }

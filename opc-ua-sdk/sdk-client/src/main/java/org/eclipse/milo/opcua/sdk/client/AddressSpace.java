@@ -825,6 +825,11 @@ public class AddressSpace {
         List<DataValue> baseAttributeValues
     ) {
 
+        StatusCode nodeIdStatusCode = baseAttributeValues.get(0).getStatusCode();
+        if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
+            return failedUaFuture(nodeIdStatusCode);
+        }
+
         Integer nodeClassValue = (Integer) baseAttributeValues.get(1).getValue().getValue();
         if (nodeClassValue == null) {
             return failedUaFuture(StatusCodes.Bad_NodeClassInvalid);
