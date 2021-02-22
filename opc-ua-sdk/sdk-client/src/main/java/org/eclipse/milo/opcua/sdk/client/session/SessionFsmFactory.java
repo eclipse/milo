@@ -254,7 +254,12 @@ public class SessionFsmFactory {
 
         fb.when(State.Creating)
             .on(Event.CreateSessionFailure.class)
-            .transitionTo(State.CreatingWait);
+            .transitionTo(State.CreatingWait)
+            .execute(ctx -> {
+                Event.CreateSessionFailure e = (Event.CreateSessionFailure) ctx.event();
+
+                handleFailureToOpenSession(client, ctx, e.failure);
+            });
 
 
         /* External Transition Actions */
@@ -268,7 +273,6 @@ public class SessionFsmFactory {
 
                 handleOpenSessionEvent(ctx);
 
-
                 //noinspection Duplicates
                 createSession(ctx, client).whenComplete((csr, ex) -> {
                     if (csr != null) {
@@ -277,8 +281,6 @@ public class SessionFsmFactory {
                         ctx.fireEvent(new Event.CreateSessionSuccess(csr));
                     } else {
                         LOGGER.debug("[{}] CreateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
-
-                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -297,8 +299,6 @@ public class SessionFsmFactory {
                         ctx.fireEvent(new Event.CreateSessionSuccess(csr));
                     } else {
                         LOGGER.debug("[{}] CreateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
-
-                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.CreateSessionFailure(ex));
                     }
@@ -330,7 +330,12 @@ public class SessionFsmFactory {
 
         fb.when(State.Activating)
             .on(Event.ActivateSessionFailure.class)
-            .transitionTo(State.CreatingWait);
+            .transitionTo(State.CreatingWait)
+            .execute(ctx -> {
+                Event.ActivateSessionFailure e = (Event.ActivateSessionFailure) ctx.event();
+
+                handleFailureToOpenSession(client, ctx, e.failure);
+            });
 
 
         /* External Transition Actions */
@@ -348,8 +353,6 @@ public class SessionFsmFactory {
                         ctx.fireEvent(new Event.ActivateSessionSuccess(session));
                     } else {
                         LOGGER.debug("[{}] ActivateSession failed: {}", ctx.getInstanceId(), ex.getMessage(), ex);
-
-                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.ActivateSessionFailure(ex));
                     }
@@ -381,7 +384,12 @@ public class SessionFsmFactory {
 
         fb.when(State.Transferring)
             .on(Event.TransferSubscriptionsFailure.class)
-            .transitionTo(State.CreatingWait);
+            .transitionTo(State.CreatingWait)
+            .execute(ctx -> {
+                Event.TransferSubscriptionsFailure e = (Event.TransferSubscriptionsFailure) ctx.event();
+
+                handleFailureToOpenSession(client, ctx, e.failure);
+            });
 
 
         /* External Transition Actions */
@@ -401,8 +409,6 @@ public class SessionFsmFactory {
                         LOGGER.debug(
                             "[{}] TransferSubscriptions failed: {}",
                             ctx.getInstanceId(), ex.getMessage(), ex);
-
-                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.TransferSubscriptionsFailure(ex));
                     }
@@ -434,7 +440,12 @@ public class SessionFsmFactory {
 
         fb.when(State.Initializing)
             .on(Event.InitializeFailure.class)
-            .transitionTo(State.CreatingWait);
+            .transitionTo(State.CreatingWait)
+            .execute(ctx -> {
+                Event.InitializeFailure e = (Event.InitializeFailure) ctx.event();
+
+                handleFailureToOpenSession(client, ctx, e.failure);
+            });
 
 
         /* External Transition Actions */
@@ -454,8 +465,6 @@ public class SessionFsmFactory {
                         ctx.fireEvent(new Event.InitializeSuccess(session));
                     } else {
                         LOGGER.warn("[{}] Initialization failed: {}", ctx.getInstanceId(), session, ex);
-
-                        handleFailureToOpenSession(client, ctx, ex);
 
                         ctx.fireEvent(new Event.InitializeFailure(ex));
                     }
