@@ -11,10 +11,11 @@
 package org.eclipse.milo.opcua.stack.core;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nonnull;
@@ -98,13 +99,29 @@ public final class Stack {
                     thread.setUncaughtExceptionHandler(
                         (t, e) ->
                             LoggerFactory.getLogger(Stack.class)
-                                .warn("Uncaught Exception on shared stack ExecutorService thread!", e)
+                                .error("Uncaught Exception on shared stack ExecutorService thread!", e)
                     );
                     return thread;
                 }
             };
 
-            EXECUTOR_SERVICE = Executors.newCachedThreadPool(threadFactory);
+            EXECUTOR_SERVICE = new ThreadPoolExecutor(
+                0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<>(),
+                threadFactory
+            ) {
+
+                @Override
+                protected void afterExecute(Runnable r, Throwable t) {
+                    super.afterExecute(r, t);
+
+                    if (t != null) {
+                        LoggerFactory.getLogger(Stack.class)
+                            .error("Uncaught Throwable on shared stack ExecutorService thread!", t);
+                    }
+                }
+            };
         }
 
         return EXECUTOR_SERVICE;
@@ -125,7 +142,7 @@ public final class Stack {
                     thread.setUncaughtExceptionHandler(
                         (t, e) ->
                             LoggerFactory.getLogger(Stack.class)
-                                .warn("Uncaught Exception on shared stack ScheduledExecutorService thread!", e)
+                                .error("Uncaught Exception on shared stack ScheduledExecutorService thread!", e)
                     );
                     return thread;
                 }
@@ -134,7 +151,18 @@ public final class Stack {
             ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
                 Runtime.getRuntime().availableProcessors(),
                 threadFactory
-            );
+            ) {
+
+                @Override
+                protected void afterExecute(Runnable r, Throwable t) {
+                    super.afterExecute(r, t);
+
+                    if (t != null) {
+                        LoggerFactory.getLogger(Stack.class)
+                            .error("Uncaught Throwable on shared stack ScheduledExecutorService thread!", t);
+                    }
+                }
+            };
 
             executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
