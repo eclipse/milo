@@ -11,7 +11,7 @@
     <artifactId>dictionary-reader</artifactId>
 
     <properties>
-        <javaModuleName>org.eclipse.milo.opcua.sdk.client.dictionaryreader</javaModuleName>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.client.dtd</javaModuleName>
     </properties>
 
     <dependencies>

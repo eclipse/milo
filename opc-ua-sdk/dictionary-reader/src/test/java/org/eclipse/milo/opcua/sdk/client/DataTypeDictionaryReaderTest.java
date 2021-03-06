@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionaryReader;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
