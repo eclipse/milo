@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -17,11 +18,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNodeProperties;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.methods.MethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -229,6 +234,10 @@ public class UaMethodNode extends UaNode implements MethodNode {
 
     public static class UaMethodNodeBuilder implements Supplier<UaMethodNode> {
 
+        private final List<AttributeFilter> attributeFilters = new ArrayList<>();
+
+        private final List<Reference> references = new ArrayList<>();
+
         private NodeId nodeId;
         private QualifiedName browseName;
         private LocalizedText displayName;
@@ -245,17 +254,27 @@ public class UaMethodNode extends UaNode implements MethodNode {
             this.context = context;
         }
 
+        /**
+         * @see #build()
+         */
         @Override
         public UaMethodNode get() {
             return build();
         }
 
+        /**
+         * Build and return the {@link UaMethodNode}.
+         * <p>
+         * The following fields are required: NodeId, BrowseName, DisplayName.
+         *
+         * @return a {@link UaMethodNode} built from the configuration of this builder.
+         */
         public UaMethodNode build() {
             Preconditions.checkNotNull(nodeId, "NodeId cannot be null");
             Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
-            return new UaMethodNode(
+            UaMethodNode node = new UaMethodNode(
                 context,
                 nodeId,
                 browseName,
@@ -266,6 +285,25 @@ public class UaMethodNode extends UaNode implements MethodNode {
                 executable,
                 userExecutable
             );
+
+            references.forEach(node::addReference);
+
+            node.getFilterChain().addLast(attributeFilters);
+
+            return node;
+        }
+
+        /**
+         * Build the {@link UaMethodNode} using the configured values and add it to the
+         * {@link NodeManager} from the {@link UaNodeContext}.
+         *
+         * @return a {@link UaMethodNode} built from the configured values.
+         * @see #build()
+         */
+        public UaMethodNode buildAndAdd() {
+            UaMethodNode node = build();
+            context.getNodeManager().addNode(node);
+            return node;
         }
 
         public UaMethodNodeBuilder setNodeId(NodeId nodeId) {
@@ -305,6 +343,63 @@ public class UaMethodNode extends UaNode implements MethodNode {
 
         public UaMethodNodeBuilder setUserExecutable(boolean userExecutable) {
             this.userExecutable = userExecutable;
+            return this;
+        }
+
+        public NodeId getNodeId() {
+            return nodeId;
+        }
+
+        public QualifiedName getBrowseName() {
+            return browseName;
+        }
+
+        public LocalizedText getDisplayName() {
+            return displayName;
+        }
+
+        public LocalizedText getDescription() {
+            return description;
+        }
+
+        public UInteger getWriteMask() {
+            return writeMask;
+        }
+
+        public UInteger getUserWriteMask() {
+            return userWriteMask;
+        }
+
+        public boolean isExecutable() {
+            return executable;
+        }
+
+        public boolean isUserExecutable() {
+            return userExecutable;
+        }
+
+        /**
+         * Add an {@link AttributeFilter} that will be added to the node's
+         * {@link AttributeFilterChain} when it's built.
+         * <p>
+         * The order filters are added in this builder is maintained.
+         *
+         * @param attributeFilter the {@link AttributeFilter} to add.
+         * @return this {@link UaMethodNodeBuilder}.
+         */
+        public UaMethodNodeBuilder addAttributeFilter(AttributeFilter attributeFilter) {
+            attributeFilters.add(attributeFilter);
+            return this;
+        }
+
+        /**
+         * Add a {@link Reference} to the node when it's built.
+         *
+         * @param reference the {@link Reference} to add.
+         * @return this {@link UaMethodNodeBuilder}.
+         */
+        public UaMethodNodeBuilder addReference(Reference reference) {
+            references.add(reference);
             return this;
         }
 

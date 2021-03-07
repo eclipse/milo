@@ -301,24 +301,29 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             }
             Variant variant = new Variant(array);
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
-                .setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name))
-                .setAccessLevel(AccessLevel.READ_WRITE)
-                .setUserAccessLevel(AccessLevel.READ_WRITE)
-                .setBrowseName(newQualifiedName(name))
-                .setDisplayName(LocalizedText.english(name))
-                .setDataType(typeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
-                .setValueRank(ValueRank.OneDimension.getValue())
-                .setArrayDimensions(new UInteger[]{uint(0)})
-                .build();
+            UaVariableNode.build(getNodeContext(), builder -> {
+                builder.setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name));
+                builder.setAccessLevel(AccessLevel.READ_WRITE);
+                builder.setUserAccessLevel(AccessLevel.READ_WRITE);
+                builder.setBrowseName(newQualifiedName(name));
+                builder.setDisplayName(LocalizedText.english(name));
+                builder.setDataType(typeId);
+                builder.setTypeDefinition(Identifiers.BaseDataVariableType);
+                builder.setValueRank(ValueRank.OneDimension.getValue());
+                builder.setArrayDimensions(new UInteger[]{uint(0)});
+                builder.setValue(new DataValue(variant));
 
-            node.setValue(new DataValue(variant));
+                builder.addAttributeFilter(new AttributeLoggingFilter(AttributeId.Value::equals));
 
-            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
+                builder.addReference(new Reference(
+                    builder.getNodeId(),
+                    Identifiers.Organizes,
+                    arrayTypesFolder.getNodeId().expanded(),
+                    Reference.Direction.INVERSE
+                ));
 
-            getNodeManager().addNode(node);
-            arrayTypesFolder.addOrganizes(node);
+                return builder.buildAndAdd();
+            });
         }
     }
 

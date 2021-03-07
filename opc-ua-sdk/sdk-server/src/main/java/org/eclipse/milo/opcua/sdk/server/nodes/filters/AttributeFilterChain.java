@@ -10,7 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -142,6 +144,18 @@ public class AttributeFilterChain {
     }
 
     /**
+     * Add {@code attributeFilters} (sequentially) to the front of this filter chain.
+     *
+     * @param attributeFilters the {@link AttributeFilter}s to add.
+     * @return this {@link AttributeFilterChain}.
+     */
+    public AttributeFilterChain addFirst(Collection<AttributeFilter> attributeFilters) {
+        attributeFilters.forEach(this::addFirst);
+
+        return this;
+    }
+
+    /**
      * Add {@code attributeFilter} to the end of this filter chain.
      *
      * @param attributeFilter the {@link AttributeFilter} to add.
@@ -163,6 +177,27 @@ public class AttributeFilterChain {
         Arrays.stream(attributeFilters).forEach(this::addLast);
 
         return this;
+    }
+
+    /**
+     * Add {@code attributeFilters} (sequentially) to the end of this filter chain.
+     *
+     * @param attributeFilters the {@link AttributeFilter}s to add.
+     * @return this {@link AttributeFilterChain}.
+     */
+    public AttributeFilterChain addLast(Collection<AttributeFilter> attributeFilters) {
+        attributeFilters.forEach(this::addLast);
+
+        return this;
+    }
+
+    /**
+     * Get a List containing all the {@link AttributeFilter}s belonging to this chain.
+     *
+     * @return a List containing all the {@link AttributeFilter}s belonging to this chain.
+     */
+    public List<AttributeFilter> getFilters() {
+        return new ArrayList<>(filters);
     }
 
 }

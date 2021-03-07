@@ -10,16 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
@@ -29,6 +31,8 @@ import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -542,13 +546,41 @@ public class UaVariableNode extends UaNode implements VariableNode {
         setProperty(VariableNodeProperties.EngineeringUnits, engineeringUnits);
     }
 
+    /**
+     * @deprecated use {@link UaVariableNodeBuilder#UaVariableNodeBuilder(UaNodeContext)} or
+     * {@link #build(UaNodeContext, Function)}.
+     */
+    @Deprecated
     public static UaVariableNodeBuilder builder(UaNodeContext context) {
         return new UaVariableNodeBuilder(context);
     }
 
+    /**
+     * Build a {@link UaVariableNode} using the {@link UaVariableNodeBuilder} supplied to the
+     * {@code build} function.
+     *
+     * @param context a {@link UaNodeContext}.
+     * @param build   a function that accepts a {@link UaVariableNodeBuilder} and uses it to build
+     *                and return a {@link UaVariableNode}.
+     * @return a {@link UaVariableNode} built using the supplied {@link UaVariableNodeBuilder}.
+     */
+    public static UaVariableNode build(
+        UaNodeContext context,
+        Function<UaVariableNodeBuilder, UaVariableNode> build
+    ) {
+
+        UaVariableNodeBuilder builder = new UaVariableNodeBuilder(context);
+
+        return build.apply(builder);
+    }
+
     public static class UaVariableNodeBuilder implements Supplier<UaVariableNode> {
 
-        private final List<Reference> references = Lists.newArrayList();
+        private final AtomicReference<UaVariableNode> builtNode = new AtomicReference<>();
+
+        private final List<AttributeFilter> attributeFilters = new ArrayList<>();
+
+        private final List<Reference> references = new ArrayList<>();
 
         private NodeId nodeId;
         private QualifiedName browseName;
@@ -558,11 +590,13 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private UInteger userWriteMask = UInteger.MIN;
 
         private DataValue value = new DataValue(
-            Variant.NULL_VALUE, new StatusCode(StatusCodes.Uncertain_InitialValue),
-            DateTime.now(), DateTime.now()
+            Variant.NULL_VALUE,
+            new StatusCode(StatusCodes.Uncertain_InitialValue),
+            DateTime.NULL_VALUE,
+            DateTime.now()
         );
 
-        private NodeId dataType;
+        private NodeId dataType = Identifiers.BaseDataType;
         private int valueRank = ValueRanks.Scalar;
         private UInteger[] arrayDimensions = null;
         private UByte accessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
@@ -576,16 +610,50 @@ public class UaVariableNode extends UaNode implements VariableNode {
             this.context = context;
         }
 
+        /**
+         * @see #build()
+         */
         @Override
         public UaVariableNode get() {
             return build();
         }
 
+        /**
+         * Build and return the {@link UaVariableNode}.
+         * <p>
+         * Nodes are only built once; subsequent invocations of {@code build} will return the
+         * previously built Node without any modifications that may have been made to the builder
+         * since.
+         *
+         * @return a {@link UaVariableNode} built from the configuration of this builder.
+         */
         public UaVariableNode build() {
+            return builtNode.updateAndGet(node -> {
+                if (node != null) {
+                    return node;
+                } else {
+                    return buildNode();
+                }
+            });
+        }
+
+        /**
+         * Build the {@link UaVariableNode} using the configured values and add it to the
+         * {@link NodeManager} from the {@link UaNodeContext}.
+         *
+         * @return a {@link UaVariableNode} built from the configured values.
+         * @see #build()
+         */
+        public UaVariableNode buildAndAdd() {
+            UaVariableNode node = build();
+            context.getNodeManager().addNode(node);
+            return node;
+        }
+
+        private UaVariableNode buildNode() {
             Preconditions.checkNotNull(nodeId, "NodeId cannot be null");
             Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
-            Preconditions.checkNotNull(dataType, "DataType cannot be null");
 
             long hasTypeDefinitionCount = references.stream()
                 .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
@@ -597,8 +665,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
                     hasTypeDefinitionCount == 1,
                     "Variable Node must have exactly one HasTypeDefinition reference.");
             }
-
-            // TODO More validation on references.
 
             UaVariableNode node = new UaVariableNode(
                 context,
@@ -620,18 +686,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             references.forEach(node::addReference);
 
-            return node;
-        }
+            node.getFilterChain().addLast(attributeFilters);
 
-        /**
-         * Build the {@link UaVariableNode} using the configured values and add it to the {@link NodeManager} from the
-         * {@link UaNodeContext}.
-         *
-         * @return a {@link UaVariableNode} built from the configured values.
-         */
-        public UaVariableNode buildAndAdd() {
-            UaVariableNode node = build();
-            context.getNodeManager().addNode(node);
             return node;
         }
 
@@ -725,6 +781,82 @@ public class UaVariableNode extends UaNode implements VariableNode {
             return this;
         }
 
+        public NodeId getNodeId() {
+            return nodeId;
+        }
+
+        public QualifiedName getBrowseName() {
+            return browseName;
+        }
+
+        public LocalizedText getDisplayName() {
+            return displayName;
+        }
+
+        public LocalizedText getDescription() {
+            return description;
+        }
+
+        public UInteger getWriteMask() {
+            return writeMask;
+        }
+
+        public UInteger getUserWriteMask() {
+            return userWriteMask;
+        }
+
+        public DataValue getValue() {
+            return value;
+        }
+
+        public NodeId getDataType() {
+            return dataType;
+        }
+
+        public int getValueRank() {
+            return valueRank;
+        }
+
+        public UInteger[] getArrayDimensions() {
+            return arrayDimensions;
+        }
+
+        public UByte getAccessLevel() {
+            return accessLevel;
+        }
+
+        public UByte getUserAccessLevel() {
+            return userAccessLevel;
+        }
+
+        public Double getMinimumSamplingInterval() {
+            return minimumSamplingInterval;
+        }
+
+        public boolean getHistorizing() {
+            return historizing;
+        }
+
+        /**
+         * Add an {@link AttributeFilter} that will be added to the node's
+         * {@link AttributeFilterChain} when it's built.
+         * <p>
+         * The order filters are added in this builder is maintained.
+         *
+         * @param attributeFilter the {@link AttributeFilter} to add.
+         * @return this {@link UaVariableNodeBuilder}.
+         */
+        public UaVariableNodeBuilder addAttributeFilter(AttributeFilter attributeFilter) {
+            attributeFilters.add(attributeFilter);
+            return this;
+        }
+
+        /**
+         * Add a {@link Reference} to the node when it's built.
+         *
+         * @param reference the {@link Reference} to add.
+         * @return this {@link UaVariableNodeBuilder}.
+         */
         public UaVariableNodeBuilder addReference(Reference reference) {
             references.add(reference);
             return this;
