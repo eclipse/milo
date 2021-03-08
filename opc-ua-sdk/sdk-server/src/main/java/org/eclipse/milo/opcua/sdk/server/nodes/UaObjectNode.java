@@ -390,7 +390,6 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         return build.apply(builder);
     }
 
-
     public static class UaObjectNodeBuilder implements Supplier<UaObjectNode> {
 
         private final List<AttributeFilter> attributeFilters = new ArrayList<>();

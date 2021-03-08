@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -206,6 +207,25 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
     public static UaObjectTypeNodeBuilder builder(UaNodeContext context) {
         return new UaObjectTypeNodeBuilder(context);
+    }
+
+    /**
+     * Build a {@link UaObjectTypeNode} using the {@link UaObjectTypeNodeBuilder} supplied to the
+     * {@code build} function.
+     *
+     * @param context a {@link UaNodeContext}.
+     * @param build   a function that accepts a {@link UaObjectTypeNodeBuilder} and uses it to build
+     *                and return a {@link UaObjectTypeNode}.
+     * @return a {@link UaObjectTypeNode} built using the supplied {@link UaObjectTypeNodeBuilder}.
+     */
+    public static UaObjectTypeNode build(
+        UaNodeContext context,
+        Function<UaObjectTypeNodeBuilder, UaObjectTypeNode> build
+    ) {
+
+        UaObjectTypeNodeBuilder builder = new UaObjectTypeNodeBuilder(context);
+
+        return build.apply(builder);
     }
 
     public static class UaObjectTypeNodeBuilder implements Supplier<UaObjectTypeNode> {
