@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.sdk.client.dtd;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.CodecDescription;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
+import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
