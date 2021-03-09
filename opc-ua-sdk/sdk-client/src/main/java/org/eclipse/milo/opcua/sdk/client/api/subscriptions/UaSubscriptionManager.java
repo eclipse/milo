@@ -10,12 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
+import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem.EventConsumer;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem.ValueConsumer;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.ItemTransferredCallback;
+import org.eclipse.milo.opcua.sdk.client.subscriptions.TransferMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -127,6 +133,65 @@ public interface UaSubscriptionManager {
                                                          Function<Double, UInteger> getMaxKeepAliveCount,
                                                          UInteger maxNotificationsPerPublish,
                                                          UByte priority);
+
+    /**
+     * Complete the transfer of {@code subscription} and its monitored items to this {@link UaSubscriptionManager}.
+     * <p>
+     * The subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     * <p>
+     * The {@code callback} provides a chance to configure a new a {@link ValueConsumer} or {@link EventConsumer} to
+     * each item belonging to the transferred subscription.
+     *
+     * @param subscription the {@link UaSubscription} to transfer to this {@link UaSubscriptionManager}.
+     * @param callback     the {@link ItemTransferredCallback} that will be invoked for each item belonging to the
+     *                     transferred subscription.
+     * @return a {@link CompletableFuture} containing the new {@link UaSubscription}.
+     */
+    CompletableFuture<UaSubscription> transferSubscription(
+        UaSubscription subscription,
+        ItemTransferredCallback callback
+    );
+
+    /**
+     * Complete the transfer of a subscription and its monitored items to this {@link UaSubscriptionManager}.
+     * <p>
+     * The subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     * <p>
+     * If the original session resided on a remote machine then information about the subscription required by this call
+     * must be obtained either by interrogating the Server diagnostics, if enabled, or by some other out-of-band means.
+     *
+     * @param subscriptionId              the server assigned id of the {@link UaSubscription} to transfer.
+     * @param nextSequenceNumber          the next expected notification sequence number for the subscription.
+     * @param requestedPublishingInterval the publishing interval requested when the subscription was created.
+     * @param publishingInterval          the actual publishing interval of the subscription.
+     * @param requestedLifetimeCount      the lifetime count requested when the subscription was created.
+     * @param lifetimeCount               the actual lifetime count of the subscription.
+     * @param requestedMaxKeepAliveCount  the max keep alive requested when the subscription was created.
+     * @param maxKeepAliveCount           the actual max keep alive of the subscription.
+     * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
+     * @param publishingEnabled           {@code true} if publishing is enabled for the subscription.
+     * @param priority                    the relative priority to assign to the subscription.
+     * @param itemsToTransfer             a collection of {@link TransferMonitoredItemsRequest} representing the
+     *                                    monitored items on the subscription to be reconstituted in the subscription.
+     * @return a {@link CompletableFuture} containing the {@link UaSubscription}
+     * @see UaClient#transferSubscriptions(List, boolean)
+     */
+    CompletableFuture<UaSubscription> transferSubscription(
+        UInteger subscriptionId,
+        UInteger nextSequenceNumber,
+        double requestedPublishingInterval,
+        double publishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger lifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority,
+        List<TransferMonitoredItemsRequest> itemsToTransfer
+    );
 
     /**
      * Delete a {@link UaSubscription}.

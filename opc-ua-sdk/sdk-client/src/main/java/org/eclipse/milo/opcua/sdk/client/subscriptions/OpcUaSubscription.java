@@ -12,14 +12,15 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
@@ -27,6 +28,7 @@ import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -38,12 +40,15 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
+import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -223,7 +228,7 @@ public class OpcUaSubscription implements UaSubscription {
 
         List<UInteger> monitoredItemIds = itemsToDelete.stream()
             .map(UaMonitoredItem::getMonitoredItemId)
-            .collect(Collectors.toList());
+            .collect(toList());
 
         return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
             List<StatusCode> results = l(response.getResults());
@@ -239,14 +244,13 @@ public class OpcUaSubscription implements UaSubscription {
         });
     }
 
-
     @Override
     public CompletableFuture<List<StatusCode>> setMonitoringMode(MonitoringMode monitoringMode,
                                                                  List<UaMonitoredItem> items) {
 
         List<UInteger> monitoredItemIds = items.stream()
             .map(UaMonitoredItem::getMonitoredItemId)
-            .collect(Collectors.toList());
+            .collect(toList());
 
         CompletableFuture<SetMonitoringModeResponse> future =
             client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
@@ -312,6 +316,124 @@ public class OpcUaSubscription implements UaSubscription {
         );
 
         return future.thenApply(r -> Arrays.asList(r.getRemoveResults()));
+    }
+
+
+    /**
+     * Transfer the monitored items from {@code subscription} to this {@link UaSubscription}.
+     * <p>
+     * This subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     *
+     * @param fromSubscription the {@link UaSubscription} to transfer items from.
+     * @return a {@link CompletableFuture} that completes when the transfer is done.
+     */
+    CompletableFuture<Unit> transferMonitoredItems(
+        UaSubscription fromSubscription,
+        ItemTransferredCallback callback
+    ) {
+
+        List<MonitoredItemTransferRequest> monitoredItemTransfers = fromSubscription.getMonitoredItems()
+            .stream()
+            .map(
+                item ->
+                    new MonitoredItemTransferRequest(
+                        item.getReadValueId(),
+                        item.getMonitoringMode(),
+                        new MonitoringParameters(
+                            item.getClientHandle(),
+                            item.getRequestedSamplingInterval(),
+                            item.getMonitoringFilter(),
+                            item.getRequestedQueueSize(),
+                            item.getDiscardOldest()
+                        ),
+                        item.getMonitoredItemId(),
+                        item.getTimestamps()
+                    )
+            )
+            .collect(toList());
+
+        TransferMonitoredItemsRequest transferRequest = new TransferMonitoredItemsRequest(
+            monitoredItemTransfers,
+            callback
+        );
+
+        return transferMonitoredItems(newArrayList(transferRequest)).thenApply(r -> Unit.VALUE);
+    }
+
+    /**
+     * Reconstitutes the monitored items of a transferred subscription.
+     * <p>
+     * The Modify Monitored Items service will be called to synchronize the state of each monitored item.
+     * <p>
+     * This subscription shall already have been transferred to this client's session via the Transfer Subscription
+     * service.
+     *
+     * @param transferRequests a list of {@link TransferMonitoredItemsRequest}s.
+     * @return a {@link TransferMonitoredItemsResponse} that includes a list of the {@link UaMonitoredItem}s
+     * and a list of the {@link StatusCode}s for each modify result.
+     */
+    CompletableFuture<TransferMonitoredItemsResponse> transferMonitoredItems(
+        List<TransferMonitoredItemsRequest> transferRequests
+    ) {
+
+        return notificationSemaphore.acquire().thenCompose(permit -> {
+            Map<TransferMonitoredItemsRequest, List<UaMonitoredItem>> monitoredItemsByRequest = new HashMap<>();
+            List<MonitoredItemModifyRequest> modifyRequests = newArrayList();
+
+            for (TransferMonitoredItemsRequest transferRequest : transferRequests) {
+                monitoredItemsByRequest.put(transferRequest, newArrayList());
+
+                for (MonitoredItemTransferRequest itemToTransfer : transferRequest.getMonitoredItems()) {
+                    OpcUaMonitoredItem item = new OpcUaMonitoredItem(
+                        client,
+                        itemToTransfer.getRequestedParameters().getClientHandle(),
+                        itemToTransfer.getItemToMonitor(),
+                        itemToTransfer.getMonitoredItemId(),
+                        new StatusCode(StatusCodes.Uncertain_InitialValue),
+                        itemToTransfer.getRequestedParameters().getSamplingInterval(),
+                        itemToTransfer.getRequestedParameters().getQueueSize(),
+                        null,
+                        itemToTransfer.getMonitoringMode(),
+                        itemToTransfer.getRequestedParameters().getFilter(),
+                        itemToTransfer.getRequestedParameters().getDiscardOldest(),
+                        itemToTransfer.getTimestamps()
+                    );
+
+                    itemsByServerHandle.put(itemToTransfer.getMonitoredItemId(), item);
+                    itemsByClientHandle.put(itemToTransfer.getRequestedParameters().getClientHandle(), item);
+
+                    monitoredItemsByRequest.get(transferRequest).add(item);
+
+                    modifyRequests.add(new MonitoredItemModifyRequest(
+                        itemToTransfer.getMonitoredItemId(),
+                        itemToTransfer.getRequestedParameters()
+                    ));
+                }
+            }
+
+            return modifyMonitoredItems(TimestampsToReturn.Neither, modifyRequests)
+                .thenApply(modifyResponse -> {
+                    monitoredItemsByRequest.forEach((req, items) ->
+                        req.getItemTransferCallback().ifPresent(callback -> {
+                            for (int i = 0; i < items.size(); i++) {
+                                callback.onItemTransferred(
+                                    client.getSerializationContext(), items.get(i), i
+                                );
+                            }
+                        })
+                    );
+
+                    return new TransferMonitoredItemsResponse(
+                        monitoredItemsByRequest.values()
+                            .stream()
+                            .flatMap(Collection::stream)
+                            .collect(toList()),
+                        modifyResponse
+                    );
+                })
+                .whenComplete((i, ex) -> permit.release());
+        });
     }
 
     @Override

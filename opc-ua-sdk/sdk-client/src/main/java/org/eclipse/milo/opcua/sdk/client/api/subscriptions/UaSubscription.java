@@ -277,7 +277,6 @@ public interface UaSubscription {
 
     }
 
-
     interface NotificationListener {
 
         /**
