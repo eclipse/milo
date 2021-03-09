@@ -10,96 +10,90 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class CallResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class CallResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=713");
 
-    public static final NodeId TypeId = Identifiers.CallResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.CallResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.CallResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=715");
 
-    protected final ResponseHeader responseHeader;
-    protected final CallMethodResult[] results;
-    protected final DiagnosticInfo[] diagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=714");
 
-    public CallResponse() {
-        this.responseHeader = null;
-        this.results = null;
-        this.diagnosticInfos = null;
-    }
+    private final ResponseHeader responseHeader;
 
-    public CallResponse(ResponseHeader responseHeader, CallMethodResult[] results, DiagnosticInfo[] diagnosticInfos) {
+    private final CallMethodResult[] results;
+
+    private final DiagnosticInfo[] diagnosticInfos;
+
+    public CallResponse(ResponseHeader responseHeader, CallMethodResult[] results,
+                        DiagnosticInfo[] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.results = results;
         this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    @Nullable
-    public CallMethodResult[] getResults() { return results; }
-
-    @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("Results", results)
-            .add("DiagnosticInfos", diagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<CallResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public CallMethodResult[] getResults() {
+        return results;
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos() {
+        return diagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<CallResponse> {
         @Override
         public Class<CallResponse> getType() {
             return CallResponse.class;
         }
 
         @Override
-        public CallResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-            CallMethodResult[] results =
-                decoder.readBuiltinStructArray(
-                    "Results",
-                    CallMethodResult.class
-                );
-            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public CallResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            CallMethodResult[] results = (CallMethodResult[]) decoder.readStructArray("Results", CallMethodResult.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new CallResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
-        public void encode(CallResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeBuiltinStructArray(
-                "Results",
-                value.results,
-                CallMethodResult.class
-            );
-            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder, CallResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeStructArray("Results", value.getResults(), CallMethodResult.TYPE_ID);
+            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
-
 }

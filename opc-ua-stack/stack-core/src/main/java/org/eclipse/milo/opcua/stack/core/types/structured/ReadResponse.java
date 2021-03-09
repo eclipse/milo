@@ -10,89 +10,91 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class ReadResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ReadResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=632");
 
-    public static final NodeId TypeId = Identifiers.ReadResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.ReadResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ReadResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=634");
 
-    protected final ResponseHeader responseHeader;
-    protected final DataValue[] results;
-    protected final DiagnosticInfo[] diagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=633");
 
-    public ReadResponse() {
-        this.responseHeader = null;
-        this.results = null;
-        this.diagnosticInfos = null;
-    }
+    private final ResponseHeader responseHeader;
 
-    public ReadResponse(ResponseHeader responseHeader, DataValue[] results, DiagnosticInfo[] diagnosticInfos) {
+    private final DataValue[] results;
+
+    private final DiagnosticInfo[] diagnosticInfos;
+
+    public ReadResponse(ResponseHeader responseHeader, DataValue[] results,
+                        DiagnosticInfo[] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.results = results;
         this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    @Nullable
-    public DataValue[] getResults() { return results; }
-
-    @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("Results", results)
-            .add("DiagnosticInfos", diagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ReadResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public DataValue[] getResults() {
+        return results;
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos() {
+        return diagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ReadResponse> {
         @Override
         public Class<ReadResponse> getType() {
             return ReadResponse.class;
         }
 
         @Override
-        public ReadResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-            DataValue[] results = decoder.readArray("Results", decoder::readDataValue, DataValue.class);
-            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public ReadResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            DataValue[] results = decoder.readDataValueArray("Results");
+            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new ReadResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
-        public void encode(ReadResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeArray("Results", value.results, encoder::writeDataValue);
-            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder, ReadResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeDataValueArray("Results", value.getResults());
+            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
-
 }

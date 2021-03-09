@@ -13,13 +13,13 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public interface ProgramTransitionEventType extends TransitionEventType {
     QualifiedProperty<Object> INTERMEDIATE_RESULT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "IntermediateResult",
-        NodeId.parse("ns=0;i=24"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
         ValueRanks.Scalar,
         Object.class
     );

@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -106,7 +105,7 @@ public class ClientServerTest extends SecurityFixture {
             {new Variant(ByteString.of(new byte[]{1, 2, 3, 4}))},
             {new Variant(new XmlElement("<tag>hello</tag>"))},
             {new Variant(new NodeId(0, 42))},
-            {new Variant(new ExpandedNodeId(1, 42, "uri", 1))},
+            {new Variant(new ExpandedNodeId(ushort(1), "uri", uint(42), uint(1)))},
             {new Variant(StatusCode.GOOD)},
             {new Variant(new QualifiedName(0, "QualifiedName"))},
             {new Variant(LocalizedText.english("LocalizedText"))},
@@ -150,7 +149,7 @@ public class ClientServerTest extends SecurityFixture {
     }
 
     private void setReadRequestHandler(Variant variant) {
-        server.addServiceHandler("/test", ReadRequest.class, service -> {
+        server.addServiceHandler("/test", ReadRequest.TYPE_ID, service -> {
             ReadRequest request = (ReadRequest) service.getRequest();
 
             ResponseHeader header = new ResponseHeader(
@@ -420,7 +419,7 @@ public class ClientServerTest extends SecurityFixture {
         UaStackClient client = UaStackClient.create(config);
         client.connect().get();
 
-        server.addServiceHandler("/test", ReadRequest.class, service -> {
+        server.addServiceHandler("/test", ReadRequest.TYPE_ID, service -> {
             // intentionally do nothing so the request can timeout
             logger.info("received {}; ignoring...", service.getRequest());
         });
@@ -466,13 +465,6 @@ public class ClientServerTest extends SecurityFixture {
             .setEndpoint(endpoint)
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
-            .setCertificateValidator(new InsecureCertificateValidator() {
-                @Override
-                public void validate(X509Certificate certificate) {}
-
-                @Override
-                public void verifyTrustChain(List<X509Certificate> certificateChain) {}
-            })
             .build();
 
         return UaStackClient.create(config);

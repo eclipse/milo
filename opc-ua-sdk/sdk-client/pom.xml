@@ -5,10 +5,14 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>opc-ua-sdk</artifactId>
-        <version>0.3.7-SNAPSHOT</version>
+        <version>0.5.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>sdk-client</artifactId>
+
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.client</javaModuleName>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -19,11 +23,6 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.milo</groupId>
-            <artifactId>bsd-parser-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

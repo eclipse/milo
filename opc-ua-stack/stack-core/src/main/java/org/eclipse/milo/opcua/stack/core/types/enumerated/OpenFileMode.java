@@ -10,17 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum OpenFileMode implements UaEnumeration {
-
     Read(1),
+
     Write(2),
+
     EraseExisting(4),
+
     Append(8);
 
     private final int value;
@@ -34,29 +39,40 @@ public enum OpenFileMode implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, OpenFileMode> VALUES;
-
-    static {
-        Builder<Integer, OpenFileMode> builder = ImmutableMap.builder();
-        for (OpenFileMode e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static OpenFileMode from(int value) {
+        switch (value) {
+            case 1:
+                return Read;
+            case 2:
+                return Write;
+            case 4:
+                return EraseExisting;
+            case 8:
+                return Append;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static OpenFileMode from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11939");
     }
 
-    public static void encode(OpenFileMode openFileMode, UaEncoder encoder) {
-        encoder.writeInt32(null, openFileMode.getValue());
+    public static class Codec extends GenericDataTypeCodec<OpenFileMode> {
+        @Override
+        public Class<OpenFileMode> getType() {
+            return OpenFileMode.class;
+        }
+
+        @Override
+        public OpenFileMode decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, OpenFileMode.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, OpenFileMode value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static OpenFileMode decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

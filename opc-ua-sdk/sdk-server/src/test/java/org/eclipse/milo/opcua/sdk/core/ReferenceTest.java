@@ -10,29 +10,33 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
+import java.util.UUID;
+
+import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class ReferenceTest {
 
     @Test
     public void testEquality() {
-//        Reference reference1 = new Reference(
-//            new NodeId(1, UUID.randomUUID()),
-//            Identifiers.HasComponent,
-//            new NodeId(1, UUID.randomUUID()).expanded(),
-//            NodeClass.Variable,
-//            Reference.Direction.FORWARD
-//        );
-//
-//        Reference reference2 = new Reference(
-//            reference1.getSourceNodeId(),
-//            reference1.getReferenceTypeId(),
-//            reference1.getTargetNodeId(),
-//            reference1.getTargetNodeClass(),
-//            reference1.getDirection()
-//        );
-//
-//        assertEquals(reference1, reference2);
+        Reference reference1 = new Reference(
+            new NodeId(1, UUID.randomUUID()),
+            Identifiers.HasComponent,
+            new NodeId(1, UUID.randomUUID()).expanded(),
+            Reference.Direction.FORWARD
+        );
+
+        Reference reference2 = new Reference(
+            reference1.getSourceNodeId(),
+            reference1.getReferenceTypeId(),
+            reference1.getTargetNodeId(),
+            reference1.getDirection()
+        );
+
+        assertEquals(reference1, reference2);
     }
 
 }

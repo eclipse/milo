@@ -10,95 +10,91 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class NodeTypeDescription implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class NodeTypeDescription extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=573");
 
-    public static final NodeId TypeId = Identifiers.NodeTypeDescription;
-    public static final NodeId BinaryEncodingId = Identifiers.NodeTypeDescription_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.NodeTypeDescription_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=575");
 
-    protected final ExpandedNodeId typeDefinitionNode;
-    protected final Boolean includeSubTypes;
-    protected final QueryDataDescription[] dataToReturn;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=574");
 
-    public NodeTypeDescription() {
-        this.typeDefinitionNode = null;
-        this.includeSubTypes = null;
-        this.dataToReturn = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15201");
 
-    public NodeTypeDescription(ExpandedNodeId typeDefinitionNode, Boolean includeSubTypes, QueryDataDescription[] dataToReturn) {
+    private final ExpandedNodeId typeDefinitionNode;
+
+    private final Boolean includeSubTypes;
+
+    private final QueryDataDescription[] dataToReturn;
+
+    public NodeTypeDescription(ExpandedNodeId typeDefinitionNode, Boolean includeSubTypes,
+                               QueryDataDescription[] dataToReturn) {
         this.typeDefinitionNode = typeDefinitionNode;
         this.includeSubTypes = includeSubTypes;
         this.dataToReturn = dataToReturn;
     }
 
-    public ExpandedNodeId getTypeDefinitionNode() { return typeDefinitionNode; }
-
-    public Boolean getIncludeSubTypes() { return includeSubTypes; }
-
-    @Nullable
-    public QueryDataDescription[] getDataToReturn() { return dataToReturn; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("TypeDefinitionNode", typeDefinitionNode)
-            .add("IncludeSubTypes", includeSubTypes)
-            .add("DataToReturn", dataToReturn)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<NodeTypeDescription> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ExpandedNodeId getTypeDefinitionNode() {
+        return typeDefinitionNode;
+    }
+
+    public Boolean getIncludeSubTypes() {
+        return includeSubTypes;
+    }
+
+    public QueryDataDescription[] getDataToReturn() {
+        return dataToReturn;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<NodeTypeDescription> {
         @Override
         public Class<NodeTypeDescription> getType() {
             return NodeTypeDescription.class;
         }
 
         @Override
-        public NodeTypeDescription decode(UaDecoder decoder) throws UaSerializationException {
+        public NodeTypeDescription decode(SerializationContext context, UaDecoder decoder) {
             ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
             Boolean includeSubTypes = decoder.readBoolean("IncludeSubTypes");
-            QueryDataDescription[] dataToReturn =
-                decoder.readBuiltinStructArray(
-                    "DataToReturn",
-                    QueryDataDescription.class
-                );
-
+            QueryDataDescription[] dataToReturn = (QueryDataDescription[]) decoder.readStructArray("DataToReturn", QueryDataDescription.TYPE_ID);
             return new NodeTypeDescription(typeDefinitionNode, includeSubTypes, dataToReturn);
         }
 
         @Override
-        public void encode(NodeTypeDescription value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeExpandedNodeId("TypeDefinitionNode", value.typeDefinitionNode);
-            encoder.writeBoolean("IncludeSubTypes", value.includeSubTypes);
-            encoder.writeBuiltinStructArray(
-                "DataToReturn",
-                value.dataToReturn,
-                QueryDataDescription.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, NodeTypeDescription value) {
+            encoder.writeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
+            encoder.writeBoolean("IncludeSubTypes", value.getIncludeSubTypes());
+            encoder.writeStructArray("DataToReturn", value.getDataToReturn(), QueryDataDescription.TYPE_ID);
         }
     }
-
 }

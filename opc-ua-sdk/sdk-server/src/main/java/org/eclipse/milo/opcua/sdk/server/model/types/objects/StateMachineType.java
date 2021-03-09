@@ -15,15 +15,15 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.TransitionVariabl
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 public interface StateMachineType extends BaseObjectType {
-    TransitionVariableType getLastTransitionNode();
-
-    LocalizedText getLastTransition();
-
-    void setLastTransition(LocalizedText value);
-
     StateVariableType getCurrentStateNode();
 
     LocalizedText getCurrentState();
 
     void setCurrentState(LocalizedText value);
+
+    TransitionVariableType getLastTransitionNode();
+
+    LocalizedText getLastTransition();
+
+    void setLastTransition(LocalizedText value);
 }

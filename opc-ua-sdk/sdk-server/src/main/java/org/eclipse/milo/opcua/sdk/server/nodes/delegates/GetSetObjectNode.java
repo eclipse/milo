@@ -10,8 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -24,8 +26,9 @@ public interface GetSetObjectNode extends GetSetBase {
 
     default DataValue getObjectAttribute(
         AttributeContext context,
-        ObjectNode node,
-        AttributeId attributeId) throws UaException {
+        UaObjectNode node,
+        AttributeId attributeId
+    ) throws UaException {
 
         switch (attributeId) {
             case EventNotifier:
@@ -40,7 +43,8 @@ public interface GetSetObjectNode extends GetSetBase {
         AttributeContext context,
         ObjectNode node,
         AttributeId attributeId,
-        DataValue value) throws UaException {
+        DataValue value
+    ) throws UaException {
 
         switch (attributeId) {
             case EventNotifier:
@@ -53,11 +57,20 @@ public interface GetSetObjectNode extends GetSetBase {
     }
 
     default UByte getEventNotifier(AttributeContext context, ObjectNode node) throws UaException {
-        return node.getEventNotifier();
+        return (UByte) ((UaNode) node).getFilterChain().getAttribute(
+            context.getSession().orElse(null),
+            (UaNode) node,
+            AttributeId.EventNotifier
+        );
     }
 
     default void setEventNotifier(AttributeContext context, ObjectNode node, UByte eventNotifier) throws UaException {
-        node.setEventNotifier(eventNotifier);
+        ((UaNode) node).getFilterChain().setAttribute(
+            context.getSession().orElse(null),
+            (UaNode) node,
+            AttributeId.EventNotifier,
+            eventNotifier
+        );
     }
 
 }

@@ -86,12 +86,14 @@ public interface UaDecoder {
 
     UaMessage readMessage(String field) throws UaSerializationException;
 
+    <T extends Enum<?> & UaEnumeration> T readEnum(String field, Class<T> enumType) throws UaSerializationException;
+
     Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException;
-    
+
     Boolean[] readBooleanArray(String field) throws UaSerializationException;
 
     Byte[] readSByteArray(String field) throws UaSerializationException;
@@ -142,19 +144,15 @@ public interface UaDecoder {
 
     DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException;
 
+    <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException;
+
     Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> T[] readArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> T readBuiltinStruct(String field, Class<T> typeClass) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> T[] readBuiltinStructArray(
-        String field,
-        Class<T> clazz
-    ) throws UaSerializationException;
 
 }

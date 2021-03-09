@@ -10,84 +10,90 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class RepublishRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class RepublishRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=830");
 
-    public static final NodeId TypeId = Identifiers.RepublishRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.RepublishRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.RepublishRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=832");
 
-    protected final RequestHeader requestHeader;
-    protected final UInteger subscriptionId;
-    protected final UInteger retransmitSequenceNumber;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=831");
 
-    public RepublishRequest() {
-        this.requestHeader = null;
-        this.subscriptionId = null;
-        this.retransmitSequenceNumber = null;
-    }
+    private final RequestHeader requestHeader;
 
-    public RepublishRequest(RequestHeader requestHeader, UInteger subscriptionId, UInteger retransmitSequenceNumber) {
+    private final UInteger subscriptionId;
+
+    private final UInteger retransmitSequenceNumber;
+
+    public RepublishRequest(RequestHeader requestHeader, UInteger subscriptionId,
+                            UInteger retransmitSequenceNumber) {
         this.requestHeader = requestHeader;
         this.subscriptionId = subscriptionId;
         this.retransmitSequenceNumber = retransmitSequenceNumber;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public UInteger getSubscriptionId() { return subscriptionId; }
-
-    public UInteger getRetransmitSequenceNumber() { return retransmitSequenceNumber; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("SubscriptionId", subscriptionId)
-            .add("RetransmitSequenceNumber", retransmitSequenceNumber)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<RepublishRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public UInteger getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public UInteger getRetransmitSequenceNumber() {
+        return retransmitSequenceNumber;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<RepublishRequest> {
         @Override
         public Class<RepublishRequest> getType() {
             return RepublishRequest.class;
         }
 
         @Override
-        public RepublishRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public RepublishRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UInteger retransmitSequenceNumber = decoder.readUInt32("RetransmitSequenceNumber");
-
             return new RepublishRequest(requestHeader, subscriptionId, retransmitSequenceNumber);
         }
 
         @Override
-        public void encode(RepublishRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
-            encoder.writeUInt32("RetransmitSequenceNumber", value.retransmitSequenceNumber);
+        public void encode(SerializationContext context, UaEncoder encoder, RepublishRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.writeUInt32("RetransmitSequenceNumber", value.getRetransmitSequenceNumber());
         }
     }
-
 }

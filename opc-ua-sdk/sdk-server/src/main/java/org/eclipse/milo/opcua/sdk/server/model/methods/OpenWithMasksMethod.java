@@ -53,7 +53,7 @@ public abstract class OpenWithMasksMethod extends AbstractMethodInvocationHandle
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger masks = (UInteger) inputValues[0].getValue();
         Out<UInteger> fileHandle = new Out<UInteger>();
@@ -61,6 +61,6 @@ public abstract class OpenWithMasksMethod extends AbstractMethodInvocationHandle
         return new Variant[]{new Variant(fileHandle.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger masks, Out<UInteger> fileHandle) throws UaException;
 }

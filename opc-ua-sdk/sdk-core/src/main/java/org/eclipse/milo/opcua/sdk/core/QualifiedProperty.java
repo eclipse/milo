@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -27,16 +27,17 @@ public class QualifiedProperty<T> {
 
     private final String namespaceUri;
     private final String browseName;
-    private final NodeId dataType;
+    private final ExpandedNodeId dataType;
     private final Integer valueRank;
     private final Class<T> javaType;
 
     public QualifiedProperty(
         String namespaceUri,
         String browseName,
-        NodeId dataType,
+        ExpandedNodeId dataType,
         Integer valueRank,
-        Class<T> javaType) {
+        Class<T> javaType
+    ) {
 
         this.namespaceUri = namespaceUri;
         this.browseName = browseName;
@@ -53,7 +54,7 @@ public class QualifiedProperty<T> {
         return browseName;
     }
 
-    public NodeId getDataType() {
+    public ExpandedNodeId getDataType() {
         return dataType;
     }
 

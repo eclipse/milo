@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -23,11 +25,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.util.ByteProcessor;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -55,13 +54,13 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
-    private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-    private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
+    private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
+    private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
 
-    private volatile ByteBuf buffer;
+    private ByteBuf buffer;
 
-    private volatile int currentByte = 0;
-    private volatile int bitsRemaining = 0;
+    private int currentByte = 0;
+    private int bitsRemaining = 0;
 
     private final AtomicInteger depth = new AtomicInteger(0);
 
@@ -274,17 +273,17 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         NodeId nodeId = readNodeId();
 
         String namespaceUri = null;
-        long serverIndex = 0;
+        UInteger serverIndex = UInteger.MIN;
 
         if ((flags & 0x80) == 0x80) {
             namespaceUri = readString();
         }
 
         if ((flags & 0x40) == 0x40) {
-            serverIndex = readUInt32().longValue();
+            serverIndex = readUInt32();
         }
 
-        return new ExpandedNodeId(nodeId, namespaceUri, serverIndex);
+        return new ExpandedNodeId(nodeId.getNamespaceIndex(), namespaceUri, nodeId.getIdentifier(), serverIndex);
     }
 
     public ExtensionObject readExtensionObject() throws UaSerializationException {
@@ -354,6 +353,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     public QualifiedName readQualifiedName() throws UaSerializationException {
         UShort namespaceIndex = readUInt16();
         String name = readString();
+
+        // invalid QualifiedNames become "null" QualifiedNames
+        if (name != null && name.length() > 512) {
+            name = null;
+        }
 
         return new QualifiedName(namespaceIndex, name);
     }
@@ -658,8 +662,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         NodeId encodingId = readNodeId();
 
         OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(encodingId);
 
         if (binaryCodec != null) {
@@ -673,10 +676,24 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public <T extends Enum<?> & UaEnumeration> T readEnum(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
+
+        try {
+            Method m = enumType.getDeclaredMethod("from", int.class);
+            Object o = m.invoke(null, readInt32(field));
+            return enumType.cast(o);
+        } catch (ClassCastException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-            OpcUaDataTypeManager
-                .getInstance()
+            context.getDataTypeManager()
                 .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
         if (binaryCodec != null) {
@@ -691,8 +708,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId
-            .local(context.getNamespaceTable())
+        return dataTypeId.toNodeId(context.getNamespaceTable())
             .map(id -> readStruct(field, id))
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
@@ -1140,6 +1156,31 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
+
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Object array = Array.newInstance(enumType, length);
+
+            for (int i = 0; i < length; i++) {
+                T value = readEnum(field, enumType);
+
+                Array.set(array, i, value);
+            }
+
+            return (Object[]) array;
+        }
+    }
+
+    @Override
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         int length = readInt32();
 
@@ -1149,8 +1190,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             checkArrayLength(length);
 
             OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-                OpcUaDataTypeManager
-                    .getInstance()
+                context.getDataTypeManager()
                     .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
             if (binaryCodec == null) {
@@ -1175,13 +1215,24 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId
-            .local(context.getNamespaceTable())
-            .map(id -> readStructArray(field, id))
-            .orElseThrow(() -> new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
-            ));
+        NodeId dataTypeNodeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElse(null);
+
+        if (dataTypeNodeId != null) {
+            return readStructArray(field, dataTypeNodeId);
+        } else {
+            if (dataTypeId.isLocal()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "namespace not registered: " + dataTypeId.getNamespaceUri()
+                );
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "ExpandedNodeId not local: " + dataTypeId
+                );
+            }
+        }
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {
@@ -1215,33 +1266,6 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
             return array;
         }
-    }
-
-    @Override
-    public <T extends UaStructure> T readBuiltinStruct(String field, Class<T> clazz) throws UaSerializationException {
-        try {
-            @SuppressWarnings("unchecked")
-            BuiltinDataTypeCodec<UaStructure> codec =
-                (BuiltinDataTypeCodec<UaStructure>) BuiltinDataTypeDictionary.getBuiltinCodec(clazz);
-
-            if (codec == null) {
-                throw new UaSerializationException(StatusCodes.Bad_DecodingError, "No codec registered:" + clazz);
-            } else {
-                @SuppressWarnings("unchecked")
-                T value = (T) codec.decode(context, this);
-
-                return value;
-            }
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-        }
-    }
-
-    @Override
-    public <T extends UaStructure> T[] readBuiltinStructArray(
-        String field, Class<T> clazz) throws UaSerializationException {
-
-        return readArray(field, s -> readBuiltinStruct(s, clazz), clazz);
     }
 
 }

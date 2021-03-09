@@ -10,17 +10,23 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum BrowseDirection implements UaEnumeration {
-
     Forward(0),
+
     Inverse(1),
-    Both(2);
+
+    Both(2),
+
+    Invalid(3);
 
     private final int value;
 
@@ -33,29 +39,40 @@ public enum BrowseDirection implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, BrowseDirection> VALUES;
-
-    static {
-        Builder<Integer, BrowseDirection> builder = ImmutableMap.builder();
-        for (BrowseDirection e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static BrowseDirection from(int value) {
+        switch (value) {
+            case 0:
+                return Forward;
+            case 1:
+                return Inverse;
+            case 2:
+                return Both;
+            case 3:
+                return Invalid;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static BrowseDirection from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=510");
     }
 
-    public static void encode(BrowseDirection browseDirection, UaEncoder encoder) {
-        encoder.writeInt32(null, browseDirection.getValue());
+    public static class Codec extends GenericDataTypeCodec<BrowseDirection> {
+        @Override
+        public Class<BrowseDirection> getType() {
+            return BrowseDirection.class;
+        }
+
+        @Override
+        public BrowseDirection decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, BrowseDirection.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, BrowseDirection value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static BrowseDirection decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

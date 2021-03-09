@@ -12,14 +12,13 @@ package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.examples.server.types.CustomDataType;
+import org.eclipse.milo.examples.server.types.CustomStructType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,31 +37,32 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        registerCustomCodec(client);
-
         // synchronous connect
         client.connect().get();
 
-        // synchronous read request via VariableNode
-        VariableNode node = client.getAddressSpace().createVariableNode(
-            new NodeId(2, "HelloWorld/CustomDataTypeVariable"));
+        registerCustomCodec(client);
 
-        logger.info("DataType={}", node.getDataType().get());
+        // synchronous read request via VariableNode
+        UaVariableNode node = client.getAddressSpace().getVariableNode(
+            new NodeId(2, "HelloWorld/CustomStructTypeVariable")
+        );
+
+        logger.info("DataType={}", node.getDataType());
 
         // Read the current value
-        DataValue value = node.readValue().get();
+        DataValue value = node.readValue();
         logger.info("Value={}", value);
 
         Variant variant = value.getValue();
         ExtensionObject xo = (ExtensionObject) variant.getValue();
 
-        CustomDataType decoded = (CustomDataType) xo.decode(
+        CustomStructType decoded = (CustomStructType) xo.decode(
             client.getSerializationContext()
         );
         logger.info("Decoded={}", decoded);
 
         // Write a modified value
-        CustomDataType modified = new CustomDataType(
+        CustomStructType modified = new CustomStructType(
             decoded.getFoo() + "bar",
             uint(decoded.getBar().intValue() + 1),
             !decoded.isBaz()
@@ -74,18 +74,16 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             OpcUaDefaultBinaryEncoding.getInstance()
         );
 
-        StatusCode writeStatus = node.writeValue(new DataValue(new Variant(modifiedXo))).get();
-
-        logger.info("writeStatus={}", writeStatus);
+        node.writeValue(new DataValue(new Variant(modifiedXo)));
 
         // Read the modified value back
-        value = node.readValue().get();
+        value = node.readValue();
         logger.info("Value={}", value);
 
         variant = value.getValue();
         xo = (ExtensionObject) variant.getValue();
 
-        decoded = (CustomDataType) xo.decode(
+        decoded = (CustomStructType) xo.decode(
             client.getSerializationContext()
         );
         logger.info("Decoded={}", decoded);
@@ -94,12 +92,14 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
     }
 
     private void registerCustomCodec(OpcUaClient client) {
-        NodeId binaryEncodingId = new NodeId(2, "DataType.CustomDataType.BinaryEncoding");
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
+            .toNodeId(client.getNamespaceTable())
+            .orElseThrow(() -> new IllegalStateException("namespace not found"));
 
         // Register codec with the client DataTypeManager instance
         client.getDataTypeManager().registerCodec(
             binaryEncodingId,
-            new CustomDataType.Codec().asBinaryCodec()
+            new CustomStructType.Codec().asBinaryCodec()
         );
     }
 

@@ -10,18 +10,24 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum ModelChangeStructureVerbMask implements UaEnumeration {
-
     NodeAdded(1),
+
     NodeDeleted(2),
+
     ReferenceAdded(4),
+
     ReferenceDeleted(8),
+
     DataTypeChanged(16);
 
     private final int value;
@@ -35,29 +41,43 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, ModelChangeStructureVerbMask> VALUES;
-
-    static {
-        Builder<Integer, ModelChangeStructureVerbMask> builder = ImmutableMap.builder();
-        for (ModelChangeStructureVerbMask e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static ModelChangeStructureVerbMask from(int value) {
+        switch (value) {
+            case 1:
+                return NodeAdded;
+            case 2:
+                return NodeDeleted;
+            case 4:
+                return ReferenceAdded;
+            case 8:
+                return ReferenceDeleted;
+            case 16:
+                return DataTypeChanged;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static ModelChangeStructureVerbMask from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11941");
     }
 
-    public static void encode(ModelChangeStructureVerbMask modelChangeStructureVerbMask, UaEncoder encoder) {
-        encoder.writeInt32(null, modelChangeStructureVerbMask.getValue());
+    public static class Codec extends GenericDataTypeCodec<ModelChangeStructureVerbMask> {
+        @Override
+        public Class<ModelChangeStructureVerbMask> getType() {
+            return ModelChangeStructureVerbMask.class;
+        }
+
+        @Override
+        public ModelChangeStructureVerbMask decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, ModelChangeStructureVerbMask.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ModelChangeStructureVerbMask value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static ModelChangeStructureVerbMask decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

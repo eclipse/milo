@@ -10,47 +10,52 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 
-public class EndpointDescription implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class EndpointDescription extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=312");
 
-    public static final NodeId TypeId = Identifiers.EndpointDescription;
-    public static final NodeId BinaryEncodingId = Identifiers.EndpointDescription_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.EndpointDescription_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=313");
 
-    protected final String endpointUrl;
-    protected final ApplicationDescription server;
-    protected final ByteString serverCertificate;
-    protected final MessageSecurityMode securityMode;
-    protected final String securityPolicyUri;
-    protected final UserTokenPolicy[] userIdentityTokens;
-    protected final String transportProfileUri;
-    protected final UByte securityLevel;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=314");
 
-    public EndpointDescription() {
-        this.endpointUrl = null;
-        this.server = null;
-        this.serverCertificate = null;
-        this.securityMode = null;
-        this.securityPolicyUri = null;
-        this.userIdentityTokens = null;
-        this.transportProfileUri = null;
-        this.securityLevel = null;
-    }
+    private final String endpointUrl;
 
-    public EndpointDescription(String endpointUrl, ApplicationDescription server, ByteString serverCertificate, MessageSecurityMode securityMode, String securityPolicyUri, UserTokenPolicy[] userIdentityTokens, String transportProfileUri, UByte securityLevel) {
+    private final ApplicationDescription server;
+
+    private final ByteString serverCertificate;
+
+    private final MessageSecurityMode securityMode;
+
+    private final String securityPolicyUri;
+
+    private final UserTokenPolicy[] userIdentityTokens;
+
+    private final String transportProfileUri;
+
+    private final UByte securityLevel;
+
+    public EndpointDescription(String endpointUrl, ApplicationDescription server,
+                               ByteString serverCertificate, MessageSecurityMode securityMode, String securityPolicyUri,
+                               UserTokenPolicy[] userIdentityTokens, String transportProfileUri, UByte securityLevel) {
         this.endpointUrl = endpointUrl;
         this.server = server;
         this.serverCertificate = serverCertificate;
@@ -61,86 +66,82 @@ public class EndpointDescription implements UaStructure {
         this.securityLevel = securityLevel;
     }
 
-    public String getEndpointUrl() { return endpointUrl; }
-
-    public ApplicationDescription getServer() { return server; }
-
-    public ByteString getServerCertificate() { return serverCertificate; }
-
-    public MessageSecurityMode getSecurityMode() { return securityMode; }
-
-    public String getSecurityPolicyUri() { return securityPolicyUri; }
-
-    @Nullable
-    public UserTokenPolicy[] getUserIdentityTokens() { return userIdentityTokens; }
-
-    public String getTransportProfileUri() { return transportProfileUri; }
-
-    public UByte getSecurityLevel() { return securityLevel; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("EndpointUrl", endpointUrl)
-            .add("Server", server)
-            .add("ServerCertificate", serverCertificate)
-            .add("SecurityMode", securityMode)
-            .add("SecurityPolicyUri", securityPolicyUri)
-            .add("UserIdentityTokens", userIdentityTokens)
-            .add("TransportProfileUri", transportProfileUri)
-            .add("SecurityLevel", securityLevel)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<EndpointDescription> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getEndpointUrl() {
+        return endpointUrl;
+    }
+
+    public ApplicationDescription getServer() {
+        return server;
+    }
+
+    public ByteString getServerCertificate() {
+        return serverCertificate;
+    }
+
+    public MessageSecurityMode getSecurityMode() {
+        return securityMode;
+    }
+
+    public String getSecurityPolicyUri() {
+        return securityPolicyUri;
+    }
+
+    public UserTokenPolicy[] getUserIdentityTokens() {
+        return userIdentityTokens;
+    }
+
+    public String getTransportProfileUri() {
+        return transportProfileUri;
+    }
+
+    public UByte getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<EndpointDescription> {
         @Override
         public Class<EndpointDescription> getType() {
             return EndpointDescription.class;
         }
 
         @Override
-        public EndpointDescription decode(UaDecoder decoder) throws UaSerializationException {
+        public EndpointDescription decode(SerializationContext context, UaDecoder decoder) {
             String endpointUrl = decoder.readString("EndpointUrl");
-            ApplicationDescription server = (ApplicationDescription) decoder.readBuiltinStruct("Server", ApplicationDescription.class);
+            ApplicationDescription server = (ApplicationDescription) decoder.readStruct("Server", ApplicationDescription.TYPE_ID);
             ByteString serverCertificate = decoder.readByteString("ServerCertificate");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readInt32("SecurityMode"));
+            MessageSecurityMode securityMode = decoder.readEnum("SecurityMode", MessageSecurityMode.class);
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            UserTokenPolicy[] userIdentityTokens =
-                decoder.readBuiltinStructArray(
-                    "UserIdentityTokens",
-                    UserTokenPolicy.class
-                );
+            UserTokenPolicy[] userIdentityTokens = (UserTokenPolicy[]) decoder.readStructArray("UserIdentityTokens", UserTokenPolicy.TYPE_ID);
             String transportProfileUri = decoder.readString("TransportProfileUri");
             UByte securityLevel = decoder.readByte("SecurityLevel");
-
             return new EndpointDescription(endpointUrl, server, serverCertificate, securityMode, securityPolicyUri, userIdentityTokens, transportProfileUri, securityLevel);
         }
 
         @Override
-        public void encode(EndpointDescription value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("EndpointUrl", value.endpointUrl);
-            encoder.writeBuiltinStruct("Server", value.server, ApplicationDescription.class);
-            encoder.writeByteString("ServerCertificate", value.serverCertificate);
-            encoder.writeInt32("SecurityMode", value.securityMode != null ? value.securityMode.getValue() : 0);
-            encoder.writeString("SecurityPolicyUri", value.securityPolicyUri);
-            encoder.writeBuiltinStructArray(
-                "UserIdentityTokens",
-                value.userIdentityTokens,
-                UserTokenPolicy.class
-            );
-            encoder.writeString("TransportProfileUri", value.transportProfileUri);
-            encoder.writeByte("SecurityLevel", value.securityLevel);
+        public void encode(SerializationContext context, UaEncoder encoder, EndpointDescription value) {
+            encoder.writeString("EndpointUrl", value.getEndpointUrl());
+            encoder.writeStruct("Server", value.getServer(), ApplicationDescription.TYPE_ID);
+            encoder.writeByteString("ServerCertificate", value.getServerCertificate());
+            encoder.writeEnum("SecurityMode", value.getSecurityMode());
+            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.writeStructArray("UserIdentityTokens", value.getUserIdentityTokens(), UserTokenPolicy.TYPE_ID);
+            encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
+            encoder.writeByte("SecurityLevel", value.getSecurityLevel());
         }
     }
-
 }

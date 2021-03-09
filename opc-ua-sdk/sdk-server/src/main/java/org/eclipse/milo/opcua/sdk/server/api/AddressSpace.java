@@ -10,18 +10,30 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.MethodServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices;
+
 /**
- * An {@link AddressSpace} is an implementation of the services defined by {@link AddressSpaceServices} that can be
- * invoked for any operation that passes the {@link AddressSpaceFilter} obtained from {@link #getFilter()}.
+ * A composite interface composed of service sub-interfaces an {@link AddressSpace} must implement:
+ * <ul>
+ * <li>{@link AttributeServices}</li>
+ * <li>{@link AttributeHistoryServices}</li>
+ * <li>{@link MethodServices}</li>
+ * <li>{@link MonitoredItemServices}</li>
+ * <li>{@link NodeManagementServices}</li>
+ * <li>{@link ViewServices}</li>
+ * </ul>
  */
-public interface AddressSpace extends AddressSpaceServices {
-
-    /**
-     * Get the {@link AddressSpaceFilter} for this {@link AddressSpace}.
-     *
-     * @return the {@link AddressSpaceFilter} for this {@link AddressSpace}.
-     */
-    AddressSpaceFilter getFilter();
-
+public interface AddressSpace extends
+    AttributeServices,
+    AttributeHistoryServices,
+    MethodServices,
+    MonitoredItemServices,
+    NodeManagementServices,
+    ViewServices {
 
 }

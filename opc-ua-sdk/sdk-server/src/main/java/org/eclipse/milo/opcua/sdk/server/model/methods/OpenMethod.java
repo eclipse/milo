@@ -54,7 +54,7 @@ public abstract class OpenMethod extends AbstractMethodInvocationHandler {
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UByte mode = (UByte) inputValues[0].getValue();
         Out<UInteger> fileHandle = new Out<UInteger>();
@@ -62,6 +62,6 @@ public abstract class OpenMethod extends AbstractMethodInvocationHandler {
         return new Variant[]{new Variant(fileHandle.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UByte mode, Out<UInteger> fileHandle) throws UaException;
 }

@@ -10,69 +10,73 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-public class LiteralOperand extends FilterOperand {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class LiteralOperand extends FilterOperand implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=595");
 
-    public static final NodeId TypeId = Identifiers.LiteralOperand;
-    public static final NodeId BinaryEncodingId = Identifiers.LiteralOperand_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.LiteralOperand_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=596");
 
-    protected final Variant value;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=597");
 
-    public LiteralOperand() {
-        super();
-        this.value = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15208");
+
+    private final Variant value;
 
     public LiteralOperand(Variant value) {
-        super();
         this.value = value;
     }
 
-    public Variant getValue() { return value; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Value", value)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<LiteralOperand> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public Variant getValue() {
+        return value;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<LiteralOperand> {
         @Override
         public Class<LiteralOperand> getType() {
             return LiteralOperand.class;
         }
 
         @Override
-        public LiteralOperand decode(UaDecoder decoder) throws UaSerializationException {
+        public LiteralOperand decode(SerializationContext context, UaDecoder decoder) {
             Variant value = decoder.readVariant("Value");
-
             return new LiteralOperand(value);
         }
 
         @Override
-        public void encode(LiteralOperand value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeVariant("Value", value.value);
+        public void encode(SerializationContext context, UaEncoder encoder, LiteralOperand value) {
+            encoder.writeVariant("Value", value.getValue());
         }
     }
-
 }

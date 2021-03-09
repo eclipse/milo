@@ -86,6 +86,8 @@ public interface UaEncoder {
 
     void writeMessage(String field, UaMessage message) throws UaSerializationException;
 
+    void writeEnum(String field, UaEnumeration value) throws UaSerializationException;
+
     void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException;
 
     void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException;
@@ -142,24 +144,12 @@ public interface UaEncoder {
 
     void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException;
 
+    void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException;
+
     void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException;
 
     void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> void writeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> void writeBuiltinStruct(
-        String field,
-        T value,
-        Class<T> clazz
-    ) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> void writeBuiltinStructArray(
-        String field,
-        T[] values,
-        Class<T> clazz
-    ) throws UaSerializationException;
 
 }

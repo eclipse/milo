@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.bouncycastle.util.Arrays;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -177,6 +178,10 @@ public class NonceUtil {
                 StatusCodes.Bad_NonceInvalid,
                 "nonce must be at least " + minimumLength + " bytes"
             );
+        }
+
+        if (bs.length > 0 && Arrays.areAllZeroes(bs, 0, bs.length)) {
+            throw new UaException(StatusCodes.Bad_NonceInvalid, "nonce must be non-zero");
         }
     }
 

@@ -10,84 +10,86 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
-public class UpdateDataDetails extends HistoryUpdateDetails {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class UpdateDataDetails extends HistoryUpdateDetails implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=680");
 
-    public static final NodeId TypeId = Identifiers.UpdateDataDetails;
-    public static final NodeId BinaryEncodingId = Identifiers.UpdateDataDetails_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.UpdateDataDetails_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=682");
 
-    protected final PerformUpdateType performInsertReplace;
-    protected final DataValue[] updateValues;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=681");
 
-    public UpdateDataDetails() {
-        super(null);
-        this.performInsertReplace = null;
-        this.updateValues = null;
-    }
+    private final PerformUpdateType performInsertReplace;
 
-    public UpdateDataDetails(NodeId nodeId, PerformUpdateType performInsertReplace, DataValue[] updateValues) {
+    private final DataValue[] updateValues;
+
+    public UpdateDataDetails(NodeId nodeId, PerformUpdateType performInsertReplace,
+                             DataValue[] updateValues) {
         super(nodeId);
         this.performInsertReplace = performInsertReplace;
         this.updateValues = updateValues;
     }
 
-    public PerformUpdateType getPerformInsertReplace() { return performInsertReplace; }
-
-    @Nullable
-    public DataValue[] getUpdateValues() { return updateValues; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("PerformInsertReplace", performInsertReplace)
-            .add("UpdateValues", updateValues)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<UpdateDataDetails> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public PerformUpdateType getPerformInsertReplace() {
+        return performInsertReplace;
+    }
+
+    public DataValue[] getUpdateValues() {
+        return updateValues;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<UpdateDataDetails> {
         @Override
         public Class<UpdateDataDetails> getType() {
             return UpdateDataDetails.class;
         }
 
         @Override
-        public UpdateDataDetails decode(UaDecoder decoder) throws UaSerializationException {
+        public UpdateDataDetails decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readInt32("PerformInsertReplace"));
-            DataValue[] updateValues = decoder.readArray("UpdateValues", decoder::readDataValue, DataValue.class);
-
+            PerformUpdateType performInsertReplace = decoder.readEnum("PerformInsertReplace", PerformUpdateType.class);
+            DataValue[] updateValues = decoder.readDataValueArray("UpdateValues");
             return new UpdateDataDetails(nodeId, performInsertReplace, updateValues);
         }
 
         @Override
-        public void encode(UpdateDataDetails value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeInt32("PerformInsertReplace", value.performInsertReplace != null ? value.performInsertReplace.getValue() : 0);
-            encoder.writeArray("UpdateValues", value.updateValues, encoder::writeDataValue);
+        public void encode(SerializationContext context, UaEncoder encoder, UpdateDataDetails value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeEnum("PerformInsertReplace", value.getPerformInsertReplace());
+            encoder.writeDataValueArray("UpdateValues", value.getUpdateValues());
         }
     }
-
 }

@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -41,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -71,6 +71,7 @@ public class ExampleServer {
     }
 
     private final OpcUaServer server;
+    private final ExampleNamespace exampleNamespace;
 
     public ExampleServer() throws Exception {
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
@@ -90,7 +91,8 @@ public class ExampleServer {
         DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
         LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
 
-        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(trustListManager);
+        DefaultServerCertificateValidator certificateValidator =
+            new DefaultServerCertificateValidator(trustListManager);
 
         KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
@@ -151,7 +153,7 @@ public class ExampleServer {
 
         server = new OpcUaServer(serverConfig);
 
-        ExampleNamespace exampleNamespace = new ExampleNamespace(server);
+        exampleNamespace = new ExampleNamespace(server);
         exampleNamespace.startup();
     }
 
@@ -246,6 +248,8 @@ public class ExampleServer {
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        exampleNamespace.shutdown();
+
         return server.shutdown();
     }
 

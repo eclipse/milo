@@ -10,75 +10,75 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class DeleteAtTimeDetails extends HistoryUpdateDetails {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=689");
 
-    public static final NodeId TypeId = Identifiers.DeleteAtTimeDetails;
-    public static final NodeId BinaryEncodingId = Identifiers.DeleteAtTimeDetails_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DeleteAtTimeDetails_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=691");
 
-    protected final DateTime[] reqTimes;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=690");
 
-    public DeleteAtTimeDetails() {
-        super(null);
-        this.reqTimes = null;
-    }
+    private final DateTime[] reqTimes;
 
     public DeleteAtTimeDetails(NodeId nodeId, DateTime[] reqTimes) {
         super(nodeId);
         this.reqTimes = reqTimes;
     }
 
-    @Nullable
-    public DateTime[] getReqTimes() { return reqTimes; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("ReqTimes", reqTimes)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DeleteAtTimeDetails> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public DateTime[] getReqTimes() {
+        return reqTimes;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DeleteAtTimeDetails> {
         @Override
         public Class<DeleteAtTimeDetails> getType() {
             return DeleteAtTimeDetails.class;
         }
 
         @Override
-        public DeleteAtTimeDetails decode(UaDecoder decoder) throws UaSerializationException {
+        public DeleteAtTimeDetails decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            DateTime[] reqTimes = decoder.readArray("ReqTimes", decoder::readDateTime, DateTime.class);
-
+            DateTime[] reqTimes = decoder.readDateTimeArray("ReqTimes");
             return new DeleteAtTimeDetails(nodeId, reqTimes);
         }
 
         @Override
-        public void encode(DeleteAtTimeDetails value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeArray("ReqTimes", value.reqTimes, encoder::writeDateTime);
+        public void encode(SerializationContext context, UaEncoder encoder, DeleteAtTimeDetails value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeDateTimeArray("ReqTimes", value.getReqTimes());
         }
     }
-
 }

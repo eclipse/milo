@@ -12,36 +12,38 @@ package org.eclipse.milo.examples.server;
 
 import java.lang.reflect.Array;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
-import org.eclipse.milo.examples.server.types.CustomDataType;
+import org.eclipse.milo.examples.server.types.CustomEnumType;
+import org.eclipse.milo.examples.server.types.CustomStructType;
+import org.eclipse.milo.examples.server.types.CustomUnionType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
-import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
+import org.eclipse.milo.opcua.sdk.server.api.DataTypeDictionaryManager;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -54,7 +56,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +72,9 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class ExampleNamespace extends ManagedNamespace {
+public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
-    static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
+    public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
     private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
         {"Boolean", Identifiers.Boolean, new Variant(false)},
@@ -119,7 +128,12 @@ public class ExampleNamespace extends ManagedNamespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private volatile Thread eventThread;
+    private volatile boolean keepPostingEvents = true;
+
     private final Random random = new Random();
+
+    private final DataTypeDictionaryManager dictionaryManager;
 
     private final SubscriptionModel subscriptionModel;
 
@@ -127,12 +141,33 @@ public class ExampleNamespace extends ManagedNamespace {
         super(server, NAMESPACE_URI);
 
         subscriptionModel = new SubscriptionModel(server, this);
+        dictionaryManager = new DataTypeDictionaryManager(getNodeContext(), NAMESPACE_URI);
+
+        getLifecycleManager().addLifecycle(dictionaryManager);
+        getLifecycleManager().addLifecycle(subscriptionModel);
+
+        getLifecycleManager().addStartupTask(this::createAndAddNodes);
+
+        getLifecycleManager().addLifecycle(new Lifecycle() {
+            @Override
+            public void startup() {
+                startBogusEventNotifier();
+            }
+
+            @Override
+            public void shutdown() {
+                try {
+                    keepPostingEvents = false;
+                    eventThread.interrupt();
+                    eventThread.join();
+                } catch (InterruptedException ignored) {
+                    // ignored
+                }
+            }
+        });
     }
 
-    @Override
-    protected void onStartup() {
-        super.onStartup();
-
+    private void createAndAddNodes() {
         // Create a "HelloWorld" folder and add it to the node manager
         NodeId folderNodeId = newNodeId("HelloWorld");
 
@@ -160,45 +195,78 @@ public class ExampleNamespace extends ManagedNamespace {
 
         addGenerateEventMethod(folderNode);
 
-        addCustomDataTypeVariable(folderNode);
+        try {
+            registerCustomEnumType();
+            addCustomEnumTypeVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom enum type", e);
+        }
+
+        try {
+            registerCustomStructType();
+            addCustomStructTypeVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom struct type", e);
+        }
+
+        try {
+            registerCustomUnionType();
+            addCustomUnionTypeVariable(folderNode);
+        } catch (Exception e) {
+            logger.warn("Failed to register custom struct type", e);
+        }
 
         addCustomObjectTypeAndInstance(folderNode);
+    }
 
+    private void startBogusEventNotifier() {
         // Set the EventNotifier bit on Server Node for Events.
         UaNode serverNode = getServer()
             .getAddressSpaceManager()
             .getManagedNode(Identifiers.Server)
             .orElse(null);
 
-        if (serverNode instanceof ServerNode) {
-            ((ServerNode) serverNode).setEventNotifier(ubyte(1));
+        if (serverNode instanceof ServerTypeNode) {
+            ((ServerTypeNode) serverNode).setEventNotifier(ubyte(1));
 
             // Post a bogus Event every couple seconds
-            getServer().getScheduledExecutorService().scheduleAtFixedRate(() -> {
-                try {
-                    BaseEventNode eventNode = getServer().getEventFactory().createEvent(
-                        newNodeId(UUID.randomUUID()),
-                        Identifiers.BaseEventType
-                    );
+            eventThread = new Thread(() -> {
+                while (keepPostingEvents) {
+                    try {
+                        BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
+                            newNodeId(UUID.randomUUID()),
+                            Identifiers.BaseEventType
+                        );
 
-                    eventNode.setBrowseName(new QualifiedName(1, "foo"));
-                    eventNode.setDisplayName(LocalizedText.english("foo"));
-                    eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                    eventNode.setEventType(Identifiers.BaseEventType);
-                    eventNode.setSourceNode(serverNode.getNodeId());
-                    eventNode.setSourceName(serverNode.getDisplayName().getText());
-                    eventNode.setTime(DateTime.now());
-                    eventNode.setReceiveTime(DateTime.NULL_VALUE);
-                    eventNode.setMessage(LocalizedText.english("event message!"));
-                    eventNode.setSeverity(ushort(2));
+                        eventNode.setBrowseName(new QualifiedName(1, "foo"));
+                        eventNode.setDisplayName(LocalizedText.english("foo"));
+                        eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
+                        eventNode.setEventType(Identifiers.BaseEventType);
+                        eventNode.setSourceNode(serverNode.getNodeId());
+                        eventNode.setSourceName(serverNode.getDisplayName().getText());
+                        eventNode.setTime(DateTime.now());
+                        eventNode.setReceiveTime(DateTime.NULL_VALUE);
+                        eventNode.setMessage(LocalizedText.english("event message!"));
+                        eventNode.setSeverity(ushort(2));
 
-                    getServer().getEventBus().post(eventNode);
+                        //noinspection UnstableApiUsage
+                        getServer().getEventBus().post(eventNode);
 
-                    eventNode.delete();
-                } catch (Throwable e) {
-                    logger.error("Error creating EventNode: {}", e.getMessage(), e);
+                        eventNode.delete();
+                    } catch (Throwable e) {
+                        logger.error("Error creating EventNode: {}", e.getMessage(), e);
+                    }
+
+                    try {
+                        //noinspection BusyWait
+                        Thread.sleep(2_000);
+                    } catch (InterruptedException ignored) {
+                        // ignored
+                    }
                 }
-            }, 0, 2, TimeUnit.SECONDS);
+            }, "bogus-event-poster");
+
+            eventThread.start();
         }
     }
 
@@ -235,8 +303,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -247,7 +315,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new ValueLoggingDelegate());
+            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
 
             getNodeManager().addNode(node);
             arrayTypesFolder.addOrganizes(node);
@@ -272,8 +340,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/ScalarTypes/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -282,7 +350,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new ValueLoggingDelegate());
+            node.getFilterChain().addLast(new AttributeLoggingFilter(AttributeId.Value::equals));
 
             getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
@@ -303,8 +371,8 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/WriteOnly/" + name))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
-            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
+            .setAccessLevel(AccessLevel.WRITE_ONLY)
+            .setUserAccessLevel(AccessLevel.WRITE_ONLY)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -331,7 +399,7 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/OnlyAdminCanRead/" + name))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -340,7 +408,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
 
-        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+        node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
             if ("admin".equals(identity)) {
                 return AccessLevel.READ_WRITE;
             } else {
@@ -366,7 +434,7 @@ public class ExampleNamespace extends ManagedNamespace {
         String name = "String";
         UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/OnlyAdminCanWrite/" + name))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
@@ -375,7 +443,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         node.setValue(new DataValue(new Variant("admin was here")));
 
-        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+        node.getFilterChain().addLast(new RestrictedAccessFilter(identity -> {
             if ("admin".equals(identity)) {
                 return AccessLevel.READ_WRITE;
             } else {
@@ -406,7 +474,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -415,17 +483,13 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            AttributeDelegate delegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                        return new DataValue(new Variant(random.nextBoolean()));
-                    }
-                },
-                ValueLoggingDelegate::new
+            node.getFilterChain().addLast(
+                new AttributeLoggingFilter(),
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextBoolean()))
+                )
             );
-
-            node.setAttributeDelegate(delegate);
 
             getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -439,7 +503,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -448,17 +512,13 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            AttributeDelegate delegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                        return new DataValue(new Variant(random.nextInt()));
-                    }
-                },
-                ValueLoggingDelegate::new
+            node.getFilterChain().addLast(
+                new AttributeLoggingFilter(),
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextInt()))
+                )
             );
-
-            node.setAttributeDelegate(delegate);
 
             getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -472,7 +532,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
                 .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -481,17 +541,13 @@ public class ExampleNamespace extends ManagedNamespace {
 
             node.setValue(new DataValue(variant));
 
-            AttributeDelegate delegate = AttributeDelegateChain.create(
-                new AttributeDelegate() {
-                    @Override
-                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                        return new DataValue(new Variant(random.nextDouble()));
-                    }
-                },
-                ValueLoggingDelegate::new
+            node.getFilterChain().addLast(
+                new AttributeLoggingFilter(),
+                AttributeFilters.getValue(
+                    ctx ->
+                        new DataValue(new Variant(random.nextDouble()))
+                )
             );
-
-            node.setAttributeDelegate(delegate);
 
             getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -510,12 +566,16 @@ public class ExampleNamespace extends ManagedNamespace {
         getNodeManager().addNode(dataAccessFolder);
         rootNode.addOrganizes(dataAccessFolder);
 
-        // AnalogItemType node
         try {
-            AnalogItemNode node = (AnalogItemNode) getNodeFactory().createNode(
+            AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
                 newNodeId("HelloWorld/DataAccess/AnalogValue"),
                 Identifiers.AnalogItemType,
-                true
+                new NodeFactory.InstantiationCallback() {
+                    @Override
+                    public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                        return true;
+                    }
+                }
             );
 
             node.setBrowseName(newQualifiedName("AnalogValue"));
@@ -542,8 +602,8 @@ public class ExampleNamespace extends ManagedNamespace {
             .build();
 
         SqrtMethod sqrtMethod = new SqrtMethod(methodNode);
-        methodNode.setProperty(UaMethodNode.InputArguments, sqrtMethod.getInputArguments());
-        methodNode.setProperty(UaMethodNode.OutputArguments, sqrtMethod.getOutputArguments());
+        methodNode.setInputArguments(sqrtMethod.getInputArguments());
+        methodNode.setOutputArguments(sqrtMethod.getOutputArguments());
         methodNode.setInvocationHandler(sqrtMethod);
 
         getNodeManager().addNode(methodNode);
@@ -566,8 +626,8 @@ public class ExampleNamespace extends ManagedNamespace {
             .build();
 
         GenerateEventMethod generateEventMethod = new GenerateEventMethod(methodNode);
-        methodNode.setProperty(UaMethodNode.InputArguments, generateEventMethod.getInputArguments());
-        methodNode.setProperty(UaMethodNode.OutputArguments, generateEventMethod.getOutputArguments());
+        methodNode.setInputArguments(generateEventMethod.getInputArguments());
+        methodNode.setOutputArguments(generateEventMethod.getOutputArguments());
         methodNode.setInvocationHandler(generateEventMethod);
 
         getNodeManager().addNode(methodNode);
@@ -592,7 +652,7 @@ public class ExampleNamespace extends ManagedNamespace {
         // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
         UaVariableNode foo = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("ObjectTypes/MyObjectType.Foo"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("Foo"))
             .setDisplayName(LocalizedText.english("Foo"))
             .setDataType(Identifiers.Int16)
@@ -611,7 +671,7 @@ public class ExampleNamespace extends ManagedNamespace {
 
         UaVariableNode bar = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("ObjectTypes/MyObjectType.Bar"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(newQualifiedName("Bar"))
             .setDisplayName(LocalizedText.english("Bar"))
             .setDataType(Identifiers.String)
@@ -655,8 +715,7 @@ public class ExampleNamespace extends ManagedNamespace {
         try {
             UaObjectNode myObject = (UaObjectNode) getNodeFactory().createNode(
                 newNodeId("HelloWorld/MyObject"),
-                objectTypeNode.getNodeId(),
-                false
+                objectTypeNode.getNodeId()
             );
             myObject.setBrowseName(newQualifiedName("MyObject"));
             myObject.setDisplayName(LocalizedText.english("MyObject"));
@@ -675,67 +734,212 @@ public class ExampleNamespace extends ManagedNamespace {
         }
     }
 
-    private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
-        // add a custom DataTypeNode as a subtype of the built-in Structure DataTypeNode
-        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
+    private void registerCustomEnumType() throws Exception {
+        NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
-            getNodeContext(),
-            dataTypeId,
-            newQualifiedName("CustomDataType"),
-            LocalizedText.english("CustomDataType"),
-            LocalizedText.english("CustomDataType"),
-            uint(0),
-            uint(0),
-            false
+        dictionaryManager.registerEnumCodec(
+            new CustomEnumType.Codec().asBinaryCodec(),
+            "CustomEnumType",
+            dataTypeId
         );
 
-        getNodeManager().addNode(dataTypeNode);
+        EnumField[] fields = new EnumField[]{
+            new EnumField(
+                0L,
+                LocalizedText.english("Field0"),
+                LocalizedText.NULL_VALUE,
+                "Field0"
+            ),
+            new EnumField(
+                1L,
+                LocalizedText.english("Field1"),
+                LocalizedText.NULL_VALUE,
+                "Field1"
+            ),
+            new EnumField(
+                2L,
+                LocalizedText.english("Field2"),
+                LocalizedText.NULL_VALUE,
+                "Field2"
+            )
+        };
 
-        // Inverse ref to Structure
-        dataTypeNode.addReference(new Reference(
+        EnumDefinition definition = new EnumDefinition(fields);
+
+        EnumDescription description = new EnumDescription(
             dataTypeId,
-            Identifiers.HasSubtype,
-            Identifiers.Structure.expanded(),
-            false
-        ));
-
-        // Forward ref from Structure
-        Optional<UaDataTypeNode> structureDataTypeNode = getNodeManager()
-            .getNode(Identifiers.Structure)
-            .map(UaDataTypeNode.class::cast);
-
-        structureDataTypeNode.ifPresent(node ->
-            node.addReference(new Reference(
-                node.getNodeId(),
-                Identifiers.HasSubtype,
-                dataTypeId.expanded(),
-                true
-            ))
+            new QualifiedName(getNamespaceIndex(), "CustomEnumType"),
+            definition,
+            ubyte(BuiltinDataType.Int32.getTypeId())
         );
 
-        // TODO this should probably get a node and a HasEncoding reference from dataTypeNode...
-        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
+        dictionaryManager.registerEnumDescription(description);
+    }
 
-        // Register codec with the server DataTypeManager instance
-        getServer().getDataTypeManager().registerCodec(
+    private void registerCustomStructType() throws Exception {
+        // Get the NodeId for the DataType and encoding Nodes.
+
+        NodeId dataTypeId = CustomStructType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        // At a minimum, custom types must have their codec registered.
+        // If clients don't need to dynamically discover types and will
+        // register the codecs on their own then this is all that is
+        // necessary.
+        // The dictionary manager will add a corresponding DataType Node to
+        // the AddressSpace.
+
+        dictionaryManager.registerStructureCodec(
+            new CustomStructType.Codec().asBinaryCodec(),
+            "CustomStructType",
+            dataTypeId,
+            binaryEncodingId
+        );
+
+        // If the custom type also needs to be discoverable by clients then it
+        // needs an entry in a DataTypeDictionary that can be read by those
+        // clients. We describe the type using StructureDefinition or
+        // EnumDefinition and register it with the dictionary manager.
+        // The dictionary manager will add all the necessary nodes to the
+        // AddressSpace and generate the required dictionary bsd.xml file.
+
+        StructureField[] fields = new StructureField[]{
+            new StructureField(
+                "foo",
+                LocalizedText.NULL_VALUE,
+                Identifiers.String,
+                ValueRanks.Scalar,
+                null,
+                getServer().getConfig().getLimits().getMaxStringLength(),
+                false
+            ),
+            new StructureField(
+                "bar",
+                LocalizedText.NULL_VALUE,
+                Identifiers.UInt32,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            ),
+            new StructureField(
+                "baz",
+                LocalizedText.NULL_VALUE,
+                Identifiers.Boolean,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            )
+        };
+
+        StructureDefinition definition = new StructureDefinition(
             binaryEncodingId,
-            new CustomDataType.Codec().asBinaryCodec()
+            Identifiers.Structure,
+            StructureType.Structure,
+            fields
         );
 
-        UaVariableNode customDataTypeVariable = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("HelloWorld/CustomDataTypeVariable"))
-            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(newQualifiedName("CustomDataTypeVariable"))
-            .setDisplayName(LocalizedText.english("CustomDataTypeVariable"))
+        StructureDescription description = new StructureDescription(
+            dataTypeId,
+            new QualifiedName(getNamespaceIndex(), "CustomStructType"),
+            definition
+        );
+
+        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+    }
+
+    private void registerCustomUnionType() throws Exception {
+        NodeId dataTypeId = CustomUnionType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        dictionaryManager.registerUnionCodec(
+            new CustomUnionType.Codec().asBinaryCodec(),
+            "CustomUnionType",
+            dataTypeId,
+            binaryEncodingId
+        );
+
+        StructureField[] fields = new StructureField[]{
+            new StructureField(
+                "foo",
+                LocalizedText.NULL_VALUE,
+                Identifiers.UInt32,
+                ValueRanks.Scalar,
+                null,
+                getServer().getConfig().getLimits().getMaxStringLength(),
+                false
+            ),
+            new StructureField(
+                "bar",
+                LocalizedText.NULL_VALUE,
+                Identifiers.String,
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
+            )
+        };
+
+        StructureDefinition definition = new StructureDefinition(
+            binaryEncodingId,
+            Identifiers.Structure,
+            StructureType.Union,
+            fields
+        );
+
+        StructureDescription description = new StructureDescription(
+            dataTypeId,
+            new QualifiedName(getNamespaceIndex(), "CustomUnionType"),
+            definition
+        );
+
+        dictionaryManager.registerStructureDescription(description, binaryEncodingId);
+    }
+
+    private void addCustomEnumTypeVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
+            .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
             .setDataType(dataTypeId)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
 
-        getNodeManager().addNode(customDataTypeVariable);
+        customEnumTypeVariable.setValue(new DataValue(new Variant(CustomEnumType.Field1)));
 
-        CustomDataType value = new CustomDataType(
+        getNodeManager().addNode(customEnumTypeVariable);
+
+        customEnumTypeVariable.addReference(new Reference(
+            customEnumTypeVariable.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            false
+        ));
+    }
+
+    private void addCustomStructTypeVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomStructType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
+            .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
+            .setDataType(dataTypeId)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        CustomStructType value = new CustomStructType(
             "foo",
             uint(42),
             true
@@ -747,12 +951,47 @@ public class ExampleNamespace extends ManagedNamespace {
             binaryEncodingId
         );
 
-        customDataTypeVariable.setValue(new DataValue(new Variant(xo)));
+        customStructTypeVariable.setValue(new DataValue(new Variant(xo)));
 
-        rootFolder.addOrganizes(customDataTypeVariable);
+        getNodeManager().addNode(customStructTypeVariable);
 
-        customDataTypeVariable.addReference(new Reference(
-            customDataTypeVariable.getNodeId(),
+        customStructTypeVariable.addReference(new Reference(
+            customStructTypeVariable.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            false
+        ));
+    }
+
+    private void addCustomUnionTypeVariable(UaFolderNode rootFolder) throws Exception {
+        NodeId dataTypeId = CustomUnionType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
+
+        UaVariableNode customUnionTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))
+            .setAccessLevel(AccessLevel.READ_WRITE)
+            .setUserAccessLevel(AccessLevel.READ_WRITE)
+            .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
+            .setDataType(dataTypeId)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        CustomUnionType value = CustomUnionType.ofBar("hello");
+
+        ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
+            getServer().getSerializationContext(),
+            value,
+            binaryEncodingId
+        );
+
+        customUnionTypeVariable.setValue(new DataValue(new Variant(xo)));
+
+        getNodeManager().addNode(customUnionTypeVariable);
+
+        customUnionTypeVariable.addReference(new Reference(
+            customUnionTypeVariable.getNodeId(),
             Identifiers.Organizes,
             rootFolder.getNodeId().expanded(),
             false

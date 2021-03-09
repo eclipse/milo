@@ -10,85 +10,91 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class AggregateFilterResult extends MonitoringFilterResult {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class AggregateFilterResult extends MonitoringFilterResult implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=737");
 
-    public static final NodeId TypeId = Identifiers.AggregateFilterResult;
-    public static final NodeId BinaryEncodingId = Identifiers.AggregateFilterResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.AggregateFilterResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=739");
 
-    protected final DateTime revisedStartTime;
-    protected final Double revisedProcessingInterval;
-    protected final AggregateConfiguration revisedAggregateConfiguration;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=738");
 
-    public AggregateFilterResult() {
-        super();
-        this.revisedStartTime = null;
-        this.revisedProcessingInterval = null;
-        this.revisedAggregateConfiguration = null;
-    }
+    private final DateTime revisedStartTime;
 
-    public AggregateFilterResult(DateTime revisedStartTime, Double revisedProcessingInterval, AggregateConfiguration revisedAggregateConfiguration) {
-        super();
+    private final Double revisedProcessingInterval;
+
+    private final AggregateConfiguration revisedAggregateConfiguration;
+
+    public AggregateFilterResult(DateTime revisedStartTime, Double revisedProcessingInterval,
+                                 AggregateConfiguration revisedAggregateConfiguration) {
         this.revisedStartTime = revisedStartTime;
         this.revisedProcessingInterval = revisedProcessingInterval;
         this.revisedAggregateConfiguration = revisedAggregateConfiguration;
     }
 
-    public DateTime getRevisedStartTime() { return revisedStartTime; }
-
-    public Double getRevisedProcessingInterval() { return revisedProcessingInterval; }
-
-    public AggregateConfiguration getRevisedAggregateConfiguration() { return revisedAggregateConfiguration; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RevisedStartTime", revisedStartTime)
-            .add("RevisedProcessingInterval", revisedProcessingInterval)
-            .add("RevisedAggregateConfiguration", revisedAggregateConfiguration)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<AggregateFilterResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public DateTime getRevisedStartTime() {
+        return revisedStartTime;
+    }
+
+    public Double getRevisedProcessingInterval() {
+        return revisedProcessingInterval;
+    }
+
+    public AggregateConfiguration getRevisedAggregateConfiguration() {
+        return revisedAggregateConfiguration;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<AggregateFilterResult> {
         @Override
         public Class<AggregateFilterResult> getType() {
             return AggregateFilterResult.class;
         }
 
         @Override
-        public AggregateFilterResult decode(UaDecoder decoder) throws UaSerializationException {
+        public AggregateFilterResult decode(SerializationContext context, UaDecoder decoder) {
             DateTime revisedStartTime = decoder.readDateTime("RevisedStartTime");
             Double revisedProcessingInterval = decoder.readDouble("RevisedProcessingInterval");
-            AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.readBuiltinStruct("RevisedAggregateConfiguration", AggregateConfiguration.class);
-
+            AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.readStruct("RevisedAggregateConfiguration", AggregateConfiguration.TYPE_ID);
             return new AggregateFilterResult(revisedStartTime, revisedProcessingInterval, revisedAggregateConfiguration);
         }
 
         @Override
-        public void encode(AggregateFilterResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeDateTime("RevisedStartTime", value.revisedStartTime);
-            encoder.writeDouble("RevisedProcessingInterval", value.revisedProcessingInterval);
-            encoder.writeBuiltinStruct("RevisedAggregateConfiguration", value.revisedAggregateConfiguration, AggregateConfiguration.class);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           AggregateFilterResult value) {
+            encoder.writeDateTime("RevisedStartTime", value.getRevisedStartTime());
+            encoder.writeDouble("RevisedProcessingInterval", value.getRevisedProcessingInterval());
+            encoder.writeStruct("RevisedAggregateConfiguration", value.getRevisedAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
         }
     }
-
 }

@@ -17,21 +17,18 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
-import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNodeProperties;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.methods.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
-import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.ALWAYS_GENERATES_EVENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
@@ -87,6 +84,39 @@ public class UaMethodNode extends UaNode implements MethodNode {
         fireAttributeChanged(AttributeId.UserExecutable, userExecutable);
     }
 
+    @Override
+    public synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case Executable:
+                return executable;
+
+            case UserExecutable:
+                return userExecutable;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case Executable:
+                executable = (Boolean) value;
+                break;
+
+            case UserExecutable:
+                userExecutable = (Boolean) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
+    }
+
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
@@ -121,57 +151,74 @@ public class UaMethodNode extends UaNode implements MethodNode {
         this.handler = handler;
     }
 
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see MethodNodeProperties#NodeVersion
+     */
     @Nullable
     public String getNodeVersion() {
-        return getProperty(NodeVersion).orElse(null);
+        return getProperty(MethodNodeProperties.NodeVersion).orElse(null);
     }
 
+    /**
+     * Get the value of the InputArguments Property, if it exists.
+     *
+     * @return the value of the InputArguments Property, if it exists.
+     * @see MethodNodeProperties#InputArguments
+     */
     @Nullable
     public Argument[] getInputArguments() {
-        return getProperty(InputArguments).orElse(null);
+        return getProperty(MethodNodeProperties.InputArguments).orElse(null);
     }
 
+    /**
+     * Get the value of the OutputArguments Property, if it exists.
+     *
+     * @return the value of the OutputArguments Property, if it exists.
+     * @see MethodNodeProperties#OutputArguments
+     */
     @Nullable
     public Argument[] getOutputArguments() {
-        return getProperty(OutputArguments).orElse(null);
+        return getProperty(MethodNodeProperties.OutputArguments).orElse(null);
     }
 
+    /**
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param nodeVersion the value to set.
+     * @see MethodNodeProperties#NodeVersion
+     */
     public void setNodeVersion(String nodeVersion) {
-        setProperty(NodeVersion, nodeVersion);
+        setProperty(MethodNodeProperties.NodeVersion, nodeVersion);
     }
 
+    /**
+     * Set the value of the InputArguments Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param inputArguments the value to set.
+     * @see MethodNodeProperties#InputArguments
+     */
     public void setInputArguments(Argument[] inputArguments) {
-        setProperty(InputArguments, inputArguments);
+        setProperty(MethodNodeProperties.InputArguments, inputArguments);
     }
 
+    /**
+     * Set the value of the OutputArguments Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param outputArguments the value to set.
+     * @see MethodNodeProperties#OutputArguments
+     */
     public void setOutputArguments(Argument[] outputArguments) {
-        setProperty(OutputArguments, outputArguments);
+        setProperty(MethodNodeProperties.OutputArguments, outputArguments);
     }
-
-
-    public static final QualifiedProperty<Argument[]> InputArguments = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "InputArguments",
-        Identifiers.Argument,
-        ValueRanks.OneDimension,
-        Argument[].class
-    );
-
-    public static final QualifiedProperty<Argument[]> OutputArguments = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "OutputArguments",
-        Identifiers.Argument,
-        ValueRanks.OneDimension,
-        Argument[].class
-    );
-
-    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NodeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
 
     /**
      * @return a new {@link UaMethodNodeBuilder}.

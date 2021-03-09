@@ -10,75 +10,79 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class TimeZoneDataType implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class TimeZoneDataType extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8912");
 
-    public static final NodeId TypeId = Identifiers.TimeZoneDataType;
-    public static final NodeId BinaryEncodingId = Identifiers.TimeZoneDataType_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.TimeZoneDataType_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8913");
 
-    protected final Short offset;
-    protected final Boolean daylightSavingInOffset;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8917");
 
-    public TimeZoneDataType() {
-        this.offset = null;
-        this.daylightSavingInOffset = null;
-    }
+    private final Short offset;
+
+    private final Boolean daylightSavingInOffset;
 
     public TimeZoneDataType(Short offset, Boolean daylightSavingInOffset) {
         this.offset = offset;
         this.daylightSavingInOffset = daylightSavingInOffset;
     }
 
-    public Short getOffset() { return offset; }
-
-    public Boolean getDaylightSavingInOffset() { return daylightSavingInOffset; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Offset", offset)
-            .add("DaylightSavingInOffset", daylightSavingInOffset)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<TimeZoneDataType> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public Short getOffset() {
+        return offset;
+    }
+
+    public Boolean getDaylightSavingInOffset() {
+        return daylightSavingInOffset;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<TimeZoneDataType> {
         @Override
         public Class<TimeZoneDataType> getType() {
             return TimeZoneDataType.class;
         }
 
         @Override
-        public TimeZoneDataType decode(UaDecoder decoder) throws UaSerializationException {
+        public TimeZoneDataType decode(SerializationContext context, UaDecoder decoder) {
             Short offset = decoder.readInt16("Offset");
             Boolean daylightSavingInOffset = decoder.readBoolean("DaylightSavingInOffset");
-
             return new TimeZoneDataType(offset, daylightSavingInOffset);
         }
 
         @Override
-        public void encode(TimeZoneDataType value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeInt16("Offset", value.offset);
-            encoder.writeBoolean("DaylightSavingInOffset", value.daylightSavingInOffset);
+        public void encode(SerializationContext context, UaEncoder encoder, TimeZoneDataType value) {
+            encoder.writeInt16("Offset", value.getOffset());
+            encoder.writeBoolean("DaylightSavingInOffset", value.getDaylightSavingInOffset());
         }
     }
-
 }

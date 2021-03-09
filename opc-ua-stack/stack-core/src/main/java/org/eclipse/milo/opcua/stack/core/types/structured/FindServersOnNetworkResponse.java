@@ -10,95 +10,91 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class FindServersOnNetworkResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class FindServersOnNetworkResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12191");
 
-    public static final NodeId TypeId = Identifiers.FindServersOnNetworkResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.FindServersOnNetworkResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.FindServersOnNetworkResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12209");
 
-    protected final ResponseHeader responseHeader;
-    protected final DateTime lastCounterResetTime;
-    protected final ServerOnNetwork[] servers;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12197");
 
-    public FindServersOnNetworkResponse() {
-        this.responseHeader = null;
-        this.lastCounterResetTime = null;
-        this.servers = null;
-    }
+    private final ResponseHeader responseHeader;
 
-    public FindServersOnNetworkResponse(ResponseHeader responseHeader, DateTime lastCounterResetTime, ServerOnNetwork[] servers) {
+    private final DateTime lastCounterResetTime;
+
+    private final ServerOnNetwork[] servers;
+
+    public FindServersOnNetworkResponse(ResponseHeader responseHeader, DateTime lastCounterResetTime,
+                                        ServerOnNetwork[] servers) {
         this.responseHeader = responseHeader;
         this.lastCounterResetTime = lastCounterResetTime;
         this.servers = servers;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    public DateTime getLastCounterResetTime() { return lastCounterResetTime; }
-
-    @Nullable
-    public ServerOnNetwork[] getServers() { return servers; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("LastCounterResetTime", lastCounterResetTime)
-            .add("Servers", servers)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<FindServersOnNetworkResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public DateTime getLastCounterResetTime() {
+        return lastCounterResetTime;
+    }
+
+    public ServerOnNetwork[] getServers() {
+        return servers;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<FindServersOnNetworkResponse> {
         @Override
         public Class<FindServersOnNetworkResponse> getType() {
             return FindServersOnNetworkResponse.class;
         }
 
         @Override
-        public FindServersOnNetworkResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+        public FindServersOnNetworkResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             DateTime lastCounterResetTime = decoder.readDateTime("LastCounterResetTime");
-            ServerOnNetwork[] servers =
-                decoder.readBuiltinStructArray(
-                    "Servers",
-                    ServerOnNetwork.class
-                );
-
+            ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.readStructArray("Servers", ServerOnNetwork.TYPE_ID);
             return new FindServersOnNetworkResponse(responseHeader, lastCounterResetTime, servers);
         }
 
         @Override
-        public void encode(FindServersOnNetworkResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeDateTime("LastCounterResetTime", value.lastCounterResetTime);
-            encoder.writeBuiltinStructArray(
-                "Servers",
-                value.servers,
-                ServerOnNetwork.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           FindServersOnNetworkResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeDateTime("LastCounterResetTime", value.getLastCounterResetTime());
+            encoder.writeStructArray("Servers", value.getServers(), ServerOnNetwork.TYPE_ID);
         }
     }
-
 }

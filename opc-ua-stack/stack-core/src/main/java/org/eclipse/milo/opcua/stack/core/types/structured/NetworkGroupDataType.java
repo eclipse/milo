@@ -10,86 +10,80 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class NetworkGroupDataType implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class NetworkGroupDataType extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11944");
 
-    public static final NodeId TypeId = Identifiers.NetworkGroupDataType;
-    public static final NodeId BinaryEncodingId = Identifiers.NetworkGroupDataType_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.NetworkGroupDataType_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11950");
 
-    protected final String serverUri;
-    protected final EndpointUrlListDataType[] networkPaths;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11958");
 
-    public NetworkGroupDataType() {
-        this.serverUri = null;
-        this.networkPaths = null;
-    }
+    private final String serverUri;
+
+    private final EndpointUrlListDataType[] networkPaths;
 
     public NetworkGroupDataType(String serverUri, EndpointUrlListDataType[] networkPaths) {
         this.serverUri = serverUri;
         this.networkPaths = networkPaths;
     }
 
-    public String getServerUri() { return serverUri; }
-
-    @Nullable
-    public EndpointUrlListDataType[] getNetworkPaths() { return networkPaths; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ServerUri", serverUri)
-            .add("NetworkPaths", networkPaths)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<NetworkGroupDataType> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getServerUri() {
+        return serverUri;
+    }
+
+    public EndpointUrlListDataType[] getNetworkPaths() {
+        return networkPaths;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<NetworkGroupDataType> {
         @Override
         public Class<NetworkGroupDataType> getType() {
             return NetworkGroupDataType.class;
         }
 
         @Override
-        public NetworkGroupDataType decode(UaDecoder decoder) throws UaSerializationException {
+        public NetworkGroupDataType decode(SerializationContext context, UaDecoder decoder) {
             String serverUri = decoder.readString("ServerUri");
-            EndpointUrlListDataType[] networkPaths =
-                decoder.readBuiltinStructArray(
-                    "NetworkPaths",
-                    EndpointUrlListDataType.class
-                );
-
+            EndpointUrlListDataType[] networkPaths = (EndpointUrlListDataType[]) decoder.readStructArray("NetworkPaths", EndpointUrlListDataType.TYPE_ID);
             return new NetworkGroupDataType(serverUri, networkPaths);
         }
 
         @Override
-        public void encode(NetworkGroupDataType value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("ServerUri", value.serverUri);
-            encoder.writeBuiltinStructArray(
-                "NetworkPaths",
-                value.networkPaths,
-                EndpointUrlListDataType.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           NetworkGroupDataType value) {
+            encoder.writeString("ServerUri", value.getServerUri());
+            encoder.writeStructArray("NetworkPaths", value.getNetworkPaths(), EndpointUrlListDataType.TYPE_ID);
         }
     }
-
 }

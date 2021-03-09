@@ -10,67 +10,71 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class CloseSecureChannelResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class CloseSecureChannelResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=453");
 
-    public static final NodeId TypeId = Identifiers.CloseSecureChannelResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.CloseSecureChannelResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.CloseSecureChannelResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=455");
 
-    protected final ResponseHeader responseHeader;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=454");
 
-    public CloseSecureChannelResponse() {
-        this.responseHeader = null;
-    }
+    private final ResponseHeader responseHeader;
 
     public CloseSecureChannelResponse(ResponseHeader responseHeader) {
         this.responseHeader = responseHeader;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<CloseSecureChannelResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<CloseSecureChannelResponse> {
         @Override
         public Class<CloseSecureChannelResponse> getType() {
             return CloseSecureChannelResponse.class;
         }
 
         @Override
-        public CloseSecureChannelResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-
+        public CloseSecureChannelResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             return new CloseSecureChannelResponse(responseHeader);
         }
 
         @Override
-        public void encode(CloseSecureChannelResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           CloseSecureChannelResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }
-
 }

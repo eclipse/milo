@@ -10,34 +10,40 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class WriteValue implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class WriteValue extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=668");
 
-    public static final NodeId TypeId = Identifiers.WriteValue;
-    public static final NodeId BinaryEncodingId = Identifiers.WriteValue_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.WriteValue_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=670");
 
-    protected final NodeId nodeId;
-    protected final UInteger attributeId;
-    protected final String indexRange;
-    protected final DataValue value;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=669");
 
-    public WriteValue() {
-        this.nodeId = null;
-        this.attributeId = null;
-        this.indexRange = null;
-        this.value = null;
-    }
+    private final NodeId nodeId;
+
+    private final UInteger attributeId;
+
+    private final String indexRange;
+
+    private final DataValue value;
 
     public WriteValue(NodeId nodeId, UInteger attributeId, String indexRange, DataValue value) {
         this.nodeId = nodeId;
@@ -46,57 +52,58 @@ public class WriteValue implements UaStructure {
         this.value = value;
     }
 
-    public NodeId getNodeId() { return nodeId; }
-
-    public UInteger getAttributeId() { return attributeId; }
-
-    public String getIndexRange() { return indexRange; }
-
-    public DataValue getValue() { return value; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("AttributeId", attributeId)
-            .add("IndexRange", indexRange)
-            .add("Value", value)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<WriteValue> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public NodeId getNodeId() {
+        return nodeId;
+    }
+
+    public UInteger getAttributeId() {
+        return attributeId;
+    }
+
+    public String getIndexRange() {
+        return indexRange;
+    }
+
+    public DataValue getValue() {
+        return value;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<WriteValue> {
         @Override
         public Class<WriteValue> getType() {
             return WriteValue.class;
         }
 
         @Override
-        public WriteValue decode(UaDecoder decoder) throws UaSerializationException {
+        public WriteValue decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String indexRange = decoder.readString("IndexRange");
             DataValue value = decoder.readDataValue("Value");
-
             return new WriteValue(nodeId, attributeId, indexRange, value);
         }
 
         @Override
-        public void encode(WriteValue value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeUInt32("AttributeId", value.attributeId);
-            encoder.writeString("IndexRange", value.indexRange);
-            encoder.writeDataValue("Value", value.value);
+        public void encode(SerializationContext context, UaEncoder encoder, WriteValue value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeUInt32("AttributeId", value.getAttributeId());
+            encoder.writeString("IndexRange", value.getIndexRange());
+            encoder.writeDataValue("Value", value.getValue());
         }
     }
-
 }

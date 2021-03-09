@@ -14,9 +14,11 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
@@ -45,19 +47,29 @@ public class PublishQueue {
         if (waitingSubscriptions.isEmpty()) {
             serviceQueue.add(service);
 
-            logger.debug("Queued PublishRequest requestHandle={}, size={}",
+            logger.debug(
+                "Queued PublishRequest requestHandle={}, size={}",
                 service.getRequest().getRequestHeader().getRequestHandle(),
                 serviceQueue.size()
             );
         } else {
+            logger.debug("{} subscriptions waiting", waitingSubscriptions.size());
+
             WaitingSubscription subscription = null;
 
             int maxPriority = 0;
             long minWaitingSince = Long.MAX_VALUE;
 
             for (WaitingSubscription waiting : waitingSubscriptions) {
-                int priority = waiting.getSubscription().getPriority();
-                long waitingSince = waiting.getWaitingSince().getTime();
+                final int priority = waiting.getSubscription().getPriority();
+                final long waitingSince = waiting.getWaitingSince().getTime();
+
+                logger.debug(
+                    "subscription id={} priority={} waitingSince={}",
+                    waiting.getSubscription().getId(),
+                    priority,
+                    waitingSince
+                );
 
                 if (priority > maxPriority) {
                     maxPriority = priority;
@@ -66,14 +78,23 @@ public class PublishQueue {
                 if (priority >= maxPriority && waitingSince < minWaitingSince) {
                     minWaitingSince = waitingSince;
                     subscription = waiting;
+
+                    logger.debug(
+                        "subscription id={} priority={} now next in line",
+                        waiting.getSubscription().getId(),
+                        priority
+                    );
                 }
             }
 
             if (subscription != null) {
                 waitList.remove(subscription.subscription.getId());
 
-                logger.debug("Delivering PublishRequest to Subscription [id={}]",
-                    subscription.getSubscription().getId());
+                logger.debug(
+                    "delivering PublishRequest to subscription id={} priority={}",
+                    subscription.getSubscription().getId(),
+                    subscription.getSubscription().getPriority()
+                );
 
                 final WaitingSubscription ws = subscription;
 
@@ -126,7 +147,7 @@ public class PublishQueue {
 
     @Nullable
     public synchronized ServiceRequest poll() {
-        long now = System.currentTimeMillis();
+        long nowNanos = System.nanoTime();
 
         while (true) {
             ServiceRequest serviceRequest = serviceQueue.poll();
@@ -138,10 +159,14 @@ public class PublishQueue {
                     .getRequest()
                     .getRequestHeader();
 
-                long timeoutHint = requestHeader.getTimeoutHint().longValue();
-                long timestamp = requestHeader.getTimestamp().getJavaTime();
+                long millisSinceReceived = TimeUnit.MILLISECONDS.convert(
+                    nowNanos - serviceRequest.getReceivedAtNanos(),
+                    TimeUnit.NANOSECONDS
+                );
 
-                if (timeoutHint == 0 || timestamp + timeoutHint >= now) {
+                long timeoutHint = requestHeader.getTimeoutHint().longValue();
+
+                if (timeoutHint == 0 || millisSinceReceived < timeoutHint) {
                     return serviceRequest;
                 } else {
                     logger.debug(
@@ -150,9 +175,20 @@ public class PublishQueue {
                         requestHeader.getTimestamp().getJavaDate(),
                         timeoutHint
                     );
+
+                    serviceRequest.setServiceFault(StatusCodes.Bad_Timeout);
                 }
             }
         }
+    }
+
+    /**
+     * Get the number of queued Publish ServiceRequests.
+     *
+     * @return the number of queued Publish ServiceRequests.
+     */
+    public synchronized int size() {
+        return serviceQueue.size();
     }
 
     public static class WaitingSubscription {

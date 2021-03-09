@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -29,6 +30,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,11 +74,11 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     private final File issuerDir;
     private final File issuerCertsDir;
-    private final File issuerCrlsDir;
+    private final File issuerCrlDir;
 
     private final File trustedDir;
     private final File trustedCertsDir;
-    private final File trustedCrlsDir;
+    private final File trustedCrlDir;
 
     private final File rejectedDir;
 
@@ -90,8 +92,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         issuerCertsDir = issuerDir.toPath().resolve("certs").toFile();
         ensureDirectoryExists(issuerCertsDir);
 
-        issuerCrlsDir = issuerDir.toPath().resolve("crls").toFile();
-        ensureDirectoryExists(issuerCrlsDir);
+        issuerCrlDir = issuerDir.toPath().resolve("crl").toFile();
+        ensureDirectoryExists(issuerCrlDir);
 
         trustedDir = baseDir.toPath().resolve("trusted").toFile();
         ensureDirectoryExists(trustedDir);
@@ -99,8 +101,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         trustedCertsDir = trustedDir.toPath().resolve("certs").toFile();
         ensureDirectoryExists(trustedCertsDir);
 
-        trustedCrlsDir = trustedDir.toPath().resolve("crls").toFile();
-        ensureDirectoryExists(trustedCrlsDir);
+        trustedCrlDir = trustedDir.toPath().resolve("crl").toFile();
+        ensureDirectoryExists(trustedCrlDir);
 
         rejectedDir = baseDir.toPath().resolve("rejected").toFile();
         ensureDirectoryExists(rejectedDir);
@@ -119,7 +121,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             this::synchronizeIssuerCerts
         );
         watchKeys.put(
-            issuerCrlsDir.toPath().register(
+            issuerCrlDir.toPath().register(
                 watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE,
@@ -137,7 +139,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             this::synchronizeTrustedCerts
         );
         watchKeys.put(
-            trustedCrlsDir.toPath().register(
+            trustedCrlDir.toPath().register(
                 watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE,
@@ -154,12 +156,13 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         synchronizeIssuerCerts();
         synchronizeIssuerCrls();
         synchronizeTrustedCerts();
+        synchronizeTrustedCrls();
     }
 
     /**
      * Stop the certificate store watcher and free all resources.
      * <p>
-     * After calling closing {@link CertificateValidator#verifyTrustChain(List)} will fail for all inputs.
+     * After calling closing {@link CertificateValidator#validateCertificateChain(List)} will fail for all inputs.
      */
     @Override
     public synchronized void close() throws IOException {
@@ -215,14 +218,14 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     @Override
     public synchronized void setIssuerCrls(List<X509CRL> issuerCrls) {
-        replaceCrlsInDir(issuerCrls, issuerCrlsDir);
+        replaceCrlsInDir(issuerCrls, issuerCrlDir);
 
         synchronizeIssuerCrls();
     }
 
     @Override
     public synchronized void setTrustedCrls(List<X509CRL> trustedCrls) {
-        replaceCrlsInDir(trustedCrls, trustedCrlsDir);
+        replaceCrlsInDir(trustedCrls, trustedCrlDir);
 
         synchronizeTrustedCrls();
     }
@@ -297,8 +300,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return issuerCertsDir;
     }
 
-    public File getIssuerCrlsDir() {
-        return issuerCrlsDir;
+    public File getIssuerCrlDir() {
+        return issuerCrlDir;
     }
 
     public File getTrustedDir() {
@@ -309,8 +312,8 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return trustedCertsDir;
     }
 
-    public File getTrustedCrlsDir() {
-        return trustedCrlsDir;
+    public File getTrustedCrlDir() {
+        return trustedCrlDir;
     }
 
     public File getRejectedDir() {
@@ -344,21 +347,28 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     private synchronized void replaceCrlsInDir(List<X509CRL> crls, File dir) {
-        File[] files = dir.listFiles();
-        if (files == null) files = new File[0];
-
-        Arrays.stream(files).forEach(File::delete);
+        deleteDirectoryContents(dir);
 
         crls.forEach(crl -> writeCrlToDir(crl, dir));
     }
 
     private synchronized void replaceCertificatesInDir(List<X509Certificate> certificates, File dir) {
+        deleteDirectoryContents(dir);
+
+        certificates.forEach(certificate -> writeCertificateToDir(certificate, dir));
+    }
+
+    private static void deleteDirectoryContents(File dir) {
         File[] files = dir.listFiles();
         if (files == null) files = new File[0];
 
-        Arrays.stream(files).forEach(File::delete);
-
-        certificates.forEach(certificate -> writeCertificateToDir(certificate, dir));
+        Arrays.stream(files).forEach(file -> {
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                LOGGER.warn("Failed to delete file: {}", file, e);
+            }
+        });
     }
 
     /**
@@ -371,10 +381,14 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         if (files != null && files.length >= MAX_REJECTED_CERTIFICATES) {
             int excessCount = files.length - MAX_REJECTED_CERTIFICATES;
 
+            // If last modified of any file changes during the sort it can lead
+            // to "IllegalArgumentException: Comparison method violates its general contract!"
+            // thrown from Java's TimSort implementation.
+            Map<File, Long> stableLastModified = new HashMap<>();
+            Arrays.stream(files).forEach(f -> stableLastModified.put(f, f.lastModified()));
+
             Arrays.stream(files)
-                .sorted(
-                    (o1, o2) ->
-                        (int) (o1.lastModified() - o2.lastModified()))
+                .sorted((f1, f2) -> Long.compareUnsigned(stableLastModified.get(f1), stableLastModified.get(f2)))
                 .limit(excessCount + 1)
                 .forEach(file -> {
                     if (!file.delete()) {
@@ -402,7 +416,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     private synchronized void synchronizeIssuerCrls() {
         LOGGER.debug("Synchronizing issuer CRLs...");
 
-        File[] files = issuerCrlsDir.listFiles();
+        File[] files = issuerCrlDir.listFiles();
         if (files == null) files = new File[0];
 
         issuerCrls.clear();
@@ -433,7 +447,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     private synchronized void synchronizeTrustedCrls() {
         LOGGER.debug("Synchronizing trusted CRLs...");
 
-        File[] files = trustedCrlsDir.listFiles();
+        File[] files = trustedCrlDir.listFiles();
         if (files == null) files = new File[0];
 
         trustedCrls.clear();

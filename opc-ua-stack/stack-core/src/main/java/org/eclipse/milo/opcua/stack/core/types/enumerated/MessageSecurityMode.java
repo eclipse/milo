@@ -10,17 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum MessageSecurityMode implements UaEnumeration {
-
     Invalid(0),
+
     None(1),
+
     Sign(2),
+
     SignAndEncrypt(3);
 
     private final int value;
@@ -34,29 +39,40 @@ public enum MessageSecurityMode implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, MessageSecurityMode> VALUES;
-
-    static {
-        Builder<Integer, MessageSecurityMode> builder = ImmutableMap.builder();
-        for (MessageSecurityMode e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static MessageSecurityMode from(int value) {
+        switch (value) {
+            case 0:
+                return Invalid;
+            case 1:
+                return None;
+            case 2:
+                return Sign;
+            case 3:
+                return SignAndEncrypt;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static MessageSecurityMode from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=302");
     }
 
-    public static void encode(MessageSecurityMode messageSecurityMode, UaEncoder encoder) {
-        encoder.writeInt32(null, messageSecurityMode.getValue());
+    public static class Codec extends GenericDataTypeCodec<MessageSecurityMode> {
+        @Override
+        public Class<MessageSecurityMode> getType() {
+            return MessageSecurityMode.class;
+        }
+
+        @Override
+        public MessageSecurityMode decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, MessageSecurityMode.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, MessageSecurityMode value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static MessageSecurityMode decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

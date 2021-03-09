@@ -34,30 +34,49 @@ import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 
-public abstract class AbstractIdentityValidator implements IdentityValidator {
+public abstract class AbstractIdentityValidator<T> implements IdentityValidator<T> {
 
     @Override
-    public Object validateIdentityToken(
+    public T validateIdentityToken(
         Session session,
         UserIdentityToken token,
         UserTokenPolicy tokenPolicy,
         SignatureData tokenSignature) throws UaException {
 
-        if (token instanceof AnonymousIdentityToken) {
-            return validateAnonymousToken(
-                session, (AnonymousIdentityToken) token, tokenPolicy, tokenSignature);
-        } else if (token instanceof UserNameIdentityToken) {
-            return validateUsernameToken(
-                session, (UserNameIdentityToken) token, tokenPolicy, tokenSignature);
-        } else if (token instanceof X509IdentityToken) {
-            return validateX509Token(
-                session, (X509IdentityToken) token, tokenPolicy, tokenSignature);
-        } else if (token instanceof IssuedIdentityToken) {
-            return validateIssuedIdentityToken(
-                session, (IssuedIdentityToken) token, tokenPolicy, tokenSignature);
-        } else {
-            throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
+        switch (tokenPolicy.getTokenType()) {
+            case Anonymous: {
+                if (token instanceof AnonymousIdentityToken) {
+                    return validateAnonymousToken(
+                        session, (AnonymousIdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            case UserName: {
+                if (token instanceof UserNameIdentityToken) {
+                    return validateUsernameToken(
+                        session, (UserNameIdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            case Certificate: {
+                if (token instanceof X509IdentityToken) {
+                    return validateX509Token(
+                        session, (X509IdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            case IssuedToken: {
+                if (token instanceof IssuedIdentityToken) {
+                    return validateIssuedIdentityToken(
+                        session, (IssuedIdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            default:
+                throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
         }
+
+        throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
     }
 
     /**
@@ -73,7 +92,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @return an identity Object that represents the user.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Object validateAnonymousToken(
+    protected T validateAnonymousToken(
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -95,7 +114,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @return an identity Object that represents the user.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Object validateUsernameToken(
+    protected T validateUsernameToken(
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -117,7 +136,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @return an identity Object that represents the user.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Object validateX509Token(
+    protected T validateX509Token(
         Session session,
         X509IdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -139,7 +158,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
      * @return an identity Object that represents the user.
      * @throws UaException if the token is invalid, rejected, or user access is denied.
      */
-    protected Object validateIssuedIdentityToken(
+    protected T validateIssuedIdentityToken(
         Session session,
         IssuedIdentityToken token,
         UserTokenPolicy tokenPolicy,

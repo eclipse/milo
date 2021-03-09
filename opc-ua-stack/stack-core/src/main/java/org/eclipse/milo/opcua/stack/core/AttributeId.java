@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
-import java.util.EnumSet;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableSet;
@@ -44,58 +43,58 @@ public enum AttributeId {
     Executable(21),
     UserExecutable(22);
 
-    public static final ImmutableSet<AttributeId> BASE_NODE_ATTRIBUTES = ImmutableSet.copyOf(
-        EnumSet.of(
+    public static final ImmutableSet<AttributeId> BASE_ATTRIBUTES = ImmutableSet.copyOf(
+        ImmutableSet.of(
             NodeId, NodeClass, BrowseName, DisplayName, Description, WriteMask, UserWriteMask)
     );
 
-    public static final ImmutableSet<AttributeId> DATA_TYPE_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> DATA_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(IsAbstract))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(IsAbstract))
     );
 
-    public static final ImmutableSet<AttributeId> METHOD_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> METHOD_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(Executable, UserExecutable))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(Executable, UserExecutable))
     );
 
-    public static final ImmutableSet<AttributeId> OBJECT_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> OBJECT_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(EventNotifier))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(EventNotifier))
     );
 
-    public static final ImmutableSet<AttributeId> OBJECT_TYPE_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> OBJECT_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(IsAbstract))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(IsAbstract))
     );
 
-    public static final ImmutableSet<AttributeId> REFERENCE_TYPE_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> REFERENCE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(IsAbstract, Symmetric, InverseName))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(IsAbstract, Symmetric, InverseName))
     );
 
-    public static final ImmutableSet<AttributeId> VARIABLE_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> VARIABLE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(Value, DataType, ValueRank, ArrayDimensions,
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions,
                 AccessLevel, UserAccessLevel, MinimumSamplingInterval, Historizing))
     );
 
-    public static final ImmutableSet<AttributeId> VARIABLE_TYPE_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> VARIABLE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(Value, DataType, ValueRank, ArrayDimensions, IsAbstract))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions, IsAbstract))
     );
 
-    public static final ImmutableSet<AttributeId> VIEW_NODE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final ImmutableSet<AttributeId> VIEW_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
-            BASE_NODE_ATTRIBUTES,
-            EnumSet.of(ContainsNoLoops, EventNotifier))
+            BASE_ATTRIBUTES,
+            ImmutableSet.of(ContainsNoLoops, EventNotifier))
     );
 
     private final int id;
@@ -150,6 +149,7 @@ public enum AttributeId {
 
     /**
      * Get the set of valid attributes for a {@link org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass}.
+     *
      * @param nodeClass the {@link org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass}.
      * @return the set of valid attributes for {@code nodeClass}.
      */
@@ -158,14 +158,14 @@ public enum AttributeId {
 
         //@formatter:off
         switch (nodeClass) {
-            case Object:        return OBJECT_NODE_ATTRIBUTES;
-            case Variable:      return VARIABLE_NODE_ATTRIBUTES;
-            case Method:        return METHOD_NODE_ATTRIBUTES;
-            case ObjectType:    return OBJECT_TYPE_NODE_ATTRIBUTES;
-            case VariableType:  return VARIABLE_TYPE_NODE_ATTRIBUTES;
-            case ReferenceType: return REFERENCE_TYPE_NODE_ATTRIBUTES;
-            case DataType:      return DATA_TYPE_NODE_ATTRIBUTES;
-            case View:          return VIEW_NODE_ATTRIBUTES;
+            case Object:        return OBJECT_ATTRIBUTES;
+            case Variable:      return VARIABLE_ATTRIBUTES;
+            case Method:        return METHOD_ATTRIBUTES;
+            case ObjectType:    return OBJECT_TYPE_ATTRIBUTES;
+            case VariableType:  return VARIABLE_TYPE_ATTRIBUTES;
+            case ReferenceType: return REFERENCE_TYPE_ATTRIBUTES;
+            case DataType:      return DATA_TYPE_ATTRIBUTES;
+            case View:          return VIEW_ATTRIBUTES;
             default:            return ImmutableSet.of();
         }
         //@formatter:on

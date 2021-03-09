@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -48,7 +49,11 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     private final ServiceCounter browseNextCounter = new ServiceCounter();
     private final ServiceCounter translateBrowsePathsCounter = new ServiceCounter();
 
-    private final BrowseHelper browseHelper = new BrowseHelper();
+    private final BrowseHelper browseHelper;
+
+    public DefaultViewServiceSet(ExecutorService executor) {
+        browseHelper = new BrowseHelper(executor);
+    }
 
     @Override
     public void onBrowse(ServiceRequest service) {
@@ -63,6 +68,11 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         List<BrowseDescription> nodesToBrowse = l(request.getNodesToBrowse());
 
+        if (nodesToBrowse.isEmpty()) {
+            service.setServiceFault(StatusCodes.Bad_NothingToDo);
+            return;
+        }
+
         if (nodesToBrowse.size() > server.getConfig().getLimits().getMaxNodesPerBrowse().intValue()) {
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
             return;
@@ -70,7 +80,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         Stream<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream().map(
             browseDescription ->
-                BrowseHelper.browse(
+                browseHelper.browse(
                     () -> Optional.of(session),
                     server,
                     request.getView(),
@@ -86,7 +96,10 @@ public class DefaultViewServiceSet implements ViewServiceSet {
                 diagnosticsContext.getDiagnosticInfos(nodesToBrowse);
 
             BrowseResponse response = new BrowseResponse(
-                header, a(results, BrowseResult.class), diagnosticInfos);
+                header,
+                a(results, BrowseResult.class),
+                diagnosticInfos
+            );
 
             service.setResponse(response);
         });

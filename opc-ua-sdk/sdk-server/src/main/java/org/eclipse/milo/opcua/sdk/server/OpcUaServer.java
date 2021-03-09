@@ -25,12 +25,12 @@ import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -67,11 +67,7 @@ public class OpcUaServer {
         logger.info("Eclipse Milo OPC UA Server SDK version: {}", SDK_VERSION);
     }
 
-    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Stack.sharedScheduledExecutor();
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
 
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
 
@@ -83,6 +79,8 @@ public class OpcUaServer {
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
@@ -115,9 +113,9 @@ public class OpcUaServer {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
+        ObjectTypeInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
 
-        VariableTypeManagerInitializer.initialize(variableTypeManager);
+        VariableTypeInitializer.initialize(stackServer.getNamespaceTable(), variableTypeManager);
 
         opcUaNamespace = new OpcUaNamespace(this);
         opcUaNamespace.startup();
@@ -144,6 +142,9 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        serverNamespace.shutdown();
+        opcUaNamespace.shutdown();
+
         eventFactory.shutdown();
 
         subscriptions.values()
@@ -187,6 +188,10 @@ public class OpcUaServer {
 
     public SerializationContext getSerializationContext() {
         return stackServer.getSerializationContext();
+    }
+
+    public ServerDiagnosticsSummary getDiagnosticsSummary() {
+        return diagnosticsSummary;
     }
 
     /**
@@ -238,7 +243,7 @@ public class OpcUaServer {
     }
 
     public ScheduledExecutorService getScheduledExecutorService() {
-        return SCHEDULED_EXECUTOR_SERVICE;
+        return config.getScheduledExecutorService();
     }
 
     public ImmutableList<EndpointDescription> getEndpointDescriptions() {
@@ -247,10 +252,6 @@ public class OpcUaServer {
 
     public Map<NodeId, ReferenceType> getReferenceTypes() {
         return referenceTypes;
-    }
-
-    public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
-        return browseContinuationPoints;
     }
 
 }

@@ -21,10 +21,13 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.server.security.ServerCertificateValidator;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class UaStackServerConfigBuilder {
 
@@ -40,9 +43,12 @@ public class UaStackServerConfigBuilder {
     private MessageLimits messageLimits = MessageLimits.DEFAULT;
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
+    private UInteger minimumSecureChannelLifetime = uint(60_000);
+    private UInteger maximumSecureChannelLifetime = uint(60_000 * 60 * 24);
+
     private CertificateManager certificateManager;
     private TrustListManager trustListManager;
-    private CertificateValidator certificateValidator;
+    private ServerCertificateValidator certificateValidator;
 
     private KeyPair httpsKeyPair;
     private X509Certificate httpsCertificate;
@@ -79,6 +85,16 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
+    public UaStackServerConfigBuilder setMinimumSecureChannelLifetime(UInteger minimumSecureChannelLifetime) {
+        this.minimumSecureChannelLifetime = minimumSecureChannelLifetime;
+        return this;
+    }
+
+    public UaStackServerConfigBuilder setMaximumSecureChannelLifetime(UInteger maximumSecureChannelLifetime) {
+        this.maximumSecureChannelLifetime = maximumSecureChannelLifetime;
+        return this;
+    }
+
     public UaStackServerConfigBuilder setCertificateManager(CertificateManager certificateManager) {
         this.certificateManager = certificateManager;
         return this;
@@ -89,7 +105,7 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
-    public UaStackServerConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+    public UaStackServerConfigBuilder setCertificateValidator(ServerCertificateValidator certificateValidator) {
         this.certificateValidator = certificateValidator;
         return this;
     }
@@ -121,6 +137,8 @@ public class UaStackServerConfigBuilder {
             productUri,
             messageLimits,
             encodingLimits,
+            minimumSecureChannelLifetime,
+            maximumSecureChannelLifetime,
             certificateManager,
             trustListManager,
             certificateValidator,
@@ -142,8 +160,11 @@ public class UaStackServerConfigBuilder {
         private final MessageLimits messageLimits;
         private final EncodingLimits encodingLimits;
 
+        private final UInteger minimumSecureChannelLifetime;
+        private final UInteger maximumSecureChannelLifetime;
+
         private final CertificateManager certificateManager;
-        private final CertificateValidator certificateValidator;
+        private final ServerCertificateValidator certificateValidator;
         private final TrustListManager trustListManager;
 
         private final KeyPair httpsKeyPair;
@@ -158,12 +179,15 @@ public class UaStackServerConfigBuilder {
             String productUri,
             MessageLimits messageLimits,
             EncodingLimits encodingLimits,
+            UInteger minimumSecureChannelLifetime,
+            UInteger maximumSecureChannelLifetime,
             CertificateManager certificateManager,
             TrustListManager trustListManager,
-            CertificateValidator certificateValidator,
+            ServerCertificateValidator certificateValidator,
             @Nullable KeyPair httpsKeyPair,
             @Nullable X509Certificate httpsCertificate,
-            ExecutorService executor) {
+            ExecutorService executor
+        ) {
 
             this.endpointConfigurations = endpointConfigurations;
             this.applicationName = applicationName;
@@ -171,6 +195,8 @@ public class UaStackServerConfigBuilder {
             this.productUri = productUri;
             this.messageLimits = messageLimits;
             this.encodingLimits = encodingLimits;
+            this.minimumSecureChannelLifetime = minimumSecureChannelLifetime;
+            this.maximumSecureChannelLifetime = maximumSecureChannelLifetime;
             this.trustListManager = trustListManager;
             this.certificateManager = certificateManager;
             this.certificateValidator = certificateValidator;
@@ -210,6 +236,16 @@ public class UaStackServerConfigBuilder {
         }
 
         @Override
+        public UInteger getMinimumSecureChannelLifetime() {
+            return minimumSecureChannelLifetime;
+        }
+
+        @Override
+        public UInteger getMaximumSecureChannelLifetime() {
+            return maximumSecureChannelLifetime;
+        }
+
+        @Override
         public CertificateManager getCertificateManager() {
             return certificateManager;
         }
@@ -220,7 +256,7 @@ public class UaStackServerConfigBuilder {
         }
 
         @Override
-        public CertificateValidator getCertificateValidator() {
+        public ServerCertificateValidator getCertificateValidator() {
             return certificateValidator;
         }
 

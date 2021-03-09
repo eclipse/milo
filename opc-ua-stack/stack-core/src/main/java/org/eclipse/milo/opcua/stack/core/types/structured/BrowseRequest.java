@@ -10,103 +10,101 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class BrowseRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class BrowseRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=525");
 
-    public static final NodeId TypeId = Identifiers.BrowseRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.BrowseRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.BrowseRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=527");
 
-    protected final RequestHeader requestHeader;
-    protected final ViewDescription view;
-    protected final UInteger requestedMaxReferencesPerNode;
-    protected final BrowseDescription[] nodesToBrowse;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=526");
 
-    public BrowseRequest() {
-        this.requestHeader = null;
-        this.view = null;
-        this.requestedMaxReferencesPerNode = null;
-        this.nodesToBrowse = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15184");
 
-    public BrowseRequest(RequestHeader requestHeader, ViewDescription view, UInteger requestedMaxReferencesPerNode, BrowseDescription[] nodesToBrowse) {
+    private final RequestHeader requestHeader;
+
+    private final ViewDescription view;
+
+    private final UInteger requestedMaxReferencesPerNode;
+
+    private final BrowseDescription[] nodesToBrowse;
+
+    public BrowseRequest(RequestHeader requestHeader, ViewDescription view,
+                         UInteger requestedMaxReferencesPerNode, BrowseDescription[] nodesToBrowse) {
         this.requestHeader = requestHeader;
         this.view = view;
         this.requestedMaxReferencesPerNode = requestedMaxReferencesPerNode;
         this.nodesToBrowse = nodesToBrowse;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public ViewDescription getView() { return view; }
-
-    public UInteger getRequestedMaxReferencesPerNode() { return requestedMaxReferencesPerNode; }
-
-    @Nullable
-    public BrowseDescription[] getNodesToBrowse() { return nodesToBrowse; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("View", view)
-            .add("RequestedMaxReferencesPerNode", requestedMaxReferencesPerNode)
-            .add("NodesToBrowse", nodesToBrowse)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<BrowseRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public ViewDescription getView() {
+        return view;
+    }
+
+    public UInteger getRequestedMaxReferencesPerNode() {
+        return requestedMaxReferencesPerNode;
+    }
+
+    public BrowseDescription[] getNodesToBrowse() {
+        return nodesToBrowse;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<BrowseRequest> {
         @Override
         public Class<BrowseRequest> getType() {
             return BrowseRequest.class;
         }
 
         @Override
-        public BrowseRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
-            ViewDescription view = (ViewDescription) decoder.readBuiltinStruct("View", ViewDescription.class);
+        public BrowseRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ViewDescription view = (ViewDescription) decoder.readStruct("View", ViewDescription.TYPE_ID);
             UInteger requestedMaxReferencesPerNode = decoder.readUInt32("RequestedMaxReferencesPerNode");
-            BrowseDescription[] nodesToBrowse =
-                decoder.readBuiltinStructArray(
-                    "NodesToBrowse",
-                    BrowseDescription.class
-                );
-
+            BrowseDescription[] nodesToBrowse = (BrowseDescription[]) decoder.readStructArray("NodesToBrowse", BrowseDescription.TYPE_ID);
             return new BrowseRequest(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse);
         }
 
         @Override
-        public void encode(BrowseRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBuiltinStruct("View", value.view, ViewDescription.class);
-            encoder.writeUInt32("RequestedMaxReferencesPerNode", value.requestedMaxReferencesPerNode);
-            encoder.writeBuiltinStructArray(
-                "NodesToBrowse",
-                value.nodesToBrowse,
-                BrowseDescription.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, BrowseRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeStruct("View", value.getView(), ViewDescription.TYPE_ID);
+            encoder.writeUInt32("RequestedMaxReferencesPerNode", value.getRequestedMaxReferencesPerNode());
+            encoder.writeStructArray("NodesToBrowse", value.getNodesToBrowse(), BrowseDescription.TYPE_ID);
         }
     }
-
 }

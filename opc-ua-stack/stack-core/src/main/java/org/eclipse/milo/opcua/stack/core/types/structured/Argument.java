@@ -10,40 +10,45 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class Argument implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class Argument extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=296");
 
-    public static final NodeId TypeId = Identifiers.Argument;
-    public static final NodeId BinaryEncodingId = Identifiers.Argument_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.Argument_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=297");
 
-    protected final String name;
-    protected final NodeId dataType;
-    protected final Integer valueRank;
-    protected final UInteger[] arrayDimensions;
-    protected final LocalizedText description;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=298");
 
-    public Argument() {
-        this.name = null;
-        this.dataType = null;
-        this.valueRank = null;
-        this.arrayDimensions = null;
-        this.description = null;
-    }
+    private final String name;
 
-    public Argument(String name, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, LocalizedText description) {
+    private final NodeId dataType;
+
+    private final Integer valueRank;
+
+    private final UInteger[] arrayDimensions;
+
+    private final LocalizedText description;
+
+    public Argument(String name, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                    LocalizedText description) {
         this.name = name;
         this.dataType = dataType;
         this.valueRank = valueRank;
@@ -51,63 +56,64 @@ public class Argument implements UaStructure {
         this.description = description;
     }
 
-    public String getName() { return name; }
-
-    public NodeId getDataType() { return dataType; }
-
-    public Integer getValueRank() { return valueRank; }
-
-    @Nullable
-    public UInteger[] getArrayDimensions() { return arrayDimensions; }
-
-    public LocalizedText getDescription() { return description; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Name", name)
-            .add("DataType", dataType)
-            .add("ValueRank", valueRank)
-            .add("ArrayDimensions", arrayDimensions)
-            .add("Description", description)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<Argument> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public NodeId getDataType() {
+        return dataType;
+    }
+
+    public Integer getValueRank() {
+        return valueRank;
+    }
+
+    public UInteger[] getArrayDimensions() {
+        return arrayDimensions;
+    }
+
+    public LocalizedText getDescription() {
+        return description;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<Argument> {
         @Override
         public Class<Argument> getType() {
             return Argument.class;
         }
 
         @Override
-        public Argument decode(UaDecoder decoder) throws UaSerializationException {
+        public Argument decode(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             NodeId dataType = decoder.readNodeId("DataType");
             Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readArray("ArrayDimensions", decoder::readUInt32, UInteger.class);
+            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
             LocalizedText description = decoder.readLocalizedText("Description");
-
             return new Argument(name, dataType, valueRank, arrayDimensions, description);
         }
 
         @Override
-        public void encode(Argument value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("Name", value.name);
-            encoder.writeNodeId("DataType", value.dataType);
-            encoder.writeInt32("ValueRank", value.valueRank);
-            encoder.writeArray("ArrayDimensions", value.arrayDimensions, encoder::writeUInt32);
-            encoder.writeLocalizedText("Description", value.description);
+        public void encode(SerializationContext context, UaEncoder encoder, Argument value) {
+            encoder.writeString("Name", value.getName());
+            encoder.writeNodeId("DataType", value.getDataType());
+            encoder.writeInt32("ValueRank", value.getValueRank());
+            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.writeLocalizedText("Description", value.getDescription());
         }
     }
-
 }

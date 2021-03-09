@@ -83,7 +83,7 @@ public final class UInteger extends UNumber implements Comparable<UInteger> {
      * negative no cache will be created. If the value is larger than
      * {@link Integer#MAX_VALUE} then Integer#MAX_VALUE will be used.
      */
-    private static final int getPrecacheSize() {
+    private static int getPrecacheSize() {
         String prop = null;
         long propParsed;
 
@@ -123,7 +123,7 @@ public final class UInteger extends UNumber implements Comparable<UInteger> {
      *
      * @return Array of cached values for UInteger
      */
-    private static final UInteger[] mkValues() {
+    private static UInteger[] mkValues() {
         int precacheSize = getPrecacheSize();
         UInteger[] ret;
 

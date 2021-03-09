@@ -19,8 +19,8 @@ import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
+import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
@@ -146,11 +146,9 @@ public class AttributeWriter {
 
                 validateArrayType(valueRank, arrayDimensions, value);
             }
-
-            node.setAttribute(context, attributeId, value);
-        } else {
-            node.setAttribute(context, attributeId, value);
         }
+
+        node.setAttribute(context, attributeId, value);
     }
 
     private static WriteMask writeMaskForAttribute(AttributeId attributeId) {
@@ -418,7 +416,7 @@ public class AttributeWriter {
             return dataTypeNode.getReferences()
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local(server.getNamespaceTable())))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
                 .findFirst()
                 .orElse(null);
         } else {

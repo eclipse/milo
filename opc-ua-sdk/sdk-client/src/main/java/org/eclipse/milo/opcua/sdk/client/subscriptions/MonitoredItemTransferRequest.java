@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
@@ -21,18 +22,21 @@ public class MonitoredItemTransferRequest {
     private final MonitoringMode monitoringMode;
     private final MonitoringParameters requestedParameters;
     private final UInteger monitoredItemId;
+    private final TimestampsToReturn timestamps;
 
     public MonitoredItemTransferRequest(
         ReadValueId itemToMonitor,
         MonitoringMode monitoringMode,
         MonitoringParameters requestedParameters,
-        UInteger monitoredItemId
+        UInteger monitoredItemId,
+        TimestampsToReturn timestamps
     ) {
 
         this.itemToMonitor = itemToMonitor;
         this.monitoringMode = monitoringMode;
         this.requestedParameters = requestedParameters;
         this.monitoredItemId = monitoredItemId;
+        this.timestamps = timestamps;
     }
 
     ReadValueId getItemToMonitor() {
@@ -51,4 +55,7 @@ public class MonitoredItemTransferRequest {
         return monitoredItemId;
     }
 
+    public TimestampsToReturn getTimestamps() {
+        return timestamps;
+    }
 }

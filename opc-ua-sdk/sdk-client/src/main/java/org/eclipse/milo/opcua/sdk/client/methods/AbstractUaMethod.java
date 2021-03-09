@@ -32,7 +32,10 @@ public abstract class AbstractUaMethod {
 
     public CompletableFuture<Variant[]> invoke(Variant[] inputArguments) {
         CallMethodRequest request = new CallMethodRequest(
-            objectId, methodId, inputArguments);
+            objectId,
+            methodId,
+            inputArguments
+        );
 
         return client.call(request).thenCompose(result -> {
             StatusCode statusCode = result.getStatusCode();

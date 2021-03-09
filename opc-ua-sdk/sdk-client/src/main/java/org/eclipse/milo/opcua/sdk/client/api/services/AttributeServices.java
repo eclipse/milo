@@ -162,7 +162,7 @@ public interface AttributeServices {
                 .thenApply(response -> l(response.getResults()));
         }
     }
-    
+
     /**
      * This service is used to write to the value attribute of one node.
      *

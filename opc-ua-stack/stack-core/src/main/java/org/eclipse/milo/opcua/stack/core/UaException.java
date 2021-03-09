@@ -44,6 +44,12 @@ public class UaException extends Exception implements UaExceptionStatus {
         this.statusCode = new StatusCode(statusCode);
     }
 
+    public UaException(long statusCode, String message, Throwable cause) {
+        super(message, cause);
+
+        this.statusCode = new StatusCode(statusCode);
+    }
+
     public UaException(StatusCode statusCode, String message) {
         super(message);
 
@@ -113,7 +119,13 @@ public class UaException extends Exception implements UaExceptionStatus {
     }
 
     public static Optional<StatusCode> extractStatusCode(Throwable ex) {
-        return extract(ex).map(UaException::getStatusCode);
+        if (ex instanceof UaExceptionStatus) {
+            return Optional.of(((UaExceptionStatus) ex).getStatusCode());
+        } else {
+            Throwable cause = ex.getCause();
+            return cause != null ?
+                extractStatusCode(cause) : Optional.empty();
+        }
     }
 
 }

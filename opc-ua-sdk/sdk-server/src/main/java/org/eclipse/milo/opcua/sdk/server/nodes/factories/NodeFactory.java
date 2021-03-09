@@ -13,31 +13,50 @@ package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
+import org.slf4j.LoggerFactory;
 
 public class NodeFactory {
+
+    private static final Cache<NodeId, InstanceDeclarationHierarchy> IDH_CACHE = CacheBuilder.newBuilder()
+        .maximumSize(1024)
+        .expireAfterAccess(1, TimeUnit.HOURS)
+        .build();
+
+    /**
+     * Invalidate the cached {@link InstanceDeclarationHierarchy} for {@code typeDefinitionId}.
+     *
+     * @param typeDefinitionId the {@link NodeId} type definition to invalidate.
+     */
+    public static void invalidateCachedIdh(NodeId typeDefinitionId) {
+        IDH_CACHE.invalidate(typeDefinitionId);
+    }
 
     private final UaNodeContext context;
     private final ObjectTypeManager objectTypeManager;
@@ -54,7 +73,8 @@ public class NodeFactory {
     public NodeFactory(
         UaNodeContext context,
         ObjectTypeManager objectTypeManager,
-        VariableTypeManager variableTypeManager) {
+        VariableTypeManager variableTypeManager
+    ) {
 
         this.context = context;
         this.objectTypeManager = objectTypeManager;
@@ -63,13 +83,22 @@ public class NodeFactory {
 
     public UaNode createNode(
         NodeId rootNodeId,
+        NodeId typeDefinitionId
+    ) throws UaException {
+
+        return createNode(rootNodeId, typeDefinitionId, new InstantiationCallback() {});
+    }
+
+    public UaNode createNode(
+        NodeId rootNodeId,
         NodeId typeDefinitionId,
-        boolean includeOptionalNodes) throws UaException {
+        InstantiationCallback instantiationCallback
+    ) throws UaException {
 
         Tree<UaNode> nodeTree = createNodeTree(
             rootNodeId,
             typeDefinitionId,
-            includeOptionalNodes
+            instantiationCallback
         );
 
         return nodeTree.getValue();
@@ -77,25 +106,34 @@ public class NodeFactory {
 
     public UaNode createNode(
         NodeId rootNodeId,
-        NodeId typeDefinitionId,
-        boolean includeOptionalNodes,
-        InstanceListener instanceListener) throws UaException {
+        ExpandedNodeId typeDefinitionId
+    ) throws UaException {
 
-        Tree<UaNode> nodeTree = createNodeTree(
-            rootNodeId,
-            typeDefinitionId,
-            includeOptionalNodes
-        );
+        return createNode(rootNodeId, typeDefinitionId, new InstantiationCallback() {});
+    }
 
-        notifyInstanceListener(nodeTree, instanceListener);
+    public UaNode createNode(
+        NodeId rootNodeId,
+        ExpandedNodeId typeDefinitionId,
+        InstantiationCallback instantiationCallback
+    ) throws UaException {
 
-        return nodeTree.getValue();
+        NodeId localTypeDefinitionId = typeDefinitionId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(
+                () ->
+                    new UaException(
+                        StatusCodes.Bad_NodeIdUnknown,
+                        "typeDefinitionId not local: " + typeDefinitionId)
+            );
+
+        return createNode(rootNodeId, localTypeDefinitionId, instantiationCallback);
     }
 
     public Tree<UaNode> createNodeTree(
         NodeId rootNodeId,
         NodeId typeDefinitionId,
-        boolean includeOptionalNodes) throws UaException {
+        InstantiationCallback instantiationCallback
+    ) throws UaException {
 
         AddressSpaceManager addressSpaceManager = context.getServer().getAddressSpaceManager();
 
@@ -107,12 +145,27 @@ public class NodeFactory {
 
         NamespaceTable namespaceTable = context.getServer().getNamespaceTable();
 
-        InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy.create(
-            addressSpaceManager,
-            namespaceTable,
-            typeDefinitionId,
-            includeOptionalNodes
-        );
+        InstanceDeclarationHierarchy idh;
+
+        try {
+            idh = IDH_CACHE.get(
+                typeDefinitionId,
+                () -> {
+                    LoggerFactory.getLogger(NodeFactory.class).debug(
+                        "InstanceDeclarationHierarchy cache " +
+                            "miss for typeDefinitionId={}", typeDefinitionId
+                    );
+
+                    return InstanceDeclarationHierarchy.create(
+                        addressSpaceManager,
+                        namespaceTable,
+                        typeDefinitionId
+                    );
+                }
+            );
+        } catch (ExecutionException e) {
+            throw new UaException(StatusCodes.Bad_InternalError, e);
+        }
 
         NodeTable nodeTable = idh.getNodeTable();
         ReferenceTable referenceTable = idh.getReferenceTable();
@@ -128,12 +181,12 @@ public class NodeFactory {
             if (browsePath.parent == null) {
                 // Root Node of hierarchy will be the ObjectType or VariableType to be instantiated
 
-                if (node instanceof ObjectTypeNode) {
-                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (ObjectTypeNode) node);
+                if (node instanceof UaObjectTypeNode) {
+                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (UaObjectTypeNode) node);
 
                     nodes.put(browsePath, instance);
-                } else if (node instanceof VariableTypeNode) {
-                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (VariableTypeNode) node);
+                } else if (node instanceof UaVariableTypeNode) {
+                    UaNode instance = instanceFromTypeDefinition(rootNodeId, (UaVariableTypeNode) node);
 
                     nodes.put(browsePath, instance);
                 } else {
@@ -143,8 +196,8 @@ public class NodeFactory {
                 // Non-root Nodes are all instance declarations
                 NodeId instanceNodeId = instanceNodeId(rootNodeId, browsePath);
 
-                if (node instanceof MethodNode) {
-                    MethodNode declaration = (MethodNode) node;
+                if (node instanceof UaMethodNode) {
+                    UaMethodNode declaration = (UaMethodNode) node;
 
                     UaMethodNode instance = new UaMethodNode(
                         context,
@@ -159,8 +212,8 @@ public class NodeFactory {
                     );
 
                     nodes.put(browsePath, instance);
-                } else if (node instanceof ObjectNode) {
-                    ObjectNode declaration = (ObjectNode) node;
+                } else if (node instanceof UaObjectNode) {
+                    UaObjectNode declaration = (UaObjectNode) node;
 
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
@@ -170,24 +223,30 @@ public class NodeFactory {
                         .orElse(null);
 
                     if (typeDefinitionNode instanceof ObjectTypeNode) {
-                        UaObjectNode instance = instanceFromTypeDefinition(
-                            instanceNodeId, (ObjectTypeNode) typeDefinitionNode);
+                        boolean optional = isOptionalDeclaration(declaration);
 
-                        instance.setBrowseName(declaration.getBrowseName());
-                        instance.setDisplayName(declaration.getDisplayName());
-                        instance.setDescription(declaration.getDescription());
-                        instance.setWriteMask(declaration.getWriteMask());
-                        instance.setUserWriteMask(declaration.getUserWriteMask());
-                        instance.setEventNotifier(declaration.getEventNotifier());
+                        if (!optional || instantiationCallback.includeOptionalNode(
+                            typeDefinitionNode.getNodeId(), declaration.getBrowseName())) {
 
-                        nodes.put(browsePath, instance);
+                            UaObjectNode instance = instanceFromTypeDefinition(
+                                instanceNodeId, (ObjectTypeNode) typeDefinitionNode);
+
+                            instance.setBrowseName(declaration.getBrowseName());
+                            instance.setDisplayName(declaration.getDisplayName());
+                            instance.setDescription(declaration.getDescription());
+                            instance.setWriteMask(declaration.getWriteMask());
+                            instance.setUserWriteMask(declaration.getUserWriteMask());
+                            instance.setEventNotifier(declaration.getEventNotifier());
+
+                            nodes.put(browsePath, instance);
+                        }
                     } else {
                         throw new UaException(
                             StatusCodes.Bad_InternalError,
                             "expected type definition for " + instanceTypeDefinitionId);
                     }
-                } else if (node instanceof VariableNode) {
-                    VariableNode declaration = (VariableNode) node;
+                } else if (node instanceof UaVariableNode) {
+                    UaVariableNode declaration = (UaVariableNode) node;
 
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
@@ -197,22 +256,27 @@ public class NodeFactory {
                         .orElse(null);
 
                     if (typeDefinitionNode instanceof VariableTypeNode) {
-                        UaVariableNode instance = instanceFromTypeDefinition(
-                            instanceNodeId, (VariableTypeNode) typeDefinitionNode);
+                        boolean optional = isOptionalDeclaration(declaration);
 
-                        instance.setBrowseName(declaration.getBrowseName());
-                        instance.setDisplayName(declaration.getDisplayName());
-                        instance.setDescription(declaration.getDescription());
-                        instance.setWriteMask(declaration.getWriteMask());
-                        instance.setUserWriteMask(declaration.getUserWriteMask());
-                        instance.setValue(declaration.getValue());
-                        instance.setDataType(declaration.getDataType());
-                        instance.setValueRank(declaration.getValueRank());
-                        instance.setArrayDimensions(declaration.getArrayDimensions());
-                        instance.setAccessLevel(declaration.getAccessLevel());
-                        instance.setUserAccessLevel(declaration.getUserAccessLevel());
+                        if (!optional || instantiationCallback.includeOptionalNode(
+                            typeDefinitionNode.getNodeId(), declaration.getBrowseName())) {
+                            UaVariableNode instance = instanceFromTypeDefinition(
+                                instanceNodeId, (VariableTypeNode) typeDefinitionNode);
 
-                        nodes.put(browsePath, instance);
+                            instance.setBrowseName(declaration.getBrowseName());
+                            instance.setDisplayName(declaration.getDisplayName());
+                            instance.setDescription(declaration.getDescription());
+                            instance.setWriteMask(declaration.getWriteMask());
+                            instance.setUserWriteMask(declaration.getUserWriteMask());
+                            instance.setValue(declaration.getValue());
+                            instance.setDataType(declaration.getDataType());
+                            instance.setValueRank(declaration.getValueRank());
+                            instance.setArrayDimensions(declaration.getArrayDimensions());
+                            instance.setAccessLevel(declaration.getAccessLevel());
+                            instance.setUserAccessLevel(declaration.getUserAccessLevel());
+
+                            nodes.put(browsePath, instance);
+                        }
                     } else {
                         throw new UaException(
                             StatusCodes.Bad_InternalError,
@@ -261,25 +325,29 @@ public class NodeFactory {
             context.getNodeManager().addNode(node);
         });
 
-        return nodeTable.getBrowsePathTree().map(nodes::get);
+        Tree<UaNode> nodeTree = nodeTable.getBrowsePathTree().map(nodes::get);
+
+        notifyInstantiationCallback(nodeTree, instantiationCallback);
+
+        return nodeTree;
     }
 
-    protected void notifyInstanceListener(Tree<UaNode> nodeTree, InstanceListener instanceListener) {
-        nodeTree.traverse((node, parentNode) -> {
+    protected void notifyInstantiationCallback(Tree<UaNode> nodeTree, InstantiationCallback instantiationCallback) {
+        nodeTree.traverseWithParent((node, parentNode) -> {
             if (parentNode instanceof UaObjectNode && node instanceof UaMethodNode) {
                 UaMethodNode methodNode = (UaMethodNode) node;
 
-                instanceListener.onMethodAdded((UaObjectNode) parentNode, methodNode);
-            } else if (parentNode instanceof UaObjectNode && node instanceof UaObjectNode) {
+                instantiationCallback.onMethodAdded((UaObjectNode) parentNode, methodNode);
+            } else if (node instanceof UaObjectNode) {
                 UaObjectNode objectNode = (UaObjectNode) node;
                 ObjectTypeNode objectTypeNode = objectNode.getTypeDefinitionNode();
 
-                instanceListener.onObjectAdded((UaObjectNode) parentNode, objectNode, objectTypeNode.getNodeId());
+                instantiationCallback.onObjectAdded(parentNode, objectNode, objectTypeNode.getNodeId());
             } else if (node instanceof UaVariableNode) {
                 UaVariableNode variableNode = (UaVariableNode) node;
                 VariableTypeNode variableTypeNode = variableNode.getTypeDefinitionNode();
 
-                instanceListener.onVariableAdded(parentNode, variableNode, variableTypeNode.getNodeId());
+                instantiationCallback.onVariableAdded(parentNode, variableNode, variableTypeNode.getNodeId());
             }
         });
     }
@@ -301,7 +369,8 @@ public class NodeFactory {
 
     protected UaObjectNode instanceFromTypeDefinition(
         NodeId nodeId,
-        ObjectTypeNode typeDefinitionNode) {
+        ObjectTypeNode typeDefinitionNode
+    ) {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
@@ -323,7 +392,8 @@ public class NodeFactory {
 
     protected UaVariableNode instanceFromTypeDefinition(
         NodeId nodeId,
-        VariableTypeNode typeDefinitionNode) {
+        VariableTypeNode typeDefinitionNode
+    ) {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
@@ -343,6 +413,13 @@ public class NodeFactory {
         );
     }
 
+    protected boolean isOptionalDeclaration(UaNode node) {
+        return node.getReferences()
+            .stream()
+            .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
+            .anyMatch(r -> Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId()));
+    }
+
     private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {
         return referenceTable
             .getReferences(browsePath)
@@ -353,7 +430,19 @@ public class NodeFactory {
             .orElse(ExpandedNodeId.NULL_VALUE);
     }
 
-    interface InstanceListener {
+    public interface InstantiationCallback {
+
+        /**
+         * Called determine whether the optional member named {@code browseName} should be added to an instantiated
+         * Node of the type identified by {@code typeDefinitionId}
+         *
+         * @param typeDefinitionId the type definition id of the {@link UaNode} being instantiated.
+         * @param browseName       the {@link QualifiedName} of the optional member.
+         * @return {@code true} if the optional member named {@code browseName} should be added.
+         */
+        default boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+            return false;
+        }
 
         /**
          * Called when a {@link UaMethodNode} has been added to a {@link UaObjectNode} somewhere in the instance
@@ -365,20 +454,24 @@ public class NodeFactory {
         default void onMethodAdded(@Nullable UaObjectNode parent, UaMethodNode instance) {}
 
         /**
-         * Called when a {@link UaObjectNode} has been added to a parent {@link UaObjectNode} by a hierarchical
+         * Called when a {@link UaObjectNode} has been added to a parent {@link UaNode} by a hierarchical
          * reference somewhere in the instance hierarchy.
+         * <p>
+         * If {@code parent} is {@code null} then {@code instance} is the root of the instance hierarchy.
          *
-         * @param parent           the parent {@link UaObjectNode}
+         * @param parent           the parent {@link UaNode}.
          * @param instance         the {@link UaObjectNode} instance.
          * @param typeDefinitionId the {@link NodeId} of the ObjectTypeDefinition.
          */
-        default void onObjectAdded(@Nullable UaObjectNode parent, UaObjectNode instance, NodeId typeDefinitionId) {}
+        default void onObjectAdded(@Nullable UaNode parent, UaObjectNode instance, NodeId typeDefinitionId) {}
 
         /**
          * Called when a {@link UaVariableNode} has been added to a parent {@link UaNode} by a hierarchical
          * reference somewhere in the instance hierarchy.
+         * <p>
+         * If {@code parent} is {@code null} then {@code instance} is the root of the instance hierarchy.
          *
-         * @param parent           the parent {@link UaVariableNode}
+         * @param parent           the parent {@link UaNode}.
          * @param instance         the {@link UaVariableNode} instance.
          * @param typeDefinitionId the {@link NodeId} of the VariableTypeDefinition.
          */

@@ -14,18 +14,17 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Supplier;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
-import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -35,9 +34,9 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
-    private LocalizedText applicationName = LocalizedText.english("client application name not configured");
-    private String applicationUri = "client application uri not configured";
-    private String productUri = "client product uri not configured";
+    private LocalizedText applicationName = LocalizedText.english("Eclipse Milo application name not configured");
+    private String applicationUri = "urn:eclipse:milo:client:applicationUriNotConfigured";
+    private String productUri = "https://github.com/eclipse/milo";
 
     private Supplier<String> sessionName;
     private String[] sessionLocaleIds = new String[0];
@@ -47,8 +46,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     private UInteger maxResponseMessageSize = uint(0);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
-
-    private BsdParser bsdParser = new GenericBsdParser();
 
     private UInteger keepAliveFailuresAllowed = uint(1);
     private UInteger keepAliveInterval = uint(5000);
@@ -99,11 +96,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         return this;
     }
 
-    public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
-        this.bsdParser = bsdParser;
-        return this;
-    }
-
     public OpcUaClientConfigBuilder setKeepAliveFailuresAllowed(UInteger keepAliveFailuresAllowed) {
         this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
         return this;
@@ -144,7 +136,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     }
 
     @Override
-    public OpcUaClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+    public OpcUaClientConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
         super.setCertificateValidator(certificateValidator);
         return this;
     }
@@ -224,7 +216,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             maxResponseMessageSize,
             maxPendingPublishRequests,
             identityProvider,
-            bsdParser,
             keepAliveFailuresAllowed,
             keepAliveInterval,
             keepAliveTimeout
@@ -243,7 +234,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
         private final IdentityProvider identityProvider;
-        private final BsdParser bsdParser;
         private final UInteger keepAliveFailuresAllowed;
         private final UInteger keepAliveInterval;
         private final UInteger keepAliveTimeout;
@@ -259,10 +249,10 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             UInteger maxResponseMessageSize,
             UInteger maxPendingPublishRequests,
             IdentityProvider identityProvider,
-            BsdParser bsdParser,
             UInteger keepAliveFailuresAllowed,
             UInteger keepAliveInterval,
-            UInteger keepAliveTimeout) {
+            UInteger keepAliveTimeout
+        ) {
 
             this.stackClientConfig = stackClientConfig;
             this.applicationName = applicationName;
@@ -274,7 +264,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
             this.identityProvider = identityProvider;
-            this.bsdParser = bsdParser;
             this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
             this.keepAliveInterval = keepAliveInterval;
             this.keepAliveTimeout = keepAliveTimeout;
@@ -326,11 +315,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         }
 
         @Override
-        public BsdParser getBsdParser() {
-            return bsdParser;
-        }
-
-        @Override
         public UInteger getKeepAliveFailuresAllowed() {
             return keepAliveFailuresAllowed;
         }
@@ -366,7 +350,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         }
 
         @Override
-        public CertificateValidator getCertificateValidator() {
+        public ClientCertificateValidator getCertificateValidator() {
             return stackClientConfig.getCertificateValidator();
         }
 
@@ -388,6 +372,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public ExecutorService getExecutor() {
             return stackClientConfig.getExecutor();
+        }
+
+        @Override
+        public ScheduledExecutorService getScheduledExecutor() {
+            return stackClientConfig.getScheduledExecutor();
         }
 
         @Override

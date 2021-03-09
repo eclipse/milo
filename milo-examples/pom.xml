@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo</artifactId>
-        <version>0.3.7-SNAPSHOT</version>
+        <version>0.5.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>milo-examples</artifactId>
@@ -15,7 +15,7 @@
         <module>client-examples</module>
         <module>server-examples</module>
     </modules>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -26,6 +26,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>

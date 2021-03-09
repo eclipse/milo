@@ -17,56 +17,56 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteTransitionV
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.ProgramDiagnosticType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
 
 public interface ProgramStateMachineType extends FiniteStateMachineType {
-    QualifiedProperty<Integer> RECYCLE_COUNT = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> CREATABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "RecycleCount",
-        NodeId.parse("ns=0;i=6"),
+        "Creatable",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
-        Integer.class
+        Boolean.class
     );
 
     QualifiedProperty<Boolean> DELETABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Deletable",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
-    );
-
-    QualifiedProperty<UInteger> MAX_INSTANCE_COUNT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MaxInstanceCount",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
     );
 
     QualifiedProperty<Boolean> AUTO_DELETE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AutoDelete",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
 
-    QualifiedProperty<Boolean> CREATABLE = new QualifiedProperty<>(
+    QualifiedProperty<Integer> RECYCLE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Creatable",
-        NodeId.parse("ns=0;i=1"),
+        "RecycleCount",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
-        Boolean.class
+        Integer.class
     );
 
     QualifiedProperty<UInteger> INSTANCE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InstanceCount",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_INSTANCE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxInstanceCount",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -74,34 +74,10 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     QualifiedProperty<UInteger> MAX_RECYCLE_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxRecycleCount",
-        NodeId.parse("ns=0;i=7"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
         ValueRanks.Scalar,
         UInteger.class
     );
-
-    PropertyType getRecycleCountNode();
-
-    Integer getRecycleCount();
-
-    void setRecycleCount(Integer value);
-
-    PropertyType getDeletableNode();
-
-    Boolean getDeletable();
-
-    void setDeletable(Boolean value);
-
-    PropertyType getMaxInstanceCountNode();
-
-    UInteger getMaxInstanceCount();
-
-    void setMaxInstanceCount(UInteger value);
-
-    PropertyType getAutoDeleteNode();
-
-    Boolean getAutoDelete();
-
-    void setAutoDelete(Boolean value);
 
     PropertyType getCreatableNode();
 
@@ -109,11 +85,35 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
 
     void setCreatable(Boolean value);
 
+    PropertyType getDeletableNode();
+
+    Boolean getDeletable();
+
+    void setDeletable(Boolean value);
+
+    PropertyType getAutoDeleteNode();
+
+    Boolean getAutoDelete();
+
+    void setAutoDelete(Boolean value);
+
+    PropertyType getRecycleCountNode();
+
+    Integer getRecycleCount();
+
+    void setRecycleCount(Integer value);
+
     PropertyType getInstanceCountNode();
 
     UInteger getInstanceCount();
 
     void setInstanceCount(UInteger value);
+
+    PropertyType getMaxInstanceCountNode();
+
+    UInteger getMaxInstanceCount();
+
+    void setMaxInstanceCount(UInteger value);
 
     PropertyType getMaxRecycleCountNode();
 
@@ -121,23 +121,11 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
 
     void setMaxRecycleCount(UInteger value);
 
-    TransitionType getReadyToHaltedNode();
-
     FiniteStateVariableType getCurrentStateNode();
 
     LocalizedText getCurrentState();
 
     void setCurrentState(LocalizedText value);
-
-    TransitionType getSuspendedToReadyNode();
-
-    TransitionType getSuspendedToHaltedNode();
-
-    ProgramDiagnosticType getProgramDiagnosticsNode();
-
-    ProgramDiagnosticDataType getProgramDiagnostics();
-
-    void setProgramDiagnostics(ProgramDiagnosticDataType value);
 
     FiniteTransitionVariableType getLastTransitionNode();
 
@@ -145,35 +133,47 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
 
     void setLastTransition(LocalizedText value);
 
-    UaMethodNode getSuspendMethodNode();
+    ProgramDiagnosticType getProgramDiagnosticsNode();
 
-    UaMethodNode getHaltMethodNode();
+    ProgramDiagnosticDataType getProgramDiagnostics();
+
+    void setProgramDiagnostics(ProgramDiagnosticDataType value);
 
     BaseObjectType getFinalResultDataNode();
+
+    StateType getReadyNode();
+
+    StateType getRunningNode();
+
+    StateType getSuspendedNode();
 
     StateType getHaltedNode();
 
     TransitionType getHaltedToReadyNode();
 
-    StateType getSuspendedNode();
-
-    StateType getRunningNode();
-
-    StateType getReadyNode();
+    TransitionType getReadyToRunningNode();
 
     TransitionType getRunningToHaltedNode();
-
-    TransitionType getReadyToRunningNode();
 
     TransitionType getRunningToReadyNode();
 
     TransitionType getRunningToSuspendedNode();
 
-    UaMethodNode getResumeMethodNode();
-
     TransitionType getSuspendedToRunningNode();
 
+    TransitionType getSuspendedToHaltedNode();
+
+    TransitionType getSuspendedToReadyNode();
+
+    TransitionType getReadyToHaltedNode();
+
     UaMethodNode getStartMethodNode();
+
+    UaMethodNode getSuspendMethodNode();
+
+    UaMethodNode getResumeMethodNode();
+
+    UaMethodNode getHaltMethodNode();
 
     UaMethodNode getResetMethodNode();
 }

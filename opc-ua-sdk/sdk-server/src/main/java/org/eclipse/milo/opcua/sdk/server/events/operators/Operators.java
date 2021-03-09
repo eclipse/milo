@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
 import org.eclipse.milo.opcua.sdk.server.events.ValidationException;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
@@ -32,13 +32,14 @@ public class Operators {
     public static final LessThanOrEqual LESS_THAN_OR_EQUAL = new LessThanOrEqual();
     public static final Not NOT = new Not();
     public static final Cast CAST = new Cast();
+    public static final OfType OF_TYPE = new OfType();
 
     public static final Operator<Object> UNSUPPORTED = new Operator<Object>() {
         @Nullable
         @Override
         public Object apply(
             OperatorContext context,
-            BaseEventNode eventNode,
+            BaseEventTypeNode eventNode,
             FilterOperand[] operands) throws UaException {
 
             throw new UaException(StatusCodes.Bad_FilterOperatorUnsupported);
@@ -59,6 +60,7 @@ public class Operators {
         .add(FilterOperator.LessThanOrEqual)
         .add(FilterOperator.Not)
         .add(FilterOperator.Cast)
+        .add(FilterOperator.OfType)
         .build();
 
 }

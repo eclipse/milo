@@ -10,17 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum ApplicationType implements UaEnumeration {
-
     Server(0),
+
     Client(1),
+
     ClientAndServer(2),
+
     DiscoveryServer(3);
 
     private final int value;
@@ -34,29 +39,40 @@ public enum ApplicationType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, ApplicationType> VALUES;
-
-    static {
-        Builder<Integer, ApplicationType> builder = ImmutableMap.builder();
-        for (ApplicationType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static ApplicationType from(int value) {
+        switch (value) {
+            case 0:
+                return Server;
+            case 1:
+                return Client;
+            case 2:
+                return ClientAndServer;
+            case 3:
+                return DiscoveryServer;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static ApplicationType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=307");
     }
 
-    public static void encode(ApplicationType applicationType, UaEncoder encoder) {
-        encoder.writeInt32(null, applicationType.getValue());
+    public static class Codec extends GenericDataTypeCodec<ApplicationType> {
+        @Override
+        public Class<ApplicationType> getType() {
+            return ApplicationType.class;
+        }
+
+        @Override
+        public ApplicationType decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, ApplicationType.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, ApplicationType value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static ApplicationType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

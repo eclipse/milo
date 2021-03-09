@@ -10,89 +10,74 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class HistoryModifiedData extends HistoryData {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class HistoryModifiedData extends HistoryData implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11217");
 
-    public static final NodeId TypeId = Identifiers.HistoryModifiedData;
-    public static final NodeId BinaryEncodingId = Identifiers.HistoryModifiedData_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.HistoryModifiedData_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11227");
 
-    protected final DataValue[] dataValues;
-    protected final ModificationInfo[] modificationInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11219");
 
-    public HistoryModifiedData() {
-        super();
-        this.dataValues = null;
-        this.modificationInfos = null;
-    }
+    private final ModificationInfo[] modificationInfos;
 
     public HistoryModifiedData(DataValue[] dataValues, ModificationInfo[] modificationInfos) {
-        super();
-        this.dataValues = dataValues;
+        super(dataValues);
         this.modificationInfos = modificationInfos;
     }
 
-    @Nullable
-    public DataValue[] getDataValues() { return dataValues; }
-
-    @Nullable
-    public ModificationInfo[] getModificationInfos() { return modificationInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("DataValues", dataValues)
-            .add("ModificationInfos", modificationInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<HistoryModifiedData> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ModificationInfo[] getModificationInfos() {
+        return modificationInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<HistoryModifiedData> {
         @Override
         public Class<HistoryModifiedData> getType() {
             return HistoryModifiedData.class;
         }
 
         @Override
-        public HistoryModifiedData decode(UaDecoder decoder) throws UaSerializationException {
-            DataValue[] dataValues = decoder.readArray("DataValues", decoder::readDataValue, DataValue.class);
-            ModificationInfo[] modificationInfos =
-                decoder.readBuiltinStructArray(
-                    "ModificationInfos",
-                    ModificationInfo.class
-                );
-
+        public HistoryModifiedData decode(SerializationContext context, UaDecoder decoder) {
+            DataValue[] dataValues = decoder.readDataValueArray("DataValues");
+            ModificationInfo[] modificationInfos = (ModificationInfo[]) decoder.readStructArray("ModificationInfos", ModificationInfo.TYPE_ID);
             return new HistoryModifiedData(dataValues, modificationInfos);
         }
 
         @Override
-        public void encode(HistoryModifiedData value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeArray("DataValues", value.dataValues, encoder::writeDataValue);
-            encoder.writeBuiltinStructArray(
-                "ModificationInfos",
-                value.modificationInfos,
-                ModificationInfo.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, HistoryModifiedData value) {
+            encoder.writeDataValueArray("DataValues", value.getDataValues());
+            encoder.writeStructArray("ModificationInfos", value.getModificationInfos(), ModificationInfo.TYPE_ID);
         }
     }
-
 }

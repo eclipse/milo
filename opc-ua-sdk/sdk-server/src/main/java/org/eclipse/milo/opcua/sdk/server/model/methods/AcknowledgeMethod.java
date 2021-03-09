@@ -52,7 +52,7 @@ public abstract class AcknowledgeMethod extends AbstractMethodInvocationHandler 
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         ByteString eventId = (ByteString) inputValues[0].getValue();
         LocalizedText comment = (LocalizedText) inputValues[1].getValue();
@@ -60,6 +60,6 @@ public abstract class AcknowledgeMethod extends AbstractMethodInvocationHandler 
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    ByteString eventId, LocalizedText comment) throws UaException;
 }

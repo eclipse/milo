@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,15 +5,16 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<String> SECURE_CHANNEL_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -31,7 +22,7 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientCertificate",
-        NodeId.parse("ns=0;i=15"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15"),
         ValueRanks.Scalar,
         ByteString.class
     );
@@ -39,7 +30,7 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientCertificateThumbprint",
-        NodeId.parse("ns=0;i=12"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
@@ -47,32 +38,301 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<Double> REVISED_SESSION_TIMEOUT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RevisedSessionTimeout",
-        NodeId.parse("ns=0;i=290"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
         ValueRanks.Scalar,
         Double.class
     );
 
-    CompletableFuture<? extends PropertyType> getSecureChannelIdNode();
+    /**
+     * Get the local value of the SecureChannelId Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the SecureChannelId Node.
+     * @throws UaException if an error occurs creating or getting the SecureChannelId Node.
+     */
+    String getSecureChannelId() throws UaException;
 
-    CompletableFuture<String> getSecureChannelId();
+    /**
+     * Set the local value of the SecureChannelId Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param secureChannelId the local value to set for the SecureChannelId Node.
+     * @throws UaException if an error occurs creating or getting the SecureChannelId Node.
+     */
+    void setSecureChannelId(String secureChannelId) throws UaException;
 
-    CompletableFuture<StatusCode> setSecureChannelId(String value);
+    /**
+     * Read the value of the SecureChannelId Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link String} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    String readSecureChannelId() throws UaException;
 
-    CompletableFuture<? extends PropertyType> getClientCertificateNode();
+    /**
+     * Write a new value for the SecureChannelId Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param secureChannelId the {@link String} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeSecureChannelId(String secureChannelId) throws UaException;
 
-    CompletableFuture<ByteString> getClientCertificate();
+    /**
+     * An asynchronous implementation of {@link #readSecureChannelId()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends String> readSecureChannelIdAsync();
 
-    CompletableFuture<StatusCode> setClientCertificate(ByteString value);
+    /**
+     * An asynchronous implementation of {@link #writeSecureChannelId(String)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeSecureChannelIdAsync(String secureChannelId);
 
-    CompletableFuture<? extends PropertyType> getClientCertificateThumbprintNode();
+    /**
+     * Get the SecureChannelId {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the SecureChannelId {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getSecureChannelIdNode() throws UaException;
 
-    CompletableFuture<String> getClientCertificateThumbprint();
+    /**
+     * Asynchronous implementation of {@link #getSecureChannelIdNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getSecureChannelIdNodeAsync();
 
-    CompletableFuture<StatusCode> setClientCertificateThumbprint(String value);
+    /**
+     * Get the local value of the ClientCertificate Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the ClientCertificate Node.
+     * @throws UaException if an error occurs creating or getting the ClientCertificate Node.
+     */
+    ByteString getClientCertificate() throws UaException;
 
-    CompletableFuture<? extends PropertyType> getRevisedSessionTimeoutNode();
+    /**
+     * Set the local value of the ClientCertificate Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param clientCertificate the local value to set for the ClientCertificate Node.
+     * @throws UaException if an error occurs creating or getting the ClientCertificate Node.
+     */
+    void setClientCertificate(ByteString clientCertificate) throws UaException;
 
-    CompletableFuture<Double> getRevisedSessionTimeout();
+    /**
+     * Read the value of the ClientCertificate Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link ByteString} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    ByteString readClientCertificate() throws UaException;
 
-    CompletableFuture<StatusCode> setRevisedSessionTimeout(Double value);
+    /**
+     * Write a new value for the ClientCertificate Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param clientCertificate the {@link ByteString} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeClientCertificate(ByteString clientCertificate) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readClientCertificate()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends ByteString> readClientCertificateAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeClientCertificate(ByteString)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeClientCertificateAsync(ByteString clientCertificate);
+
+    /**
+     * Get the ClientCertificate {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the ClientCertificate {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getClientCertificateNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getClientCertificateNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getClientCertificateNodeAsync();
+
+    /**
+     * Get the local value of the ClientCertificateThumbprint Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the ClientCertificateThumbprint Node.
+     * @throws UaException if an error occurs creating or getting the ClientCertificateThumbprint Node.
+     */
+    String getClientCertificateThumbprint() throws UaException;
+
+    /**
+     * Set the local value of the ClientCertificateThumbprint Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param clientCertificateThumbprint the local value to set for the ClientCertificateThumbprint Node.
+     * @throws UaException if an error occurs creating or getting the ClientCertificateThumbprint Node.
+     */
+    void setClientCertificateThumbprint(String clientCertificateThumbprint) throws UaException;
+
+    /**
+     * Read the value of the ClientCertificateThumbprint Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link String} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    String readClientCertificateThumbprint() throws UaException;
+
+    /**
+     * Write a new value for the ClientCertificateThumbprint Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param clientCertificateThumbprint the {@link String} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeClientCertificateThumbprint(String clientCertificateThumbprint) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readClientCertificateThumbprint()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends String> readClientCertificateThumbprintAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeClientCertificateThumbprint(String)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeClientCertificateThumbprintAsync(
+        String clientCertificateThumbprint);
+
+    /**
+     * Get the ClientCertificateThumbprint {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the ClientCertificateThumbprint {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getClientCertificateThumbprintNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getClientCertificateThumbprintNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getClientCertificateThumbprintNodeAsync();
+
+    /**
+     * Get the local value of the RevisedSessionTimeout Node.
+     * <p>
+     * The returned value is the last seen; it is not read live from the server.
+     *
+     * @return the local value of the RevisedSessionTimeout Node.
+     * @throws UaException if an error occurs creating or getting the RevisedSessionTimeout Node.
+     */
+    Double getRevisedSessionTimeout() throws UaException;
+
+    /**
+     * Set the local value of the RevisedSessionTimeout Node.
+     * <p>
+     * The value is only updated locally; it is not written to the server.
+     *
+     * @param revisedSessionTimeout the local value to set for the RevisedSessionTimeout Node.
+     * @throws UaException if an error occurs creating or getting the RevisedSessionTimeout Node.
+     */
+    void setRevisedSessionTimeout(Double revisedSessionTimeout) throws UaException;
+
+    /**
+     * Read the value of the RevisedSessionTimeout Node from the server and update the local value if the
+     * operation succeeds.
+     *
+     * @return the {@link Double} value read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    Double readRevisedSessionTimeout() throws UaException;
+
+    /**
+     * Write a new value for the RevisedSessionTimeout Node to the server and update the local value if
+     * the operation succeeds.
+     *
+     * @param revisedSessionTimeout the {@link Double} value to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    void writeRevisedSessionTimeout(Double revisedSessionTimeout) throws UaException;
+
+    /**
+     * An asynchronous implementation of {@link #readRevisedSessionTimeout()}.
+     *
+     * @return a CompletableFuture that completes successfully with the property value or completes
+     * exceptionally if an operation- or service-level error occurs.
+     */
+    CompletableFuture<? extends Double> readRevisedSessionTimeoutAsync();
+
+    /**
+     * An asynchronous implementation of {@link #writeRevisedSessionTimeout(Double)}.
+     *
+     * @return a CompletableFuture that completes successfully with the operation result or
+     * completes exceptionally if a service-level error occurs.
+     */
+    CompletableFuture<StatusCode> writeRevisedSessionTimeoutAsync(Double revisedSessionTimeout);
+
+    /**
+     * Get the RevisedSessionTimeout {@link PropertyType} Node, or {@code null} if it does not exist.
+     * <p>
+     * The Node is created when first accessed and cached for subsequent calls.
+     *
+     * @return the RevisedSessionTimeout {@link PropertyType} Node, or {@code null} if it does not exist.
+     * @throws UaException if an error occurs creating or getting the Node.
+     */
+    PropertyType getRevisedSessionTimeoutNode() throws UaException;
+
+    /**
+     * Asynchronous implementation of {@link #getRevisedSessionTimeoutNode()}.
+     *
+     * @return a CompletableFuture that completes successfully with the
+     * ? extends PropertyType Node or completes exceptionally if an error occurs
+     * creating or getting the Node.
+     */
+    CompletableFuture<? extends PropertyType> getRevisedSessionTimeoutNodeAsync();
 }

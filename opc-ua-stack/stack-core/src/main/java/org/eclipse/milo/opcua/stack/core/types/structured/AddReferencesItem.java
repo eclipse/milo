@@ -10,40 +10,46 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-public class AddReferencesItem implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class AddReferencesItem extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=379");
 
-    public static final NodeId TypeId = Identifiers.AddReferencesItem;
-    public static final NodeId BinaryEncodingId = Identifiers.AddReferencesItem_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.AddReferencesItem_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=380");
 
-    protected final NodeId sourceNodeId;
-    protected final NodeId referenceTypeId;
-    protected final Boolean isForward;
-    protected final String targetServerUri;
-    protected final ExpandedNodeId targetNodeId;
-    protected final NodeClass targetNodeClass;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=381");
 
-    public AddReferencesItem() {
-        this.sourceNodeId = null;
-        this.referenceTypeId = null;
-        this.isForward = null;
-        this.targetServerUri = null;
-        this.targetNodeId = null;
-        this.targetNodeClass = null;
-    }
+    private final NodeId sourceNodeId;
 
-    public AddReferencesItem(NodeId sourceNodeId, NodeId referenceTypeId, Boolean isForward, String targetServerUri, ExpandedNodeId targetNodeId, NodeClass targetNodeClass) {
+    private final NodeId referenceTypeId;
+
+    private final Boolean isForward;
+
+    private final String targetServerUri;
+
+    private final ExpandedNodeId targetNodeId;
+
+    private final NodeClass targetNodeClass;
+
+    public AddReferencesItem(NodeId sourceNodeId, NodeId referenceTypeId, Boolean isForward,
+                             String targetServerUri, ExpandedNodeId targetNodeId, NodeClass targetNodeClass) {
         this.sourceNodeId = sourceNodeId;
         this.referenceTypeId = referenceTypeId;
         this.isForward = isForward;
@@ -52,67 +58,70 @@ public class AddReferencesItem implements UaStructure {
         this.targetNodeClass = targetNodeClass;
     }
 
-    public NodeId getSourceNodeId() { return sourceNodeId; }
-
-    public NodeId getReferenceTypeId() { return referenceTypeId; }
-
-    public Boolean getIsForward() { return isForward; }
-
-    public String getTargetServerUri() { return targetServerUri; }
-
-    public ExpandedNodeId getTargetNodeId() { return targetNodeId; }
-
-    public NodeClass getTargetNodeClass() { return targetNodeClass; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SourceNodeId", sourceNodeId)
-            .add("ReferenceTypeId", referenceTypeId)
-            .add("IsForward", isForward)
-            .add("TargetServerUri", targetServerUri)
-            .add("TargetNodeId", targetNodeId)
-            .add("TargetNodeClass", targetNodeClass)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<AddReferencesItem> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public NodeId getSourceNodeId() {
+        return sourceNodeId;
+    }
+
+    public NodeId getReferenceTypeId() {
+        return referenceTypeId;
+    }
+
+    public Boolean getIsForward() {
+        return isForward;
+    }
+
+    public String getTargetServerUri() {
+        return targetServerUri;
+    }
+
+    public ExpandedNodeId getTargetNodeId() {
+        return targetNodeId;
+    }
+
+    public NodeClass getTargetNodeClass() {
+        return targetNodeClass;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<AddReferencesItem> {
         @Override
         public Class<AddReferencesItem> getType() {
             return AddReferencesItem.class;
         }
 
         @Override
-        public AddReferencesItem decode(UaDecoder decoder) throws UaSerializationException {
+        public AddReferencesItem decode(SerializationContext context, UaDecoder decoder) {
             NodeId sourceNodeId = decoder.readNodeId("SourceNodeId");
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isForward = decoder.readBoolean("IsForward");
             String targetServerUri = decoder.readString("TargetServerUri");
             ExpandedNodeId targetNodeId = decoder.readExpandedNodeId("TargetNodeId");
-            NodeClass targetNodeClass = NodeClass.from(decoder.readInt32("TargetNodeClass"));
-
+            NodeClass targetNodeClass = decoder.readEnum("TargetNodeClass", NodeClass.class);
             return new AddReferencesItem(sourceNodeId, referenceTypeId, isForward, targetServerUri, targetNodeId, targetNodeClass);
         }
 
         @Override
-        public void encode(AddReferencesItem value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("SourceNodeId", value.sourceNodeId);
-            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
-            encoder.writeBoolean("IsForward", value.isForward);
-            encoder.writeString("TargetServerUri", value.targetServerUri);
-            encoder.writeExpandedNodeId("TargetNodeId", value.targetNodeId);
-            encoder.writeInt32("TargetNodeClass", value.targetNodeClass != null ? value.targetNodeClass.getValue() : 0);
+        public void encode(SerializationContext context, UaEncoder encoder, AddReferencesItem value) {
+            encoder.writeNodeId("SourceNodeId", value.getSourceNodeId());
+            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.writeBoolean("IsForward", value.getIsForward());
+            encoder.writeString("TargetServerUri", value.getTargetServerUri());
+            encoder.writeExpandedNodeId("TargetNodeId", value.getTargetNodeId());
+            encoder.writeEnum("TargetNodeClass", value.getTargetNodeClass());
         }
     }
-
 }

@@ -17,10 +17,10 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -69,14 +69,17 @@ public class UaNodeTest {
             }
         };
 
-        new UaNodeLoader(nodeContext, nodeManager).loadNodes();
+        new NodeLoader(nodeContext, nodeManager).loadNodes();
 
-        ObjectTypeManagerInitializer.initialize(
+        ObjectTypeInitializer.initialize(
             server.getNamespaceTable(),
             objectTypeManager
         );
 
-        VariableTypeManagerInitializer.initialize(variableTypeManager);
+        VariableTypeInitializer.initialize(
+            server.getNamespaceTable(),
+            variableTypeManager
+        );
     }
 
     @Test
@@ -152,10 +155,15 @@ public class UaNodeTest {
             }
         );
 
-        AnalogItemNode analogItem = (AnalogItemNode) nodeFactory.createNode(
+        AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             nodeId,
             Identifiers.AnalogItemType,
-            true
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+            }
         );
 
         assertTrue(nodeManager.containsNode(nodeId));

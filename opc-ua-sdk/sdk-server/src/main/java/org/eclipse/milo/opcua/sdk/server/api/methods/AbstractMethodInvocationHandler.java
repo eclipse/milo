@@ -21,15 +21,21 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.slf4j.LoggerFactory;
 
 /**
  * A partial implementation of {@link MethodInvocationHandler} that handles checking the Executable and UserExecutable
@@ -76,7 +82,32 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                 //  extract subtype logic from AttributeWriter...
                 boolean dataTypeMatch = value == null ||
                     variant.getDataType()
-                        .map(type -> type.equals(argument.getDataType()))
+                        .flatMap(xni -> xni.toNodeId(node.getNodeContext().getNamespaceTable()))
+                        .map(type -> {
+                            if (type.equals(argument.getDataType())) {
+                                return true;
+                            } else {
+                                if (Identifiers.Structure.equals(type) && value instanceof ExtensionObject) {
+                                    SerializationContext serializationContext =
+                                        getNode().getNodeContext().getServer().getSerializationContext();
+
+                                    try {
+                                        Object decoded = ((ExtensionObject) value).decode(serializationContext);
+
+                                        if (decoded instanceof UaStructure) {
+                                            return ((UaStructure) decoded).getTypeId()
+                                                .toNodeId(node.getNodeContext().getNamespaceTable())
+                                                .map(argument.getDataType()::equals).orElse(false);
+                                        }
+                                    } catch (UaSerializationException e) {
+                                        LoggerFactory.getLogger(getClass())
+                                            .warn("Error decoding argument value", e);
+                                    }
+                                }
+
+                                return false;
+                            }
+                        })
                         .orElse(false);
 
                 switch (argument.getValueRank()) {

@@ -10,79 +10,80 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class MdnsDiscoveryConfiguration extends DiscoveryConfiguration {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class MdnsDiscoveryConfiguration extends DiscoveryConfiguration implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12891");
 
-    public static final NodeId TypeId = Identifiers.MdnsDiscoveryConfiguration;
-    public static final NodeId BinaryEncodingId = Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12893");
 
-    protected final String mdnsServerName;
-    protected final String[] serverCapabilities;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12901");
 
-    public MdnsDiscoveryConfiguration() {
-        super();
-        this.mdnsServerName = null;
-        this.serverCapabilities = null;
-    }
+    private final String mdnsServerName;
+
+    private final String[] serverCapabilities;
 
     public MdnsDiscoveryConfiguration(String mdnsServerName, String[] serverCapabilities) {
-        super();
         this.mdnsServerName = mdnsServerName;
         this.serverCapabilities = serverCapabilities;
     }
 
-    public String getMdnsServerName() { return mdnsServerName; }
-
-    @Nullable
-    public String[] getServerCapabilities() { return serverCapabilities; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("MdnsServerName", mdnsServerName)
-            .add("ServerCapabilities", serverCapabilities)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<MdnsDiscoveryConfiguration> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getMdnsServerName() {
+        return mdnsServerName;
+    }
+
+    public String[] getServerCapabilities() {
+        return serverCapabilities;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<MdnsDiscoveryConfiguration> {
         @Override
         public Class<MdnsDiscoveryConfiguration> getType() {
             return MdnsDiscoveryConfiguration.class;
         }
 
         @Override
-        public MdnsDiscoveryConfiguration decode(UaDecoder decoder) throws UaSerializationException {
+        public MdnsDiscoveryConfiguration decode(SerializationContext context, UaDecoder decoder) {
             String mdnsServerName = decoder.readString("MdnsServerName");
-            String[] serverCapabilities = decoder.readArray("ServerCapabilities", decoder::readString, String.class);
-
+            String[] serverCapabilities = decoder.readStringArray("ServerCapabilities");
             return new MdnsDiscoveryConfiguration(mdnsServerName, serverCapabilities);
         }
 
         @Override
-        public void encode(MdnsDiscoveryConfiguration value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("MdnsServerName", value.mdnsServerName);
-            encoder.writeArray("ServerCapabilities", value.serverCapabilities, encoder::writeString);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           MdnsDiscoveryConfiguration value) {
+            encoder.writeString("MdnsServerName", value.getMdnsServerName());
+            encoder.writeStringArray("ServerCapabilities", value.getServerCapabilities());
         }
     }
-
 }

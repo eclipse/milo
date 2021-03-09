@@ -10,16 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum NamingRuleType implements UaEnumeration {
-
     Mandatory(1),
+
     Optional(2),
+
     Constraint(3);
 
     private final int value;
@@ -33,29 +37,38 @@ public enum NamingRuleType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, NamingRuleType> VALUES;
-
-    static {
-        Builder<Integer, NamingRuleType> builder = ImmutableMap.builder();
-        for (NamingRuleType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static NamingRuleType from(int value) {
+        switch (value) {
+            case 1:
+                return Mandatory;
+            case 2:
+                return Optional;
+            case 3:
+                return Constraint;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static NamingRuleType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=120");
     }
 
-    public static void encode(NamingRuleType namingRuleType, UaEncoder encoder) {
-        encoder.writeInt32(null, namingRuleType.getValue());
+    public static class Codec extends GenericDataTypeCodec<NamingRuleType> {
+        @Override
+        public Class<NamingRuleType> getType() {
+            return NamingRuleType.class;
+        }
+
+        @Override
+        public NamingRuleType decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, NamingRuleType.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, NamingRuleType value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static NamingRuleType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

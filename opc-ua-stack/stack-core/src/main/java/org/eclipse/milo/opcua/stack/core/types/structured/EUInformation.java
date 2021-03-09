@@ -10,92 +10,99 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class EUInformation implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class EUInformation extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=887");
 
-    public static final NodeId TypeId = Identifiers.EUInformation;
-    public static final NodeId BinaryEncodingId = Identifiers.EUInformation_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.EUInformation_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=888");
 
-    protected final String namespaceUri;
-    protected final Integer unitId;
-    protected final LocalizedText displayName;
-    protected final LocalizedText description;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=889");
 
-    public EUInformation() {
-        this.namespaceUri = null;
-        this.unitId = null;
-        this.displayName = null;
-        this.description = null;
-    }
+    private final String namespaceUri;
 
-    public EUInformation(String namespaceUri, Integer unitId, LocalizedText displayName, LocalizedText description) {
+    private final Integer unitId;
+
+    private final LocalizedText displayName;
+
+    private final LocalizedText description;
+
+    public EUInformation(String namespaceUri, Integer unitId, LocalizedText displayName,
+                         LocalizedText description) {
         this.namespaceUri = namespaceUri;
         this.unitId = unitId;
         this.displayName = displayName;
         this.description = description;
     }
 
-    public String getNamespaceUri() { return namespaceUri; }
-
-    public Integer getUnitId() { return unitId; }
-
-    public LocalizedText getDisplayName() { return displayName; }
-
-    public LocalizedText getDescription() { return description; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NamespaceUri", namespaceUri)
-            .add("UnitId", unitId)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<EUInformation> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getNamespaceUri() {
+        return namespaceUri;
+    }
+
+    public Integer getUnitId() {
+        return unitId;
+    }
+
+    public LocalizedText getDisplayName() {
+        return displayName;
+    }
+
+    public LocalizedText getDescription() {
+        return description;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<EUInformation> {
         @Override
         public Class<EUInformation> getType() {
             return EUInformation.class;
         }
 
         @Override
-        public EUInformation decode(UaDecoder decoder) throws UaSerializationException {
+        public EUInformation decode(SerializationContext context, UaDecoder decoder) {
             String namespaceUri = decoder.readString("NamespaceUri");
             Integer unitId = decoder.readInt32("UnitId");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");
-
             return new EUInformation(namespaceUri, unitId, displayName, description);
         }
 
         @Override
-        public void encode(EUInformation value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("NamespaceUri", value.namespaceUri);
-            encoder.writeInt32("UnitId", value.unitId);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
+        public void encode(SerializationContext context, UaEncoder encoder, EUInformation value) {
+            encoder.writeString("NamespaceUri", value.getNamespaceUri());
+            encoder.writeInt32("UnitId", value.getUnitId());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
         }
     }
-
 }

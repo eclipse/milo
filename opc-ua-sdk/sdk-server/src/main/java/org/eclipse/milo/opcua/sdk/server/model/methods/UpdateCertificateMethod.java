@@ -95,7 +95,7 @@ public abstract class UpdateCertificateMethod extends AbstractMethodInvocationHa
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         NodeId certificateGroupId = (NodeId) inputValues[0].getValue();
         NodeId certificateTypeId = (NodeId) inputValues[1].getValue();
@@ -108,7 +108,7 @@ public abstract class UpdateCertificateMethod extends AbstractMethodInvocationHa
         return new Variant[]{new Variant(applyChangesRequired.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    NodeId certificateGroupId, NodeId certificateTypeId, ByteString certificate,
                                    ByteString[] issuerCertificates, String privateKeyFormat, ByteString privateKey,
                                    Out<Boolean> applyChangesRequired) throws UaException;

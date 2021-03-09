@@ -10,104 +10,101 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
-public class CreateMonitoredItemsRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class CreateMonitoredItemsRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=749");
 
-    public static final NodeId TypeId = Identifiers.CreateMonitoredItemsRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.CreateMonitoredItemsRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.CreateMonitoredItemsRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=751");
 
-    protected final RequestHeader requestHeader;
-    protected final UInteger subscriptionId;
-    protected final TimestampsToReturn timestampsToReturn;
-    protected final MonitoredItemCreateRequest[] itemsToCreate;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=750");
 
-    public CreateMonitoredItemsRequest() {
-        this.requestHeader = null;
-        this.subscriptionId = null;
-        this.timestampsToReturn = null;
-        this.itemsToCreate = null;
-    }
+    private final RequestHeader requestHeader;
 
-    public CreateMonitoredItemsRequest(RequestHeader requestHeader, UInteger subscriptionId, TimestampsToReturn timestampsToReturn, MonitoredItemCreateRequest[] itemsToCreate) {
+    private final UInteger subscriptionId;
+
+    private final TimestampsToReturn timestampsToReturn;
+
+    private final MonitoredItemCreateRequest[] itemsToCreate;
+
+    public CreateMonitoredItemsRequest(RequestHeader requestHeader, UInteger subscriptionId,
+                                       TimestampsToReturn timestampsToReturn, MonitoredItemCreateRequest[] itemsToCreate) {
         this.requestHeader = requestHeader;
         this.subscriptionId = subscriptionId;
         this.timestampsToReturn = timestampsToReturn;
         this.itemsToCreate = itemsToCreate;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public UInteger getSubscriptionId() { return subscriptionId; }
-
-    public TimestampsToReturn getTimestampsToReturn() { return timestampsToReturn; }
-
-    @Nullable
-    public MonitoredItemCreateRequest[] getItemsToCreate() { return itemsToCreate; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("SubscriptionId", subscriptionId)
-            .add("TimestampsToReturn", timestampsToReturn)
-            .add("ItemsToCreate", itemsToCreate)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<CreateMonitoredItemsRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public UInteger getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public TimestampsToReturn getTimestampsToReturn() {
+        return timestampsToReturn;
+    }
+
+    public MonitoredItemCreateRequest[] getItemsToCreate() {
+        return itemsToCreate;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<CreateMonitoredItemsRequest> {
         @Override
         public Class<CreateMonitoredItemsRequest> getType() {
             return CreateMonitoredItemsRequest.class;
         }
 
         @Override
-        public CreateMonitoredItemsRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public CreateMonitoredItemsRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readInt32("TimestampsToReturn"));
-            MonitoredItemCreateRequest[] itemsToCreate =
-                decoder.readBuiltinStructArray(
-                    "ItemsToCreate",
-                    MonitoredItemCreateRequest.class
-                );
-
+            TimestampsToReturn timestampsToReturn = decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
+            MonitoredItemCreateRequest[] itemsToCreate = (MonitoredItemCreateRequest[]) decoder.readStructArray("ItemsToCreate", MonitoredItemCreateRequest.TYPE_ID);
             return new CreateMonitoredItemsRequest(requestHeader, subscriptionId, timestampsToReturn, itemsToCreate);
         }
 
         @Override
-        public void encode(CreateMonitoredItemsRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
-            encoder.writeInt32("TimestampsToReturn", value.timestampsToReturn != null ? value.timestampsToReturn.getValue() : 0);
-            encoder.writeBuiltinStructArray(
-                "ItemsToCreate",
-                value.itemsToCreate,
-                MonitoredItemCreateRequest.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           CreateMonitoredItemsRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
+            encoder.writeStructArray("ItemsToCreate", value.getItemsToCreate(), MonitoredItemCreateRequest.TYPE_ID);
         }
     }
-
 }

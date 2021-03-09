@@ -10,18 +10,24 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum ExceptionDeviationFormat implements UaEnumeration {
-
     AbsoluteValue(0),
+
     PercentOfValue(1),
+
     PercentOfRange(2),
-    PercentOfEURange(3),
+
+    PercentOfEuRange(3),
+
     Unknown(4);
 
     private final int value;
@@ -35,29 +41,43 @@ public enum ExceptionDeviationFormat implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, ExceptionDeviationFormat> VALUES;
-
-    static {
-        Builder<Integer, ExceptionDeviationFormat> builder = ImmutableMap.builder();
-        for (ExceptionDeviationFormat e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static ExceptionDeviationFormat from(int value) {
+        switch (value) {
+            case 0:
+                return AbsoluteValue;
+            case 1:
+                return PercentOfValue;
+            case 2:
+                return PercentOfRange;
+            case 3:
+                return PercentOfEuRange;
+            case 4:
+                return Unknown;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static ExceptionDeviationFormat from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=890");
     }
 
-    public static void encode(ExceptionDeviationFormat exceptionDeviationFormat, UaEncoder encoder) {
-        encoder.writeInt32(null, exceptionDeviationFormat.getValue());
+    public static class Codec extends GenericDataTypeCodec<ExceptionDeviationFormat> {
+        @Override
+        public Class<ExceptionDeviationFormat> getType() {
+            return ExceptionDeviationFormat.class;
+        }
+
+        @Override
+        public ExceptionDeviationFormat decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, ExceptionDeviationFormat.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ExceptionDeviationFormat value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static ExceptionDeviationFormat decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

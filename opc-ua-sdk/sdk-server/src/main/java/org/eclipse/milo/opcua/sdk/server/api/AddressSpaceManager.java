@@ -83,7 +83,7 @@ public class AddressSpaceManager extends AddressSpaceComposite {
      * @return the managed {@link UaNode} identified by {@code nodeId}, if there is one.
      */
     public Optional<UaNode> getManagedNode(ExpandedNodeId nodeId) {
-        return nodeId.local(getServer().getNamespaceTable()).flatMap(this::getManagedNode);
+        return nodeId.toNodeId(getServer().getNamespaceTable()).flatMap(this::getManagedNode);
     }
 
     /**

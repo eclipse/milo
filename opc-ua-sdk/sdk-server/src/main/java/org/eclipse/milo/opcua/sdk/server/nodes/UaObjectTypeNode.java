@@ -18,10 +18,9 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -30,14 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
-    private volatile Boolean isAbstract;
+    private Boolean isAbstract;
 
     public UaObjectTypeNode(
         UaNodeContext context,
@@ -65,6 +63,32 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
+    }
+
+    @Override
+    public synchronized Object getAttribute(AttributeId attributeId) {
+        switch (attributeId) {
+            case IsAbstract:
+                return isAbstract;
+
+            default:
+                return super.getAttribute(attributeId);
+        }
+    }
+
+    @Override
+    public synchronized void setAttribute(AttributeId attributeId, Object value) {
+        switch (attributeId) {
+            case IsAbstract:
+                isAbstract = (Boolean) value;
+                break;
+
+            default:
+                super.setAttribute(attributeId, value);
+                return; // prevent firing an attribute change
+        }
+
+        fireAttributeChanged(attributeId, value);
     }
 
     @Nullable
@@ -131,31 +155,51 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         ));
     }
 
+    /**
+     * Get the value of the NodeVersion Property, if it exists.
+     *
+     * @return the value of the NodeVersion Property, if it exists.
+     * @see ObjectTypeNodeProperties#NodeVersion
+     */
     @Nullable
     public String getNodeVersion() {
-        return getProperty(NodeVersion).orElse(null);
+        return getProperty(ObjectTypeNodeProperties.NodeVersion).orElse(null);
     }
 
+    /**
+     * Get the value of the Icon Property, if it exists.
+     *
+     * @return the value of the Icon Property, if it exists.
+     * @see ObjectTypeNodeProperties#Icon
+     */
     @Nullable
     public ByteString getIcon() {
-        return getProperty(Icon).orElse(null);
+        return getProperty(ObjectTypeNodeProperties.Icon).orElse(null);
     }
 
-    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "NodeVersion",
-        Identifiers.String,
-        ValueRanks.Scalar,
-        String.class
-    );
+    /**
+     * Set the value of the NodeVersion Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param nodeVersion the value to set.
+     * @see ObjectTypeNodeProperties#NodeVersion
+     */
+    public void setNodeVersion(String nodeVersion) {
+        setProperty(ObjectTypeNodeProperties.NodeVersion, nodeVersion);
+    }
 
-    public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
-        Namespaces.OPC_UA,
-        "Icon",
-        Identifiers.Image,
-        ValueRanks.Scalar,
-        ByteString.class
-    );
+    /**
+     * Set the value of the Icon Property.
+     * <p>
+     * A PropertyNode will be created if it does not already exist.
+     *
+     * @param icon the value to set.
+     * @see ObjectTypeNodeProperties#NodeVersion
+     */
+    public void setIcon(ByteString icon) {
+        setProperty(ObjectTypeNodeProperties.Icon, icon);
+    }
 
     public static UaObjectTypeNodeBuilder builder(UaNodeContext context) {
         return new UaObjectTypeNodeBuilder(context);

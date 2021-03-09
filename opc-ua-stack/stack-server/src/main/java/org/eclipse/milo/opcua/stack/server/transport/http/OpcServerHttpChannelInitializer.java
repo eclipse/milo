@@ -108,7 +108,7 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
         }
 
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
+        protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) {
             String host = httpRequest.headers().get(HttpHeaderNames.HOST);
             String uri = httpRequest.uri();
 

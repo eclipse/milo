@@ -36,7 +36,8 @@ import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecurityKeys;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
-import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -69,9 +70,6 @@ import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;
 public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
     static final AttributeKey<EndpointDescription> ENDPOINT_KEY = AttributeKey.valueOf("endpoint");
-
-    private static final long SecureChannelLifetimeMin = 60000L * 60;
-    private static final long SecureChannelLifetimeMax = 60000L * 60 * 24;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -199,8 +197,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
                     CertificateValidator certificateValidator = stackServer.getConfig().getCertificateValidator();
 
-                    certificateValidator.validate(secureChannel.getRemoteCertificate());
-                    certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
+                    certificateValidator.validateCertificateChain(secureChannel.getRemoteCertificateChain());
 
                     CertificateManager certificateManager = stackServer.getConfig().getCertificateManager();
 
@@ -244,46 +241,49 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 chunkBuffers = new ArrayList<>();
                 headerRef.set(null);
 
-                serializationQueue.decode((binaryDecoder, chunkDecoder) ->
-                    chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                        @Override
-                        public void onDecodingError(UaException ex) {
-                            logger.error(
-                                "Error decoding asymmetric message: {}",
-                                ex.getMessage(), ex);
+                serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                    ByteBuf message;
+                    long requestId;
 
-                            ctx.close();
-                        }
+                    try {
+                        ChunkDecoder.DecodedMessage decodedMessage =
+                            chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
 
-                        @Override
-                        public void onMessageAborted(MessageAbortedException ex) {
-                            logger.warn(
-                                "Asymmetric message aborted. error={} reason={}",
-                                ex.getStatusCode(), ex.getMessage());
-                        }
+                        message = decodedMessage.getMessage();
+                        requestId = decodedMessage.getRequestId();
+                    } catch (MessageAbortException e) {
+                        logger.warn(
+                            "Received message abort chunk; error={}, reason={}",
+                            e.getStatusCode(), e.getMessage()
+                        );
+                        return;
+                    } catch (MessageDecodeException e) {
+                        logger.error("Error decoding asymmetric message", e);
 
-                        @Override
-                        public void onMessageDecoded(ByteBuf message, long requestId) {
-                            try {
-                                OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
-                                    .setBuffer(message)
-                                    .readMessage(null);
+                        ctx.close();
+                        return;
+                    }
 
-                                logger.debug(
-                                    "Received OpenSecureChannelRequest ({}, id={}).",
-                                    request.getRequestType(), secureChannelId);
+                    try {
+                        OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
+                            .setBuffer(message)
+                            .readMessage(null);
 
-                                sendOpenSecureChannelResponse(ctx, requestId, request);
-                            } catch (Throwable t) {
-                                logger.error("Error decoding OpenSecureChannelRequest", t);
-                                ctx.close();
-                            } finally {
-                                message.release();
-                                buffersToDecode.clear();
-                            }
-                        }
-                    })
-                );
+                        logger.debug(
+                            "Received OpenSecureChannelRequest ({}, id={}).",
+                            request.getRequestType(), secureChannelId
+                        );
+
+                        sendOpenSecureChannelResponse(ctx, requestId, request);
+                    } catch (Throwable t) {
+                        logger.error("Error decoding OpenSecureChannelRequest", t);
+
+                        ctx.close();
+                    } finally {
+                        message.release();
+                        buffersToDecode.clear();
+                    }
+                });
             }
         }
     }
@@ -418,8 +418,15 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         }
 
         long channelLifetime = request.getRequestedLifetime().longValue();
-        channelLifetime = Math.min(SecureChannelLifetimeMax, channelLifetime);
-        channelLifetime = Math.max(SecureChannelLifetimeMin, channelLifetime);
+
+        channelLifetime = Math.min(
+            channelLifetime,
+            stackServer.getConfig().getMaximumSecureChannelLifetime().longValue()
+        );
+        channelLifetime = Math.max(
+            channelLifetime,
+            stackServer.getConfig().getMinimumSecureChannelLifetime().longValue()
+        );
 
         ChannelSecurityToken newToken = new ChannelSecurityToken(
             uint(secureChannel.getChannelId()),
@@ -514,7 +521,8 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
         if (cause instanceof IOException) {
             ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed");
+            logger.debug("[remote={}] IOException caught; channel closed",
+                ctx.channel().remoteAddress(), cause);
         } else {
             ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
 
@@ -526,6 +534,16 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                     ctx.channel().remoteAddress(), errorMessage, cause);
             }
         }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        if (secureChannelTimeout != null) {
+            secureChannelTimeout.cancel();
+            secureChannelTimeout = null;
+        }
+
+        super.channelInactive(ctx);
     }
 
 }

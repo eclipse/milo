@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -40,30 +40,30 @@ public class ReadNodeExample implements ClientExample {
         client.connect().get();
 
         // Get a typed reference to the Server object: ServerNode
-        ServerNode serverNode = client.getAddressSpace().getObjectNode(
+        ServerTypeNode serverNode = (ServerTypeNode) client.getAddressSpace().getObjectNode(
             Identifiers.Server,
-            ServerNode.class
-        ).get();
+            Identifiers.ServerType
+        );
 
         // Read properties of the Server object...
-        String[] serverArray = serverNode.getServerArray().get();
-        String[] namespaceArray = serverNode.getNamespaceArray().get();
+        String[] serverArray = serverNode.getServerArray();
+        String[] namespaceArray = serverNode.getNamespaceArray();
 
         logger.info("ServerArray={}", Arrays.toString(serverArray));
         logger.info("NamespaceArray={}", Arrays.toString(namespaceArray));
 
         // Read the value of attribute the ServerStatus variable component
-        ServerStatusDataType serverStatus = serverNode.getServerStatus().get();
+        ServerStatusDataType serverStatus = serverNode.getServerStatus();
 
         logger.info("ServerStatus={}", serverStatus);
 
         // Get a typed reference to the ServerStatus variable
         // component and read value attributes individually
-        ServerStatusNode serverStatusNode = serverNode.getServerStatusNode().get();
-        BuildInfo buildInfo = serverStatusNode.getBuildInfo().get();
-        DateTime startTime = serverStatusNode.getStartTime().get();
-        DateTime currentTime = serverStatusNode.getCurrentTime().get();
-        ServerState state = serverStatusNode.getState().get();
+        ServerStatusTypeNode serverStatusNode = serverNode.getServerStatusNode();
+        BuildInfo buildInfo = serverStatusNode.getBuildInfo();
+        DateTime startTime = serverStatusNode.getStartTime();
+        DateTime currentTime = serverStatusNode.getCurrentTime();
+        ServerState state = serverStatusNode.getState();
 
         logger.info("ServerStatus.BuildInfo={}", buildInfo);
         logger.info("ServerStatus.StartTime={}", startTime);

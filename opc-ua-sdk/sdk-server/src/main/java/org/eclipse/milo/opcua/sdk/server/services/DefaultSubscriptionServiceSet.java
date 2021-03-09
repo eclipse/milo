@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
@@ -90,21 +91,32 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
             Subscription subscription = server.getSubscriptions().get(subscriptionId);
 
             if (subscription == null) {
-                results.add(new TransferResult(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid), new UInteger[0]));
+                results.add(new TransferResult(
+                    new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid),
+                    new UInteger[0]
+                ));
             } else {
                 Session otherSession = subscription.getSession();
 
                 if (!sessionsHaveSameUser(session, otherSession)) {
-                    results.add(new TransferResult(new StatusCode(StatusCodes.Bad_UserAccessDenied), new UInteger[0]));
+                    results.add(new TransferResult(
+                        new StatusCode(StatusCodes.Bad_UserAccessDenied),
+                        new UInteger[0]
+                    ));
                 } else {
                     UInteger[] availableSequenceNumbers;
 
                     synchronized (subscription) {
-                        otherSession.getSubscriptionManager().sendStatusChangeNotification(subscription);
+                        otherSession.getSubscriptionManager().sendStatusChangeNotification(
+                            subscription,
+                            new StatusCode(StatusCodes.Good_SubscriptionTransferred)
+                        );
                         otherSession.getSubscriptionManager().removeSubscription(subscriptionId);
 
                         subscription.setSubscriptionManager(session.getSubscriptionManager());
                         subscriptionManager.addSubscription(subscription);
+
+                        subscription.getMonitoredItems().values().forEach(item -> item.setSession(session));
 
                         availableSequenceNumbers = subscription.getAvailableSequenceNumbers();
 
@@ -112,8 +124,19 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
                             subscription.getMonitoredItems().values().stream()
                                 .filter(item -> item instanceof MonitoredDataItem)
                                 .map(item -> (MonitoredDataItem) item)
-                                .forEach(MonitoredDataItem::clearLastValue);
+                                .forEach(MonitoredDataItem::maybeSendLastValue);
                         }
+                    }
+
+                    subscription.getSubscriptionDiagnostics().getTransferRequestCount().increment();
+
+                    ApplicationDescription toClient = session.getClientDescription();
+                    ApplicationDescription fromClient = otherSession.getClientDescription();
+
+                    if (Objects.equals(toClient, fromClient)) {
+                        subscription.getSubscriptionDiagnostics().getTransferredToSameClientCount().increment();
+                    } else {
+                        subscription.getSubscriptionDiagnostics().getTransferredToAltClientCount().increment();
                     }
 
                     results.add(new TransferResult(StatusCode.GOOD, availableSequenceNumbers));

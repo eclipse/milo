@@ -10,76 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class ServiceCounterDataType implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ServiceCounterDataType extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=871");
 
-    public static final NodeId TypeId = Identifiers.ServiceCounterDataType;
-    public static final NodeId BinaryEncodingId = Identifiers.ServiceCounterDataType_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ServiceCounterDataType_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=872");
 
-    protected final UInteger totalCount;
-    protected final UInteger errorCount;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=873");
 
-    public ServiceCounterDataType() {
-        this.totalCount = null;
-        this.errorCount = null;
-    }
+    private final UInteger totalCount;
+
+    private final UInteger errorCount;
 
     public ServiceCounterDataType(UInteger totalCount, UInteger errorCount) {
         this.totalCount = totalCount;
         this.errorCount = errorCount;
     }
 
-    public UInteger getTotalCount() { return totalCount; }
-
-    public UInteger getErrorCount() { return errorCount; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("TotalCount", totalCount)
-            .add("ErrorCount", errorCount)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ServiceCounterDataType> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public UInteger getTotalCount() {
+        return totalCount;
+    }
+
+    public UInteger getErrorCount() {
+        return errorCount;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ServiceCounterDataType> {
         @Override
         public Class<ServiceCounterDataType> getType() {
             return ServiceCounterDataType.class;
         }
 
         @Override
-        public ServiceCounterDataType decode(UaDecoder decoder) throws UaSerializationException {
+        public ServiceCounterDataType decode(SerializationContext context, UaDecoder decoder) {
             UInteger totalCount = decoder.readUInt32("TotalCount");
             UInteger errorCount = decoder.readUInt32("ErrorCount");
-
             return new ServiceCounterDataType(totalCount, errorCount);
         }
 
         @Override
-        public void encode(ServiceCounterDataType value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("TotalCount", value.totalCount);
-            encoder.writeUInt32("ErrorCount", value.errorCount);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ServiceCounterDataType value) {
+            encoder.writeUInt32("TotalCount", value.getTotalCount());
+            encoder.writeUInt32("ErrorCount", value.getErrorCount());
         }
     }
-
 }

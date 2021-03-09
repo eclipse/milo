@@ -11,10 +11,12 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -131,6 +133,32 @@ public class FutureUtils {
      */
     public static <T> CompletionBuilder<T> completeAsync(CompletableFuture<T> future, Executor executor) {
         return new AsyncCompletionBuilder<>(future, executor);
+    }
+
+    /**
+     * Flatten a List of future Lists into a CompletableFuture of List
+     *
+     * @param futures a List of future Lists
+     * @param <T>     the type of item the List holds
+     * @return a flattened CompletableFuture of List.
+     */
+    public static <T> CompletableFuture<List<T>> flatSequence(List<CompletableFuture<List<T>>> futures) {
+        return FutureUtils.sequence(futures).thenApply(
+            listOfListOfT ->
+                listOfListOfT.stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Unwrap a CompletableFuture of CompletableFuture of {@code T} into a CompletableFuture of {@code T}.
+     *
+     * @param future a CompletableFuture of CompletableFuture of {@code T}.
+     * @return an unwrapped CompletableFuture of {@code T}.
+     */
+    public static <T> CompletableFuture<T> unwrap(CompletableFuture<CompletableFuture<T>> future) {
+        return future.thenCompose(Function.identity());
     }
 
     public static class CompletionBuilder<T> {

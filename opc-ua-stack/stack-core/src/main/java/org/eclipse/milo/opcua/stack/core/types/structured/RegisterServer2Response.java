@@ -10,89 +10,92 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class RegisterServer2Response implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class RegisterServer2Response extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12194");
 
-    public static final NodeId TypeId = Identifiers.RegisterServer2Response;
-    public static final NodeId BinaryEncodingId = Identifiers.RegisterServer2Response_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.RegisterServer2Response_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12212");
 
-    protected final ResponseHeader responseHeader;
-    protected final StatusCode[] configurationResults;
-    protected final DiagnosticInfo[] diagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12200");
 
-    public RegisterServer2Response() {
-        this.responseHeader = null;
-        this.configurationResults = null;
-        this.diagnosticInfos = null;
-    }
+    private final ResponseHeader responseHeader;
 
-    public RegisterServer2Response(ResponseHeader responseHeader, StatusCode[] configurationResults, DiagnosticInfo[] diagnosticInfos) {
+    private final StatusCode[] configurationResults;
+
+    private final DiagnosticInfo[] diagnosticInfos;
+
+    public RegisterServer2Response(ResponseHeader responseHeader, StatusCode[] configurationResults,
+                                   DiagnosticInfo[] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.configurationResults = configurationResults;
         this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    @Nullable
-    public StatusCode[] getConfigurationResults() { return configurationResults; }
-
-    @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("ConfigurationResults", configurationResults)
-            .add("DiagnosticInfos", diagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<RegisterServer2Response> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public StatusCode[] getConfigurationResults() {
+        return configurationResults;
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos() {
+        return diagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<RegisterServer2Response> {
         @Override
         public Class<RegisterServer2Response> getType() {
             return RegisterServer2Response.class;
         }
 
         @Override
-        public RegisterServer2Response decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-            StatusCode[] configurationResults = decoder.readArray("ConfigurationResults", decoder::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public RegisterServer2Response decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            StatusCode[] configurationResults = decoder.readStatusCodeArray("ConfigurationResults");
+            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new RegisterServer2Response(responseHeader, configurationResults, diagnosticInfos);
         }
 
         @Override
-        public void encode(RegisterServer2Response value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeArray("ConfigurationResults", value.configurationResults, encoder::writeStatusCode);
-            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           RegisterServer2Response value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeStatusCodeArray("ConfigurationResults", value.getConfigurationResults());
+            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
-
 }

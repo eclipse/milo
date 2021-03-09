@@ -14,12 +14,13 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -59,11 +60,11 @@ public interface UaStackClientConfig {
     Optional<X509Certificate[]> getCertificateChain();
 
     /**
-     * Get the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     * Get the {@link ClientCertificateValidator} this client will use to validate server certificates when connecting.
      *
-     * @return the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     * @return the validator this client will use to validate server certificates when connecting.
      */
-    CertificateValidator getCertificateValidator();
+    ClientCertificateValidator getCertificateValidator();
 
     /**
      * @return the configured {@link EncodingLimits}.
@@ -71,17 +72,22 @@ public interface UaStackClientConfig {
     EncodingLimits getEncodingLimits();
 
     /**
-     * @return the {@link ExecutorService} the transport will use.
+     * @return the {@link ExecutorService} used by the client.
      */
     ExecutorService getExecutor();
 
     /**
-     * @return the {@link NioEventLoopGroup} the transport will use.
+     * @return the {@link ScheduledExecutorService} used by the client.
+     */
+    ScheduledExecutorService getScheduledExecutor();
+
+    /**
+     * @return the {@link NioEventLoopGroup} used by the client.
      */
     NioEventLoopGroup getEventLoop();
 
     /**
-     * @return the {@link HashedWheelTimer} the transport will use.
+     * @return the {@link HashedWheelTimer} used by the client.
      */
     HashedWheelTimer getWheelTimer();
 
@@ -134,6 +140,7 @@ public interface UaStackClientConfig {
         builder.setMessageLimits(config.getMessageLimits());
         builder.setChannelLifetime(config.getChannelLifetime());
         builder.setExecutor(config.getExecutor());
+        builder.setScheduledExecutor(config.getScheduledExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
         builder.setConnectTimeout(config.getConnectTimeout());

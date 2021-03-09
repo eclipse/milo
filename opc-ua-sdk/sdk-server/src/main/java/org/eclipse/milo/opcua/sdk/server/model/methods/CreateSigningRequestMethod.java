@@ -85,7 +85,7 @@ public abstract class CreateSigningRequestMethod extends AbstractMethodInvocatio
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         NodeId certificateGroupId = (NodeId) inputValues[0].getValue();
         NodeId certificateTypeId = (NodeId) inputValues[1].getValue();
@@ -97,7 +97,7 @@ public abstract class CreateSigningRequestMethod extends AbstractMethodInvocatio
         return new Variant[]{new Variant(certificateRequest.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    NodeId certificateGroupId, NodeId certificateTypeId, String subjectName,
                                    Boolean regeneratePrivateKey, ByteString nonce, Out<ByteString> certificateRequest) throws
         UaException;

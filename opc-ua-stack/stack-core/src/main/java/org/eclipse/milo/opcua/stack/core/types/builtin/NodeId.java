@@ -12,18 +12,20 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -169,8 +171,27 @@ public final class NodeId {
         }
     }
 
+    /**
+     * Convert this NodeId to a relative {@link ExpandedNodeId}.
+     *
+     * @return a relative {@link ExpandedNodeId}.
+     * @see ExpandedNodeId#isRelative()
+     */
     public ExpandedNodeId expanded() {
-        return new ExpandedNodeId(this);
+        return new ExpandedNodeId(namespaceIndex, null, identifier, UInteger.MIN);
+    }
+
+    /**
+     * Convert this NodeId to an absolute {@link ExpandedNodeId}, using {@code namespaceTable} to convert the
+     * namespace index to a namespace URI.
+     *
+     * @param namespaceTable a {@link NamespaceTable} to look up the namespace URI in.
+     * @return an absolute {@link ExpandedNodeId}.
+     * @see ExpandedNodeId#isAbsolute()
+     */
+    public ExpandedNodeId expanded(NamespaceTable namespaceTable) {
+        String namespaceUri = namespaceTable.getUri(namespaceIndex);
+        return new ExpandedNodeId(namespaceIndex, namespaceUri, identifier, UInteger.MIN);
     }
 
     public boolean isNull() {
@@ -265,6 +286,53 @@ public final class NodeId {
             namespaceIndex.equals(nodeId.namespaceIndex);
     }
 
+    /**
+     * Check if this {@link NodeId} is equal to {@code xni}.
+     * <p>
+     * To be considered equal {@code xni} must be in serverIndex == 0, have a namespace index that is equal this
+     * namespace index, or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param xni the {@link ExpandedNodeId} to check equality against.
+     * @return {@code true} if this {@link NodeId} is equal to {@code xni}.
+     */
+    public boolean equals(ExpandedNodeId xni) {
+        return equals(xni, uri -> {
+            if (Namespaces.OPC_UA.equals(uri)) {
+                return UShort.MIN;
+            } else {
+                return null;
+            }
+        });
+    }
+
+    /**
+     * Check if this {@link NodeId} is equal to {@code xni}.
+     * <p>
+     * To be considered equal {@code xni} must be in serverIndex == 0, have a namespace index that is equal this
+     * namespace index, or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param xni            the {@link ExpandedNodeId} to check equality against.
+     * @param namespaceTable the {@link NamespaceTable} used to look up the index of a namespace URI.
+     * @return {@code true} if this {@link NodeId} is equal to {@code xni}.
+     */
+    public boolean equals(ExpandedNodeId xni, NamespaceTable namespaceTable) {
+        return equals(xni, namespaceTable::getIndex);
+    }
+
+    private boolean equals(ExpandedNodeId xni, Function<String, UShort> getIndex) {
+        if (!xni.isLocal()) {
+            return false;
+        }
+
+        UShort otherNamespaceIndex = xni.isAbsolute() ?
+            getIndex.apply(xni.getNamespaceUri()) :
+            xni.getNamespaceIndex();
+
+        return Objects.equal(namespaceIndex, otherNamespaceIndex) && Objects.equal(identifier, xni.getIdentifier());
+    }
+
     @Override
     public int hashCode() {
         int result = namespaceIndex.hashCode();
@@ -308,90 +376,71 @@ public final class NodeId {
         return sb.toString();
     }
 
-    private static final Pattern NS_INT = Pattern.compile("ns=(\\d*);i=(\\d*)");
-
-    private static final Pattern NONE_INT = Pattern.compile("i=(\\d*)");
-
-    private static final Pattern NS_STRING = Pattern.compile("ns=(\\d*);s=(.*)", Pattern.DOTALL);
-
-    private static final Pattern NONE_STRING = Pattern.compile("s=(.*)", Pattern.DOTALL);
-
-    private static final Pattern NS_GUID = Pattern.compile(
-        "ns=(\\d*);g=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
-
-    private static final Pattern NONE_GUID = Pattern.compile(
-        "g=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
-
-    private static final Pattern NS_OPAQUE = Pattern.compile("ns=(\\d*);b=([0-9a-zA-Z+/=]*)");
-
-    private static final Pattern NONE_OPAQUE = Pattern.compile("b=([0-9a-zA-Z+/=]*)");
-
-    public static NodeId parse(@Nonnull String s) {
-        Matcher m;
-
+    public static NodeId parse(@Nonnull String s) throws UaRuntimeException {
         if (s.startsWith("ns=")) {
-            m = NS_INT.matcher(s);
-            if (m.matches()) {
-                Integer nsi = Integer.valueOf(m.group(1));
-                Long obj = Long.valueOf(m.group(2));
-                return new NodeId(ushort(nsi), uint(obj));
+            int index = s.indexOf(";");
+
+            if (index == -1) {
+                throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
             }
 
-            m = NS_STRING.matcher(s);
-            if (m.matches()) {
-                Integer nsi = Integer.valueOf(m.group(1));
-                String obj = m.group(2);
-                return new NodeId(ushort(nsi), obj);
-            }
+            try {
+                int namespaceIndex = Integer.parseInt(s.substring(3, index));
 
-            m = NS_GUID.matcher(s);
-            if (m.matches()) {
-                Integer nsi = Integer.valueOf(m.group(1));
-                UUID obj = UUID.fromString(m.group(2));
-                return new NodeId(ushort(nsi), obj);
-            }
-
-            m = NS_OPAQUE.matcher(s);
-            if (m.matches()) {
-                Integer nsi = Integer.valueOf(m.group(1));
-                byte[] obj = DatatypeConverter.parseBase64Binary(m.group(2));
-                return new NodeId(ushort(nsi), ByteString.of(obj));
+                return parse(s.substring(index + 1), namespaceIndex);
+            } catch (NumberFormatException e) {
+                throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
             }
         } else {
-            m = NONE_STRING.matcher(s);
-            if (m.matches()) {
-                String obj = m.group(1);
-                return new NodeId(ushort(0), obj);
-            }
-
-            m = NONE_INT.matcher(s);
-            if (m.matches()) {
-                Long obj = Long.valueOf(m.group(1));
-                return new NodeId(ushort(0), uint(obj));
-            }
-
-            m = NONE_GUID.matcher(s);
-            if (m.matches()) {
-                UUID obj = UUID.fromString(m.group(1));
-                return new NodeId(ushort(0), obj);
-            }
-
-            m = NONE_OPAQUE.matcher(s);
-            if (m.matches()) {
-                byte[] obj = DatatypeConverter.parseBase64Binary(m.group(1));
-                return new NodeId(ushort(0), ByteString.of(obj));
-            }
+            return parse(s, 0);
         }
-
-        throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
     }
 
-    public static Optional<NodeId> parseSafe(String s) {
-        try {
-            return Optional.of(parse(s));
-        } catch (Throwable t) {
-            return Optional.empty();
+    private static NodeId parse(String s, int namespaceIndex) throws UaRuntimeException {
+        if (s.length() < 2) {
+            throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
         }
+
+        String type = s.substring(0, 2);
+        String id = s.substring(2);
+
+        switch (type) {
+            case "i=":
+                try {
+                    return new NodeId(namespaceIndex, uint(Long.valueOf(id)));
+                } catch (NumberFormatException e) {
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                }
+            case "s=":
+                return new NodeId(namespaceIndex, id);
+            case "g=":
+                try {
+                    return new NodeId(namespaceIndex, UUID.fromString(id));
+                } catch (IllegalArgumentException e) {
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                }
+            case "b=":
+                try {
+                    return new NodeId(namespaceIndex, ByteString.of(DatatypeConverter.parseBase64Binary(id)));
+                } catch (IllegalArgumentException e) {
+                    throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
+                }
+            default:
+                throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
+        }
+    }
+
+    @Nullable
+    public static NodeId parseOrNull(@Nonnull String s) {
+        try {
+            return NodeId.parse(s);
+        } catch (UaRuntimeException t) {
+            return null;
+        }
+    }
+
+    public static Optional<NodeId> parseSafe(@Nonnull String s) {
+        return Optional.ofNullable(parseOrNull(s));
     }
 
 }

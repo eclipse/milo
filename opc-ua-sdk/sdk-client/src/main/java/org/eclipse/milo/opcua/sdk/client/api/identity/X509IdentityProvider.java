@@ -13,9 +13,10 @@ package org.eclipse.milo.opcua.sdk.client.api.identity;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.bouncycastle.util.Arrays;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -25,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
@@ -36,13 +38,23 @@ public class X509IdentityProvider implements IdentityProvider {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final X509Certificate certificate;
+    private final List<X509Certificate> certificateChain =
+        Collections.synchronizedList(new ArrayList<>());
+
     private final PrivateKey privateKey;
 
     public X509IdentityProvider(X509Certificate certificate, PrivateKey privateKey) {
-        this.certificate = certificate;
         this.privateKey = privateKey;
+
+        certificateChain.add(certificate);
     }
+
+    public X509IdentityProvider(List<X509Certificate> certificateChain, PrivateKey privateKey) {
+        this.privateKey = privateKey;
+
+        this.certificateChain.addAll(certificateChain);
+    }
+
 
     @Override
     public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
@@ -54,54 +66,51 @@ public class X509IdentityProvider implements IdentityProvider {
             .filter(t -> t.getTokenType() == UserTokenType.Certificate)
             .findFirst().orElseThrow(() -> new Exception("no x509 certificate token policy found"));
 
-        String policyId = tokenPolicy.getPolicyId();
-
-        SecurityPolicy securityPolicy = SecurityPolicy.None;
+        SecurityPolicy securityPolicy;
 
         String securityPolicyUri = tokenPolicy.getSecurityPolicyUri();
 
         try {
-            if (securityPolicyUri != null && !securityPolicyUri.isEmpty()) {
-                securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
-            } else {
+            if (securityPolicyUri == null || securityPolicyUri.isEmpty()) {
                 securityPolicyUri = endpoint.getSecurityPolicyUri();
-                securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
             }
+            securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
         } catch (Throwable t) {
-            logger.warn("Error parsing SecurityPolicy for uri={}", securityPolicyUri);
-        }
-
-        NonceUtil.validateNonce(serverNonce);
-
-        if (serverNonce.length() > 0 && Arrays.areAllZeroes(serverNonce.bytesOrEmpty(), 0, serverNonce.length())) {
-            throw new UaException(StatusCodes.Bad_NonceInvalid, "nonce must be non-zero");
+            throw new UaException(StatusCodes.Bad_SecurityPolicyRejected, t);
         }
 
         X509IdentityToken token = new X509IdentityToken(
-            policyId,
-            ByteString.of(certificate.getEncoded())
+            tokenPolicy.getPolicyId(),
+            CertificateUtil.getCertificateChainBytes(certificateChain)
         );
 
-        byte[] serverCertificateBytes = new byte[0];
-        if (!endpoint.getSecurityPolicyUri().equals(SecurityPolicy.None.getUri())) {
-            ByteString serverCertificate = endpoint.getServerCertificate();
-            serverCertificateBytes = serverCertificate.bytesOrEmpty();
+        SignatureData signatureData;
+
+        if (securityPolicy == SecurityPolicy.None) {
+            signatureData = new SignatureData(null, null);
+        } else {
+            NonceUtil.validateNonce(serverNonce);
+
+            List<X509Certificate> serverCertificates = CertificateUtil.decodeCertificates(
+                endpoint.getServerCertificate().bytesOrEmpty()
+            );
+            byte[] serverCertificateBytes = serverCertificates.get(0).getEncoded();
+
+            byte[] serverNonceBytes = serverNonce.bytes();
+            if (serverNonceBytes == null) serverNonceBytes = new byte[0];
+
+            byte[] signature = SignatureUtil.sign(
+                securityPolicy.getAsymmetricSignatureAlgorithm(),
+                privateKey,
+                ByteBuffer.wrap(serverCertificateBytes),
+                ByteBuffer.wrap(serverNonceBytes)
+            );
+
+            signatureData = new SignatureData(
+                securityPolicy.getAsymmetricSignatureAlgorithm().getUri(),
+                ByteString.of(signature)
+            );
         }
-
-        byte[] serverNonceBytes = serverNonce.bytes();
-        if (serverNonceBytes == null) serverNonceBytes = new byte[0];
-
-        byte[] signature = SignatureUtil.sign(
-            securityPolicy.getAsymmetricSignatureAlgorithm(),
-            privateKey,
-            ByteBuffer.wrap(serverCertificateBytes),
-            ByteBuffer.wrap(serverNonceBytes)
-        );
-
-        SignatureData signatureData = new SignatureData(
-            securityPolicy.getAsymmetricSignatureAlgorithm().getUri(),
-            ByteString.of(signature)
-        );
 
         return new SignedIdentityToken(token, signatureData);
     }

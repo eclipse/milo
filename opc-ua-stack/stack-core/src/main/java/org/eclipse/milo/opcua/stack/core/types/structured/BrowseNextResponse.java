@@ -10,96 +10,92 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class BrowseNextResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class BrowseNextResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=534");
 
-    public static final NodeId TypeId = Identifiers.BrowseNextResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.BrowseNextResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.BrowseNextResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=536");
 
-    protected final ResponseHeader responseHeader;
-    protected final BrowseResult[] results;
-    protected final DiagnosticInfo[] diagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=535");
 
-    public BrowseNextResponse() {
-        this.responseHeader = null;
-        this.results = null;
-        this.diagnosticInfos = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15187");
 
-    public BrowseNextResponse(ResponseHeader responseHeader, BrowseResult[] results, DiagnosticInfo[] diagnosticInfos) {
+    private final ResponseHeader responseHeader;
+
+    private final BrowseResult[] results;
+
+    private final DiagnosticInfo[] diagnosticInfos;
+
+    public BrowseNextResponse(ResponseHeader responseHeader, BrowseResult[] results,
+                              DiagnosticInfo[] diagnosticInfos) {
         this.responseHeader = responseHeader;
         this.results = results;
         this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    @Nullable
-    public BrowseResult[] getResults() { return results; }
-
-    @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("Results", results)
-            .add("DiagnosticInfos", diagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<BrowseNextResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public BrowseResult[] getResults() {
+        return results;
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos() {
+        return diagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<BrowseNextResponse> {
         @Override
         public Class<BrowseNextResponse> getType() {
             return BrowseNextResponse.class;
         }
 
         @Override
-        public BrowseNextResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
-            BrowseResult[] results =
-                decoder.readBuiltinStructArray(
-                    "Results",
-                    BrowseResult.class
-                );
-            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public BrowseNextResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            BrowseResult[] results = (BrowseResult[]) decoder.readStructArray("Results", BrowseResult.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new BrowseNextResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
-        public void encode(BrowseNextResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeBuiltinStructArray(
-                "Results",
-                value.results,
-                BrowseResult.class
-            );
-            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder, BrowseNextResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeStructArray("Results", value.getResults(), BrowseResult.TYPE_ID);
+            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
-
 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo</artifactId>
-        <version>0.3.7-SNAPSHOT</version>
+        <version>0.5.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>opc-ua-sdk</artifactId>
@@ -19,10 +19,13 @@
     </properties>
 
     <modules>
+        <module>dictionary-manager</module>
+        <module>dictionary-reader</module>
         <module>sdk-client</module>
         <module>sdk-core</module>
         <module>sdk-server</module>
         <module>sdk-tests</module>
+        <module>integration-tests</module>
     </modules>
 
     <build>
@@ -64,7 +67,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.4</version>
+                <version>3.0.5</version>
                 <configuration>
                     <excludeFilterFile>${basedir}/../findbugs-exclude.xml</excludeFilterFile>
                 </configuration>

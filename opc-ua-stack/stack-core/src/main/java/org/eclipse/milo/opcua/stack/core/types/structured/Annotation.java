@@ -10,31 +10,36 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class Annotation implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class Annotation extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=891");
 
-    public static final NodeId TypeId = Identifiers.Annotation;
-    public static final NodeId BinaryEncodingId = Identifiers.Annotation_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.Annotation_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=892");
 
-    protected final String message;
-    protected final String userName;
-    protected final DateTime annotationTime;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=893");
 
-    public Annotation() {
-        this.message = null;
-        this.userName = null;
-        this.annotationTime = null;
-    }
+    private final String message;
+
+    private final String userName;
+
+    private final DateTime annotationTime;
 
     public Annotation(String message, String userName, DateTime annotationTime) {
         this.message = message;
@@ -42,52 +47,52 @@ public class Annotation implements UaStructure {
         this.annotationTime = annotationTime;
     }
 
-    public String getMessage() { return message; }
-
-    public String getUserName() { return userName; }
-
-    public DateTime getAnnotationTime() { return annotationTime; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Message", message)
-            .add("UserName", userName)
-            .add("AnnotationTime", annotationTime)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<Annotation> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public DateTime getAnnotationTime() {
+        return annotationTime;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<Annotation> {
         @Override
         public Class<Annotation> getType() {
             return Annotation.class;
         }
 
         @Override
-        public Annotation decode(UaDecoder decoder) throws UaSerializationException {
+        public Annotation decode(SerializationContext context, UaDecoder decoder) {
             String message = decoder.readString("Message");
             String userName = decoder.readString("UserName");
             DateTime annotationTime = decoder.readDateTime("AnnotationTime");
-
             return new Annotation(message, userName, annotationTime);
         }
 
         @Override
-        public void encode(Annotation value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("Message", value.message);
-            encoder.writeString("UserName", value.userName);
-            encoder.writeDateTime("AnnotationTime", value.annotationTime);
+        public void encode(SerializationContext context, UaEncoder encoder, Annotation value) {
+            encoder.writeString("Message", value.getMessage());
+            encoder.writeString("UserName", value.getUserName());
+            encoder.writeDateTime("AnnotationTime", value.getAnnotationTime());
         }
     }
-
 }

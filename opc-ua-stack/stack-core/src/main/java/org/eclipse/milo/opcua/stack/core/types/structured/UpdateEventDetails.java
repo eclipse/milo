@@ -10,99 +10,94 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
-public class UpdateEventDetails extends HistoryUpdateDetails {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class UpdateEventDetails extends HistoryUpdateDetails implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=683");
 
-    public static final NodeId TypeId = Identifiers.UpdateEventDetails;
-    public static final NodeId BinaryEncodingId = Identifiers.UpdateEventDetails_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.UpdateEventDetails_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=685");
 
-    protected final PerformUpdateType performInsertReplace;
-    protected final EventFilter filter;
-    protected final HistoryEventFieldList[] eventData;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=684");
 
-    public UpdateEventDetails() {
-        super(null);
-        this.performInsertReplace = null;
-        this.filter = null;
-        this.eventData = null;
-    }
+    private final PerformUpdateType performInsertReplace;
 
-    public UpdateEventDetails(NodeId nodeId, PerformUpdateType performInsertReplace, EventFilter filter, HistoryEventFieldList[] eventData) {
+    private final EventFilter filter;
+
+    private final HistoryEventFieldList[] eventData;
+
+    public UpdateEventDetails(NodeId nodeId, PerformUpdateType performInsertReplace,
+                              EventFilter filter, HistoryEventFieldList[] eventData) {
         super(nodeId);
         this.performInsertReplace = performInsertReplace;
         this.filter = filter;
         this.eventData = eventData;
     }
 
-    public PerformUpdateType getPerformInsertReplace() { return performInsertReplace; }
-
-    public EventFilter getFilter() { return filter; }
-
-    @Nullable
-    public HistoryEventFieldList[] getEventData() { return eventData; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("PerformInsertReplace", performInsertReplace)
-            .add("Filter", filter)
-            .add("EventData", eventData)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<UpdateEventDetails> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public PerformUpdateType getPerformInsertReplace() {
+        return performInsertReplace;
+    }
+
+    public EventFilter getFilter() {
+        return filter;
+    }
+
+    public HistoryEventFieldList[] getEventData() {
+        return eventData;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<UpdateEventDetails> {
         @Override
         public Class<UpdateEventDetails> getType() {
             return UpdateEventDetails.class;
         }
 
         @Override
-        public UpdateEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+        public UpdateEventDetails decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readInt32("PerformInsertReplace"));
-            EventFilter filter = (EventFilter) decoder.readBuiltinStruct("Filter", EventFilter.class);
-            HistoryEventFieldList[] eventData =
-                decoder.readBuiltinStructArray(
-                    "EventData",
-                    HistoryEventFieldList.class
-                );
-
+            PerformUpdateType performInsertReplace = decoder.readEnum("PerformInsertReplace", PerformUpdateType.class);
+            EventFilter filter = (EventFilter) decoder.readStruct("Filter", EventFilter.TYPE_ID);
+            HistoryEventFieldList[] eventData = (HistoryEventFieldList[]) decoder.readStructArray("EventData", HistoryEventFieldList.TYPE_ID);
             return new UpdateEventDetails(nodeId, performInsertReplace, filter, eventData);
         }
 
         @Override
-        public void encode(UpdateEventDetails value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeInt32("PerformInsertReplace", value.performInsertReplace != null ? value.performInsertReplace.getValue() : 0);
-            encoder.writeBuiltinStruct("Filter", value.filter, EventFilter.class);
-            encoder.writeBuiltinStructArray(
-                "EventData",
-                value.eventData,
-                HistoryEventFieldList.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, UpdateEventDetails value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeEnum("PerformInsertReplace", value.getPerformInsertReplace());
+            encoder.writeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);
+            encoder.writeStructArray("EventData", value.getEventData(), HistoryEventFieldList.TYPE_ID);
         }
     }
-
 }

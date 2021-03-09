@@ -16,32 +16,41 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.ConditionVariable
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface ConditionType extends BaseEventType {
-    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+    QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
+        "ConditionClassId",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
-        String.class
+        NodeId.class
     );
 
     QualifiedProperty<LocalizedText> CONDITION_CLASS_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ConditionClassName",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    QualifiedProperty<NodeId> CONDITION_CLASS_ID = new QualifiedProperty<>(
+    QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ConditionClassId",
-        NodeId.parse("ns=0;i=17"),
+        "ConditionName",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
+
+    QualifiedProperty<NodeId> BRANCH_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "BranchId",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
         ValueRanks.Scalar,
         NodeId.class
     );
@@ -49,38 +58,18 @@ public interface ConditionType extends BaseEventType {
     QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Retain",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
     );
 
-    QualifiedProperty<NodeId> BRANCH_ID = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "BranchId",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
-    QualifiedProperty<String> CONDITION_NAME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ConditionName",
-        NodeId.parse("ns=0;i=12"),
+        "ClientUserId",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
         ValueRanks.Scalar,
         String.class
     );
-
-    PropertyType getClientUserIdNode();
-
-    String getClientUserId();
-
-    void setClientUserId(String value);
-
-    PropertyType getConditionClassNameNode();
-
-    LocalizedText getConditionClassName();
-
-    void setConditionClassName(LocalizedText value);
 
     PropertyType getConditionClassIdNode();
 
@@ -88,17 +77,11 @@ public interface ConditionType extends BaseEventType {
 
     void setConditionClassId(NodeId value);
 
-    PropertyType getRetainNode();
+    PropertyType getConditionClassNameNode();
 
-    Boolean getRetain();
+    LocalizedText getConditionClassName();
 
-    void setRetain(Boolean value);
-
-    PropertyType getBranchIdNode();
-
-    NodeId getBranchId();
-
-    void setBranchId(NodeId value);
+    void setConditionClassName(LocalizedText value);
 
     PropertyType getConditionNameNode();
 
@@ -106,21 +89,35 @@ public interface ConditionType extends BaseEventType {
 
     void setConditionName(String value);
 
-    UaMethodNode getAddCommentMethodNode();
+    PropertyType getBranchIdNode();
 
-    UaMethodNode getDisableMethodNode();
+    NodeId getBranchId();
 
-    UaMethodNode getEnableMethodNode();
+    void setBranchId(NodeId value);
 
-    UaMethodNode getConditionRefreshMethodNode();
+    PropertyType getRetainNode();
 
-    UaMethodNode getConditionRefresh2MethodNode();
+    Boolean getRetain();
+
+    void setRetain(Boolean value);
+
+    PropertyType getClientUserIdNode();
+
+    String getClientUserId();
+
+    void setClientUserId(String value);
 
     TwoStateVariableType getEnabledStateNode();
 
     LocalizedText getEnabledState();
 
     void setEnabledState(LocalizedText value);
+
+    ConditionVariableType getQualityNode();
+
+    StatusCode getQuality();
+
+    void setQuality(StatusCode value);
 
     ConditionVariableType getLastSeverityNode();
 
@@ -134,9 +131,13 @@ public interface ConditionType extends BaseEventType {
 
     void setComment(LocalizedText value);
 
-    ConditionVariableType getQualityNode();
+    UaMethodNode getDisableMethodNode();
 
-    StatusCode getQuality();
+    UaMethodNode getEnableMethodNode();
 
-    void setQuality(StatusCode value);
+    UaMethodNode getAddCommentMethodNode();
+
+    UaMethodNode getConditionRefreshMethodNode();
+
+    UaMethodNode getConditionRefresh2MethodNode();
 }

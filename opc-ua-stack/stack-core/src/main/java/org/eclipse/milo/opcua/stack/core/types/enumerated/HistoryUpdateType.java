@@ -10,17 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum HistoryUpdateType implements UaEnumeration {
-
     Insert(1),
+
     Replace(2),
+
     Update(3),
+
     Delete(4);
 
     private final int value;
@@ -34,29 +39,40 @@ public enum HistoryUpdateType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, HistoryUpdateType> VALUES;
-
-    static {
-        Builder<Integer, HistoryUpdateType> builder = ImmutableMap.builder();
-        for (HistoryUpdateType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static HistoryUpdateType from(int value) {
+        switch (value) {
+            case 1:
+                return Insert;
+            case 2:
+                return Replace;
+            case 3:
+                return Update;
+            case 4:
+                return Delete;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static HistoryUpdateType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11234");
     }
 
-    public static void encode(HistoryUpdateType historyUpdateType, UaEncoder encoder) {
-        encoder.writeInt32(null, historyUpdateType.getValue());
+    public static class Codec extends GenericDataTypeCodec<HistoryUpdateType> {
+        @Override
+        public Class<HistoryUpdateType> getType() {
+            return HistoryUpdateType.class;
+        }
+
+        @Override
+        public HistoryUpdateType decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, HistoryUpdateType.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, HistoryUpdateType value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static HistoryUpdateType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

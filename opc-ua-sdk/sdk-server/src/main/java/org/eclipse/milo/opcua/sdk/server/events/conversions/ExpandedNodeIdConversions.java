@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -23,7 +24,8 @@ final class ExpandedNodeIdConversions {
 
     @Nullable
     static NodeId expandedNodeIdToNodeId(@Nonnull ExpandedNodeId e) {
-        return e.local().orElse(null);
+        // TODO need a real NamespaceTable here
+        return e.toNodeId(new NamespaceTable()).orElse(null);
     }
 
     @Nonnull

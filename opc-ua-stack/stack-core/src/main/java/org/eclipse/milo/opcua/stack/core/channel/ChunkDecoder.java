@@ -56,61 +56,97 @@ public final class ChunkDecoder {
         this.maxStringLength = maxStringLength;
     }
 
-    public void decodeAsymmetric(
+    public DecodedMessage decodeAsymmetric(
         SecureChannel channel,
-        List<ByteBuf> chunkBuffers,
-        ChunkDecoder.Callback callback) {
+        List<ByteBuf> chunkBuffers
+    ) throws MessageAbortException, MessageDecodeException {
 
-        decode(asymmetricDecoder, channel, chunkBuffers, callback);
+        return decode(asymmetricDecoder, channel, chunkBuffers);
     }
 
-    public void decodeSymmetric(
+    public DecodedMessage decodeSymmetric(
         SecureChannel channel,
-        List<ByteBuf> chunkBuffers,
-        ChunkDecoder.Callback callback) {
+        List<ByteBuf> chunkBuffers
+    ) throws MessageAbortException, MessageDecodeException {
 
-        decode(symmetricDecoder, channel, chunkBuffers, callback);
+        try {
+            validateSymmetricSecurityHeaders(channel, chunkBuffers);
+        } catch (UaException e) {
+            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+            throw new MessageDecodeException(e);
+        }
+
+        return decode(symmetricDecoder, channel, chunkBuffers);
     }
 
-    private static void decode(
+    private static DecodedMessage decode(
         AbstractDecoder decoder,
         SecureChannel channel,
-        List<ByteBuf> chunkBuffers,
-        Callback callback) {
+        List<ByteBuf> chunkBuffers
+    ) throws MessageAbortException, MessageDecodeException {
 
         CompositeByteBuf composite = BufferUtil.compositeBuffer();
 
         try {
-            decoder.decode(channel, composite, chunkBuffers, callback);
-        } catch (MessageAbortedException e) {
-            callback.onMessageAborted(e);
-
-            safeReleaseBuffers(composite, chunkBuffers);
-        } catch (UaException e) {
-            callback.onDecodingError(e);
-
-            safeReleaseBuffers(composite, chunkBuffers);
-        }
-    }
-
-    private static void safeReleaseBuffers(CompositeByteBuf composite, List<ByteBuf> chunkBuffers) {
-        if (composite.refCnt() > 0) {
+            return decoder.decode(channel, composite, chunkBuffers);
+        } catch (MessageAbortException e) {
             ReferenceCountUtil.safeRelease(composite);
+            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+            throw e;
+        } catch (UaException e) {
+            ReferenceCountUtil.safeRelease(composite);
+            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+            throw new MessageDecodeException(e);
         }
-        chunkBuffers.forEach(b -> {
-            if (b.refCnt() > 0) {
-                ReferenceCountUtil.safeRelease(b);
-            }
-        });
     }
 
-    public interface Callback {
+    private static void validateSymmetricSecurityHeaders(
+        SecureChannel secureChannel,
+        List<ByteBuf> chunkBuffers
+    ) throws UaException {
 
-        void onDecodingError(UaException ex);
+        ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
+        long currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
+        long previousTokenId = channelSecurity.getPreviousToken()
+            .map(t -> t.getTokenId().longValue())
+            .orElse(-1L);
 
-        void onMessageAborted(MessageAbortedException ex);
+        for (ByteBuf chunkBuffer : chunkBuffers) {
+            // tokenId starts after messageType + chunkType + messageSize + secureChannelId
+            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
 
-        void onMessageDecoded(ByteBuf message, long requestId);
+            if (tokenId != currentTokenId && tokenId != previousTokenId) {
+                String message = String.format(
+                    "received unknown secure channel token: " +
+                        "tokenId=%s currentTokenId=%s previousTokenId=%s",
+                    tokenId, currentTokenId, previousTokenId
+                );
+
+                throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
+            }
+        }
+    }
+
+    /**
+     * A full decoded message, assembled from one or more successfully decoded chunks.
+     */
+    public static class DecodedMessage {
+
+        private final ByteBuf message;
+        private final long requestId;
+
+        private DecodedMessage(ByteBuf message, long requestId) {
+            this.message = message;
+            this.requestId = requestId;
+        }
+
+        public ByteBuf getMessage() {
+            return message;
+        }
+
+        public long getRequestId() {
+            return requestId;
+        }
 
     }
 
@@ -118,11 +154,11 @@ public final class ChunkDecoder {
 
         protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-        void decode(
+        DecodedMessage decode(
             SecureChannel channel,
             CompositeByteBuf composite,
-            List<ByteBuf> chunkBuffers,
-            Callback callback) throws UaException {
+            List<ByteBuf> chunkBuffers
+        ) throws MessageAbortException, UaException {
 
             int signatureSize = getSignatureSize(channel);
             int cipherTextBlockSize = getCipherTextBlockSize(channel);
@@ -150,8 +186,9 @@ public final class ChunkDecoder {
                     verifyChunk(channel, chunkBuffer);
                 }
 
+                final int paddingOverhead = encrypted ? (cipherTextBlockSize > 256 ? 2 : 1) : 0;
                 final int paddingSize = encrypted ? getPaddingSize(cipherTextBlockSize, signatureSize, chunkBuffer) : 0;
-                final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingSize;
+                final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingOverhead - paddingSize;
 
                 chunkBuffer.readerIndex(encryptedStart);
 
@@ -159,9 +196,7 @@ public final class ChunkDecoder {
                 long sequenceNumber = sequenceHeader.getSequenceNumber();
                 requestId = sequenceHeader.getRequestId();
 
-                if (lastSequenceNumber == -1) {
-                    lastSequenceNumber = sequenceNumber;
-                } else {
+                if (lastSequenceNumber != -1) {
                     if (lastSequenceNumber + 1 != sequenceNumber) {
                         String message = String.format(
                             "expected sequence number %s but received %s",
@@ -169,16 +204,29 @@ public final class ChunkDecoder {
 
                         throw new UaException(StatusCodes.Bad_SequenceNumberInvalid, message);
                     }
-
-                    lastSequenceNumber = sequenceNumber;
                 }
 
+                lastSequenceNumber = sequenceNumber;
+
                 ByteBuf bodyBuffer = chunkBuffer.readSlice(bodyEnd - chunkBuffer.readerIndex());
+
+                if (encrypted) {
+                    int expectedPaddingSize = chunkBuffer.readableBytes() - signatureSize - paddingOverhead;
+                    if (paddingSize != expectedPaddingSize) {
+                        throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "bad padding size");
+                    }
+                    byte expectedPaddingByte = (byte) (paddingSize & 0xFF);
+                    for (int i = chunkBuffer.readerIndex(); i < chunkBuffer.readerIndex() + paddingSize + 1; i++) {
+                        if (chunkBuffer.getByte(i) != expectedPaddingByte) {
+                            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "bad padding sequence");
+                        }
+                    }
+                }
 
                 if (chunkType == 'A') {
                     ErrorMessage errorMessage = ErrorMessage.decode(bodyBuffer);
 
-                    throw new MessageAbortedException(errorMessage.getError(), errorMessage.getReason(), requestId);
+                    throw new MessageAbortException(errorMessage.getReason(), requestId, errorMessage.getError());
                 }
 
                 composite.addComponent(bodyBuffer);
@@ -195,7 +243,7 @@ public final class ChunkDecoder {
                 throw new UaException(StatusCodes.Bad_TcpMessageTooLarge, errorMessage);
             }
 
-            callback.onMessageDecoded(composite, requestId);
+            return new DecodedMessage(composite, requestId);
         }
 
         private void decryptChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
@@ -243,8 +291,8 @@ public final class ChunkDecoder {
             int lastPaddingByteOffset = buffer.readableBytes() - signatureSize - 1;
 
             return cipherTextBlockSize <= 256 ?
-                buffer.getUnsignedByte(lastPaddingByteOffset) + 1 :
-                buffer.getUnsignedShortLE(lastPaddingByteOffset - 1) + 2;
+                buffer.getUnsignedByte(lastPaddingByteOffset) :
+                buffer.getUnsignedShortLE(lastPaddingByteOffset - 1);
         }
 
         protected abstract void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;

@@ -14,13 +14,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public interface UaMonitoredItem {
@@ -107,9 +108,20 @@ public interface UaMonitoredItem {
     ExtensionObject getMonitoringFilter();
 
     /**
-     * @return {@code true} if the item is configured to discard oldest when the queue is full.
+     * Get the discard policy.
+     * <p>
+     * {@code true} if oldest are discarded when the queue capacity is exceeded.
+     *
+     * @return the discard policy.
      */
     boolean getDiscardOldest();
+
+    /**
+     * Get the {@link TimestampsToReturn} requested when the item was created.
+     *
+     * @return the {@link TimestampsToReturn} requested when the item was created.
+     */
+    TimestampsToReturn getTimestamps();
 
     /**
      * Set the {@link Consumer} that will receive values as they arrive from the server.
@@ -164,11 +176,11 @@ public interface UaMonitoredItem {
         /**
          * A new value has arrived for the {@link UaMonitoredItem} {@code item}.
          *
-         * @param dataTypeManager the {@link DataTypeManager} from {@link OpcUaClient#getDataTypeManager()}.
-         * @param item            the {@link UaMonitoredItem} this value is for.
-         * @param value           the new {@link DataValue}.
+         * @param context the {@link SerializationContext} from {@link OpcUaClient#getSerializationContext()}.
+         * @param item    the {@link UaMonitoredItem} this value is for.
+         * @param value   the new {@link DataValue}.
          */
-        void onValueArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, DataValue value);
+        void onValueArrived(SerializationContext context, UaMonitoredItem item, DataValue value);
 
     }
 
@@ -177,11 +189,11 @@ public interface UaMonitoredItem {
         /**
          * A new event has arrived for the {@link UaMonitoredItem} {@code item}.
          *
-         * @param dataTypeManager the {@link DataTypeManager} from {@link OpcUaClient#getDataTypeManager()}.
-         * @param item            the {@link UaMonitoredItem} this event is for.
-         * @param eventValues     the event values.
+         * @param context     the {@link SerializationContext} from {@link OpcUaClient#getSerializationContext()}.
+         * @param item        the {@link UaMonitoredItem} this event is for.
+         * @param eventValues the event values.
          */
-        void onEventArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, Variant[] eventValues);
+        void onEventArrived(SerializationContext context, UaMonitoredItem item, Variant[] eventValues);
 
     }
 

@@ -16,11 +16,11 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
@@ -93,11 +93,11 @@ public class AttributeReader {
                 }
             }
 
-            final DataValue.Builder value = node.getAttribute(context, attributeId).copy();
+            final DataValue.Builder dvb = node.getAttribute(context, attributeId).copy();
 
             // Maybe transcode the structure...
-            if (value.value.isNotNull()) {
-                final Object valueObject = value.value.getValue();
+            if (dvb.value.isNotNull()) {
+                final Object valueObject = dvb.value.getValue();
 
                 Class<?> valueClazz = valueObject.getClass();
 
@@ -109,29 +109,31 @@ public class AttributeReader {
                         ExtensionObject.class
                     );
 
-                    value.setValue(new Variant(newValue));
+                    dvb.setValue(new Variant(newValue));
                 } else if (valueClazz == ExtensionObject.class) {
                     ExtensionObject xo = (ExtensionObject) valueObject;
 
                     Object newValue = transcode(context, node, xo, encodingName);
 
-                    value.setValue(new Variant(newValue));
+                    dvb.setValue(new Variant(newValue));
                 }
             }
 
+            // Apply index range if provided...
             if (indexRange != null) {
                 NumericRange range = NumericRange.parse(indexRange);
 
-                Object valueAtRange = NumericRange.readFromValueAtRange(value.value, range);
+                Object valueAtRange = NumericRange.readFromValueAtRange(dvb.value, range);
 
-                value.setValue(new Variant(valueAtRange));
+                dvb.setValue(new Variant(valueAtRange));
             }
 
+            // Add or remove timestamps based on TimestampsToReturn...
             if (timestamps != null) {
-                value.applyTimestamps(attributeId, timestamps);
+                dvb.applyTimestamps(attributeId, timestamps);
             }
 
-            return value.build();
+            return dvb.build();
         } catch (UaException e) {
             return new DataValue(e.getStatusCode());
         }
@@ -145,7 +147,7 @@ public class AttributeReader {
         if (dataTypeNode != null) {
             Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
                 .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(Identifiers.HasSubtype))
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local(server.getNamespaceTable())))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
                 .findFirst();
 
             return superTypeId
@@ -162,7 +164,7 @@ public class AttributeReader {
         ExtensionObject xo,
         QualifiedName encodingName) {
 
-        if (xo.isNull()) {
+        if (xo == null || xo.isNull()) {
             return xo;
         }
 

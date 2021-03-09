@@ -10,79 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class HistoryUpdateRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class HistoryUpdateRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=698");
 
-    public static final NodeId TypeId = Identifiers.HistoryUpdateRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.HistoryUpdateRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.HistoryUpdateRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=700");
 
-    protected final RequestHeader requestHeader;
-    protected final ExtensionObject[] historyUpdateDetails;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=699");
 
-    public HistoryUpdateRequest() {
-        this.requestHeader = null;
-        this.historyUpdateDetails = null;
-    }
+    private final RequestHeader requestHeader;
+
+    private final ExtensionObject[] historyUpdateDetails;
 
     public HistoryUpdateRequest(RequestHeader requestHeader, ExtensionObject[] historyUpdateDetails) {
         this.requestHeader = requestHeader;
         this.historyUpdateDetails = historyUpdateDetails;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    @Nullable
-    public ExtensionObject[] getHistoryUpdateDetails() { return historyUpdateDetails; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("HistoryUpdateDetails", historyUpdateDetails)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<HistoryUpdateRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public ExtensionObject[] getHistoryUpdateDetails() {
+        return historyUpdateDetails;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<HistoryUpdateRequest> {
         @Override
         public Class<HistoryUpdateRequest> getType() {
             return HistoryUpdateRequest.class;
         }
 
         @Override
-        public HistoryUpdateRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
-            ExtensionObject[] historyUpdateDetails = decoder.readArray("HistoryUpdateDetails", decoder::readExtensionObject, ExtensionObject.class);
-
+        public HistoryUpdateRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ExtensionObject[] historyUpdateDetails = decoder.readExtensionObjectArray("HistoryUpdateDetails");
             return new HistoryUpdateRequest(requestHeader, historyUpdateDetails);
         }
 
         @Override
-        public void encode(HistoryUpdateRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeArray("HistoryUpdateDetails", value.historyUpdateDetails, encoder::writeExtensionObject);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           HistoryUpdateRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeExtensionObjectArray("HistoryUpdateDetails", value.getHistoryUpdateDetails());
         }
     }
-
 }

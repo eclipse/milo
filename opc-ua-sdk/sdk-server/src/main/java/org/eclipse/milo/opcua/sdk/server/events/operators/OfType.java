@@ -15,11 +15,13 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
 import org.eclipse.milo.opcua.sdk.server.events.ValidationException;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
+
+import static org.eclipse.milo.opcua.sdk.server.events.EventContentFilter.subtypeOf;
 
 public class OfType implements Operator<Boolean> {
 
@@ -36,20 +38,25 @@ public class OfType implements Operator<Boolean> {
     @Override
     public Boolean apply(
         OperatorContext context,
-        BaseEventNode eventNode,
-        FilterOperand[] operands) throws UaException {
+        BaseEventTypeNode eventNode,
+        FilterOperand[] operands
+    ) throws UaException {
 
         validate(context, operands);
 
         Object value = context.resolve(operands[0], eventNode);
 
         if (value instanceof NodeId) {
-            NodeId nodeId = (NodeId) value;
+            NodeId eventTypeDefinitionId =
+                eventNode.getTypeDefinitionNode().getNodeId();
 
-            // TODO lookup Node
+            NodeId targetTypeDefinitionId = (NodeId) value;
+
+            return eventTypeDefinitionId.equals(targetTypeDefinitionId) ||
+                subtypeOf(eventTypeDefinitionId, targetTypeDefinitionId, context.getServer());
+        } else {
+            return false;
         }
-
-        return null;
     }
 
 }

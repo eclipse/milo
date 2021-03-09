@@ -10,31 +10,38 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class QueryDataDescription implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class QueryDataDescription extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=570");
 
-    public static final NodeId TypeId = Identifiers.QueryDataDescription;
-    public static final NodeId BinaryEncodingId = Identifiers.QueryDataDescription_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.QueryDataDescription_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=572");
 
-    protected final RelativePath relativePath;
-    protected final UInteger attributeId;
-    protected final String indexRange;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=571");
 
-    public QueryDataDescription() {
-        this.relativePath = null;
-        this.attributeId = null;
-        this.indexRange = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15200");
+
+    private final RelativePath relativePath;
+
+    private final UInteger attributeId;
+
+    private final String indexRange;
 
     public QueryDataDescription(RelativePath relativePath, UInteger attributeId, String indexRange) {
         this.relativePath = relativePath;
@@ -42,52 +49,53 @@ public class QueryDataDescription implements UaStructure {
         this.indexRange = indexRange;
     }
 
-    public RelativePath getRelativePath() { return relativePath; }
-
-    public UInteger getAttributeId() { return attributeId; }
-
-    public String getIndexRange() { return indexRange; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RelativePath", relativePath)
-            .add("AttributeId", attributeId)
-            .add("IndexRange", indexRange)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<QueryDataDescription> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RelativePath getRelativePath() {
+        return relativePath;
+    }
+
+    public UInteger getAttributeId() {
+        return attributeId;
+    }
+
+    public String getIndexRange() {
+        return indexRange;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<QueryDataDescription> {
         @Override
         public Class<QueryDataDescription> getType() {
             return QueryDataDescription.class;
         }
 
         @Override
-        public QueryDataDescription decode(UaDecoder decoder) throws UaSerializationException {
-            RelativePath relativePath = (RelativePath) decoder.readBuiltinStruct("RelativePath", RelativePath.class);
+        public QueryDataDescription decode(SerializationContext context, UaDecoder decoder) {
+            RelativePath relativePath = (RelativePath) decoder.readStruct("RelativePath", RelativePath.TYPE_ID);
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String indexRange = decoder.readString("IndexRange");
-
             return new QueryDataDescription(relativePath, attributeId, indexRange);
         }
 
         @Override
-        public void encode(QueryDataDescription value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RelativePath", value.relativePath, RelativePath.class);
-            encoder.writeUInt32("AttributeId", value.attributeId);
-            encoder.writeString("IndexRange", value.indexRange);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           QueryDataDescription value) {
+            encoder.writeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
+            encoder.writeUInt32("AttributeId", value.getAttributeId());
+            encoder.writeString("IndexRange", value.getIndexRange());
         }
     }
-
 }

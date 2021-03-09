@@ -52,8 +52,10 @@ public class UaStackClient {
 
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
 
-    private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
     private final NamespaceTable namespaceTable = new NamespaceTable();
+    
+    private final DataTypeManager dataTypeManager =
+        DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
     private final UaTransport transport;
     private final ExecutionQueue deliveryQueue;

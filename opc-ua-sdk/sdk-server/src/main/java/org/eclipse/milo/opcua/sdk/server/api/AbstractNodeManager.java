@@ -11,19 +11,18 @@
 package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.MapMaker;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -31,11 +30,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     private final ConcurrentMap<NodeId, T> nodeMap;
-    private final ListMultimap<NodeId, Reference> referenceMultimap;
+    private final ConcurrentMap<NodeId, LinkedHashMultiset<Reference>> referenceMap;
 
     public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
-        referenceMultimap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
+
+        referenceMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -58,15 +58,12 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     /**
-     * Get the backing {@link ListMultimap} holding this {@link NodeManager}'s References.
-     * <p>
-     * The backing ListMultimap is synchronized and should be treated with caution as described by
-     * {@link Multimaps#synchronizedMultimap(Multimap)}.
+     * Get the backing {@link ConcurrentMap} holding this {@link NodeManager}'s References.
      *
-     * @return the backing {@link ListMultimap} holding this {@link NodeManager}'s References.
+     * @return the backing {@link ConcurrentMap} holding this {@link NodeManager}'s References.
      */
-    protected ListMultimap<NodeId, Reference> getReferenceMultimap() {
-        return referenceMultimap;
+    public ConcurrentMap<NodeId, LinkedHashMultiset<Reference>> getReferenceMap() {
+        return referenceMap;
     }
 
     /**
@@ -94,7 +91,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public boolean containsNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.local(namespaceTable)
+        return nodeId.toNodeId(namespaceTable)
             .map(this::containsNode)
             .orElse(false);
     }
@@ -111,7 +108,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public Optional<T> getNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.local(namespaceTable).flatMap(this::getNode);
+        return nodeId.toNodeId(namespaceTable).flatMap(this::getNode);
     }
 
     @Override
@@ -121,54 +118,65 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public Optional<T> removeNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.local(namespaceTable).flatMap(this::removeNode);
+        return nodeId.toNodeId(namespaceTable).flatMap(this::removeNode);
     }
 
     @Override
-    public void addReference(Reference reference) {
-        referenceMultimap.put(reference.getSourceNodeId(), reference);
-    }
-
-    @Override
-    public void addReferences(Reference reference, NamespaceTable namespaceTable) {
-        referenceMultimap.put(reference.getSourceNodeId(), reference);
-
-        reference.invert(namespaceTable).ifPresent(
-            inverted ->
-                referenceMultimap.put(inverted.getSourceNodeId(), inverted)
+    public synchronized void addReference(Reference reference) {
+        LinkedHashMultiset<Reference> references = referenceMap.computeIfAbsent(
+            reference.getSourceNodeId(),
+            nodeId -> LinkedHashMultiset.create()
         );
+
+        references.add(reference);
     }
 
     @Override
-    public void removeReference(Reference reference) {
-        referenceMultimap.remove(reference.getSourceNodeId(), reference);
+    public synchronized void addReferences(Reference reference, NamespaceTable namespaceTable) {
+        addReference(reference);
+
+        reference.invert(namespaceTable).ifPresent(this::addReference);
     }
 
     @Override
-    public void removeReferences(Reference reference, NamespaceTable namespaceTable) {
-        referenceMultimap.remove(reference.getSourceNodeId(), reference);
-
-        reference.invert(namespaceTable).ifPresent(
-            inverted ->
-                referenceMultimap.remove(inverted.getSourceNodeId(), inverted)
+    public synchronized void removeReference(Reference reference) {
+        LinkedHashMultiset<Reference> references = referenceMap.get(
+            reference.getSourceNodeId()
         );
+
+        if (references != null) {
+            references.remove(reference);
+
+            if (references.isEmpty()) {
+                referenceMap.remove(reference.getSourceNodeId());
+            }
+        }
     }
 
     @Override
-    public List<Reference> getReferences(NodeId nodeId) {
-        synchronized (referenceMultimap) {
-            return new ArrayList<>(referenceMultimap.get(nodeId));
+    public synchronized void removeReferences(Reference reference, NamespaceTable namespaceTable) {
+        removeReference(reference);
+
+        reference.invert(namespaceTable).ifPresent(this::removeReference);
+    }
+
+    @Override
+    public synchronized List<Reference> getReferences(NodeId nodeId) {
+        LinkedHashMultiset<Reference> references = referenceMap.get(nodeId);
+
+        if (references != null) {
+            return new ArrayList<>(references);
+        } else {
+            return Collections.emptyList();
         }
     }
 
     @Override
     public List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter) {
-        synchronized (referenceMultimap) {
-            return referenceMultimap.get(nodeId)
-                .stream()
-                .filter(filter)
-                .collect(Collectors.toList());
-        }
+        return getReferences(nodeId)
+            .stream()
+            .filter(filter)
+            .collect(Collectors.toList());
     }
 
 }

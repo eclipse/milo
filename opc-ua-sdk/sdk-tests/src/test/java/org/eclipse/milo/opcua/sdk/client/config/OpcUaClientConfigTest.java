@@ -10,10 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.client.config;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -22,16 +24,32 @@ import static org.testng.Assert.assertNotEquals;
 
 public class OpcUaClientConfigTest {
 
+    private final EndpointDescription endpoint = new EndpointDescription(
+        "opc.tcp://localhost:62541",
+        null,
+        null,
+        null,
+        null,
+        new UserTokenPolicy[]{
+            new UserTokenPolicy(
+                "anonymous",
+                UserTokenType.Anonymous,
+                null, null, null)
+        },
+        null,
+        null
+    );
+
     @Test
     public void testCopy() {
         OpcUaClientConfig original = OpcUaClientConfig.builder()
+            .setEndpoint(endpoint)
             .setSessionName(() -> "testSessionName")
             .setSessionTimeout(uint(60000 * 60))
             .setRequestTimeout(uint(120000))
             .setMaxResponseMessageSize(UInteger.MAX)
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
-            .setBsdParser(new GenericBsdParser())
             .setSessionLocaleIds(new String[]{"en", "es"})
             .build();
 
@@ -43,7 +61,6 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getMaxResponseMessageSize(), original.getMaxResponseMessageSize());
         assertEquals(copy.getMaxPendingPublishRequests(), original.getMaxPendingPublishRequests());
         assertEquals(copy.getIdentityProvider(), original.getIdentityProvider());
-        assertEquals(copy.getBsdParser(), original.getBsdParser());
         assertEquals(copy.getKeepAliveFailuresAllowed(), original.getKeepAliveFailuresAllowed());
         assertEquals(copy.getKeepAliveInterval(), original.getKeepAliveInterval());
         assertEquals(copy.getKeepAliveTimeout(), original.getKeepAliveTimeout());
@@ -53,6 +70,7 @@ public class OpcUaClientConfigTest {
     @Test
     public void testCopyAndModify() {
         OpcUaClientConfig original = OpcUaClientConfig.builder()
+            .setEndpoint(endpoint)
             .setSessionName(() -> "testSessionName")
             .setSessionTimeout(uint(60000 * 60))
             .setRequestTimeout(uint(120000))
@@ -69,7 +87,6 @@ public class OpcUaClientConfigTest {
                     .setMaxResponseMessageSize(uint(0))
                     .setMaxPendingPublishRequests(uint(0))
                     .setIdentityProvider(new AnonymousProvider())
-                    .setBsdParser(new GenericBsdParser())
                     .setKeepAliveFailuresAllowed(uint(2))
                     .setKeepAliveInterval(uint(10000))
                     .setKeepAliveTimeout(uint(15000))
@@ -78,7 +95,6 @@ public class OpcUaClientConfigTest {
 
         assertNotEquals(copy.getSessionName(), original.getSessionName());
         assertNotEquals(copy.getIdentityProvider(), original.getIdentityProvider());
-        assertNotEquals(copy.getBsdParser(), original.getBsdParser());
         assertNotEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
 
         assertEquals(copy.getSessionTimeout(), uint(0));

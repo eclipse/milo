@@ -10,21 +10,30 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum ServerState implements UaEnumeration {
-
     Running(0),
+
     Failed(1),
+
     NoConfiguration(2),
+
     Suspended(3),
+
     Shutdown(4),
+
     Test(5),
+
     CommunicationFault(6),
+
     Unknown(7);
 
     private final int value;
@@ -38,29 +47,48 @@ public enum ServerState implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, ServerState> VALUES;
-
-    static {
-        Builder<Integer, ServerState> builder = ImmutableMap.builder();
-        for (ServerState e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static ServerState from(int value) {
+        switch (value) {
+            case 0:
+                return Running;
+            case 1:
+                return Failed;
+            case 2:
+                return NoConfiguration;
+            case 3:
+                return Suspended;
+            case 4:
+                return Shutdown;
+            case 5:
+                return Test;
+            case 6:
+                return CommunicationFault;
+            case 7:
+                return Unknown;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static ServerState from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=852");
     }
 
-    public static void encode(ServerState serverState, UaEncoder encoder) {
-        encoder.writeInt32(null, serverState.getValue());
+    public static class Codec extends GenericDataTypeCodec<ServerState> {
+        @Override
+        public Class<ServerState> getType() {
+            return ServerState.class;
+        }
+
+        @Override
+        public ServerState decode(SerializationContext context, UaDecoder decoder) {
+            return decoder.readEnum(null, ServerState.class);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, ServerState value) {
+            encoder.writeEnum(null, value);
+        }
     }
-
-    public static ServerState decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

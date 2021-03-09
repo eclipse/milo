@@ -17,6 +17,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -27,11 +28,6 @@ public class DefaultDataTypeManager implements DataTypeManager {
     private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = Maps.newConcurrentMap();
     private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
         Tables.synchronizedTable(HashBasedTable.create());
-
-    public DefaultDataTypeManager() {
-        registerTypeDictionary(BuiltinDataTypeDictionary.getBinaryInstance());
-        registerTypeDictionary(BuiltinDataTypeDictionary.getXmlInstance());
-    }
 
     @Override
     public void registerCodec(NodeId encodingId, DataTypeCodec codec) {
@@ -73,6 +69,26 @@ public class DefaultDataTypeManager implements DataTypeManager {
         DataTypeDictionary<?> dataTypeDictionary = dictionaries.get(namespaceUri);
 
         return dataTypeDictionary != null ? dataTypeDictionary.getCodec(description) : null;
+    }
+
+    @Nullable
+    @Override
+    public DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri) {
+        return dictionaries.get(namespaceUri);
+    }
+
+    /**
+     * Create a {@link DefaultDataTypeManager} and initialize it with the built-in DataTypes.
+     *
+     * @param namespaceTable a {@link NamespaceTable}.
+     * @return a {@link DataTypeManager} pre-initialized wth the built-in DataTypes.
+     */
+    public static DataTypeManager createAndInitialize(NamespaceTable namespaceTable) {
+        DefaultDataTypeManager dataTypeManager = new DefaultDataTypeManager();
+
+        DataTypeInitializer.initialize(namespaceTable, dataTypeManager);
+
+        return dataTypeManager;
     }
 
 }

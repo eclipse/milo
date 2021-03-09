@@ -10,88 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class ContentFilterResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ContentFilterResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=607");
 
-    public static final NodeId TypeId = Identifiers.ContentFilterResult;
-    public static final NodeId BinaryEncodingId = Identifiers.ContentFilterResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ContentFilterResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=609");
 
-    protected final ContentFilterElementResult[] elementResults;
-    protected final DiagnosticInfo[] elementDiagnosticInfos;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=608");
 
-    public ContentFilterResult() {
-        this.elementResults = null;
-        this.elementDiagnosticInfos = null;
-    }
+    private final ContentFilterElementResult[] elementResults;
 
-    public ContentFilterResult(ContentFilterElementResult[] elementResults, DiagnosticInfo[] elementDiagnosticInfos) {
+    private final DiagnosticInfo[] elementDiagnosticInfos;
+
+    public ContentFilterResult(ContentFilterElementResult[] elementResults,
+                               DiagnosticInfo[] elementDiagnosticInfos) {
         this.elementResults = elementResults;
         this.elementDiagnosticInfos = elementDiagnosticInfos;
     }
 
-    @Nullable
-    public ContentFilterElementResult[] getElementResults() { return elementResults; }
-
-    @Nullable
-    public DiagnosticInfo[] getElementDiagnosticInfos() { return elementDiagnosticInfos; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ElementResults", elementResults)
-            .add("ElementDiagnosticInfos", elementDiagnosticInfos)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ContentFilterResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ContentFilterElementResult[] getElementResults() {
+        return elementResults;
+    }
+
+    public DiagnosticInfo[] getElementDiagnosticInfos() {
+        return elementDiagnosticInfos;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ContentFilterResult> {
         @Override
         public Class<ContentFilterResult> getType() {
             return ContentFilterResult.class;
         }
 
         @Override
-        public ContentFilterResult decode(UaDecoder decoder) throws UaSerializationException {
-            ContentFilterElementResult[] elementResults =
-                decoder.readBuiltinStructArray(
-                    "ElementResults",
-                    ContentFilterElementResult.class
-                );
-            DiagnosticInfo[] elementDiagnosticInfos = decoder.readArray("ElementDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
-
+        public ContentFilterResult decode(SerializationContext context, UaDecoder decoder) {
+            ContentFilterElementResult[] elementResults = (ContentFilterElementResult[]) decoder.readStructArray("ElementResults", ContentFilterElementResult.TYPE_ID);
+            DiagnosticInfo[] elementDiagnosticInfos = decoder.readDiagnosticInfoArray("ElementDiagnosticInfos");
             return new ContentFilterResult(elementResults, elementDiagnosticInfos);
         }
 
         @Override
-        public void encode(ContentFilterResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStructArray(
-                "ElementResults",
-                value.elementResults,
-                ContentFilterElementResult.class
-            );
-            encoder.writeArray("ElementDiagnosticInfos", value.elementDiagnosticInfos, encoder::writeDiagnosticInfo);
+        public void encode(SerializationContext context, UaEncoder encoder, ContentFilterResult value) {
+            encoder.writeStructArray("ElementResults", value.getElementResults(), ContentFilterElementResult.TYPE_ID);
+            encoder.writeDiagnosticInfoArray("ElementDiagnosticInfos", value.getElementDiagnosticInfos());
         }
     }
-
 }

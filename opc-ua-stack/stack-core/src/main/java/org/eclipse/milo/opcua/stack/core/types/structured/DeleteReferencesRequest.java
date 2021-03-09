@@ -10,86 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class DeleteReferencesRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DeleteReferencesRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=504");
 
-    public static final NodeId TypeId = Identifiers.DeleteReferencesRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.DeleteReferencesRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DeleteReferencesRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=506");
 
-    protected final RequestHeader requestHeader;
-    protected final DeleteReferencesItem[] referencesToDelete;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=505");
 
-    public DeleteReferencesRequest() {
-        this.requestHeader = null;
-        this.referencesToDelete = null;
-    }
+    private final RequestHeader requestHeader;
 
-    public DeleteReferencesRequest(RequestHeader requestHeader, DeleteReferencesItem[] referencesToDelete) {
+    private final DeleteReferencesItem[] referencesToDelete;
+
+    public DeleteReferencesRequest(RequestHeader requestHeader,
+                                   DeleteReferencesItem[] referencesToDelete) {
         this.requestHeader = requestHeader;
         this.referencesToDelete = referencesToDelete;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    @Nullable
-    public DeleteReferencesItem[] getReferencesToDelete() { return referencesToDelete; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("ReferencesToDelete", referencesToDelete)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DeleteReferencesRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public DeleteReferencesItem[] getReferencesToDelete() {
+        return referencesToDelete;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DeleteReferencesRequest> {
         @Override
         public Class<DeleteReferencesRequest> getType() {
             return DeleteReferencesRequest.class;
         }
 
         @Override
-        public DeleteReferencesRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
-            DeleteReferencesItem[] referencesToDelete =
-                decoder.readBuiltinStructArray(
-                    "ReferencesToDelete",
-                    DeleteReferencesItem.class
-                );
-
+        public DeleteReferencesRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
+            DeleteReferencesItem[] referencesToDelete = (DeleteReferencesItem[]) decoder.readStructArray("ReferencesToDelete", DeleteReferencesItem.TYPE_ID);
             return new DeleteReferencesRequest(requestHeader, referencesToDelete);
         }
 
         @Override
-        public void encode(DeleteReferencesRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBuiltinStructArray(
-                "ReferencesToDelete",
-                value.referencesToDelete,
-                DeleteReferencesItem.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           DeleteReferencesRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeStructArray("ReferencesToDelete", value.getReferencesToDelete(), DeleteReferencesItem.TYPE_ID);
         }
     }
-
 }

@@ -22,11 +22,11 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
-import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
+import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeTest;
@@ -82,6 +83,8 @@ public class NodeFactoryTest {
                     nodeManager.getReferences(invocationOnMock.getArgument(0))
             );
 
+        Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
+
         UaNodeContext context = new UaNodeContext() {
             @Override
             public OpcUaServer getServer() {
@@ -94,18 +97,19 @@ public class NodeFactoryTest {
             }
         };
 
-        Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
-
-        new UaNodeLoader(context, nodeManager).loadNodes();
+        new NodeLoader(context, nodeManager).loadNodes();
 
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
-        ObjectTypeManagerInitializer.initialize(
+        ObjectTypeInitializer.initialize(
             server.getNamespaceTable(),
             objectTypeManager
         );
 
         VariableTypeManager variableTypeManager = new VariableTypeManager();
-        VariableTypeManagerInitializer.initialize(variableTypeManager);
+        VariableTypeInitializer.initialize(
+            server.getNamespaceTable(),
+            variableTypeManager
+        );
 
         nodeFactory = new NodeFactory(
             context,
@@ -116,10 +120,15 @@ public class NodeFactoryTest {
 
     @Test
     public void testCreateAnalogItemType() throws Exception {
-        AnalogItemNode analogItem = (AnalogItemNode) nodeFactory.createNode(
+        AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             new NodeId(1, "TestAnalog"),
             Identifiers.AnalogItemType,
-            true
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+            }
         );
 
         assertNotNull(analogItem);
@@ -132,11 +141,15 @@ public class NodeFactoryTest {
         final AtomicBoolean objectAdded = new AtomicBoolean(false);
         final AtomicBoolean variableAdded = new AtomicBoolean(false);
 
-        ServerNode serverNode = (ServerNode) nodeFactory.createNode(
+        ServerTypeNode serverNode = (ServerTypeNode) nodeFactory.createNode(
             new NodeId(0, "Server"),
             Identifiers.ServerType,
-            true,
-            new NodeFactory.InstanceListener() {
+            new NodeFactory.InstantiationCallback() {
+                @Override
+                public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
+                    return true;
+                }
+
                 @Override
                 public void onMethodAdded(@Nullable UaObjectNode parent, UaMethodNode instance) {
                     String pbn = parent != null ? parent.getBrowseName().getName() : null;
@@ -145,7 +158,7 @@ public class NodeFactoryTest {
                 }
 
                 @Override
-                public void onObjectAdded(@Nullable UaObjectNode parent, UaObjectNode instance, NodeId typeDefinitionId) {
+                public void onObjectAdded(@Nullable UaNode parent, UaObjectNode instance, NodeId typeDefinitionId) {
                     String pbn = parent != null ? parent.getBrowseName().getName() : null;
                     System.out.println("onObjectAdded parent=" + pbn + " instance=" + instance.getBrowseName().getName());
                     objectAdded.set(true);

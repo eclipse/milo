@@ -15,29 +15,29 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDeleteEventType {
-    QualifiedProperty<DateTime> START_TIME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "StartTime",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
     QualifiedProperty<Boolean> IS_DELETE_MODIFIED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "IsDeleteModified",
-        NodeId.parse("ns=0;i=1"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
         ValueRanks.Scalar,
         Boolean.class
+    );
+
+    QualifiedProperty<DateTime> START_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StartTime",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
     );
 
     QualifiedProperty<DateTime> END_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EndTime",
-        NodeId.parse("ns=0;i=294"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
         ValueRanks.Scalar,
         DateTime.class
     );
@@ -45,22 +45,22 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
     QualifiedProperty<DataValue[]> OLD_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldValues",
-        NodeId.parse("ns=0;i=23"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23"),
         ValueRanks.OneDimension,
         DataValue[].class
     );
-
-    PropertyType getStartTimeNode();
-
-    DateTime getStartTime();
-
-    void setStartTime(DateTime value);
 
     PropertyType getIsDeleteModifiedNode();
 
     Boolean getIsDeleteModified();
 
     void setIsDeleteModified(Boolean value);
+
+    PropertyType getStartTimeNode();
+
+    DateTime getStartTime();
+
+    void setStartTime(DateTime value);
 
     PropertyType getEndTimeNode();
 

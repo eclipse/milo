@@ -15,38 +15,30 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface DialogConditionType extends ConditionType {
-    QualifiedProperty<Integer> CANCEL_RESPONSE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "CancelResponse",
-        NodeId.parse("ns=0;i=6"),
-        ValueRanks.Scalar,
-        Integer.class
-    );
-
     QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Prompt",
-        NodeId.parse("ns=0;i=21"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
         ValueRanks.Scalar,
         LocalizedText.class
+    );
+
+    QualifiedProperty<LocalizedText[]> RESPONSE_OPTION_SET = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ResponseOptionSet",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
+        ValueRanks.OneDimension,
+        LocalizedText[].class
     );
 
     QualifiedProperty<Integer> DEFAULT_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "DefaultResponse",
-        NodeId.parse("ns=0;i=6"),
-        ValueRanks.Scalar,
-        Integer.class
-    );
-
-    QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "LastResponse",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
@@ -54,24 +46,26 @@ public interface DialogConditionType extends ConditionType {
     QualifiedProperty<Integer> OK_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OkResponse",
-        NodeId.parse("ns=0;i=6"),
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
         ValueRanks.Scalar,
         Integer.class
     );
 
-    QualifiedProperty<LocalizedText[]> RESPONSE_OPTION_SET = new QualifiedProperty<>(
+    QualifiedProperty<Integer> CANCEL_RESPONSE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ResponseOptionSet",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.OneDimension,
-        LocalizedText[].class
+        "CancelResponse",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
+        ValueRanks.Scalar,
+        Integer.class
     );
 
-    PropertyType getCancelResponseNode();
-
-    Integer getCancelResponse();
-
-    void setCancelResponse(Integer value);
+    QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastResponse",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=6"),
+        ValueRanks.Scalar,
+        Integer.class
+    );
 
     PropertyType getPromptNode();
 
@@ -79,17 +73,17 @@ public interface DialogConditionType extends ConditionType {
 
     void setPrompt(LocalizedText value);
 
+    PropertyType getResponseOptionSetNode();
+
+    LocalizedText[] getResponseOptionSet();
+
+    void setResponseOptionSet(LocalizedText[] value);
+
     PropertyType getDefaultResponseNode();
 
     Integer getDefaultResponse();
 
     void setDefaultResponse(Integer value);
-
-    PropertyType getLastResponseNode();
-
-    Integer getLastResponse();
-
-    void setLastResponse(Integer value);
 
     PropertyType getOkResponseNode();
 
@@ -97,11 +91,17 @@ public interface DialogConditionType extends ConditionType {
 
     void setOkResponse(Integer value);
 
-    PropertyType getResponseOptionSetNode();
+    PropertyType getCancelResponseNode();
 
-    LocalizedText[] getResponseOptionSet();
+    Integer getCancelResponse();
 
-    void setResponseOptionSet(LocalizedText[] value);
+    void setCancelResponse(Integer value);
+
+    PropertyType getLastResponseNode();
+
+    Integer getLastResponse();
+
+    void setLastResponse(Integer value);
 
     TwoStateVariableType getEnabledStateNode();
 

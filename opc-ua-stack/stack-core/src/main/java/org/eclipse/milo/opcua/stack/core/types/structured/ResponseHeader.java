@@ -10,45 +10,49 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class ResponseHeader implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ResponseHeader extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=392");
 
-    public static final NodeId TypeId = Identifiers.ResponseHeader;
-    public static final NodeId BinaryEncodingId = Identifiers.ResponseHeader_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ResponseHeader_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=394");
 
-    protected final DateTime timestamp;
-    protected final UInteger requestHandle;
-    protected final StatusCode serviceResult;
-    protected final DiagnosticInfo serviceDiagnostics;
-    protected final String[] stringTable;
-    protected final ExtensionObject additionalHeader;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=393");
 
-    public ResponseHeader() {
-        this.timestamp = null;
-        this.requestHandle = null;
-        this.serviceResult = null;
-        this.serviceDiagnostics = null;
-        this.stringTable = null;
-        this.additionalHeader = null;
-    }
+    private final DateTime timestamp;
 
-    public ResponseHeader(DateTime timestamp, UInteger requestHandle, StatusCode serviceResult, DiagnosticInfo serviceDiagnostics, String[] stringTable, ExtensionObject additionalHeader) {
+    private final UInteger requestHandle;
+
+    private final StatusCode serviceResult;
+
+    private final DiagnosticInfo serviceDiagnostics;
+
+    private final String[] stringTable;
+
+    private final ExtensionObject additionalHeader;
+
+    public ResponseHeader(DateTime timestamp, UInteger requestHandle, StatusCode serviceResult,
+                          DiagnosticInfo serviceDiagnostics, String[] stringTable, ExtensionObject additionalHeader) {
         this.timestamp = timestamp;
         this.requestHandle = requestHandle;
         this.serviceResult = serviceResult;
@@ -57,68 +61,70 @@ public class ResponseHeader implements UaStructure {
         this.additionalHeader = additionalHeader;
     }
 
-    public DateTime getTimestamp() { return timestamp; }
-
-    public UInteger getRequestHandle() { return requestHandle; }
-
-    public StatusCode getServiceResult() { return serviceResult; }
-
-    public DiagnosticInfo getServiceDiagnostics() { return serviceDiagnostics; }
-
-    @Nullable
-    public String[] getStringTable() { return stringTable; }
-
-    public ExtensionObject getAdditionalHeader() { return additionalHeader; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Timestamp", timestamp)
-            .add("RequestHandle", requestHandle)
-            .add("ServiceResult", serviceResult)
-            .add("ServiceDiagnostics", serviceDiagnostics)
-            .add("StringTable", stringTable)
-            .add("AdditionalHeader", additionalHeader)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ResponseHeader> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public DateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public UInteger getRequestHandle() {
+        return requestHandle;
+    }
+
+    public StatusCode getServiceResult() {
+        return serviceResult;
+    }
+
+    public DiagnosticInfo getServiceDiagnostics() {
+        return serviceDiagnostics;
+    }
+
+    public String[] getStringTable() {
+        return stringTable;
+    }
+
+    public ExtensionObject getAdditionalHeader() {
+        return additionalHeader;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ResponseHeader> {
         @Override
         public Class<ResponseHeader> getType() {
             return ResponseHeader.class;
         }
 
         @Override
-        public ResponseHeader decode(UaDecoder decoder) throws UaSerializationException {
+        public ResponseHeader decode(SerializationContext context, UaDecoder decoder) {
             DateTime timestamp = decoder.readDateTime("Timestamp");
             UInteger requestHandle = decoder.readUInt32("RequestHandle");
             StatusCode serviceResult = decoder.readStatusCode("ServiceResult");
             DiagnosticInfo serviceDiagnostics = decoder.readDiagnosticInfo("ServiceDiagnostics");
-            String[] stringTable = decoder.readArray("StringTable", decoder::readString, String.class);
+            String[] stringTable = decoder.readStringArray("StringTable");
             ExtensionObject additionalHeader = decoder.readExtensionObject("AdditionalHeader");
-
             return new ResponseHeader(timestamp, requestHandle, serviceResult, serviceDiagnostics, stringTable, additionalHeader);
         }
 
         @Override
-        public void encode(ResponseHeader value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeDateTime("Timestamp", value.timestamp);
-            encoder.writeUInt32("RequestHandle", value.requestHandle);
-            encoder.writeStatusCode("ServiceResult", value.serviceResult);
-            encoder.writeDiagnosticInfo("ServiceDiagnostics", value.serviceDiagnostics);
-            encoder.writeArray("StringTable", value.stringTable, encoder::writeString);
-            encoder.writeExtensionObject("AdditionalHeader", value.additionalHeader);
+        public void encode(SerializationContext context, UaEncoder encoder, ResponseHeader value) {
+            encoder.writeDateTime("Timestamp", value.getTimestamp());
+            encoder.writeUInt32("RequestHandle", value.getRequestHandle());
+            encoder.writeStatusCode("ServiceResult", value.getServiceResult());
+            encoder.writeDiagnosticInfo("ServiceDiagnostics", value.getServiceDiagnostics());
+            encoder.writeStringArray("StringTable", value.getStringTable());
+            encoder.writeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
         }
     }
-
 }

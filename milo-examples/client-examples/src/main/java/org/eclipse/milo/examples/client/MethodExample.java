@@ -54,7 +54,10 @@ public class MethodExample implements ClientExample {
         NodeId methodId = NodeId.parse("ns=2;s=HelloWorld/sqrt(x)");
 
         CallMethodRequest request = new CallMethodRequest(
-            objectId, methodId, new Variant[]{new Variant(input)});
+            objectId,
+            methodId,
+            new Variant[]{new Variant(input)}
+        );
 
         return client.call(request).thenCompose(result -> {
             StatusCode statusCode = result.getStatusCode();

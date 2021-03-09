@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 public abstract class BaseMonitoredItem<T> implements MonitoredItem {
@@ -106,12 +107,14 @@ public abstract class BaseMonitoredItem<T> implements MonitoredItem {
         return (queue.size() > 0 && monitoringMode == MonitoringMode.Reporting);
     }
 
-    public synchronized void modify(TimestampsToReturn timestamps,
-                                    UInteger clientHandle,
-                                    double samplingInterval,
-                                    ExtensionObject filter,
-                                    UInteger queueSize,
-                                    boolean discardOldest) throws UaException {
+    public synchronized void modify(
+        TimestampsToReturn timestamps,
+        UInteger clientHandle,
+        double samplingInterval,
+        MonitoringFilter filter,
+        UInteger queueSize,
+        boolean discardOldest
+    ) throws UaException {
 
         installFilter(filter);
 
@@ -142,12 +145,13 @@ public abstract class BaseMonitoredItem<T> implements MonitoredItem {
         }
     }
 
-    public Session getSession() {
-        return session;
-    }
-
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    @Override
+    public Session getSession() {
+        return session;
     }
 
     @Override
@@ -202,7 +206,7 @@ public abstract class BaseMonitoredItem<T> implements MonitoredItem {
 
     public abstract ExtensionObject getFilterResult();
 
-    protected abstract void installFilter(ExtensionObject filterXo) throws UaException;
+    public abstract void installFilter(MonitoringFilter filter) throws UaException;
 
     protected abstract UaStructure wrapQueueValue(T value);
 

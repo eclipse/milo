@@ -10,80 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class TransferResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class TransferResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=836");
 
-    public static final NodeId TypeId = Identifiers.TransferResult;
-    public static final NodeId BinaryEncodingId = Identifiers.TransferResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.TransferResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=838");
 
-    protected final StatusCode statusCode;
-    protected final UInteger[] availableSequenceNumbers;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=837");
 
-    public TransferResult() {
-        this.statusCode = null;
-        this.availableSequenceNumbers = null;
-    }
+    private final StatusCode statusCode;
+
+    private final UInteger[] availableSequenceNumbers;
 
     public TransferResult(StatusCode statusCode, UInteger[] availableSequenceNumbers) {
         this.statusCode = statusCode;
         this.availableSequenceNumbers = availableSequenceNumbers;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    @Nullable
-    public UInteger[] getAvailableSequenceNumbers() { return availableSequenceNumbers; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("AvailableSequenceNumbers", availableSequenceNumbers)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<TransferResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public UInteger[] getAvailableSequenceNumbers() {
+        return availableSequenceNumbers;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<TransferResult> {
         @Override
         public Class<TransferResult> getType() {
             return TransferResult.class;
         }
 
         @Override
-        public TransferResult decode(UaDecoder decoder) throws UaSerializationException {
+        public TransferResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            UInteger[] availableSequenceNumbers = decoder.readArray("AvailableSequenceNumbers", decoder::readUInt32, UInteger.class);
-
+            UInteger[] availableSequenceNumbers = decoder.readUInt32Array("AvailableSequenceNumbers");
             return new TransferResult(statusCode, availableSequenceNumbers);
         }
 
         @Override
-        public void encode(TransferResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeArray("AvailableSequenceNumbers", value.availableSequenceNumbers, encoder::writeUInt32);
+        public void encode(SerializationContext context, UaEncoder encoder, TransferResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
         }
     }
-
 }

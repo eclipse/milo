@@ -22,7 +22,8 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.events.EventContentFilter;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -43,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElementRe
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 import org.slf4j.Logger;
@@ -75,8 +77,8 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         UInteger clientHandle,
         double samplingInterval,
         UInteger queueSize,
-        boolean discardOldest,
-        ExtensionObject filter) throws UaException {
+        boolean discardOldest
+    ) {
 
         super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
@@ -92,12 +94,10 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
                 return Optional.of(session);
             }
         };
-
-        installFilter(filter);
     }
 
     @Override
-    public void onEvent(BaseEventNode eventNode) {
+    public void onEvent(BaseEventTypeNode eventNode) {
         try {
             if (filterResultGood) {
                 ContentFilter whereClause = filter.getWhereClause();
@@ -119,7 +119,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
 
     @Nonnull
-    private Variant[] selectEventFields(BaseEventNode eventNode) {
+    private Variant[] selectEventFields(BaseEventTypeNode eventNode) {
         SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
 
         if (selectClauses != null) {
@@ -140,6 +140,12 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         } else {
             if (getQueueSize() > 1) {
                 eventOverflow.set(true);
+
+                Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
+
+                if (subscription != null) {
+                    subscription.getSubscriptionDiagnostics().getEventQueueOverflowCount().increment();
+                }
             }
 
             if (discardOldest) {
@@ -174,7 +180,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Nonnull
     private Variant[] generateOverflowEventFields() {
-        BaseEventNode overflowEvent = null;
+        BaseEventTypeNode overflowEvent = null;
 
         try {
             UUID eventId = UUID.randomUUID();
@@ -218,13 +224,11 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     }
 
     @Override
-    protected void installFilter(ExtensionObject filterXo) throws UaException {
-        Object filterObject = filterXo != null ? filterXo.decode(server.getSerializationContext()) : null;
+    public void installFilter(MonitoringFilter filter) throws UaException {
+        if (filter instanceof EventFilter) {
+            this.filter = (EventFilter) filter;
 
-        if (filterObject instanceof EventFilter) {
-            this.filter = (EventFilter) filterObject;
-
-            filterResult = EventContentFilter.validate(filterContext, filter);
+            filterResult = EventContentFilter.validate(filterContext, this.filter);
 
             boolean selectClauseGood = l(filterResult.getSelectClauseResults())
                 .stream()
@@ -239,10 +243,10 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         } else {
             filterResultGood = false;
 
-            throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid);
+            throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
         }
     }
-
+    
     @Override
     protected EventFieldList wrapQueueValue(Variant[] value) {
         return new EventFieldList(uint(getClientHandle()), value);

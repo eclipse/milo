@@ -62,8 +62,8 @@ public class DataChangeMonitoringFilter {
     }
 
     private static boolean compareArrayDeadband(Object last, Object current, double deadband) {
-        Object[] lastA = Object[].class.cast(last);
-        Object[] currentA = Object[].class.cast(current);
+        Object[] lastA = (Object[]) last;
+        Object[] currentA = (Object[]) current;
 
         if (lastA.length != currentA.length) {
             return true;
@@ -84,8 +84,8 @@ public class DataChangeMonitoringFilter {
 
     private static boolean exceedsDeadband(Object last, Object current, double deadband) {
         try {
-            double lastD = Number.class.cast(last).doubleValue();
-            double currentD = Number.class.cast(current).doubleValue();
+            double lastD = ((Number) last).doubleValue();
+            double currentD = ((Number) current).doubleValue();
 
             return Math.abs(lastD - currentD) > deadband;
         } catch (Throwable t) {

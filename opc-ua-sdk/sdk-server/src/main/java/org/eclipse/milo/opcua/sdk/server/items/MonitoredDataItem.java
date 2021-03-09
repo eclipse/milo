@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.sdk.server.items;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.DataChangeMonitoringFilter;
-import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -28,9 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.AggregateFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeFilter;
-import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -39,7 +37,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements DataItem {
 
-    private static final DataChangeFilter DEFAULT_FILTER = new DataChangeFilter(
+    public static final DataChangeFilter DEFAULT_FILTER = new DataChangeFilter(
         DataChangeTrigger.StatusValue,
         uint(DeadbandType.None.getValue()),
         0.0
@@ -59,14 +57,12 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
         TimestampsToReturn timestamps,
         UInteger clientHandle,
         double samplingInterval,
-        ExtensionObject filter,
         UInteger queueSize,
-        boolean discardOldest) throws UaException {
+        boolean discardOldest
+    ) {
 
         super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
-
-        installFilter(filter);
     }
 
     @Override
@@ -92,6 +88,12 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
             if (getQueueSize() > 1) {
                 /* Set overflow if queueSize > 1... */
                 value = value.withStatus(value.getStatusCode().withOverflow());
+
+                Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
+
+                if (subscription != null) {
+                    subscription.getSubscriptionDiagnostics().getMonitoringQueueOverflowCount().increment();
+                }
             } else if (value.getStatusCode().isOverflowSet()) {
                 /* But make sure it's clear otherwise. */
                 value = value.withStatus(value.getStatusCode().withoutOverflow());
@@ -134,46 +136,18 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
         super.setMonitoringMode(monitoringMode);
     }
 
-    public synchronized void clearLastValue() {
-        lastValue = null;
+    public synchronized void maybeSendLastValue() {
+        if (queue.isEmpty()) {
+            enqueue(lastValue);
+        }
     }
 
     @Override
-    protected void installFilter(ExtensionObject filterXo) throws UaException {
-        if (filterXo == null || filterXo.isNull()) {
-            this.filter = DEFAULT_FILTER;
+    public void installFilter(MonitoringFilter filter) throws UaException {
+        if (filter instanceof DataChangeFilter) {
+            this.filter = (DataChangeFilter) filter;
         } else {
-            Object filterObject = filterXo.decode(server.getSerializationContext());
-
-            if (filterObject instanceof MonitoringFilter) {
-                if (filterObject instanceof DataChangeFilter) {
-                    this.filter = ((DataChangeFilter) filterObject);
-
-                    DeadbandType deadbandType = DeadbandType.from(filter.getDeadbandType().intValue());
-
-                    if (deadbandType == null) {
-                        throw new UaException(StatusCodes.Bad_DeadbandFilterInvalid);
-                    }
-
-                    if (deadbandType == DeadbandType.Percent) {
-                        // Percent deadband is not currently implemented
-                        throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
-                    }
-
-                    if (deadbandType == DeadbandType.Absolute &&
-                        !AttributeId.Value.isEqual(getReadValueId().getAttributeId())) {
-
-                        // Absolute deadband is only allowed for Value attributes
-                        throw new UaException(StatusCodes.Bad_FilterNotAllowed);
-                    }
-                } else if (filterObject instanceof AggregateFilter) {
-                    throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
-                } else if (filterObject instanceof EventFilter) {
-                    throw new UaException(StatusCodes.Bad_FilterNotAllowed);
-                }
-            } else {
-                throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid);
-            }
+            throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
         }
     }
 

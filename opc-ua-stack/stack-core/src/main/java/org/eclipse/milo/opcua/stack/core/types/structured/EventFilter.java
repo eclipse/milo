@@ -10,87 +10,79 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class EventFilter extends MonitoringFilter {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class EventFilter extends MonitoringFilter implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=725");
 
-    public static final NodeId TypeId = Identifiers.EventFilter;
-    public static final NodeId BinaryEncodingId = Identifiers.EventFilter_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.EventFilter_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=726");
 
-    protected final SimpleAttributeOperand[] selectClauses;
-    protected final ContentFilter whereClause;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=727");
 
-    public EventFilter() {
-        super();
-        this.selectClauses = null;
-        this.whereClause = null;
-    }
+    private final SimpleAttributeOperand[] selectClauses;
+
+    private final ContentFilter whereClause;
 
     public EventFilter(SimpleAttributeOperand[] selectClauses, ContentFilter whereClause) {
-        super();
         this.selectClauses = selectClauses;
         this.whereClause = whereClause;
     }
 
-    @Nullable
-    public SimpleAttributeOperand[] getSelectClauses() { return selectClauses; }
-
-    public ContentFilter getWhereClause() { return whereClause; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SelectClauses", selectClauses)
-            .add("WhereClause", whereClause)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<EventFilter> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public SimpleAttributeOperand[] getSelectClauses() {
+        return selectClauses;
+    }
+
+    public ContentFilter getWhereClause() {
+        return whereClause;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<EventFilter> {
         @Override
         public Class<EventFilter> getType() {
             return EventFilter.class;
         }
 
         @Override
-        public EventFilter decode(UaDecoder decoder) throws UaSerializationException {
-            SimpleAttributeOperand[] selectClauses =
-                decoder.readBuiltinStructArray(
-                    "SelectClauses",
-                    SimpleAttributeOperand.class
-                );
-            ContentFilter whereClause = (ContentFilter) decoder.readBuiltinStruct("WhereClause", ContentFilter.class);
-
+        public EventFilter decode(SerializationContext context, UaDecoder decoder) {
+            SimpleAttributeOperand[] selectClauses = (SimpleAttributeOperand[]) decoder.readStructArray("SelectClauses", SimpleAttributeOperand.TYPE_ID);
+            ContentFilter whereClause = (ContentFilter) decoder.readStruct("WhereClause", ContentFilter.TYPE_ID);
             return new EventFilter(selectClauses, whereClause);
         }
 
         @Override
-        public void encode(EventFilter value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStructArray(
-                "SelectClauses",
-                value.selectClauses,
-                SimpleAttributeOperand.class
-            );
-            encoder.writeBuiltinStruct("WhereClause", value.whereClause, ContentFilter.class);
+        public void encode(SerializationContext context, UaEncoder encoder, EventFilter value) {
+            encoder.writeStructArray("SelectClauses", value.getSelectClauses(), SimpleAttributeOperand.TYPE_ID);
+            encoder.writeStruct("WhereClause", value.getWhereClause(), ContentFilter.TYPE_ID);
         }
     }
-
 }

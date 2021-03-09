@@ -10,86 +10,80 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class PublishRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class PublishRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=824");
 
-    public static final NodeId TypeId = Identifiers.PublishRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.PublishRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.PublishRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=826");
 
-    protected final RequestHeader requestHeader;
-    protected final SubscriptionAcknowledgement[] subscriptionAcknowledgements;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=825");
 
-    public PublishRequest() {
-        this.requestHeader = null;
-        this.subscriptionAcknowledgements = null;
-    }
+    private final RequestHeader requestHeader;
 
-    public PublishRequest(RequestHeader requestHeader, SubscriptionAcknowledgement[] subscriptionAcknowledgements) {
+    private final SubscriptionAcknowledgement[] subscriptionAcknowledgements;
+
+    public PublishRequest(RequestHeader requestHeader,
+                          SubscriptionAcknowledgement[] subscriptionAcknowledgements) {
         this.requestHeader = requestHeader;
         this.subscriptionAcknowledgements = subscriptionAcknowledgements;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    @Nullable
-    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() { return subscriptionAcknowledgements; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("SubscriptionAcknowledgements", subscriptionAcknowledgements)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<PublishRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() {
+        return subscriptionAcknowledgements;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<PublishRequest> {
         @Override
         public Class<PublishRequest> getType() {
             return PublishRequest.class;
         }
 
         @Override
-        public PublishRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
-            SubscriptionAcknowledgement[] subscriptionAcknowledgements =
-                decoder.readBuiltinStructArray(
-                    "SubscriptionAcknowledgements",
-                    SubscriptionAcknowledgement.class
-                );
-
+        public PublishRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
+            SubscriptionAcknowledgement[] subscriptionAcknowledgements = (SubscriptionAcknowledgement[]) decoder.readStructArray("SubscriptionAcknowledgements", SubscriptionAcknowledgement.TYPE_ID);
             return new PublishRequest(requestHeader, subscriptionAcknowledgements);
         }
 
         @Override
-        public void encode(PublishRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBuiltinStructArray(
-                "SubscriptionAcknowledgements",
-                value.subscriptionAcknowledgements,
-                SubscriptionAcknowledgement.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, PublishRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeStructArray("SubscriptionAcknowledgements", value.getSubscriptionAcknowledgements(), SubscriptionAcknowledgement.TYPE_ID);
         }
     }
-
 }

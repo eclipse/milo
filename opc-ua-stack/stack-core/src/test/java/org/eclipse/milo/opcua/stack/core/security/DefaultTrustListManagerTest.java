@@ -48,6 +48,8 @@ public class DefaultTrustListManagerTest {
         for (int i = 0; i < DefaultTrustListManager.MAX_REJECTED_CERTIFICATES; i++) {
             File tmp = File.createTempFile("foo", "bar", rejectedDir);
             tmp.deleteOnExit();
+            // sleep so some of the last modified attributes are different
+            Thread.sleep(25);
         }
 
         File[] rejectedFiles = rejectedDir.listFiles();

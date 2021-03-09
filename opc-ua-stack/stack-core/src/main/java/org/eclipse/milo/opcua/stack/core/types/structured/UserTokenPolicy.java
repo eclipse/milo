@@ -10,37 +10,43 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 
-public class UserTokenPolicy implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class UserTokenPolicy extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=304");
 
-    public static final NodeId TypeId = Identifiers.UserTokenPolicy;
-    public static final NodeId BinaryEncodingId = Identifiers.UserTokenPolicy_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.UserTokenPolicy_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=305");
 
-    protected final String policyId;
-    protected final UserTokenType tokenType;
-    protected final String issuedTokenType;
-    protected final String issuerEndpointUrl;
-    protected final String securityPolicyUri;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=306");
 
-    public UserTokenPolicy() {
-        this.policyId = null;
-        this.tokenType = null;
-        this.issuedTokenType = null;
-        this.issuerEndpointUrl = null;
-        this.securityPolicyUri = null;
-    }
+    private final String policyId;
 
-    public UserTokenPolicy(String policyId, UserTokenType tokenType, String issuedTokenType, String issuerEndpointUrl, String securityPolicyUri) {
+    private final UserTokenType tokenType;
+
+    private final String issuedTokenType;
+
+    private final String issuerEndpointUrl;
+
+    private final String securityPolicyUri;
+
+    public UserTokenPolicy(String policyId, UserTokenType tokenType, String issuedTokenType,
+                           String issuerEndpointUrl, String securityPolicyUri) {
         this.policyId = policyId;
         this.tokenType = tokenType;
         this.issuedTokenType = issuedTokenType;
@@ -48,62 +54,64 @@ public class UserTokenPolicy implements UaStructure {
         this.securityPolicyUri = securityPolicyUri;
     }
 
-    public String getPolicyId() { return policyId; }
-
-    public UserTokenType getTokenType() { return tokenType; }
-
-    public String getIssuedTokenType() { return issuedTokenType; }
-
-    public String getIssuerEndpointUrl() { return issuerEndpointUrl; }
-
-    public String getSecurityPolicyUri() { return securityPolicyUri; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("PolicyId", policyId)
-            .add("TokenType", tokenType)
-            .add("IssuedTokenType", issuedTokenType)
-            .add("IssuerEndpointUrl", issuerEndpointUrl)
-            .add("SecurityPolicyUri", securityPolicyUri)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<UserTokenPolicy> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getPolicyId() {
+        return policyId;
+    }
+
+    public UserTokenType getTokenType() {
+        return tokenType;
+    }
+
+    public String getIssuedTokenType() {
+        return issuedTokenType;
+    }
+
+    public String getIssuerEndpointUrl() {
+        return issuerEndpointUrl;
+    }
+
+    public String getSecurityPolicyUri() {
+        return securityPolicyUri;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<UserTokenPolicy> {
         @Override
         public Class<UserTokenPolicy> getType() {
             return UserTokenPolicy.class;
         }
 
         @Override
-        public UserTokenPolicy decode(UaDecoder decoder) throws UaSerializationException {
+        public UserTokenPolicy decode(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
-            UserTokenType tokenType = UserTokenType.from(decoder.readInt32("TokenType"));
+            UserTokenType tokenType = decoder.readEnum("TokenType", UserTokenType.class);
             String issuedTokenType = decoder.readString("IssuedTokenType");
             String issuerEndpointUrl = decoder.readString("IssuerEndpointUrl");
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-
             return new UserTokenPolicy(policyId, tokenType, issuedTokenType, issuerEndpointUrl, securityPolicyUri);
         }
 
         @Override
-        public void encode(UserTokenPolicy value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("PolicyId", value.policyId);
-            encoder.writeInt32("TokenType", value.tokenType != null ? value.tokenType.getValue() : 0);
-            encoder.writeString("IssuedTokenType", value.issuedTokenType);
-            encoder.writeString("IssuerEndpointUrl", value.issuerEndpointUrl);
-            encoder.writeString("SecurityPolicyUri", value.securityPolicyUri);
+        public void encode(SerializationContext context, UaEncoder encoder, UserTokenPolicy value) {
+            encoder.writeString("PolicyId", value.getPolicyId());
+            encoder.writeEnum("TokenType", value.getTokenType());
+            encoder.writeString("IssuedTokenType", value.getIssuedTokenType());
+            encoder.writeString("IssuerEndpointUrl", value.getIssuerEndpointUrl());
+            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
         }
     }
-
 }

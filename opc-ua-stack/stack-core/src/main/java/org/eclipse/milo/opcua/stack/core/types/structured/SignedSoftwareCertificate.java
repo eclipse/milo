@@ -10,76 +10,81 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class SignedSoftwareCertificate implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class SignedSoftwareCertificate extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=344");
 
-    public static final NodeId TypeId = Identifiers.SignedSoftwareCertificate;
-    public static final NodeId BinaryEncodingId = Identifiers.SignedSoftwareCertificate_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.SignedSoftwareCertificate_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=345");
 
-    protected final ByteString certificateData;
-    protected final ByteString signature;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=346");
 
-    public SignedSoftwareCertificate() {
-        this.certificateData = null;
-        this.signature = null;
-    }
+    private final ByteString certificateData;
+
+    private final ByteString signature;
 
     public SignedSoftwareCertificate(ByteString certificateData, ByteString signature) {
         this.certificateData = certificateData;
         this.signature = signature;
     }
 
-    public ByteString getCertificateData() { return certificateData; }
-
-    public ByteString getSignature() { return signature; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("CertificateData", certificateData)
-            .add("Signature", signature)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<SignedSoftwareCertificate> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public ByteString getCertificateData() {
+        return certificateData;
+    }
+
+    public ByteString getSignature() {
+        return signature;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<SignedSoftwareCertificate> {
         @Override
         public Class<SignedSoftwareCertificate> getType() {
             return SignedSoftwareCertificate.class;
         }
 
         @Override
-        public SignedSoftwareCertificate decode(UaDecoder decoder) throws UaSerializationException {
+        public SignedSoftwareCertificate decode(SerializationContext context, UaDecoder decoder) {
             ByteString certificateData = decoder.readByteString("CertificateData");
             ByteString signature = decoder.readByteString("Signature");
-
             return new SignedSoftwareCertificate(certificateData, signature);
         }
 
         @Override
-        public void encode(SignedSoftwareCertificate value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeByteString("CertificateData", value.certificateData);
-            encoder.writeByteString("Signature", value.signature);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           SignedSoftwareCertificate value) {
+            encoder.writeByteString("CertificateData", value.getCertificateData());
+            encoder.writeByteString("Signature", value.getSignature());
         }
     }
-
 }

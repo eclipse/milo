@@ -10,87 +10,82 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class BrowsePathResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class BrowsePathResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=549");
 
-    public static final NodeId TypeId = Identifiers.BrowsePathResult;
-    public static final NodeId BinaryEncodingId = Identifiers.BrowsePathResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.BrowsePathResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=551");
 
-    protected final StatusCode statusCode;
-    protected final BrowsePathTarget[] targets;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=550");
 
-    public BrowsePathResult() {
-        this.statusCode = null;
-        this.targets = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15192");
+
+    private final StatusCode statusCode;
+
+    private final BrowsePathTarget[] targets;
 
     public BrowsePathResult(StatusCode statusCode, BrowsePathTarget[] targets) {
         this.statusCode = statusCode;
         this.targets = targets;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    @Nullable
-    public BrowsePathTarget[] getTargets() { return targets; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("Targets", targets)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<BrowsePathResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public BrowsePathTarget[] getTargets() {
+        return targets;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<BrowsePathResult> {
         @Override
         public Class<BrowsePathResult> getType() {
             return BrowsePathResult.class;
         }
 
         @Override
-        public BrowsePathResult decode(UaDecoder decoder) throws UaSerializationException {
+        public BrowsePathResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            BrowsePathTarget[] targets =
-                decoder.readBuiltinStructArray(
-                    "Targets",
-                    BrowsePathTarget.class
-                );
-
+            BrowsePathTarget[] targets = (BrowsePathTarget[]) decoder.readStructArray("Targets", BrowsePathTarget.TYPE_ID);
             return new BrowsePathResult(statusCode, targets);
         }
 
         @Override
-        public void encode(BrowsePathResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeBuiltinStructArray(
-                "Targets",
-                value.targets,
-                BrowsePathTarget.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, BrowsePathResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeStructArray("Targets", value.getTargets(), BrowsePathTarget.TYPE_ID);
         }
     }
-
 }

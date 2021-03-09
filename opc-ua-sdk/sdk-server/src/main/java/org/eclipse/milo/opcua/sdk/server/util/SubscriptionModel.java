@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
+import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -36,7 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
-public class SubscriptionModel {
+public class SubscriptionModel extends AbstractLifecycle {
 
     private final Set<DataItem> itemSet = Collections.newSetFromMap(Maps.newConcurrentMap());
 
@@ -60,7 +62,24 @@ public class SubscriptionModel {
         executionQueue = new ExecutionQueue(executor);
     }
 
+    @Override
+    protected void onStartup() {
+    }
+
+    @Override
+    protected void onShutdown() {
+        executionQueue.submit(() -> {
+            schedule.forEach(ScheduledUpdate::cancel);
+            schedule.clear();
+            itemSet.clear();
+        });
+    }
+
     public void onDataItemsCreated(List<DataItem> items) {
+        if (isNotRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(() -> {
             itemSet.addAll(items);
             reschedule();
@@ -68,10 +87,18 @@ public class SubscriptionModel {
     }
 
     public void onDataItemsModified(List<DataItem> items) {
+        if (isNotRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(this::reschedule);
     }
 
     public void onDataItemsDeleted(List<DataItem> items) {
+        if (isNotRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(() -> {
             itemSet.removeAll(items);
             reschedule();
@@ -79,6 +106,10 @@ public class SubscriptionModel {
     }
 
     public void onMonitoringModeChanged(List<MonitoredItem> items) {
+        if (isNotRunning()) {
+            throw new IllegalArgumentException("not running");
+        }
+
         executionQueue.submit(this::reschedule);
     }
 
@@ -119,17 +150,29 @@ public class SubscriptionModel {
 
         @Override
         public void run() {
-            List<PendingRead> pending = items.stream()
-                .map(item -> new PendingRead(item.getReadValueId()))
-                .collect(Collectors.toList());
+            if (cancelled) return;
 
-            List<ReadValueId> ids = pending.stream()
-                .map(PendingRead::getInput)
-                .collect(Collectors.toList());
+            CompletableFuture<List<DataValue>> future = GroupMapCollate.groupMapCollate(
+                items,
+                MonitoredItem::getSession,
+                session -> sessionItems -> {
+                    List<PendingRead> pending = sessionItems.stream()
+                        .map(item -> new PendingRead(item.getReadValueId()))
+                        .collect(Collectors.toList());
 
-            ReadContext context = new ReadContext(server, null);
+                    List<ReadValueId> ids = pending.stream()
+                        .map(PendingRead::getInput)
+                        .collect(Collectors.toList());
 
-            context.getFuture().thenAcceptAsync(values -> {
+                    ReadContext context = new ReadContext(server, session);
+
+                    attributeServices.read(context, 0d, TimestampsToReturn.Both, ids);
+
+                    return context.getFuture();
+                }
+            );
+
+            future.thenAcceptAsync(values -> {
                 Iterator<DataItem> ii = items.iterator();
                 Iterator<DataValue> vi = values.iterator();
 
@@ -154,8 +197,6 @@ public class SubscriptionModel {
                     scheduler.schedule(this, samplingInterval, TimeUnit.MILLISECONDS);
                 }
             }, executor);
-
-            executor.execute(() -> attributeServices.read(context, 0d, TimestampsToReturn.Both, ids));
         }
 
     }

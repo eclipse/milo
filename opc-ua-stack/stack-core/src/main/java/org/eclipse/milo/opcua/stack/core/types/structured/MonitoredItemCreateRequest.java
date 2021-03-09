@@ -10,84 +10,90 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 
-public class MonitoredItemCreateRequest implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class MonitoredItemCreateRequest extends Structure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=743");
 
-    public static final NodeId TypeId = Identifiers.MonitoredItemCreateRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.MonitoredItemCreateRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.MonitoredItemCreateRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=745");
 
-    protected final ReadValueId itemToMonitor;
-    protected final MonitoringMode monitoringMode;
-    protected final MonitoringParameters requestedParameters;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=744");
 
-    public MonitoredItemCreateRequest() {
-        this.itemToMonitor = null;
-        this.monitoringMode = null;
-        this.requestedParameters = null;
-    }
+    private final ReadValueId itemToMonitor;
 
-    public MonitoredItemCreateRequest(ReadValueId itemToMonitor, MonitoringMode monitoringMode, MonitoringParameters requestedParameters) {
+    private final MonitoringMode monitoringMode;
+
+    private final MonitoringParameters requestedParameters;
+
+    public MonitoredItemCreateRequest(ReadValueId itemToMonitor, MonitoringMode monitoringMode,
+                                      MonitoringParameters requestedParameters) {
         this.itemToMonitor = itemToMonitor;
         this.monitoringMode = monitoringMode;
         this.requestedParameters = requestedParameters;
     }
 
-    public ReadValueId getItemToMonitor() { return itemToMonitor; }
-
-    public MonitoringMode getMonitoringMode() { return monitoringMode; }
-
-    public MonitoringParameters getRequestedParameters() { return requestedParameters; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ItemToMonitor", itemToMonitor)
-            .add("MonitoringMode", monitoringMode)
-            .add("RequestedParameters", requestedParameters)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<MonitoredItemCreateRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ReadValueId getItemToMonitor() {
+        return itemToMonitor;
+    }
+
+    public MonitoringMode getMonitoringMode() {
+        return monitoringMode;
+    }
+
+    public MonitoringParameters getRequestedParameters() {
+        return requestedParameters;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<MonitoredItemCreateRequest> {
         @Override
         public Class<MonitoredItemCreateRequest> getType() {
             return MonitoredItemCreateRequest.class;
         }
 
         @Override
-        public MonitoredItemCreateRequest decode(UaDecoder decoder) throws UaSerializationException {
-            ReadValueId itemToMonitor = (ReadValueId) decoder.readBuiltinStruct("ItemToMonitor", ReadValueId.class);
-            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readInt32("MonitoringMode"));
-            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readBuiltinStruct("RequestedParameters", MonitoringParameters.class);
-
+        public MonitoredItemCreateRequest decode(SerializationContext context, UaDecoder decoder) {
+            ReadValueId itemToMonitor = (ReadValueId) decoder.readStruct("ItemToMonitor", ReadValueId.TYPE_ID);
+            MonitoringMode monitoringMode = decoder.readEnum("MonitoringMode", MonitoringMode.class);
+            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemCreateRequest(itemToMonitor, monitoringMode, requestedParameters);
         }
 
         @Override
-        public void encode(MonitoredItemCreateRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ItemToMonitor", value.itemToMonitor, ReadValueId.class);
-            encoder.writeInt32("MonitoringMode", value.monitoringMode != null ? value.monitoringMode.getValue() : 0);
-            encoder.writeBuiltinStruct("RequestedParameters", value.requestedParameters, MonitoringParameters.class);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           MonitoredItemCreateRequest value) {
+            encoder.writeStruct("ItemToMonitor", value.getItemToMonitor(), ReadValueId.TYPE_ID);
+            encoder.writeEnum("MonitoringMode", value.getMonitoringMode());
+            encoder.writeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);
         }
     }
-
 }

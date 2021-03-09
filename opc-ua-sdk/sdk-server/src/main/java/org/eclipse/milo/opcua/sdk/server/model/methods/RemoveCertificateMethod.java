@@ -51,7 +51,7 @@ public abstract class RemoveCertificateMethod extends AbstractMethodInvocationHa
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         String thumbprint = (String) inputValues[0].getValue();
         Boolean isTrustedCertificate = (Boolean) inputValues[1].getValue();
@@ -59,6 +59,6 @@ public abstract class RemoveCertificateMethod extends AbstractMethodInvocationHa
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    String thumbprint, Boolean isTrustedCertificate) throws UaException;
 }

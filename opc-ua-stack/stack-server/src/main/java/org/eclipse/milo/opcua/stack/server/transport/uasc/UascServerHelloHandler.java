@@ -127,13 +127,14 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
         String endpointUrl = hello.getEndpointUrl();
 
-        boolean endpointMatch = stackServer.getEndpointDescriptions()
-            .stream()
-            .anyMatch(endpoint ->
-                Objects.equals(
-                    EndpointUtil.getPath(endpointUrl),
-                    EndpointUtil.getPath(endpoint.getEndpointUrl()))
-            );
+        boolean endpointMatch = endpointUrl != null &&
+            stackServer.getEndpointDescriptions()
+                .stream()
+                .anyMatch(endpoint ->
+                    Objects.equals(
+                        EndpointUtil.getPath(endpointUrl),
+                        EndpointUtil.getPath(endpoint.getEndpointUrl()))
+                );
 
         if (!endpointMatch) {
             throw new UaException(
@@ -211,7 +212,8 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof IOException) {
             ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed");
+            logger.debug("[remote={}] IOException caught; channel closed",
+                ctx.channel().remoteAddress(), cause);
         } else {
             ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
 

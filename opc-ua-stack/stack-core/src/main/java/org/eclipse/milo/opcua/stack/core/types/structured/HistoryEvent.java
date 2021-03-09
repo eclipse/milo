@@ -10,78 +10,70 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class HistoryEvent implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class HistoryEvent extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=659");
 
-    public static final NodeId TypeId = Identifiers.HistoryEvent;
-    public static final NodeId BinaryEncodingId = Identifiers.HistoryEvent_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.HistoryEvent_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=660");
 
-    protected final HistoryEventFieldList[] events;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=661");
 
-    public HistoryEvent() {
-        this.events = null;
-    }
+    private final HistoryEventFieldList[] events;
 
     public HistoryEvent(HistoryEventFieldList[] events) {
         this.events = events;
     }
 
-    @Nullable
-    public HistoryEventFieldList[] getEvents() { return events; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Events", events)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<HistoryEvent> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public HistoryEventFieldList[] getEvents() {
+        return events;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<HistoryEvent> {
         @Override
         public Class<HistoryEvent> getType() {
             return HistoryEvent.class;
         }
 
         @Override
-        public HistoryEvent decode(UaDecoder decoder) throws UaSerializationException {
-            HistoryEventFieldList[] events =
-                decoder.readBuiltinStructArray(
-                    "Events",
-                    HistoryEventFieldList.class
-                );
-
+        public HistoryEvent decode(SerializationContext context, UaDecoder decoder) {
+            HistoryEventFieldList[] events = (HistoryEventFieldList[]) decoder.readStructArray("Events", HistoryEventFieldList.TYPE_ID);
             return new HistoryEvent(events);
         }
 
         @Override
-        public void encode(HistoryEvent value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStructArray(
-                "Events",
-                value.events,
-                HistoryEventFieldList.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, HistoryEvent value) {
+            encoder.writeStructArray("Events", value.getEvents(), HistoryEventFieldList.TYPE_ID);
         }
     }
-
 }

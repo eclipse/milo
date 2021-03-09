@@ -5,11 +5,14 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>opc-ua-sdk</artifactId>
-        <version>0.3.7-SNAPSHOT</version>
+        <version>0.5.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>sdk-tests</artifactId>
 
+    <properties>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.tests</javaModuleName>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -56,7 +59,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>3.0.0-M4</version>
                 <executions>
                     <execution>
                         <goals>

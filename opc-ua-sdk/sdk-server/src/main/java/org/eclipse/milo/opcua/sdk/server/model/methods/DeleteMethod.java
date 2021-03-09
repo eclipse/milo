@@ -43,13 +43,13 @@ public abstract class DeleteMethod extends AbstractMethodInvocationHandler {
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         NodeId objectToDelete = (NodeId) inputValues[0].getValue();
         invoke(context, objectToDelete);
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    NodeId objectToDelete) throws UaException;
 }

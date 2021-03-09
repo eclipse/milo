@@ -10,89 +10,92 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class NotificationMessage implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class NotificationMessage extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=803");
 
-    public static final NodeId TypeId = Identifiers.NotificationMessage;
-    public static final NodeId BinaryEncodingId = Identifiers.NotificationMessage_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.NotificationMessage_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=805");
 
-    protected final UInteger sequenceNumber;
-    protected final DateTime publishTime;
-    protected final ExtensionObject[] notificationData;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=804");
 
-    public NotificationMessage() {
-        this.sequenceNumber = null;
-        this.publishTime = null;
-        this.notificationData = null;
-    }
+    private final UInteger sequenceNumber;
 
-    public NotificationMessage(UInteger sequenceNumber, DateTime publishTime, ExtensionObject[] notificationData) {
+    private final DateTime publishTime;
+
+    private final ExtensionObject[] notificationData;
+
+    public NotificationMessage(UInteger sequenceNumber, DateTime publishTime,
+                               ExtensionObject[] notificationData) {
         this.sequenceNumber = sequenceNumber;
         this.publishTime = publishTime;
         this.notificationData = notificationData;
     }
 
-    public UInteger getSequenceNumber() { return sequenceNumber; }
-
-    public DateTime getPublishTime() { return publishTime; }
-
-    @Nullable
-    public ExtensionObject[] getNotificationData() { return notificationData; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SequenceNumber", sequenceNumber)
-            .add("PublishTime", publishTime)
-            .add("NotificationData", notificationData)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<NotificationMessage> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public UInteger getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public DateTime getPublishTime() {
+        return publishTime;
+    }
+
+    public ExtensionObject[] getNotificationData() {
+        return notificationData;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<NotificationMessage> {
         @Override
         public Class<NotificationMessage> getType() {
             return NotificationMessage.class;
         }
 
         @Override
-        public NotificationMessage decode(UaDecoder decoder) throws UaSerializationException {
+        public NotificationMessage decode(SerializationContext context, UaDecoder decoder) {
             UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
             DateTime publishTime = decoder.readDateTime("PublishTime");
-            ExtensionObject[] notificationData = decoder.readArray("NotificationData", decoder::readExtensionObject, ExtensionObject.class);
-
+            ExtensionObject[] notificationData = decoder.readExtensionObjectArray("NotificationData");
             return new NotificationMessage(sequenceNumber, publishTime, notificationData);
         }
 
         @Override
-        public void encode(NotificationMessage value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("SequenceNumber", value.sequenceNumber);
-            encoder.writeDateTime("PublishTime", value.publishTime);
-            encoder.writeArray("NotificationData", value.notificationData, encoder::writeExtensionObject);
+        public void encode(SerializationContext context, UaEncoder encoder, NotificationMessage value) {
+            encoder.writeUInt32("SequenceNumber", value.getSequenceNumber());
+            encoder.writeDateTime("PublishTime", value.getPublishTime());
+            encoder.writeExtensionObjectArray("NotificationData", value.getNotificationData());
         }
     }
-
 }

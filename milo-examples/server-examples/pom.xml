@@ -5,51 +5,26 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo-examples</artifactId>
-        <version>0.3.7-SNAPSHOT</version>
+        <version>0.5.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>server-examples</artifactId>
 
-    <profiles>
-        <profile>
-            <id>standalone-server</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>build-server</id>
-                                <configuration>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>org.eclipse.milo.examples.server.SecureServerStandalone
-                                            </mainClass>
-                                        </manifest>
-                                    </archive>
-                                    <descriptorRefs>
-                                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                                    </descriptorRefs>
-                                    <finalName>milo-opcua-server</finalName>
-                                </configuration>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <properties>
+        <javaModuleName>org.eclipse.milo.examples.server</javaModuleName>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-server</artifactId>
-            <version>0.3.7-SNAPSHOT</version>
+            <version>0.5.5-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.milo</groupId>
+            <artifactId>dictionary-manager</artifactId>
+            <version>0.5.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -85,7 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.2.2</version>
                 <configuration>
                     <filters>
                         <filter>

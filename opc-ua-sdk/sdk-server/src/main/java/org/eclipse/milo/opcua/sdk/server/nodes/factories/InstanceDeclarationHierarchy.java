@@ -31,7 +31,8 @@ public class InstanceDeclarationHierarchy {
     private InstanceDeclarationHierarchy(
         NodeId typeId,
         NodeTable nodeTable,
-        ReferenceTable referenceTable) {
+        ReferenceTable referenceTable
+    ) {
 
         this.typeId = typeId;
         this.nodeTable = nodeTable;
@@ -59,12 +60,12 @@ public class InstanceDeclarationHierarchy {
     public static InstanceDeclarationHierarchy create(
         AddressSpaceManager addressSpaceManager,
         NamespaceTable namespaceTable,
-        NodeId typeDefinitionId,
-        boolean includeOptionalNodes) {
+        NodeId typeDefinitionId
+    ) {
 
-        Builder builder = new Builder(addressSpaceManager, namespaceTable, includeOptionalNodes);
+        Builder builder = new Builder(addressSpaceManager, namespaceTable);
 
-        return builder.build(typeDefinitionId, includeOptionalNodes);
+        return builder.build(typeDefinitionId);
     }
 
     static class Builder {
@@ -74,28 +75,21 @@ public class InstanceDeclarationHierarchy {
 
         private final AddressSpaceManager addressSpaceManager;
         private final NamespaceTable namespaceTable;
-        private final boolean includeOptionalNodes;
 
-        Builder(
-            AddressSpaceManager addressSpaceManager,
-            NamespaceTable namespaceTable,
-            boolean includeOptionalNodes
-        ) {
-
+        Builder(AddressSpaceManager addressSpaceManager, NamespaceTable namespaceTable) {
             this.addressSpaceManager = addressSpaceManager;
             this.namespaceTable = namespaceTable;
-            this.includeOptionalNodes = includeOptionalNodes;
         }
 
-        public InstanceDeclarationHierarchy build(NodeId typeDefinitionId, boolean includeOptionalNodes) {
+        public InstanceDeclarationHierarchy build(NodeId typeDefinitionId) {
             Optional<InstanceDeclarationHierarchy> parentIdh = addressSpaceManager
                 .getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
-                .flatMap(r -> r.getTargetNodeId().local(namespaceTable))
+                .flatMap(r -> r.getTargetNodeId().toNodeId(namespaceTable))
                 .map(parentTypeId -> InstanceDeclarationHierarchy
-                    .create(addressSpaceManager, namespaceTable, parentTypeId, includeOptionalNodes));
+                    .create(addressSpaceManager, namespaceTable, parentTypeId));
 
             final InstanceDeclarationHierarchy idh = buildHierarchyForType(typeDefinitionId);
 
@@ -113,8 +107,8 @@ public class InstanceDeclarationHierarchy {
             return new InstanceDeclarationHierarchy(typeDefinitionId, nodeTable, referenceTable);
         }
 
-        private void addModeledNodes(NodeId nodeId, BrowsePath parentPath) {
-            List<Reference> forwardReferences = addressSpaceManager.getManagedReferences(nodeId)
+        private void addModeledNodes(NodeId typeDefinitionId, BrowsePath parentPath) {
+            List<Reference> forwardReferences = addressSpaceManager.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference::isForward)
                 .collect(Collectors.toList());
@@ -127,7 +121,7 @@ public class InstanceDeclarationHierarchy {
 
                     BrowsePath browsePath = new BrowsePath(parentPath, node.getBrowseName());
 
-                    if (isInstanceDeclaration(node, includeOptionalNodes)) {
+                    if (isInstanceDeclaration(node)) {
                         nodeTable.addNode(browsePath, node.getNodeId());
                         referenceTable.addReference(parentPath, reference.getReferenceTypeId(), browsePath);
 
@@ -142,27 +136,25 @@ public class InstanceDeclarationHierarchy {
             );
         }
 
-        private static boolean isInstanceDeclaration(UaNode node, boolean includeOptionalNodes) {
-            NodeClass nodeClass = node.getNodeClass();
+        private static boolean isInstanceDeclaration(UaNode potentialMemberNode) {
+            NodeClass nodeClass = potentialMemberNode.getNodeClass();
 
             boolean methodOrObjectOrVariable =
                 nodeClass == NodeClass.Method ||
                     nodeClass == NodeClass.Object ||
                     nodeClass == NodeClass.Variable;
 
-            return methodOrObjectOrVariable && hasModellingRule(node, includeOptionalNodes);
+            return methodOrObjectOrVariable && hasModellingRule(potentialMemberNode);
         }
 
-        private static boolean hasModellingRule(UaNode node, boolean includeOptionalNodes) {
-            return node.getReferences().stream()
-                .anyMatch(r -> {
-                    boolean rule =
-                        Identifiers.ModellingRule_Mandatory.expanded().equals(r.getTargetNodeId()) ||
-                            (includeOptionalNodes &&
-                                Identifiers.ModellingRule_Optional.expanded().equals(r.getTargetNodeId()));
-
-                    return Identifiers.HasModellingRule.equals(r.getReferenceTypeId()) && rule;
-                });
+        private static boolean hasModellingRule(UaNode potentialMemberNode) {
+            return potentialMemberNode.getReferences()
+                .stream()
+                .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
+                .anyMatch(r ->
+                    Identifiers.ModellingRule_Mandatory.equals(r.getTargetNodeId()) ||
+                        Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId())
+                );
         }
 
     }

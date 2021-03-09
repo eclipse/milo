@@ -76,7 +76,7 @@ public abstract class MoveOrCopyMethod extends AbstractMethodInvocationHandler {
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         NodeId objectToMoveOrCopy = (NodeId) inputValues[0].getValue();
         NodeId targetDirectory = (NodeId) inputValues[1].getValue();
@@ -87,7 +87,7 @@ public abstract class MoveOrCopyMethod extends AbstractMethodInvocationHandler {
         return new Variant[]{new Variant(newNodeId.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    NodeId objectToMoveOrCopy, NodeId targetDirectory, Boolean createCopy, String newName,
                                    Out<NodeId> newNodeId) throws UaException;
 }

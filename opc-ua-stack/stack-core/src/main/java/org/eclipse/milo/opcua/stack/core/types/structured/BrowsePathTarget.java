@@ -10,77 +10,82 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class BrowsePathTarget implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class BrowsePathTarget extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=546");
 
-    public static final NodeId TypeId = Identifiers.BrowsePathTarget;
-    public static final NodeId BinaryEncodingId = Identifiers.BrowsePathTarget_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.BrowsePathTarget_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=548");
 
-    protected final ExpandedNodeId targetId;
-    protected final UInteger remainingPathIndex;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=547");
 
-    public BrowsePathTarget() {
-        this.targetId = null;
-        this.remainingPathIndex = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15191");
+
+    private final ExpandedNodeId targetId;
+
+    private final UInteger remainingPathIndex;
 
     public BrowsePathTarget(ExpandedNodeId targetId, UInteger remainingPathIndex) {
         this.targetId = targetId;
         this.remainingPathIndex = remainingPathIndex;
     }
 
-    public ExpandedNodeId getTargetId() { return targetId; }
-
-    public UInteger getRemainingPathIndex() { return remainingPathIndex; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("TargetId", targetId)
-            .add("RemainingPathIndex", remainingPathIndex)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<BrowsePathTarget> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ExpandedNodeId getTargetId() {
+        return targetId;
+    }
+
+    public UInteger getRemainingPathIndex() {
+        return remainingPathIndex;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<BrowsePathTarget> {
         @Override
         public Class<BrowsePathTarget> getType() {
             return BrowsePathTarget.class;
         }
 
         @Override
-        public BrowsePathTarget decode(UaDecoder decoder) throws UaSerializationException {
+        public BrowsePathTarget decode(SerializationContext context, UaDecoder decoder) {
             ExpandedNodeId targetId = decoder.readExpandedNodeId("TargetId");
             UInteger remainingPathIndex = decoder.readUInt32("RemainingPathIndex");
-
             return new BrowsePathTarget(targetId, remainingPathIndex);
         }
 
         @Override
-        public void encode(BrowsePathTarget value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeExpandedNodeId("TargetId", value.targetId);
-            encoder.writeUInt32("RemainingPathIndex", value.remainingPathIndex);
+        public void encode(SerializationContext context, UaEncoder encoder, BrowsePathTarget value) {
+            encoder.writeExpandedNodeId("TargetId", value.getTargetId());
+            encoder.writeUInt32("RemainingPathIndex", value.getRemainingPathIndex());
         }
     }
-
 }

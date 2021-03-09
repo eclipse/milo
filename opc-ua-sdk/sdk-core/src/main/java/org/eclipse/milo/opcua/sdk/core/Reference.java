@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.slf4j.LoggerFactory;
 
 public class Reference {
@@ -36,33 +35,6 @@ public class Reference {
     private final NodeId referenceTypeId;
     private final ExpandedNodeId targetNodeId;
     private final Direction direction;
-
-    @Deprecated
-    public Reference(
-        NodeId sourceNodeId,
-        NodeId referenceTypeId,
-        ExpandedNodeId targetNodeId,
-        NodeClass targetNodeClass,
-        boolean forward) {
-
-        this(
-            sourceNodeId,
-            referenceTypeId,
-            targetNodeId,
-            targetNodeClass,
-            forward ? Direction.FORWARD : Direction.INVERSE);
-    }
-
-    @Deprecated
-    public Reference(
-        NodeId sourceNodeId,
-        NodeId referenceTypeId,
-        ExpandedNodeId targetNodeId,
-        NodeClass targetNodeClass,
-        Direction direction) {
-
-        this(sourceNodeId, referenceTypeId, targetNodeId, direction);
-    }
 
     public Reference(
         NodeId sourceNodeId,
@@ -117,27 +89,9 @@ public class Reference {
      * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
      *
      * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
-     * @deprecated use {@link #invert(NamespaceTable)}
-     */
-    @Deprecated
-    public Optional<Reference> invert() {
-        return getTargetNodeId().local().map(
-            sourceNodeId -> new Reference(
-                sourceNodeId,
-                getReferenceTypeId(),
-                getSourceNodeId().expanded(),
-                !isForward()
-            )
-        );
-    }
-
-    /**
-     * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
-     *
-     * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
      */
     public Optional<Reference> invert(NamespaceTable namespaceTable) {
-        return getTargetNodeId().local(namespaceTable).map(
+        return getTargetNodeId().toNodeId(namespaceTable).map(
             sourceNodeId -> new Reference(
                 sourceNodeId,
                 getReferenceTypeId(),
@@ -171,7 +125,7 @@ public class Reference {
         NodeId newReferenceTypeId = referenceTypeId.reindex(namespaceTable, referenceNamespaceUri);
 
         // re-index targetNodeId only if it's local, otherwise leave it alone.
-        ExpandedNodeId newTargetNodeId = targetNodeId.local(namespaceTable)
+        ExpandedNodeId newTargetNodeId = targetNodeId.toNodeId(namespaceTable)
             .map(id -> id.reindex(namespaceTable, targetNamespaceUri).expanded())
             .orElse(targetNodeId);
 
@@ -241,6 +195,9 @@ public class Reference {
     public static final Predicate<Reference> HAS_COMPONENT_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
 
+    public static final Predicate<Reference> COMPONENT_OF_PREDICATE =
+        (reference) -> reference.isInverse() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
+
     public static final Predicate<Reference> HAS_PROPERTY_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasProperty.equals(reference.getReferenceTypeId());
 
@@ -255,6 +212,9 @@ public class Reference {
 
     public static final Predicate<Reference> ORGANIZES_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.Organizes.equals(reference.getReferenceTypeId());
+
+    public static final Predicate<Reference> HAS_ENCODING_PREDICATE =
+        (reference) -> reference.isForward() && Identifiers.HasEncoding.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_DESCRIPTION_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasDescription.equals(reference.getReferenceTypeId());

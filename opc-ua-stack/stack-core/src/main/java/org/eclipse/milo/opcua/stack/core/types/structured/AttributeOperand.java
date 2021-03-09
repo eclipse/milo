@@ -10,38 +10,46 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class AttributeOperand extends FilterOperand {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class AttributeOperand extends FilterOperand implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=598");
 
-    public static final NodeId TypeId = Identifiers.AttributeOperand;
-    public static final NodeId BinaryEncodingId = Identifiers.AttributeOperand_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.AttributeOperand_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=599");
 
-    protected final NodeId nodeId;
-    protected final String alias;
-    protected final RelativePath browsePath;
-    protected final UInteger attributeId;
-    protected final String indexRange;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=600");
 
-    public AttributeOperand() {
-        super();
-        this.nodeId = null;
-        this.alias = null;
-        this.browsePath = null;
-        this.attributeId = null;
-        this.indexRange = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15209");
 
-    public AttributeOperand(NodeId nodeId, String alias, RelativePath browsePath, UInteger attributeId, String indexRange) {
-        super();
+    private final NodeId nodeId;
+
+    private final String alias;
+
+    private final RelativePath browsePath;
+
+    private final UInteger attributeId;
+
+    private final String indexRange;
+
+    public AttributeOperand(NodeId nodeId, String alias, RelativePath browsePath,
+                            UInteger attributeId, String indexRange) {
         this.nodeId = nodeId;
         this.alias = alias;
         this.browsePath = browsePath;
@@ -49,62 +57,64 @@ public class AttributeOperand extends FilterOperand {
         this.indexRange = indexRange;
     }
 
-    public NodeId getNodeId() { return nodeId; }
-
-    public String getAlias() { return alias; }
-
-    public RelativePath getBrowsePath() { return browsePath; }
-
-    public UInteger getAttributeId() { return attributeId; }
-
-    public String getIndexRange() { return indexRange; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("Alias", alias)
-            .add("BrowsePath", browsePath)
-            .add("AttributeId", attributeId)
-            .add("IndexRange", indexRange)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<AttributeOperand> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public NodeId getNodeId() {
+        return nodeId;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public RelativePath getBrowsePath() {
+        return browsePath;
+    }
+
+    public UInteger getAttributeId() {
+        return attributeId;
+    }
+
+    public String getIndexRange() {
+        return indexRange;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<AttributeOperand> {
         @Override
         public Class<AttributeOperand> getType() {
             return AttributeOperand.class;
         }
 
         @Override
-        public AttributeOperand decode(UaDecoder decoder) throws UaSerializationException {
+        public AttributeOperand decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             String alias = decoder.readString("Alias");
-            RelativePath browsePath = (RelativePath) decoder.readBuiltinStruct("BrowsePath", RelativePath.class);
+            RelativePath browsePath = (RelativePath) decoder.readStruct("BrowsePath", RelativePath.TYPE_ID);
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String indexRange = decoder.readString("IndexRange");
-
             return new AttributeOperand(nodeId, alias, browsePath, attributeId, indexRange);
         }
 
         @Override
-        public void encode(AttributeOperand value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeString("Alias", value.alias);
-            encoder.writeBuiltinStruct("BrowsePath", value.browsePath, RelativePath.class);
-            encoder.writeUInt32("AttributeId", value.attributeId);
-            encoder.writeString("IndexRange", value.indexRange);
+        public void encode(SerializationContext context, UaEncoder encoder, AttributeOperand value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeString("Alias", value.getAlias());
+            encoder.writeStruct("BrowsePath", value.getBrowsePath(), RelativePath.TYPE_ID);
+            encoder.writeUInt32("AttributeId", value.getAttributeId());
+            encoder.writeString("IndexRange", value.getIndexRange());
         }
     }
-
 }

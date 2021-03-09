@@ -11,10 +11,13 @@
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.testng.annotations.Test;
 
@@ -36,7 +39,10 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
 
         @SuppressWarnings("unchecked")
         OpcUaBinaryDataTypeCodec<Argument> codec = (OpcUaBinaryDataTypeCodec<Argument>)
-            OpcUaDataTypeManager.getInstance().getCodec(Argument.BinaryEncodingId);
+            OpcUaDataTypeManager.getInstance().getCodec(
+                OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+                Argument.TYPE_ID.toNodeId(new NamespaceTable()).get()
+            );
 
         assertNotNull(codec);
 
@@ -46,6 +52,26 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
         assertEquals(decoded.getName(), argument.getName());
 
         assertNull(decoded.getArrayDimensions());
+    }
+
+    @Test
+    public void testEnumScalar() {
+        writer.writeEnum(null, ApplicationType.Client);
+        ApplicationType decoded = reader.readEnum(null, ApplicationType.class);
+
+        assertEquals(decoded, ApplicationType.Client);
+    }
+
+    @Test
+    public void testEnumArray() {
+        ApplicationType[] array = new ApplicationType[]{
+            ApplicationType.Client,
+            ApplicationType.ClientAndServer
+        };
+        writer.writeEnumArray(null, array);
+        ApplicationType[] decoded = (ApplicationType[]) reader.readEnumArray(null, ApplicationType.class);
+
+        assertEquals(decoded, array);
     }
 
 }

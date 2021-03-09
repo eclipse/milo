@@ -10,42 +10,48 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 
-public class ServerStatusDataType implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ServerStatusDataType extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=862");
 
-    public static final NodeId TypeId = Identifiers.ServerStatusDataType;
-    public static final NodeId BinaryEncodingId = Identifiers.ServerStatusDataType_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ServerStatusDataType_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=863");
 
-    protected final DateTime startTime;
-    protected final DateTime currentTime;
-    protected final ServerState state;
-    protected final BuildInfo buildInfo;
-    protected final UInteger secondsTillShutdown;
-    protected final LocalizedText shutdownReason;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=864");
 
-    public ServerStatusDataType() {
-        this.startTime = null;
-        this.currentTime = null;
-        this.state = null;
-        this.buildInfo = null;
-        this.secondsTillShutdown = null;
-        this.shutdownReason = null;
-    }
+    private final DateTime startTime;
 
-    public ServerStatusDataType(DateTime startTime, DateTime currentTime, ServerState state, BuildInfo buildInfo, UInteger secondsTillShutdown, LocalizedText shutdownReason) {
+    private final DateTime currentTime;
+
+    private final ServerState state;
+
+    private final BuildInfo buildInfo;
+
+    private final UInteger secondsTillShutdown;
+
+    private final LocalizedText shutdownReason;
+
+    public ServerStatusDataType(DateTime startTime, DateTime currentTime, ServerState state,
+                                BuildInfo buildInfo, UInteger secondsTillShutdown, LocalizedText shutdownReason) {
         this.startTime = startTime;
         this.currentTime = currentTime;
         this.state = state;
@@ -54,67 +60,71 @@ public class ServerStatusDataType implements UaStructure {
         this.shutdownReason = shutdownReason;
     }
 
-    public DateTime getStartTime() { return startTime; }
-
-    public DateTime getCurrentTime() { return currentTime; }
-
-    public ServerState getState() { return state; }
-
-    public BuildInfo getBuildInfo() { return buildInfo; }
-
-    public UInteger getSecondsTillShutdown() { return secondsTillShutdown; }
-
-    public LocalizedText getShutdownReason() { return shutdownReason; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StartTime", startTime)
-            .add("CurrentTime", currentTime)
-            .add("State", state)
-            .add("BuildInfo", buildInfo)
-            .add("SecondsTillShutdown", secondsTillShutdown)
-            .add("ShutdownReason", shutdownReason)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ServerStatusDataType> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public DateTime getStartTime() {
+        return startTime;
+    }
+
+    public DateTime getCurrentTime() {
+        return currentTime;
+    }
+
+    public ServerState getState() {
+        return state;
+    }
+
+    public BuildInfo getBuildInfo() {
+        return buildInfo;
+    }
+
+    public UInteger getSecondsTillShutdown() {
+        return secondsTillShutdown;
+    }
+
+    public LocalizedText getShutdownReason() {
+        return shutdownReason;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ServerStatusDataType> {
         @Override
         public Class<ServerStatusDataType> getType() {
             return ServerStatusDataType.class;
         }
 
         @Override
-        public ServerStatusDataType decode(UaDecoder decoder) throws UaSerializationException {
+        public ServerStatusDataType decode(SerializationContext context, UaDecoder decoder) {
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime currentTime = decoder.readDateTime("CurrentTime");
-            ServerState state = ServerState.from(decoder.readInt32("State"));
-            BuildInfo buildInfo = (BuildInfo) decoder.readBuiltinStruct("BuildInfo", BuildInfo.class);
+            ServerState state = decoder.readEnum("State", ServerState.class);
+            BuildInfo buildInfo = (BuildInfo) decoder.readStruct("BuildInfo", BuildInfo.TYPE_ID);
             UInteger secondsTillShutdown = decoder.readUInt32("SecondsTillShutdown");
             LocalizedText shutdownReason = decoder.readLocalizedText("ShutdownReason");
-
             return new ServerStatusDataType(startTime, currentTime, state, buildInfo, secondsTillShutdown, shutdownReason);
         }
 
         @Override
-        public void encode(ServerStatusDataType value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeDateTime("StartTime", value.startTime);
-            encoder.writeDateTime("CurrentTime", value.currentTime);
-            encoder.writeInt32("State", value.state != null ? value.state.getValue() : 0);
-            encoder.writeBuiltinStruct("BuildInfo", value.buildInfo, BuildInfo.class);
-            encoder.writeUInt32("SecondsTillShutdown", value.secondsTillShutdown);
-            encoder.writeLocalizedText("ShutdownReason", value.shutdownReason);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ServerStatusDataType value) {
+            encoder.writeDateTime("StartTime", value.getStartTime());
+            encoder.writeDateTime("CurrentTime", value.getCurrentTime());
+            encoder.writeEnum("State", value.getState());
+            encoder.writeStruct("BuildInfo", value.getBuildInfo(), BuildInfo.TYPE_ID);
+            encoder.writeUInt32("SecondsTillShutdown", value.getSecondsTillShutdown());
+            encoder.writeLocalizedText("ShutdownReason", value.getShutdownReason());
         }
     }
-
 }

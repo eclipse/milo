@@ -43,13 +43,13 @@ public abstract class RespondMethod extends AbstractMethodInvocationHandler {
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         Integer selectedResponse = (Integer) inputValues[0].getValue();
         invoke(context, selectedResponse);
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Integer selectedResponse) throws UaException;
 }

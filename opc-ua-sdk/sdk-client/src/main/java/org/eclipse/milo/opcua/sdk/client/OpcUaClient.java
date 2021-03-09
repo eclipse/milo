@@ -10,26 +10,34 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
+import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
+import org.eclipse.milo.opcua.sdk.client.model.ObjectTypeInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -43,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
@@ -72,6 +81,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesReques
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
@@ -115,6 +125,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,10 +146,97 @@ public class OpcUaClient implements UaClient {
         logger.info("Eclipse Milo OPC UA Client SDK version: {}", SDK_VERSION);
     }
 
+    /**
+     * Create an {@link OpcUaClient} configured with {@code config}.
+     *
+     * @param config the {@link OpcUaClientConfig}.
+     * @return an {@link OpcUaClient} configured with {@code config}.
+     * @throws UaException if the client could not be created (e.g. transport/encoding not supported).
+     */
     public static OpcUaClient create(OpcUaClientConfig config) throws UaException {
         UaStackClient stackClient = UaStackClient.create(config);
 
         return new OpcUaClient(config, stackClient);
+    }
+
+    /**
+     * Select the first endpoint with no security that allows anonymous connections and create an
+     * {@link OpcUaClient} with the default configuration.
+     * <p>
+     * If the server is not configured with an endpoint with no security or authentication you
+     * must use {@link #create(String, Function, Function)} to select an endpoint and configure
+     * any certificates or identity provider that the selected endpoint would require.
+     *
+     * @param endpointUrl the endpoint URL of the server to connect to and get endpoints from.
+     * @return an {@link OpcUaClient} configured to connect to the server identified by
+     * {@code endpointUrl}.
+     * @throws UaException if the endpoints could not be retrieved or the client could not be
+     *                     created.
+     */
+    public static OpcUaClient create(String endpointUrl) throws UaException {
+        // select the first EndpointDescription with no security and anonymous authentication
+        Predicate<EndpointDescription> predicate = e ->
+            SecurityPolicy.None.getUri().equals(e.getSecurityPolicyUri()) &&
+                Arrays.stream(e.getUserIdentityTokens())
+                    .anyMatch(p -> p.getTokenType() == UserTokenType.Anonymous);
+
+        return create(
+            endpointUrl,
+            endpoints -> endpoints.stream()
+                .filter(predicate)
+                .findFirst(),
+            OpcUaClientConfigBuilder::build
+        );
+    }
+
+    /**
+     * Create and configure an {@link OpcUaClient} by selecting an {@link EndpointDescription} from a list of endpoints
+     * retrieved via the GetEndpoints service from the server at {@code endpointUrl} and building an
+     * {@link OpcUaClientConfig} using that endpoint.
+     *
+     * @param endpointUrl    the endpoint URL of the server to connect to and retrieve endpoints from.
+     * @param selectEndpoint a function that selects the {@link EndpointDescription} to connect to from the list of
+     *                       endpoints from the server.
+     * @param buildConfig    a function that configures an {@link OpcUaClientConfigBuilder} and then builds and returns
+     *                       an {@link OpcUaClientConfig}.
+     * @return a configured {@link OpcUaClient}.
+     * @throws UaException if the endpoints could not be retrieved or the client could not be created.
+     */
+    public static OpcUaClient create(
+        String endpointUrl,
+        Function<List<EndpointDescription>, Optional<EndpointDescription>> selectEndpoint,
+        Function<OpcUaClientConfigBuilder, OpcUaClientConfig> buildConfig
+    ) throws UaException {
+
+        try {
+            List<EndpointDescription> endpoints =
+                DiscoveryClient.getEndpoints(endpointUrl).get();
+
+            EndpointDescription endpoint = selectEndpoint.apply(endpoints).orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no endpoint selected"
+                )
+            );
+
+            OpcUaClientConfigBuilder builder = OpcUaClientConfig.builder()
+                .setEndpoint(endpoint);
+
+            return create(buildConfig.apply(builder));
+        } catch (InterruptedException | ExecutionException e) {
+            if (!endpointUrl.endsWith("/discovery")) {
+                StringBuilder discoveryUrl = new StringBuilder(endpointUrl);
+                if (!endpointUrl.endsWith("/")) {
+                    discoveryUrl.append("/");
+                }
+                discoveryUrl.append("discovery");
+
+                return create(discoveryUrl.toString(), selectEndpoint, buildConfig);
+            } else {
+                throw UaException.extract(e)
+                    .orElseGet(() -> new UaException(e));
+            }
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -147,9 +245,9 @@ public class OpcUaClient implements UaClient {
     private final ExecutionQueue faultNotificationQueue;
 
     private final AddressSpace addressSpace;
-    private final NodeCache nodeCache = new DefaultNodeCache();
 
-    private final TypeRegistry typeRegistry = new TypeRegistry();
+    private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
+    private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
     private final OpcUaSubscriptionManager subscriptionManager;
 
@@ -163,26 +261,6 @@ public class OpcUaClient implements UaClient {
         this.stackClient = stackClient;
 
         sessionFsm = SessionFsmFactory.newSessionFsm(this);
-
-        sessionFsm.addInitializer((client, session) -> {
-            logger.debug("SessionInitializer: DataTypeDictionary");
-
-            DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
-                client,
-                session,
-                config.getBsdParser()
-            );
-
-            return reader.readDataTypeDictionaries()
-                .thenAccept(dictionaries ->
-                    dictionaries.forEach(
-                        stackClient.getDataTypeManager()::registerTypeDictionary))
-                .thenApply(v -> Unit.VALUE)
-                .exceptionally(ex -> {
-                    logger.warn("SessionInitializer: DataTypeDictionary", ex);
-                    return Unit.VALUE;
-                });
-        });
 
         sessionFsm.addInitializer((client, session) -> {
             logger.debug("SessionInitializer: NamespaceTable");
@@ -201,28 +279,11 @@ public class OpcUaClient implements UaClient {
                 }
             );
 
-            CompletableFuture<String[]> namespaceArray = client.sendRequest(readRequest)
+            return client.sendRequest(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
-                .thenApply(results -> (String[]) results[0].getValue().getValue());
-
-            return namespaceArray
-                .thenAccept(uris -> getNamespaceTable().update(uriTable -> {
-                    uriTable.clear();
-
-                    if (uris.length > UShort.MAX_VALUE) {
-                        logger.warn("SessionInitializer: NamespaceTable returned by " +
-                            "server contains " + uris.length + " entries");
-                    }
-
-                    for (int i = 0; i < uris.length && i < UShort.MAX_VALUE; i++) {
-                        String uri = uris[i];
-
-                        if (uri != null && !uriTable.containsValue(uri)) {
-                            uriTable.put(ushort(i), uri);
-                        }
-                    }
-                }))
+                .thenApply(results -> (String[]) results[0].getValue().getValue())
+                .thenAccept(this::updateNamespaceTable)
                 .thenApply(v -> Unit.VALUE)
                 .exceptionally(ex -> {
                     logger.warn("SessionInitializer: NamespaceTable", ex);
@@ -233,10 +294,18 @@ public class OpcUaClient implements UaClient {
 
         faultNotificationQueue = new ExecutionQueue(config.getExecutor());
 
-        addressSpace = new DefaultAddressSpace(this);
+        addressSpace = new AddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
-        TypeRegistryInitializer.initialize(typeRegistry);
+        ObjectTypeInitializer.initialize(
+            stackClient.getNamespaceTable(),
+            objectTypeManager
+        );
+
+        VariableTypeInitializer.initialize(
+            stackClient.getNamespaceTable(),
+            variableTypeManager
+        );
     }
 
     @Override
@@ -249,11 +318,6 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public NodeCache getNodeCache() {
-        return nodeCache;
-    }
-
-    @Override
     public AddressSpace getAddressSpace() {
         return addressSpace;
     }
@@ -262,12 +326,93 @@ public class OpcUaClient implements UaClient {
         return stackClient.getDataTypeManager();
     }
 
-    public TypeRegistry getTypeRegistry() {
-        return typeRegistry;
+    public ObjectTypeManager getObjectTypeManager() {
+        return objectTypeManager;
     }
 
+    public VariableTypeManager getVariableTypeManager() {
+        return variableTypeManager;
+    }
+
+    /**
+     * Get the local copy of the server's NamespaceTable.
+     *
+     * @return the current local value for server's NamespaceTable.
+     */
     public NamespaceTable getNamespaceTable() {
         return stackClient.getNamespaceTable();
+    }
+
+    /**
+     * Read the server's NamespaceTable and update the local copy.
+     *
+     * @return the updated {@link NamespaceTable}.
+     * @throws UaException if an operation- or service-level error occurs.
+     */
+    public NamespaceTable readNamespaceTable() throws UaException {
+        try {
+            return readNamespaceTableAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
+
+    /**
+     * Read the server's NamespaceTable and update the local copy.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with the updated
+     * {@link NamespaceTable} or completes exceptionally if a service- or operation-level error
+     * occurs.
+     */
+    public CompletableFuture<NamespaceTable> readNamespaceTableAsync() {
+        return getSession().thenCompose(session -> {
+            RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
+
+            ReadRequest readRequest = new ReadRequest(
+                requestHeader,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        Identifiers.Server_NamespaceArray,
+                        AttributeId.Value.uid(),
+                        null,
+                        QualifiedName.NULL_VALUE)
+                }
+            );
+
+            CompletableFuture<String[]> namespaceArray = sendRequest(readRequest)
+                .thenApply(ReadResponse.class::cast)
+                .thenApply(response -> Objects.requireNonNull(response.getResults()))
+                .thenApply(results -> (String[]) results[0].getValue().getValue());
+
+            return namespaceArray
+                .thenAccept(this::updateNamespaceTable)
+                .thenApply(v -> getNamespaceTable());
+        });
+    }
+
+    private void updateNamespaceTable(String[] namespaceArray) {
+        getNamespaceTable().update(uriTable -> {
+            uriTable.clear();
+            uriTable.put(ushort(0), Namespaces.OPC_UA);
+
+            if (namespaceArray.length > UShort.MAX_VALUE) {
+                logger.warn("NamespaceTable returned by " +
+                    "server contains " + namespaceArray.length + " entries");
+            }
+
+            for (int i = 1; i < namespaceArray.length && i < UShort.MAX_VALUE; i++) {
+                String uri = namespaceArray[i];
+
+                if (uri != null && !uriTable.containsValue(uri)) {
+                    uriTable.put(ushort(i), uri);
+                }
+            }
+        });
     }
 
     public SerializationContext getSerializationContext() {
@@ -349,7 +494,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 maxAge,
                 timestampsToReturn,
-                a(readValueIds, ReadValueId.class));
+                a(readValueIds, ReadValueId.class)
+            );
 
             return sendRequest(request);
         });
@@ -360,7 +506,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             WriteRequest request = new WriteRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(writeValues, WriteValue.class));
+                a(writeValues, WriteValue.class)
+            );
 
             return sendRequest(request);
         });
@@ -378,7 +525,8 @@ public class OpcUaClient implements UaClient {
                 ExtensionObject.encode(getSerializationContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
-                a(nodesToRead, HistoryReadValueId.class));
+                a(nodesToRead, HistoryReadValueId.class)
+            );
 
             return sendRequest(request);
         });
@@ -393,7 +541,8 @@ public class OpcUaClient implements UaClient {
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                details);
+                details
+            );
 
             return sendRequest(request);
         });
@@ -409,7 +558,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 viewDescription,
                 maxReferencesPerNode,
-                a(nodesToBrowse, BrowseDescription.class));
+                a(nodesToBrowse, BrowseDescription.class)
+            );
 
             return sendRequest(request);
         });
@@ -423,7 +573,8 @@ public class OpcUaClient implements UaClient {
             BrowseNextRequest request = new BrowseNextRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 releaseContinuationPoints,
-                a(continuationPoints, ByteString.class));
+                a(continuationPoints, ByteString.class)
+            );
 
             return sendRequest(request);
         });
@@ -434,7 +585,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             TranslateBrowsePathsToNodeIdsRequest request = new TranslateBrowsePathsToNodeIdsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(browsePaths, BrowsePath.class));
+                a(browsePaths, BrowsePath.class)
+            );
 
             return sendRequest(request);
         });
@@ -445,7 +597,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             RegisterNodesRequest request = new RegisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToRegister, NodeId.class));
+                a(nodesToRegister, NodeId.class)
+            );
 
             return sendRequest(request);
         });
@@ -456,7 +609,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             UnregisterNodesRequest request = new UnregisterNodesRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(nodesToUnregister, NodeId.class));
+                a(nodesToUnregister, NodeId.class)
+            );
 
             return sendRequest(request);
         });
@@ -467,19 +621,21 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             CallRequest request = new CallRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(methodsToCall, CallMethodRequest.class));
+                a(methodsToCall, CallMethodRequest.class)
+            );
 
             return sendRequest(request);
         });
     }
 
     @Override
-    public CompletableFuture<CreateSubscriptionResponse> createSubscription(double requestedPublishingInterval,
-                                                                            UInteger requestedLifetimeCount,
-                                                                            UInteger requestedMaxKeepAliveCount,
-                                                                            UInteger maxNotificationsPerPublish,
-                                                                            boolean publishingEnabled,
-                                                                            UByte priority) {
+    public CompletableFuture<CreateSubscriptionResponse> createSubscription(
+        double requestedPublishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority) {
 
         return getSession().thenCompose(session -> {
             CreateSubscriptionRequest request = new CreateSubscriptionRequest(
@@ -489,19 +645,21 @@ public class OpcUaClient implements UaClient {
                 requestedMaxKeepAliveCount,
                 maxNotificationsPerPublish,
                 publishingEnabled,
-                priority);
+                priority
+            );
 
             return sendRequest(request);
         });
     }
 
     @Override
-    public CompletableFuture<ModifySubscriptionResponse> modifySubscription(UInteger subscriptionId,
-                                                                            double requestedPublishingInterval,
-                                                                            UInteger requestedLifetimeCount,
-                                                                            UInteger requestedMaxKeepAliveCount,
-                                                                            UInteger maxNotificationsPerPublish,
-                                                                            UByte priority) {
+    public CompletableFuture<ModifySubscriptionResponse> modifySubscription(
+        UInteger subscriptionId,
+        double requestedPublishingInterval,
+        UInteger requestedLifetimeCount,
+        UInteger requestedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        UByte priority) {
 
         return getSession().thenCompose(session -> {
             ModifySubscriptionRequest request = new ModifySubscriptionRequest(
@@ -511,7 +669,8 @@ public class OpcUaClient implements UaClient {
                 requestedLifetimeCount,
                 requestedMaxKeepAliveCount,
                 maxNotificationsPerPublish,
-                priority);
+                priority
+            );
 
             return sendRequest(request);
         });
@@ -522,7 +681,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             DeleteSubscriptionsRequest request = new DeleteSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionIds, UInteger.class));
+                a(subscriptionIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -536,7 +696,8 @@ public class OpcUaClient implements UaClient {
             TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 a(subscriptionIds, UInteger.class),
-                sendInitialValues);
+                sendInitialValues
+            );
 
             return sendRequest(request);
         });
@@ -550,7 +711,8 @@ public class OpcUaClient implements UaClient {
             SetPublishingModeRequest request = new SetPublishingModeRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 publishingEnabled,
-                a(subscriptionIds, UInteger.class));
+                a(subscriptionIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -561,7 +723,8 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             PublishRequest request = new PublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                a(subscriptionAcknowledgements, SubscriptionAcknowledgement.class));
+                a(subscriptionAcknowledgements, SubscriptionAcknowledgement.class)
+            );
 
             return sendRequest(request);
         });
@@ -573,7 +736,8 @@ public class OpcUaClient implements UaClient {
             RepublishRequest request = new RepublishRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
-                retransmitSequenceNumber);
+                retransmitSequenceNumber
+            );
 
             return sendRequest(request);
         });
@@ -590,7 +754,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 timestampsToReturn,
-                a(itemsToCreate, MonitoredItemCreateRequest.class));
+                a(itemsToCreate, MonitoredItemCreateRequest.class)
+            );
 
             return sendRequest(request);
         });
@@ -607,7 +772,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 timestampsToReturn,
-                a(itemsToModify, MonitoredItemModifyRequest.class));
+                a(itemsToModify, MonitoredItemModifyRequest.class)
+            );
 
             return sendRequest(request);
         });
@@ -621,7 +787,8 @@ public class OpcUaClient implements UaClient {
             DeleteMonitoredItemsRequest request = new DeleteMonitoredItemsRequest(
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
-                a(monitoredItemIds, UInteger.class));
+                a(monitoredItemIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -637,7 +804,8 @@ public class OpcUaClient implements UaClient {
                 newRequestHeader(session.getAuthenticationToken()),
                 subscriptionId,
                 monitoringMode,
-                a(monitoredItemIds, UInteger.class));
+                a(monitoredItemIds, UInteger.class)
+            );
 
             return sendRequest(request);
         });
@@ -655,7 +823,8 @@ public class OpcUaClient implements UaClient {
                 subscriptionId,
                 triggeringItemId,
                 a(linksToAdd, UInteger.class),
-                a(linksToRemove, UInteger.class));
+                a(linksToRemove, UInteger.class)
+            );
 
             return sendRequest(request);
         });

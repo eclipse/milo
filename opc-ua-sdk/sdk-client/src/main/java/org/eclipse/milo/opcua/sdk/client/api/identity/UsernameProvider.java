@@ -22,13 +22,11 @@ import javax.crypto.Cipher;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.bouncycastle.util.Arrays;
+import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
-import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -37,9 +35,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -48,11 +45,9 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
  */
 public class UsernameProvider implements IdentityProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final String username;
     private final String password;
-    private final CertificateValidator certificateValidator;
+    private final ClientCertificateValidator certificateValidator;
     private final Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser;
 
 
@@ -64,7 +59,7 @@ public class UsernameProvider implements IdentityProvider {
      * @param password the password to authenticate with.
      */
     public UsernameProvider(String username, String password) {
-        this(username, password, new InsecureCertificateValidator());
+        this(username, password, new ClientCertificateValidator.InsecureValidator());
     }
 
     /**
@@ -73,9 +68,9 @@ public class UsernameProvider implements IdentityProvider {
      *
      * @param username             the username to authenticate with.
      * @param password             the password to authenticate with.
-     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
      */
-    public UsernameProvider(String username, String password, CertificateValidator certificateValidator) {
+    public UsernameProvider(String username, String password, ClientCertificateValidator certificateValidator) {
         this(username, password, certificateValidator, ps -> ps.get(0));
     }
 
@@ -87,14 +82,14 @@ public class UsernameProvider implements IdentityProvider {
      *
      * @param username             the username to authenticate with.
      * @param password             the password to authenticate with.
-     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     * @param certificateValidator the {@link ClientCertificateValidator} used to validate the remote certificate.
      * @param policyChooser        a function that selects a {@link UserTokenPolicy} to use. The policy list is
      *                             guaranteed to be non-null and non-empty.
      */
     public UsernameProvider(
         String username,
         String password,
-        CertificateValidator certificateValidator,
+        ClientCertificateValidator certificateValidator,
         Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser) {
 
         this.username = username;
@@ -119,26 +114,16 @@ public class UsernameProvider implements IdentityProvider {
 
         UserTokenPolicy tokenPolicy = policyChooser.apply(tokenPolicies);
 
-        String policyId = tokenPolicy.getPolicyId();
-
-        SecurityPolicy securityPolicy = SecurityPolicy.None;
+        SecurityPolicy securityPolicy;
 
         String securityPolicyUri = tokenPolicy.getSecurityPolicyUri();
         try {
-            if (securityPolicyUri != null && !securityPolicyUri.isEmpty()) {
-                securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
-            } else {
+            if (securityPolicyUri == null || securityPolicyUri.isEmpty()) {
                 securityPolicyUri = endpoint.getSecurityPolicyUri();
-                securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
             }
+            securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
         } catch (Throwable t) {
-            logger.warn("Error parsing SecurityPolicy for uri={}, falling back to no security.", securityPolicyUri);
-        }
-
-        NonceUtil.validateNonce(serverNonce);
-
-        if (serverNonce.length() > 0 && Arrays.areAllZeroes(serverNonce.bytesOrEmpty(), 0, serverNonce.length())) {
-            throw new UaException(StatusCodes.Bad_NonceInvalid, "nonce must be non-zero");
+            throw new UaException(StatusCodes.Bad_SecurityPolicyRejected, t);
         }
 
         byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
@@ -149,6 +134,8 @@ public class UsernameProvider implements IdentityProvider {
         if (securityPolicy == SecurityPolicy.None) {
             buffer.writeBytes(passwordBytes);
         } else {
+            NonceUtil.validateNonce(serverNonce);
+
             buffer.writeIntLE(passwordBytes.length + nonceBytes.length);
             buffer.writeBytes(passwordBytes);
             buffer.writeBytes(nonceBytes);
@@ -159,7 +146,8 @@ public class UsernameProvider implements IdentityProvider {
                 throw new UaException(
                     StatusCodes.Bad_ConfigurationError,
                     "UserTokenPolicy requires encryption but " +
-                        "server did not provide a certificate in endpoint");
+                        "server did not provide a certificate in endpoint"
+                );
             }
 
             List<X509Certificate> certificateChain = CertificateUtil.decodeCertificates(bs.bytes());
@@ -171,8 +159,11 @@ public class UsernameProvider implements IdentityProvider {
                 // If the SecurityPolicy is None or if this is an HTTP(S) connection the certificate used to encrypt
                 // the username and password must be trusted. Otherwise, if it's a secure connection, the certificate
                 // will have already been validated and verified when the secure channel or session was created.
-                certificateValidator.validate(certificate);
-                certificateValidator.verifyTrustChain(certificateChain);
+                certificateValidator.validateCertificateChain(
+                    certificateChain,
+                    endpoint.getServer().getApplicationUri(),
+                    EndpointUtil.getHost(endpoint.getEndpointUrl())
+                );
             }
 
             int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(
@@ -212,13 +203,13 @@ public class UsernameProvider implements IdentityProvider {
         String encryptionAlgorithm = securityAlgorithmUri.isEmpty() ? null : securityAlgorithmUri;
 
         UserNameIdentityToken token = new UserNameIdentityToken(
-            policyId,
+            tokenPolicy.getPolicyId(),
             username,
             ByteString.of(bs),
             encryptionAlgorithm
         );
 
-        return new SignedIdentityToken(token, new SignatureData());
+        return new SignedIdentityToken(token, new SignatureData(null, null));
     }
 
     private Cipher getAndInitializeCipher(X509Certificate serverCertificate,
@@ -243,7 +234,12 @@ public class UsernameProvider implements IdentityProvider {
             '}';
     }
 
-    public static UsernameProvider of(String username, String password, CertificateValidator certificateValidator) {
+    public static UsernameProvider of(
+        String username,
+        String password,
+        ClientCertificateValidator certificateValidator
+    ) {
+
         return new UsernameProvider(username, password, certificateValidator);
     }
 

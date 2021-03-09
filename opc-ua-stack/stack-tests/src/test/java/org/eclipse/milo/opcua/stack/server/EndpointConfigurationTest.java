@@ -10,11 +10,14 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
+import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.expectThrows;
 
 public class EndpointConfigurationTest {
@@ -56,20 +59,9 @@ public class EndpointConfigurationTest {
     }
 
     @Test
-    protected void missingTokenPolicyThrows() {
-        expectThrows(
-            IllegalStateException.class,
-            () ->
-                // missing UserTokenPolicy
-                EndpointConfiguration.newBuilder()
-                    .build()
-        );
-    }
-
-    @Test
     public void unsupportedTransportThrows() {
         expectThrows(
-            IllegalStateException.class,
+            IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
                     .setTransportProfile(TransportProfile.HTTPS_UAXML)
@@ -77,7 +69,7 @@ public class EndpointConfigurationTest {
         );
 
         expectThrows(
-            IllegalStateException.class,
+            IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
                     .setTransportProfile(TransportProfile.HTTPS_UAJSON)
@@ -85,7 +77,7 @@ public class EndpointConfigurationTest {
         );
 
         expectThrows(
-            IllegalStateException.class,
+            IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
                     .setTransportProfile(TransportProfile.WSS_UAJSON)
@@ -93,12 +85,22 @@ public class EndpointConfigurationTest {
         );
 
         expectThrows(
-            IllegalStateException.class,
+            IllegalArgumentException.class,
             () ->
                 EndpointConfiguration.newBuilder()
                     .setTransportProfile(TransportProfile.WSS_UASC_UABINARY)
                     .build()
         );
+    }
+
+    @Test
+    public void missingTokenPolicyDefaultsToAnonymous() {
+        EndpointConfiguration endpointConfiguration =
+            EndpointConfiguration.newBuilder().build();
+
+        ImmutableList<UserTokenPolicy> tokenPolicies = endpointConfiguration.getTokenPolicies();
+        assertEquals(tokenPolicies.size(), 1);
+        assertEquals(tokenPolicies.get(0), EndpointConfiguration.Builder.USER_TOKEN_POLICY_ANONYMOUS);
     }
 
 }

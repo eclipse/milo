@@ -10,86 +10,79 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class AddNodesRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class AddNodesRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=486");
 
-    public static final NodeId TypeId = Identifiers.AddNodesRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.AddNodesRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.AddNodesRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=488");
 
-    protected final RequestHeader requestHeader;
-    protected final AddNodesItem[] nodesToAdd;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=487");
 
-    public AddNodesRequest() {
-        this.requestHeader = null;
-        this.nodesToAdd = null;
-    }
+    private final RequestHeader requestHeader;
+
+    private final AddNodesItem[] nodesToAdd;
 
     public AddNodesRequest(RequestHeader requestHeader, AddNodesItem[] nodesToAdd) {
         this.requestHeader = requestHeader;
         this.nodesToAdd = nodesToAdd;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    @Nullable
-    public AddNodesItem[] getNodesToAdd() { return nodesToAdd; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("NodesToAdd", nodesToAdd)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<AddNodesRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public AddNodesItem[] getNodesToAdd() {
+        return nodesToAdd;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<AddNodesRequest> {
         @Override
         public Class<AddNodesRequest> getType() {
             return AddNodesRequest.class;
         }
 
         @Override
-        public AddNodesRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
-            AddNodesItem[] nodesToAdd =
-                decoder.readBuiltinStructArray(
-                    "NodesToAdd",
-                    AddNodesItem.class
-                );
-
+        public AddNodesRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
+            AddNodesItem[] nodesToAdd = (AddNodesItem[]) decoder.readStructArray("NodesToAdd", AddNodesItem.TYPE_ID);
             return new AddNodesRequest(requestHeader, nodesToAdd);
         }
 
         @Override
-        public void encode(AddNodesRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBuiltinStructArray(
-                "NodesToAdd",
-                value.nodesToAdd,
-                AddNodesItem.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, AddNodesRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeStructArray("NodesToAdd", value.getNodesToAdd(), AddNodesItem.TYPE_ID);
         }
     }
-
 }

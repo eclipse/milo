@@ -10,41 +10,46 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class ActivateSessionRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = false
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ActivateSessionRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=465");
 
-    public static final NodeId TypeId = Identifiers.ActivateSessionRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.ActivateSessionRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ActivateSessionRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=467");
 
-    protected final RequestHeader requestHeader;
-    protected final SignatureData clientSignature;
-    protected final SignedSoftwareCertificate[] clientSoftwareCertificates;
-    protected final String[] localeIds;
-    protected final ExtensionObject userIdentityToken;
-    protected final SignatureData userTokenSignature;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=466");
 
-    public ActivateSessionRequest() {
-        this.requestHeader = null;
-        this.clientSignature = null;
-        this.clientSoftwareCertificates = null;
-        this.localeIds = null;
-        this.userIdentityToken = null;
-        this.userTokenSignature = null;
-    }
+    private final RequestHeader requestHeader;
 
-    public ActivateSessionRequest(RequestHeader requestHeader, SignatureData clientSignature, SignedSoftwareCertificate[] clientSoftwareCertificates, String[] localeIds, ExtensionObject userIdentityToken, SignatureData userTokenSignature) {
+    private final SignatureData clientSignature;
+
+    private final SignedSoftwareCertificate[] clientSoftwareCertificates;
+
+    private final String[] localeIds;
+
+    private final ExtensionObject userIdentityToken;
+
+    private final SignatureData userTokenSignature;
+
+    public ActivateSessionRequest(RequestHeader requestHeader, SignatureData clientSignature,
+                                  SignedSoftwareCertificate[] clientSoftwareCertificates, String[] localeIds,
+                                  ExtensionObject userIdentityToken, SignatureData userTokenSignature) {
         this.requestHeader = requestHeader;
         this.clientSignature = clientSignature;
         this.clientSoftwareCertificates = clientSoftwareCertificates;
@@ -53,77 +58,71 @@ public class ActivateSessionRequest implements UaRequestMessage {
         this.userTokenSignature = userTokenSignature;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public SignatureData getClientSignature() { return clientSignature; }
-
-    @Nullable
-    public SignedSoftwareCertificate[] getClientSoftwareCertificates() { return clientSoftwareCertificates; }
-
-    @Nullable
-    public String[] getLocaleIds() { return localeIds; }
-
-    public ExtensionObject getUserIdentityToken() { return userIdentityToken; }
-
-    public SignatureData getUserTokenSignature() { return userTokenSignature; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("ClientSignature", clientSignature)
-            .add("ClientSoftwareCertificates", clientSoftwareCertificates)
-            .add("LocaleIds", localeIds)
-            .add("UserIdentityToken", userIdentityToken)
-            .add("UserTokenSignature", userTokenSignature)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ActivateSessionRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public SignatureData getClientSignature() {
+        return clientSignature;
+    }
+
+    public SignedSoftwareCertificate[] getClientSoftwareCertificates() {
+        return clientSoftwareCertificates;
+    }
+
+    public String[] getLocaleIds() {
+        return localeIds;
+    }
+
+    public ExtensionObject getUserIdentityToken() {
+        return userIdentityToken;
+    }
+
+    public SignatureData getUserTokenSignature() {
+        return userTokenSignature;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ActivateSessionRequest> {
         @Override
         public Class<ActivateSessionRequest> getType() {
             return ActivateSessionRequest.class;
         }
 
         @Override
-        public ActivateSessionRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
-            SignatureData clientSignature = (SignatureData) decoder.readBuiltinStruct("ClientSignature", SignatureData.class);
-            SignedSoftwareCertificate[] clientSoftwareCertificates =
-                decoder.readBuiltinStructArray(
-                    "ClientSoftwareCertificates",
-                    SignedSoftwareCertificate.class
-                );
-            String[] localeIds = decoder.readArray("LocaleIds", decoder::readString, String.class);
+        public ActivateSessionRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
+            SignatureData clientSignature = (SignatureData) decoder.readStruct("ClientSignature", SignatureData.TYPE_ID);
+            SignedSoftwareCertificate[] clientSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.readStructArray("ClientSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
+            String[] localeIds = decoder.readStringArray("LocaleIds");
             ExtensionObject userIdentityToken = decoder.readExtensionObject("UserIdentityToken");
-            SignatureData userTokenSignature = (SignatureData) decoder.readBuiltinStruct("UserTokenSignature", SignatureData.class);
-
+            SignatureData userTokenSignature = (SignatureData) decoder.readStruct("UserTokenSignature", SignatureData.TYPE_ID);
             return new ActivateSessionRequest(requestHeader, clientSignature, clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature);
         }
 
         @Override
-        public void encode(ActivateSessionRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeBuiltinStruct("ClientSignature", value.clientSignature, SignatureData.class);
-            encoder.writeBuiltinStructArray(
-                "ClientSoftwareCertificates",
-                value.clientSoftwareCertificates,
-                SignedSoftwareCertificate.class
-            );
-            encoder.writeArray("LocaleIds", value.localeIds, encoder::writeString);
-            encoder.writeExtensionObject("UserIdentityToken", value.userIdentityToken);
-            encoder.writeBuiltinStruct("UserTokenSignature", value.userTokenSignature, SignatureData.class);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ActivateSessionRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeStruct("ClientSignature", value.getClientSignature(), SignatureData.TYPE_ID);
+            encoder.writeStructArray("ClientSoftwareCertificates", value.getClientSoftwareCertificates(), SignedSoftwareCertificate.TYPE_ID);
+            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.writeExtensionObject("UserIdentityToken", value.getUserIdentityToken());
+            encoder.writeStruct("UserTokenSignature", value.getUserTokenSignature(), SignatureData.TYPE_ID);
         }
     }
-
 }

@@ -182,7 +182,7 @@ public final class DataValue {
             from.value,
             from.status,
             includeSource ? from.sourceTime : null,
-            includeServer ? new DateTime() : null
+            includeServer ? DateTime.now() : null
         );
     }
 
@@ -202,7 +202,7 @@ public final class DataValue {
             from.value,
             from.status,
             null,
-            includeServer ? new DateTime() : null
+            includeServer ? DateTime.now() : null
         );
     }
 
@@ -279,11 +279,13 @@ public final class DataValue {
                 setSourcePicoseconds(null);
             }
 
-            if (includeServer) {
-                setServerTime(DateTime.now());
-            } else {
+            if (!includeServer) {
                 setServerTime(null);
                 setServerPicoseconds(null);
+            } else {
+                if (serverTime == null) {
+                    setServerTime(DateTime.now());
+                }
             }
 
             return this;

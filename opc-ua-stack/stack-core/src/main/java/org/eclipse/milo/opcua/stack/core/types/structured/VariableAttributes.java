@@ -10,48 +10,55 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class VariableAttributes extends NodeAttributes {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class VariableAttributes extends NodeAttributes implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=355");
 
-    public static final NodeId TypeId = Identifiers.VariableAttributes;
-    public static final NodeId BinaryEncodingId = Identifiers.VariableAttributes_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.VariableAttributes_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=357");
 
-    protected final Variant value;
-    protected final NodeId dataType;
-    protected final Integer valueRank;
-    protected final UInteger[] arrayDimensions;
-    protected final UByte accessLevel;
-    protected final UByte userAccessLevel;
-    protected final Double minimumSamplingInterval;
-    protected final Boolean historizing;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=356");
 
-    public VariableAttributes() {
-        super(null, null, null, null, null);
-        this.value = null;
-        this.dataType = null;
-        this.valueRank = null;
-        this.arrayDimensions = null;
-        this.accessLevel = null;
-        this.userAccessLevel = null;
-        this.minimumSamplingInterval = null;
-        this.historizing = null;
-    }
+    private final Variant value;
 
-    public VariableAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Variant value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, Boolean historizing) {
+    private final NodeId dataType;
+
+    private final Integer valueRank;
+
+    private final UInteger[] arrayDimensions;
+
+    private final UByte accessLevel;
+
+    private final UByte userAccessLevel;
+
+    private final Double minimumSamplingInterval;
+
+    private final Boolean historizing;
+
+    public VariableAttributes(UInteger specifiedAttributes, LocalizedText displayName,
+                              LocalizedText description, UInteger writeMask, UInteger userWriteMask, Variant value,
+                              NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel,
+                              UByte userAccessLevel, Double minimumSamplingInterval, Boolean historizing) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.value = value;
         this.dataType = dataType;
@@ -63,60 +70,61 @@ public class VariableAttributes extends NodeAttributes {
         this.historizing = historizing;
     }
 
-    public Variant getValue() { return value; }
-
-    public NodeId getDataType() { return dataType; }
-
-    public Integer getValueRank() { return valueRank; }
-
-    @Nullable
-    public UInteger[] getArrayDimensions() { return arrayDimensions; }
-
-    public UByte getAccessLevel() { return accessLevel; }
-
-    public UByte getUserAccessLevel() { return userAccessLevel; }
-
-    public Double getMinimumSamplingInterval() { return minimumSamplingInterval; }
-
-    public Boolean getHistorizing() { return historizing; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", specifiedAttributes)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .add("WriteMask", writeMask)
-            .add("UserWriteMask", userWriteMask)
-            .add("Value", value)
-            .add("DataType", dataType)
-            .add("ValueRank", valueRank)
-            .add("ArrayDimensions", arrayDimensions)
-            .add("AccessLevel", accessLevel)
-            .add("UserAccessLevel", userAccessLevel)
-            .add("MinimumSamplingInterval", minimumSamplingInterval)
-            .add("Historizing", historizing)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<VariableAttributes> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public Variant getValue() {
+        return value;
+    }
+
+    public NodeId getDataType() {
+        return dataType;
+    }
+
+    public Integer getValueRank() {
+        return valueRank;
+    }
+
+    public UInteger[] getArrayDimensions() {
+        return arrayDimensions;
+    }
+
+    public UByte getAccessLevel() {
+        return accessLevel;
+    }
+
+    public UByte getUserAccessLevel() {
+        return userAccessLevel;
+    }
+
+    public Double getMinimumSamplingInterval() {
+        return minimumSamplingInterval;
+    }
+
+    public Boolean getHistorizing() {
+        return historizing;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<VariableAttributes> {
         @Override
         public Class<VariableAttributes> getType() {
             return VariableAttributes.class;
         }
 
         @Override
-        public VariableAttributes decode(UaDecoder decoder) throws UaSerializationException {
+        public VariableAttributes decode(SerializationContext context, UaDecoder decoder) {
             UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");
@@ -125,31 +133,29 @@ public class VariableAttributes extends NodeAttributes {
             Variant value = decoder.readVariant("Value");
             NodeId dataType = decoder.readNodeId("DataType");
             Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readArray("ArrayDimensions", decoder::readUInt32, UInteger.class);
+            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
             UByte accessLevel = decoder.readByte("AccessLevel");
             UByte userAccessLevel = decoder.readByte("UserAccessLevel");
             Double minimumSamplingInterval = decoder.readDouble("MinimumSamplingInterval");
             Boolean historizing = decoder.readBoolean("Historizing");
-
             return new VariableAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
         }
 
         @Override
-        public void encode(VariableAttributes value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
-            encoder.writeUInt32("WriteMask", value.writeMask);
-            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
-            encoder.writeVariant("Value", value.value);
-            encoder.writeNodeId("DataType", value.dataType);
-            encoder.writeInt32("ValueRank", value.valueRank);
-            encoder.writeArray("ArrayDimensions", value.arrayDimensions, encoder::writeUInt32);
-            encoder.writeByte("AccessLevel", value.accessLevel);
-            encoder.writeByte("UserAccessLevel", value.userAccessLevel);
-            encoder.writeDouble("MinimumSamplingInterval", value.minimumSamplingInterval);
-            encoder.writeBoolean("Historizing", value.historizing);
+        public void encode(SerializationContext context, UaEncoder encoder, VariableAttributes value) {
+            encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.writeUInt32("WriteMask", value.getWriteMask());
+            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeVariant("Value", value.getValue());
+            encoder.writeNodeId("DataType", value.getDataType());
+            encoder.writeInt32("ValueRank", value.getValueRank());
+            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.writeByte("AccessLevel", value.getAccessLevel());
+            encoder.writeByte("UserAccessLevel", value.getUserAccessLevel());
+            encoder.writeDouble("MinimumSamplingInterval", value.getMinimumSamplingInterval());
+            encoder.writeBoolean("Historizing", value.getHistorizing());
         }
     }
-
 }

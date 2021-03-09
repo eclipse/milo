@@ -10,78 +10,82 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class ReferenceTypeAttributes extends NodeAttributes {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ReferenceTypeAttributes extends NodeAttributes implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=367");
 
-    public static final NodeId TypeId = Identifiers.ReferenceTypeAttributes;
-    public static final NodeId BinaryEncodingId = Identifiers.ReferenceTypeAttributes_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ReferenceTypeAttributes_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=369");
 
-    protected final Boolean isAbstract;
-    protected final Boolean symmetric;
-    protected final LocalizedText inverseName;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=368");
 
-    public ReferenceTypeAttributes() {
-        super(null, null, null, null, null);
-        this.isAbstract = null;
-        this.symmetric = null;
-        this.inverseName = null;
-    }
+    private final Boolean isAbstract;
 
-    public ReferenceTypeAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean isAbstract, Boolean symmetric, LocalizedText inverseName) {
+    private final Boolean symmetric;
+
+    private final LocalizedText inverseName;
+
+    public ReferenceTypeAttributes(UInteger specifiedAttributes, LocalizedText displayName,
+                                   LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean isAbstract,
+                                   Boolean symmetric, LocalizedText inverseName) {
         super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         this.isAbstract = isAbstract;
         this.symmetric = symmetric;
         this.inverseName = inverseName;
     }
 
-    public Boolean getIsAbstract() { return isAbstract; }
-
-    public Boolean getSymmetric() { return symmetric; }
-
-    public LocalizedText getInverseName() { return inverseName; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", specifiedAttributes)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .add("WriteMask", writeMask)
-            .add("UserWriteMask", userWriteMask)
-            .add("IsAbstract", isAbstract)
-            .add("Symmetric", symmetric)
-            .add("InverseName", inverseName)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ReferenceTypeAttributes> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public Boolean getIsAbstract() {
+        return isAbstract;
+    }
+
+    public Boolean getSymmetric() {
+        return symmetric;
+    }
+
+    public LocalizedText getInverseName() {
+        return inverseName;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ReferenceTypeAttributes> {
         @Override
         public Class<ReferenceTypeAttributes> getType() {
             return ReferenceTypeAttributes.class;
         }
 
         @Override
-        public ReferenceTypeAttributes decode(UaDecoder decoder) throws UaSerializationException {
+        public ReferenceTypeAttributes decode(SerializationContext context, UaDecoder decoder) {
             UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");
@@ -90,21 +94,20 @@ public class ReferenceTypeAttributes extends NodeAttributes {
             Boolean isAbstract = decoder.readBoolean("IsAbstract");
             Boolean symmetric = decoder.readBoolean("Symmetric");
             LocalizedText inverseName = decoder.readLocalizedText("InverseName");
-
             return new ReferenceTypeAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, isAbstract, symmetric, inverseName);
         }
 
         @Override
-        public void encode(ReferenceTypeAttributes value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
-            encoder.writeUInt32("WriteMask", value.writeMask);
-            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
-            encoder.writeBoolean("IsAbstract", value.isAbstract);
-            encoder.writeBoolean("Symmetric", value.symmetric);
-            encoder.writeLocalizedText("InverseName", value.inverseName);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ReferenceTypeAttributes value) {
+            encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.writeUInt32("WriteMask", value.getWriteMask());
+            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeBoolean("IsAbstract", value.getIsAbstract());
+            encoder.writeBoolean("Symmetric", value.getSymmetric());
+            encoder.writeLocalizedText("InverseName", value.getInverseName());
         }
     }
-
 }

@@ -10,75 +10,75 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class DeleteEventDetails extends HistoryUpdateDetails {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DeleteEventDetails extends HistoryUpdateDetails implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=692");
 
-    public static final NodeId TypeId = Identifiers.DeleteEventDetails;
-    public static final NodeId BinaryEncodingId = Identifiers.DeleteEventDetails_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DeleteEventDetails_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=694");
 
-    protected final ByteString[] eventIds;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=693");
 
-    public DeleteEventDetails() {
-        super(null);
-        this.eventIds = null;
-    }
+    private final ByteString[] eventIds;
 
     public DeleteEventDetails(NodeId nodeId, ByteString[] eventIds) {
         super(nodeId);
         this.eventIds = eventIds;
     }
 
-    @Nullable
-    public ByteString[] getEventIds() { return eventIds; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("EventIds", eventIds)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DeleteEventDetails> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ByteString[] getEventIds() {
+        return eventIds;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DeleteEventDetails> {
         @Override
         public Class<DeleteEventDetails> getType() {
             return DeleteEventDetails.class;
         }
 
         @Override
-        public DeleteEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+        public DeleteEventDetails decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            ByteString[] eventIds = decoder.readArray("EventIds", decoder::readByteString, ByteString.class);
-
+            ByteString[] eventIds = decoder.readByteStringArray("EventIds");
             return new DeleteEventDetails(nodeId, eventIds);
         }
 
         @Override
-        public void encode(DeleteEventDetails value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeArray("EventIds", value.eventIds, encoder::writeByteString);
+        public void encode(SerializationContext context, UaEncoder encoder, DeleteEventDetails value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeByteStringArray("EventIds", value.getEventIds());
         }
     }
-
 }

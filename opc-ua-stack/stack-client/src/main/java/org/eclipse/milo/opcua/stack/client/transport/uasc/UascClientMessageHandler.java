@@ -37,7 +37,8 @@ import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
@@ -483,8 +484,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 List<X509Certificate> serverCertificateChain =
                     CertificateUtil.decodeCertificates(serverCertificateBytes.bytesOrEmpty());
 
-                certificateValidator.validate(serverCertificateChain.get(0));
-                certificateValidator.verifyTrustChain(serverCertificateChain);
+                certificateValidator.validateCertificateChain(serverCertificateChain);
             }
         } else {
             if (!securityHeader.equals(headerRef.get())) {
@@ -497,64 +497,63 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
             final List<ByteBuf> buffersToDecode = chunkBuffers;
             chunkBuffers = new ArrayList<>(maxChunkCount);
 
-            serializationQueue.decode((binaryDecoder, chunkDecoder) ->
-                chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                    @Override
-                    public void onDecodingError(UaException ex) {
-                        logger.error(
-                            "Error decoding asymmetric message: {}",
-                            ex.getMessage(), ex);
+            serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                ByteBuf message;
 
-                        handshakeFuture.completeExceptionally(ex);
+                try {
+                    ChunkDecoder.DecodedMessage decodedMessage =
+                        chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
 
+                    message = decodedMessage.getMessage();
+                } catch (MessageAbortException e) {
+                    logger.warn(
+                        "Received message abort chunk; error={}, reason={}",
+                        e.getStatusCode(), e.getMessage()
+                    );
+                    return;
+                } catch (MessageDecodeException e) {
+                    logger.error("Error decoding asymmetric message", e);
+
+                    handshakeFuture.completeExceptionally(e);
+
+                    ctx.close();
+                    return;
+                }
+
+                try {
+                    UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                        .setBuffer(message)
+                        .readMessage(null);
+
+                    StatusCode serviceResult = response.getResponseHeader().getServiceResult();
+
+                    if (serviceResult.isGood()) {
+                        OpenSecureChannelResponse oscr = (OpenSecureChannelResponse) response;
+
+                        secureChannel.setChannelId(oscr.getSecurityToken().getChannelId().longValue());
+                        logger.debug("Received OpenSecureChannelResponse.");
+
+                        NonceUtil.validateNonce(oscr.getServerNonce(), secureChannel.getSecurityPolicy());
+
+                        installSecurityToken(ctx, oscr);
+
+                        handshakeFuture.complete(secureChannel);
+                    } else {
+                        ServiceFault serviceFault = (response instanceof ServiceFault) ?
+                            (ServiceFault) response : new ServiceFault(response.getResponseHeader());
+
+                        handshakeFuture.completeExceptionally(new UaServiceFaultException(serviceFault));
                         ctx.close();
                     }
+                } catch (Throwable t) {
+                    logger.error("Error decoding OpenSecureChannelResponse", t);
 
-                    @Override
-                    public void onMessageAborted(MessageAbortedException ex) {
-                        logger.warn(
-                            "Asymmetric message aborted. error={} reason={}",
-                            ex.getStatusCode(), ex.getMessage());
-                    }
-
-                    @Override
-                    public void onMessageDecoded(ByteBuf message, long requestId) {
-                        try {
-                            UaResponseMessage response = (UaResponseMessage) binaryDecoder
-                                .setBuffer(message)
-                                .readMessage(null);
-
-                            StatusCode serviceResult = response.getResponseHeader().getServiceResult();
-
-                            if (serviceResult.isGood()) {
-                                OpenSecureChannelResponse oscr = (OpenSecureChannelResponse) response;
-
-                                secureChannel.setChannelId(oscr.getSecurityToken().getChannelId().longValue());
-                                logger.debug("Received OpenSecureChannelResponse.");
-
-                                NonceUtil.validateNonce(oscr.getServerNonce(), secureChannel.getSecurityPolicy());
-
-                                installSecurityToken(ctx, oscr);
-
-                                handshakeFuture.complete(secureChannel);
-                            } else {
-                                ServiceFault serviceFault = (response instanceof ServiceFault) ?
-                                    (ServiceFault) response : new ServiceFault(response.getResponseHeader());
-
-                                handshakeFuture.completeExceptionally(new UaServiceFaultException(serviceFault));
-                                ctx.close();
-                            }
-                        } catch (Throwable t) {
-                            logger.error("Error decoding OpenSecureChannelResponse", t);
-
-                            handshakeFuture.completeExceptionally(t);
-                            ctx.close();
-                        } finally {
-                            message.release();
-                        }
-                    }
-                })
-            );
+                    handshakeFuture.completeExceptionally(t);
+                    ctx.close();
+                } finally {
+                    message.release();
+                }
+            });
         }
     }
 
@@ -628,92 +627,62 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
             chunkBuffers = new ArrayList<>(maxChunkCount);
 
             serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+                ByteBuf message;
+                long requestId;
+
                 try {
-                    validateChunkHeaders(buffersToDecode);
-                } catch (UaException e) {
-                    logger.error("Error validating chunk headers: {}", e.getMessage(), e);
-                    buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
+                    ChunkDecoder.DecodedMessage decodedMessage =
+                        chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode);
+
+                    message = decodedMessage.getMessage();
+                    requestId = decodedMessage.getRequestId();
+                } catch (MessageAbortException e) {
+                    logger.warn(
+                        "Received message abort chunk; error={}, reason={}",
+                        e.getStatusCode(), e.getMessage()
+                    );
+
+                    UaTransportRequest request = pending.remove(e.getRequestId());
+
+                    if (request != null) {
+                        request.getFuture().completeExceptionally(e);
+                    } else {
+                        logger.warn("No pending request for requestId={}", e.getRequestId());
+                    }
+                    return;
+                } catch (MessageDecodeException e) {
+                    logger.error("Error decoding symmetric message", e);
+
                     ctx.close();
                     return;
                 }
 
-                chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
-                    @Override
-                    public void onDecodingError(UaException ex) {
-                        logger.error(
-                            "Error decoding symmetric message: {}",
-                            ex.getMessage(), ex);
 
-                        ctx.close();
-                    }
+                UaTransportRequest request = pending.remove(requestId);
 
-                    @Override
-                    public void onMessageAborted(MessageAbortedException ex) {
+                try {
+                    UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                        .setBuffer(message)
+                        .readMessage(null);
+
+                    if (request != null) {
+                        request.getFuture().complete(response);
+                    } else {
                         logger.warn(
-                            "Received message abort chunk; error={}, reason={}",
-                            ex.getStatusCode(), ex.getMessage());
-
-                        long requestId = ex.getRequestId();
-                        UaTransportRequest request = pending.remove(requestId);
-
-                        if (request != null) {
-                            request.getFuture().completeExceptionally(ex);
-                        } else {
-                            logger.warn("No pending request for requestId={}", requestId);
-                        }
+                            "No pending request with requestId={} for {}",
+                            requestId, response.getClass().getSimpleName()
+                        );
                     }
+                } catch (Throwable t) {
+                    logger.error("Error decoding UaResponseMessage", t);
 
-                    @Override
-                    public void onMessageDecoded(ByteBuf message, long requestId) {
-                        UaTransportRequest request = pending.remove(requestId);
-
-                        try {
-                            UaResponseMessage response = (UaResponseMessage) binaryDecoder
-                                .setBuffer(message)
-                                .readMessage(null);
-
-                            if (request != null) {
-                                request.getFuture().complete(response);
-                            } else {
-                                logger.warn(
-                                    "No pending request with requestId={} for {}",
-                                    requestId, response.getClass().getSimpleName());
-                            }
-                        } catch (Throwable t) {
-                            logger.error("Error decoding UaResponseMessage", t);
-
-                            if (request != null) {
-                                request.getFuture().completeExceptionally(t);
-                            }
-                        } finally {
-                            message.release();
-                        }
+                    if (request != null) {
+                        request.getFuture().completeExceptionally(t);
                     }
-                });
+                } finally {
+                    message.release();
+                }
             });
-        }
-    }
-
-    private void validateChunkHeaders(List<ByteBuf> chunkBuffers) throws UaException {
-        ChannelSecurity channelSecurity = secureChannel.getChannelSecurity();
-        long currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
-        long previousTokenId = channelSecurity.getPreviousToken()
-            .map(t -> t.getTokenId().longValue())
-            .orElse(-1L);
-
-        for (ByteBuf chunkBuffer : chunkBuffers) {
-            // tokenId starts after messageType + chunkType + messageSize + secureChannelId
-            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
-
-            if (tokenId != currentTokenId && tokenId != previousTokenId) {
-                String message = String.format(
-                    "received unknown secure channel token: " +
-                        "tokenId=%s currentTokenId=%s previousTokenId=%s",
-                    tokenId, currentTokenId, previousTokenId
-                );
-
-                throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
-            }
         }
     }
 

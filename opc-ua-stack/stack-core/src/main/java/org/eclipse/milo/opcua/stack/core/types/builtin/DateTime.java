@@ -17,6 +17,11 @@ import com.google.common.base.MoreObjects;
 
 public final class DateTime {
 
+    /**
+     * When {@code true}, {@link #now()} will use nanosecond precision.
+     */
+    public static volatile boolean USE_NANOS = false;
+
     public static final DateTime MIN_VALUE = new DateTime(0L);
 
     public static final DateTime NULL_VALUE = MIN_VALUE;
@@ -100,14 +105,29 @@ public final class DateTime {
     }
 
     /**
+     * Get a {@link DateTime} initialized to now.
+     * <p>
+     * The precision depends on the value of {@link #USE_NANOS}.
+     *
      * @return a {@link DateTime} initialized to now.
      */
     public static DateTime now() {
+        if (USE_NANOS) {
+            return nowNanos();
+        } else {
+            return nowMillis();
+        }
+    }
+
+    /**
+     * @return a {@link DateTime} initialized to now with millisecond precision.
+     */
+    public static DateTime nowMillis() {
         return new DateTime();
     }
 
     /**
-     * @return a {@link DateTime} initialized to now, considering nanoseconds
+     * @return a {@link DateTime} initialized to now with nanosecond precision.
      */
     public static DateTime nowNanos() {
         return new DateTime(Instant.now());

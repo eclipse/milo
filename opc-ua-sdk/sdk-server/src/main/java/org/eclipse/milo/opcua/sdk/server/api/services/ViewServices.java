@@ -20,14 +20,13 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFilter;
 import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContext;
 import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 
@@ -53,9 +52,6 @@ public interface ViewServices {
 
     /**
      * Get all References for which {@code nodeId} is the source.
-     * <p>
-     * The Node identified by {@code nodeId} is managed by this AddressSpace according to {@link AddressSpaceFilter}
-     * from {@link AddressSpace#getFilter()}.
      * <p>
      * If a Node instance for {@code nodeId} does not exist then {@link BrowseContext#failure(StatusCode)} should be
      * invoked with {@link StatusCodes#Bad_NodeIdUnknown}.
@@ -96,6 +92,15 @@ public interface ViewServices {
      */
     default void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
         context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
+    }
+
+    /**
+     * Get the number of views, if any, managed by this {@link ViewServices} implementation.
+     *
+     * @return the number of views, if any, managed by this {@link ViewServices} implementation.
+     */
+    default UInteger getViewCount() {
+        return uint(0);
     }
 
 

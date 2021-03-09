@@ -10,25 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class HelloMessage {
 
-    private static final int MAX_ENDPOINT_URL_LENGTH = 4096;
-
-    private static final EncodingLimits ENCODING_LIMITS = new EncodingLimits(
-        EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-        MAX_ENDPOINT_URL_LENGTH,
-        EncodingLimits.DEFAULT_MAX_RECURSION_DEPTH
-    );
+    static final int MAX_ENDPOINT_URL_LENGTH = 4096;
 
     @UInt32Primitive
     private final long protocolVersion;
@@ -65,12 +60,12 @@ public class HelloMessage {
                         @UInt32Primitive long sendBufferSize,
                         @UInt32Primitive long maxMessageSize,
                         @UInt32Primitive long maxChunkCount,
-                        @Nonnull String endpointUrl) {
+                        @Nullable String endpointUrl) {
 
         checkArgument(receiveBufferSize >= 8192, "receiverBufferSize must be at least 8192 bytes");
         checkArgument(sendBufferSize >= 8192, "sendBufferSize must be at least 8192 bytes");
         checkArgument(
-            endpointUrl.length() <= MAX_ENDPOINT_URL_LENGTH,
+            endpointUrl == null || endpointUrl.length() <= MAX_ENDPOINT_URL_LENGTH,
             "endpointUrl length cannot be greater than 4096 bytes");
 
         this.protocolVersion = protocolVersion;
@@ -106,6 +101,7 @@ public class HelloMessage {
         return maxChunkCount;
     }
 
+    @Nullable
     public String getEndpointUrl() {
         return endpointUrl;
     }
@@ -158,7 +154,7 @@ public class HelloMessage {
         encodeString(message.getEndpointUrl(), buffer);
     }
 
-    public static HelloMessage decode(ByteBuf buffer) {
+    public static HelloMessage decode(ByteBuf buffer) throws UaException {
         return new HelloMessage(
             buffer.readUnsignedIntLE(), /*    ProtocolVersion    */
             buffer.readUnsignedIntLE(), /*    ReceiveBufferSize  */
@@ -178,11 +174,24 @@ public class HelloMessage {
         }
     }
 
-    private static String decodeString(ByteBuf buffer) {
+    private static String decodeString(ByteBuf buffer) throws UaException {
         int length = buffer.readIntLE();
-        if (length == -1) {
-            return null;
+        if (length < 0) {
+            if (length == -1) {
+                return null;
+            } else {
+                throw new UaException(
+                    StatusCodes.Bad_DecodingError,
+                    "invalid endpoint URL length: " + length
+                );
+            }
         } else {
+            if (length > MAX_ENDPOINT_URL_LENGTH) {
+                throw new UaException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    "endpoint URL length exceeds 4096: " + length
+                );
+            }
             byte[] bs = new byte[length];
             buffer.readBytes(bs);
             return new String(bs, Charsets.UTF_8);
