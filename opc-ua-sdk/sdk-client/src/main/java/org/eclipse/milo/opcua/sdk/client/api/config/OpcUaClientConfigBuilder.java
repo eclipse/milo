@@ -24,8 +24,7 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.client.security.ClientCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -138,12 +137,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     @Override
     public OpcUaClientConfigBuilder setCertificateValidator(ClientCertificateValidator certificateValidator) {
         super.setCertificateValidator(certificateValidator);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setMessageLimits(MessageLimits messageLimits) {
-        super.setMessageLimits(messageLimits);
         return this;
     }
 
@@ -352,11 +345,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public ClientCertificateValidator getCertificateValidator() {
             return stackClientConfig.getCertificateValidator();
-        }
-
-        @Override
-        public MessageLimits getMessageLimits() {
-            return stackClientConfig.getMessageLimits();
         }
 
         @Override

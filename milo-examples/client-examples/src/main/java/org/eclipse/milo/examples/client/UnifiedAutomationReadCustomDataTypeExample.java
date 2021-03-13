@@ -13,8 +13,8 @@ package org.eclipse.milo.examples.client;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
-import org.eclipse.milo.opcua.sdk.client.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -57,7 +57,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
 
-        Object value = xo.decode(client.getSerializationContext());
+        Object value = xo.decode(client.getDynamicSerializationContext());
 
         logger.info("value: {}", value);
 

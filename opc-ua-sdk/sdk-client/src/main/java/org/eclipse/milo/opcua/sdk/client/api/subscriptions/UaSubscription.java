@@ -12,11 +12,9 @@ package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -100,7 +98,7 @@ public interface UaSubscription {
      * <b>WARNING:</b> items must be created in {@link MonitoringMode#Sampling} and then later set to
      * {@link MonitoringMode#Reporting} <i>after</i> consumers have been set in order to avoid a race condition where
      * the initial values arrive before the consumers are set. Alternatively, you can use
-     * {@link #createMonitoredItems(TimestampsToReturn, List, BiConsumer)} to avoid this race condition.
+     * {@link #createMonitoredItems(TimestampsToReturn, List, ItemCreationCallback)} to avoid this race condition.
      *
      * @param timestampsToReturn the {@link TimestampsToReturn}.
      * @param itemsToCreate      a list of {@link MonitoredItemCreateRequest}s.
@@ -108,35 +106,6 @@ public interface UaSubscription {
      */
     CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(TimestampsToReturn timestampsToReturn,
                                                                   List<MonitoredItemCreateRequest> itemsToCreate);
-
-    /**
-     * Create one or more {@link UaMonitoredItem}s.
-     * <p>
-     * Callers must check the quality of each of the returned {@link UaMonitoredItem}s; it is not to be assumed that
-     * all items were created successfully. Any item with a bad quality will not be updated nor will it be part of the
-     * subscription's bookkeeping.
-     * <p>
-     * {@code itemCreationCallback} will be invoked for each successfully created {@link UaMonitoredItem}. Callers
-     * should use this opportunity to register any value or event consumers on the item, as this is the only time in
-     * which it is guaranteed no values or events will be delivered to the item yet.
-     *
-     * @param timestampsToReturn   the {@link TimestampsToReturn}.
-     * @param itemsToCreate        a list of {@link MonitoredItemCreateRequest}s.
-     * @param itemCreationCallback callback to be invoked for each successfully created {@link UaMonitoredItem}.
-     * @return a list of {@link UaMonitoredItem}s.
-     */
-    default CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(
-        TimestampsToReturn timestampsToReturn,
-        List<MonitoredItemCreateRequest> itemsToCreate,
-        BiConsumer<UaMonitoredItem, Integer> itemCreationCallback) {
-
-        return createMonitoredItems(
-            timestampsToReturn,
-            itemsToCreate,
-            (serializationContext, item, index) ->
-                itemCreationCallback.accept(item, index)
-        );
-    }
 
     /**
      * Create one or more {@link UaMonitoredItem}s.
@@ -273,7 +242,7 @@ public interface UaSubscription {
 
     interface ItemCreationCallback {
 
-        void onItemCreated(SerializationContext serializationContext, UaMonitoredItem item, int index);
+        void onItemCreated(UaMonitoredItem item, int index);
 
     }
 

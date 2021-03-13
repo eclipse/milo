@@ -51,62 +51,54 @@ public final class ChunkEncoder {
         this.parameters = parameters;
     }
 
-    public void encodeAsymmetric(
+    public EncodedMessage encodeAsymmetric(
         SecureChannel channel,
         long requestId,
         ByteBuf messageBuffer,
-        MessageType messageType,
-        ChunkEncoder.Callback callback) {
+        MessageType messageType
+    ) throws MessageEncodeException {
 
-        encode(asymmetricEncoder, channel, requestId, messageBuffer, messageType, callback);
+        return encode(asymmetricEncoder, channel, requestId, messageBuffer, messageType);
     }
 
-    public void encodeSymmetric(
+    public EncodedMessage encodeSymmetric(
         SecureChannel channel,
         long requestId,
         ByteBuf messageBuffer,
-        MessageType messageType,
-        ChunkEncoder.Callback callback) {
+        MessageType messageType
+    ) throws MessageEncodeException {
 
-        encode(symmetricEncoder, channel, requestId, messageBuffer, messageType, callback);
+        return encode(symmetricEncoder, channel, requestId, messageBuffer, messageType);
     }
 
-    private static void encode(
+    private EncodedMessage encode(
         AbstractEncoder encoder,
         SecureChannel channel,
         long requestId,
         ByteBuf messageBuffer,
-        MessageType messageType,
-        Callback callback) {
+        MessageType messageType
+    ) throws MessageEncodeException {
 
         List<ByteBuf> chunks = new ArrayList<>();
 
         try {
-            encoder.encode(chunks, channel, requestId, messageBuffer, messageType, callback);
+            return encoder.encode(chunks, channel, requestId, messageBuffer, messageType);
         } catch (UaException e) {
-            callback.onEncodingError(e);
-
             chunks.forEach(ReferenceCountUtil::safeRelease);
+
+            throw new MessageEncodeException(e);
         }
-    }
-
-    public interface Callback {
-
-        void onEncodingError(UaException ex);
-
-        void onMessageEncoded(List<ByteBuf> messageChunks, long requestId);
-
     }
 
     private abstract class AbstractEncoder {
 
-        void encode(
+        EncodedMessage encode(
             List<ByteBuf> chunks,
             SecureChannel channel,
             long requestId,
             ByteBuf messageBuffer,
-            MessageType messageType,
-            ChunkEncoder.Callback callback) throws UaException {
+            MessageType messageType
+        ) throws UaException {
 
             boolean encrypted = isEncryptionEnabled(channel);
 
@@ -236,7 +228,7 @@ public final class ChunkEncoder {
                 chunkBuffer.readerIndex(0).writerIndex(chunkSize);
             }
 
-            callback.onMessageEncoded(chunks, requestId);
+            return new EncodedMessage(chunks, requestId);
         }
 
         private void writePadding(int cipherTextBlockSize, int paddingSize, ByteBuf buffer) {
@@ -276,7 +268,30 @@ public final class ChunkEncoder {
 
     }
 
-    private class AsymmetricEncoder extends AbstractEncoder {
+    /**
+     * A fully encoded message, in one more more chunks ready to send.
+     */
+    public static class EncodedMessage {
+
+        private final List<ByteBuf> messageChunks;
+        private final long requestId;
+
+        public EncodedMessage(List<ByteBuf> messageChunks, long requestId) {
+            this.messageChunks = messageChunks;
+            this.requestId = requestId;
+        }
+
+        public List<ByteBuf> getMessageChunks() {
+            return messageChunks;
+        }
+
+        public long getRequestId() {
+            return requestId;
+        }
+
+    }
+
+    private final class AsymmetricEncoder extends AbstractEncoder {
 
         @Override
         public byte[] signChunk(SecureChannel channel, ByteBuffer chunkNioBuffer) throws UaException {
@@ -358,7 +373,7 @@ public final class ChunkEncoder {
 
     }
 
-    private class SymmetricEncoder extends AbstractEncoder {
+    private final class SymmetricEncoder extends AbstractEncoder {
 
         private volatile ChannelSecurity.SecurityKeys securityKeys;
         private volatile Cipher cipher = null;

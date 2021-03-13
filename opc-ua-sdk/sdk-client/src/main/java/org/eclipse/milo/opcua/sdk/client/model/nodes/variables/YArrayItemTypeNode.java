@@ -40,7 +40,7 @@ public class YArrayItemTypeNode extends ArrayItemTypeNode implements YArrayItemT
     @Override
     public void setXAxisDefinition(AxisInformation xAxisDefinition) throws UaException {
         PropertyTypeNode node = getXAxisDefinitionNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), xAxisDefinition);
         node.setValue(new Variant(value));
     }
 
@@ -69,7 +69,7 @@ public class YArrayItemTypeNode extends ArrayItemTypeNode implements YArrayItemT
 
     @Override
     public CompletableFuture<StatusCode> writeXAxisDefinitionAsync(AxisInformation xAxisDefinition) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), xAxisDefinition);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), xAxisDefinition);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getXAxisDefinitionNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

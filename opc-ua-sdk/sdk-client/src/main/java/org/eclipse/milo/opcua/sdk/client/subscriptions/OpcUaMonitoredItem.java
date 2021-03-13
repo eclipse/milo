@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -76,6 +75,11 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.monitoringFilter = monitoringFilter;
         this.discardOldest = discardOldest;
         this.timestamps = timestamps;
+    }
+
+    @Override
+    public OpcUaClient getClient() {
+        return client;
     }
 
     @Override
@@ -145,12 +149,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     @Override
     public void setValueConsumer(Consumer<DataValue> consumer) {
-        this.valueConsumer = (context, item, value) -> consumer.accept(value);
-    }
-
-    @Override
-    public void setValueConsumer(BiConsumer<UaMonitoredItem, DataValue> valueBiConsumer) {
-        this.valueConsumer = (context, item, value) -> valueBiConsumer.accept(item, value);
+        this.valueConsumer = (item, value) -> consumer.accept(value);
     }
 
     @Override
@@ -160,12 +159,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     @Override
     public void setEventConsumer(Consumer<Variant[]> consumer) {
-        this.eventConsumer = (dataTypeManager, item, values) -> consumer.accept(values);
-    }
-
-    @Override
-    public void setEventConsumer(BiConsumer<UaMonitoredItem, Variant[]> eventBiConsumer) {
-        this.eventConsumer = (dataTypeManager, item, values) -> eventBiConsumer.accept(item, values);
+        this.eventConsumer = (item, values) -> consumer.accept(values);
     }
 
     @Override
@@ -215,12 +209,12 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     void onValueArrived(DataValue value) {
         ValueConsumer c = valueConsumer;
-        if (c != null) c.onValueArrived(client.getSerializationContext(), this, value);
+        if (c != null) c.onValueArrived(this, value);
     }
 
     void onEventArrived(Variant[] values) {
         EventConsumer c = eventConsumer;
-        if (c != null) c.onEventArrived(client.getSerializationContext(), this, values);
+        if (c != null) c.onEventArrived(this, values);
     }
 
 }

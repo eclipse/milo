@@ -14,11 +14,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class CefactEngineeringUnitsTest {
 
     @Test
     public void test() {
+        assertTrue(CefactEngineeringUnits.getAll().length > 0);
+
         for (EUInformation eu : CefactEngineeringUnits.getAll()) {
             assertEquals(CefactEngineeringUnits.getByUnitId(eu.getUnitId()), eu);
         }

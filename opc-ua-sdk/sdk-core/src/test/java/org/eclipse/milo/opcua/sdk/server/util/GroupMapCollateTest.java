@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCollate;
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GroupMapCollateTest {

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCollate;
+import static org.eclipse.milo.opcua.sdk.core.util.GroupMapCollate.groupMapCollate;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.sdk.client.dtd;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.CodecDescription;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
+import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -110,7 +111,6 @@ public class DataTypeDictionaryReader {
         CompletableFuture<Stream<NodeId>> dictionaryNodeIds = browseFuture.thenApply(
             references ->
                 references.stream()
-                    .filter(r -> r.getNodeId().getNamespaceIndex().intValue() != 0)
                     .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType))
                     .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
         );
@@ -325,7 +325,15 @@ public class DataTypeDictionaryReader {
                                 NodeId dataTypeId = dataTypeIdMap.get(description);
 
                                 if (encodingId == null || encodingId.isNull()) {
-                                    logger.warn("encodingId is null for description={}", description);
+                                    if (dataTypeId != null && dataTypeId.getNamespaceIndex().intValue() != 0) {
+                                        logger.warn("encodingId is null for description={}", description);
+                                    } else {
+                                        // Theres a number of missing structures in the built-in type dictionary;
+                                        // namely the service request and response structures. It's expected that
+                                        // we won't be able to create codecs for these.
+                                        logger.debug(
+                                            "dataTypeId and encodingId is null for description={}", description);
+                                    }
                                 } else if (dataTypeId == null || dataTypeId.isNull()) {
                                     logger.warn("dataTypeId is null for description={}", description);
                                 } else {

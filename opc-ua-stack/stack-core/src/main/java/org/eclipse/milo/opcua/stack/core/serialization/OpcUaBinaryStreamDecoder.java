@@ -430,12 +430,12 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         if (length == -1) {
             return null;
         } else {
-            if (length > context.getEncodingLimits().getMaxStringLength()) {
+            if (length > context.getEncodingLimits().getMaxMessageSize()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
                     String.format(
-                        "max string length exceeded (length=%s, max=%s)",
-                        length, context.getEncodingLimits().getMaxStringLength())
+                        "string length exceeds max message size (length=%s, max=%s)",
+                        length, context.getEncodingLimits().getMaxMessageSize())
                 );
             }
 
@@ -1236,12 +1236,12 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {
-        if (length > context.getEncodingLimits().getMaxArrayLength()) {
+        if (length > context.getEncodingLimits().getMaxMessageSize()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
                 String.format(
-                    "max array length exceeded (length=%s, max=%s)",
-                    length, context.getEncodingLimits().getMaxArrayLength())
+                    "array length exceeds max message size (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxMessageSize())
             );
         }
     }

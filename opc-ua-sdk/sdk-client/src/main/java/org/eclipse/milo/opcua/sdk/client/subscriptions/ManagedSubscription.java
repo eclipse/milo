@@ -628,7 +628,7 @@ public class ManagedSubscription {
             MonitoringParameters parameters = new MonitoringParameters(
                 subscription.nextClientHandle(),
                 0.0,
-                ExtensionObject.encode(client.getSerializationContext(), eventFilters.get(i)),
+                ExtensionObject.encode(client.getStaticSerializationContext(), eventFilters.get(i)),
                 queueSize,
                 discardOldest
             );
@@ -898,7 +898,7 @@ public class ManagedSubscription {
      */
     public synchronized void setDefaultDataFilter(@Nullable DataChangeFilter defaultDataFilter) {
         this.defaultDataFilter = defaultDataFilter != null ?
-            ExtensionObject.encode(client.getSerializationContext(), defaultDataFilter) : null;
+            ExtensionObject.encode(client.getStaticSerializationContext(), defaultDataFilter) : null;
     }
 
     /**

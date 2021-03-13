@@ -39,12 +39,7 @@ public class SerializationQueue {
         this.parameters = parameters;
 
         chunkEncoder = new ChunkEncoder(parameters);
-
-        chunkDecoder = new ChunkDecoder(
-            parameters,
-            context.getEncodingLimits().getMaxArrayLength(),
-            context.getEncodingLimits().getMaxStringLength()
-        );
+        chunkDecoder = new ChunkDecoder(parameters, context.getEncodingLimits());
 
         binaryEncoder = new OpcUaBinaryStreamEncoder(context);
         binaryDecoder = new OpcUaBinaryStreamDecoder(context);

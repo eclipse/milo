@@ -18,16 +18,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
@@ -37,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.channel.MessageLimits.DEFAULT_MAX_CHUNK_SIZE;
-import static org.eclipse.milo.opcua.stack.core.channel.MessageLimits.DEFAULT_MAX_MESSAGE_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_CHUNK_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -74,24 +73,24 @@ public class ChunkSerializationTest extends SecureChannelFixture {
     );
 
     private ChannelParameters unlimitedChunkCountParameters = new ChannelParameters(
-        MessageLimits.DEFAULT_MAX_MESSAGE_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0,
-        MessageLimits.DEFAULT_MAX_MESSAGE_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_MESSAGE_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0
     );
 
     private ChannelParameters unlimitedMessageSizeParameters = new ChannelParameters(
         0,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0,
         0,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
-        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
+        EncodingLimits.DEFAULT_MAX_CHUNK_SIZE,
         0
     );
 
@@ -133,8 +132,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
         ChunkDecoder decoder = new ChunkDecoder(
             parameters,
-            EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-            EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+            EncodingLimits.DEFAULT
         );
 
         SecureChannel[] channels = generateChannels4096();
@@ -159,23 +157,18 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             List<ByteBuf> chunkBuffers = new ArrayList<>();
 
-            encoder.encodeAsymmetric(
-                clientChannel,
-                requestId.getAndIncrement(),
-                messageBuffer,
-                MessageType.OpenSecureChannel,
-                new ChunkEncoder.Callback() {
-                    @Override
-                    public void onEncodingError(UaException ex) {
-                        fail("onEncodingError", ex);
-                    }
+            try {
+                ChunkEncoder.EncodedMessage message = encoder.encodeAsymmetric(
+                    clientChannel,
+                    requestId.getAndIncrement(),
+                    messageBuffer,
+                    MessageType.OpenSecureChannel
+                );
 
-                    @Override
-                    public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                        chunkBuffers.addAll(messageChunks);
-                    }
-                }
-            );
+                chunkBuffers.addAll(message.getMessageChunks());
+            } catch (MessageEncodeException e) {
+                fail("encoding error", e);
+            }
 
             try {
                 ChunkDecoder.DecodedMessage decodedMessage =
@@ -202,8 +195,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
         ChunkDecoder decoder = new ChunkDecoder(
             parameters,
-            EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-            EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+            EncodingLimits.DEFAULT
         );
 
         SecureChannel[] channels = generateChannels4096();
@@ -228,23 +220,18 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             List<ByteBuf> chunkBuffers = new ArrayList<>();
 
-            encoder.encodeSymmetric(
-                clientChannel,
-                requestId.getAndIncrement(),
-                messageBuffer,
-                MessageType.OpenSecureChannel,
-                new ChunkEncoder.Callback() {
-                    @Override
-                    public void onEncodingError(UaException ex) {
-                        fail("onEncodingError", ex);
-                    }
+            try {
+                ChunkEncoder.EncodedMessage message = encoder.encodeSymmetric(
+                    clientChannel,
+                    requestId.getAndIncrement(),
+                    messageBuffer,
+                    MessageType.OpenSecureChannel
+                );
 
-                    @Override
-                    public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                        chunkBuffers.addAll(messageChunks);
-                    }
-                }
-            );
+                chunkBuffers.addAll(message.getMessageChunks());
+            } catch (MessageEncodeException e) {
+                fail("encoding error", e);
+            }
 
             try {
                 ChunkDecoder.DecodedMessage decodedMessage =
@@ -284,8 +271,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             ChunkDecoder decoder = new ChunkDecoder(
                 parameters,
-                EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-                EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+                EncodingLimits.DEFAULT
             );
 
             SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
@@ -308,23 +294,18 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             List<ByteBuf> chunkBuffers = new ArrayList<>();
 
-            encoder.encodeAsymmetric(
-                clientChannel,
-                requestId.getAndIncrement(),
-                messageBuffer,
-                MessageType.OpenSecureChannel,
-                new ChunkEncoder.Callback() {
-                    @Override
-                    public void onEncodingError(UaException ex) {
-                        fail("onEncodingError", ex);
-                    }
+            try {
+                ChunkEncoder.EncodedMessage message = encoder.encodeAsymmetric(
+                    clientChannel,
+                    requestId.getAndIncrement(),
+                    messageBuffer,
+                    MessageType.OpenSecureChannel
+                );
 
-                    @Override
-                    public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                        chunkBuffers.addAll(messageChunks);
-                    }
-                }
-            );
+                chunkBuffers.addAll(message.getMessageChunks());
+            } catch (MessageEncodeException e) {
+                fail("encoding error", e);
+            }
 
             try {
                 ChunkDecoder.DecodedMessage decodedMessage =
@@ -388,8 +369,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
                 ChunkDecoder decoder = new ChunkDecoder(
                     parameters,
-                    EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
-                    EncodingLimits.DEFAULT_MAX_STRING_LENGTH
+                    EncodingLimits.DEFAULT
                 );
 
                 SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
@@ -412,23 +392,18 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
                 List<ByteBuf> chunkBuffers = new ArrayList<>();
 
-                encoder.encodeSymmetric(
-                    clientChannel,
-                    requestId.getAndIncrement(),
-                    messageBuffer,
-                    MessageType.SecureMessage,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            fail("onEncodingError", ex);
-                        }
+                try {
+                    ChunkEncoder.EncodedMessage message = encoder.encodeSymmetric(
+                        clientChannel,
+                        requestId.getAndIncrement(),
+                        messageBuffer,
+                        MessageType.SecureMessage
+                    );
 
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            chunkBuffers.addAll(messageChunks);
-                        }
-                    }
-                );
+                    chunkBuffers.addAll(message.getMessageChunks());
+                } catch (MessageEncodeException e) {
+                    fail("encoding error", e);
+                }
 
                 try {
                     ChunkDecoder.DecodedMessage decodedMessage =

@@ -102,7 +102,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     public void setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType serverDiagnosticsSummary)
         throws UaException {
         ServerDiagnosticsSummaryTypeNode node = getServerDiagnosticsSummaryNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), serverDiagnosticsSummary);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), serverDiagnosticsSummary);
         node.setValue(new Variant(value));
     }
 
@@ -134,7 +134,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<StatusCode> writeServerDiagnosticsSummaryAsync(
         ServerDiagnosticsSummaryDataType serverDiagnosticsSummary) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), serverDiagnosticsSummary);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), serverDiagnosticsSummary);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getServerDiagnosticsSummaryNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -167,7 +167,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     public void setSamplingIntervalDiagnosticsArray(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray) throws UaException {
         SamplingIntervalDiagnosticsArrayTypeNode node = getSamplingIntervalDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), samplingIntervalDiagnosticsArray);
         node.setValue(new Variant(encoded));
     }
 
@@ -200,7 +200,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<StatusCode> writeSamplingIntervalDiagnosticsArrayAsync(
         SamplingIntervalDiagnosticsDataType[] samplingIntervalDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), samplingIntervalDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), samplingIntervalDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSamplingIntervalDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
@@ -233,7 +233,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     public void setSubscriptionDiagnosticsArray(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) throws UaException {
         SubscriptionDiagnosticsArrayTypeNode node = getSubscriptionDiagnosticsArrayNode();
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), subscriptionDiagnosticsArray);
         node.setValue(new Variant(encoded));
     }
 
@@ -265,7 +265,7 @@ public class ServerDiagnosticsTypeNode extends BaseObjectTypeNode implements Ser
     @Override
     public CompletableFuture<StatusCode> writeSubscriptionDiagnosticsArrayAsync(
         SubscriptionDiagnosticsDataType[] subscriptionDiagnosticsArray) {
-        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getSerializationContext(), subscriptionDiagnosticsArray);
+        ExtensionObject[] encoded = ExtensionObject.encodeArray(client.getStaticSerializationContext(), subscriptionDiagnosticsArray);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSubscriptionDiagnosticsArrayNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));

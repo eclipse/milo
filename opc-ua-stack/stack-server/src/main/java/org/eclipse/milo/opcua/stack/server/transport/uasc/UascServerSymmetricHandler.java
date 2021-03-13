@@ -22,9 +22,10 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
-import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
+import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
@@ -224,41 +225,33 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
                 checkMessageSize(messageBuffer);
 
-                chunkEncoder.encodeSymmetric(
+                EncodedMessage encodedMessage = chunkEncoder.encodeSymmetric(
                     secureChannel,
                     requestId,
                     messageBuffer,
-                    MessageType.SecureMessage,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding {}: {}",
-                                response, ex.getMessage(), ex);
-
-                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
-
-                            sendServiceFault(ctx, requestId, requestHandle, ex);
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-                        }
-                    }
+                    MessageType.SecureMessage
                 );
-            } catch (UaSerializationException ex) {
-                logger.error("Error encoding response: {}", ex.getStatusCode(), ex);
+
+                CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
+                    chunkComposite.addComponent(chunk);
+                    chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                }
+
+                ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+            } catch (MessageEncodeException e) {
+                logger.error("Error encoding {}: {}", response, e.getMessage(), e);
 
                 UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
-                sendServiceFault(ctx, requestId, requestHandle, ex);
+                sendServiceFault(ctx, requestId, requestHandle, e);
+            } catch (UaSerializationException e) {
+                logger.error("Error serializing response: {}", e.getStatusCode(), e);
+
+                UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                sendServiceFault(ctx, requestId, requestHandle, e);
             } finally {
                 messageBuffer.release();
             }
@@ -295,33 +288,25 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
                 checkMessageSize(messageBuffer);
 
-                chunkEncoder.encodeSymmetric(
+                EncodedMessage encodedMessage = chunkEncoder.encodeSymmetric(
                     secureChannel,
                     requestId,
                     messageBuffer,
-                    MessageType.SecureMessage,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding {}: {}",
-                                serviceFault, ex.getMessage(), ex);
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-                        }
-                    }
+                    MessageType.SecureMessage
                 );
-            } catch (UaSerializationException ex) {
-                logger.error("Error encoding ServiceFault: {}", ex.getStatusCode(), ex);
+
+                CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
+                    chunkComposite.addComponent(chunk);
+                    chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                }
+
+                ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+            } catch (MessageEncodeException e) {
+                logger.error("Error encoding {}: {}", serviceFault, e.getMessage(), e);
+            } catch (UaSerializationException e) {
+                logger.error("Error serializing ServiceFault: {}", e.getStatusCode(), e);
             } finally {
                 messageBuffer.release();
             }

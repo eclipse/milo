@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.sdk.client.dtd;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
+import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
@@ -28,13 +29,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DataTypeDictionaryReaderTest {
 
@@ -109,7 +110,7 @@ class DataTypeDictionaryReaderTest {
             fragmentSize
         ).get();
 
-        assertEquals(typeDictionaryBs, dictionary);
+        Assertions.assertEquals(typeDictionaryBs, dictionary);
     }
 
 }

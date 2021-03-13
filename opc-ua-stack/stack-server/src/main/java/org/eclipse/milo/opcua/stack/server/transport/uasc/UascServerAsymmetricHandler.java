@@ -34,10 +34,11 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecurityKeys;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
-import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
+import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
+import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -82,8 +83,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
     private final AtomicReference<AsymmetricSecurityHeader> headerRef = new AtomicReference<>();
 
-    private final int maxArrayLength;
-    private final int maxStringLength;
     private final int maxChunkCount;
     private final int maxChunkSize;
 
@@ -94,14 +93,13 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     UascServerAsymmetricHandler(
         UaStackServer stackServer,
         TransportProfile transportProfile,
-        SerializationQueue serializationQueue) {
+        SerializationQueue serializationQueue
+    ) {
 
         this.stackServer = stackServer;
         this.transportProfile = transportProfile;
         this.serializationQueue = serializationQueue;
 
-        maxArrayLength = stackServer.getConfig().getEncodingLimits().getMaxArrayLength();
-        maxStringLength = stackServer.getConfig().getEncodingLimits().getMaxStringLength();
         maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
         maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
     }
@@ -160,8 +158,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
             final AsymmetricSecurityHeader header = AsymmetricSecurityHeader.decode(
                 buffer,
-                maxArrayLength,
-                maxStringLength
+                stackServer.getConfig().getEncodingLimits()
             );
 
             if (!headerRef.compareAndSet(null, header)) {
@@ -305,51 +302,44 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
                 checkMessageSize(messageBuffer);
 
-                chunkEncoder.encodeAsymmetric(
+                EncodedMessage encodedMessage = chunkEncoder.encodeAsymmetric(
                     secureChannel,
                     requestId,
                     messageBuffer,
-                    MessageType.OpenSecureChannel,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding OpenSecureChannelResponse: {}", ex.getMessage(), ex);
-                            ctx.fireExceptionCaught(ex);
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            if (!symmetricHandlerAdded) {
-                                UascServerSymmetricHandler symmetricHandler =
-                                    new UascServerSymmetricHandler(
-                                        stackServer,
-                                        serializationQueue,
-                                        secureChannel
-                                    );
-
-                                ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
-
-                                symmetricHandlerAdded = true;
-                            }
-
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-
-                            logger.debug("Sent OpenSecureChannelResponse.");
-                        }
-                    }
+                    MessageType.OpenSecureChannel
                 );
+
+                if (!symmetricHandlerAdded) {
+                    UascServerSymmetricHandler symmetricHandler = new UascServerSymmetricHandler(
+                        stackServer,
+                        serializationQueue,
+                        secureChannel
+                    );
+
+                    ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
+
+                    symmetricHandlerAdded = true;
+                }
+
+                CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                for (ByteBuf chunk : encodedMessage.getMessageChunks()) {
+                    chunkComposite.addComponent(chunk);
+                    chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                }
+
+                ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+
+                logger.debug("Sent OpenSecureChannelResponse.");
+            } catch (MessageEncodeException e) {
+                logger.error("Error encoding OpenSecureChannelResponse: {}", e.getMessage(), e);
+                ctx.fireExceptionCaught(e);
+            } catch (UaSerializationException e) {
+                logger.error("Error serializing OpenSecureChannelResponse: {}", e.getMessage(), e);
+                ctx.fireExceptionCaught(e);
             } catch (UaException e) {
                 logger.error("Error installing security token: {}", e.getStatusCode(), e);
                 ctx.close();
-            } catch (UaSerializationException e) {
-                ctx.fireExceptionCaught(e);
             } finally {
                 messageBuffer.release();
             }

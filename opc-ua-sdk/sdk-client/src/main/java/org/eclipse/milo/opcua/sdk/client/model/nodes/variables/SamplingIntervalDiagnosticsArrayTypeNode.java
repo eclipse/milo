@@ -41,7 +41,7 @@ public class SamplingIntervalDiagnosticsArrayTypeNode extends BaseDataVariableTy
     public void setSamplingIntervalDiagnostics(
         SamplingIntervalDiagnosticsDataType samplingIntervalDiagnostics) throws UaException {
         SamplingIntervalDiagnosticsTypeNode node = getSamplingIntervalDiagnosticsNode();
-        ExtensionObject value = ExtensionObject.encode(client.getSerializationContext(), samplingIntervalDiagnostics);
+        ExtensionObject value = ExtensionObject.encode(client.getStaticSerializationContext(), samplingIntervalDiagnostics);
         node.setValue(new Variant(value));
     }
 
@@ -73,7 +73,7 @@ public class SamplingIntervalDiagnosticsArrayTypeNode extends BaseDataVariableTy
     @Override
     public CompletableFuture<StatusCode> writeSamplingIntervalDiagnosticsAsync(
         SamplingIntervalDiagnosticsDataType samplingIntervalDiagnostics) {
-        ExtensionObject encoded = ExtensionObject.encode(client.getSerializationContext(), samplingIntervalDiagnostics);
+        ExtensionObject encoded = ExtensionObject.encode(client.getStaticSerializationContext(), samplingIntervalDiagnostics);
         DataValue value = DataValue.valueOnly(new Variant(encoded));
         return getSamplingIntervalDiagnosticsNodeAsync()
             .thenCompose(node -> node.writeAttributeAsync(AttributeId.Value, value));
