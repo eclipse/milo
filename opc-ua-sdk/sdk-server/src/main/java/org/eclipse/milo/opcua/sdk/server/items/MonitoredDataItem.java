@@ -137,7 +137,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
     }
 
     public synchronized void maybeSendLastValue() {
-        if (queue.isEmpty()) {
+        if (queue.isEmpty() && lastValue != null) {
             enqueue(lastValue);
         }
     }
