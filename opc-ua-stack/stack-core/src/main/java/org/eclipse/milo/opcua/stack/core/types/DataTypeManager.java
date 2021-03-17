@@ -10,11 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.jetbrains.annotations.Nullable;
 
 public interface DataTypeManager {
 

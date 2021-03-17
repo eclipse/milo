@@ -10,12 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.filters;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.sdk.server.nodes.DefaultAttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.jetbrains.annotations.Nullable;
 
 public interface AttributeFilter {
 

@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
@@ -27,63 +26,63 @@ final class ByteConversions {
 
     private ByteConversions() {}
 
-    @Nonnull
-    static Boolean byteToBoolean(@Nonnull UByte ub) {
+    @NotNull
+    static Boolean byteToBoolean(@NotNull UByte ub) {
         return ub.intValue() != 0;
     }
 
-    @Nonnull
-    static Double byteToDouble(@Nonnull UByte ub) {
+    @NotNull
+    static Double byteToDouble(@NotNull UByte ub) {
         return ub.doubleValue();
     }
 
-    @Nonnull
-    static Float byteToFloat(@Nonnull UByte ub) {
+    @NotNull
+    static Float byteToFloat(@NotNull UByte ub) {
         return ub.floatValue();
     }
 
-    @Nonnull
-    static Short byteToInt16(@Nonnull UByte ub) {
+    @NotNull
+    static Short byteToInt16(@NotNull UByte ub) {
         return ub.shortValue();
     }
 
-    @Nonnull
-    static Integer byteToInt32(@Nonnull UByte ub) {
+    @NotNull
+    static Integer byteToInt32(@NotNull UByte ub) {
         return ub.intValue();
     }
 
-    @Nonnull
-    static Long byteToInt64(@Nonnull UByte ub) {
+    @NotNull
+    static Long byteToInt64(@NotNull UByte ub) {
         return ub.longValue();
     }
 
     @Nullable
-    static Byte byteToSByte(@Nonnull UByte ub) {
+    static Byte byteToSByte(@NotNull UByte ub) {
         return ub.intValue() > Byte.MAX_VALUE ? null : ub.byteValue();
     }
 
-    @Nonnull
-    static String byteToString(@Nonnull UByte ub) {
+    @NotNull
+    static String byteToString(@NotNull UByte ub) {
         return ub.toString();
     }
 
-    @Nonnull
-    static UShort byteToUInt16(@Nonnull UByte ub) {
+    @NotNull
+    static UShort byteToUInt16(@NotNull UByte ub) {
         return ushort(ub.intValue());
     }
 
-    @Nonnull
-    static UInteger byteToUInt32(@Nonnull UByte ub) {
+    @NotNull
+    static UInteger byteToUInt32(@NotNull UByte ub) {
         return uint(ub.intValue());
     }
 
-    @Nonnull
-    static ULong byteToUInt64(@Nonnull UByte ub) {
+    @NotNull
+    static ULong byteToUInt64(@NotNull UByte ub) {
         return ulong(ub.longValue());
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof UByte) {
             UByte b = (UByte) o;
 
@@ -96,7 +95,7 @@ final class ByteConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull UByte b, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull UByte b, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return byteToBoolean(b);
@@ -107,7 +106,7 @@ final class ByteConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull UByte b, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull UByte b, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Double:    return byteToDouble(b);

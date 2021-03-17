@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.examples.server.types;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -19,6 +17,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.jetbrains.annotations.Nullable;
 
 public enum CustomEnumType implements UaEnumeration {
 

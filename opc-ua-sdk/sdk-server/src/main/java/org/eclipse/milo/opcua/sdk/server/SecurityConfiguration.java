@@ -15,7 +15,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -23,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.jetbrains.annotations.Nullable;
 
 public final class SecurityConfiguration {
 

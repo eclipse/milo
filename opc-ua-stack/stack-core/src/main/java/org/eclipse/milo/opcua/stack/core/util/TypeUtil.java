@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
@@ -31,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.Nullable;
 
 public class TypeUtil {
 

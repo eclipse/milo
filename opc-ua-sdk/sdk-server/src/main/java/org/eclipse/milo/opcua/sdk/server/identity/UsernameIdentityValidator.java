@@ -11,9 +11,9 @@
 package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.jetbrains.annotations.Nullable;
 
 public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator<String> {
 

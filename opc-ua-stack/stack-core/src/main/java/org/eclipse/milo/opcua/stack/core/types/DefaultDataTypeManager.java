@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.concurrent.ConcurrentMap;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
@@ -21,6 +20,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.jetbrains.annotations.Nullable;
 
 public class DefaultDataTypeManager implements DataTypeManager {
 

@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
@@ -30,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
 

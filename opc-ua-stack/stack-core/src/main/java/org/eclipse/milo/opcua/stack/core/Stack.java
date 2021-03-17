@@ -18,12 +18,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nonnull;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 public final class Stack {
@@ -71,7 +71,7 @@ public final class Stack {
                 private final AtomicLong threadNumber = new AtomicLong(0L);
 
                 @Override
-                public Thread newThread(@Nonnull Runnable r) {
+                public Thread newThread(@NotNull Runnable r) {
                     Thread thread = new Thread(r, "milo-netty-event-loop-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
                     return thread;
@@ -93,7 +93,7 @@ public final class Stack {
                 private final AtomicLong threadNumber = new AtomicLong(0L);
 
                 @Override
-                public Thread newThread(@Nonnull Runnable r) {
+                public Thread newThread(@NotNull Runnable r) {
                     Thread thread = new Thread(r, "milo-shared-thread-pool-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
                     thread.setUncaughtExceptionHandler(
@@ -136,7 +136,7 @@ public final class Stack {
                 private final AtomicLong threadNumber = new AtomicLong(0L);
 
                 @Override
-                public Thread newThread(@Nonnull Runnable r) {
+                public Thread newThread(@NotNull Runnable r) {
                     Thread thread = new Thread(r, "milo-shared-scheduled-executor-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
                     thread.setUncaughtExceptionHandler(

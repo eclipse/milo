@@ -12,11 +12,11 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.jetbrains.annotations.Nullable;
 
 public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>> implements AccessContext {
 

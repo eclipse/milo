@@ -13,12 +13,12 @@ package org.eclipse.milo.opcua.stack.core;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Consumer;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 

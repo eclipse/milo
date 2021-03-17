@@ -11,7 +11,8 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Thread-safe holder for a lazily-computed value.
@@ -25,7 +26,7 @@ public final class Lazy<T> {
     private volatile Object value;
 
     @SuppressWarnings("unchecked")
-    public T getOrCompute(@Nonnull Supplier<T> supplier) {
+    public T getOrCompute(@NotNull Supplier<T> supplier) {
         final Object v1 = value;
 
         if (v1 == LAZY_NULL) {

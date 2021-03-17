@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.security.cert.X509Certificate;
-import javax.annotation.Nullable;
 
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -25,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractX509IdentityValidator<T> extends AbstractIdentityValidator<T> {
 

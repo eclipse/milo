@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -28,13 +27,13 @@ final class Int16Conversions {
 
     private Int16Conversions() {}
 
-    @Nonnull
-    static Boolean int16ToBoolean(@Nonnull Short s) {
+    @NotNull
+    static Boolean int16ToBoolean(@NotNull Short s) {
         return s != 0;
     }
 
     @Nullable
-    static UByte int16ToByte(@Nonnull Short s) {
+    static UByte int16ToByte(@NotNull Short s) {
         if (s >= 0 && s <= UByte.MAX_VALUE) {
             return ubyte(s);
         } else {
@@ -42,28 +41,28 @@ final class Int16Conversions {
         }
     }
 
-    @Nonnull
-    static Double int16ToDouble(@Nonnull Short s) {
+    @NotNull
+    static Double int16ToDouble(@NotNull Short s) {
         return (double) s;
     }
 
-    @Nonnull
-    static Float int16ToFloat(@Nonnull Short s) {
+    @NotNull
+    static Float int16ToFloat(@NotNull Short s) {
         return (float) s;
     }
 
-    @Nonnull
-    static Integer int16ToInt32(@Nonnull Short s) {
+    @NotNull
+    static Integer int16ToInt32(@NotNull Short s) {
         return (int) s;
     }
 
-    @Nonnull
-    static Long int16ToInt64(@Nonnull Short s) {
+    @NotNull
+    static Long int16ToInt64(@NotNull Short s) {
         return (long) s;
     }
 
     @Nullable
-    static Byte int16ToSByte(@Nonnull Short s) {
+    static Byte int16ToSByte(@NotNull Short s) {
         if (s >= Byte.MIN_VALUE && s <= Byte.MAX_VALUE) {
             return s.byteValue();
         } else {
@@ -71,13 +70,13 @@ final class Int16Conversions {
         }
     }
 
-    @Nonnull
-    static String int16ToString(@Nonnull Short s) {
+    @NotNull
+    static String int16ToString(@NotNull Short s) {
         return s.toString();
     }
 
     @Nullable
-    static UShort int16ToUInt16(@Nonnull Short s) {
+    static UShort int16ToUInt16(@NotNull Short s) {
         if (s >= 0) {
             return ushort(s);
         } else {
@@ -86,7 +85,7 @@ final class Int16Conversions {
     }
 
     @Nullable
-    static UInteger int16ToUInt32(@Nonnull Short s) {
+    static UInteger int16ToUInt32(@NotNull Short s) {
         if (s >= 0) {
             return uint(s);
         } else {
@@ -95,7 +94,7 @@ final class Int16Conversions {
     }
 
     @Nullable
-    static ULong int16ToUInt64(@Nonnull Short s) {
+    static ULong int16ToUInt64(@NotNull Short s) {
         if (s >= 0) {
             return ulong(s);
         } else {
@@ -117,7 +116,7 @@ final class Int16Conversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull Short s, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull Short s, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return int16ToBoolean(s);
@@ -131,7 +130,7 @@ final class Int16Conversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull Short s, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull Short s, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Double:    return int16ToDouble(s);
