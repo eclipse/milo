@@ -11,11 +11,11 @@
 package org.eclipse.milo.opcua.stack.client.transport;
 
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.jetbrains.annotations.Nullable;
 
 public class UaTransportRequest {
 

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nonnull;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -47,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +118,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     }
 
 
-    @Nonnull
+    @NotNull
     private Variant[] selectEventFields(BaseEventTypeNode eventNode) {
         SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
 
@@ -178,7 +178,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         }
     }
 
-    @Nonnull
+    @NotNull
     private Variant[] generateOverflowEventFields() {
         BaseEventTypeNode overflowEvent = null;
 

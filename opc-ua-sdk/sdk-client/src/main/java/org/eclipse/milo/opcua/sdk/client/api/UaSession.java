@@ -10,13 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.client.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface UaSession {
 
@@ -77,7 +76,7 @@ public interface UaSession {
      * @return the attribute value.
      */
     @Nullable
-    Object getAttribute(@Nonnull String name);
+    Object getAttribute(@NotNull String name);
 
     /**
      * Binds an attribute to this session, using the name specified.
@@ -89,7 +88,7 @@ public interface UaSession {
      * @return the previously bound value, or {@code null} if none exists.
      */
     @Nullable
-    Object setAttribute(@Nonnull String name, @Nonnull Object value);
+    Object setAttribute(@NotNull String name, @NotNull Object value);
 
     /**
      * Removes the attribute bound with the specified name from this session.
@@ -100,6 +99,6 @@ public interface UaSession {
      * @return the previously bound value, or {@code null} if none exists.
      */
     @Nullable
-    Object removeAttribute(@Nonnull String name);
+    Object removeAttribute(@NotNull String name);
 
 }

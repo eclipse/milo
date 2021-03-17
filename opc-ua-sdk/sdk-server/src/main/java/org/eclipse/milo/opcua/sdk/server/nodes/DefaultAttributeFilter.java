@@ -10,12 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.SetAttributeContext;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An {@link AttributeFilter} that gets or sets the actual attribute value from the backing field of a {@link UaNode}.

@@ -10,13 +10,12 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
@@ -48,7 +47,7 @@ public final class QualifiedName {
      *                       namespace in the local Server’s NamespaceArray.
      * @param name           the text portion of the QualifiedName.
      */
-    public QualifiedName(@Nonnull UShort namespaceIndex, @Nullable String name) {
+    public QualifiedName(@NotNull UShort namespaceIndex, @Nullable String name) {
         Preconditions.checkNotNull(namespaceIndex);
         Preconditions.checkArgument(name == null || name.length() <= 512, "name");
 
@@ -108,7 +107,7 @@ public final class QualifiedName {
      * @param namespaceIndex thew new namespace index.
      * @return a new {@link QualifiedName} with {@code namespaceIndex}.
      */
-    public QualifiedName withNamespaceIndex(@Nonnull UShort namespaceIndex) {
+    public QualifiedName withNamespaceIndex(@NotNull UShort namespaceIndex) {
         return new QualifiedName(namespaceIndex, name);
     }
 

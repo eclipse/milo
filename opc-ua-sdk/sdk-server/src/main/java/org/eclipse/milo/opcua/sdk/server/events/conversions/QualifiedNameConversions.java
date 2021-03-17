@@ -10,29 +10,28 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class QualifiedNameConversions {
 
     private QualifiedNameConversions() {}
 
     @Nullable
-    static String qualifiedNameToString(@Nonnull QualifiedName name) {
+    static String qualifiedNameToString(@NotNull QualifiedName name) {
         return name.getName();
     }
 
-    @Nonnull
-    static LocalizedText qualifiedNameToLocalizedText(@Nonnull QualifiedName name) {
+    @NotNull
+    static LocalizedText qualifiedNameToLocalizedText(@NotNull QualifiedName name) {
         return new LocalizedText("", name.getName());
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof QualifiedName) {
             QualifiedName name = (QualifiedName) o;
 
@@ -45,12 +44,12 @@ final class QualifiedNameConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull QualifiedName name, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull QualifiedName name, BuiltinDataType targetType) {
         return implicitConversion(name, targetType);
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull QualifiedName name, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull QualifiedName name, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case String:        return qualifiedNameToString(name);

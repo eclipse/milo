@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.sdk.core.nodes.ViewNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ViewNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -21,6 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.jetbrains.annotations.Nullable;
 
 public class UaViewNode extends UaNode implements ViewNode {
 

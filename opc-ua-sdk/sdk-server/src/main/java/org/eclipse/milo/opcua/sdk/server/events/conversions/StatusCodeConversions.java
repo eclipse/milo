@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
@@ -27,38 +26,38 @@ final class StatusCodeConversions {
 
     private StatusCodeConversions() {}
 
-    @Nonnull
-    static Short statusCodeToInt16(@Nonnull StatusCode s) {
+    @NotNull
+    static Short statusCodeToInt16(@NotNull StatusCode s) {
         return (short) ((s.getValue() >>> 16) & 0xFFFF);
     }
 
-    @Nonnull
-    static Integer statusCodeToInt32(@Nonnull StatusCode s) {
+    @NotNull
+    static Integer statusCodeToInt32(@NotNull StatusCode s) {
         return (int) s.getValue();
     }
 
-    @Nonnull
-    static Long statusCodeToInt64(@Nonnull StatusCode s) {
+    @NotNull
+    static Long statusCodeToInt64(@NotNull StatusCode s) {
         return s.getValue();
     }
 
-    @Nonnull
-    static UShort statusCodeToUInt16(@Nonnull StatusCode s) {
+    @NotNull
+    static UShort statusCodeToUInt16(@NotNull StatusCode s) {
         return ushort(statusCodeToInt16(s));
     }
 
-    @Nonnull
-    static UInteger statusCodeToUInt32(@Nonnull StatusCode s) {
+    @NotNull
+    static UInteger statusCodeToUInt32(@NotNull StatusCode s) {
         return uint(statusCodeToInt32(s));
     }
 
-    @Nonnull
-    static ULong statusCodeToUInt64(@Nonnull StatusCode s) {
+    @NotNull
+    static ULong statusCodeToUInt64(@NotNull StatusCode s) {
         return ulong(s.getValue());
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof StatusCode) {
             StatusCode s = (StatusCode) o;
 
@@ -71,7 +70,7 @@ final class StatusCodeConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull StatusCode s, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull StatusCode s, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Int16:     return statusCodeToInt16(s);
@@ -82,7 +81,7 @@ final class StatusCodeConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull StatusCode s, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull StatusCode s, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Int32:     return statusCodeToInt32(s);

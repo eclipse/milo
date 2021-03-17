@@ -12,11 +12,11 @@ package org.eclipse.milo.opcua.stack.core;
 
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.jetbrains.annotations.Nullable;
 
 public enum BuiltinReferenceType implements ReferenceType {
 

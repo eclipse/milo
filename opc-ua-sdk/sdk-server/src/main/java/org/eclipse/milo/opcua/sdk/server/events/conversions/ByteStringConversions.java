@@ -12,19 +12,19 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class ByteStringConversions {
 
     private ByteStringConversions() {}
 
     @Nullable
-    static UUID byteStringToGuid(@Nonnull ByteString bs) {
+    static UUID byteStringToGuid(@NotNull ByteString bs) {
         if (bs.length() != 16) {
             return null;
         } else {
@@ -35,13 +35,13 @@ final class ByteStringConversions {
         }
     }
 
-    @Nonnull
-    static String byteStringToString(@Nonnull ByteString bs) {
+    @NotNull
+    static String byteStringToString(@NotNull ByteString bs) {
         return ByteBufUtil.hexDump(bs.bytesOrEmpty());
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof ByteString) {
             ByteString bs = (ByteString) o;
 
@@ -54,7 +54,7 @@ final class ByteStringConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull ByteString bs, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull ByteString bs, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Guid:      return byteStringToGuid(bs);
@@ -65,7 +65,7 @@ final class ByteStringConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull ByteString bs, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull ByteString bs, BuiltinDataType targetType) {
         // no implicit conversions exist
         return null;
     }

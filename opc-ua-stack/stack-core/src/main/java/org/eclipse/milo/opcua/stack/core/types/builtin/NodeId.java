@@ -13,8 +13,6 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
@@ -26,6 +24,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -143,7 +143,7 @@ public final class NodeId {
         this.identifier = identifier;
     }
 
-    NodeId(@Nonnull UShort namespaceIndex, @Nonnull Object identifier) {
+    NodeId(@NotNull UShort namespaceIndex, @NotNull Object identifier) {
         checkNotNull(namespaceIndex);
         checkNotNull(identifier);
 
@@ -376,7 +376,7 @@ public final class NodeId {
         return sb.toString();
     }
 
-    public static NodeId parse(@Nonnull String s) throws UaRuntimeException {
+    public static NodeId parse(@NotNull String s) throws UaRuntimeException {
         if (s.startsWith("ns=")) {
             int index = s.indexOf(";");
 
@@ -431,7 +431,7 @@ public final class NodeId {
     }
 
     @Nullable
-    public static NodeId parseOrNull(@Nonnull String s) {
+    public static NodeId parseOrNull(@NotNull String s) {
         try {
             return NodeId.parse(s);
         } catch (UaRuntimeException t) {
@@ -439,7 +439,7 @@ public final class NodeId {
         }
     }
 
-    public static Optional<NodeId> parseSafe(@Nonnull String s) {
+    public static Optional<NodeId> parseSafe(@NotNull String s) {
         return Optional.ofNullable(parseOrNull(s));
     }
 

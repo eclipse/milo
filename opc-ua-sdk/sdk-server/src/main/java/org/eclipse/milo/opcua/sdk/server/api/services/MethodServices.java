@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.api.services;
 
 import java.util.List;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -23,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Collections.nCopies;
 

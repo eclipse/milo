@@ -10,15 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -28,13 +27,13 @@ final class UInt16Conversions {
 
     private UInt16Conversions() {}
 
-    @Nonnull
-    static Boolean uInt16ToBoolean(@Nonnull UShort us) {
+    @NotNull
+    static Boolean uInt16ToBoolean(@NotNull UShort us) {
         return us.intValue() != 0;
     }
 
     @Nullable
-    static UByte uInt16ToByte(@Nonnull UShort us) {
+    static UByte uInt16ToByte(@NotNull UShort us) {
         int i = us.intValue();
 
         if (i <= UByte.MAX_VALUE) {
@@ -44,18 +43,18 @@ final class UInt16Conversions {
         }
     }
 
-    @Nonnull
-    static Double uInt16ToDouble(@Nonnull UShort us) {
+    @NotNull
+    static Double uInt16ToDouble(@NotNull UShort us) {
         return us.doubleValue();
     }
 
-    @Nonnull
-    static Float uInt16ToFloat(@Nonnull UShort us) {
+    @NotNull
+    static Float uInt16ToFloat(@NotNull UShort us) {
         return us.floatValue();
     }
 
     @Nullable
-    static Short uInt16ToInt16(@Nonnull UShort us) {
+    static Short uInt16ToInt16(@NotNull UShort us) {
         int i = us.intValue();
 
         if (i <= Short.MAX_VALUE) {
@@ -65,18 +64,18 @@ final class UInt16Conversions {
         }
     }
 
-    @Nonnull
-    static Integer uInt16ToInt32(@Nonnull UShort us) {
+    @NotNull
+    static Integer uInt16ToInt32(@NotNull UShort us) {
         return us.intValue();
     }
 
-    @Nonnull
-    static Long uInt16ToInt64(@Nonnull UShort us) {
+    @NotNull
+    static Long uInt16ToInt64(@NotNull UShort us) {
         return us.longValue();
     }
 
     @Nullable
-    static Byte uInt16ToSByte(@Nonnull UShort us) {
+    static Byte uInt16ToSByte(@NotNull UShort us) {
         int i = us.intValue();
 
         if (i <= Byte.MAX_VALUE) {
@@ -86,23 +85,23 @@ final class UInt16Conversions {
         }
     }
 
-    @Nonnull
-    static StatusCode uInt16ToStatusCode(@Nonnull UShort us) {
+    @NotNull
+    static StatusCode uInt16ToStatusCode(@NotNull UShort us) {
         return new StatusCode(us.longValue() << 16);
     }
 
-    @Nonnull
-    static String uInt16ToString(@Nonnull UShort us) {
+    @NotNull
+    static String uInt16ToString(@NotNull UShort us) {
         return us.toString();
     }
 
-    @Nonnull
-    static UInteger uInt16ToUInt32(@Nonnull UShort us) {
+    @NotNull
+    static UInteger uInt16ToUInt32(@NotNull UShort us) {
         return uint(us.intValue());
     }
 
-    @Nonnull
-    static ULong uInt16ToUInt64(@Nonnull UShort us) {
+    @NotNull
+    static ULong uInt16ToUInt64(@NotNull UShort us) {
         return ulong(us.longValue());
     }
 
@@ -120,7 +119,7 @@ final class UInt16Conversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull UShort us, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull UShort us, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return uInt16ToBoolean(us);
@@ -133,7 +132,7 @@ final class UInt16Conversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull UShort us, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull UShort us, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Double:        return uInt16ToDouble(us);

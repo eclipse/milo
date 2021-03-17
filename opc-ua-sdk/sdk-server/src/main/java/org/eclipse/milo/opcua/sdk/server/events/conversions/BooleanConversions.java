@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -28,63 +27,63 @@ final class BooleanConversions {
 
     private BooleanConversions() {}
 
-    @Nonnull
-    static UByte booleanToByte(@Nonnull Boolean b) {
+    @NotNull
+    static UByte booleanToByte(@NotNull Boolean b) {
         return ubyte(b ? 1 : 0);
     }
 
-    @Nonnull
-    static Double booleanToDouble(@Nonnull Boolean b) {
+    @NotNull
+    static Double booleanToDouble(@NotNull Boolean b) {
         return b ? 1.0 : 0.0;
     }
 
-    @Nonnull
-    static Float booleanToFloat(@Nonnull Boolean b) {
+    @NotNull
+    static Float booleanToFloat(@NotNull Boolean b) {
         return b ? 1.0f : 0.0f;
     }
 
-    @Nonnull
-    static Short booleanToInt16(@Nonnull Boolean b) {
+    @NotNull
+    static Short booleanToInt16(@NotNull Boolean b) {
         return b ? (short) 1 : (short) 0;
     }
 
-    @Nonnull
-    static Integer booleanToInt32(@Nonnull Boolean b) {
+    @NotNull
+    static Integer booleanToInt32(@NotNull Boolean b) {
         return b ? 1 : 0;
     }
 
-    @Nonnull
-    static Long booleanToInt64(@Nonnull Boolean b) {
+    @NotNull
+    static Long booleanToInt64(@NotNull Boolean b) {
         return b ? 1L : 0L;
     }
 
-    @Nonnull
-    static Byte booleanToSByte(@Nonnull Boolean b) {
+    @NotNull
+    static Byte booleanToSByte(@NotNull Boolean b) {
         return b ? (byte) 1 : (byte) 0;
     }
 
-    @Nonnull
-    static String booleanToString(@Nonnull Boolean b) {
+    @NotNull
+    static String booleanToString(@NotNull Boolean b) {
         return b ? "1" : "0";
     }
 
-    @Nonnull
-    static UShort booleanToUInt16(@Nonnull Boolean b) {
+    @NotNull
+    static UShort booleanToUInt16(@NotNull Boolean b) {
         return b ? ushort(1) : ushort(0);
     }
 
-    @Nonnull
-    static UInteger booleanToUInt32(@Nonnull Boolean b) {
+    @NotNull
+    static UInteger booleanToUInt32(@NotNull Boolean b) {
         return b ? uint(1) : uint(0);
     }
 
-    @Nonnull
-    static ULong booleanToUInt64(@Nonnull Boolean b) {
+    @NotNull
+    static ULong booleanToUInt64(@NotNull Boolean b) {
         return b ? ulong(1) : ulong(0);
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof Boolean) {
             Boolean b = (Boolean) o;
 
@@ -97,7 +96,7 @@ final class BooleanConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull Boolean b, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull Boolean b, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case String:    return booleanToString(b);
@@ -107,7 +106,7 @@ final class BooleanConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull Boolean b, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull Boolean b, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Byte:      return booleanToByte(b);

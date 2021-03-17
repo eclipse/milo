@@ -11,7 +11,8 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Objects;
-import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Vendor-specific diagnostic information
