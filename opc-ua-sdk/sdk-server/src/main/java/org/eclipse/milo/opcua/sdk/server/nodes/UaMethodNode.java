@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -230,6 +231,25 @@ public class UaMethodNode extends UaNode implements MethodNode {
      */
     public static UaMethodNodeBuilder builder(UaNodeContext context) {
         return new UaMethodNodeBuilder(context);
+    }
+
+    /**
+     * Build a {@link UaMethodNode} using the {@link UaMethodNodeBuilder} supplied to the
+     * {@code build} function.
+     *
+     * @param context a {@link UaNodeContext}.
+     * @param build   a function that accepts a {@link UaMethodNodeBuilder} and uses it to build
+     *                and return a {@link UaMethodNode}.
+     * @return a {@link UaMethodNode} built using the supplied {@link UaMethodNodeBuilder}.
+     */
+    public static UaMethodNode build(
+        UaNodeContext context,
+        Function<UaMethodNodeBuilder, UaMethodNode> build
+    ) {
+
+        UaMethodNodeBuilder builder = new UaMethodNodeBuilder(context);
+
+        return build.apply(builder);
     }
 
     public static class UaMethodNodeBuilder implements Supplier<UaMethodNode> {
