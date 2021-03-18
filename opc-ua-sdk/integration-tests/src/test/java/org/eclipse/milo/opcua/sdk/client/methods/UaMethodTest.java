@@ -118,9 +118,9 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void callMethodWithHasComponentReference() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
 
-        Variant[] outputs = serverNode.callMethod(
+        Variant[] outputs = objectsNode.callMethod(
             new QualifiedName(2, "sqrt(x)"),
             new Variant[]{new Variant(16.0)}
         );
@@ -132,9 +132,9 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void callMethodWithHasOrderedComponentReference() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
 
-        Variant[] outputs = serverNode.callMethod(
+        Variant[] outputs = objectsNode.callMethod(
             new QualifiedName(2, "sqrt2(x)"),
             new Variant[]{new Variant(16.0)}
         );
