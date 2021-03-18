@@ -12,14 +12,14 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Objects;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class DataValue {
 
@@ -54,7 +54,7 @@ public final class DataValue {
         this(value, status, sourceTime, null, serverTime, null);
     }
 
-    public DataValue(@Nonnull Variant value,
+    public DataValue(@NotNull Variant value,
                      @Nullable StatusCode status,
                      @Nullable DateTime sourceTime,
                      @Nullable UShort sourcePicoseconds,

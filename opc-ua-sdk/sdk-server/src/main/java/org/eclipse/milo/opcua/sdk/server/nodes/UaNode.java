@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
@@ -43,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;

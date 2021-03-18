@@ -11,8 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.events.operators;
 
 import java.lang.reflect.Array;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
@@ -24,6 +22,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A binary operator where the operands undergo implicit conversion to the same type based on their type precedence
@@ -93,7 +93,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
         @Nullable Object operand1) throws UaException;
 
     @Nullable
-    private static Object convert(@Nonnull Object value, BuiltinDataType targetType) {
+    private static Object convert(@NotNull Object value, BuiltinDataType targetType) {
         if (value.getClass().isArray()) {
             return convertArray(value, targetType);
         } else {
@@ -101,7 +101,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
         }
     }
 
-    private static Object convertArray(@Nonnull Object array, BuiltinDataType targetType) {
+    private static Object convertArray(@NotNull Object array, BuiltinDataType targetType) {
         int[] dimensions = ArrayUtil.getDimensions(array);
 
         Object flattened = ArrayUtil.flatten(array);
@@ -118,7 +118,7 @@ abstract class ImplicitConversionBinaryOperator<T> implements Operator<T> {
         return ArrayUtil.unflatten(transformed, dimensions);
     }
 
-    private static BuiltinDataType getType(@Nonnull Object o) {
+    private static BuiltinDataType getType(@NotNull Object o) {
         if (o.getClass().isArray()) {
             return BuiltinDataType.fromBackingClass(ArrayUtil.getType(o));
         } else {

@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -23,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A tree-based representation of a DataType hierarchy.

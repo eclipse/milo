@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,13 +93,26 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
     }
 
     private void registerCustomCodec(OpcUaClient client) {
+        NodeId dataTypeId = CustomStructType.TYPE_ID
+            .toNodeId(client.getNamespaceTable())
+            .orElseThrow(() -> new IllegalStateException("namespace not found"));
+
         NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID
             .toNodeId(client.getNamespaceTable())
             .orElseThrow(() -> new IllegalStateException("namespace not found"));
 
-        // Register codec with the client DataTypeManager instance
+        // Register codec with the client's DataTypeManager instance.
+        // We need to register it by both its encodingId and its dataTypeId because it may be
+        // looked up by either depending on the context.
+
         client.getStaticDataTypeManager().registerCodec(
             binaryEncodingId,
+            new CustomStructType.Codec().asBinaryCodec()
+        );
+
+        client.getStaticDataTypeManager().registerCodec(
+            new QualifiedName(dataTypeId.getNamespaceIndex(), "CustomStructType"),
+            dataTypeId,
             new CustomStructType.Codec().asBinaryCodec()
         );
     }

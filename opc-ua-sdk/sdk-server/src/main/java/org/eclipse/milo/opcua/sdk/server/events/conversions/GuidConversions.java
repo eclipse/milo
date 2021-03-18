@@ -12,18 +12,18 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class GuidConversions {
 
     private GuidConversions() {}
 
-    @Nonnull
-    static ByteString guidToByteString(@Nonnull UUID uuid) {
+    @NotNull
+    static ByteString guidToByteString(@NotNull UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
@@ -31,13 +31,13 @@ final class GuidConversions {
         return ByteString.of(bb.array());
     }
 
-    @Nonnull
-    static String guidToString(@Nonnull UUID uuid) {
+    @NotNull
+    static String guidToString(@NotNull UUID uuid) {
         return uuid.toString();
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof UUID) {
             UUID uuid = (UUID) o;
 
@@ -50,7 +50,7 @@ final class GuidConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull UUID uuid, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull UUID uuid, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case ByteString:    return guidToByteString(uuid);
@@ -61,7 +61,7 @@ final class GuidConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull UUID uuid, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull UUID uuid, BuiltinDataType targetType) {
         // no implicit conversions exist
         return null;
     }

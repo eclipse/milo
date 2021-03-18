@@ -221,14 +221,12 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     private UInteger getLifetimeCount(double publishingInterval, UInteger maxKeepAliveCount) {
         // Lifetime must be 3x (or greater) the keep-alive count.
-        try {
-            long value = maxKeepAliveCount.toBigInteger()
-                .multiply(BigInteger.valueOf(6)).longValueExact();
+        BigInteger lifetimeCount = maxKeepAliveCount
+            .toBigInteger()
+            .multiply(BigInteger.valueOf(6))
+            .min(BigInteger.valueOf(UInteger.MAX_VALUE));
 
-            return uint(Math.min(value, UInteger.MAX_VALUE));
-        } catch (ArithmeticException e) {
-            return UInteger.MAX;
-        }
+        return uint(lifetimeCount.longValue());
     }
 
     @Override

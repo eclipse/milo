@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.stack;
 
-import org.eclipse.milo.opcua.stack.core.channel.headers.SymmetricSecurityHeader;
 import com.google.common.primitives.UnsignedInteger;
+import org.eclipse.milo.opcua.stack.core.channel.headers.SymmetricSecurityHeader;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

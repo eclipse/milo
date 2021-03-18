@@ -11,7 +11,7 @@
     <artifactId>dictionary-manager</artifactId>
 
     <properties>
-        <javaModuleName>org.eclipse.milo.opcua.sdk.server.dictionarymanager</javaModuleName>
+        <javaModuleName>org.eclipse.milo.opcua.sdk.server.dtd</javaModuleName>
     </properties>
 
     <dependencies>

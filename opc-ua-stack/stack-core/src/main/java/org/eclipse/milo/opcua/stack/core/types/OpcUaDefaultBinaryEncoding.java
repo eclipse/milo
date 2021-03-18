@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -23,6 +22,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+
+import static io.netty.buffer.Unpooled.buffer;
 
 public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
@@ -36,8 +37,6 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
     private static class InstanceHolder {
         private static final OpcUaDefaultBinaryEncoding INSTANCE = new OpcUaDefaultBinaryEncoding();
     }
-
-    private final ByteBufAllocator allocator = ByteBufAllocator.DEFAULT;
 
     private OpcUaDefaultBinaryEncoding() {}
 
@@ -70,17 +69,20 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
                     "no codec registered for encodingId=" + encodingId);
             }
 
-            ByteBuf buffer = allocator.buffer();
+            ByteBuf buffer = buffer();
 
-            OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(context).setBuffer(buffer);
+            try {
+                OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(context).setBuffer(buffer);
 
-            codec.encode(context, writer, decodedBody);
+                codec.encode(context, writer, decodedBody);
 
-            byte[] bs = new byte[buffer.readableBytes()];
-            buffer.readBytes(bs);
-            buffer.release();
+                byte[] bs = new byte[buffer.readableBytes()];
+                buffer.readBytes(bs);
 
-            return ByteString.of(bs);
+                return ByteString.of(bs);
+            } finally {
+                buffer.release();
+            }
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }

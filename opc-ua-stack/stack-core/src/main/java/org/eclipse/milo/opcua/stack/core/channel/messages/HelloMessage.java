@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
+import org.jetbrains.annotations.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

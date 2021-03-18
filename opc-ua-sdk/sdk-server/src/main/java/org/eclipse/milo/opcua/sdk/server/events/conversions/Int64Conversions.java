@@ -10,15 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -29,13 +28,13 @@ final class Int64Conversions {
 
     private Int64Conversions() {}
 
-    @Nonnull
-    static Boolean int64ToBoolean(@Nonnull Long l) {
+    @NotNull
+    static Boolean int64ToBoolean(@NotNull Long l) {
         return l != 0;
     }
 
     @Nullable
-    static UByte int64ToByte(@Nonnull Long l) {
+    static UByte int64ToByte(@NotNull Long l) {
         if (l >= 0 && l <= UByte.MAX_VALUE) {
             return ubyte(l);
         } else {
@@ -43,18 +42,18 @@ final class Int64Conversions {
         }
     }
 
-    @Nonnull
-    static Double int64ToDouble(@Nonnull Long l) {
+    @NotNull
+    static Double int64ToDouble(@NotNull Long l) {
         return l.doubleValue();
     }
 
-    @Nonnull
-    static Float int64ToFloat(@Nonnull Long l) {
+    @NotNull
+    static Float int64ToFloat(@NotNull Long l) {
         return l.floatValue();
     }
 
     @Nullable
-    static Short int64ToInt16(@Nonnull Long l) {
+    static Short int64ToInt16(@NotNull Long l) {
         if (l >= Short.MIN_VALUE && l <= Short.MAX_VALUE) {
             return l.shortValue();
         } else {
@@ -63,7 +62,7 @@ final class Int64Conversions {
     }
 
     @Nullable
-    static Integer int64ToInt32(@Nonnull Long l) {
+    static Integer int64ToInt32(@NotNull Long l) {
         if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) {
             return l.intValue();
         } else {
@@ -72,7 +71,7 @@ final class Int64Conversions {
     }
 
     @Nullable
-    static Byte int64ToSByte(@Nonnull Long l) {
+    static Byte int64ToSByte(@NotNull Long l) {
         if (l >= Byte.MIN_VALUE && l <= Byte.MAX_VALUE) {
             return l.byteValue();
         } else {
@@ -80,18 +79,18 @@ final class Int64Conversions {
         }
     }
 
-    @Nonnull
-    static StatusCode int64ToStatusCode(@Nonnull Long l) {
+    @NotNull
+    static StatusCode int64ToStatusCode(@NotNull Long l) {
         return new StatusCode(l);
     }
 
-    @Nonnull
-    static String int64ToString(@Nonnull Long l) {
+    @NotNull
+    static String int64ToString(@NotNull Long l) {
         return l.toString();
     }
 
     @Nullable
-    static UShort int64ToUInt16(@Nonnull Long l) {
+    static UShort int64ToUInt16(@NotNull Long l) {
         if (l >= 0 && l <= UShort.MAX_VALUE) {
             return ushort(l.intValue());
         } else {
@@ -100,7 +99,7 @@ final class Int64Conversions {
     }
 
     @Nullable
-    static UInteger int64ToUInt32(@Nonnull Long l) {
+    static UInteger int64ToUInt32(@NotNull Long l) {
         if (l >= 0 && l <= UInteger.MAX_VALUE) {
             return uint(l);
         } else {
@@ -109,7 +108,7 @@ final class Int64Conversions {
     }
 
     @Nullable
-    static ULong int64ToUInt64(@Nonnull Long l) {
+    static ULong int64ToUInt64(@NotNull Long l) {
         if (l >= 0) {
             return ulong(l);
         } else {
@@ -131,7 +130,7 @@ final class Int64Conversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull Long l, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull Long l, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Boolean:       return int64ToBoolean(l);
@@ -150,7 +149,7 @@ final class Int64Conversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull Long l, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull Long l, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Double:    return int64ToDouble(l);

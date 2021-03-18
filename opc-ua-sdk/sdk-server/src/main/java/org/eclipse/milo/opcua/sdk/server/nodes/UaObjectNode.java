@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -39,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_EVENT_SOURCE_PREDICATE;

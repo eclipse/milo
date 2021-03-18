@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
@@ -27,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.jetbrains.annotations.Nullable;
 
 public class ServiceRequest extends DefaultAttributeMap {
 

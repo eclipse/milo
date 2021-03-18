@@ -10,14 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -28,13 +27,13 @@ final class DoubleConversions {
 
     private DoubleConversions() {}
 
-    @Nonnull
-    static Boolean doubleToBoolean(@Nonnull Double d) {
+    @NotNull
+    static Boolean doubleToBoolean(@NotNull Double d) {
         return d != 0.0d;
     }
 
     @Nullable
-    static UByte doubleToByte(@Nonnull Double d) {
+    static UByte doubleToByte(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= 0 && rounded <= UByte.MAX_VALUE) {
@@ -45,7 +44,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Float doubleToFloat(@Nonnull Double d) {
+    static Float doubleToFloat(@NotNull Double d) {
         if (d >= -Float.MAX_VALUE && d <= Float.MAX_VALUE) {
             return d.floatValue();
         } else {
@@ -54,7 +53,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Short doubleToInt16(@Nonnull Double d) {
+    static Short doubleToInt16(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= Short.MIN_VALUE && rounded <= Short.MAX_VALUE) {
@@ -65,7 +64,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Integer doubleToInt32(@Nonnull Double d) {
+    static Integer doubleToInt32(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= Integer.MIN_VALUE && rounded <= Integer.MAX_VALUE) {
@@ -76,7 +75,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Long doubleToInt64(@Nonnull Double d) {
+    static Long doubleToInt64(@NotNull Double d) {
         if (d >= Long.MIN_VALUE && d <= Long.MAX_VALUE) {
             return Math.round(d);
         } else {
@@ -85,7 +84,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Byte doubleToSByte(@Nonnull Double d) {
+    static Byte doubleToSByte(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= Byte.MIN_VALUE && rounded <= Byte.MAX_VALUE) {
@@ -95,13 +94,13 @@ final class DoubleConversions {
         }
     }
 
-    @Nonnull
-    static String doubleToString(@Nonnull Double d) {
+    @NotNull
+    static String doubleToString(@NotNull Double d) {
         return d.toString();
     }
 
     @Nullable
-    static UShort doubleToUInt16(@Nonnull Double d) {
+    static UShort doubleToUInt16(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= UShort.MIN_VALUE && rounded <= UShort.MAX_VALUE) {
@@ -112,7 +111,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static UInteger doubleToUInt32(@Nonnull Double d) {
+    static UInteger doubleToUInt32(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= UInteger.MIN_VALUE && rounded <= UInteger.MAX_VALUE) {
@@ -123,7 +122,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static ULong doubleToUInt64(@Nonnull Double d) {
+    static ULong doubleToUInt64(@NotNull Double d) {
         long rounded = Math.round(d);
 
         if (rounded >= 0) {
@@ -147,7 +146,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull Double d, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull Double d, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Boolean:   return doubleToBoolean(d);
@@ -167,7 +166,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull Double d, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull Double d, BuiltinDataType targetType) {
         // no implicit conversions exist
         return null;
     }

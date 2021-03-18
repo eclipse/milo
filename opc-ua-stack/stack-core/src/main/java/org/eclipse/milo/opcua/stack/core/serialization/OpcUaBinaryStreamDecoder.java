@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ByteProcessor;
@@ -46,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;

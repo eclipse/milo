@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -75,6 +73,8 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -708,7 +708,7 @@ public class SessionManager implements
      * @param tokenPolicies   the {@link UserTokenPolicy}s from the Session's Endpoint.
      * @return a {@link UserIdentityToken} object.
      */
-    @Nonnull
+    @NotNull
     private UserIdentityToken decodeIdentityToken(
         @Nullable ExtensionObject identityTokenXo,
         @Nullable UserTokenPolicy[] tokenPolicies

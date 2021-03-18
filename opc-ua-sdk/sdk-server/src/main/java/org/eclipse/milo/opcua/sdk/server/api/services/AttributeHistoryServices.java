@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.api.services;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -26,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
+import org.jetbrains.annotations.Nullable;
 
 public interface AttributeHistoryServices {
 

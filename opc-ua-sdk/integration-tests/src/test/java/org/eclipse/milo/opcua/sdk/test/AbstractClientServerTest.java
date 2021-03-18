@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.sdk.test;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
-import org.eclipse.milo.opcua.sdk.client.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

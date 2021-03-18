@@ -12,10 +12,10 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EndpointUtil {
 
@@ -23,7 +23,7 @@ public class EndpointUtil {
         Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+|\\[.*])(:\\d+)?(/.*)?");
 
     @Nullable
-    public static String getScheme(@Nonnull String endpointUrl) {
+    public static String getScheme(@NotNull String endpointUrl) {
         Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
         if (matcher.matches()) {
@@ -34,7 +34,7 @@ public class EndpointUtil {
     }
 
     @Nullable
-    public static String getHost(@Nonnull String endpointUrl) {
+    public static String getHost(@NotNull String endpointUrl) {
         Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
         if (matcher.matches()) {
@@ -44,7 +44,7 @@ public class EndpointUtil {
         return null;
     }
 
-    public static int getPort(@Nonnull String endpointUrl) {
+    public static int getPort(@NotNull String endpointUrl) {
         Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
         if (matcher.matches()) {
@@ -70,8 +70,8 @@ public class EndpointUtil {
      * @param endpointUrl the endpoint URL.
      * @return the path component from the endpoint URL.
      */
-    @Nonnull
-    public static String getPath(@Nonnull String endpointUrl) {
+    @NotNull
+    public static String getPath(@NotNull String endpointUrl) {
         Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
         if (matcher.matches()) {
@@ -102,7 +102,7 @@ public class EndpointUtil {
      * {@code hostname}.
      */
     public static EndpointDescription updateUrl(
-        @Nonnull EndpointDescription endpoint, @Nullable String hostname) {
+        @NotNull EndpointDescription endpoint, @Nullable String hostname) {
 
         return updateUrl(endpoint, hostname, -1);
     }
@@ -121,7 +121,7 @@ public class EndpointUtil {
      * {@code hostname}.
      */
     public static EndpointDescription updateUrl(
-        @Nonnull EndpointDescription endpoint, @Nullable String hostname, int port) {
+        @NotNull EndpointDescription endpoint, @Nullable String hostname, int port) {
 
         return new EndpointDescription(
             updateUrl(endpoint.getEndpointUrl(), hostname, port),

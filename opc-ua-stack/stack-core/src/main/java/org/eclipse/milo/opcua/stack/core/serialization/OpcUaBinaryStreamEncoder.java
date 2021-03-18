@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -43,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 public class OpcUaBinaryStreamEncoder implements UaEncoder {
@@ -739,7 +739,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         }
     }
 
-    private Class<?> getClass(@Nonnull Object o) {
+    private Class<?> getClass(@NotNull Object o) {
         if (o.getClass().isArray()) {
             return ArrayUtil.getType(o);
         } else {

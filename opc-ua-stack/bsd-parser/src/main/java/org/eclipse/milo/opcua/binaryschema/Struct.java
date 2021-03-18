@@ -14,23 +14,23 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Struct {
 
     private final String name;
     private final ImmutableMap<String, Member> members;
 
-    public Struct(@Nonnull String name, @Nonnull Map<String, Member> members) {
+    public Struct(@NotNull String name, @NotNull Map<String, Member> members) {
         this(name, ImmutableMap.copyOf(members));
     }
 
-    public Struct(@Nonnull String name, @Nonnull ImmutableMap<String, Member> members) {
+    public Struct(@NotNull String name, @NotNull ImmutableMap<String, Member> members) {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(members);
 
@@ -38,12 +38,12 @@ public class Struct {
         this.members = members;
     }
 
-    @Nonnull
+    @NotNull
     public String getName() {
         return name;
     }
 
-    @Nonnull
+    @NotNull
     public ImmutableMap<String, Member> getMembers() {
         return members;
     }
@@ -53,7 +53,7 @@ public class Struct {
         return members.get(name);
     }
 
-    @Nonnull
+    @NotNull
     public Optional<Member> getMemberSafe(String name) {
         return Optional.ofNullable(members.get(name));
     }

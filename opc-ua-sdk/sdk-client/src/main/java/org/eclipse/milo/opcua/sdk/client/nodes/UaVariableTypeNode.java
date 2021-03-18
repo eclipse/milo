@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
@@ -27,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.jetbrains.annotations.Nullable;
 
 public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 

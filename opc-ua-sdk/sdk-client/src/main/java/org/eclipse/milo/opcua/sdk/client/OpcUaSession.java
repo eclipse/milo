@@ -11,8 +11,6 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
@@ -20,6 +18,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class OpcUaSession extends ConcurrentHashMap<String, Object> implements UaSession {
 
@@ -96,18 +96,18 @@ public class OpcUaSession extends ConcurrentHashMap<String, Object> implements U
 
     @Nullable
     @Override
-    public Object getAttribute(@Nonnull String name) {
+    public Object getAttribute(@NotNull String name) {
         return get(name);
     }
 
     @Nullable
     @Override
-    public Object setAttribute(@Nonnull String name, @Nonnull Object value) {
+    public Object setAttribute(@NotNull String name, @NotNull Object value) {
         return put(name, value);
     }
 
     @Override
-    public Object removeAttribute(@Nonnull String name) {
+    public Object removeAttribute(@NotNull String name) {
         return remove(name);
     }
 

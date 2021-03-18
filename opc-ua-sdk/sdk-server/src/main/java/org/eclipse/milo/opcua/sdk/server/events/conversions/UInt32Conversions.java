@@ -10,15 +10,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
@@ -28,13 +27,13 @@ final class UInt32Conversions {
 
     private UInt32Conversions() {}
 
-    @Nonnull
-    static Boolean uInt32ToBoolean(@Nonnull UInteger ui) {
+    @NotNull
+    static Boolean uInt32ToBoolean(@NotNull UInteger ui) {
         return ui.intValue() != 0;
     }
 
     @Nullable
-    static UByte uInt32ToByte(@Nonnull UInteger ui) {
+    static UByte uInt32ToByte(@NotNull UInteger ui) {
         long l = ui.longValue();
 
         if (l <= UByte.MAX_VALUE) {
@@ -44,18 +43,18 @@ final class UInt32Conversions {
         }
     }
 
-    @Nonnull
-    static Double uInt32ToDouble(@Nonnull UInteger ui) {
+    @NotNull
+    static Double uInt32ToDouble(@NotNull UInteger ui) {
         return ui.doubleValue();
     }
 
-    @Nonnull
-    static Float uInt32ToFloat(@Nonnull UInteger ui) {
+    @NotNull
+    static Float uInt32ToFloat(@NotNull UInteger ui) {
         return ui.floatValue();
     }
 
     @Nullable
-    static Short uInt32ToInt16(@Nonnull UInteger ui) {
+    static Short uInt32ToInt16(@NotNull UInteger ui) {
         int i = ui.intValue();
 
         if (i <= Short.MAX_VALUE) {
@@ -66,7 +65,7 @@ final class UInt32Conversions {
     }
 
     @Nullable
-    static Integer uInt32ToInt32(@Nonnull UInteger ui) {
+    static Integer uInt32ToInt32(@NotNull UInteger ui) {
         long l = ui.longValue();
 
         if (l <= Integer.MAX_VALUE) {
@@ -76,13 +75,13 @@ final class UInt32Conversions {
         }
     }
 
-    @Nonnull
-    static Long uInt32ToInt64(@Nonnull UInteger ui) {
+    @NotNull
+    static Long uInt32ToInt64(@NotNull UInteger ui) {
         return ui.longValue();
     }
 
     @Nullable
-    static Byte uInt32ToSByte(@Nonnull UInteger ui) {
+    static Byte uInt32ToSByte(@NotNull UInteger ui) {
         int i = ui.intValue();
 
         if (i <= Byte.MAX_VALUE) {
@@ -92,18 +91,18 @@ final class UInt32Conversions {
         }
     }
 
-    @Nonnull
-    static StatusCode uInt32ToStatusCode(@Nonnull UInteger ui) {
+    @NotNull
+    static StatusCode uInt32ToStatusCode(@NotNull UInteger ui) {
         return new StatusCode(ui);
     }
 
-    @Nonnull
-    static String uInt32ToString(@Nonnull UInteger ui) {
+    @NotNull
+    static String uInt32ToString(@NotNull UInteger ui) {
         return ui.toString();
     }
 
     @Nullable
-    static UShort uInt32ToUInt16(@Nonnull UInteger ui) {
+    static UShort uInt32ToUInt16(@NotNull UInteger ui) {
         int i = ui.intValue();
 
         if (i <= UShort.MAX_VALUE) {
@@ -113,8 +112,8 @@ final class UInt32Conversions {
         }
     }
 
-    @Nonnull
-    static ULong uInt32ToUInt64(@Nonnull UInteger ui) {
+    @NotNull
+    static ULong uInt32ToUInt64(@NotNull UInteger ui) {
         return ulong(ui.longValue());
     }
 
@@ -132,7 +131,7 @@ final class UInt32Conversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull UInteger ui, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull UInteger ui, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Boolean:       return uInt32ToBoolean(ui);
@@ -148,7 +147,7 @@ final class UInt32Conversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull UInteger ui, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull UInteger ui, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case Double:        return uInt32ToDouble(ui);

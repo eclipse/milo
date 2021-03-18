@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -91,6 +90,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

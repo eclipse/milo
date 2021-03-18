@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -108,7 +107,7 @@ abstract class AbstractConversionTest<S> {
         }
     }
 
-    protected Conversion c(@Nonnull S fromValue, @Nonnull Object targetValue) {
+    protected Conversion c(@NotNull S fromValue, @NotNull Object targetValue) {
         Conversion c = new Conversion();
         c.fromValue = fromValue;
         c.targetValue = targetValue;
@@ -116,7 +115,7 @@ abstract class AbstractConversionTest<S> {
         return c;
     }
 
-    protected Conversion c(@Nonnull S fromValue, @Nullable Object targetValue, @Nonnull BuiltinDataType targetType) {
+    protected Conversion c(@NotNull S fromValue, @Nullable Object targetValue, @NotNull BuiltinDataType targetType) {
         Conversion c = new Conversion();
         c.fromValue = fromValue;
         c.targetValue = targetValue;

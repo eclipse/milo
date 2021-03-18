@@ -14,18 +14,18 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class DateTimeConversions {
 
     private DateTimeConversions() {}
 
-    @Nonnull
-    static String dateTimeToString(@Nonnull DateTime dt) {
+    @NotNull
+    static String dateTimeToString(@NotNull DateTime dt) {
         return dateToIso8601UtcString(dt.getJavaDate());
     }
 
@@ -43,7 +43,7 @@ final class DateTimeConversions {
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@NotNull Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof DateTime) {
             DateTime d = (DateTime) o;
 
@@ -56,7 +56,7 @@ final class DateTimeConversions {
     }
 
     @Nullable
-    static Object explicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) {
+    static Object explicitConversion(@NotNull DateTime d, BuiltinDataType targetType) {
         //@formatter:off
         switch (targetType) {
             case String:    return dateTimeToString(d);
@@ -66,7 +66,7 @@ final class DateTimeConversions {
     }
 
     @Nullable
-    static Object implicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) {
+    static Object implicitConversion(@NotNull DateTime d, BuiltinDataType targetType) {
         // no implicit conversions exist
         return null;
     }

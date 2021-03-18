@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.digitalpetri.netty</groupId>
             <artifactId>netty-channel-fsm</artifactId>
-            <version>0.3</version>
+            <version>0.5</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -31,9 +31,9 @@
             <version>${netty.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>${jsr305.version}</version>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${annotations.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
