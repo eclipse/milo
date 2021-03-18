@@ -10,16 +10,20 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectTypeNodeProperties;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
+import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -205,9 +209,30 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         return new UaObjectTypeNodeBuilder(context);
     }
 
+    /**
+     * Build a {@link UaObjectTypeNode} using the {@link UaObjectTypeNodeBuilder} supplied to the
+     * {@code build} function.
+     *
+     * @param context a {@link UaNodeContext}.
+     * @param build   a function that accepts a {@link UaObjectTypeNodeBuilder} and uses it to build
+     *                and return a {@link UaObjectTypeNode}.
+     * @return a {@link UaObjectTypeNode} built using the supplied {@link UaObjectTypeNodeBuilder}.
+     */
+    public static UaObjectTypeNode build(
+        UaNodeContext context,
+        Function<UaObjectTypeNodeBuilder, UaObjectTypeNode> build
+    ) {
+
+        UaObjectTypeNodeBuilder builder = new UaObjectTypeNodeBuilder(context);
+
+        return build.apply(builder);
+    }
+
     public static class UaObjectTypeNodeBuilder implements Supplier<UaObjectTypeNode> {
 
-        private final List<Reference> references = Lists.newArrayList();
+        private final List<AttributeFilter> attributeFilters = new ArrayList<>();
+
+        private final List<Reference> references = new ArrayList<>();
 
         private NodeId nodeId;
         private QualifiedName browseName;
@@ -221,6 +246,57 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
         public UaObjectTypeNodeBuilder(UaNodeContext context) {
             this.context = context;
+        }
+
+        /**
+         * @see #build()
+         */
+        @Override
+        public UaObjectTypeNode get() {
+            return build();
+        }
+
+        /**
+         * Build and return the {@link UaObjectTypeNode}.
+         * <p>
+         * The following fields are required: NodeId, BrowseName, DisplayName.
+         *
+         *  @return a {@link UaObjectTypeNode} built from the configuration of this builder.
+         */
+        public UaObjectTypeNode build() {
+            Preconditions.checkNotNull(nodeId, "NodeId cannot be null");
+            Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
+            Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
+
+            UaObjectTypeNode node = new UaObjectTypeNode(
+                context,
+                nodeId,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                isAbstract
+            );
+
+            references.forEach(node::addReference);
+
+            node.getFilterChain().addLast(attributeFilters);
+
+            return node;
+        }
+
+        /**
+         * Build the {@link UaObjectTypeNode} using the configured values and add it to the
+         * {@link NodeManager} from the {@link UaNodeContext}.
+         *
+         * @return a {@link UaObjectTypeNode} built from the configured values.
+         * @see #build()
+         */
+        public UaObjectTypeNode buildAndAdd() {
+            UaObjectTypeNode node = build();
+            context.getNodeManager().addNode(node);
+            return node;
         }
 
         public UaObjectTypeNodeBuilder setNodeId(NodeId nodeId) {
@@ -258,36 +334,59 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             return this;
         }
 
+        public NodeId getNodeId() {
+            return nodeId;
+        }
+
+        public QualifiedName getBrowseName() {
+            return browseName;
+        }
+
+        public LocalizedText getDisplayName() {
+            return displayName;
+        }
+
+        public LocalizedText getDescription() {
+            return description;
+        }
+
+        public UInteger getWriteMask() {
+            return writeMask;
+        }
+
+        public UInteger getUserWriteMask() {
+            return userWriteMask;
+        }
+
+        public boolean isAbstract() {
+            return isAbstract;
+        }
+
+        /**
+         * Add an {@link AttributeFilter} that will be added to the node's
+         * {@link AttributeFilterChain} when it's built.
+         * <p>
+         * The order filters are added in this builder is maintained.
+         *
+         * @param attributeFilter the {@link AttributeFilter} to add.
+         * @return this {@link UaObjectTypeNodeBuilder}.
+         */
+        public UaObjectTypeNodeBuilder addAttributeFilter(AttributeFilter attributeFilter) {
+            attributeFilters.add(attributeFilter);
+            return this;
+        }
+
+        /**
+         * Add a {@link Reference} to the node when it's built.
+         *
+         * @param reference the {@link Reference} to add.
+         * @return this {@link UaObjectTypeNodeBuilder}.
+         */
         public UaObjectTypeNodeBuilder addReference(Reference reference) {
             references.add(reference);
             return this;
         }
 
-        @Override
-        public UaObjectTypeNode get() {
-            return build();
-        }
-
-        public UaObjectTypeNode build() {
-            Preconditions.checkNotNull(nodeId, "NodeId cannot be null");
-            Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
-            Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
-
-            UaObjectTypeNode node = new UaObjectTypeNode(
-                context,
-                nodeId,
-                browseName,
-                displayName,
-                description,
-                writeMask,
-                userWriteMask,
-                isAbstract
-            );
-
-            references.forEach(node::addReference);
-
-            return node;
-        }
     }
 
 }
