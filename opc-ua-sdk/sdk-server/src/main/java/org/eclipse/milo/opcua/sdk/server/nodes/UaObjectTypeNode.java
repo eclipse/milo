@@ -369,7 +369,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
          * The order filters are added in this builder is maintained.
          *
          * @param attributeFilter the {@link AttributeFilter} to add.
-         * @return this {@link UaObjectNode.UaObjectNodeBuilder}.
+         * @return this {@link UaObjectTypeNodeBuilder}.
          */
         public UaObjectTypeNodeBuilder addAttributeFilter(AttributeFilter attributeFilter) {
             attributeFilters.add(attributeFilter);
