@@ -422,8 +422,6 @@ public class UaObjectNode extends UaNode implements ObjectNode {
          * Build and return the {@link UaObjectNode}.
          * <p>
          * The following fields are required: NodeId, BrowseName, DisplayName.
-         * <p>
-         * Exactly one HasTypeDefinition reference must be present.
          *
          * @return a {@link UaObjectNode}.
          * @throws NullPointerException  if any of the required fields are null.
@@ -437,9 +435,13 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             long hasTypeDefinitionCount = references.stream()
                 .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
 
-            Preconditions.checkState(
-                hasTypeDefinitionCount == 1,
-                "Object Node must have exactly one HasTypeDefinition reference.");
+            if (hasTypeDefinitionCount == 0) {
+                setTypeDefinition(Identifiers.BaseObjectType);
+            } else {
+                Preconditions.checkState(
+                    hasTypeDefinitionCount == 1,
+                    "Object Node must have exactly one HasTypeDefinition reference.");
+            }
 
             UaObjectNode node = new UaObjectNode(
                 context,

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -576,8 +575,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     public static class UaVariableNodeBuilder implements Supplier<UaVariableNode> {
 
-        private final AtomicReference<UaVariableNode> builtNode = new AtomicReference<>();
-
         private final List<AttributeFilter> attributeFilters = new ArrayList<>();
 
         private final List<Reference> references = new ArrayList<>();
@@ -621,36 +618,11 @@ public class UaVariableNode extends UaNode implements VariableNode {
         /**
          * Build and return the {@link UaVariableNode}.
          * <p>
-         * Nodes are only built once; subsequent invocations of {@code build} will return the
-         * previously built Node without any modifications that may have been made to the builder
-         * since.
+         * The following fields are required: NodeId, BrowseName, DisplayName.
          *
          * @return a {@link UaVariableNode} built from the configuration of this builder.
          */
         public UaVariableNode build() {
-            return builtNode.updateAndGet(node -> {
-                if (node != null) {
-                    return node;
-                } else {
-                    return buildNode();
-                }
-            });
-        }
-
-        /**
-         * Build the {@link UaVariableNode} using the configured values and add it to the
-         * {@link NodeManager} from the {@link UaNodeContext}.
-         *
-         * @return a {@link UaVariableNode} built from the configured values.
-         * @see #build()
-         */
-        public UaVariableNode buildAndAdd() {
-            UaVariableNode node = build();
-            context.getNodeManager().addNode(node);
-            return node;
-        }
-
-        private UaVariableNode buildNode() {
             Preconditions.checkNotNull(nodeId, "NodeId cannot be null");
             Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
@@ -688,6 +660,19 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             node.getFilterChain().addLast(attributeFilters);
 
+            return node;
+        }
+
+        /**
+         * Build the {@link UaVariableNode} using the configured values and add it to the
+         * {@link NodeManager} from the {@link UaNodeContext}.
+         *
+         * @return a {@link UaVariableNode} built from the configured values.
+         * @see #build()
+         */
+        public UaVariableNode buildAndAdd() {
+            UaVariableNode node = build();
+            context.getNodeManager().addNode(node);
             return node;
         }
 
