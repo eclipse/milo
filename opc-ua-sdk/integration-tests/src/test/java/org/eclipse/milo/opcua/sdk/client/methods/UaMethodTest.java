@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
@@ -110,6 +111,35 @@ public class UaMethodTest extends AbstractClientServerTest {
         UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
 
         assertThrows(UaException.class, () -> serverNode.getMethod("foo"));
+    }
+
+
+    @Test
+    public void testMethodWithHasComponentReference() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+
+        Variant[] outputs = serverNode.callMethod(
+            new QualifiedName(2, "sqrt(x)"),
+            new Variant[]{new Variant(16.0)}
+        );
+
+        assertEquals(4.0, outputs[0].getValue());
+    }
+
+    @Test
+    public void testMethodWithHasOrderedComponentReference() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+
+        Variant[] outputs = serverNode.callMethod(
+            new QualifiedName(2, "sqrt2(x)"),
+            new Variant[]{new Variant(16.0)}
+        );
+
+        assertEquals(4.0, outputs[0].getValue());
     }
 
 }

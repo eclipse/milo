@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -195,8 +195,14 @@ public class Reference {
     public static final Predicate<Reference> HAS_COMPONENT_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
 
+    public static final Predicate<Reference> HAS_ORDERED_COMPONENT_PREDICATE =
+        (reference) -> reference.isForward() && Identifiers.HasOrderedComponent.equals(reference.getReferenceTypeId());
+
     public static final Predicate<Reference> COMPONENT_OF_PREDICATE =
         (reference) -> reference.isInverse() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
+
+    public static final Predicate<Reference> ORDERED_COMPONENT_OF_PREDICATE =
+        (reference) -> reference.isInverse() && Identifiers.HasOrderedComponent.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_PROPERTY_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.HasProperty.equals(reference.getReferenceTypeId());
