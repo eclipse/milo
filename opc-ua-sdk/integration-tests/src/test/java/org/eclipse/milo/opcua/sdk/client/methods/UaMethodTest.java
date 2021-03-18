@@ -115,7 +115,7 @@ public class UaMethodTest extends AbstractClientServerTest {
 
 
     @Test
-    public void testMethodWithHasComponentReference() throws UaException {
+    public void callMethodWithHasComponentReference() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
         UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
@@ -129,7 +129,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     }
 
     @Test
-    public void testMethodWithHasOrderedComponentReference() throws UaException {
+    public void callMethodWithHasOrderedComponentReference() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
         UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
