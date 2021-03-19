@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -122,6 +123,52 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
             } catch (UaException e) {
                 throw new RuntimeException(e);
             }
+        });
+
+        getLifecycleManager().addStartupTask(() -> {
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("sqrt(x)"));
+                b.setBrowseName(newQualifiedName("sqrt(x)"));
+                b.setDisplayName(LocalizedText.english("sqrt(x)"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    Identifiers.HasComponent,
+                    Identifiers.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+
+                SqrtMethod sqrtMethod = new SqrtMethod(methodNode);
+                methodNode.setInputArguments(sqrtMethod.getInputArguments());
+                methodNode.setOutputArguments(sqrtMethod.getOutputArguments());
+                methodNode.setInvocationHandler(sqrtMethod);
+
+                return methodNode;
+            });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("sqrt2(x)"));
+                b.setBrowseName(newQualifiedName("sqrt2(x)"));
+                b.setDisplayName(LocalizedText.english("sqrt2(x)"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    Identifiers.HasOrderedComponent,
+                    Identifiers.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+
+                SqrtMethod sqrtMethod = new SqrtMethod(methodNode);
+                methodNode.setInputArguments(sqrtMethod.getInputArguments());
+                methodNode.setOutputArguments(sqrtMethod.getOutputArguments());
+                methodNode.setInvocationHandler(sqrtMethod);
+
+                return methodNode;
+            });
         });
     }
 

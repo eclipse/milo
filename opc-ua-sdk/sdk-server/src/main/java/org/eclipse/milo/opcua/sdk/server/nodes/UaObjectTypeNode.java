@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -35,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
+import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_ORDERED_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
@@ -98,7 +99,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     @Nullable
     public UaMethodNode findMethodNode(NodeId methodId) {
         return getReferences().stream()
-            .filter(HAS_COMPONENT_PREDICATE)
+            .filter(HAS_COMPONENT_PREDICATE.or(HAS_ORDERED_COMPONENT_PREDICATE))
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode) && Objects.equals(n.getNodeId(), methodId))
             .map(UaMethodNode.class::cast)
@@ -108,7 +109,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
     public List<UaMethodNode> getMethodNodes() {
         return getReferences().stream()
-            .filter(HAS_COMPONENT_PREDICATE)
+            .filter(HAS_COMPONENT_PREDICATE.or(HAS_ORDERED_COMPONENT_PREDICATE))
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode))
             .map(UaMethodNode.class::cast)
