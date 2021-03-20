@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertThrows;
+import static org.testng.Assert.assertTrue;
 
 public class NonceUtilTest {
 
@@ -58,6 +59,13 @@ public class NonceUtilTest {
     public void testZeroLengthNonceValidation() throws UaException {
         // an empty nonce is valid in the secure channel layer when no security is used.
         NonceUtil.validateNonce(ByteString.of(new byte[0]), 0);
+    }
+
+    @Test
+    public void blockUntilSecureRandomSeeded() throws Exception {
+        NonceUtil.blockUntilSecureRandomSeeded();
+
+        assertTrue(NonceUtil.isSecureRandomSeeded());
     }
 
 }

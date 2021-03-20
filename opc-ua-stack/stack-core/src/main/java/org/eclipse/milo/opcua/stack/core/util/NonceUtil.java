@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,12 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.bouncycastle.util.Arrays;
@@ -34,6 +38,8 @@ public class NonceUtil {
 
     private static volatile boolean SECURE_RANDOM_ENABLED = true;
 
+    private static final CompletableFuture<Void> SEED_FUTURE = new CompletableFuture<>();
+
     private static final AtomicReference<SecureRandom> SECURE_RANDOM = new AtomicReference<>();
 
     static {
@@ -50,8 +56,47 @@ public class NonceUtil {
 
             LoggerFactory.getLogger(NonceUtil.class).info(
                 "SecureRandom seeded in {}ms.",
-                TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS));
-        }, "NonceUtilSecureRandom").start();
+                TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS)
+            );
+
+            SEED_FUTURE.complete(null);
+        }, "milo-nonce-util-secure-random").start();
+    }
+
+    /**
+     * Block until the {@link SecureRandom} instance has been seeded.
+     *
+     * @throws ExecutionException   if seeding completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted.
+     */
+    public static void blockUntilSecureRandomSeeded() throws ExecutionException, InterruptedException {
+        SEED_FUTURE.get();
+    }
+
+    /**
+     * Block for at most {@code timeout} waiting for the {@link SecureRandom} instance to be seeded.
+     *
+     * @param timeout the maximum time to wait.
+     * @param unit    the {@link TimeUnit} of the {@code timeout} argument.
+     * @throws ExecutionException   if seeding completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted.
+     * @throws TimeoutException     if the wait timed out.
+     */
+    public static void blockUntilSecureRandomSeeded(
+        long timeout,
+        TimeUnit unit
+    ) throws ExecutionException, InterruptedException, TimeoutException {
+
+        SEED_FUTURE.get(timeout, unit);
+    }
+
+    /**
+     * Get a {@link CompletionStage} that is completed when the {@link SecureRandom} instance has been seeded.
+     *
+     * @return a {@link CompletionStage} that is completed when the {@link SecureRandom} instance has been seeded.
+     */
+    public static CompletionStage<Void> secureRandomSeeded() {
+        return SEED_FUTURE;
     }
 
     /**
@@ -73,6 +118,13 @@ public class NonceUtil {
      */
     public static boolean isSecureRandomEnabled() {
         return SECURE_RANDOM_ENABLED;
+    }
+
+    /**
+     * @return {@code true} if the {@link SecureRandom} instance is seeded and available.
+     */
+    public static boolean isSecureRandomSeeded() {
+        return SECURE_RANDOM.get() != null;
     }
 
     /**
