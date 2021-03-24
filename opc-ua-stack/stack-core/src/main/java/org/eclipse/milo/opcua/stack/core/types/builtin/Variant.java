@@ -44,7 +44,6 @@ public final class Variant {
                 ArrayUtil.getType(value) : value.getClass();
 
             checkArgument(clazzIsArray || !Variant.class.equals(componentClazz), "Variant cannot contain Variant");
-            checkArgument(!DataValue.class.equals(componentClazz), "Variant cannot contain DataValue");
             checkArgument(!DiagnosticInfo.class.equals(componentClazz), "Variant cannot contain DiagnosticInfo");
         }
 
