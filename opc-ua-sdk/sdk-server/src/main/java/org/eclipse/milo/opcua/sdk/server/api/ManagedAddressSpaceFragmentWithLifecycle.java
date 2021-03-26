@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -54,7 +54,7 @@ public abstract class ManagedAddressSpaceFragmentWithLifecycle
         getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                composite.register(ManagedAddressSpaceFragmentWithLifecycle.this);
+                registerWithComposite(composite);
                 registerNodeManager(getNodeManager());
             }
 
@@ -96,7 +96,7 @@ public abstract class ManagedAddressSpaceFragmentWithLifecycle
         getLifecycleManager().addLifecycle(new Lifecycle() {
             @Override
             public void startup() {
-                composite.register(ManagedAddressSpaceFragmentWithLifecycle.this);
+                registerWithComposite(composite);
                 registerNodeManager(getNodeManager());
             }
 
@@ -134,6 +134,19 @@ public abstract class ManagedAddressSpaceFragmentWithLifecycle
      */
     protected LifecycleManager getLifecycleManager() {
         return lifecycleManager;
+    }
+
+    /**
+     * Register this {@link AddressSpaceFragment} with {@code composite}.
+     * <p>
+     * Can be overridden if e.g. this fragment should use
+     * {@link AddressSpaceComposite#registerFirst(AddressSpaceFragment)} instead of
+     * {@link AddressSpaceComposite#register(AddressSpaceFragment)}.
+     *
+     * @param composite the {@link AddressSpaceComposite} to register with.
+     */
+    protected void registerWithComposite(AddressSpaceComposite composite) {
+        composite.register(ManagedAddressSpaceFragmentWithLifecycle.this);
     }
 
     /**

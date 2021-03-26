@@ -15,18 +15,18 @@ import org.testng.annotations.Test;
 public class VariantTest {
 
     @Test
-    public void testVariantCanContainVariantArray() {
-        new Variant(new Variant[] {new Variant(0), new Variant(1), new Variant(2)});
+    public void variantCanContainDataValue() {
+        new Variant(new DataValue(Variant.NULL_VALUE));
+    }
+
+    @Test
+    public void variantCanContainVariantArray() {
+        new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)});
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void variantCannotContainVariant() {
         new Variant(new Variant(null));
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void variantCannotContainDataValue() {
-        new Variant(new DataValue(Variant.NULL_VALUE));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
