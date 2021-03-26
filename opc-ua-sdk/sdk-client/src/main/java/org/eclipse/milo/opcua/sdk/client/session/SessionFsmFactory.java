@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -255,7 +255,7 @@ public class SessionFsmFactory {
         fb.when(State.Creating)
             .on(Event.CreateSessionFailure.class)
             .transitionTo(State.CreatingWait)
-            .execute(ctx -> {
+            .executeFirst(ctx -> {
                 Event.CreateSessionFailure e = (Event.CreateSessionFailure) ctx.event();
 
                 handleFailureToOpenSession(client, ctx, e.failure);
@@ -331,7 +331,7 @@ public class SessionFsmFactory {
         fb.when(State.Activating)
             .on(Event.ActivateSessionFailure.class)
             .transitionTo(State.CreatingWait)
-            .execute(ctx -> {
+            .executeFirst(ctx -> {
                 Event.ActivateSessionFailure e = (Event.ActivateSessionFailure) ctx.event();
 
                 handleFailureToOpenSession(client, ctx, e.failure);
@@ -385,7 +385,7 @@ public class SessionFsmFactory {
         fb.when(State.Transferring)
             .on(Event.TransferSubscriptionsFailure.class)
             .transitionTo(State.CreatingWait)
-            .execute(ctx -> {
+            .executeFirst(ctx -> {
                 Event.TransferSubscriptionsFailure e = (Event.TransferSubscriptionsFailure) ctx.event();
 
                 handleFailureToOpenSession(client, ctx, e.failure);
@@ -441,7 +441,7 @@ public class SessionFsmFactory {
         fb.when(State.Initializing)
             .on(Event.InitializeFailure.class)
             .transitionTo(State.CreatingWait)
-            .execute(ctx -> {
+            .executeFirst(ctx -> {
                 Event.InitializeFailure e = (Event.InitializeFailure) ctx.event();
 
                 handleFailureToOpenSession(client, ctx, e.failure);
@@ -541,7 +541,7 @@ public class SessionFsmFactory {
             .to(s -> s == State.Closing || s == State.CreatingWait)
             .viaAny()
             .execute(ctx -> {
-                ScheduledFuture scheduledFuture =
+                ScheduledFuture<?> scheduledFuture =
                     KEY_KEEP_ALIVE_SCHEDULED_FUTURE.remove(ctx);
 
                 if (scheduledFuture != null) {
@@ -1062,7 +1062,7 @@ public class SessionFsmFactory {
         } else {
             UaStackClient stackClient = client.getStackClient();
 
-            CompletableFuture[] futures = initializers.stream()
+            CompletableFuture<?>[] futures = initializers.stream()
                 .map(i -> i.initialize(stackClient, session))
                 .toArray(CompletableFuture[]::new);
 
