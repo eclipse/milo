@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.sdk.client.dtd;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import javax.xml.bind.JAXBException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -139,43 +142,56 @@ public class DataTypeDictionaryReader {
     }
 
     CompletableFuture<ByteString> readDataTypeDictionaryBytes(NodeId nodeId, int fragmentSize) {
-        CompositeByteBuf fragmentBuffer = Unpooled.compositeBuffer();
+        if (Identifiers.OpcUa_BinarySchema.equals(nodeId)) {
+            try (InputStream inputStream =
+                     DataTypeDictionaryReader.class.getResourceAsStream("/Opc.Ua.Types.bsd")) {
 
-        CompletableFuture<ByteBuf> future = readFragments(
-            nodeId,
-            fragmentBuffer,
-            fragmentSize,
-            0
-        );
+                //noinspection UnstableApiUsage
+                ByteString bs = ByteString.of(ByteStreams.toByteArray(inputStream));
 
-        return future.thenApply(buffer -> {
-            // trim any junk at the end. some servers have a bug
-            // that cause a null byte to be appended to the end,
-            // which makes it invalid XML.
-            int length = buffer.readableBytes();
-
-            for (int i = buffer.writerIndex() - 1; i >= 0; i--) {
-                byte lastByte = buffer.getByte(i);
-
-                boolean empty =
-                    (lastByte == 0 ||
-                        Character.isWhitespace(lastByte) ||
-                        Character.isSpaceChar(lastByte));
-
-                if (!empty) break;
-                else length -= 1;
+                return completedFuture(bs);
+            } catch (IOException e) {
+                return failedFuture(e);
             }
+        } else {
+            CompositeByteBuf fragmentBuffer = Unpooled.compositeBuffer();
 
-            byte[] bs = new byte[length];
-            buffer.readBytes(bs, 0, length);
+            CompletableFuture<ByteBuf> future = readFragments(
+                nodeId,
+                fragmentBuffer,
+                fragmentSize,
+                0
+            );
 
-            if (logger.isDebugEnabled()) {
-                String xmlString = new String(bs);
-                logger.debug("Dictionary XML: {}", xmlString);
-            }
+            return future.thenApply(buffer -> {
+                // trim any junk at the end. some servers have a bug
+                // that cause a null byte to be appended to the end,
+                // which makes it invalid XML.
+                int length = buffer.readableBytes();
 
-            return ByteString.of(bs);
-        });
+                for (int i = buffer.writerIndex() - 1; i >= 0; i--) {
+                    byte lastByte = buffer.getByte(i);
+
+                    boolean empty =
+                        (lastByte == 0 ||
+                            Character.isWhitespace(lastByte) ||
+                            Character.isSpaceChar(lastByte));
+
+                    if (!empty) break;
+                    else length -= 1;
+                }
+
+                byte[] bs = new byte[length];
+                buffer.readBytes(bs, 0, length);
+
+                if (logger.isDebugEnabled()) {
+                    String xmlString = new String(bs);
+                    logger.debug("Dictionary XML: {}", xmlString);
+                }
+
+                return ByteString.of(bs);
+            });
+        }
     }
 
     private CompletableFuture<ByteBuf> readFragments(
@@ -511,10 +527,10 @@ public class DataTypeDictionaryReader {
             } else {
                 logger.debug("Browse finished with {} references", references.size());
 
-                return CompletableFuture.completedFuture(references);
+                return completedFuture(references);
             }
         } else {
-            return CompletableFuture.completedFuture(references);
+            return completedFuture(references);
         }
     }
 
