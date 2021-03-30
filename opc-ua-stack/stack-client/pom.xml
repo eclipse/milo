@@ -24,6 +24,17 @@
             <groupId>com.digitalpetri.netty</groupId>
             <artifactId>netty-channel-fsm</artifactId>
             <version>0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.digitalpetri.fsm</groupId>
+                    <artifactId>strict-machine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.digitalpetri.fsm</groupId>
+            <artifactId>strict-machine</artifactId>
+            <version>0.5</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
