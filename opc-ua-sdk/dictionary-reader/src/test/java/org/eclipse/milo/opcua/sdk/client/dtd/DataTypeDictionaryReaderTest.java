@@ -56,7 +56,7 @@ class DataTypeDictionaryReaderTest {
     @Test
     void testReadDataTypeDictionaryBytes() throws Exception {
         int[] fragmentSizes = new int[]{1, 2, 1024, 2048, 4096, 8192};
-        int[] dictionarySizes = new int[]{1, 2, 1024, 1025, 2048, 2049, 4096, 4097, 8192, 8193, 16384, 16385};
+        int[] dictionarySizes = new int[]{1, 2, 1024, 1025, 2048, 2049, 4096, 4097, 8192, 8193};
 
         for (int fragmentSize : fragmentSizes) {
             for (int dictionarySize : dictionarySizes) {
