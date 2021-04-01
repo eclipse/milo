@@ -473,7 +473,7 @@ public class DataTypeDictionaryReader {
     private CompletableFuture<List<ReferenceDescription>> browseNode(BrowseDescription browseDescription) {
         RequestHeader requestHeader = stackClient.newRequestHeader(
             session.getAuthenticationToken(),
-            uint(60000)
+            stackClient.getConfig().getRequestTimeout()
         );
 
         BrowseRequest browseRequest = new BrowseRequest(
@@ -524,7 +524,7 @@ public class DataTypeDictionaryReader {
 
         RequestHeader requestHeader = stackClient.newRequestHeader(
             session.getAuthenticationToken(),
-            uint(60000)
+            stackClient.getConfig().getRequestTimeout()
         );
 
         BrowseNextRequest request = new BrowseNextRequest(
@@ -549,7 +549,7 @@ public class DataTypeDictionaryReader {
     private CompletableFuture<List<DataValue>> readNodes(List<ReadValueId> readValueIds) {
         RequestHeader requestHeader = stackClient.newRequestHeader(
             session.getAuthenticationToken(),
-            uint(60000)
+            stackClient.getConfig().getRequestTimeout()
         );
 
         ReadRequest readRequest = new ReadRequest(
