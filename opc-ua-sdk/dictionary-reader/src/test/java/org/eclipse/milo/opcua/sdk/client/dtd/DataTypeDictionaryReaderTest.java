@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.sdk.client.dtd;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
@@ -20,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -36,6 +39,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DataTypeDictionaryReaderTest {
 
@@ -72,6 +76,16 @@ class DataTypeDictionaryReaderTest {
                 testReadDataTypeDictionaryBytes(ByteString.of(dictionary), fragmentSize);
             }
         }
+    }
+
+    @Test
+    public void readBuiltinDataTypeDictionaryBytes() throws ExecutionException, InterruptedException {
+        CompletableFuture<ByteString> future = dictionaryReader.readDataTypeDictionaryBytes(
+            Identifiers.OpcUa_BinarySchema,
+            Integer.MAX_VALUE // not used for built-in dictionary
+        );
+
+        assertNotNull(future.get());
     }
 
     private void testReadDataTypeDictionaryBytes(ByteString dictionary, int fragmentSize) throws Exception {
