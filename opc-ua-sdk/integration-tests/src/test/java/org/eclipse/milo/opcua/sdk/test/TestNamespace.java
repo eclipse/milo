@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
@@ -39,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,6 +168,40 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                 methodNode.setInputArguments(sqrtMethod.getInputArguments());
                 methodNode.setOutputArguments(sqrtMethod.getOutputArguments());
                 methodNode.setInvocationHandler(sqrtMethod);
+
+                return methodNode;
+            });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("hasNoInputsOrOutputs()"));
+                b.setBrowseName(newQualifiedName("hasNoInputsOrOutputs()"));
+                b.setDisplayName(LocalizedText.english("hasNoInputsOrOutputs()"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    Identifiers.HasOrderedComponent,
+                    Identifiers.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+
+                methodNode.setInvocationHandler(new AbstractMethodInvocationHandler(methodNode) {
+                    @Override
+                    public Argument[] getInputArguments() {
+                        return new Argument[0];
+                    }
+
+                    @Override
+                    public Argument[] getOutputArguments() {
+                        return new Argument[0];
+                    }
+
+                    @Override
+                    protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException {
+                        return new Variant[0];
+                    }
+                });
 
                 return methodNode;
             });

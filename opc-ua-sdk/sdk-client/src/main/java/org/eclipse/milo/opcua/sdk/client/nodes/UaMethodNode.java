@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -209,7 +209,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the InputArguments Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<? extends Argument[]> readInputArgumentsAsync() {
+    public CompletableFuture<Argument[]> readInputArgumentsAsync() {
         return getProperty(MethodNodeProperties.InputArguments);
     }
 
@@ -224,7 +224,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
      * @return the value of the OutputArguments Property, if it exists.
      * @see MethodNodeProperties
      */
-    public CompletableFuture<? extends Argument[]> readOutputArgumentsAsync() {
+    public CompletableFuture<Argument[]> readOutputArgumentsAsync() {
         return getProperty(MethodNodeProperties.OutputArguments);
     }
 

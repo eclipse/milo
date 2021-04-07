@@ -142,4 +142,18 @@ public class UaMethodTest extends AbstractClientServerTest {
         assertEquals(4.0, outputs[0].getValue());
     }
 
+    @Test
+    public void callMethodWithNoInputsOrOutputs() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+
+        Variant[] outputs = objectsNode.callMethod(
+            new QualifiedName(2, "hasNoInputsOrOutputs()"),
+            new Variant[0]
+        );
+
+        assertEquals(0, outputs.length);
+    }
+
 }
