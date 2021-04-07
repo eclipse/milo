@@ -84,7 +84,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
             List<? extends UaNode> nodes = addressSpace.browseNodes(objectsFolderNode, browseOptions);
 
-            assertEquals(5, nodes.size());
+            assertEquals(6, nodes.size());
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.RootFolder)));
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server)));
         }
