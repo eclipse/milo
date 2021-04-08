@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -133,37 +133,37 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public synchronized void setNodeId(NodeId nodeId) {
+    public void setNodeId(NodeId nodeId) {
         filterChain.setAttribute(this, AttributeId.NodeId, nodeId);
     }
 
     @Override
-    public synchronized void setNodeClass(NodeClass nodeClass) {
+    public void setNodeClass(NodeClass nodeClass) {
         filterChain.setAttribute(this, AttributeId.NodeClass, nodeClass);
     }
 
     @Override
-    public synchronized void setBrowseName(QualifiedName browseName) {
+    public void setBrowseName(QualifiedName browseName) {
         filterChain.setAttribute(this, AttributeId.BrowseName, browseName);
     }
 
     @Override
-    public synchronized void setDisplayName(LocalizedText displayName) {
+    public void setDisplayName(LocalizedText displayName) {
         filterChain.setAttribute(this, AttributeId.DisplayName, displayName);
     }
 
     @Override
-    public synchronized void setDescription(LocalizedText description) {
+    public void setDescription(LocalizedText description) {
         filterChain.setAttribute(this, AttributeId.Description, description);
     }
 
     @Override
-    public synchronized void setWriteMask(UInteger writeMask) {
+    public void setWriteMask(UInteger writeMask) {
         filterChain.setAttribute(this, AttributeId.WriteMask, writeMask);
     }
 
     @Override
-    public synchronized void setUserWriteMask(UInteger userWriteMask) {
+    public void setUserWriteMask(UInteger userWriteMask) {
         filterChain.setAttribute(this, AttributeId.UserWriteMask, userWriteMask);
     }
 

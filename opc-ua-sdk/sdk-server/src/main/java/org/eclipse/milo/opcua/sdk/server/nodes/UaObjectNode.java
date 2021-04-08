@@ -105,40 +105,31 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     @Override
     public UByte getEventNotifier() {
-        return eventNotifier;
+        return (UByte) filterChain.getAttribute(this, AttributeId.EventNotifier);
     }
 
     @Override
-    public synchronized void setEventNotifier(UByte eventNotifier) {
-        this.eventNotifier = eventNotifier;
-
-        fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
+    public void setEventNotifier(UByte eventNotifier) {
+        filterChain.setAttribute(this, AttributeId.EventNotifier, eventNotifier);
     }
 
     @Override
     public synchronized Object getAttribute(AttributeId attributeId) {
-        switch (attributeId) {
-            case EventNotifier:
-                return eventNotifier;
-
-            default:
-                return super.getAttribute(attributeId);
+        if (attributeId == AttributeId.EventNotifier) {
+            return eventNotifier;
+        } else {
+            return super.getAttribute(attributeId);
         }
     }
 
     @Override
     public synchronized void setAttribute(AttributeId attributeId, Object value) {
-        switch (attributeId) {
-            case EventNotifier:
-                eventNotifier = (UByte) value;
-                break;
-
-            default:
-                super.setAttribute(attributeId, value);
-                return; // prevent firing an attribute change
+        if (attributeId == AttributeId.EventNotifier) {
+            eventNotifier = (UByte) value;
+            fireAttributeChanged(attributeId, value);
+        } else {
+            super.setAttribute(attributeId, value);
         }
-
-        fireAttributeChanged(attributeId, value);
     }
 
     @Nullable

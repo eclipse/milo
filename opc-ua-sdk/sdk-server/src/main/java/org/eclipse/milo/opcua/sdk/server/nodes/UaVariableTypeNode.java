@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -56,62 +56,52 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
     @Override
     public DataValue getValue() {
-        return value;
+        return (DataValue) filterChain.getAttribute(this, AttributeId.Value);
     }
 
     @Override
     public NodeId getDataType() {
-        return dataType;
+        return (NodeId) filterChain.getAttribute(this, AttributeId.DataType);
     }
 
     @Override
     public Integer getValueRank() {
-        return valueRank;
+        return (Integer) filterChain.getAttribute(this, AttributeId.ValueRank);
     }
 
     @Override
     public UInteger[] getArrayDimensions() {
-        return arrayDimensions;
+        return (UInteger[]) filterChain.getAttribute(this, AttributeId.ArrayDimensions);
     }
 
     @Override
     public Boolean getIsAbstract() {
-        return isAbstract;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.IsAbstract);
     }
 
     @Override
-    public synchronized void setValue(DataValue value) {
-        this.value = value;
-
-        fireAttributeChanged(AttributeId.Value, value);
+    public void setValue(DataValue value) {
+        filterChain.setAttribute(this, AttributeId.Value, value);
     }
 
     @Override
-    public synchronized void setDataType(NodeId dataType) {
-        this.dataType = dataType;
-
-        fireAttributeChanged(AttributeId.Value, dataType);
+    public void setDataType(NodeId dataType) {
+        filterChain.setAttribute(this, AttributeId.DataType, dataType);
     }
 
     @Override
-    public synchronized void setValueRank(Integer valueRank) {
-        this.valueRank = valueRank;
-
-        fireAttributeChanged(AttributeId.ValueRank, valueRank);
+    public void setValueRank(Integer valueRank) {
+        filterChain.setAttribute(this, AttributeId.ValueRank, valueRank);
     }
 
     @Override
-    public synchronized void setArrayDimensions(UInteger[] arrayDimensions) {
-        this.arrayDimensions = arrayDimensions;
-
-        fireAttributeChanged(AttributeId.ArrayDimensions, arrayDimensions);
+    public void setArrayDimensions(UInteger[] arrayDimensions) {
+        filterChain.setAttribute(this, AttributeId.ArrayDimensions, arrayDimensions);
     }
 
     @Override
-    public synchronized void setIsAbstract(Boolean isAbstract) {
-        this.isAbstract = isAbstract;
-
-        fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
+    public void setIsAbstract(Boolean isAbstract) {
+        filterChain.setAttribute(this, AttributeId.IsAbstract, isAbstract);
     }
 
     @Override
