@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -52,7 +52,7 @@ public class EndpointUtil {
                 String group = matcher.group(3);
                 if (group != null && group.startsWith(":")) {
                     group = group.substring(1);
-                    return Integer.valueOf(group);
+                    return Integer.parseInt(group);
                 }
             } catch (NumberFormatException ignored) {
                 // ignored

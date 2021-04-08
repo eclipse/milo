@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -97,7 +98,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     public OpcUaXmlStreamDecoder setInput(Reader reader) throws IOException, SAXException {
-        return setInput(new ByteArrayInputStream(CharStreams.toString(reader).getBytes()));
+        return setInput(new ByteArrayInputStream(CharStreams.toString(reader).getBytes(StandardCharsets.UTF_8)));
     }
 
     public OpcUaXmlStreamDecoder setInput(InputStream inputStream) throws IOException, SAXException {
