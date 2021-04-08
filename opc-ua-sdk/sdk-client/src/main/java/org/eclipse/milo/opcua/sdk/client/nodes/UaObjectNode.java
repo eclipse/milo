@@ -93,7 +93,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @see #writeEventNotifier(UByte)
      */
     @Override
-    public void setEventNotifier(UByte eventNotifier) {
+    public synchronized void setEventNotifier(UByte eventNotifier) {
         this.eventNotifier = eventNotifier;
     }
 

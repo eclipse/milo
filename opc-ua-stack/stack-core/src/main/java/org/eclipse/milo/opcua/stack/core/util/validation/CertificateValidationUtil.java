@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.util.validation;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
@@ -20,6 +21,7 @@ import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertPathValidatorException.BasicReason;
 import java.security.cert.CertStore;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.CertificateParsingException;
@@ -158,12 +160,12 @@ public class CertificateValidationUtil {
      * The function is meant to be used in conjunction with {@link #buildTrustedCertPath(List, Collection, Collection)},
      * the result of which contains a {@link CertPath} and {@link TrustAnchor} that form a trusted certificate path.
      *
-     * @param certPath         a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
-     * @param trustAnchor      a {@link TrustAnchor} containing the root of trust for the path being validated.
-     * @param crls             a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
-     *                         leaf should have a CRL, though whether that's enforced or not depends on
-     *                         {@link ValidationCheck#REVOCATION_LISTS} being present.
-     * @param validationChecks the set of {@link ValidationCheck}s to enforce.
+     * @param certPath          a {@link CertPath} containing 0 or more certificates leading to the trust anchor.
+     * @param trustAnchor       a {@link TrustAnchor} containing the root of trust for the path being validated.
+     * @param crls              a collection of {@link X509CRL}s. Every CA certificate in the trusted path except the
+     *                          leaf should have a CRL, though whether that's enforced or not depends on
+     *                          {@link ValidationCheck#REVOCATION_LISTS} being present.
+     * @param validationChecks  the set of {@link ValidationCheck}s to enforce.
      * @param endEntityIsClient {@code true} if the end-entity is a client, {@code false} if it is a server.
      * @throws UaException if a check from the set of {@link ValidationCheck}s failed.
      */
@@ -680,9 +682,10 @@ public class CertificateValidationUtil {
                     }
                 }
 
-                throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
-            } catch (Exception e) {
-                throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
+                throw new UaException(StatusCodes.Bad_CertificateUriInvalid,
+                    "no match in certificate for application URI '" + applicationUri + "'");
+            } catch (IOException | CertificateEncodingException e) {
+                throw new UaException(StatusCodes.Bad_CertificateUriInvalid, e);
             }
         }
     }
