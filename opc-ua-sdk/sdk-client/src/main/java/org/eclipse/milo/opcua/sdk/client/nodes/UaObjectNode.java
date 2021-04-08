@@ -563,6 +563,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         return setProperty(ObjectNodeProperties.NamingRule, namingRule);
     }
 
+    @Override
     protected DataValue getAttributeValue(AttributeId attributeId) {
         switch (attributeId) {
             case EventNotifier:
@@ -572,6 +573,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
     }
 
+    @Override
     protected void setAttributeValue(AttributeId attributeId, DataValue value) {
         switch (attributeId) {
             case EventNotifier: {

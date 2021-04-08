@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -294,6 +294,7 @@ public abstract class UaNode implements UaServerNode {
         return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
+    @Override
     public ImmutableList<Reference> getReferences() {
         return ImmutableList.copyOf(
             context.getServer()
@@ -307,6 +308,7 @@ public abstract class UaNode implements UaServerNode {
      *
      * @param reference the {@link Reference} to add.
      */
+    @Override
     public void addReference(Reference reference) {
         context.getNodeManager().addReferences(reference, context.getNamespaceTable());
     }
@@ -316,6 +318,7 @@ public abstract class UaNode implements UaServerNode {
      *
      * @param reference the {@link Reference} to remove.
      */
+    @Override
     public void removeReference(Reference reference) {
         context.getNodeManager().removeReferences(reference, context.getNamespaceTable());
     }
