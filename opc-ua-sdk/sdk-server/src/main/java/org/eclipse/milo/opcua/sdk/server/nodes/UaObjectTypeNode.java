@@ -60,40 +60,31 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
     @Override
     public Boolean getIsAbstract() {
-        return isAbstract;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.IsAbstract);
     }
 
     @Override
-    public synchronized void setIsAbstract(Boolean isAbstract) {
-        this.isAbstract = isAbstract;
-
-        fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
+    public void setIsAbstract(Boolean isAbstract) {
+        filterChain.setAttribute(this, AttributeId.IsAbstract, isAbstract);
     }
 
     @Override
     public synchronized Object getAttribute(AttributeId attributeId) {
-        switch (attributeId) {
-            case IsAbstract:
-                return isAbstract;
-
-            default:
-                return super.getAttribute(attributeId);
+        if (attributeId == AttributeId.IsAbstract) {
+            return isAbstract;
+        } else {
+            return super.getAttribute(attributeId);
         }
     }
 
     @Override
     public synchronized void setAttribute(AttributeId attributeId, Object value) {
-        switch (attributeId) {
-            case IsAbstract:
-                isAbstract = (Boolean) value;
-                break;
-
-            default:
-                super.setAttribute(attributeId, value);
-                return; // prevent firing an attribute change
+        if (attributeId == AttributeId.IsAbstract) {
+            isAbstract = (Boolean) value;
+            fireAttributeChanged(attributeId, value);
+        } else {
+            super.setAttribute(attributeId, value);
         }
-
-        fireAttributeChanged(attributeId, value);
     }
 
     @Nullable
@@ -262,7 +253,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
          * <p>
          * The following fields are required: NodeId, BrowseName, DisplayName.
          *
-         *  @return a {@link UaObjectTypeNode} built from the configuration of this builder.
+         * @return a {@link UaObjectTypeNode} built from the configuration of this builder.
          */
         public UaObjectTypeNode build() {
             Preconditions.checkNotNull(nodeId, "NodeId cannot be null");

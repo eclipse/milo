@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -68,26 +68,22 @@ public class UaMethodNode extends UaNode implements MethodNode {
 
     @Override
     public Boolean isExecutable() {
-        return executable;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.Executable);
     }
 
     @Override
     public Boolean isUserExecutable() {
-        return userExecutable;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.UserExecutable);
     }
 
     @Override
-    public synchronized void setExecutable(Boolean executable) {
-        this.executable = executable;
-
-        fireAttributeChanged(AttributeId.Executable, executable);
+    public void setExecutable(Boolean executable) {
+        filterChain.setAttribute(this, AttributeId.Executable, executable);
     }
 
     @Override
-    public synchronized void setUserExecutable(Boolean userExecutable) {
-        this.userExecutable = userExecutable;
-
-        fireAttributeChanged(AttributeId.UserExecutable, userExecutable);
+    public void setUserExecutable(Boolean userExecutable) {
+        filterChain.setAttribute(this, AttributeId.UserExecutable, userExecutable);
     }
 
     @Override

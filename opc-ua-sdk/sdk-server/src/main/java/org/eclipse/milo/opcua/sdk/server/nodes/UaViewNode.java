@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class UaViewNode extends UaNode implements ViewNode {
 
-    private volatile Boolean containsNoLoops;
-    private volatile UByte eventNotifier;
+    private Boolean containsNoLoops;
+    private UByte eventNotifier;
 
     public UaViewNode(
         UaNodeContext context,
@@ -46,26 +46,22 @@ public class UaViewNode extends UaNode implements ViewNode {
 
     @Override
     public Boolean getContainsNoLoops() {
-        return containsNoLoops;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.ContainsNoLoops);
     }
 
     @Override
     public UByte getEventNotifier() {
-        return eventNotifier;
+        return (UByte) filterChain.getAttribute(this, AttributeId.EventNotifier);
     }
 
     @Override
-    public synchronized void setContainsNoLoops(Boolean containsNoLoops) {
-        this.containsNoLoops = containsNoLoops;
-
-        fireAttributeChanged(AttributeId.ContainsNoLoops, containsNoLoops);
+    public void setContainsNoLoops(Boolean containsNoLoops) {
+        filterChain.setAttribute(this, AttributeId.ContainsNoLoops, containsNoLoops);
     }
 
     @Override
-    public synchronized void setEventNotifier(UByte eventNotifier) {
-        this.eventNotifier = eventNotifier;
-
-        fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
+    public void setEventNotifier(UByte eventNotifier) {
+        filterChain.setAttribute(this, AttributeId.EventNotifier, eventNotifier);
     }
 
     @Override

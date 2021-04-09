@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -43,40 +43,31 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
 
     @Override
     public Boolean getIsAbstract() {
-        return isAbstract;
+        return (Boolean) filterChain.getAttribute(this, AttributeId.IsAbstract);
     }
 
     @Override
-    public synchronized void setIsAbstract(Boolean isAbstract) {
-        this.isAbstract = isAbstract;
-
-        fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
+    public void setIsAbstract(Boolean isAbstract) {
+        filterChain.setAttribute(this, AttributeId.IsAbstract, isAbstract);
     }
 
     @Override
     public synchronized Object getAttribute(AttributeId attributeId) {
-        switch (attributeId) {
-            case IsAbstract:
-                return isAbstract;
-
-            default:
-                return super.getAttribute(attributeId);
+        if (attributeId == AttributeId.IsAbstract) {
+            return isAbstract;
+        } else {
+            return super.getAttribute(attributeId);
         }
     }
 
     @Override
     public synchronized void setAttribute(AttributeId attributeId, Object value) {
-        switch (attributeId) {
-            case IsAbstract:
-                isAbstract = (Boolean) value;
-                break;
-
-            default:
-                super.setAttribute(attributeId, value);
-                return; // prevent firing an attribute change
+        if (attributeId == AttributeId.IsAbstract) {
+            isAbstract = (Boolean) value;
+            fireAttributeChanged(attributeId, value);
+        } else {
+            super.setAttribute(attributeId, value);
         }
-
-        fireAttributeChanged(attributeId, value);
     }
 
     /**
