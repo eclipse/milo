@@ -425,15 +425,37 @@ public final class ExpandedNodeId {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ExpandedNodeId that = (ExpandedNodeId) o;
-        return Objects.equals(namespaceIndex, that.namespaceIndex) &&
-            Objects.equals(identifier, that.identifier) &&
-            Objects.equals(namespaceUri, that.namespaceUri) &&
-            serverIndex.equals(that.serverIndex);
+    /**
+     * Check if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     * <p>
+     * To be considered equal this ExpandedNodeId must be in serverIndex == 0, have the same namespace index as
+     * {@code nodeId} or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param nodeId the {@link NodeId} to check equality against.
+     * @return {@code true} if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     * @deprecated use {@link #equalTo(NodeId)} instead.
+     */
+    @Deprecated
+    public boolean equals(NodeId nodeId) {
+        return equalTo(nodeId);
+    }
+
+    /**
+     * Check if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     * <p>
+     * To be considered equal this ExpandedNodeId must be in serverIndex == 0, have the same namespace index as
+     * {@code nodeId} or have a namespace URI at the same index in the default namespace table, and an equal
+     * identifier.
+     *
+     * @param nodeId         the {@link NodeId} to check equality against.
+     * @param namespaceTable the {@link NamespaceTable} used to look up the index of a namespace URI.
+     * @return {@code true} if this {@link ExpandedNodeId} is equal to {@code nodeId}.
+     * @deprecated use {@link #equalTo(NodeId, NamespaceTable)} instead.
+     */
+    @Deprecated
+    public boolean equals(NodeId nodeId, NamespaceTable namespaceTable) {
+        return equalTo(nodeId, namespaceTable);
     }
 
     /**
@@ -446,8 +468,8 @@ public final class ExpandedNodeId {
      * @param nodeId the {@link NodeId} to check equality against.
      * @return {@code true} if this {@link ExpandedNodeId} is equal to {@code nodeId}.
      */
-    public boolean equals(NodeId nodeId) {
-        return nodeId.equals(this);
+    public boolean equalTo(NodeId nodeId) {
+        return nodeId.equalTo(this);
     }
 
     /**
@@ -461,8 +483,19 @@ public final class ExpandedNodeId {
      * @param namespaceTable the {@link NamespaceTable} used to look up the index of a namespace URI.
      * @return {@code true} if this {@link ExpandedNodeId} is equal to {@code nodeId}.
      */
-    public boolean equals(NodeId nodeId, NamespaceTable namespaceTable) {
-        return nodeId.equals(this, namespaceTable);
+    public boolean equalTo(NodeId nodeId, NamespaceTable namespaceTable) {
+        return nodeId.equalTo(this, namespaceTable);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpandedNodeId that = (ExpandedNodeId) o;
+        return Objects.equals(namespaceIndex, that.namespaceIndex) &&
+            Objects.equals(identifier, that.identifier) &&
+            Objects.equals(namespaceUri, that.namespaceUri) &&
+            serverIndex.equals(that.serverIndex);
     }
 
     @Override
