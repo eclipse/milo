@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -424,6 +424,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         return setProperty(VariableTypeNodeProperties.NodeVersion, nodeVersion);
     }
 
+    @Override
     protected DataValue getAttributeValue(AttributeId attributeId) {
         switch (attributeId) {
             case Value:
@@ -441,6 +442,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         }
     }
 
+    @Override
     protected void setAttributeValue(AttributeId attributeId, DataValue value) {
         switch (attributeId) {
             case Value: {

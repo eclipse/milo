@@ -261,6 +261,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
         return setProperty(MethodNodeProperties.OutputArguments, outputArguments);
     }
 
+    @Override
     protected DataValue getAttributeValue(AttributeId attributeId) {
         switch (attributeId) {
             case Executable:
@@ -272,6 +273,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
         }
     }
 
+    @Override
     protected void setAttributeValue(AttributeId attributeId, DataValue value) {
         switch (attributeId) {
             case Executable: {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -219,6 +219,7 @@ public class UaViewNode extends UaNode implements ViewNode {
         return setProperty(ViewNodeProperties.ViewVersion, viewVersion);
     }
 
+    @Override
     protected DataValue getAttributeValue(AttributeId attributeId) {
         switch (attributeId) {
             case ContainsNoLoops:
@@ -230,6 +231,7 @@ public class UaViewNode extends UaNode implements ViewNode {
         }
     }
 
+    @Override
     protected void setAttributeValue(AttributeId attributeId, DataValue value) {
         switch (attributeId) {
             case ContainsNoLoops: {
