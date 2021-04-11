@@ -114,7 +114,7 @@ public class DataTypeDictionaryReader {
         CompletableFuture<Stream<NodeId>> dictionaryNodeIds = browseFuture.thenApply(
             references ->
                 references.stream()
-                    .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType))
+                    .filter(r -> r.getTypeDefinition().equalTo(Identifiers.DataTypeDictionaryType))
                     .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
         );
 
@@ -386,7 +386,7 @@ public class DataTypeDictionaryReader {
 
         return browseResult.thenApply(references ->
             references.stream()
-                .filter(r -> Identifiers.DataTypeDescriptionType.equals(r.getTypeDefinition()))
+                .filter(r -> Identifiers.DataTypeDescriptionType.equalTo(r.getTypeDefinition()))
                 .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
                 .collect(Collectors.toList())
         );
@@ -447,7 +447,7 @@ public class DataTypeDictionaryReader {
             return browse.thenApply(references -> {
                 Optional<ReferenceDescription> ref = references.stream()
                     .filter(r -> QN_DEFAULT_BINARY.equals(r.getBrowseName()) &&
-                        Identifiers.DataTypeEncodingType.equals(r.getTypeDefinition()))
+                        Identifiers.DataTypeEncodingType.equalTo(r.getTypeDefinition()))
                     .findFirst();
 
                 return ref.map(r ->

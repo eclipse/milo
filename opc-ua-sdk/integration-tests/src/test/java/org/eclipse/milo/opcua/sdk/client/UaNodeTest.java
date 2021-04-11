@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -50,11 +50,11 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         List<ReferenceDescription> references = serverNode.browse(browseOptions);
         assertEquals(5, references.size());
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_ServerArray)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_NamespaceArray)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_ServiceLevel)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_Auditing)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_EstimatedReturnTime)));
     }
 
     @Test

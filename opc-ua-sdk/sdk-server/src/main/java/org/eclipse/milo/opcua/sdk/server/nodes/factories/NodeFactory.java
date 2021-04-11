@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -417,7 +417,7 @@ public class NodeFactory {
         return node.getReferences()
             .stream()
             .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
-            .anyMatch(r -> Identifiers.ModellingRule_Optional.equals(r.getTargetNodeId()));
+            .anyMatch(r -> Identifiers.ModellingRule_Optional.equalTo(r.getTargetNodeId()));
     }
 
     private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {

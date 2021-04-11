@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -68,7 +68,7 @@ public class ExpandedNodeIdTest {
 
             NodeId nodeId = new NodeId(0, "foo");
 
-            assertTrue(xni.equals(nodeId));
+            assertTrue(xni.equalTo(nodeId));
         }
 
         {
@@ -79,7 +79,7 @@ public class ExpandedNodeIdTest {
 
             NodeId nodeId = new NodeId(0, "foo");
 
-            assertTrue(xni.equals(nodeId));
+            assertTrue(xni.equalTo(nodeId));
         }
 
         {
@@ -91,7 +91,7 @@ public class ExpandedNodeIdTest {
 
             NodeId nodeId = new NodeId(0, "foo");
 
-            assertFalse(xni.equals(nodeId));
+            assertFalse(xni.equalTo(nodeId));
         }
 
         {
@@ -102,7 +102,7 @@ public class ExpandedNodeIdTest {
 
             NodeId nodeId = new NodeId(0, "foo");
 
-            assertFalse(xni.equals(nodeId));
+            assertFalse(xni.equalTo(nodeId));
         }
 
         {
@@ -113,7 +113,7 @@ public class ExpandedNodeIdTest {
 
             NodeId nodeId = new NodeId(0, "foo");
 
-            assertFalse(xni.equals(nodeId));
+            assertFalse(xni.equalTo(nodeId));
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -133,31 +133,31 @@ public class NodeIdTest {
         {
             ExpandedNodeId xni = nodeId.expanded();
 
-            assertTrue(nodeId.equals(xni));
+            assertTrue(nodeId.equalTo(xni));
         }
 
         {
             ExpandedNodeId xni = new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo");
 
-            assertTrue(nodeId.equals(xni));
+            assertTrue(nodeId.equalTo(xni));
         }
 
         {
             ExpandedNodeId xni = new ExpandedNodeId(ushort(1), Namespaces.OPC_UA, "foo");
 
-            assertTrue(nodeId.equals(xni));
+            assertTrue(nodeId.equalTo(xni));
         }
 
         {
             ExpandedNodeId xni = new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo", uint(1));
 
-            assertFalse(nodeId.equals(xni));
+            assertFalse(nodeId.equalTo(xni));
         }
 
         {
             ExpandedNodeId xni = new ExpandedNodeId(ushort(0), "uri:foo:bar", "foo");
 
-            assertFalse(nodeId.equals(xni));
+            assertFalse(nodeId.equalTo(xni));
         }
     }
 
