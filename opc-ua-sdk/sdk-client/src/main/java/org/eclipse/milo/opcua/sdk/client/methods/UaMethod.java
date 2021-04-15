@@ -94,9 +94,10 @@ public class UaMethod {
      *
      * @param inputs an array of {@link Variant}s containing the input values.
      * @return an array of {@link Variant}s containing the output values.
-     * @throws UaException if an operation- or service-level error occurs.
+     * @throws UaException       if a service-level error occurs.
+     * @throws UaMethodException if the operation-level result was not good.
      */
-    public Variant[] call(Variant[] inputs) throws UaException {
+    public Variant[] call(Variant[] inputs) throws UaMethodException, UaException {
         try {
             return callAsync(inputs).get();
         } catch (ExecutionException | InterruptedException e) {

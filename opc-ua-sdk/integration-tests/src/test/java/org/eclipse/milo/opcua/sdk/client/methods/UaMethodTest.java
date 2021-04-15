@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.methods;
 
+import java.util.Arrays;
+
 import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
@@ -154,6 +156,27 @@ public class UaMethodTest extends AbstractClientServerTest {
         );
 
         assertEquals(0, outputs.length);
+    }
+
+    @Test
+    public void throwsUaMethodException() throws UaException {
+        AddressSpace addressSpace = client.getAddressSpace();
+
+        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+
+        assertThrows(UaMethodException.class, () -> {
+            try {
+                objectsNode.callMethod(
+                    new QualifiedName(2, "onlyAcceptsPositiveInputs()"),
+                    new Variant[]{new Variant(-1)}
+                );
+            } catch (UaMethodException e) {
+                System.out.println("result: " + e.getStatusCode());
+                System.out.println("inputArgumentResults: " + Arrays.toString(e.getInputArgumentResults()));
+
+                throw e;
+            }
+        });
     }
 
 }

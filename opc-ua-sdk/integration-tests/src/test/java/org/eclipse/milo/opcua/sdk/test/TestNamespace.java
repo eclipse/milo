@@ -16,6 +16,7 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -32,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -199,6 +201,55 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                     @Override
                     protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException {
+                        return new Variant[0];
+                    }
+                });
+
+                return methodNode;
+            });
+
+            UaMethodNode.build(getNodeContext(), b -> {
+                b.setNodeId(newNodeId("onlyAcceptsPositiveInputs()"));
+                b.setBrowseName(newQualifiedName("onlyAcceptsPositiveInputs()"));
+                b.setDisplayName(LocalizedText.english("onlyAcceptsPositiveInputs()"));
+
+                b.addReference(new Reference(
+                    b.getNodeId(),
+                    Identifiers.HasOrderedComponent,
+                    Identifiers.ObjectsFolder.expanded(),
+                    Reference.Direction.INVERSE
+                ));
+
+                UaMethodNode methodNode = b.buildAndAdd();
+
+                methodNode.setInvocationHandler(new AbstractMethodInvocationHandler(methodNode) {
+                    @Override
+                    public Argument[] getInputArguments() {
+                        return new Argument[]{
+                            new Argument(
+                                "i",
+                                Identifiers.Int32,
+                                ValueRanks.Scalar,
+                                null,
+                                LocalizedText.NULL_VALUE)
+                        };
+                    }
+
+                    @Override
+                    public Argument[] getOutputArguments() {
+                        return new Argument[0];
+                    }
+
+                    @Override
+                    protected Variant[] invoke(
+                        InvocationContext invocationContext,
+                        Variant[] inputValues
+                    ) throws UaException {
+
+                        int i = (int) inputValues[0].getValue();
+                        if (i < 0) {
+                            throw new UaException(StatusCodes.Bad_InvalidArgument, "invalid argument: i");
+                        }
                         return new Variant[0];
                     }
                 });
