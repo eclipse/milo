@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespaceWithLifecycle;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.InvalidArgumentException;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
@@ -41,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
@@ -200,7 +202,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                     }
 
                     @Override
-                    protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException {
+                    protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) {
                         return new Variant[0];
                     }
                 });
@@ -241,15 +243,23 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                     }
 
                     @Override
-                    protected Variant[] invoke(
-                        InvocationContext invocationContext,
-                        Variant[] inputValues
-                    ) throws UaException {
+                    protected void validateInputArgumentValues(
+                        Variant[] inputArgumentValues
+                    ) throws InvalidArgumentException {
 
-                        int i = (int) inputValues[0].getValue();
+                        int i = (int) inputArgumentValues[0].getValue();
+
                         if (i < 0) {
-                            throw new UaException(StatusCodes.Bad_InvalidArgument, "invalid argument: i");
+                            StatusCode[] inputArgumentResults = {
+                                new StatusCode(StatusCodes.Bad_OutOfRange)
+                            };
+
+                            throw new InvalidArgumentException(inputArgumentResults);
                         }
+                    }
+
+                    @Override
+                    protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) {
                         return new Variant[0];
                     }
                 });
