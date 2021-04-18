@@ -11,6 +11,9 @@
 package org.eclipse.milo.examples.server;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -85,11 +88,18 @@ public class ExampleServer {
     private final ExampleNamespace exampleNamespace;
 
     public ExampleServer() throws Exception {
-        File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
-        if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
+        Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "server", "security");
+        Files.createDirectories(securityTempDir);
+        if (!Files.exists(securityTempDir)) {
             throw new Exception("unable to create security temp dir: " + securityTempDir);
         }
-        LoggerFactory.getLogger(getClass()).info("security temp dir: {}", securityTempDir.getAbsolutePath());
+
+        File pkiDir = securityTempDir.resolve("pki").toFile();
+
+        LoggerFactory.getLogger(getClass())
+            .info("security dir: {}", securityTempDir.toAbsolutePath());
+        LoggerFactory.getLogger(getClass())
+            .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -98,9 +108,7 @@ public class ExampleServer {
             loader.getServerCertificateChain()
         );
 
-        File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
         DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
-        LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
 
         DefaultServerCertificateValidator certificateValidator =
             new DefaultServerCertificateValidator(trustListManager);
