@@ -88,14 +88,18 @@ public class ExampleServer {
     private final ExampleNamespace exampleNamespace;
 
     public ExampleServer() throws Exception {
-        Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "server-example", "security");
+        Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "server", "security");
         Files.createDirectories(securityTempDir);
         if (!Files.exists(securityTempDir)) {
             throw new Exception("unable to create security temp dir: " + securityTempDir);
         }
 
+        File pkiDir = securityTempDir.resolve("pki").toFile();
+
         LoggerFactory.getLogger(getClass())
-            .info("security temp dir: {}", securityTempDir.toAbsolutePath());
+            .info("security dir: {}", securityTempDir.toAbsolutePath());
+        LoggerFactory.getLogger(getClass())
+            .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -104,9 +108,7 @@ public class ExampleServer {
             loader.getServerCertificateChain()
         );
 
-        File pkiDir = securityTempDir.resolve("pki").toFile();
         DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
-        LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
 
         DefaultServerCertificateValidator certificateValidator =
             new DefaultServerCertificateValidator(trustListManager);

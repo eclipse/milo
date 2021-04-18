@@ -64,20 +64,22 @@ public class ClientExampleRunner {
     }
 
     private OpcUaClient createClient() throws Exception {
-        Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "client-example", "security");
+        Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "client", "security");
         Files.createDirectories(securityTempDir);
         if (!Files.exists(securityTempDir)) {
             throw new Exception("unable to create security dir: " + securityTempDir);
         }
 
+        File pkiDir = securityTempDir.resolve("pki").toFile();
+
         LoggerFactory.getLogger(getClass())
-            .info("security temp dir: {}", securityTempDir.toAbsolutePath());
+            .info("security dir: {}", securityTempDir.toAbsolutePath());
+        LoggerFactory.getLogger(getClass())
+            .info("security pki dir: {}", pkiDir.getAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
-        File pkiDir = securityTempDir.resolve("pki").toFile();
         trustListManager = new DefaultTrustListManager(pkiDir);
-        LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
 
         DefaultClientCertificateValidator certificateValidator =
             new DefaultClientCertificateValidator(trustListManager);
@@ -112,13 +114,13 @@ public class ClientExampleRunner {
             // will need to be moved from the security "pki/rejected" directory to the
             // "pki/trusted/certs" directory.
 
-            // Make the example client trust the example server certificate by default.
+            // Make the example server trust the example client certificate by default.
             client.getConfig().getCertificate().ifPresent(
                 certificate ->
                     exampleServer.getServer().getConfig().getTrustListManager().addTrustedCertificate(certificate)
             );
 
-            // Make the example server trust the example client certificate by default.
+            // Make the example client trust the example server certificate by default.
             exampleServer.getServer().getConfig().getCertificateManager().getCertificates().forEach(
                 certificate ->
                     trustListManager.addTrustedCertificate(certificate)
