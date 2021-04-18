@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
@@ -38,6 +39,7 @@ class KeyStoreLoader {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private X509Certificate[] clientCertificateChain;
     private X509Certificate clientCertificate;
     private KeyPair clientKeyPair;
 
@@ -85,11 +87,16 @@ class KeyStoreLoader {
             }
         }
 
-        Key serverPrivateKey = keyStore.getKey(CLIENT_ALIAS, PASSWORD);
-        if (serverPrivateKey instanceof PrivateKey) {
+        Key clientPrivateKey = keyStore.getKey(CLIENT_ALIAS, PASSWORD);
+        if (clientPrivateKey instanceof PrivateKey) {
             clientCertificate = (X509Certificate) keyStore.getCertificate(CLIENT_ALIAS);
+
+            clientCertificateChain = Arrays.stream(keyStore.getCertificateChain(CLIENT_ALIAS))
+                .map(X509Certificate.class::cast)
+                .toArray(X509Certificate[]::new);
+
             PublicKey serverPublicKey = clientCertificate.getPublicKey();
-            clientKeyPair = new KeyPair(serverPublicKey, (PrivateKey) serverPrivateKey);
+            clientKeyPair = new KeyPair(serverPublicKey, (PrivateKey) clientPrivateKey);
         }
 
         return this;
@@ -97,6 +104,10 @@ class KeyStoreLoader {
 
     X509Certificate getClientCertificate() {
         return clientCertificate;
+    }
+
+    public X509Certificate[] getClientCertificateChain() {
+        return clientCertificateChain;
     }
 
     KeyPair getClientKeyPair() {

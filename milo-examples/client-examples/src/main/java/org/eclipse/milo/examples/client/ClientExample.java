@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,11 +27,11 @@ public interface ClientExample {
     }
 
     default Predicate<EndpointDescription> endpointFilter() {
-        return e -> true;
+        return e -> getSecurityPolicy().getUri().equals(e.getSecurityPolicyUri());
     }
 
     default SecurityPolicy getSecurityPolicy() {
-        return SecurityPolicy.None;
+        return SecurityPolicy.Basic256Sha256;
     }
 
     default IdentityProvider getIdentityProvider() {
