@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -265,6 +265,20 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
         } finally {
             ctx.close();
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        logger.error(
+            "[remote={}] Exception caught: {}",
+            ctx.channel().remoteAddress(), cause.getMessage(), cause);
+
+        // If the handshake hasn't completed yet this cause will be more
+        // accurate than the generic "connection closed" exception that
+        // channelInactive() will use.
+        handshakeFuture.completeExceptionally(cause);
+
+        ctx.close();
     }
 
 }
