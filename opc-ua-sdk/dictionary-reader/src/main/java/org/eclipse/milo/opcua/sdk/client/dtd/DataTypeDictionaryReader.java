@@ -280,129 +280,143 @@ public class DataTypeDictionaryReader {
             logger.debug("structCodecs.size()={}", structCodecs.size());
 
             if (Namespaces.OPC_UA.equals(namespaceUri)) {
-                structCodecs.forEach(cd -> {
-                    String description = cd.getDescription();
-
-                    BuiltinDataTypeInfo.DataTypeInfo dataTypeInfo =
-                        BuiltinDataTypeInfo.getDataTypeInfo(description);
-
-                    if (dataTypeInfo != null) {
-                        dictionary.registerStructCodec(
-                            cd.getCodec(),
-                            description,
-                            dataTypeInfo.dataTypeId,
-                            dataTypeInfo.encodingId
-                        );
-                    } else {
-                        logger.debug("no DataTypeInfo for builtin DataType \"{}\"", description);
-                    }
-                });
-
-                return completedFuture(dictionary);
+                return registerBuiltinStructCodecs(dictionary, structCodecs);
             } else {
-                CompletableFuture<List<NodeId>> descriptionNodeIds =
-                    browseDataTypeDescriptionNodeIds(dictionaryNodeId);
-
-                CompletableFuture<List<String>> descriptionValues =
-                    descriptionNodeIds.thenCompose(this::readDataTypeDescriptionValues);
-
-                if (logger.isTraceEnabled()) {
-                    try {
-                        List<NodeId> ids = descriptionNodeIds.get();
-                        List<String> values = descriptionValues.get();
-
-                        if (ids.size() != values.size()) {
-                            throw new IllegalStateException("size mismatch");
-                        }
-
-                        for (int i = 0; i < ids.size(); i++) {
-                            NodeId id = ids.get(i);
-                            String value = values.get(i);
-
-                            logger.trace("description NodeId={} value={}", id, value);
-                        }
-                    } catch (Exception e) {
-                        logger.error("Error reading description NodeIds", e);
-                    }
-                }
-
-                CompletableFuture<List<NodeId>> encodingIdsFuture =
-                    descriptionNodeIds.thenCompose(this::browseDataTypeEncodingNodeIds);
-
-                return encodingIdsFuture.thenCompose(encodingIds ->
-                    browseDataTypeIds(encodingIds).thenCompose(dataTypeIds ->
-                        descriptionValues.thenApply(descriptions -> {
-                                Map<String, NodeId> encodingIdMap = new HashMap<>();
-                                Map<String, NodeId> dataTypeIdMap = new HashMap<>();
-
-                                if (descriptions.size() != encodingIds.size()) {
-                                    throw new IllegalStateException(String.format(
-                                        "descriptions.size() != encodingIds.size() (%s != %s)",
-                                        descriptions.size(), encodingIds.size()
-                                    ));
-                                }
-
-                                if (encodingIds.size() != dataTypeIds.size()) {
-                                    throw new IllegalStateException(String.format(
-                                        "encodingIds.size() != dataTypeIds.size() (%s != %s)",
-                                        encodingIds.size(), dataTypeIds.size()
-                                    ));
-                                }
-
-                                Iterator<String> descriptionIter = descriptions.iterator();
-                                Iterator<NodeId> encodingIdIter = encodingIds.iterator();
-                                Iterator<NodeId> dataTypeIdIter = dataTypeIds.iterator();
-
-                                while (
-                                    descriptionIter.hasNext() && encodingIdIter.hasNext() && dataTypeIdIter.hasNext()
-                                ) {
-
-                                    String description = descriptionIter.next();
-                                    encodingIdMap.put(description, encodingIdIter.next());
-                                    dataTypeIdMap.put(description, dataTypeIdIter.next());
-                                }
-
-                                structCodecs.forEach(cd -> {
-                                    String description = cd.getDescription();
-                                    NodeId encodingId = encodingIdMap.get(description);
-                                    NodeId dataTypeId = dataTypeIdMap.get(description);
-
-                                    if (encodingId == null || encodingId.isNull()) {
-                                        if (dataTypeId != null && dataTypeId.getNamespaceIndex().intValue() != 0) {
-                                            logger.warn("encodingId is null for description={}", description);
-                                        } else {
-                                            // Theres a number of missing structures in the built-in type dictionary;
-                                            // namely the service request and response structures. It's expected that
-                                            // we won't be able to create codecs for these.
-                                            logger.debug(
-                                                "dataTypeId and encodingId is null for description={}", description);
-                                        }
-                                    } else if (dataTypeId == null || dataTypeId.isNull()) {
-                                        logger.warn("dataTypeId is null for description={}", description);
-                                    } else {
-                                        dictionary.registerStructCodec(
-                                            cd.getCodec(),
-                                            description,
-                                            dataTypeId,
-                                            encodingId
-                                        );
-
-                                        logger.debug(
-                                            "Registered codec description={} dataTypeId={} encodingId={}",
-                                            description, dataTypeId, encodingId
-                                        );
-                                    }
-                                });
-
-                                return dictionary;
-                            }
-                        )
-                    )
-                );
+                return registerCustomStructCodecs(dictionaryNodeId, dictionary, structCodecs);
             }
         } catch (JAXBException e) {
             return failedFuture(e);
         }
+    }
+
+    private CompletableFuture<DataTypeDictionary<?>> registerBuiltinStructCodecs(
+        OpcUaBinaryDataTypeDictionary dictionary,
+        List<CodecDescription> structCodecs
+    ) {
+
+        structCodecs.forEach(cd -> {
+            String description = cd.getDescription();
+
+            BuiltinDataTypeInfo.DataTypeInfo dataTypeInfo =
+                BuiltinDataTypeInfo.getDataTypeInfo(description);
+
+            if (dataTypeInfo != null) {
+                dictionary.registerStructCodec(
+                    cd.getCodec(),
+                    description,
+                    dataTypeInfo.dataTypeId,
+                    dataTypeInfo.encodingId
+                );
+            } else {
+                logger.debug("no DataTypeInfo for builtin DataType \"{}\"", description);
+            }
+        });
+
+        return completedFuture(dictionary);
+    }
+
+    private CompletableFuture<DataTypeDictionary<?>> registerCustomStructCodecs(
+        NodeId dictionaryNodeId,
+        OpcUaBinaryDataTypeDictionary dictionary,
+        List<CodecDescription> structCodecs
+    ) {
+
+        CompletableFuture<List<NodeId>> descriptionNodeIds =
+            browseDataTypeDescriptionNodeIds(dictionaryNodeId);
+
+        CompletableFuture<List<String>> descriptionValues =
+            descriptionNodeIds.thenCompose(this::readDataTypeDescriptionValues);
+
+        if (logger.isTraceEnabled()) {
+            try {
+                List<NodeId> ids = descriptionNodeIds.get();
+                List<String> values = descriptionValues.get();
+
+                if (ids.size() != values.size()) {
+                    throw new IllegalStateException("size mismatch");
+                }
+
+                for (int i = 0; i < ids.size(); i++) {
+                    NodeId id = ids.get(i);
+                    String value = values.get(i);
+
+                    logger.trace("description NodeId={} value={}", id, value);
+                }
+            } catch (Exception e) {
+                logger.error("Error reading description NodeIds", e);
+            }
+        }
+
+        CompletableFuture<List<NodeId>> encodingIdsFuture =
+            descriptionNodeIds.thenCompose(this::browseDataTypeEncodingNodeIds);
+
+        return encodingIdsFuture.thenCompose(encodingIds ->
+            browseDataTypeIds(encodingIds).thenCompose(dataTypeIds ->
+                descriptionValues.thenApply(descriptions -> {
+                        Map<String, NodeId> encodingIdMap = new HashMap<>();
+                        Map<String, NodeId> dataTypeIdMap = new HashMap<>();
+
+                        if (descriptions.size() != encodingIds.size()) {
+                            throw new IllegalStateException(String.format(
+                                "descriptions.size() != encodingIds.size() (%s != %s)",
+                                descriptions.size(), encodingIds.size()
+                            ));
+                        }
+
+                        if (encodingIds.size() != dataTypeIds.size()) {
+                            throw new IllegalStateException(String.format(
+                                "encodingIds.size() != dataTypeIds.size() (%s != %s)",
+                                encodingIds.size(), dataTypeIds.size()
+                            ));
+                        }
+
+                        Iterator<String> descriptionIter = descriptions.iterator();
+                        Iterator<NodeId> encodingIdIter = encodingIds.iterator();
+                        Iterator<NodeId> dataTypeIdIter = dataTypeIds.iterator();
+
+                        while (descriptionIter.hasNext() && encodingIdIter.hasNext() && dataTypeIdIter.hasNext()) {
+                            String description = descriptionIter.next();
+                            encodingIdMap.put(description, encodingIdIter.next());
+                            dataTypeIdMap.put(description, dataTypeIdIter.next());
+                        }
+
+                        structCodecs.forEach(cd -> {
+                            String description = cd.getDescription();
+                            NodeId encodingId = encodingIdMap.get(description);
+                            NodeId dataTypeId = dataTypeIdMap.get(description);
+
+                            if (encodingId == null || encodingId.isNull()) {
+                                if (dataTypeId != null && dataTypeId.getNamespaceIndex().intValue() != 0) {
+                                    logger.warn("encodingId is null for description={}", description);
+                                } else {
+                                    // Theres a number of missing structures in the built-in type dictionary;
+                                    // namely the service request and response structures. It's expected that
+                                    // we won't be able to create codecs for these.
+                                    logger.debug(
+                                        "dataTypeId and encodingId is null for description={}", description);
+                                }
+                            } else if (dataTypeId == null || dataTypeId.isNull()) {
+                                logger.warn("dataTypeId is null for description={}", description);
+                            } else {
+                                dictionary.registerStructCodec(
+                                    cd.getCodec(),
+                                    description,
+                                    dataTypeId,
+                                    encodingId
+                                );
+
+                                logger.debug(
+                                    "Registered codec description={} dataTypeId={} encodingId={}",
+                                    description, dataTypeId, encodingId
+                                );
+                            }
+                        });
+
+                        return dictionary;
+                    }
+                )
+            )
+        );
     }
 
     private CompletableFuture<List<NodeId>> browseDataTypeDescriptionNodeIds(NodeId dictionaryNodeId) {
