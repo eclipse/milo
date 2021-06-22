@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
-import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem.DataValueListener;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -1216,8 +1215,7 @@ public class ManagedSubscription {
      * A {@link UaSubscription.NotificationListener} used internally by {@link ManagedSubscription} to notify its
      * {@link ChangeListener}s and {@link StatusListener}s.
      */
-    private class ManagedSubscriptionNotificationListener implements
-        UaSubscriptionManager.SubscriptionListener, UaSubscription.NotificationListener {
+    private class ManagedSubscriptionNotificationListener implements UaSubscription.NotificationListener {
 
         private final ExecutionQueue executionQueue = new ExecutionQueue(client.getConfig().getExecutor());
 
@@ -1290,39 +1288,25 @@ public class ManagedSubscription {
             );
         }
 
-        //endregion
-
-        //region UaSubscriptionManager.SubscriptionListener
-
-        // These callbacks need to be filtered to see if they are for the
-        // UaSubscription backing this ManagedSubscription instance before
-        // doing notification.
-
         @Override
         public void onNotificationDataLost(UaSubscription subscription) {
-            if (ManagedSubscription.this.subscription.getSubscriptionId().equals(subscription.getSubscriptionId())) {
-                executionQueue.submit(() ->
-                    statusListeners.forEach(
-                        statusListener ->
-                            statusListener.onNotificationDataLost(ManagedSubscription.this)
-                    )
-                );
-            }
+            executionQueue.submit(() ->
+                statusListeners.forEach(
+                    statusListener ->
+                        statusListener.onNotificationDataLost(ManagedSubscription.this)
+                )
+            );
         }
 
         @Override
         public void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {
-            if (ManagedSubscription.this.subscription.getSubscriptionId().equals(subscription.getSubscriptionId())) {
-                executionQueue.submit(() ->
-                    statusListeners.forEach(
-                        statusListener ->
-                            statusListener.onSubscriptionTransferFailed(ManagedSubscription.this, statusCode)
-                    )
-                );
-            }
+            executionQueue.submit(() ->
+                statusListeners.forEach(
+                    statusListener ->
+                        statusListener.onSubscriptionTransferFailed(ManagedSubscription.this, statusCode)
+                )
+            );
         }
-
-        //endregion
 
     }
 
