@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -363,6 +363,11 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         if (subscription != null) {
             subscriptionListeners.forEach(l -> l.onSubscriptionTransferFailed(subscription, statusCode));
+
+            subscription.getNotificationListeners().forEach(
+                l ->
+                    l.onSubscriptionTransferFailed(subscription, statusCode)
+            );
         }
     }
 
@@ -528,10 +533,12 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                     logger.debug("Republish failed: {}", ex.getMessage(), ex);
 
                     subscriptionListeners.forEach(l -> l.onNotificationDataLost(subscription));
+                    subscription.getNotificationListeners().forEach(l -> l.onNotificationDataLost(subscription));
                 } else {
                     // Republish succeeded, possibly with some data loss, resume processing.
                     if (dataLost) {
                         subscriptionListeners.forEach(l -> l.onNotificationDataLost(subscription));
+                        subscription.getNotificationListeners().forEach(l -> l.onNotificationDataLost(subscription));
                     }
                 }
 
