@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
+import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -296,6 +297,27 @@ public interface UaSubscription {
          * @param status       the new subscription status.
          */
         default void onStatusChangedNotification(UaSubscription subscription, StatusCode status) {}
+
+        /**
+         * Attempts to recover missed notification data have failed.
+         * <p>
+         * When a notification is missed a series of Republish requests are initiated to recover the missing data. If
+         * republishing fails, or any of the notifications are no longer available, this callback will be invoked.
+         *
+         * @param subscription the subscription that missed notification data.
+         */
+        default void onNotificationDataLost(UaSubscription subscription) {}
+
+        /**
+         * A new {@link UaSession} was established, and upon attempting to transfer an existing subscription to this
+         * new session, a failure occurred.
+         * <p>
+         * This subscription will be removed from {@link UaSubscriptionManager}'s bookkeeping. It must be re-created.
+         *
+         * @param subscription the {@link UaSubscription} that could not be transferred.
+         * @param statusCode   the {@link StatusCode} for the transfer failure.
+         */
+        default void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {}
 
     }
 
