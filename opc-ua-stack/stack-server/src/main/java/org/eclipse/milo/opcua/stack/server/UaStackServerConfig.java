@@ -98,8 +98,18 @@ public interface UaStackServerConfig {
 
     /**
      * @return the {@link X509Certificate} used for SSL/TLS with HTTPS endpoints.
+     * @deprecated This will only return the leaf certificate, use @{{@link #getHttpsCertificateChain()}} to get the
+     * full chain.
      */
-    Optional<X509Certificate> getHttpsCertificate();
+    @Deprecated
+    default Optional<X509Certificate> getHttpsCertificate() {
+        return getHttpsCertificateChain().flatMap(chain -> Optional.ofNullable(chain[0]));
+    }
+
+    /**
+     * @return the {@link X509Certificate} used for SSL/TLS with HTTPS endpoints.
+     */
+    Optional<X509Certificate[]> getHttpsCertificateChain();
 
     /**
      * @return the {@link ExecutorService} for this server.
@@ -136,7 +146,7 @@ public interface UaStackServerConfig {
         builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());
         builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
-        builder.setHttpsCertificate(config.getHttpsCertificate().orElse(null));
+        builder.setHttpsCertificateChain(config.getHttpsCertificateChain().orElse(null));
         builder.setExecutor(config.getExecutor());
 
         return builder;

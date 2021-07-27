@@ -113,7 +113,7 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
         builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());
         builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
-        builder.setHttpsCertificate(config.getHttpsCertificate().orElse(null));
+        builder.setHttpsCertificateChain(config.getHttpsCertificateChain().orElse(null));
         builder.setExecutor(config.getExecutor());
 
         // OpcUaServerConfig values
