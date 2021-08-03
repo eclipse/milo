@@ -118,8 +118,15 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     }
 
     @Override
+    @Deprecated
     public OpcUaServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
         super.setHttpsCertificate(httpsCertificate);
+        return this;
+    }
+
+    @Override
+    public OpcUaServerConfigBuilder setHttpsCertificateChain(X509Certificate[] httpsCertificate) {
+        super.setHttpsCertificateChain(httpsCertificate);
         return this;
     }
 
@@ -251,8 +258,8 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         }
 
         @Override
-        public Optional<X509Certificate> getHttpsCertificate() {
-            return stackServerConfig.getHttpsCertificate();
+        public Optional<X509Certificate[]> getHttpsCertificateChain() {
+            return stackServerConfig.getHttpsCertificateChain();
         }
 
         @Override

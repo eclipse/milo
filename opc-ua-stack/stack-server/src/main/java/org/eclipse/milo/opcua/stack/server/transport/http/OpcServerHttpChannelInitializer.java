@@ -55,7 +55,7 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
         this.stackServer = stackServer;
 
         KeyPair keyPair = stackServer.getConfig().getHttpsKeyPair().orElse(null);
-        X509Certificate httpsCertificate = stackServer.getConfig().getHttpsCertificate().orElse(null);
+        X509Certificate[] httpsCertificate = stackServer.getConfig().getHttpsCertificateChain().orElse(null);
 
         if (keyPair != null && httpsCertificate != null) {
             try {

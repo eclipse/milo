@@ -49,7 +49,7 @@ public class UaStackServerConfigBuilder {
     private ServerCertificateValidator certificateValidator;
 
     private KeyPair httpsKeyPair;
-    private X509Certificate httpsCertificate;
+    private X509Certificate[] httpsCertificate;
 
     private ExecutorService executor;
 
@@ -108,8 +108,14 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
-    public UaStackServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
+    public UaStackServerConfigBuilder setHttpsCertificateChain(X509Certificate[] httpsCertificate) {
         this.httpsCertificate = httpsCertificate;
+        return this;
+    }
+
+    @Deprecated
+    public UaStackServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
+        this.httpsCertificate = new X509Certificate[] { httpsCertificate };
         return this;
     }
 
@@ -159,7 +165,7 @@ public class UaStackServerConfigBuilder {
         private final TrustListManager trustListManager;
 
         private final KeyPair httpsKeyPair;
-        private final X509Certificate httpsCertificate;
+        private final X509Certificate[] httpsCertificate;
 
         private final ExecutorService executor;
 
@@ -175,7 +181,7 @@ public class UaStackServerConfigBuilder {
             TrustListManager trustListManager,
             ServerCertificateValidator certificateValidator,
             @Nullable KeyPair httpsKeyPair,
-            @Nullable X509Certificate httpsCertificate,
+            @Nullable X509Certificate[] httpsCertificate,
             ExecutorService executor
         ) {
 
@@ -250,7 +256,7 @@ public class UaStackServerConfigBuilder {
         }
 
         @Override
-        public Optional<X509Certificate> getHttpsCertificate() {
+        public Optional<X509Certificate[]> getHttpsCertificateChain() {
             return Optional.ofNullable(httpsCertificate);
         }
 
