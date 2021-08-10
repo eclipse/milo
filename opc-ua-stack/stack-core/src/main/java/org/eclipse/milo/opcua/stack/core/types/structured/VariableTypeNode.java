@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 @EqualsAndHashCode(
@@ -40,6 +41,8 @@ public class VariableTypeNode extends TypeNode implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=271");
 
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15075");
+
     private final Variant value;
 
     private final NodeId dataType;
@@ -52,9 +55,11 @@ public class VariableTypeNode extends TypeNode implements UaStructure {
 
     public VariableTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                            UInteger userWriteMask, ReferenceNode[] references, Variant value, NodeId dataType,
-                            Integer valueRank, UInteger[] arrayDimensions, Boolean isAbstract) {
-        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+                            UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                            RolePermissionType[] userRolePermissions, UShort accessRestrictions,
+                            ReferenceNode[] references, Variant value, NodeId dataType, Integer valueRank,
+                            UInteger[] arrayDimensions, Boolean isAbstract) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         this.value = value;
         this.dataType = dataType;
         this.valueRank = valueRank;
@@ -75,6 +80,11 @@ public class VariableTypeNode extends TypeNode implements UaStructure {
     @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public Variant getValue() {
@@ -112,13 +122,16 @@ public class VariableTypeNode extends TypeNode implements UaStructure {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.readStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
+            UShort accessRestrictions = decoder.readUInt16("AccessRestrictions");
             ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
             Variant value = decoder.readVariant("Value");
             NodeId dataType = decoder.readNodeId("DataType");
             Integer valueRank = decoder.readInt32("ValueRank");
             UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
             Boolean isAbstract = decoder.readBoolean("IsAbstract");
-            return new VariableTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, value, dataType, valueRank, arrayDimensions, isAbstract);
+            return new VariableTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references, value, dataType, valueRank, arrayDimensions, isAbstract);
         }
 
         @Override
@@ -130,6 +143,9 @@ public class VariableTypeNode extends TypeNode implements UaStructure {
             encoder.writeLocalizedText("Description", value.getDescription());
             encoder.writeUInt32("WriteMask", value.getWriteMask());
             encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeUInt16("AccessRestrictions", value.getAccessRestrictions());
             encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
             encoder.writeVariant("Value", value.getValue());
             encoder.writeNodeId("DataType", value.getDataType());

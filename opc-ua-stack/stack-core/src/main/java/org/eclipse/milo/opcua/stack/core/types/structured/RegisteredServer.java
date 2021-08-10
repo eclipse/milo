@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,9 +32,11 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 public class RegisteredServer extends Structure implements UaStructure {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=432");
 
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=434");
+
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=433");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=434");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15102");
 
     private final String serverUri;
 
@@ -71,13 +73,18 @@ public class RegisteredServer extends Structure implements UaStructure {
     }
 
     @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
     }
 
     @Override
-    public ExpandedNodeId getBinaryEncodingId() {
-        return BINARY_ENCODING_ID;
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public String getServerUri() {

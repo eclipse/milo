@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,10 @@ public interface UaStructure extends UaSerializable {
     }
 
     default ExpandedNodeId getXmlEncodingId() {
+        return ExpandedNodeId.NULL_VALUE;
+    }
+
+    default ExpandedNodeId getJsonEncodingId() {
         return ExpandedNodeId.NULL_VALUE;
     }
 

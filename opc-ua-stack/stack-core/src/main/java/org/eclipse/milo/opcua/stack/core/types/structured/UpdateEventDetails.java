@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -36,6 +36,8 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=684");
 
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15282");
+
     private final PerformUpdateType performInsertReplace;
 
     private final EventFilter filter;
@@ -63,6 +65,11 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
     @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public PerformUpdateType getPerformInsertReplace() {

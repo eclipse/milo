@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -64,6 +64,12 @@ public enum NodeAttributesMask implements UaEnumeration {
     WriteMask(1048576),
 
     Value(2097152),
+
+    DataTypeDefinition(4194304),
+
+    RolePermissions(8388608),
+
+    AccessRestrictions(16777216),
 
     All(33554431),
 
@@ -143,6 +149,12 @@ public enum NodeAttributesMask implements UaEnumeration {
                 return WriteMask;
             case 2097152:
                 return Value;
+            case 4194304:
+                return DataTypeDefinition;
+            case 8388608:
+                return RolePermissions;
+            case 16777216:
+                return AccessRestrictions;
             case 33554431:
                 return All;
             case 26501220:

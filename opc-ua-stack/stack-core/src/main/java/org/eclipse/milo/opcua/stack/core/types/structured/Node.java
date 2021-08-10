@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 @EqualsAndHashCode(
@@ -39,6 +40,8 @@ public class Node extends Structure implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=259");
 
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15068");
+
     private final NodeId nodeId;
 
     private final NodeClass nodeClass;
@@ -53,11 +56,19 @@ public class Node extends Structure implements UaStructure {
 
     private final UInteger userWriteMask;
 
+    private final RolePermissionType[] rolePermissions;
+
+    private final RolePermissionType[] userRolePermissions;
+
+    private final UShort accessRestrictions;
+
     private final ReferenceNode[] references;
 
     public Node(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                UInteger userWriteMask, ReferenceNode[] references) {
+                UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                RolePermissionType[] userRolePermissions, UShort accessRestrictions,
+                ReferenceNode[] references) {
         this.nodeId = nodeId;
         this.nodeClass = nodeClass;
         this.browseName = browseName;
@@ -65,6 +76,9 @@ public class Node extends Structure implements UaStructure {
         this.description = description;
         this.writeMask = writeMask;
         this.userWriteMask = userWriteMask;
+        this.rolePermissions = rolePermissions;
+        this.userRolePermissions = userRolePermissions;
+        this.accessRestrictions = accessRestrictions;
         this.references = references;
     }
 
@@ -81,6 +95,11 @@ public class Node extends Structure implements UaStructure {
     @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public NodeId getNodeId() {
@@ -111,6 +130,18 @@ public class Node extends Structure implements UaStructure {
         return userWriteMask;
     }
 
+    public RolePermissionType[] getRolePermissions() {
+        return rolePermissions;
+    }
+
+    public RolePermissionType[] getUserRolePermissions() {
+        return userRolePermissions;
+    }
+
+    public UShort getAccessRestrictions() {
+        return accessRestrictions;
+    }
+
     public ReferenceNode[] getReferences() {
         return references;
     }
@@ -130,8 +161,11 @@ public class Node extends Structure implements UaStructure {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.readStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
+            UShort accessRestrictions = decoder.readUInt16("AccessRestrictions");
             ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
-            return new Node(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+            return new Node(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         }
 
         @Override
@@ -143,6 +177,9 @@ public class Node extends Structure implements UaStructure {
             encoder.writeLocalizedText("Description", value.getDescription());
             encoder.writeUInt32("WriteMask", value.getWriteMask());
             encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeUInt16("AccessRestrictions", value.getAccessRestrictions());
             encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
         }
     }

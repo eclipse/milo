@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 @EqualsAndHashCode(
@@ -40,6 +41,8 @@ public class VariableNode extends InstanceNode implements UaStructure {
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=269");
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=268");
+
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15074");
 
     private final Variant value;
 
@@ -61,10 +64,12 @@ public class VariableNode extends InstanceNode implements UaStructure {
 
     public VariableNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask, ReferenceNode[] references, Variant value, NodeId dataType,
-                        Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                        UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                        RolePermissionType[] userRolePermissions, UShort accessRestrictions,
+                        ReferenceNode[] references, Variant value, NodeId dataType, Integer valueRank,
+                        UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
                         Double minimumSamplingInterval, Boolean historizing, UInteger accessLevelEx) {
-        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         this.value = value;
         this.dataType = dataType;
         this.valueRank = valueRank;
@@ -89,6 +94,11 @@ public class VariableNode extends InstanceNode implements UaStructure {
     @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public Variant getValue() {
@@ -142,6 +152,9 @@ public class VariableNode extends InstanceNode implements UaStructure {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.readStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
+            UShort accessRestrictions = decoder.readUInt16("AccessRestrictions");
             ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
             Variant value = decoder.readVariant("Value");
             NodeId dataType = decoder.readNodeId("DataType");
@@ -152,7 +165,7 @@ public class VariableNode extends InstanceNode implements UaStructure {
             Double minimumSamplingInterval = decoder.readDouble("MinimumSamplingInterval");
             Boolean historizing = decoder.readBoolean("Historizing");
             UInteger accessLevelEx = decoder.readUInt32("AccessLevelEx");
-            return new VariableNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
+            return new VariableNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
         }
 
         @Override
@@ -164,6 +177,9 @@ public class VariableNode extends InstanceNode implements UaStructure {
             encoder.writeLocalizedText("Description", value.getDescription());
             encoder.writeUInt32("WriteMask", value.getWriteMask());
             encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeUInt16("AccessRestrictions", value.getAccessRestrictions());
             encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
             encoder.writeVariant("Value", value.getValue());
             encoder.writeNodeId("DataType", value.getDataType());

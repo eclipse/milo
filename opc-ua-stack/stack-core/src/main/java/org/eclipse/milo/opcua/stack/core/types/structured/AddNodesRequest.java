@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -34,6 +34,8 @@ public class AddNodesRequest extends Structure implements UaRequestMessage {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=487");
 
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15167");
+
     private final RequestHeader requestHeader;
 
     private final AddNodesItem[] nodesToAdd;
@@ -58,6 +60,12 @@ public class AddNodesRequest extends Structure implements UaRequestMessage {
         return XML_ENCODING_ID;
     }
 
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
+    }
+
+    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }

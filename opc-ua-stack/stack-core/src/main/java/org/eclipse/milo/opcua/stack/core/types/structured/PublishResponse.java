@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -36,6 +36,8 @@ public class PublishResponse extends Structure implements UaResponseMessage {
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=829");
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=828");
+
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15353");
 
     private final ResponseHeader responseHeader;
 
@@ -79,6 +81,12 @@ public class PublishResponse extends Structure implements UaResponseMessage {
         return XML_ENCODING_ID;
     }
 
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
+    }
+
+    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }

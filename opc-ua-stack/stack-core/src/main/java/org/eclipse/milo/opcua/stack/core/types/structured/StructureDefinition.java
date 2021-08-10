@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -69,6 +69,11 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         return XML_ENCODING_ID;
     }
 
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
+    }
+
     public NodeId getDefaultEncodingId() {
         return defaultEncodingId;
     }
@@ -95,7 +100,7 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         public StructureDefinition decode(SerializationContext context, UaDecoder decoder) {
             NodeId defaultEncodingId = decoder.readNodeId("DefaultEncodingId");
             NodeId baseDataType = decoder.readNodeId("BaseDataType");
-            StructureType structureType = StructureType.from(decoder.readInt32("StructureType"));
+            StructureType structureType = decoder.readEnum("StructureType", StructureType.class);
             StructureField[] fields = (StructureField[]) decoder.readStructArray("Fields", StructureField.TYPE_ID);
             return new StructureDefinition(defaultEncodingId, baseDataType, structureType, fields);
         }
@@ -104,7 +109,7 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         public void encode(SerializationContext context, UaEncoder encoder, StructureDefinition value) {
             encoder.writeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
             encoder.writeNodeId("BaseDataType", value.getBaseDataType());
-            encoder.writeInt32("StructureType", value.getStructureType().getValue());
+            encoder.writeEnum("StructureType", value.getStructureType());
             encoder.writeStructArray("Fields", value.getFields(), StructureField.TYPE_ID);
         }
     }

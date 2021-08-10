@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -27,12 +28,14 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
     toBuilder = true
 )
 @ToString
-public class MonitoredItemCreateRequest extends Structure {
+public class MonitoredItemCreateRequest extends Structure implements UaStructure {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=743");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=745");
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=744");
+
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15321");
 
     private final ReadValueId itemToMonitor;
 
@@ -60,6 +63,11 @@ public class MonitoredItemCreateRequest extends Structure {
     @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public ReadValueId getItemToMonitor() {

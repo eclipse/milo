@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 @EqualsAndHashCode(
@@ -40,15 +41,18 @@ public class DataTypeNode extends TypeNode implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=283");
 
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15079");
+
     private final Boolean isAbstract;
 
     private final ExtensionObject dataTypeDefinition;
 
     public DataTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask, ReferenceNode[] references, Boolean isAbstract,
-                        ExtensionObject dataTypeDefinition) {
-        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+                        UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                        RolePermissionType[] userRolePermissions, UShort accessRestrictions,
+                        ReferenceNode[] references, Boolean isAbstract, ExtensionObject dataTypeDefinition) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references);
         this.isAbstract = isAbstract;
         this.dataTypeDefinition = dataTypeDefinition;
     }
@@ -66,6 +70,11 @@ public class DataTypeNode extends TypeNode implements UaStructure {
     @Override
     public ExpandedNodeId getXmlEncodingId() {
         return XML_ENCODING_ID;
+    }
+
+    @Override
+    public ExpandedNodeId getJsonEncodingId() {
+        return JSON_ENCODING_ID;
     }
 
     public Boolean getIsAbstract() {
@@ -91,10 +100,13 @@ public class DataTypeNode extends TypeNode implements UaStructure {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.readStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
+            UShort accessRestrictions = decoder.readUInt16("AccessRestrictions");
             ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
             Boolean isAbstract = decoder.readBoolean("IsAbstract");
             ExtensionObject dataTypeDefinition = decoder.readExtensionObject("DataTypeDefinition");
-            return new DataTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, isAbstract, dataTypeDefinition);
+            return new DataTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references, isAbstract, dataTypeDefinition);
         }
 
         @Override
@@ -106,6 +118,9 @@ public class DataTypeNode extends TypeNode implements UaStructure {
             encoder.writeLocalizedText("Description", value.getDescription());
             encoder.writeUInt32("WriteMask", value.getWriteMask());
             encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.writeUInt16("AccessRestrictions", value.getAccessRestrictions());
             encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
             encoder.writeBoolean("IsAbstract", value.getIsAbstract());
             encoder.writeExtensionObject("DataTypeDefinition", value.getDataTypeDefinition());

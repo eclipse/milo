@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -582,6 +583,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         } else {
             boolean structure = false;
             boolean enumeration = false;
+            boolean optionSet = false;
             Class<?> valueClass = getClass(value);
 
             if (UaStructure.class.isAssignableFrom(valueClass)) {
@@ -590,6 +592,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             } else if (UaEnumeration.class.isAssignableFrom(valueClass)) {
                 valueClass = Integer.class;
                 enumeration = true;
+            } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
+                valueClass = ((OptionSetUInteger<?>) value).getValue().getClass();
+                optionSet = true;
             }
 
             int typeId = TypeUtil.getBuiltinTypeId(valueClass);
@@ -611,7 +616,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                     for (int i = 0; i < length; i++) {
                         Object o = Array.get(value, i);
 
-                        writeValue(o, typeId, structure, enumeration);
+                        writeValue(o, typeId, structure, enumeration, optionSet);
                     }
                 } else {
                     buffer.writeByte(typeId | 0xC0);
@@ -623,7 +628,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                     for (int i = 0; i < length; i++) {
                         Object o = Array.get(flattened, i);
 
-                        writeValue(o, typeId, structure, enumeration);
+                        writeValue(o, typeId, structure, enumeration, optionSet);
                     }
 
                     writeInt32(dimensions.length);
@@ -634,14 +639,14 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             } else {
                 buffer.writeByte(typeId);
 
-                writeValue(value, typeId, structure, enumeration);
+                writeValue(value, typeId, structure, enumeration, optionSet);
             }
         }
     }
 
     // endregion
 
-    private void writeValue(Object value, int typeId, boolean structure, boolean enumeration) {
+    private void writeValue(Object value, int typeId, boolean structure, boolean enumeration, boolean optionSet) {
         if (structure) {
             UaStructure struct = (UaStructure) value;
 
@@ -650,6 +655,8 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             writeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {
             writeBuiltinType(typeId, ((UaEnumeration) value).getValue());
+        } else if (optionSet) {
+            writeBuiltinType(typeId, ((OptionSetUInteger<?>) value).getValue());
         } else {
             writeBuiltinType(typeId, value);
         }

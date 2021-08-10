@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,9 +14,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelType;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
 
 public class OpcUaBinaryStreamEncoderTest {
@@ -76,6 +79,18 @@ public class OpcUaBinaryStreamEncoderTest {
             writer.writeBit(0);
             assertEquals(buffer.readUnsignedByte(), 0b01010101);
         }
+    }
+
+    @Test
+    public void testWriteOptionSet() {
+        AccessLevelType accessLevelType = AccessLevelType.of(
+            AccessLevelType.Field.CurrentRead,
+            AccessLevelType.Field.CurrentWrite
+        );
+
+        writer.writeVariant(new Variant(accessLevelType));
+
+        assertEquals(ubyte(buffer.readUnsignedByte()), accessLevelType.getValue());
     }
 
 }
