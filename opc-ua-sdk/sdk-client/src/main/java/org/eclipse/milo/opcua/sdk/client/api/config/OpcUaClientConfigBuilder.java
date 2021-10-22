@@ -159,6 +159,12 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     }
 
     @Override
+    public OpcUaClientConfigBuilder setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
+        super.setScheduledExecutor(scheduledExecutor);
+        return this;
+    }
+
+    @Override
     public OpcUaClientConfigBuilder setWheelTimer(HashedWheelTimer wheelTimer) {
         super.setWheelTimer(wheelTimer);
         return this;
