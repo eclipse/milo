@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -202,6 +202,21 @@ public interface UaSubscriptionManager {
          * @param statusCode   the {@link StatusCode} for the transfer failure.
          */
         default void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {}
+
+        /**
+         * The subscription watchdog timer has elapsed. The receiver of this callback should
+         * consider deleting and re-creating this subscription or taking other appropriate action.
+         * <p>
+         * The timer elapses when 125% of the expected keep-alive interval has passed since receipt
+         * of the last PublishResponse. The watchdog timer will not be restarted unless a new
+         * PublishResponse for this subscription is received.
+         * <p>
+         * The expected keep-alive interval is {@code publishingInterval * keepAliveCount}
+         * milliseconds.
+         *
+         * @param subscription the {@link UaSubscription} that has not received a response.
+         */
+        default void onSubscriptionWatchdogTimerElapsed(UaSubscription subscription) {}
 
     }
 

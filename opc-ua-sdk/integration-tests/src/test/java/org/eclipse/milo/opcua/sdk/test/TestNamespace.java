@@ -281,6 +281,12 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
             // Post a bogus Event every couple seconds
             eventThread = new Thread(() -> {
+                try {
+                    Thread.sleep(2_000);
+                } catch (InterruptedException ignored) {
+                    // ignored
+                }
+
                 while (keepPostingEvents) {
                     try {
                         BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
