@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -73,6 +76,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<UInteger, OpcUaSubscription> subscriptions = Maps.newConcurrentMap();
+
+    private final Map<UInteger, WatchdogTimer> watchdogTimers = Maps.newConcurrentMap();
 
     private final List<SubscriptionListener> subscriptionListeners = Lists.newCopyOnWriteArrayList();
 
@@ -200,12 +205,20 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                     subscriptions.put(subscription.getSubscriptionId(), subscription);
 
+                    WatchdogTimer watchdogTimer = new WatchdogTimer(subscription);
+                    watchdogTimers.put(subscription.getSubscriptionId(), watchdogTimer);
+                    watchdogTimer.kick();
+
                     maybeSendPublishRequests();
 
                     return subscription;
                 });
             } else {
                 subscriptions.put(subscription.getSubscriptionId(), subscription);
+
+                WatchdogTimer watchdogTimer = new WatchdogTimer(subscription);
+                watchdogTimers.put(subscription.getSubscriptionId(), watchdogTimer);
+                watchdogTimer.kick();
 
                 maybeSendPublishRequests();
 
@@ -333,11 +346,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                     subscription.setRevisedLifetimeCount(modifyResponse.getRevisedLifetimeCount());
                     subscription.setRevisedMaxKeepAliveCount(modifyResponse.getRevisedMaxKeepAliveCount());
 
+                    WatchdogTimer watchdogTimer = watchdogTimers.remove(subscriptionId);
+                    if (watchdogTimer != null) watchdogTimer.kick();
+
                     maybeSendPublishRequests();
 
                     return subscription;
                 });
             } else {
+                WatchdogTimer watchdogTimer = watchdogTimers.remove(subscriptionId);
+                if (watchdogTimer != null) watchdogTimer.kick();
+
                 maybeSendPublishRequests();
 
                 return completedFuture(subscription);
@@ -352,6 +371,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         return client.deleteSubscriptions(subscriptionIds).thenApply(r -> {
             OpcUaSubscription subscription = subscriptions.remove(subscriptionId);
 
+            WatchdogTimer watchdogTimer = watchdogTimers.remove(subscriptionId);
+            if (watchdogTimer != null) watchdogTimer.cancel();
+
             maybeSendPublishRequests();
 
             return subscription;
@@ -360,6 +382,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     public void transferFailed(UInteger subscriptionId, StatusCode statusCode) {
         OpcUaSubscription subscription = subscriptions.remove(subscriptionId);
+
+        WatchdogTimer watchdogTimer = watchdogTimers.remove(subscriptionId);
+        if (watchdogTimer != null) watchdogTimer.cancel();
 
         if (subscription != null) {
             subscriptionListeners.forEach(l -> l.onSubscriptionTransferFailed(subscription, statusCode));
@@ -508,13 +533,20 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         logger.debug("onPublishComplete() response for subscriptionId={}", response.getSubscriptionId());
 
         UInteger subscriptionId = response.getSubscriptionId();
+
         OpcUaSubscription subscription = subscriptions.get(subscriptionId);
 
         if (subscription == null) {
+            WatchdogTimer watchdogTimer = watchdogTimers.remove(subscriptionId);
+            if (watchdogTimer != null) watchdogTimer.cancel();
+
             pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
             maybeSendPublishRequests();
             return;
         }
+
+        WatchdogTimer watchdogTimer = watchdogTimers.get(subscriptionId);
+        if (watchdogTimer != null) watchdogTimer.kick();
 
         NotificationMessage notificationMessage = response.getNotificationMessage();
 
@@ -807,6 +839,55 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     public void resumeDelivery() {
         deliveryQueue.resume();
+    }
+
+    private class WatchdogTimer {
+
+        private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
+
+        private final OpcUaSubscription subscription;
+
+        WatchdogTimer(OpcUaSubscription subscription) {
+            this.subscription = subscription;
+        }
+
+        void kick() {
+            ScheduledFuture<?> sf = scheduledFuture.get();
+            if (sf != null) sf.cancel(false);
+
+            scheduleNext();
+        }
+
+        void cancel() {
+            ScheduledFuture<?> sf = scheduledFuture.getAndSet(null);
+            if (sf != null) sf.cancel(false);
+        }
+
+        private void scheduleNext() {
+            long delay = Math.round(subscription.getRevisedPublishingInterval() *
+                subscription.getRevisedMaxKeepAliveCount().longValue() * 1.25);
+
+            ScheduledFuture<?> nextSf = client.getConfig().getScheduledExecutor().schedule(
+                () -> client.getConfig().getExecutor().execute(this::notifyListeners),
+                delay,
+                TimeUnit.MILLISECONDS
+            );
+
+            scheduledFuture.set(nextSf);
+        }
+
+        private void notifyListeners() {
+            subscriptionListeners.forEach(
+                subscriptionListener ->
+                    subscriptionListener.onSubscriptionWatchdogTimerElapsed(subscription)
+            );
+
+            subscription.getNotificationListeners().forEach(
+                notificationListener ->
+                    notificationListener.onSubscriptionWatchdogTimerElapsed(subscription)
+            );
+        }
+
     }
 
 }
