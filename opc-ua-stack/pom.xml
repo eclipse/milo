@@ -12,12 +12,12 @@
     <packaging>pom</packaging>
 
     <properties>
-        <bouncycastle.version>1.61</bouncycastle.version>
-        <guava.version>26.0-jre</guava.version>
+        <bouncycastle.version>1.69</bouncycastle.version>
+        <guava.version>31.0.1-jre</guava.version>
         <javassist.version>3.23.1-GA</javassist.version>
-        <annotations.version>20.1.0</annotations.version>
-        <netty.version>4.1.54.Final</netty.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <annotations.version>22.0.0</annotations.version>
+        <netty.version>4.1.70.Final</netty.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <testng.version>6.9.10</testng.version>
     </properties>
 
