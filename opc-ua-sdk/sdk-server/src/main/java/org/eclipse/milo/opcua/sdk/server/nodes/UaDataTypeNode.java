@@ -18,12 +18,16 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 public class UaDataTypeNode extends UaNode implements DataTypeNode {
 
-    private volatile Boolean isAbstract;
+    private Boolean isAbstract;
+    private DataTypeDefinition dataTypeDefinition;
 
     public UaDataTypeNode(
         UaNodeContext context,
@@ -33,12 +37,46 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
-        boolean isAbstract) {
+        boolean isAbstract
+    ) {
 
         super(context, nodeId, NodeClass.DataType,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.isAbstract = isAbstract;
+    }
+
+    public UaDataTypeNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        boolean isAbstract,
+        DataTypeDefinition dataTypeDefinition
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.DataType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.isAbstract = isAbstract;
+        this.dataTypeDefinition = dataTypeDefinition;
     }
 
     @Override
@@ -47,14 +85,26 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     }
 
     @Override
+    public DataTypeDefinition getDataTypeDefinition() {
+        return (DataTypeDefinition) filterChain.getAttribute(this, AttributeId.DataTypeDefinition);
+    }
+
+    @Override
     public void setIsAbstract(Boolean isAbstract) {
         filterChain.setAttribute(this, AttributeId.IsAbstract, isAbstract);
+    }
+
+    @Override
+    public void setDataTypeDefinition(DataTypeDefinition dataTypeDefinition) {
+        filterChain.setAttribute(this, AttributeId.DataTypeDefinition, dataTypeDefinition);
     }
 
     @Override
     public synchronized Object getAttribute(AttributeId attributeId) {
         if (attributeId == AttributeId.IsAbstract) {
             return isAbstract;
+        } else if (attributeId == AttributeId.DataTypeDefinition) {
+            return dataTypeDefinition;
         } else {
             return super.getAttribute(attributeId);
         }
@@ -64,6 +114,9 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     public synchronized void setAttribute(AttributeId attributeId, Object value) {
         if (attributeId == AttributeId.IsAbstract) {
             isAbstract = (Boolean) value;
+            fireAttributeChanged(attributeId, value);
+        } else if (attributeId == AttributeId.DataTypeDefinition) {
+            dataTypeDefinition = (DataTypeDefinition) value;
             fireAttributeChanged(attributeId, value);
         } else {
             super.setAttribute(attributeId, value);

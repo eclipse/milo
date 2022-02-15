@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -41,17 +42,32 @@ public enum AttributeId {
     MinimumSamplingInterval(19),
     Historizing(20),
     Executable(21),
-    UserExecutable(22);
+    UserExecutable(22),
+    DataTypeDefinition(23),
+    RolePermissions(24),
+    UserRolePermissions(25),
+    AccessRestrictions(26),
+    AccessLevelEx(27);
 
-    public static final ImmutableSet<AttributeId> BASE_ATTRIBUTES = ImmutableSet.copyOf(
+    public static final Set<AttributeId> BASE_ATTRIBUTES = ImmutableSet.copyOf(
         ImmutableSet.of(
-            NodeId, NodeClass, BrowseName, DisplayName, Description, WriteMask, UserWriteMask)
+            NodeId,
+            NodeClass,
+            BrowseName,
+            DisplayName,
+            Description,
+            WriteMask,
+            UserWriteMask,
+            RolePermissions,
+            UserRolePermissions,
+            AccessRestrictions
+        )
     );
 
     public static final ImmutableSet<AttributeId> DATA_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
         Sets.union(
             BASE_ATTRIBUTES,
-            ImmutableSet.of(IsAbstract))
+            ImmutableSet.of(IsAbstract, DataTypeDefinition))
     );
 
     public static final ImmutableSet<AttributeId> METHOD_ATTRIBUTES = ImmutableSet.copyOf(
@@ -82,7 +98,7 @@ public enum AttributeId {
         Sets.union(
             BASE_ATTRIBUTES,
             ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions,
-                AccessLevel, UserAccessLevel, MinimumSamplingInterval, Historizing))
+                AccessLevel, UserAccessLevel, MinimumSamplingInterval, Historizing, AccessLevelEx))
     );
 
     public static final ImmutableSet<AttributeId> VARIABLE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(

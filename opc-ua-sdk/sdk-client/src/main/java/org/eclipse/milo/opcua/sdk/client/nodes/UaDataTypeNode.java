@@ -18,6 +18,7 @@ import org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -25,13 +26,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.nodes.DataTypeNodeProperties.NodeVersion;
 
 public class UaDataTypeNode extends UaNode implements DataTypeNode {
 
     private Boolean isAbstract;
+    private DataTypeDefinition dataTypeDefinition;
 
     public UaDataTypeNode(
         OpcUaClient client,
@@ -50,6 +56,40 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         this.isAbstract = isAbstract;
     }
 
+    public UaDataTypeNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        Boolean isAbstract,
+        DataTypeDefinition dataTypeDefinition
+    ) {
+
+        super(
+            client,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.isAbstract = isAbstract;
+        this.dataTypeDefinition = dataTypeDefinition;
+    }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -65,6 +105,19 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     /**
      * {@inheritDoc}
      * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readDataTypeDefinition()
+     */
+    @Override
+    @Nullable
+    public synchronized DataTypeDefinition getDataTypeDefinition() {
+        return dataTypeDefinition;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * The attribute is only updated locally; it is not written to the server.
      *
      * @see #writeIsAbstract(Boolean)
@@ -72,6 +125,18 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     @Override
     public synchronized void setIsAbstract(Boolean isAbstract) {
         this.isAbstract = isAbstract;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeDataTypeDefinition(DataTypeDefinition)
+     */
+    @Override
+    public synchronized void setDataTypeDefinition(DataTypeDefinition dataTypeDefinition) {
+        this.dataTypeDefinition = dataTypeDefinition;
     }
 
     /**
@@ -96,6 +161,34 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     }
 
     /**
+     * Read the DataTypeDefinition attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link DataTypeDefinition} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.s
+     */
+    @Nullable
+    public DataTypeDefinition readDataTypeDefinition() throws UaException {
+        DataValue value = readAttribute(AttributeId.DataTypeDefinition);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read DataTypeDefinition failed");
+        } else {
+            ExtensionObject xo = (ExtensionObject) value.getValue().getValue();
+            if (xo == null || xo.isNull()) {
+                setDataTypeDefinition(null);
+            } else {
+                DataTypeDefinition dataTypeDefinition =
+                    (DataTypeDefinition) xo.decode(client.getStaticSerializationContext());
+                setDataTypeDefinition(dataTypeDefinition);
+            }
+            return dataTypeDefinition;
+        }
+    }
+
+    /**
      * Write a new IsAbstract attribute for this Node to the server and update the local attribute
      * if the operation succeeds.
      *
@@ -110,6 +203,24 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
             throw new UaException(statusCode, "write IsAbstract failed");
         } else {
             setIsAbstract(isAbstract);
+        }
+    }
+
+    /**
+     * Write a new DataTypeDefinition attribute for this Node to the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @param dataTypeDefinition the {@link DataTypeDefinition} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeDataTypeDefinition(DataTypeDefinition dataTypeDefinition) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(dataTypeDefinition));
+        StatusCode statusCode = writeAttribute(AttributeId.DataTypeDefinition, value);
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "write DataTypeDefinition failed");
+        } else {
+            setDataTypeDefinition(dataTypeDefinition);
         }
     }
 
@@ -202,6 +313,8 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         switch (attributeId) {
             case IsAbstract:
                 return DataValue.valueOnly(new Variant(getIsAbstract()));
+            case DataType:
+                return DataValue.valueOnly(new Variant(getDataTypeDefinition()));
             default:
                 return super.getAttributeValue(attributeId);
         }
@@ -212,6 +325,11 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         switch (attributeId) {
             case IsAbstract: {
                 setIsAbstract((Boolean) value.getValue().getValue());
+                break;
+            }
+            case DataTypeDefinition: {
+                ExtensionObject xo = (ExtensionObject) value.getValue().getValue();
+                setDataTypeDefinition((DataTypeDefinition) xo.decode(client.getStaticSerializationContext()));
                 break;
             }
             default: {

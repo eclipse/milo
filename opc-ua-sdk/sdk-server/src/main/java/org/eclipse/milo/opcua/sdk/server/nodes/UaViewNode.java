@@ -35,7 +35,8 @@ public class UaViewNode extends UaNode implements ViewNode {
         UInteger writeMask,
         UInteger userWriteMask,
         Boolean containsNoLoops,
-        UByte eventNotifier) {
+        UByte eventNotifier
+    ) {
 
         super(context, nodeId, NodeClass.View,
             browseName, displayName, description, writeMask, userWriteMask);

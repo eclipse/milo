@@ -35,10 +35,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.jetbrains.annotations.Nullable;
@@ -58,6 +61,38 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private UByte userAccessLevel;
     private Double minimumSamplingInterval;
     private Boolean historizing;
+    private AccessLevelExType accessLevelEx;
+
+//    public UaVariableNode(
+//        OpcUaClient client,
+//        NodeId nodeId,
+//        NodeClass nodeClass,
+//        QualifiedName browseName,
+//        LocalizedText displayName,
+//        LocalizedText description,
+//        UInteger writeMask,
+//        UInteger userWriteMask,
+//        DataValue value,
+//        NodeId dataType,
+//        Integer valueRank,
+//        UInteger[] arrayDimensions,
+//        UByte accessLevel,
+//        UByte userAccessLevel,
+//        Double minimumSamplingInterval,
+//        Boolean historizing
+//    ) {
+//
+//        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+//
+//        this.value = value;
+//        this.dataType = dataType;
+//        this.valueRank = valueRank;
+//        this.arrayDimensions = arrayDimensions;
+//        this.accessLevel = accessLevel;
+//        this.userAccessLevel = userAccessLevel;
+//        this.minimumSamplingInterval = minimumSamplingInterval;
+//        this.historizing = historizing;
+//    }
 
     public UaVariableNode(
         OpcUaClient client,
@@ -68,6 +103,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
         DataValue value,
         NodeId dataType,
         Integer valueRank,
@@ -75,10 +113,23 @@ public class UaVariableNode extends UaNode implements VariableNode {
         UByte accessLevel,
         UByte userAccessLevel,
         Double minimumSamplingInterval,
-        Boolean historizing
+        Boolean historizing,
+        AccessLevelExType accessLevelEx
     ) {
 
-        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            client,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.value = value;
         this.dataType = dataType;
@@ -88,6 +139,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         this.userAccessLevel = userAccessLevel;
         this.minimumSamplingInterval = minimumSamplingInterval;
         this.historizing = historizing;
+        this.accessLevelEx = accessLevelEx;
     }
 
     /**
@@ -170,6 +222,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
      * @see #readMinimumSamplingInterval()
      */
     @Override
+    @Nullable
     public synchronized Double getMinimumSamplingInterval() {
         return minimumSamplingInterval;
     }
@@ -184,6 +237,19 @@ public class UaVariableNode extends UaNode implements VariableNode {
     @Override
     public synchronized Boolean getHistorizing() {
         return historizing;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readAccessLevelEx()
+     */
+    @Override
+    @Nullable
+    public synchronized AccessLevelExType getAccessLevelEx() {
+        return accessLevelEx;
     }
 
     /**
@@ -291,6 +357,18 @@ public class UaVariableNode extends UaNode implements VariableNode {
     @Override
     public synchronized void setHistorizing(Boolean historizing) {
         this.historizing = historizing;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeAccessLevelEx(AccessLevelExType)
+     */
+    @Override
+    public synchronized void setAccessLevelEx(AccessLevelExType accessLevelEx) {
+        this.accessLevelEx = accessLevelEx;
     }
 
     /**
@@ -476,6 +554,30 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     /**
+     * Read the AccessLevelEx attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link AccessLevelExType} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    @Nullable
+    public AccessLevelExType readAccessLevelEx() throws UaException {
+        DataValue value = readAttribute(AttributeId.AccessLevelEx);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read AccessLevelEx failed");
+        } else {
+            AccessLevelExType accessLevelEx = new AccessLevelExType(
+                (UInteger) value.getValue().getValue()
+            );
+            setAccessLevelEx(accessLevelEx);
+            return accessLevelEx;
+        }
+    }
+
+    /**
      * Write a new Value attribute for this Node to the server and update the local attribute if
      * the operation succeeds.
      *
@@ -628,6 +730,24 @@ public class UaVariableNode extends UaNode implements VariableNode {
             throw new UaException(statusCode, "write Historizing failed");
         } else {
             setHistorizing(historizing);
+        }
+    }
+
+    /**
+     * Write a new AccessLevelEx attribute for this Node to the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @param accessLevelEx the {@link AccessLevelExType} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeAccessLevelEx(AccessLevelExType accessLevelEx) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(accessLevelEx.getValue()));
+        StatusCode statusCode = writeAttribute(AttributeId.AccessLevelEx, value);
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "write AccessLevelEx failed");
+        } else {
+            setAccessLevelEx(accessLevelEx);
         }
     }
 
@@ -957,6 +1077,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 return DataValue.valueOnly(new Variant(getMinimumSamplingInterval()));
             case Historizing:
                 return DataValue.valueOnly(new Variant(getHistorizing()));
+            case AccessLevelEx:
+                return DataValue.valueOnly(new Variant(getAccessLevelEx().getValue()));
             default:
                 return super.getAttributeValue(attributeId);
         }
@@ -995,6 +1117,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
             }
             case Historizing: {
                 setHistorizing((Boolean) value.getValue().getValue());
+                break;
+            }
+            case AccessLevelEx: {
+                setAccessLevelEx(new AccessLevelExType((UInteger) value.getValue().getValue()));
                 break;
             }
             default: {

@@ -45,8 +45,8 @@ public class UaMethodNode extends UaNode implements MethodNode {
 
     private volatile MethodInvocationHandler handler = MethodInvocationHandler.NOT_IMPLEMENTED;
 
-    private volatile Boolean executable;
-    private volatile Boolean userExecutable;
+    private Boolean executable;
+    private Boolean userExecutable;
 
     public UaMethodNode(
         UaNodeContext context,
@@ -57,7 +57,8 @@ public class UaMethodNode extends UaNode implements MethodNode {
         UInteger writeMask,
         UInteger userWriteMask,
         Boolean executable,
-        Boolean userExecutable) {
+        Boolean userExecutable
+    ) {
 
         super(context, nodeId, NodeClass.Method,
             browseName, displayName, description, writeMask, userWriteMask);

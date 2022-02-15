@@ -50,11 +50,14 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1339,34 +1342,51 @@ public class AddressSpace {
         List<DataValue> attributeValues
     ) throws UaException {
 
-        DataValue nodeIdDataValue = attributeValues.get(0);
+        int ai = 0;
+        DataValue nodeIdDataValue = attributeValues.get(ai++);
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(ai++).getValue().getValue());
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.Variable,
                 "expected NodeClass.Variable, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues.get(ai++).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(ai++).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(ai++), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(ai++), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(ai++), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(ai++),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(ai++),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(ai++),
+                AccessRestrictionType.class
+            );
 
-            DataValue value = attributeValues.get(7);
-            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-            UByte accessLevel = (UByte) attributeValues.get(11).getValue().getValue();
-            UByte userAccessLevel = (UByte) attributeValues.get(12).getValue().getValue();
-            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(13), Double.class);
-            Boolean historizing = (Boolean) attributeValues.get(14).getValue().getValue();
+            DataValue value = attributeValues.get(ai++);
+            NodeId dataType = (NodeId) attributeValues.get(ai++).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(ai++).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(ai++), UInteger[].class);
+            UByte accessLevel = (UByte) attributeValues.get(ai++).getValue().getValue();
+            UByte userAccessLevel = (UByte) attributeValues.get(ai++).getValue().getValue();
+            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(ai++), Double.class);
+            Boolean historizing = (Boolean) attributeValues.get(ai++).getValue().getValue();
+            AccessLevelExType accessLevelEx = getAttributeOrNull(
+                attributeValues.get(ai),
+                AccessLevelExType.class
+            );
 
             VariableTypeManager.VariableNodeConstructor constructor = client.getVariableTypeManager()
                 .getNodeConstructor(typeDefinitionId)
@@ -1381,6 +1401,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
@@ -1388,7 +1411,8 @@ public class AddressSpace {
                 accessLevel,
                 userAccessLevel,
                 minimumSamplingInterval,
-                historizing
+                historizing,
+                accessLevelEx
             );
         } catch (Throwable t) {
             throw UaException.extract(t)

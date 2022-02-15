@@ -57,7 +57,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public UaObjectNode(
         UaNodeContext context,
         NodeId nodeId,
-        ObjectTypeNode objectTypeNode) {
+        ObjectTypeNode objectTypeNode
+    ) {
 
         this(context, nodeId, objectTypeNode.getBrowseName(), objectTypeNode.getDisplayName());
 
@@ -70,7 +71,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
-        LocalizedText displayName) {
+        LocalizedText displayName
+    ) {
 
         super(context, nodeId, NodeClass.Object, browseName, displayName);
     }
@@ -82,7 +84,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
-        UInteger userWriteMask) {
+        UInteger userWriteMask
+    ) {
 
         super(context, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
     }
@@ -95,7 +98,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
-        UByte eventNotifier) {
+        UByte eventNotifier
+    ) {
 
         super(context, nodeId, NodeClass.Object,
             browseName, displayName, description, writeMask, userWriteMask);

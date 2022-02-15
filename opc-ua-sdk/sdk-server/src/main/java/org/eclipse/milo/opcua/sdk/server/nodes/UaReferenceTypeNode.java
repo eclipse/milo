@@ -36,7 +36,8 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         UInteger userWriteMask,
         Boolean isAbstract,
         Boolean symmetric,
-        LocalizedText inverseName) {
+        LocalizedText inverseName
+    ) {
 
         super(context, nodeId, NodeClass.ReferenceType,
             browseName, displayName, description, writeMask, userWriteMask);

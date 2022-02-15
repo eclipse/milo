@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class VariableTypeManager {
 
@@ -67,6 +70,9 @@ public class VariableTypeManager {
             LocalizedText description,
             UInteger writeMask,
             UInteger userWriteMask,
+            RolePermissionType[] rolePermissions,
+            RolePermissionType[] userRolePermissions,
+            AccessRestrictionType accessRestrictions,
             DataValue value,
             NodeId dataType,
             Integer valueRank,
@@ -74,7 +80,8 @@ public class VariableTypeManager {
             UByte accessLevel,
             UByte userAccessLevel,
             Double minimumSamplingInterval,
-            Boolean historizing
+            Boolean historizing,
+            AccessLevelExType accessLevelEx
         );
 
     }

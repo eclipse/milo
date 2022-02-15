@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -45,7 +45,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,11 +70,13 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private UByte userAccessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
     private Double minimumSamplingInterval = -1.0;
     private Boolean historizing = false;
+    private AccessLevelExType accessLevelEx;
 
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
-        VariableTypeNode variableTypeNode) {
+        VariableTypeNode variableTypeNode
+    ) {
 
         this(context, nodeId, variableTypeNode.getBrowseName(), variableTypeNode.getDisplayName());
 
@@ -88,7 +93,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
         UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
-        LocalizedText displayName) {
+        LocalizedText displayName
+    ) {
 
         super(context, nodeId, NodeClass.Variable, browseName, displayName);
     }
@@ -100,7 +106,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
-        UInteger userWriteMask) {
+        UInteger userWriteMask
+    ) {
 
         super(context, nodeId, NodeClass.Variable, browseName, displayName, description, writeMask, userWriteMask);
     }
@@ -120,7 +127,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
         UByte accessLevel,
         UByte userAccessLevel,
         Double minimumSamplingInterval,
-        boolean historizing) {
+        boolean historizing
+    ) {
 
         super(context, nodeId, NodeClass.Variable,
             browseName, displayName, description, writeMask, userWriteMask);
@@ -133,6 +141,53 @@ public class UaVariableNode extends UaNode implements VariableNode {
         this.userAccessLevel = userAccessLevel;
         this.minimumSamplingInterval = minimumSamplingInterval;
         this.historizing = historizing;
+    }
+
+    public UaVariableNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        DataValue value,
+        NodeId dataType,
+        Integer valueRank,
+        UInteger[] arrayDimensions,
+        UByte accessLevel,
+        UByte userAccessLevel,
+        Double minimumSamplingInterval,
+        boolean historizing,
+        AccessLevelExType accessLevelEx
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Variable,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.accessLevel = accessLevel;
+        this.userAccessLevel = userAccessLevel;
+        this.minimumSamplingInterval = minimumSamplingInterval;
+        this.historizing = historizing;
+        this.accessLevelEx = accessLevelEx;
     }
 
     @Override
@@ -176,6 +231,11 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
+    public AccessLevelExType getAccessLevelEx() {
+        return (AccessLevelExType) filterChain.getAttribute(this, AttributeId.AccessLevelEx);
+    }
+
+    @Override
     public void setValue(DataValue value) {
         filterChain.setAttribute(this, AttributeId.Value, value);
     }
@@ -216,6 +276,11 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
+    public void setAccessLevelEx(AccessLevelExType accessLevelEx) {
+        filterChain.setAttribute(this, AttributeId.AccessLevelEx, accessLevelEx);
+    }
+
+    @Override
     public synchronized Object getAttribute(AttributeId attributeId) {
         switch (attributeId) {
             case Value:
@@ -246,6 +311,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             case Historizing:
                 return historizing;
+
+            case AccessLevelEx:
+                return accessLevelEx;
 
             default:
                 return super.getAttribute(attributeId);
@@ -285,6 +353,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             case Historizing:
                 historizing = (Boolean) value;
+                break;
+
+            case AccessLevelEx:
+                accessLevelEx = (AccessLevelExType) value;
                 break;
 
             default:
@@ -585,6 +657,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private LocalizedText description = LocalizedText.NULL_VALUE;
         private UInteger writeMask = UInteger.MIN;
         private UInteger userWriteMask = UInteger.MIN;
+        private RolePermissionType[] rolePermissions;
+        private RolePermissionType[] userRolePermissions;
+        private AccessRestrictionType accessRestrictions;
 
         private DataValue value = new DataValue(
             Variant.NULL_VALUE,
@@ -600,6 +675,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private UByte userAccessLevel = AccessLevel.toValue(AccessLevel.CurrentRead);
         private Double minimumSamplingInterval = -1.0;
         private boolean historizing = false;
+        private AccessLevelExType accessLevelEx = null;
 
         private final UaNodeContext context;
 
@@ -646,6 +722,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
@@ -653,7 +732,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 accessLevel,
                 userAccessLevel,
                 minimumSamplingInterval,
-                historizing
+                historizing,
+                accessLevelEx
             );
 
             references.forEach(node::addReference);
@@ -703,6 +783,21 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
         public UaVariableNodeBuilder setUserWriteMask(UInteger userWriteMask) {
             this.userWriteMask = userWriteMask;
+            return this;
+        }
+
+        public UaVariableNodeBuilder setRolePermissions(RolePermissionType[] rolePermissions) {
+            this.rolePermissions = rolePermissions;
+            return this;
+        }
+
+        public UaVariableNodeBuilder setUserRolePermissions(RolePermissionType[] userRolePermissions) {
+            this.userRolePermissions = userRolePermissions;
+            return this;
+        }
+
+        public UaVariableNodeBuilder setAccessRestrictions(AccessRestrictionType accessRestrictions) {
+            this.accessRestrictions = accessRestrictions;
             return this;
         }
 
@@ -766,6 +861,11 @@ public class UaVariableNode extends UaNode implements VariableNode {
             return this;
         }
 
+        public UaVariableNodeBuilder setAccessLevelEx(AccessLevelExType accessLevelEx) {
+            this.accessLevelEx = accessLevelEx;
+            return this;
+        }
+
         public NodeId getNodeId() {
             return nodeId;
         }
@@ -788,6 +888,18 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
         public UInteger getUserWriteMask() {
             return userWriteMask;
+        }
+
+        public RolePermissionType[] getRolePermissions() {
+            return rolePermissions;
+        }
+
+        public RolePermissionType[] getUserRolePermissions() {
+            return userRolePermissions;
+        }
+
+        public AccessRestrictionType getAccessRestrictions() {
+            return accessRestrictions;
         }
 
         public DataValue getValue() {
@@ -820,6 +932,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
         public boolean getHistorizing() {
             return historizing;
+        }
+
+        public AccessLevelExType getAccessLevelEx() {
+            return accessLevelEx;
         }
 
         /**

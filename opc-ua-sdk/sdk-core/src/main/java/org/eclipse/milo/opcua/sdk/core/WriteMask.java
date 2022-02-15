@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,27 +19,31 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 public enum WriteMask {
 
     AccessLevel(1),
-    ArrayDimensions(2),
-    BrowseName(4),
-    ContainsNoLoops(8),
-    DataType(16),
-    Description(32),
-    DisplayName(64),
-    EventNotifier(128),
-    Executable(256),
-    Historizing(512),
-    InverseName(1024),
-    IsAbstract(2048),
-    MinimumSamplingInterval(4096),
-    NodeClass(8192),
-    NodeId(16384),
-    Symmetric(32768),
-    UserAccessLevel(65536),
-    UserExecutable(131072),
-    UserWriteMask(262144),
-    ValueRank(524288),
-    WriteMask(1048576),
-    ValueForVariableType(2097152);
+    ArrayDimensions(1 << 1),
+    BrowseName(1 << 2),
+    ContainsNoLoops(1 << 3),
+    DataType(1 << 4),
+    Description(1 << 5),
+    DisplayName(1 << 6),
+    EventNotifier(1 << 7),
+    Executable(1 << 8),
+    Historizing(1 << 9),
+    InverseName(1 << 10),
+    IsAbstract(1 << 11),
+    MinimumSamplingInterval(1 << 12),
+    NodeClass(1 << 13),
+    NodeId(1 << 14),
+    Symmetric(1 << 15),
+    UserAccessLevel(1 << 16),
+    UserExecutable(1 << 17),
+    UserWriteMask(1 << 18),
+    ValueRank(1 << 19),
+    WriteMask(1 << 20),
+    ValueForVariableType(1 << 21),
+    DataTypeDefinition(1 << 22),
+    RolePermissions(1 << 23),
+    AccessRestrictions(1 << 24),
+    AccessLevelEx(1 << 25);
 
     public static final Set<WriteMask> NONE = ImmutableSet.of();
 

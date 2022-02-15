@@ -42,6 +42,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
@@ -64,16 +66,22 @@ public abstract class UaNode implements UaServerNode {
     private LocalizedText description;
     private UInteger writeMask;
     private UInteger userWriteMask;
+    private RolePermissionType[] rolePermissions;
+    private RolePermissionType[] userRolePermissions;
+    private AccessRestrictionType accessRestrictions;
 
     protected UaNode(
         UaNodeContext context,
         NodeId nodeId,
         NodeClass nodeClass,
         QualifiedName browseName,
-        LocalizedText displayName) {
+        LocalizedText displayName
+    ) {
 
-        this(context, nodeId, nodeClass, browseName,
-            displayName, LocalizedText.NULL_VALUE, UInteger.MIN, UInteger.MIN);
+        this(
+            context, nodeId, nodeClass, browseName, displayName,
+            LocalizedText.NULL_VALUE, UInteger.MIN, UInteger.MIN, null, null, null
+        );
     }
 
     protected UaNode(
@@ -84,7 +92,28 @@ public abstract class UaNode implements UaServerNode {
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
-        UInteger userWriteMask) {
+        UInteger userWriteMask
+    ) {
+
+        this(
+            context, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask,
+            null, null, null
+        );
+    }
+
+    protected UaNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions
+    ) {
 
         this.context = context;
 
@@ -95,6 +124,9 @@ public abstract class UaNode implements UaServerNode {
         this.description = description;
         this.writeMask = writeMask;
         this.userWriteMask = userWriteMask;
+        this.rolePermissions = rolePermissions;
+        this.userRolePermissions = userRolePermissions;
+        this.accessRestrictions = accessRestrictions;
     }
 
     @Override
@@ -133,6 +165,21 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
+    public RolePermissionType[] getRolePermissions() {
+        return (RolePermissionType[]) filterChain.getAttribute(this, AttributeId.RolePermissions);
+    }
+
+    @Override
+    public RolePermissionType[] getUserRolePermissions() {
+        return (RolePermissionType[]) filterChain.getAttribute(this, AttributeId.UserRolePermissions);
+    }
+
+    @Override
+    public AccessRestrictionType getAccessRestrictions() {
+        return (AccessRestrictionType) filterChain.getAttribute(this, AttributeId.AccessRestrictions);
+    }
+
+    @Override
     public void setNodeId(NodeId nodeId) {
         filterChain.setAttribute(this, AttributeId.NodeId, nodeId);
     }
@@ -167,6 +214,21 @@ public abstract class UaNode implements UaServerNode {
         filterChain.setAttribute(this, AttributeId.UserWriteMask, userWriteMask);
     }
 
+    @Override
+    public void setRolePermissions(RolePermissionType[] rolePermissions) {
+        filterChain.setAttribute(this, AttributeId.RolePermissions, rolePermissions);
+    }
+
+    @Override
+    public void setUserRolePermissions(RolePermissionType[] userRolePermissions) {
+        filterChain.setAttribute(this, AttributeId.UserRolePermissions, userRolePermissions);
+    }
+
+    @Override
+    public void setAccessRestrictions(AccessRestrictionType accessRestrictions) {
+        filterChain.setAttribute(this, AttributeId.AccessRestrictions, accessRestrictions);
+    }
+
     /**
      * Direct read access to the field for {@code attributeId}, bypassing the {@link AttributeFilterChain}.
      *
@@ -195,6 +257,15 @@ public abstract class UaNode implements UaServerNode {
 
             case UserWriteMask:
                 return userWriteMask;
+
+            case RolePermissions:
+                return rolePermissions;
+
+            case UserRolePermissions:
+                return userRolePermissions;
+
+            case AccessRestrictions:
+                return accessRestrictions;
 
             default:
                 throw new UaRuntimeException(
@@ -241,6 +312,18 @@ public abstract class UaNode implements UaServerNode {
 
             case UserWriteMask:
                 userWriteMask = (UInteger) value;
+                break;
+
+            case RolePermissions:
+                rolePermissions = (RolePermissionType[]) value;
+                break;
+
+            case UserRolePermissions:
+                userRolePermissions = (RolePermissionType[]) value;
+                break;
+
+            case AccessRestrictions:
+                accessRestrictions = (AccessRestrictionType) value;
                 break;
 
             default:

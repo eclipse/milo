@@ -50,7 +50,8 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
-        Boolean isAbstract) {
+        Boolean isAbstract
+    ) {
 
         super(context, nodeId, NodeClass.ObjectType,
             browseName, displayName, description, writeMask, userWriteMask);

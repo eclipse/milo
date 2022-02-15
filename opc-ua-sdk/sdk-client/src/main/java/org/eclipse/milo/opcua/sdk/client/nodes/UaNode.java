@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -49,6 +49,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathResult;
@@ -58,8 +59,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RelativePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.RelativePathElement;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.jetbrains.annotations.Nullable;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -78,6 +81,9 @@ public abstract class UaNode implements Node {
     private LocalizedText description;
     private UInteger writeMask;
     private UInteger userWriteMask;
+    private RolePermissionType[] rolePermissions;
+    private RolePermissionType[] userRolePermissions;
+    private AccessRestrictionType accessRestrictions;
 
     protected final OpcUaClient client;
 
@@ -100,6 +106,33 @@ public abstract class UaNode implements Node {
         this.description = description;
         this.writeMask = writeMask;
         this.userWriteMask = userWriteMask;
+    }
+
+    public UaNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions
+    ) {
+
+        this.client = client;
+        this.nodeId = nodeId;
+        this.nodeClass = nodeClass;
+        this.browseName = browseName;
+        this.displayName = displayName;
+        this.description = description;
+        this.writeMask = writeMask;
+        this.userWriteMask = userWriteMask;
+        this.rolePermissions = rolePermissions;
+        this.userRolePermissions = userRolePermissions;
+        this.accessRestrictions = accessRestrictions;
     }
 
     /**
@@ -158,6 +191,7 @@ public abstract class UaNode implements Node {
      * @see #readDescription()
      */
     @Override
+    @Nullable
     public synchronized LocalizedText getDescription() {
         return description;
     }
@@ -170,6 +204,7 @@ public abstract class UaNode implements Node {
      * @see #readWriteMask()
      */
     @Override
+    @Nullable
     public synchronized UInteger getWriteMask() {
         return writeMask;
     }
@@ -182,8 +217,48 @@ public abstract class UaNode implements Node {
      * @see #readUserWriteMask()
      */
     @Override
+    @Nullable
     public synchronized UInteger getUserWriteMask() {
         return userWriteMask;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readRolePermissions()
+     */
+    @Override
+    @Nullable
+    public synchronized RolePermissionType[] getRolePermissions() {
+        return rolePermissions;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readUserRolePermissions()
+     */
+    @Override
+    @Nullable
+    public synchronized RolePermissionType[] getUserRolePermissions() {
+        return userRolePermissions;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned attribute is the most recently seen value; it is not read live from the server.
+     *
+     * @see #readAccessRestrictions()
+     */
+    @Override
+    @Nullable
+    public synchronized AccessRestrictionType getAccessRestrictions() {
+        return accessRestrictions;
     }
 
     /**
@@ -268,6 +343,39 @@ public abstract class UaNode implements Node {
     @Override
     public synchronized void setUserWriteMask(UInteger userWriteMask) {
         this.userWriteMask = userWriteMask;
+    }
+
+    /**
+     * {@inheritDoc}
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeRolePermissions(RolePermissionType[])
+     */
+    @Override
+    public synchronized void setRolePermissions(RolePermissionType[] rolePermissions) {
+        this.rolePermissions = rolePermissions;
+    }
+
+    /**
+     * {@inheritDoc}
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeUserRolePermissions(RolePermissionType[])
+     */
+    @Override
+    public synchronized void setUserRolePermissions(RolePermissionType[] userRolePermissions) {
+        this.userRolePermissions = userRolePermissions;
+    }
+
+    /**
+     * {@inheritDoc}
+     * The attribute is only updated locally; it is not written to the server.
+     *
+     * @see #writeAccessRestrictions(AccessRestrictionType)
+     */
+    @Override
+    public synchronized void setAccessRestrictions(AccessRestrictionType accessRestrictions) {
+        this.accessRestrictions = accessRestrictions;
     }
 
     /**
@@ -362,6 +470,7 @@ public abstract class UaNode implements Node {
      * @return the {@link LocalizedText} read from the server.
      * @throws UaException if a service- or operation-level error occurs.
      */
+    @Nullable
     public LocalizedText readDescription() throws UaException {
         DataValue value = readAttribute(AttributeId.Description);
 
@@ -383,6 +492,7 @@ public abstract class UaNode implements Node {
      * @return the {@link UInteger} read from the server.
      * @throws UaException if a service- or operation-level error occurs.
      */
+    @Nullable
     public UInteger readWriteMask() throws UaException {
         DataValue value = readAttribute(AttributeId.UserWriteMask);
 
@@ -404,6 +514,7 @@ public abstract class UaNode implements Node {
      * @return the {@link UInteger} read from the server.
      * @throws UaException if a service- or operation-level error occurs.
      */
+    @Nullable
     public UInteger readUserWriteMask() throws UaException {
         DataValue value = readAttribute(AttributeId.UserWriteMask);
 
@@ -415,6 +526,80 @@ public abstract class UaNode implements Node {
             UInteger userWriteMask = (UInteger) value.getValue().getValue();
             setUserWriteMask(userWriteMask);
             return userWriteMask;
+        }
+    }
+
+    /**
+     * Read the RolePermissions attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link RolePermissionType} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    @Nullable
+    public RolePermissionType[] readRolePermissions() throws UaException {
+        DataValue value = readAttribute(AttributeId.RolePermissions);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read RolePermissions failed");
+        } else {
+            RolePermissionType[] rolePermissions = cast(
+                value.getValue().getValue(),
+                RolePermissionType[].class
+            );
+            setRolePermissions(rolePermissions);
+            return rolePermissions;
+        }
+    }
+
+    /**
+     * Read the UserRolePermissions attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link RolePermissionType} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    @Nullable
+    public RolePermissionType[] readUserRolePermissions() throws UaException {
+        DataValue value = readAttribute(AttributeId.UserRolePermissions);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read UserRolePermissions failed");
+        } else {
+            RolePermissionType[] userRolePermissions = cast(
+                value.getValue().getValue(),
+                RolePermissionType[].class
+            );
+            setUserRolePermissions(userRolePermissions);
+            return userRolePermissions;
+        }
+    }
+
+    /**
+     * Read the AccessRestrictions attribute for this Node from the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @return the {@link AccessRestrictionType} read from the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    @Nullable
+    public AccessRestrictionType readAccessRestrictions() throws UaException {
+        DataValue value = readAttribute(AttributeId.AccessRestrictions);
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            throw new UaException(statusCode, "read AccessRestriction failed");
+        } else {
+            AccessRestrictionType accessRestrictions = new AccessRestrictionType(
+                (UInteger) value.getValue().getValue()
+            );
+            setAccessRestrictions(accessRestrictions);
+            return accessRestrictions;
         }
     }
 
@@ -541,6 +726,60 @@ public abstract class UaNode implements Node {
             setUserWriteMask(userWriteMask);
         } else {
             throw new UaException(statusCode, "write UserWriteMask failed");
+        }
+    }
+
+    /**
+     * Write a new RolePermissions attribute for this Node to the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @param rolePermissions the {@link RolePermissionType} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeRolePermissions(RolePermissionType[] rolePermissions) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(rolePermissions));
+        StatusCode statusCode = writeAttribute(AttributeId.RolePermissions, value);
+
+        if (statusCode == null || statusCode.isGood()) {
+            setRolePermissions(rolePermissions);
+        } else {
+            throw new UaException(statusCode, "write RolePermissions failed");
+        }
+    }
+
+    /**
+     * Write a new UserRolePermissions attribute for this Node to the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @param userRolePermissions the {@link RolePermissionType} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeUserRolePermissions(RolePermissionType[] userRolePermissions) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(userRolePermissions));
+        StatusCode statusCode = writeAttribute(AttributeId.UserRolePermissions, value);
+
+        if (statusCode == null || statusCode.isGood()) {
+            setUserRolePermissions(userRolePermissions);
+        } else {
+            throw new UaException(statusCode, "write UserRolePermissions failed");
+        }
+    }
+
+    /**
+     * Write a new AccessRestrictions attribute for this Node to the server and update the local
+     * attribute if the operation succeeds.
+     *
+     * @param accessRestrictions the {@link AccessRestrictionType} to write to the server.
+     * @throws UaException if a service- or operation-level error occurs.
+     */
+    public void writeAccessRestrictions(AccessRestrictionType accessRestrictions) throws UaException {
+        DataValue value = DataValue.valueOnly(new Variant(accessRestrictions.getValue()));
+        StatusCode statusCode = writeAttribute(AttributeId.AccessRestrictions, value);
+
+        if (statusCode == null || statusCode.isGood()) {
+            setAccessRestrictions(accessRestrictions);
+        } else {
+            throw new UaException(statusCode, "write AccessRestrictions failed");
         }
     }
 
@@ -878,6 +1117,12 @@ public abstract class UaNode implements Node {
                 return DataValue.valueOnly(new Variant(getWriteMask()));
             case UserWriteMask:
                 return DataValue.valueOnly(new Variant(getUserWriteMask()));
+            case RolePermissions:
+                return DataValue.valueOnly(new Variant(getRolePermissions()));
+            case UserRolePermissions:
+                return DataValue.valueOnly(new Variant(getUserRolePermissions()));
+            case AccessRestrictions:
+                return DataValue.valueOnly(new Variant(getAccessRestrictions().getValue()));
             default:
                 throw new IllegalArgumentException("attributeId: " + attributeId);
         }
@@ -913,6 +1158,18 @@ public abstract class UaNode implements Node {
             }
             case UserWriteMask: {
                 setUserWriteMask((UInteger) value.getValue().getValue());
+                break;
+            }
+            case RolePermissions: {
+                setRolePermissions((RolePermissionType[]) value.getValue().getValue());
+                break;
+            }
+            case UserRolePermissions: {
+                setUserRolePermissions((RolePermissionType[]) value.getValue().getValue());
+                break;
+            }
+            case AccessRestrictions: {
+                setAccessRestrictions(new AccessRestrictionType((UInteger) value.getValue().getValue()));
                 break;
             }
             default:
