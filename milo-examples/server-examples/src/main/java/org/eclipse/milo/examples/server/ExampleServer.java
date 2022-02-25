@@ -165,7 +165,7 @@ public class ExampleServer {
             .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
             .setHttpsKeyPair(httpsKeyPair)
-            .setHttpsCertificate(httpsCertificate)
+            .setHttpsCertificateChain(new X509Certificate[] {httpsCertificate} )
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
             .build();
