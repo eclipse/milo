@@ -117,6 +117,9 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         return this;
     }
 
+    /**
+     * @Deprecated use setHttpsCertificateChain instead
+     **/
     @Override
     @Deprecated
     public OpcUaServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
