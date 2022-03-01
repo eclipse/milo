@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,14 +27,15 @@ public class NodeCache {
     private final ConcurrentMap<NodeId, UaNode> canonicalNodes;
 
     public NodeCache() {
-        this(b -> {});
+        this(builder -> {
+            builder.expireAfterWrite(2, TimeUnit.MINUTES);
+            builder.maximumSize(16384);
+            builder.recordStats();
+        });
     }
 
     public NodeCache(Consumer<CacheBuilder<Object, Object>> consumer) {
-        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder()
-            .expireAfterWrite(2, TimeUnit.MINUTES)
-            .maximumSize(16384)
-            .recordStats();
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
 
         consumer.accept(builder);
 

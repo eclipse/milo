@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -142,6 +142,7 @@ public class OpcUaClient implements UaClient {
 
     static {
         Logger logger = LoggerFactory.getLogger(OpcUaClient.class);
+        logger.info("Java version: " + System.getProperty("java.version"));
         logger.info("Eclipse Milo OPC UA Stack version: {}", Stack.VERSION);
         logger.info("Eclipse Milo OPC UA Client SDK version: {}", SDK_VERSION);
     }

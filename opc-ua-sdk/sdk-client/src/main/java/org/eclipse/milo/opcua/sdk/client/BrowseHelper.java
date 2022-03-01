@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
@@ -41,19 +42,21 @@ public class BrowseHelper {
 
     public static CompletableFuture<List<ReferenceDescription>> browse(
         OpcUaClient client,
-        BrowseDescription browseDescription
+        BrowseDescription browseDescription,
+        UInteger maxReferencesPerNode
     ) {
 
         return client.getSession().thenCompose(
             session ->
-                browse(client.getStackClient(), session, browseDescription)
+                browse(client.getStackClient(), session, browseDescription, maxReferencesPerNode)
         );
     }
 
     public static CompletableFuture<List<ReferenceDescription>> browse(
         UaStackClient client,
         OpcUaSession session,
-        BrowseDescription browseDescription
+        BrowseDescription browseDescription,
+        UInteger maxReferencesPerNode
     ) {
 
         BrowseRequest browseRequest = new BrowseRequest(
@@ -66,7 +69,7 @@ public class BrowseHelper {
                 DateTime.MIN_VALUE,
                 uint(0)
             ),
-            uint(0),
+            maxReferencesPerNode,
             new BrowseDescription[]{browseDescription}
         );
 

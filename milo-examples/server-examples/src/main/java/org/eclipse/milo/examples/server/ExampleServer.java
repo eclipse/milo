@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -165,7 +165,7 @@ public class ExampleServer {
             .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
             .setHttpsKeyPair(httpsKeyPair)
-            .setHttpsCertificate(httpsCertificate)
+            .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
             .build();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import com.google.common.base.Strings;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -90,7 +91,7 @@ public class DiscoveryClient {
      * Query the GetEndpoints service at {@code endpointUrl}.
      *
      * @param endpointUrl the endpoint URL to get endpoints from.
-     * @param localeIds   list of locales to use. Specifies the locale to use when returning human readable strings.
+     * @param localeIds   list of locales to use. Specifies the locale to use when returning human-readable strings.
      * @param profileUris list of Transport Profile that the returned Endpoints shall support. All Endpoints are
      *                    returned if the list is empty.
      * @return the {@link GetEndpointsResponse} returned by the GetEndpoints service.
@@ -127,6 +128,24 @@ public class DiscoveryClient {
      * @return a List of {@link ApplicationDescription}s returned by the FindServers service.
      */
     public static CompletableFuture<List<ApplicationDescription>> findServers(String endpointUrl) {
+        return findServers(endpointUrl, b -> {});
+    }
+
+    /**
+     * Query the FindServers service at the {@code endpointUrl}.
+     * <p>
+     * The discovery URL(s) for each server {@link ApplicationDescription} in the response can then be used in a
+     * {@link #getEndpoints(String)} call to discover the endpoints for that server.
+     *
+     * @param endpointUrl the endpoint URL to find servers at.
+     * @param customizer  a {@link Consumer} that accepts a {@link UaStackClientConfigBuilder} for customization.
+     * @return a List of {@link ApplicationDescription}s returned by the FindServers service.
+     */
+    public static CompletableFuture<List<ApplicationDescription>> findServers(
+        String endpointUrl,
+        Consumer<UaStackClientConfigBuilder> customizer
+    ) {
+
         EndpointDescription endpoint = new EndpointDescription(
             endpointUrl,
             null,
@@ -138,9 +157,11 @@ public class DiscoveryClient {
             ubyte(0)
         );
 
-        UaStackClientConfig config = UaStackClientConfig.builder()
-            .setEndpoint(endpoint)
-            .build();
+        UaStackClientConfigBuilder builder = UaStackClientConfig.builder();
+        builder.setEndpoint(endpoint);
+        customizer.accept(builder);
+
+        UaStackClientConfig config = builder.build();
 
         try {
             UaStackClient stackClient = UaStackClient.create(config);
@@ -164,6 +185,21 @@ public class DiscoveryClient {
      * @return a List of {@link EndpointDescription}s returned by the GetEndpoints service.
      */
     public static CompletableFuture<List<EndpointDescription>> getEndpoints(String endpointUrl) {
+        return getEndpoints(endpointUrl, b -> {});
+    }
+
+    /**
+     * Query the GetEndpoints service at {@code endpointUrl}.
+     *
+     * @param endpointUrl the endpoint URL to get endpoints from.
+     * @param customizer  a {@link Consumer} that accepts a {@link UaStackClientConfigBuilder} for customization.
+     * @return a List of {@link EndpointDescription}s returned by the GetEndpoints service.
+     */
+    public static CompletableFuture<List<EndpointDescription>> getEndpoints(
+        String endpointUrl,
+        Consumer<UaStackClientConfigBuilder> customizer
+    ) {
+
         String scheme = EndpointUtil.getScheme(endpointUrl);
 
         String profileUri;
@@ -192,10 +228,15 @@ public class DiscoveryClient {
                         "unsupported protocol: " + scheme));
         }
 
-        return getEndpoints(endpointUrl, profileUri);
+        return getEndpoints(endpointUrl, profileUri, customizer);
     }
 
-    private static CompletableFuture<List<EndpointDescription>> getEndpoints(String endpointUrl, String profileUri) {
+    private static CompletableFuture<List<EndpointDescription>> getEndpoints(
+        String endpointUrl,
+        String profileUri,
+        Consumer<UaStackClientConfigBuilder> customizer
+    ) {
+
         EndpointDescription endpoint = new EndpointDescription(
             endpointUrl,
             null,
@@ -207,9 +248,11 @@ public class DiscoveryClient {
             ubyte(0)
         );
 
-        UaStackClientConfig config = UaStackClientConfig.builder()
-            .setEndpoint(endpoint)
-            .build();
+        UaStackClientConfigBuilder builder = UaStackClientConfig.builder();
+        builder.setEndpoint(endpoint);
+        customizer.accept(builder);
+
+        UaStackClientConfig config = builder.build();
 
         try {
             UaStackClient stackClient = UaStackClient.create(config);

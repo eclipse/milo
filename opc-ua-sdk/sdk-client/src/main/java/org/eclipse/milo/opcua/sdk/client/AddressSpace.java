@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -462,7 +462,7 @@ public class AddressSpace {
             uint(BrowseResultMask.All.getValue())
         );
 
-        return BrowseHelper.browse(client, browseDescription);
+        return BrowseHelper.browse(client, browseDescription, browseOptions.getMaxReferencesPerNode());
     }
 
     /**
@@ -603,7 +603,11 @@ public class AddressSpace {
             uint(BrowseResultMask.All.getValue())
         );
 
-        CompletableFuture<List<ReferenceDescription>> browse = BrowseHelper.browse(client, browseDescription);
+        CompletableFuture<List<ReferenceDescription>> browse = BrowseHelper.browse(
+            client,
+            browseDescription,
+            browseOptions.getMaxReferencesPerNode()
+        );
 
         return browse.thenCompose(references -> {
             List<CompletableFuture<? extends UaNode>> cfs = references.stream()
@@ -1505,22 +1509,25 @@ public class AddressSpace {
         private final NodeId referenceTypeId;
         private final boolean includeSubtypes;
         private final UInteger nodeClassMask;
+        private final UInteger maxReferencesPerNode;
 
         public BrowseOptions() {
-            this(BrowseDirection.Forward, Identifiers.HierarchicalReferences, true, uint(0xFF));
+            this(BrowseDirection.Forward, Identifiers.HierarchicalReferences, true, uint(0xFF), uint(0));
         }
 
         public BrowseOptions(
             BrowseDirection browseDirection,
             NodeId referenceTypeId,
             boolean includeSubtypes,
-            UInteger nodeClassMask
+            UInteger nodeClassMask,
+            UInteger maxReferencesPerNode
         ) {
 
             this.browseDirection = browseDirection;
             this.referenceTypeId = referenceTypeId;
             this.includeSubtypes = includeSubtypes;
             this.nodeClassMask = nodeClassMask;
+            this.maxReferencesPerNode = maxReferencesPerNode;
         }
 
         public BrowseDirection getBrowseDirection() {
@@ -1537,6 +1544,10 @@ public class AddressSpace {
 
         public UInteger getNodeClassMask() {
             return nodeClassMask;
+        }
+
+        public UInteger getMaxReferencesPerNode() {
+            return maxReferencesPerNode;
         }
 
         public BrowseOptions copy(Consumer<Builder> builderConsumer) {
@@ -1557,6 +1568,7 @@ public class AddressSpace {
             private NodeId referenceTypeId = Identifiers.HierarchicalReferences;
             private boolean includeSubtypes = true;
             private UInteger nodeClassMask = uint(0xFF);
+            private UInteger maxReferencesPerNode = uint(0);
 
             private Builder() {}
 
@@ -1565,6 +1577,7 @@ public class AddressSpace {
                 this.referenceTypeId = browseOptions.getReferenceTypeId();
                 this.includeSubtypes = browseOptions.isIncludeSubtypes();
                 this.nodeClassMask = browseOptions.getNodeClassMask();
+                this.maxReferencesPerNode = browseOptions.getMaxReferencesPerNode();
             }
 
             public Builder setBrowseDirection(BrowseDirection browseDirection) {
@@ -1599,8 +1612,19 @@ public class AddressSpace {
                 return setNodeClassMask(uint(mask));
             }
 
+            public Builder setMaxReferencesPerNode(UInteger maxReferencesPerNode) {
+                this.maxReferencesPerNode = maxReferencesPerNode;
+                return this;
+            }
+
             public BrowseOptions build() {
-                return new BrowseOptions(browseDirection, referenceTypeId, includeSubtypes, nodeClassMask);
+                return new BrowseOptions(
+                    browseDirection,
+                    referenceTypeId,
+                    includeSubtypes,
+                    nodeClassMask,
+                    maxReferencesPerNode
+                );
             }
 
         }

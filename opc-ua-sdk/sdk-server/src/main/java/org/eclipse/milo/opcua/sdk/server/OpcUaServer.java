@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -63,6 +63,7 @@ public class OpcUaServer {
 
     static {
         Logger logger = LoggerFactory.getLogger(OpcUaServer.class);
+        logger.info("Java version: " + System.getProperty("java.version"));
         logger.info("Eclipse Milo OPC UA Stack version: {}", Stack.VERSION);
         logger.info("Eclipse Milo OPC UA Server SDK version: {}", SDK_VERSION);
     }

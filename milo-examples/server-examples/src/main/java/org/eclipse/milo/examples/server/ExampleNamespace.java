@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.dtd.DataTypeDictionaryManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -747,6 +748,17 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             "CustomEnumType",
             dataTypeId
         );
+
+        UaNode node = getNodeManager().get(dataTypeId);
+        if (node instanceof UaDataTypeNode) {
+            UaDataTypeNode dataTypeNode = (UaDataTypeNode) node;
+
+            dataTypeNode.setEnumStrings(new LocalizedText[]{
+                LocalizedText.english("Field0"),
+                LocalizedText.english("Field1"),
+                LocalizedText.english("Field2")
+            });
+        }
 
         EnumField[] fields = new EnumField[]{
             new EnumField(

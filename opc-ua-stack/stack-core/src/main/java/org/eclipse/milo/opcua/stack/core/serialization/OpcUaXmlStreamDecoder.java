@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,7 +31,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -59,8 +58,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
-import org.eclipse.milo.opcua.stack.core.util.DocumentBuilderUtil;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.eclipse.milo.opcua.stack.core.util.SecureXmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -84,7 +83,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         this.context = context;
 
         try {
-            builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
+            builder = SecureXmlUtil.SHARED_DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new UaRuntimeException(StatusCodes.Bad_InternalError, e);
         }
@@ -1272,7 +1271,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         try {
             StringWriter sw = new StringWriter();
 
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = SecureXmlUtil.SHARED_TRANSFORMER_FACTORY.newTransformer();
             transformer.setOutputProperty("omit-xml-declaration", "yes");
             transformer.transform(new DOMSource(node), new StreamResult(sw));
 
