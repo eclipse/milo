@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -46,8 +46,8 @@ public class SecureXmlUtil {
         trySetFeature("http://xml.org/sax/features/external-parameter-entities", false);
         trySetFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-        SHARED_TRANSFORMER_FACTORY.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        SHARED_TRANSFORMER_FACTORY.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        trySetAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        trySetAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     }
 
     private static void trySetFeature(String feature, boolean value) {
@@ -55,7 +55,16 @@ public class SecureXmlUtil {
             SHARED_DOCUMENT_BUILDER_FACTORY.setFeature(feature, value);
         } catch (Exception e) {
             LoggerFactory.getLogger(SecureXmlUtil.class)
-                .debug("Error configuring feature: " + feature, e);
+                .warn("Error configuring feature: " + feature + "=" + value, e);
+        }
+    }
+
+    private static void trySetAttribute(String attribute, Object value) {
+        try {
+            SHARED_TRANSFORMER_FACTORY.setAttribute(attribute, value);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(SecureXmlUtil.class)
+                .warn("Error configuring attribute: " + attribute + "=" + value, e);
         }
     }
 
