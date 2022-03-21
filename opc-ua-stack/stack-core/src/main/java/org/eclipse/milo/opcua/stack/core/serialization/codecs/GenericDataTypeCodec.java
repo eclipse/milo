@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -21,12 +23,25 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
 public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDecoder, UaEncoder> {
 
+    /**
+     * @return a derived instance of {@link OpcUaBinaryDataTypeCodec} that handles serialization of {@link T}.
+     */
     public final OpcUaBinaryDataTypeCodec<T> asBinaryCodec() {
         return new GenericBinaryDataTypeCodec<>(this);
     }
 
+    /**
+     * @return a derived instance of {@link OpcUaXmlDataTypeCodec} that handles serialization of {@link T}.
+     */
     public final OpcUaXmlDataTypeCodec<T> asXmlCodec() {
         return new GenericXmlDataTypeCodec<>(this);
+    }
+
+    /**
+     * @return a derived instance of {@link OpcUaJsonDataTypeCodec} that handles serialization of {@link T}.
+     */
+    public final OpcUaJsonDataTypeCodec<T> asJsonCodec() {
+        return new GenericJsonDataTypeCodec<>(this);
     }
 
     private static class GenericBinaryDataTypeCodec<T> implements OpcUaBinaryDataTypeCodec<T> {
@@ -78,6 +93,31 @@ public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDeco
         public void encode(
             SerializationContext context, OpcUaXmlStreamEncoder writer, T value) throws UaSerializationException {
 
+            codec.encode(context, writer, value);
+        }
+
+    }
+
+    private static class GenericJsonDataTypeCodec<T> implements OpcUaJsonDataTypeCodec<T> {
+
+        private final GenericDataTypeCodec<T> codec;
+
+        public GenericJsonDataTypeCodec(GenericDataTypeCodec<T> codec) {
+            this.codec = codec;
+        }
+
+        @Override
+        public Class<T> getType() {
+            return codec.getType();
+        }
+
+        @Override
+        public T decode(SerializationContext context, OpcUaJsonDecoder reader) throws UaSerializationException {
+            return codec.decode(context, reader);
+        }
+
+        @Override
+        public void encode(SerializationContext context, OpcUaJsonEncoder writer, T value) throws UaSerializationException {
             codec.encode(context, writer, value);
         }
 

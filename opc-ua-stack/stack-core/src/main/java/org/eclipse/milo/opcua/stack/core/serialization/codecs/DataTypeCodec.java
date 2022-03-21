@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,9 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 
-public interface DataTypeCodec<T, R, W> {
+public interface DataTypeCodec<T, R extends UaDecoder, W> {
 
     /**
      * @return the {@link Class} of the DataType this codec encodes.
