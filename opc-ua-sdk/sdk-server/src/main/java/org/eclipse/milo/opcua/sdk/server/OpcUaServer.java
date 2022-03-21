@@ -124,7 +124,7 @@ public class OpcUaServer {
         serverNamespace = new ServerNamespace(this);
         serverNamespace.startup();
 
-        serverTable.addUri(stackServer.getConfig().getApplicationUri());
+        serverTable.add(stackServer.getConfig().getApplicationUri());
 
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
