@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -530,7 +530,7 @@ public abstract class UaNode implements UaServerNode {
                 String nodeBrowseName = n.getBrowseName().getName();
 
                 UShort index = n.getBrowseName().getNamespaceIndex();
-                String nodeBrowseNameUri = context.getServer().getNamespaceTable().getUri(index);
+                String nodeBrowseNameUri = context.getServer().getNamespaceTable().get(index);
 
                 return Objects.equals(browseName, nodeBrowseName) && Objects.equals(namespaceUri, nodeBrowseNameUri);
             })

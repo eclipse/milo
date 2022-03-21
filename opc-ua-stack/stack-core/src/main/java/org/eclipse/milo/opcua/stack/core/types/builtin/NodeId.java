@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -190,7 +190,7 @@ public final class NodeId {
      * @see ExpandedNodeId#isAbsolute()
      */
     public ExpandedNodeId expanded(NamespaceTable namespaceTable) {
-        String namespaceUri = namespaceTable.getUri(namespaceIndex);
+        String namespaceUri = namespaceTable.get(namespaceIndex);
         return new ExpandedNodeId(namespaceIndex, namespaceUri, identifier, UInteger.MIN);
     }
 

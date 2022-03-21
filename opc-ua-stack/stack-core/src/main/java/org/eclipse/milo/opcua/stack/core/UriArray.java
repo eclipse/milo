@@ -29,17 +29,6 @@ public abstract class UriArray {
     private final BiMap<UShort, String> uriMap = HashBiMap.create();
 
     /**
-     * Created a {@link UriArray}, seeded with 0 or more initial URIs.
-     *
-     * @param uris the URIs to seed.
-     */
-    public UriArray(String... uris) {
-        for (String uri : uris) {
-            add(uri);
-        }
-    }
-
-    /**
      * Add a URI and return the index.
      * <p>
      * If the URI is not already present the next available index is assigned, otherwise the

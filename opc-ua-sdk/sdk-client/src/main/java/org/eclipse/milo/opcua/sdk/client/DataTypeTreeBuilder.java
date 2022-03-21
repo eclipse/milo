@@ -155,7 +155,7 @@ public final class DataTypeTreeBuilder {
             String[] namespaceUris = (String[]) dataValue.getValue().getValue();
             NamespaceTable namespaceTable = new NamespaceTable();
             for (String namespaceUri : namespaceUris) {
-                namespaceTable.addUri(namespaceUri);
+                namespaceTable.add(namespaceUri);
             }
             return namespaceTable;
         });

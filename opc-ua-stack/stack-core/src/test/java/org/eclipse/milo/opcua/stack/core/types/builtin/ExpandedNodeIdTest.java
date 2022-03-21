@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -30,7 +30,7 @@ public class ExpandedNodeIdTest {
 
     @Test
     public void testLocal() {
-        namespaceTable.addUri("uri:test");
+        namespaceTable.add("uri:test");
 
         ExpandedNodeId xni0 = new ExpandedNodeId(ushort(0), null, "test");
         assertTrue(xni0.toNodeId(namespaceTable).isPresent());
@@ -38,10 +38,10 @@ public class ExpandedNodeIdTest {
         ExpandedNodeId xni1 = new ExpandedNodeId(ushort(1), null, "test");
         assertTrue(xni1.toNodeId(namespaceTable).isPresent());
 
-        ExpandedNodeId xni2 = new ExpandedNodeId(ushort(99), namespaceTable.getUri(0), "test");
+        ExpandedNodeId xni2 = new ExpandedNodeId(ushort(99), namespaceTable.get(0), "test");
         assertTrue(xni2.toNodeId(namespaceTable).isPresent());
 
-        ExpandedNodeId xni3 = new ExpandedNodeId(ushort(99), namespaceTable.getUri(1), "test");
+        ExpandedNodeId xni3 = new ExpandedNodeId(ushort(99), namespaceTable.get(1), "test");
         assertTrue(xni3.toNodeId(namespaceTable).isPresent());
 
         ExpandedNodeId xni4 = new ExpandedNodeId(ushort(99), "uri:notpresent", "test");
@@ -182,8 +182,8 @@ public class ExpandedNodeIdTest {
     @Test
     public void reindex() {
         NamespaceTable namespaceTable = new NamespaceTable();
-        namespaceTable.addUri("test1");
-        namespaceTable.addUri("test2");
+        namespaceTable.add("test1");
+        namespaceTable.add("test2");
 
         ExpandedNodeId xni1 = new ExpandedNodeId(ushort(1), null, "test");
 

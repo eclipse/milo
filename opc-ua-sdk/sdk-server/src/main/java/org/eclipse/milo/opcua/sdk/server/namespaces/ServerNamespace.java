@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -41,7 +41,7 @@ public class ServerNamespace extends AddressSpaceComposite implements Lifecycle,
         super(server);
 
         this.namespaceUri = server.getConfig().getApplicationUri();
-        this.namespaceIndex = server.getNamespaceTable().addUri(namespaceUri);
+        this.namespaceIndex = server.getNamespaceTable().add(namespaceUri);
 
         lifecycleManager.addLifecycle(new Lifecycle() {
             @Override

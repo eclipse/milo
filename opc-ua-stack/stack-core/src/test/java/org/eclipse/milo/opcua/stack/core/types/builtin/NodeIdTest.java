@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -175,7 +175,7 @@ public class NodeIdTest {
     @Test
     public void testExpandedWithNamespaceTable() {
         NamespaceTable namespaceTable = new NamespaceTable();
-        namespaceTable.addUri("urn:test");
+        namespaceTable.add("urn:test");
 
         NodeId nodeId = new NodeId(1, "foo");
         ExpandedNodeId xni = nodeId.expanded(namespaceTable);
