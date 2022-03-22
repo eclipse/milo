@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.stack.client.transport.http.OpcHttpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.websocket.OpcWebSocketTransport;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
@@ -53,6 +54,7 @@ public class UaStackClient {
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
+    private final ServerTable serverTable = new ServerTable();
 
     private final DataTypeManager staticDataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
@@ -74,6 +76,8 @@ public class UaStackClient {
     ) {
 
         this.config = config;
+
+        serverTable.add(config.getEndpoint().getServer().getApplicationUri());
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
 
@@ -153,12 +157,28 @@ public class UaStackClient {
     }
 
     /**
-     * Get the client {@link NamespaceTable}.
+     * Get the local copy of the {@link NamespaceTable}.
+     * <p>
+     * Until explicitly updated this contains only
+     * {@link org.eclipse.milo.opcua.stack.core.util.Namespaces#OPC_UA} at index 0.
      *
-     * @return the client {@link NamespaceTable}.
+     * @return the local copy of the {@link NamespaceTable}.
      */
     public NamespaceTable getNamespaceTable() {
         return namespaceTable;
+    }
+
+    /**
+     * Get the local copy of the {@link ServerTable}.
+     * <p>
+     * Until explicitly updated this contains only the server application URI from the
+     * {@link org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription} in the
+     * configured endpoint.
+     *
+     * @return the local copy of the {@link ServerTable}.
+     */
+    public ServerTable getServerTable() {
+        return serverTable;
     }
 
     /**
