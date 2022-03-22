@@ -30,6 +30,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
@@ -123,6 +124,7 @@ public class UaStackServer {
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
+    private final ServerTable serverTable = new ServerTable();
 
     private final DataTypeManager dataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
@@ -141,6 +143,8 @@ public class UaStackServer {
 
     public UaStackServer(UaStackServerConfig config) {
         this.config = config;
+
+        serverTable.add(config.getApplicationUri());
 
         channelManager = new ServerChannelManager(this);
 
@@ -241,6 +245,10 @@ public class UaStackServer {
 
     public NamespaceTable getNamespaceTable() {
         return namespaceTable;
+    }
+
+    public ServerTable getServerTable() {
+        return serverTable;
     }
 
     public DataTypeManager getDataTypeManager() {

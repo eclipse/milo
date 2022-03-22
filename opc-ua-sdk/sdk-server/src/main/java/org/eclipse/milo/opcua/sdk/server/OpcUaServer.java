@@ -74,8 +74,6 @@ public class OpcUaServer {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
-    private final ServerTable serverTable = new ServerTable();
-
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
@@ -123,8 +121,6 @@ public class OpcUaServer {
 
         serverNamespace = new ServerNamespace(this);
         serverNamespace.startup();
-
-        serverTable.add(stackServer.getConfig().getApplicationUri());
 
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
@@ -175,16 +171,16 @@ public class OpcUaServer {
         return serverNamespace;
     }
 
-    public ServerTable getServerTable() {
-        return serverTable;
-    }
-
     public DataTypeManager getDataTypeManager() {
         return stackServer.getDataTypeManager();
     }
 
     public NamespaceTable getNamespaceTable() {
         return stackServer.getNamespaceTable();
+    }
+
+    public ServerTable getServerTable() {
+        return stackServer.getServerTable();
     }
 
     public SerializationContext getSerializationContext() {
