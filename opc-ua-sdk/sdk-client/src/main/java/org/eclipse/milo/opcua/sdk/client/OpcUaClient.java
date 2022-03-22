@@ -264,7 +264,7 @@ public class OpcUaClient implements UaClient {
         sessionFsm = SessionFsmFactory.newSessionFsm(this);
 
         sessionFsm.addInitializer((client, session) -> {
-            logger.debug("SessionInitializer: NamespaceTable");
+            logger.debug("SessionInitializer: NamespaceTable and ServerTable");
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
             ReadRequest readRequest = new ReadRequest(
@@ -276,6 +276,11 @@ public class OpcUaClient implements UaClient {
                         Identifiers.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
+                        QualifiedName.NULL_VALUE),
+                    new ReadValueId(
+                        Identifiers.Server_ServerArray,
+                        AttributeId.Value.uid(),
+                        null,
                         QualifiedName.NULL_VALUE)
                 }
             );
@@ -283,9 +288,13 @@ public class OpcUaClient implements UaClient {
             return client.sendRequest(readRequest)
                 .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
-                .thenApply(results -> (String[]) results[0].getValue().getValue())
-                .thenAccept(this::updateNamespaceTable)
-                .thenApply(v -> Unit.VALUE)
+                .thenApply(results -> {
+                    String[] namespaceArray = (String[]) results[0].getValue().getValue();
+                    String[] serverArray = (String[]) results[1].getValue().getValue();
+                    updateNamespaceTable(namespaceArray);
+                    updateServerTable(serverArray);
+                    return Unit.VALUE;
+                })
                 .exceptionally(ex -> {
                     logger.warn("SessionInitializer: NamespaceTable", ex);
                     return Unit.VALUE;
