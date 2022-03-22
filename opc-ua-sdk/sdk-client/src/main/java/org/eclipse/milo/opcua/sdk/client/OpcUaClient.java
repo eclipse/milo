@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -132,7 +133,6 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaClient implements UaClient {
@@ -360,16 +360,16 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * Get the local copy of the server's NamespaceTable.
+     * Get the local copy of the server's NamespaceTable (NamespaceArray).
      *
-     * @return the current local value for server's NamespaceTable.
+     * @return the local copy of the server's NamespaceTable (NamespaceArray).
      */
     public NamespaceTable getNamespaceTable() {
         return stackClient.getNamespaceTable();
     }
 
     /**
-     * Read the server's NamespaceTable and update the local copy.
+     * Read the server's NamespaceTable (NamespaceArray) and update the local copy.
      *
      * @return the updated {@link NamespaceTable}.
      * @throws UaException if an operation- or service-level error occurs.
@@ -384,7 +384,7 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * Read the server's NamespaceTable and update the local copy.
+     * Read the server's NamespaceTable (NamespaceArray) and update the local copy.
      * <p>
      * This call completes asynchronously.
      *
@@ -420,23 +420,95 @@ public class OpcUaClient implements UaClient {
         });
     }
 
-    private void updateNamespaceTable(String[] namespaceArray) {
-        getNamespaceTable().update(uriTable -> {
-            uriTable.clear();
-            uriTable.put(ushort(0), Namespaces.OPC_UA);
+    /**
+     * Get the local copy of the server's ServerTable (ServerArray).
+     *
+     * @return the local copy of the server's ServerTable (ServerArray).
+     */
+    public ServerTable getServerTable() {
+        return stackClient.getServerTable();
+    }
 
-            if (namespaceArray.length > UShort.MAX_VALUE) {
-                logger.warn("NamespaceTable returned by " +
-                    "server contains " + namespaceArray.length + " entries");
-            }
+    /**
+     * Read the server's ServerTable (ServerArray) and update the local copy.
+     *
+     * @return the updated {@link ServerTable}.
+     * @throws UaException if an operation- or service-level error occurs.
+     */
+    public ServerTable readServerTable() throws UaException {
+        try {
+            return readServerTableAsync().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw UaException.extract(e)
+                .orElse(new UaException(StatusCodes.Bad_UnexpectedError, e));
+        }
+    }
 
-            for (int i = 1; i < namespaceArray.length && i < UShort.MAX_VALUE; i++) {
-                String uri = namespaceArray[i];
+    /**
+     * Read the server's ServerTable (ServerArray) and update the local copy.
+     * <p>
+     * This call completes asynchronously.
+     *
+     * @return a {@link CompletableFuture} that completes successfully with the updated
+     * {@link ServerTable} or completes exceptionally if a service- or operation-level error
+     * occurs.
+     */
+    public CompletableFuture<ServerTable> readServerTableAsync() {
+        return getSession().thenCompose(session -> {
+            RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
-                if (uri != null && !uriTable.containsValue(uri)) {
-                    uriTable.put(ushort(i), uri);
+            ReadRequest readRequest = new ReadRequest(
+                requestHeader,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        Identifiers.Server_ServerArray,
+                        AttributeId.Value.uid(),
+                        null,
+                        QualifiedName.NULL_VALUE)
                 }
-            }
+            );
+
+            CompletableFuture<String[]> namespaceArray = sendRequest(readRequest)
+                .thenApply(ReadResponse.class::cast)
+                .thenApply(response -> Objects.requireNonNull(response.getResults()))
+                .thenApply(results -> (String[]) results[0].getValue().getValue());
+
+            return namespaceArray
+                .thenAccept(this::updateServerTable)
+                .thenApply(v -> getServerTable());
+        });
+    }
+
+    private void updateNamespaceTable(String[] namespaceArray) {
+        if (namespaceArray.length > UShort.MAX_VALUE) {
+            logger.warn("NamespaceTable returned by " +
+                "server contains " + namespaceArray.length + " entries");
+        }
+
+        NamespaceTable namespaceTable = getNamespaceTable();
+
+        namespaceTable.update(uriTable -> {
+            uriTable.clear();
+
+            namespaceTable.add(Namespaces.OPC_UA);
+            for (String uri : namespaceArray) {namespaceTable.add(uri);}
+        });
+    }
+
+    private void updateServerTable(String[] serverArray) {
+        if (serverArray.length > UShort.MAX_VALUE) {
+            logger.warn("ServerTable returned by " +
+                "server contains " + serverArray.length + " entries");
+        }
+
+        ServerTable serverTable = getServerTable();
+
+        serverTable.update(map -> {
+            map.clear();
+
+            for (String uri : serverArray) {serverTable.add(uri);}
         });
     }
 
