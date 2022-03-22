@@ -516,8 +516,8 @@ class OpcUaJsonEncoderTest {
 
         encoder.reversible = false;
         encoder.serializationContext = new TestSerializationContext();
-        encoder.serializationContext.getNamespaceTable().addUri("urn:eclipse:milo:test1");
-        encoder.serializationContext.getNamespaceTable().addUri("urn:eclipse:milo:test2");
+        encoder.serializationContext.getNamespaceTable().add("urn:eclipse:milo:test1");
+        encoder.serializationContext.getNamespaceTable().add("urn:eclipse:milo:test2");
 
         // IdType == UInt32, Namespace = 0, non-reversible
         encoder.reset(writer = new StringWriter());
@@ -628,8 +628,8 @@ class OpcUaJsonEncoderTest {
 
         encoder.reversible = false;
         encoder.serializationContext = new TestSerializationContext();
-        encoder.serializationContext.getNamespaceTable().addUri("urn:eclipse:milo:test1");
-        encoder.serializationContext.getNamespaceTable().addUri("urn:eclipse:milo:test2");
+        encoder.serializationContext.getNamespaceTable().add("urn:eclipse:milo:test1");
+        encoder.serializationContext.getNamespaceTable().add("urn:eclipse:milo:test2");
 
         encoder.reset(writer = new StringWriter());
         encoder.writeQualifiedName(null, new QualifiedName(0, "foo"));

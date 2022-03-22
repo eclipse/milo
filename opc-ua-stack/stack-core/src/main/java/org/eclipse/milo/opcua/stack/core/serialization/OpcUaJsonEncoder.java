@@ -424,7 +424,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
             if (reversible || namespaceIndex == 1) {
                 jsonWriter.name("Namespace").value(namespaceIndex);
             } else {
-                String namespaceUri = serializationContext.getNamespaceTable().getUri(namespaceIndex);
+                String namespaceUri = serializationContext.getNamespaceTable().get(namespaceIndex);
                 if (namespaceUri != null) {
                     jsonWriter.name("Namespace").value(namespaceUri);
                 } else {
@@ -498,7 +498,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
                 if (reversible || namespaceIndex == 1) {
                     jsonWriter.name("Uri").value(namespaceIndex);
                 } else {
-                    String namespaceUri = serializationContext.getNamespaceTable().getUri(namespaceIndex);
+                    String namespaceUri = serializationContext.getNamespaceTable().get(namespaceIndex);
                     if (namespaceUri != null) {
                         jsonWriter.name("Uri").value(namespaceUri);
                     } else {
