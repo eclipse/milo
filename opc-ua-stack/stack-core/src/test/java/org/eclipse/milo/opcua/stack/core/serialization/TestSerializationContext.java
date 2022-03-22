@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.serialization;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -18,6 +19,12 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 public class TestSerializationContext implements SerializationContext {
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
+    private final ServerTable serverTable = new ServerTable();
+
+    @Override
+    public DataTypeManager getDataTypeManager() {
+        return OpcUaDataTypeManager.getInstance();
+    }
 
     @Override
     public EncodingLimits getEncodingLimits() {
@@ -30,8 +37,8 @@ public class TestSerializationContext implements SerializationContext {
     }
 
     @Override
-    public DataTypeManager getDataTypeManager() {
-        return OpcUaDataTypeManager.getInstance();
+    public ServerTable getServerTable() {
+        return serverTable;
     }
 
 }

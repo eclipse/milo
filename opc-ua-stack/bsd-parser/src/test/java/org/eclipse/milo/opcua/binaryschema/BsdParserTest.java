@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
@@ -42,6 +43,7 @@ public abstract class BsdParserTest {
     private final SerializationContext context = new SerializationContext() {
 
         private final NamespaceTable namespaceTable = new NamespaceTable();
+        private final ServerTable serverTable = new ServerTable();
 
         @Override
         public DataTypeManager getDataTypeManager() {
@@ -56,6 +58,11 @@ public abstract class BsdParserTest {
         @Override
         public NamespaceTable getNamespaceTable() {
             return namespaceTable;
+        }
+
+        @Override
+        public ServerTable getServerTable() {
+            return serverTable;
         }
 
         @Override

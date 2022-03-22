@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -83,6 +83,11 @@ public class UaStackClient {
 
         staticSerializationContext = new SerializationContext() {
             @Override
+            public DataTypeManager getDataTypeManager() {
+                return staticDataTypeManager;
+            }
+
+            @Override
             public EncodingLimits getEncodingLimits() {
                 return config.getEncodingLimits();
             }
@@ -93,13 +98,18 @@ public class UaStackClient {
             }
 
             @Override
-            public DataTypeManager getDataTypeManager() {
-                return staticDataTypeManager;
+            public ServerTable getServerTable() {
+                return serverTable;
             }
         };
 
         dynamicSerializationContext = new SerializationContext() {
             @Override
+            public DataTypeManager getDataTypeManager() {
+                return dynamicDataTypeManager;
+            }
+
+            @Override
             public EncodingLimits getEncodingLimits() {
                 return config.getEncodingLimits();
             }
@@ -110,8 +120,8 @@ public class UaStackClient {
             }
 
             @Override
-            public DataTypeManager getDataTypeManager() {
-                return dynamicDataTypeManager;
+            public ServerTable getServerTable() {
+                return serverTable;
             }
         };
 

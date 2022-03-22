@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -150,6 +150,11 @@ public class UaStackServer {
 
         serializationContext = new SerializationContext() {
             @Override
+            public DataTypeManager getDataTypeManager() {
+                return dataTypeManager;
+            }
+
+            @Override
             public EncodingLimits getEncodingLimits() {
                 return config.getEncodingLimits();
             }
@@ -160,8 +165,8 @@ public class UaStackServer {
             }
 
             @Override
-            public DataTypeManager getDataTypeManager() {
-                return dataTypeManager;
+            public ServerTable getServerTable() {
+                return serverTable;
             }
         };
 
