@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -36,7 +38,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OpcUaJsonEncoderTest {
-    
+
     @Test
     void writeBoolean() throws IOException {
         var writer = new StringWriter();
@@ -548,8 +550,44 @@ class OpcUaJsonEncoderTest {
     }
 
     @Test
-    public void writeExpandedNodeId() {
-        // TODO
+    public void writeExpandedNodeId() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+
+        // Two things differentiate the encoding of ExpandedNodeId from NodeId:
+        // 1. if the namespace URI is specified it is encoded in the "Namespace" field
+        // 2. if the ExpandedNodeId is non-local (server index > 0) it is encoded in the "ServerUri" field
+
+        // reversible, namespace URI specified
+        encoder.writeExpandedNodeId(null, new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo"));
+        assertEquals("{\"IdType\":1,\"Id\":\"foo\",\"Namespace\":\"http://opcfoundation.org/UA/\"}", writer.toString());
+
+        // reversible, remote server index
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExpandedNodeId(null, new ExpandedNodeId(ushort(0), null, "foo", uint(1)));
+        assertEquals("{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":1}", writer.toString());
+
+        // non-reversible, remote server index
+        encoder.reversible = false;
+        encoder.serializationContext = new TestSerializationContext();
+        encoder.serializationContext.getServerTable().add("urn:server:local");
+        encoder.serializationContext.getServerTable().add("urn:server:remote");
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExpandedNodeId(null, new ExpandedNodeId(ushort(0), null, "foo", uint(1)));
+        assertEquals("{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":\"urn:server:remote\"}", writer.toString());
+
+        // non-reversible, remote server index not in table
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExpandedNodeId(null, new ExpandedNodeId(ushort(0), null, "foo", uint(2)));
+        assertEquals("{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":2}", writer.toString());
+
+        // reversible, field specified
+        encoder.reversible = false;
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.writeExpandedNodeId("foo", new ExpandedNodeId(ushort(0), Namespaces.OPC_UA, "foo"));
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":{\"IdType\":1,\"Id\":\"foo\",\"Namespace\":\"http://opcfoundation.org/UA/\"}}", writer.toString());
     }
 
     @Test

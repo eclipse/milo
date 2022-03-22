@@ -391,7 +391,34 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
     @Override
     public void writeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
-
+        try {
+            if (field != null) {
+                jsonWriter.name(field);
+            }
+            jsonWriter.beginObject();
+            if (value.isAbsolute()) {
+                writeNodeIdCommonFields(value.getType(), value.getIdentifier(), 0);
+                jsonWriter.name("Namespace").value(value.getNamespaceUri());
+            } else {
+                writeNodeIdCommonFields(value.getType(), value.getIdentifier(), value.getNamespaceIndex().intValue());
+            }
+            if (!value.isLocal()) {
+                int serverIndex = value.getServerIndex().intValue();
+                if (reversible) {
+                    jsonWriter.name("ServerUri").value(serverIndex);
+                } else {
+                    String serverUri = serializationContext.getServerTable().get(serverIndex);
+                    if (serverUri != null) {
+                        jsonWriter.name("ServerUri").value(serverUri);
+                    } else {
+                        jsonWriter.name("ServerUri").value(serverIndex);
+                    }
+                }
+            }
+            jsonWriter.endObject();
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
     }
 
     /**
