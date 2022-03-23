@@ -77,7 +77,10 @@ public class UaStackClient {
 
         this.config = config;
 
-        serverTable.add(config.getEndpoint().getServer().getApplicationUri());
+        if (config.getEndpoint() != null && config.getEndpoint().getServer() != null) {
+            // might be null if e.g. this is being used by DiscoveryClient
+            serverTable.add(config.getEndpoint().getServer().getApplicationUri());
+        }
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
 
@@ -183,7 +186,7 @@ public class UaStackClient {
      * <p>
      * Until explicitly updated this contains only the server application URI from the
      * {@link org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription} in the
-     * configured endpoint.
+     * configured endpoint, if present.
      *
      * @return the local copy of the {@link ServerTable}.
      */
