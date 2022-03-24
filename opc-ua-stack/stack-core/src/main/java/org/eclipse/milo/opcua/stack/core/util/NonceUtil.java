@@ -232,7 +232,7 @@ public class NonceUtil {
             );
         }
 
-        if (bs.length > 0 && Arrays.areAllZeroes(bs, 0, bs.length)) {
+        if (minimumLength > 0 && bs.length > 0 && Arrays.areAllZeroes(bs, 0, bs.length)) {
             throw new UaException(StatusCodes.Bad_NonceInvalid, "nonce must be non-zero");
         }
     }
