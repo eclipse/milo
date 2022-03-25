@@ -572,22 +572,37 @@ public class OpcUaJsonEncoder implements UaEncoder {
                 jsonWriter.name(field);
             }
 
-            jsonWriter.beginObject();
-            writeNodeId("TypeId", value.getEncodingId());
-            switch (value.getBodyType()) {
-                case JsonString:
-                    // Encoding field omitted for JSON body
-                    jsonWriter.name("Body").value((String) value.getBody());
-                    break;
-                case ByteString:
-                    jsonWriter.name("Encoding").value(1);
-                    writeByteString("Body", (ByteString) value.getBody());
-                    break;
-                case XmlElement:
-                    jsonWriter.name("Encoding").value(2);
-                    writeXmlElement("Body", (XmlElement) value.getBody());
+            if (reversible) {
+                jsonWriter.beginObject();
+                writeNodeId("TypeId", value.getEncodingId());
+                switch (value.getBodyType()) {
+                    case JsonString:
+                        // Encoding field omitted for JSON body
+                        jsonWriter.name("Body").value((String) value.getBody());
+                        break;
+                    case ByteString:
+                        jsonWriter.name("Encoding").value(1);
+                        writeByteString("Body", (ByteString) value.getBody());
+                        break;
+                    case XmlElement:
+                        jsonWriter.name("Encoding").value(2);
+                        writeXmlElement("Body", (XmlElement) value.getBody());
+                        break;
+                }
+                jsonWriter.endObject();
+            } else {
+                switch (value.getBodyType()) {
+                    case JsonString:
+                        jsonWriter.jsonValue((String) value.getBody());
+                        break;
+                    case ByteString:
+                        writeByteString(null, (ByteString) value.getBody());
+                        break;
+                    case XmlElement:
+                        writeXmlElement(null, (XmlElement) value.getBody());
+                        break;
+                }
             }
-            jsonWriter.endObject();
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
@@ -595,7 +610,58 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
     @Override
     public void writeDataValue(String field, DataValue value) throws UaSerializationException {
+        try {
+            if (allFieldsAreOmitted(value)) {
+                return;
+            }
 
+            if (field != null) {
+                jsonWriter.name(field);
+            }
+
+            jsonWriter.beginObject();
+
+            Variant v = value.getValue();
+            if (v != null && v.isNotNull()) {
+                writeVariant("Value", v);
+            }
+            StatusCode s = value.getStatusCode();
+            if (s != null && s.getValue() != 0L) {
+                writeStatusCode("Status", s);
+            }
+            DateTime sourceTime = value.getSourceTime();
+            if (sourceTime != null && sourceTime.isNotNull()) {
+                writeDateTime("SourceTimestamp", sourceTime);
+            }
+            UShort sourcePicoseconds = value.getSourcePicoseconds();
+            if (sourcePicoseconds != null && sourcePicoseconds.intValue() > 0) {
+                writeUInt16("SourcePicoseconds", sourcePicoseconds);
+            }
+            DateTime serverTime = value.getServerTime();
+            if (serverTime != null && serverTime.isNotNull()) {
+                writeDateTime("ServerTimestamp", serverTime);
+            }
+            UShort serverPicoseconds = value.getServerPicoseconds();
+            if (serverPicoseconds != null && serverPicoseconds.intValue() > 0) {
+                writeUInt16("ServerPicoseconds", serverPicoseconds);
+            }
+
+            jsonWriter.endObject();
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    /**
+     * @return {@code true} if all fields in {@code value} would be omitted from the encoding.
+     */
+    private static boolean allFieldsAreOmitted(DataValue value) {
+        return (value.getValue() == null || value.getValue().isNull())
+            && (value.getStatusCode() == null || value.getStatusCode().getValue() == 0L)
+            && (value.getSourceTime() == null || value.getSourceTime().isNull())
+            && (value.getSourcePicoseconds() == null || value.getSourcePicoseconds().intValue() == 0)
+            && (value.getServerTime() == null || value.getServerTime().isNull())
+            && (value.getServerPicoseconds() == null || value.getServerPicoseconds().intValue() == 0);
     }
 
     @Override
@@ -643,17 +709,20 @@ public class OpcUaJsonEncoder implements UaEncoder {
             );
         }
 
-        jsonWriter.beginObject();
-
         if (reversible) {
+            jsonWriter.beginObject();
             jsonWriter.name("Type").value(typeId);
         }
+
         if (!value.getClass().isArray()) {
-            writeBuiltinTypeValue("Body", typeId, value);
+            String field = reversible ? "Body" : null;
+            writeBuiltinTypeValue(field, typeId, value);
         } else {
             int[] dimensions = ArrayUtil.getDimensions(value);
 
-            jsonWriter.name("Body");
+            if (reversible) {
+                jsonWriter.name("Body");
+            }
 
             if (dimensions.length == 1) {
                 int length = Array.getLength(value);
@@ -681,7 +750,9 @@ public class OpcUaJsonEncoder implements UaEncoder {
             }
         }
 
-        jsonWriter.endObject();
+        if (reversible) {
+            jsonWriter.endObject();
+        }
     }
 
     /**

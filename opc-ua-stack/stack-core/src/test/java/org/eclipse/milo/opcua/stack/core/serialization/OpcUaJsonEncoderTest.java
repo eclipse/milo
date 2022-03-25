@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -754,11 +755,83 @@ class OpcUaJsonEncoderTest {
         encoder.reset(writer = new StringWriter());
         encoder.writeExtensionObject(null, byteStringXo);
         assertEquals("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":1,\"Body\":\"AAECAw==\"}", writer.toString());
+
+        encoder.reversible = false;
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExtensionObject(null, jsonStringXo);
+        assertEquals("{\"foo\":\"bar\",\"baz\":42}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExtensionObject(null, xmlElementXo);
+        assertEquals("\"<foo>bar</foo>\"", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExtensionObject(null, byteStringXo);
+        assertEquals("\"AAECAw==\"", writer.toString());
     }
 
     @Test
-    public void writeDataValue() {
-        // TODO
+    public void writeDataValue() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+
+        DateTime now = DateTime.now();
+        String isoNow = OpcUaJsonEncoder.dateTimeToIso8601UtcString(now);
+
+        DataValue allFieldsValue = new DataValue(
+            new Variant("foo"),
+            StatusCode.GOOD,
+            now,
+            ushort(100),
+            now,
+            ushort(200)
+        );
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue);
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+
+        // omit "Value"
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setValue(Variant.NULL_VALUE)));
+        assertEquals(String.format("{\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+
+        // omit "Status"
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setStatus(null)));
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+
+        // omit "SourceTimestamp"
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setSourceTime(null)));
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow), writer.toString());
+
+        // omit "SourcePicoseconds
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setSourcePicoseconds(null)));
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+
+        // omit "ServerTimestamp"
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setServerTime(null)));
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerPicoseconds\":200}", isoNow), writer.toString());
+
+        // omit "ServerPicoseconds"
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setServerPicoseconds(null)));
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\"}", isoNow, isoNow), writer.toString());
+
+        // omit all fields
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDataValue(null, new DataValue(Variant.NULL_VALUE, null, null));
+        assertEquals("", writer.toString());
+
+        // omit all fields while embedded in object
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.writeDataValue("foo", new DataValue(Variant.NULL_VALUE, null, null));
+        encoder.jsonWriter.endObject();
+        assertEquals("{}", writer.toString());
     }
 
     @Test
@@ -784,15 +857,15 @@ class OpcUaJsonEncoderTest {
         encoder.reversible = false;
         encoder.reset(writer = new StringWriter());
         encoder.writeVariant(null, new Variant(true));
-        assertEquals("{\"Body\":true}", writer.toString());
+        assertEquals("true", writer.toString());
 
         encoder.reset(writer = new StringWriter());
         encoder.writeVariant(null, new Variant(new QualifiedName(1, "foo")));
-        assertEquals("{\"Body\":{\"Name\":\"foo\",\"Uri\":1}}", writer.toString());
+        assertEquals("{\"Name\":\"foo\",\"Uri\":1}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
         encoder.writeVariant(null, new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}));
-        assertEquals("{\"Body\":[{\"Body\":\"foo\"},{\"Body\":\"bar\"}]}", writer.toString());
+        assertEquals("[\"foo\",\"bar\"]", writer.toString());
         //endregion
 
         int[] value1d = {0, 1, 2, 3};
@@ -831,15 +904,15 @@ class OpcUaJsonEncoderTest {
 
         encoder.reset(writer = new StringWriter());
         encoder.writeVariant(null, new Variant(value1d));
-        assertEquals("{\"Body\":[0,1,2,3]}", writer.toString());
+        assertEquals("[0,1,2,3]", writer.toString());
 
         encoder.reset(writer = new StringWriter());
         encoder.writeVariant(null, new Variant(value2d));
-        assertEquals("{\"Body\":[[0,2,3],[1,3,4]]}", writer.toString());
+        assertEquals("[[0,2,3],[1,3,4]]", writer.toString());
 
         encoder.reset(writer = new StringWriter());
         encoder.writeVariant(null, new Variant(value3d));
-        assertEquals("{\"Body\":[[[0,1],[2,3]],[[4,5],[6,7]]]}", writer.toString());
+        assertEquals("[[[0,1],[2,3]],[[4,5],[6,7]]]", writer.toString());
         //endregion
     }
 
