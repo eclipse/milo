@@ -16,7 +16,7 @@
         <guava.version>31.0.1-jre</guava.version>
         <javassist.version>3.23.1-GA</javassist.version>
         <annotations.version>22.0.0</annotations.version>
-        <netty.version>4.1.70.Final</netty.version>
+        <netty.version>4.1.75.Final</netty.version>
         <slf4j.version>1.7.32</slf4j.version>
         <testng.version>6.9.10</testng.version>
     </properties>
