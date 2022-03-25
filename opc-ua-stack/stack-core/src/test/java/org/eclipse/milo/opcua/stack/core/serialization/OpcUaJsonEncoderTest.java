@@ -780,7 +780,7 @@ class OpcUaJsonEncoderTest {
 
         DataValue allFieldsValue = new DataValue(
             new Variant("foo"),
-            StatusCode.GOOD,
+            new StatusCode(StatusCodes.Good_Overload),
             now,
             ushort(100),
             now,
@@ -789,37 +789,37 @@ class OpcUaJsonEncoderTest {
 
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue);
-        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
 
         // omit "Value"
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setValue(Variant.NULL_VALUE)));
-        assertEquals(String.format("{\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+        assertEquals(String.format("{\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
 
         // omit "Status"
         encoder.reset(writer = new StringWriter());
-        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setStatus(null)));
+        encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setStatus(StatusCode.GOOD)));
         assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
 
         // omit "SourceTimestamp"
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setSourceTime(null)));
-        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow), writer.toString());
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow), writer.toString());
 
         // omit "SourcePicoseconds
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setSourcePicoseconds(null)));
-        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());
 
         // omit "ServerTimestamp"
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setServerTime(null)));
-        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerPicoseconds\":200}", isoNow), writer.toString());
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerPicoseconds\":200}", isoNow), writer.toString());
 
         // omit "ServerPicoseconds"
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setServerPicoseconds(null)));
-        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":0,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\"}", isoNow, isoNow), writer.toString());
+        assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\"}", isoNow, isoNow), writer.toString());
 
         // omit all fields
         encoder.reset(writer = new StringWriter());
