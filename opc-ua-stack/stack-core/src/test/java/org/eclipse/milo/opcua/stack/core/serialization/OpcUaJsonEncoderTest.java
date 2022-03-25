@@ -33,7 +33,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -953,6 +959,98 @@ class OpcUaJsonEncoderTest {
         encoder.writeDiagnosticInfo("foo", diagnosticInfo);
         encoder.jsonWriter.endObject();
         assertEquals("{\"foo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}", writer.toString());
+    }
+
+    @Disabled
+    @Test
+    public void writeMessage() {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+        encoder.serializationContext = new TestSerializationContext();
+
+        var message = new ReadRequest(
+            new RequestHeader(
+                NodeId.NULL_VALUE,
+                DateTime.NULL_VALUE,
+                uint(0),
+                uint(0),
+                "foo",
+                uint(0),
+                null
+            ),
+            0.0,
+            TimestampsToReturn.Both,
+            new ReadValueId[]{
+                new ReadValueId(
+                    new NodeId(0, 1),
+                    uint(13),
+                    null,
+                    QualifiedName.NULL_VALUE)
+            }
+        );
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeMessage(null, message);
+        assertEquals("TODO", writer.toString());
+    }
+
+    @Test
+    public void writeEnum() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+
+        for (ApplicationType applicationType : ApplicationType.values()) {
+            encoder.reset(writer = new StringWriter());
+            encoder.writeEnum(null, applicationType);
+            assertEquals(String.valueOf(applicationType.getValue()), writer.toString());
+
+            encoder.reset(writer = new StringWriter());
+            encoder.jsonWriter.beginObject();
+            encoder.writeEnum("foo", applicationType);
+            encoder.jsonWriter.endObject();
+            assertEquals(String.format("{\"foo\":%d}", applicationType.getValue()), writer.toString());
+        }
+    }
+
+    @Test
+    @Disabled
+    public void writeStruct() {
+        // TODO
+    }
+
+    @Test
+    public void writeBooleanArray() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+        encoder.serializationContext = new TestSerializationContext();
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeBooleanArray(null, null);
+        assertEquals("", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeBooleanArray(null, new Boolean[]{});
+        assertEquals("[]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeBooleanArray(null, new Boolean[]{true, false, true});
+        assertEquals("[true,false,true]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeBooleanArray(null, new Boolean[]{true, false, null});
+        assertEquals("[true,false,null]", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.writeBooleanArray("foo", new Boolean[]{true, false, true});
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":[true,false,true]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.writeBooleanArray("foo", null);
+        encoder.jsonWriter.endObject();
+        assertEquals("{}", writer.toString());
     }
 
     private static byte[] randomBytes(int length) {
