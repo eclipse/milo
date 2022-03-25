@@ -19,11 +19,14 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -723,7 +726,34 @@ class OpcUaJsonEncoderTest {
 
     @Test
     public void writeExtensionObject() {
-        // TODO
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+
+        var byteStringXo = new ExtensionObject(
+            ByteString.of(new byte[]{0x00, 0x01, 0x02, 0x03}),
+            new NodeId(2, 42)
+        );
+
+        var xmlElementXo = new ExtensionObject(
+            new XmlElement("<foo>bar</foo>"),
+            new NodeId(2, 42)
+        );
+
+        var jsonStringXo = new ExtensionObject(
+            "{\"foo\":\"bar\",\"baz\":42}",
+            new NodeId(2, 42)
+        );
+
+        encoder.writeExtensionObject(null, jsonStringXo);
+        assertEquals("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":\"{\\\"foo\\\":\\\"bar\\\",\\\"baz\\\":42}\"}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExtensionObject(null, xmlElementXo);
+        assertEquals("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":2,\"Body\":\"<foo>bar</foo>\"}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExtensionObject(null, byteStringXo);
+        assertEquals("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":1,\"Body\":\"AAECAw==\"}", writer.toString());
     }
 
     @Test
@@ -733,12 +763,123 @@ class OpcUaJsonEncoderTest {
 
     @Test
     public void writeVariant() {
-        // TODO
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+
+        //region reversible
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(true));
+        assertEquals("{\"Type\":1,\"Body\":true}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(new QualifiedName(1, "foo")));
+        assertEquals("{\"Type\":20,\"Body\":{\"Name\":\"foo\",\"Uri\":1}}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}));
+        assertEquals("{\"Type\":24,\"Body\":[{\"Type\":12,\"Body\":\"foo\"},{\"Type\":12,\"Body\":\"bar\"}]}", writer.toString());
+        //endregion
+
+        //region non-reversible
+        encoder.reversible = false;
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(true));
+        assertEquals("{\"Body\":true}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(new QualifiedName(1, "foo")));
+        assertEquals("{\"Body\":{\"Name\":\"foo\",\"Uri\":1}}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}));
+        assertEquals("{\"Body\":[{\"Body\":\"foo\"},{\"Body\":\"bar\"}]}", writer.toString());
+        //endregion
+
+        int[] value1d = {0, 1, 2, 3};
+        int[][] value2d = {
+            {0, 2, 3},
+            {1, 3, 4}
+        };
+        int[][][] value3d = {
+            {
+                {0, 1},
+                {2, 3}
+            },
+            {
+                {4, 5},
+                {6, 7},
+            }
+        };
+
+        //region Arrays, reversible
+        encoder.reversible = true;
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(value1d));
+        assertEquals("{\"Type\":6,\"Body\":[0,1,2,3]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(value2d));
+        assertEquals("{\"Type\":6,\"Body\":[0,2,3,1,3,4],\"Dimensions\":[2,3]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(value3d));
+        assertEquals("{\"Type\":6,\"Body\":[0,1,2,3,4,5,6,7],\"Dimensions\":[2,2,2]}", writer.toString());
+        //endregion
+
+        //region Arrays, non-reversible
+        encoder.reversible = false;
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(value1d));
+        assertEquals("{\"Body\":[0,1,2,3]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(value2d));
+        assertEquals("{\"Body\":[[0,2,3],[1,3,4]]}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeVariant(null, new Variant(value3d));
+        assertEquals("{\"Body\":[[[0,1],[2,3]],[[4,5],[6,7]]]}", writer.toString());
+        //endregion
     }
 
     @Test
-    public void writeDiagnosticInfo() {
-        // TODO
+    public void writeDiagnosticInfo() throws IOException {
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(writer);
+
+        var diagnosticInfo = new DiagnosticInfo(
+            0,
+            1,
+            2,
+            3,
+            "foo",
+            null,
+            null
+        );
+
+        var nestedDiagnosticInfo = new DiagnosticInfo(
+            4,
+            5,
+            6,
+            7,
+            "bar",
+            StatusCode.GOOD,
+            diagnosticInfo
+        );
+
+        encoder.writeDiagnosticInfo(null, diagnosticInfo);
+        assertEquals("{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeDiagnosticInfo(null, nestedDiagnosticInfo);
+        assertEquals("{\"SymbolicId\":5,\"NamespaceUri\":4,\"Locale\":6,\"LocalizedText\":7,\"AdditionalInfo\":\"bar\",\"InnerStatusCode\":0,\"InnerDiagnosticInfo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.jsonWriter.beginObject();
+        encoder.writeDiagnosticInfo("foo", diagnosticInfo);
+        encoder.jsonWriter.endObject();
+        assertEquals("{\"foo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}", writer.toString());
     }
 
     private static byte[] randomBytes(int length) {

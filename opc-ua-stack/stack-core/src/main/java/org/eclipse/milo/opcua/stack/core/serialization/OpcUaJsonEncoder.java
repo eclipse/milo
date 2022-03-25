@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import com.google.gson.stream.JsonWriter;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
@@ -33,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -42,6 +45,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
+import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.jetbrains.annotations.NotNull;
 
 public class OpcUaJsonEncoder implements UaEncoder {
 
@@ -561,7 +567,30 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
     @Override
     public void writeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
+        try {
+            if (field != null) {
+                jsonWriter.name(field);
+            }
 
+            jsonWriter.beginObject();
+            writeNodeId("TypeId", value.getEncodingId());
+            switch (value.getBodyType()) {
+                case JsonString:
+                    // Encoding field omitted for JSON body
+                    jsonWriter.name("Body").value((String) value.getBody());
+                    break;
+                case ByteString:
+                    jsonWriter.name("Encoding").value(1);
+                    writeByteString("Body", (ByteString) value.getBody());
+                    break;
+                case XmlElement:
+                    jsonWriter.name("Encoding").value(2);
+                    writeXmlElement("Body", (XmlElement) value.getBody());
+            }
+            jsonWriter.endObject();
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
     }
 
     @Override
@@ -571,12 +600,263 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
     @Override
     public void writeVariant(String field, Variant value) throws UaSerializationException {
+        if (value.isNull()) {
+            return;
+        }
 
+        try {
+            if (field != null) {
+                jsonWriter.name(field);
+            }
+
+            writeVariantValue(value.getValue());
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    private void writeVariantValue(Object value) throws IOException {
+        Class<?> valueClass = getClass(value);
+
+        int typeId;
+        if (UaStructure.class.isAssignableFrom(valueClass)) {
+            typeId = BuiltinDataType.ExtensionObject.getTypeId();
+
+            value = ExtensionObject.encode(serializationContext, (UaStructure) value);
+        } else if (UaEnumeration.class.isAssignableFrom(valueClass)) {
+            typeId = BuiltinDataType.Int32.getTypeId();
+
+            value = ((UaEnumeration) value).getValue();
+        } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
+            Object optionSetValue = ((OptionSetUInteger<?>) value).getValue();
+            typeId = TypeUtil.getBuiltinTypeId(optionSetValue.getClass());
+
+            value = optionSetValue;
+        } else {
+            typeId = TypeUtil.getBuiltinTypeId(valueClass);
+        }
+
+        if (typeId == -1) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "not a built-in type: " + value.getClass()
+            );
+        }
+
+        jsonWriter.beginObject();
+
+        if (reversible) {
+            jsonWriter.name("Type").value(typeId);
+        }
+        if (!value.getClass().isArray()) {
+            writeBuiltinTypeValue("Body", typeId, value);
+        } else {
+            int[] dimensions = ArrayUtil.getDimensions(value);
+
+            jsonWriter.name("Body");
+
+            if (dimensions.length == 1) {
+                int length = Array.getLength(value);
+
+                jsonWriter.beginArray();
+                for (int i = 0; i < length; i++) {
+                    Object o = Array.get(value, i);
+
+                    writeBuiltinTypeValue(null, typeId, o);
+                }
+                jsonWriter.endArray();
+            } else {
+                if (reversible) {
+                    writeFlattenedMultiDimensionalVariantValue(typeId, value, dimensions, 0);
+
+                    jsonWriter.name("Dimensions");
+                    jsonWriter.beginArray();
+                    for (int dimension : dimensions) {
+                        jsonWriter.value(dimension);
+                    }
+                    jsonWriter.endArray();
+                } else {
+                    writeNestedMultiDimensionalVariantValue(typeId, value, dimensions, 0);
+                }
+            }
+        }
+
+        jsonWriter.endObject();
+    }
+
+    /**
+     * Write a multidimensional value in the reversible (flattened array) format.
+     */
+    private void writeFlattenedMultiDimensionalVariantValue(
+        int typeId,
+        Object value,
+        int[] dimensions,
+        int dimensionIndex
+    ) throws IOException {
+
+        if (dimensionIndex == 0) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = Array.get(value, i);
+                writeFlattenedMultiDimensionalVariantValue(typeId, e, dimensions, dimensionIndex + 1);
+            }
+            jsonWriter.endArray();
+        } else if (dimensionIndex == dimensions.length - 1) {
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = Array.get(value, i);
+                writeBuiltinTypeValue(null, typeId, e);
+            }
+        } else {
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = Array.get(value, i);
+                writeFlattenedMultiDimensionalVariantValue(typeId, e, dimensions, dimensionIndex + 1);
+            }
+        }
+    }
+
+    /**
+     * Write a multidimensional value in the non-reversible (nested array) format.
+     */
+    private void writeNestedMultiDimensionalVariantValue(
+        int typeId,
+        Object value,
+        int[] dimensions,
+        int dimensionIndex
+    ) throws IOException {
+
+        if (dimensionIndex == dimensions.length - 1) {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = Array.get(value, i);
+                writeBuiltinTypeValue(null, typeId, e);
+            }
+            jsonWriter.endArray();
+        } else {
+            jsonWriter.beginArray();
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = Array.get(value, i);
+                writeNestedMultiDimensionalVariantValue(typeId, e, dimensions, dimensionIndex + 1);
+            }
+            jsonWriter.endArray();
+        }
+    }
+
+    private void writeBuiltinTypeValue(String field, int typeId, Object value) throws UaSerializationException {
+        switch (typeId) {
+            case 1:
+                writeBoolean(field, (Boolean) value);
+                break;
+            case 2:
+                writeSByte(field, (Byte) value);
+                break;
+            case 3:
+                writeByte(field, (UByte) value);
+                break;
+            case 4:
+                writeInt16(field, (Short) value);
+                break;
+            case 5:
+                writeUInt16(field, (UShort) value);
+                break;
+            case 6:
+                writeInt32(field, (Integer) value);
+                break;
+            case 7:
+                writeUInt32(field, (UInteger) value);
+                break;
+            case 8:
+                writeInt64(field, (Long) value);
+                break;
+            case 9:
+                writeUInt64(field, (ULong) value);
+                break;
+            case 10:
+                writeFloat(field, (Float) value);
+                break;
+            case 11:
+                writeDouble(field, (Double) value);
+                break;
+            case 12:
+                writeString(field, (String) value);
+                break;
+            case 13:
+                writeDateTime(field, (DateTime) value);
+                break;
+            case 14:
+                writeGuid(field, (UUID) value);
+                break;
+            case 15:
+                writeByteString(field, (ByteString) value);
+                break;
+            case 16:
+                writeXmlElement(field, (XmlElement) value);
+                break;
+            case 17:
+                writeNodeId(field, (NodeId) value);
+                break;
+            case 18:
+                writeExpandedNodeId(field, (ExpandedNodeId) value);
+                break;
+            case 19:
+                writeStatusCode(field, (StatusCode) value);
+                break;
+            case 20:
+                writeQualifiedName(field, (QualifiedName) value);
+                break;
+            case 21:
+                writeLocalizedText(field, (LocalizedText) value);
+                break;
+            case 22:
+                writeExtensionObject(field, (ExtensionObject) value);
+                break;
+            case 23:
+                writeDataValue(field, (DataValue) value);
+                break;
+            case 24:
+                writeVariant(field, (Variant) value);
+                break;
+            case 25:
+                writeDiagnosticInfo(field, (DiagnosticInfo) value);
+                break;
+            default:
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "not a built-in type: " + value.getClass()
+                );
+        }
+    }
+
+    private static Class<?> getClass(@NotNull Object o) {
+        if (o.getClass().isArray()) {
+            return ArrayUtil.getType(o);
+        } else {
+            return o.getClass();
+        }
     }
 
     @Override
     public void writeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
+        try {
+            if (field != null) {
+                jsonWriter.name(field);
+            }
 
+            jsonWriter.beginObject();
+            writeInt32("SymbolicId", value.getSymbolicId());
+            writeInt32("NamespaceUri", value.getNamespaceUri());
+            writeInt32("Locale", value.getLocale());
+            writeInt32("LocalizedText", value.getLocalizedText());
+            writeString("AdditionalInfo", value.getAdditionalInfo());
+            if (value.getInnerStatusCode() != null) {
+                writeStatusCode("InnerStatusCode", value.getInnerStatusCode());
+            }
+            if (value.getInnerDiagnosticInfo() != null) {
+                writeDiagnosticInfo("InnerDiagnosticInfo", value.getInnerDiagnosticInfo());
+            }
+            jsonWriter.endObject();
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
     }
 
     @Override
