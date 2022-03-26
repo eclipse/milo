@@ -63,6 +63,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private Boolean historizing;
     private AccessLevelExType accessLevelEx;
 
+    /**
+     * Construct a {@link UaVariableNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaVariableNode(
         OpcUaClient client,
         NodeId nodeId,
@@ -94,6 +97,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
         this.historizing = historizing;
     }
 
+    /**
+     * Construct a {@link UaVariableNode} using all attributes, including those defined by OPC UA 1.04.
+     */
     public UaVariableNode(
         OpcUaClient client,
         NodeId nodeId,

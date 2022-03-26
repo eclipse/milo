@@ -116,7 +116,6 @@ public class VariableTypeManager {
     @FunctionalInterface
     public interface VariableNodeConstructor {
 
-
         UaVariableNode apply(
             OpcUaClient client,
             NodeId nodeId,

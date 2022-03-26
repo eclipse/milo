@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -87,6 +87,9 @@ public abstract class UaNode implements Node {
 
     protected final OpcUaClient client;
 
+    /**
+     * Construct a {@link UaNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaNode(
         OpcUaClient client,
         NodeId nodeId,
@@ -108,6 +111,9 @@ public abstract class UaNode implements Node {
         this.userWriteMask = userWriteMask;
     }
 
+    /**
+     * Construct a {@link UaNode} using all attributes, including those defined by OPC UA 1.04.
+     */
     public UaNode(
         OpcUaClient client,
         NodeId nodeId,

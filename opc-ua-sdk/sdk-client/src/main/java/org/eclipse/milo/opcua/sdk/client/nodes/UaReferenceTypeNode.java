@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,6 +25,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
@@ -32,6 +34,9 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     private Boolean symmetric;
     private LocalizedText inverseName;
 
+    /**
+     * Construct a {@link UaReferenceTypeNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaReferenceTypeNode(
         OpcUaClient client,
         NodeId nodeId,
@@ -41,6 +46,33 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
+        Boolean isAbstract,
+        Boolean symmetric,
+        LocalizedText inverseName
+    ) {
+
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.isAbstract = isAbstract;
+        this.symmetric = symmetric;
+        this.inverseName = inverseName;
+    }
+
+    /**
+     * Construct a {@link UaReferenceTypeNode} using all attributes, including those defined by OPC UA 1.04.
+     */
+    public UaReferenceTypeNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
         Boolean isAbstract,
         Boolean symmetric,
         LocalizedText inverseName

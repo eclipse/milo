@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,6 +22,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class ObjectTypeManager {
 
@@ -34,6 +36,46 @@ public class ObjectTypeManager {
     ) {
 
         typeDefinitions.put(typeDefinition, new ObjectTypeDefinition(nodeClass, objectNodeConstructor));
+    }
+
+    public void registerObjectType(
+        NodeId typeDefinition,
+        Class<? extends UaObjectNode> nodeClass,
+        LegacyObjectNodeConstructor objectNodeConstructor
+    ) {
+
+        ObjectNodeConstructor adapted = new ObjectNodeConstructor() {
+            @Override
+            public UaObjectNode apply(
+                OpcUaClient client,
+                NodeId nodeId,
+                NodeClass nodeClass,
+                QualifiedName browseName,
+                LocalizedText displayName,
+                LocalizedText description,
+                UInteger writeMask,
+                UInteger userWriteMask,
+                RolePermissionType[] rolePermissions,
+                RolePermissionType[] userRolePermissions,
+                AccessRestrictionType accessRestrictions,
+                UByte eventNotifier
+            ) {
+
+                return objectNodeConstructor.apply(
+                    client,
+                    nodeId,
+                    nodeClass,
+                    browseName,
+                    displayName,
+                    description,
+                    writeMask,
+                    userWriteMask,
+                    eventNotifier
+                );
+            }
+        };
+
+        typeDefinitions.put(typeDefinition, new ObjectTypeDefinition(nodeClass, adapted));
     }
 
     public Optional<ObjectNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
@@ -57,6 +99,26 @@ public class ObjectTypeManager {
 
     @FunctionalInterface
     public interface ObjectNodeConstructor {
+
+        UaObjectNode apply(
+            OpcUaClient client,
+            NodeId nodeId,
+            NodeClass nodeClass,
+            QualifiedName browseName,
+            LocalizedText displayName,
+            LocalizedText description,
+            UInteger writeMask,
+            UInteger userWriteMask,
+            RolePermissionType[] rolePermissions,
+            RolePermissionType[] userRolePermissions,
+            AccessRestrictionType accessRestrictions,
+            UByte eventNotifier
+        );
+
+    }
+
+    @FunctionalInterface
+    public interface LegacyObjectNodeConstructor {
 
         UaObjectNode apply(
             OpcUaClient client,
