@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -63,36 +63,36 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private Boolean historizing;
     private AccessLevelExType accessLevelEx;
 
-//    public UaVariableNode(
-//        OpcUaClient client,
-//        NodeId nodeId,
-//        NodeClass nodeClass,
-//        QualifiedName browseName,
-//        LocalizedText displayName,
-//        LocalizedText description,
-//        UInteger writeMask,
-//        UInteger userWriteMask,
-//        DataValue value,
-//        NodeId dataType,
-//        Integer valueRank,
-//        UInteger[] arrayDimensions,
-//        UByte accessLevel,
-//        UByte userAccessLevel,
-//        Double minimumSamplingInterval,
-//        Boolean historizing
-//    ) {
-//
-//        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
-//
-//        this.value = value;
-//        this.dataType = dataType;
-//        this.valueRank = valueRank;
-//        this.arrayDimensions = arrayDimensions;
-//        this.accessLevel = accessLevel;
-//        this.userAccessLevel = userAccessLevel;
-//        this.minimumSamplingInterval = minimumSamplingInterval;
-//        this.historizing = historizing;
-//    }
+    public UaVariableNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        DataValue value,
+        NodeId dataType,
+        Integer valueRank,
+        UInteger[] arrayDimensions,
+        UByte accessLevel,
+        UByte userAccessLevel,
+        Double minimumSamplingInterval,
+        Boolean historizing
+    ) {
+
+        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.accessLevel = accessLevel;
+        this.userAccessLevel = userAccessLevel;
+        this.minimumSamplingInterval = minimumSamplingInterval;
+        this.historizing = historizing;
+    }
 
     public UaVariableNode(
         OpcUaClient client,

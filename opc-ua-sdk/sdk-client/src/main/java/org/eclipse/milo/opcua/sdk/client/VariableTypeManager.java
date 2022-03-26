@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -39,6 +39,61 @@ public class VariableTypeManager {
         typeDefinitions.put(typeDefinition, new VariableTypeDefinition(nodeClass, variableNodeConstructor));
     }
 
+    public void registerVariableType(
+        NodeId typeDefinition,
+        Class<? extends UaVariableNode> nodeClass,
+        LegacyVariableNodeConstructor variableNodeConstructor
+    ) {
+
+        VariableNodeConstructor adapted = new VariableNodeConstructor() {
+            @Override
+            public UaVariableNode apply(
+                OpcUaClient client,
+                NodeId nodeId,
+                NodeClass nodeClass,
+                QualifiedName browseName,
+                LocalizedText displayName,
+                LocalizedText description,
+                UInteger writeMask,
+                UInteger userWriteMask,
+                RolePermissionType[] rolePermissions,
+                RolePermissionType[] userRolePermissions,
+                AccessRestrictionType accessRestrictions,
+                DataValue value,
+                NodeId dataType,
+                Integer valueRank,
+                UInteger[] arrayDimensions,
+                UByte accessLevel,
+                UByte userAccessLevel,
+                Double minimumSamplingInterval,
+                Boolean historizing,
+                AccessLevelExType accessLevelEx
+            ) {
+
+                return variableNodeConstructor.apply(
+                    client,
+                    nodeId,
+                    nodeClass,
+                    browseName,
+                    displayName,
+                    description,
+                    writeMask,
+                    userWriteMask,
+                    value,
+                    dataType,
+                    valueRank,
+                    arrayDimensions,
+                    accessLevel,
+                    userAccessLevel,
+                    minimumSamplingInterval,
+                    historizing
+                );
+            }
+        };
+
+        typeDefinitions.put(typeDefinition, new VariableTypeDefinition(nodeClass, adapted));
+    }
+
     public Optional<VariableNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
         VariableTypeDefinition def = typeDefinitions.get(typeDefinition);
 
@@ -61,6 +116,7 @@ public class VariableTypeManager {
     @FunctionalInterface
     public interface VariableNodeConstructor {
 
+
         UaVariableNode apply(
             OpcUaClient client,
             NodeId nodeId,
@@ -82,6 +138,30 @@ public class VariableTypeManager {
             Double minimumSamplingInterval,
             Boolean historizing,
             AccessLevelExType accessLevelEx
+        );
+
+    }
+
+    @FunctionalInterface
+    public interface LegacyVariableNodeConstructor {
+
+        UaVariableNode apply(
+            OpcUaClient client,
+            NodeId nodeId,
+            NodeClass nodeClass,
+            QualifiedName browseName,
+            LocalizedText displayName,
+            LocalizedText description,
+            UInteger writeMask,
+            UInteger userWriteMask,
+            DataValue value,
+            NodeId dataType,
+            Integer valueRank,
+            UInteger[] arrayDimensions,
+            UByte accessLevel,
+            UByte userAccessLevel,
+            Double minimumSamplingInterval,
+            Boolean historizing
         );
 
     }
