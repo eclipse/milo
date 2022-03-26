@@ -97,19 +97,20 @@ public class VariableTypeManager {
     public Optional<VariableNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
         VariableTypeDefinition def = typeDefinitions.get(typeDefinition);
 
-        return Optional.ofNullable(def).map(d -> d.nodeFactory);
+        return Optional.ofNullable(def).map(d -> d.nodeConstructor);
     }
 
     private static class VariableTypeDefinition {
         final Class<? extends UaVariableNode> nodeClass;
-        final VariableNodeConstructor nodeFactory;
+        final VariableNodeConstructor nodeConstructor;
 
         private VariableTypeDefinition(
             Class<? extends UaVariableNode> nodeClass,
-            VariableNodeConstructor nodeFactory) {
+            VariableNodeConstructor nodeConstructor
+        ) {
 
             this.nodeClass = nodeClass;
-            this.nodeFactory = nodeFactory;
+            this.nodeConstructor = nodeConstructor;
         }
     }
 

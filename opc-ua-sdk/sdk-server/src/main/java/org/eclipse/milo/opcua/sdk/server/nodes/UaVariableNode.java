@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -72,23 +72,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private Boolean historizing = false;
     private AccessLevelExType accessLevelEx;
 
-    public UaVariableNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        VariableTypeNode variableTypeNode
-    ) {
-
-        this(context, nodeId, variableTypeNode.getBrowseName(), variableTypeNode.getDisplayName());
-
-        setDescription(variableTypeNode.getDescription());
-        setWriteMask(variableTypeNode.getWriteMask());
-        setUserWriteMask(variableTypeNode.getUserWriteMask());
-        setValue(variableTypeNode.getValue());
-        setDataType(variableTypeNode.getDataType());
-        setValueRank(variableTypeNode.getValueRank());
-        setArrayDimensions(variableTypeNode.getArrayDimensions());
-    }
-
+    // TODO remove this constructor
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -99,6 +83,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         super(context, nodeId, NodeClass.Variable, browseName, displayName);
     }
 
+    // OPC UA 1.03, only base attributes
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -112,6 +97,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         super(context, nodeId, NodeClass.Variable, browseName, displayName, description, writeMask, userWriteMask);
     }
 
+    // OPC UA 1.03, base + variable attributes
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -143,6 +129,74 @@ public class UaVariableNode extends UaNode implements VariableNode {
         this.historizing = historizing;
     }
 
+    // OPC UA 1.04, only base attributes
+    public UaVariableNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Variable,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+    }
+
+    // OPC UA 1.04, intersection of Variable and VariableType attributes
+    public UaVariableNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        DataValue value,
+        NodeId dataType,
+        Integer valueRank,
+        UInteger[] arrayDimensions
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Variable,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+    }
+
+    // OPC UA 1.04, base + variable attributes
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,

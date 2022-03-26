@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -376,7 +376,7 @@ public class NodeFactory {
 
         // Use a specialized instance if one is registered, otherwise fallback to UaObjectNode.
         ObjectTypeManager.ObjectNodeConstructor ctor = objectTypeManager
-            .getNodeFactory(typeDefinitionId)
+            .getNodeConstructor(typeDefinitionId)
             .orElse(UaObjectNode::new);
 
         return ctor.apply(
@@ -386,7 +386,10 @@ public class NodeFactory {
             typeDefinitionNode.getDisplayName(),
             typeDefinitionNode.getDescription(),
             typeDefinitionNode.getWriteMask(),
-            typeDefinitionNode.getUserWriteMask()
+            typeDefinitionNode.getUserWriteMask(),
+            typeDefinitionNode.getRolePermissions(),
+            typeDefinitionNode.getUserRolePermissions(),
+            typeDefinitionNode.getAccessRestrictions()
         );
     }
 
@@ -399,7 +402,7 @@ public class NodeFactory {
 
         // Use a specialized instance if one is registered, otherwise fallback to UaVariableNode.
         VariableTypeManager.VariableNodeConstructor ctor = variableTypeManager
-            .getNodeFactory(typeDefinitionId)
+            .getNodeConstructor(typeDefinitionId)
             .orElse(UaVariableNode::new);
 
         return ctor.apply(
@@ -409,7 +412,14 @@ public class NodeFactory {
             typeDefinitionNode.getDisplayName(),
             typeDefinitionNode.getDescription(),
             typeDefinitionNode.getWriteMask(),
-            typeDefinitionNode.getUserWriteMask()
+            typeDefinitionNode.getUserWriteMask(),
+            typeDefinitionNode.getRolePermissions(),
+            typeDefinitionNode.getUserRolePermissions(),
+            typeDefinitionNode.getAccessRestrictions(),
+            typeDefinitionNode.getValue(),
+            typeDefinitionNode.getDataType(),
+            typeDefinitionNode.getValueRank(),
+            typeDefinitionNode.getArrayDimensions()
         );
     }
 

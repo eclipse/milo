@@ -81,19 +81,20 @@ public class ObjectTypeManager {
     public Optional<ObjectNodeConstructor> getNodeConstructor(NodeId typeDefinition) {
         ObjectTypeDefinition def = typeDefinitions.get(typeDefinition);
 
-        return Optional.ofNullable(def).map(d -> d.nodeFactory);
+        return Optional.ofNullable(def).map(d -> d.nodeConstructor);
     }
 
     private static class ObjectTypeDefinition {
         final Class<? extends UaNode> nodeClass;
-        final ObjectNodeConstructor nodeFactory;
+        final ObjectNodeConstructor nodeConstructor;
 
         private ObjectTypeDefinition(
             Class<? extends UaNode> nodeClass,
-            ObjectNodeConstructor nodeFactory) {
+            ObjectNodeConstructor nodeConstructor
+        ) {
 
             this.nodeClass = nodeClass;
-            this.nodeFactory = nodeFactory;
+            this.nodeConstructor = nodeConstructor;
         }
     }
 
