@@ -1421,31 +1421,46 @@ public class AddressSpace {
     }
 
     private UaVariableTypeNode newVariableTypeNode(NodeId nodeId, List<DataValue> attributeValues) throws UaException {
-        DataValue nodeIdDataValue = attributeValues.get(0);
+        int ai = 0;
+        DataValue nodeIdDataValue = attributeValues.get(ai++);
         StatusCode nodeIdStatusCode = nodeIdDataValue.getStatusCode();
         if (nodeIdStatusCode != null && nodeIdStatusCode.isBad()) {
             throw new UaException(nodeIdStatusCode);
         }
 
         try {
-            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(1).getValue().getValue());
+            NodeClass nodeClass = NodeClass.from((Integer) attributeValues.get(ai++).getValue().getValue());
 
             Preconditions.checkArgument(
                 nodeClass == NodeClass.VariableType,
                 "expected NodeClass.VariableType, got NodeClass." + nodeClass
             );
 
-            QualifiedName browseName = (QualifiedName) attributeValues.get(2).getValue().getValue();
-            LocalizedText displayName = (LocalizedText) attributeValues.get(3).getValue().getValue();
-            LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
-            UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
-            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            QualifiedName browseName = (QualifiedName) attributeValues.get(ai++).getValue().getValue();
+            LocalizedText displayName = (LocalizedText) attributeValues.get(ai++).getValue().getValue();
+            LocalizedText description = getAttributeOrNull(attributeValues.get(ai++), LocalizedText.class);
+            UInteger writeMask = getAttributeOrNull(attributeValues.get(ai++), UInteger.class);
+            UInteger userWriteMask = getAttributeOrNull(attributeValues.get(ai++), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(ai++),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(ai++),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(ai++),
+                AccessRestrictionType.class
+            );
 
-            DataValue value = attributeValues.get(7);
-            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-            Boolean isAbstract = (Boolean) attributeValues.get(11).getValue().getValue();
+            DataValue value = attributeValues.get(ai++);
+            NodeId dataType = (NodeId) attributeValues.get(ai++).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(ai++).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(ai++), UInteger[].class);
+            Boolean isAbstract = (Boolean) attributeValues.get(ai).getValue().getValue();
+
+            // TODO call constructor that includes 1.04 attributes
 
             return new UaVariableTypeNode(
                 client,
