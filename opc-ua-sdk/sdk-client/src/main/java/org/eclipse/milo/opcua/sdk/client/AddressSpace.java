@@ -1460,8 +1460,6 @@ public class AddressSpace {
             UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(ai++), UInteger[].class);
             Boolean isAbstract = (Boolean) attributeValues.get(ai).getValue().getValue();
 
-            // TODO call constructor that includes 1.04 attributes
-
             return new UaVariableTypeNode(
                 client,
                 nodeId,
@@ -1471,6 +1469,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
