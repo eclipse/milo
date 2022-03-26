@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 
 
-public class Identifiers {
+public class Identifiers extends NodeIds {
 
     public static final org.eclipse.milo.opcua.stack.core.types.builtin.NodeId Boolean = init(1);
     public static final NodeId SByte = init(2);
@@ -5808,7 +5808,6 @@ public class Identifiers {
     public static final NodeId OpcUa_XmlSchema_ScalarTestType = init(8384);
     public static final NodeId OpcUa_XmlSchema_ScalarTestType_DataTypeVersion = init(8385);
     public static final NodeId OpcUa_XmlSchema_ScalarTestType_DictionaryFragment = init(8386);
-
 
     private static NodeId init(int value) {
         return new NodeId(Unsigned.ushort(0), Unsigned.uint(value));
