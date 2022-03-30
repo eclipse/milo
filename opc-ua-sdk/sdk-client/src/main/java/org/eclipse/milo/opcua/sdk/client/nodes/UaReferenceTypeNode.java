@@ -78,7 +78,19 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         LocalizedText inverseName
     ) {
 
-        super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            client,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.isAbstract = isAbstract;
         this.symmetric = symmetric;

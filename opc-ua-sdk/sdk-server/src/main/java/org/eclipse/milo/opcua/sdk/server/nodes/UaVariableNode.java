@@ -72,18 +72,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private Boolean historizing = false;
     private AccessLevelExType accessLevelEx;
 
-    // TODO remove this constructor
-    public UaVariableNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName
-    ) {
-
-        super(context, nodeId, NodeClass.Variable, browseName, displayName);
-    }
-
     // OPC UA 1.03, only base attributes
+    // TODO remove after nodes are regenerated?
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -94,10 +84,21 @@ public class UaVariableNode extends UaNode implements VariableNode {
         UInteger userWriteMask
     ) {
 
-        super(context, nodeId, NodeClass.Variable, browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            context,
+            nodeId,
+            NodeClass.Variable,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
     }
 
-    // OPC UA 1.03, base + variable attributes
+    /**
+     * Construct a {@link UaVariableNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -129,74 +130,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
         this.historizing = historizing;
     }
 
-    // OPC UA 1.04, only base attributes
-    public UaVariableNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        RolePermissionType[] rolePermissions,
-        RolePermissionType[] userRolePermissions,
-        AccessRestrictionType accessRestrictions
-    ) {
-
-        super(
-            context,
-            nodeId,
-            NodeClass.Variable,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            rolePermissions,
-            userRolePermissions,
-            accessRestrictions
-        );
-    }
-
-    // OPC UA 1.04, intersection of Variable and VariableType attributes
-    public UaVariableNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        RolePermissionType[] rolePermissions,
-        RolePermissionType[] userRolePermissions,
-        AccessRestrictionType accessRestrictions,
-        DataValue value,
-        NodeId dataType,
-        Integer valueRank,
-        UInteger[] arrayDimensions
-    ) {
-
-        super(
-            context,
-            nodeId,
-            NodeClass.Variable,
-            browseName,
-            displayName,
-            description,
-            writeMask,
-            userWriteMask,
-            rolePermissions,
-            userRolePermissions,
-            accessRestrictions
-        );
-
-        this.value = value;
-        this.dataType = dataType;
-        this.valueRank = valueRank;
-        this.arrayDimensions = arrayDimensions;
-    }
-
-    // OPC UA 1.04, base + variable attributes
+    /**
+     * Construct a {@link UaVariableNode} using all attributes, including those defined by OPC UA 1.04.
+     */
     public UaVariableNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -242,6 +178,50 @@ public class UaVariableNode extends UaNode implements VariableNode {
         this.minimumSamplingInterval = minimumSamplingInterval;
         this.historizing = historizing;
         this.accessLevelEx = accessLevelEx;
+    }
+
+    /**
+     * Construct a {@link UaVariableNode} using all attributes in the intersection of attributes
+     * defined by Variables and VariableTypes, making it suitable for use when instantiating a
+     * Variable instance from an VariableType.
+     * <p>
+     * This constructor requires attributes defined by OPC 1.04.
+     */
+    public UaVariableNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        DataValue value,
+        NodeId dataType,
+        Integer valueRank,
+        UInteger[] arrayDimensions
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Variable,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
     }
 
     @Override

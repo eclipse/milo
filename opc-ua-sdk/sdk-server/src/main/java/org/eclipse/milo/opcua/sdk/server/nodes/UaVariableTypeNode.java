@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
@@ -30,6 +32,9 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     private UInteger[] arrayDimensions;
     private Boolean isAbstract;
 
+    /**
+     * Construct a {@link UaVariableTypeNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaVariableTypeNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -45,8 +50,58 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         Boolean isAbstract
     ) {
 
-        super(context, nodeId, NodeClass.VariableType,
-            browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            context,
+            nodeId,
+            NodeClass.VariableType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
+
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.isAbstract = isAbstract;
+    }
+
+    /**
+     * Construct a {@link UaVariableTypeNode} using all available attributes.
+     */
+    public UaVariableTypeNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        DataValue value,
+        NodeId dataType,
+        Integer valueRank,
+        UInteger[] arrayDimensions,
+        Boolean isAbstract
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.VariableType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.value = value;
         this.dataType = dataType;

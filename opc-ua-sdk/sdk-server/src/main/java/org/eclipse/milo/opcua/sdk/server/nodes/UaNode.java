@@ -75,20 +75,6 @@ public abstract class UaNode implements UaServerNode {
         NodeId nodeId,
         NodeClass nodeClass,
         QualifiedName browseName,
-        LocalizedText displayName
-    ) {
-
-        this(
-            context, nodeId, nodeClass, browseName, displayName,
-            LocalizedText.NULL_VALUE, UInteger.MIN, UInteger.MIN, null, null, null
-        );
-    }
-
-    protected UaNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        NodeClass nodeClass,
-        QualifiedName browseName,
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
@@ -96,8 +82,17 @@ public abstract class UaNode implements UaServerNode {
     ) {
 
         this(
-            context, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask,
-            null, null, null
+            context,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            null,
+            null,
+            null
         );
     }
 

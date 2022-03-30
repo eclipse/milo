@@ -56,21 +56,9 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     private UByte eventNotifier = ubyte(0);
 
-    // OPC UA 1.03, only base attributes
-    public UaObjectNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask
-    ) {
-
-        super(context, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
-    }
-
-    // OPC UA 1.03, base + object attributes
+    /**
+     * Construct a {@link UaObjectNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaObjectNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -82,26 +70,6 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UByte eventNotifier
     ) {
 
-        super(context, nodeId, NodeClass.Object,
-            browseName, displayName, description, writeMask, userWriteMask);
-
-        this.eventNotifier = eventNotifier;
-    }
-
-    // OPC UA 1.04, only base attributes (also the intersection of Object and ObjectType attributes)
-    public UaObjectNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        RolePermissionType[] rolePermissions,
-        RolePermissionType[] userRolePermissions,
-        AccessRestrictionType accessRestrictions
-    ) {
-
         super(
             context,
             nodeId,
@@ -110,14 +78,15 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             displayName,
             description,
             writeMask,
-            userWriteMask,
-            rolePermissions,
-            userRolePermissions,
-            accessRestrictions
+            userWriteMask
         );
+
+        this.eventNotifier = eventNotifier;
     }
 
-    // OPC UA 1.04, base + object attributes
+    /**
+     * Construct a {@link UaObjectNode} using all attributes, including those defined by OPC UA 1.04.
+     */
     public UaObjectNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -147,6 +116,70 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         );
 
         this.eventNotifier = eventNotifier;
+    }
+
+    /**
+     * Construct a {@link UaObjectNode} using all attributes in the intersection of attributes
+     * defined by Objects and ObjectTypes, making it suitable for use when instantiating an Object
+     * instance from an ObjectType.
+     * <p>
+     * This constructor requires only attributes defined prior to OPC UA 1.04.
+     */
+    public UaObjectNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Object,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
+    }
+
+    /**
+     * Construct a {@link UaObjectNode} using all attributes in the intersection of attributes
+     * defined by Objects and ObjectTypes, making it suitable for use when instantiating an Object
+     * instance from an ObjectType.
+     * <p>
+     * This constructor requires attributes defined by OPC UA 1.04.
+     */
+    public UaObjectNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Object,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
     }
 
     @Override

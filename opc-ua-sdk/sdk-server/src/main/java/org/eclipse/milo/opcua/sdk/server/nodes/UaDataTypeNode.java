@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -29,6 +29,9 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     private Boolean isAbstract;
     private DataTypeDefinition dataTypeDefinition;
 
+    /**
+     * Construct a {@link UaDataTypeNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaDataTypeNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -46,6 +49,9 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         this.isAbstract = isAbstract;
     }
 
+    /**
+     * Construct a {@link UaDataTypeNode} using all attributes, including those defined by OPC UA 1.04.
+     */
     public UaDataTypeNode(
         UaNodeContext context,
         NodeId nodeId,
