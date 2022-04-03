@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -32,6 +32,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
@@ -42,6 +44,9 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
     private Boolean isAbstract;
 
+    /**
+     * Construct a {@link UaObjectTypeNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaObjectTypeNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -50,10 +55,53 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
-        Boolean isAbstract) {
+        Boolean isAbstract
+    ) {
 
-        super(context, nodeId, NodeClass.ObjectType,
-            browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            context,
+            nodeId,
+            NodeClass.ObjectType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
+
+        this.isAbstract = isAbstract;
+    }
+
+    /**
+     * Construct a {@link UaObjectTypeNode} using all attributes, including those defined by OPC UA 1.04.
+     */
+    public UaObjectTypeNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        Boolean isAbstract
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.ObjectType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.isAbstract = isAbstract;
     }

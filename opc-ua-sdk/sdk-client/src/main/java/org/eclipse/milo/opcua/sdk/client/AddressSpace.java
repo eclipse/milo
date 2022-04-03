@@ -50,11 +50,15 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1134,8 +1138,24 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
+            DataTypeDefinition dataTypeDefinition = getAttributeOrNull(
+                attributeValues.get(11),
+                DataTypeDefinition.class
+            );
 
             return new UaDataTypeNode(
                 client,
@@ -1146,7 +1166,11 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
-                isAbstract
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
+                isAbstract,
+                dataTypeDefinition
             );
         } catch (Throwable t) {
             throw UaException.extract(t)
@@ -1174,9 +1198,21 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean executable = (Boolean) attributeValues.get(7).getValue().getValue();
-            Boolean userExecutable = (Boolean) attributeValues.get(8).getValue().getValue();
+            Boolean executable = (Boolean) attributeValues.get(10).getValue().getValue();
+            Boolean userExecutable = (Boolean) attributeValues.get(11).getValue().getValue();
 
             return new UaMethodNode(
                 client,
@@ -1187,6 +1223,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 executable,
                 userExecutable
             );
@@ -1221,8 +1260,20 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            UByte eventNotifier = (UByte) attributeValues.get(7).getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues.get(10).getValue().getValue();
 
             ObjectNodeConstructor constructor = client.getObjectTypeManager()
                 .getNodeConstructor(typeDefinitionId)
@@ -1237,6 +1288,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 eventNotifier
             );
         } catch (Throwable t) {
@@ -1265,8 +1319,20 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
 
             return new UaObjectTypeNode(
                 client,
@@ -1277,6 +1343,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 isAbstract
             );
         } catch (Throwable t) {
@@ -1309,10 +1378,22 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
-            Boolean symmetric = (Boolean) attributeValues.get(8).getValue().getValue();
-            LocalizedText inverseName = getAttributeOrNull(attributeValues.get(9), LocalizedText.class);
+            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
+            Boolean symmetric = (Boolean) attributeValues.get(11).getValue().getValue();
+            LocalizedText inverseName = getAttributeOrNull(attributeValues.get(12), LocalizedText.class);
 
             return new UaReferenceTypeNode(
                 client,
@@ -1323,6 +1404,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 isAbstract,
                 symmetric,
                 inverseName
@@ -1358,15 +1442,31 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            DataValue value = attributeValues.get(7);
-            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-            UByte accessLevel = (UByte) attributeValues.get(11).getValue().getValue();
-            UByte userAccessLevel = (UByte) attributeValues.get(12).getValue().getValue();
-            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(13), Double.class);
-            Boolean historizing = (Boolean) attributeValues.get(14).getValue().getValue();
+            DataValue value = attributeValues.get(10);
+            NodeId dataType = (NodeId) attributeValues.get(11).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(12).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(13), UInteger[].class);
+            UByte accessLevel = (UByte) attributeValues.get(14).getValue().getValue();
+            UByte userAccessLevel = (UByte) attributeValues.get(15).getValue().getValue();
+            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(16), Double.class);
+            Boolean historizing = (Boolean) attributeValues.get(17).getValue().getValue();
+            AccessLevelExType accessLevelEx = getAttributeOrNull(
+                attributeValues.get(18),
+                AccessLevelExType.class
+            );
 
             VariableTypeManager.VariableNodeConstructor constructor = client.getVariableTypeManager()
                 .getNodeConstructor(typeDefinitionId)
@@ -1381,6 +1481,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
@@ -1388,7 +1491,8 @@ public class AddressSpace {
                 accessLevel,
                 userAccessLevel,
                 minimumSamplingInterval,
-                historizing
+                historizing,
+                accessLevelEx
             );
         } catch (Throwable t) {
             throw UaException.extract(t)
@@ -1416,12 +1520,24 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            DataValue value = attributeValues.get(7);
-            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-            Boolean isAbstract = (Boolean) attributeValues.get(11).getValue().getValue();
+            DataValue value = attributeValues.get(10);
+            NodeId dataType = (NodeId) attributeValues.get(11).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(12).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(13), UInteger[].class);
+            Boolean isAbstract = (Boolean) attributeValues.get(14).getValue().getValue();
 
             return new UaVariableTypeNode(
                 client,
@@ -1432,6 +1548,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
@@ -1464,9 +1583,21 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean containsNoLoops = (Boolean) attributeValues.get(7).getValue().getValue();
-            UByte eventNotifier = (UByte) attributeValues.get(8).getValue().getValue();
+            Boolean containsNoLoops = (Boolean) attributeValues.get(10).getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues.get(11).getValue().getValue();
 
             return new UaViewNode(
                 client,
@@ -1477,6 +1608,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 containsNoLoops,
                 eventNotifier
             );

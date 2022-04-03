@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,13 +26,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class UaMethodNode extends UaNode implements MethodNode {
 
     private Boolean executable;
     private Boolean userExecutable;
 
+    /**
+     * Construct a {@link UaMethodNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaMethodNode(
         OpcUaClient client,
         NodeId nodeId,
@@ -47,6 +52,43 @@ public class UaMethodNode extends UaNode implements MethodNode {
     ) {
 
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.executable = executable;
+        this.userExecutable = userExecutable;
+    }
+
+    /**
+     * Construct a {@link UaMethodNode} using all attributes, including those defined by OPC UA 1.04.
+     */
+    public UaMethodNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        Boolean executable,
+        Boolean userExecutable
+    ) {
+
+        super(
+            client,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.executable = executable;
         this.userExecutable = userExecutable;

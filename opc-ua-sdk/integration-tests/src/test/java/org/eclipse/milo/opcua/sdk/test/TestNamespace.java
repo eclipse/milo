@@ -44,12 +44,16 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.PermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 public class TestNamespace extends ManagedNamespaceWithLifecycle {
@@ -91,6 +95,13 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                 .setDisplayName(LocalizedText.english("TestInt32"))
                 .setDataType(Identifiers.Int32)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setRolePermissions(new RolePermissionType[] {
+                    new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
+                })
+                .setUserRolePermissions(new RolePermissionType[] {
+                    new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
+                })
+                .setAccessRestrictions(new AccessRestrictionType(uint(0)))
                 .build();
 
             testInt32Node.setValue(new DataValue(new Variant(0)));

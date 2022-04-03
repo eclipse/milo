@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public interface Node {
 
@@ -96,6 +98,42 @@ public interface Node {
     UInteger getUserWriteMask();
 
     /**
+     * Get the RolePermissions attribute.
+     * <p>
+     * The optional RolePermissions Attribute specifies the Permissions that apply to a Node for
+     * all Roles which have access to the Node.
+     * <p>
+     * See OPC UA Part 3, section 5.2.9.
+     *
+     * @return if this attribute is present, the RolePermissions ({@link RolePermissionType}).
+     */
+    RolePermissionType[] getRolePermissions();
+
+    /**
+     * Get the UserRolePermissions attribute.
+     * <p>
+     * The optional UserRolePermissions Attribute specifies the Permissions that apply to a Node
+     * for all Roles granted to current Session.
+     * <p>
+     * See OPC UA Part 3, section 5.2.10.
+     *
+     * @return if this attribute is present, the UserRolePermissions ({@link RolePermissionType}).
+     */
+    RolePermissionType[] getUserRolePermissions();
+
+    /**
+     * Get the AccessRestrictions attribute.
+     * <p>
+     * The optional AccessRestrictions Attribute specifies the AccessRestrictions that apply to a
+     * Node.
+     * <p>
+     * See OPC UA Part 3, section 5.2.11.
+     *
+     * @return if this attribute is present, the AccessRestrictions ({@link AccessRestrictionType}).
+     */
+    AccessRestrictionType getAccessRestrictions();
+
+    /**
      * Set the NodeId attribute of this Node.
      *
      * @param nodeId the NodeId to set.
@@ -150,5 +188,29 @@ public interface Node {
      * @see #getUserWriteMask()
      */
     void setUserWriteMask(UInteger userWriteMask);
+
+    /**
+     * Set the RolePermissions attribute of this Node.
+     *
+     * @param rolePermissions the RolePermissions to set.
+     * @see #getRolePermissions()
+     */
+    void setRolePermissions(RolePermissionType[] rolePermissions);
+
+    /**
+     * Set the UserRolePermissions attribute of this Node.
+     *
+     * @param rolePermissions the UserRolePermissions to set.
+     * @see #getUserRolePermissions()
+     */
+    void setUserRolePermissions(RolePermissionType[] rolePermissions);
+
+    /**
+     * Set the AccessRestrictions attribute if this Node.
+     *
+     * @param accessRestrictions the AccessRestrictions to set.
+     * @see #getAccessRestrictions()
+     */
+    void setAccessRestrictions(AccessRestrictionType accessRestrictions);
 
 }

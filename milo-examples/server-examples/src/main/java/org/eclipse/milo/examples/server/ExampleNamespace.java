@@ -695,11 +695,19 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         objectTypeNode.addComponent(bar);
 
         // Tell the ObjectTypeManager about our new type.
-        // This let's us use NodeFactory to instantiate instances of the type.
+        // This lets us use NodeFactory to instantiate instances of the type.
         getServer().getObjectTypeManager().registerObjectType(
             objectTypeNode.getNodeId(),
             UaObjectNode.class,
-            UaObjectNode::new
+            (context, nodeId, browseName, displayName, description, writeMask, userWriteMask) -> new UaObjectNode(
+                context,
+                nodeId,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask
+            )
         );
 
         // Add the inverse SubtypeOf relationship.

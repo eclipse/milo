@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -74,16 +74,27 @@ public class AttributeWriter {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
         } else {
-            WriteMask writeMask = writeMaskForAttribute(attributeId);
-
-            Set<WriteMask> writeMasks = getWriteMasks(node, internalContext);
-            if (!writeMasks.contains(writeMask)) {
+            if (attributeId == AttributeId.UserRolePermissions) {
+                // Part 3, section 5.2.10
+                // https://reference.opcfoundation.org/v104/Core/docs/Part3/5.2.10/
+                // The value of this Attribute is derived from the rules used by the Server to
+                // map Sessions to Roles. This mapping may be vendor specific, or it may use the
+                // standard Role model defined in 4.8.
+                //
+                // This Attribute shall not be writeable.
                 throw new UaException(StatusCodes.Bad_NotWritable);
-            }
+            } else {
+                WriteMask writeMask = writeMaskForAttribute(attributeId);
 
-            Set<WriteMask> userWriteMasks = getUserWriteMasks(node, context);
-            if (!userWriteMasks.contains(writeMask)) {
-                throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                Set<WriteMask> writeMasks = getWriteMasks(node, internalContext);
+                if (!writeMasks.contains(writeMask)) {
+                    throw new UaException(StatusCodes.Bad_NotWritable);
+                }
+
+                Set<WriteMask> userWriteMasks = getUserWriteMasks(node, context);
+                if (!userWriteMasks.contains(writeMask)) {
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
             }
         }
 
@@ -197,7 +208,14 @@ public class AttributeWriter {
                 return WriteMask.ValueRank;
             case WriteMask:
                 return WriteMask.WriteMask;
-
+            case RolePermissions:
+                return WriteMask.RolePermissions;
+            case AccessRestrictions:
+                return WriteMask.AccessRestrictions;
+            case AccessLevelEx:
+                return WriteMask.AccessLevelEx;
+            case DataTypeDefinition:
+                return WriteMask.DataTypeDefinition;
             default:
                 throw new IllegalArgumentException("unknown AttributeId: " + attributeId);
         }
