@@ -104,12 +104,13 @@ public class UaNodeTest {
         assertFalse(nodeManager.containsNode(nodeId));
         assertEquals(0, nodeManager.getReferences(nodeId).size());
 
-        UaObjectNode objectNode = UaObjectNode.builder(nodeContext)
-            .setNodeId(nodeId)
-            .setBrowseName(new QualifiedName(1, "TestObject"))
-            .setDisplayName(LocalizedText.english("TestObject"))
-            .setTypeDefinition(Identifiers.FolderType)
-            .build();
+        UaObjectNode objectNode = UaObjectNode.build(nodeContext, b ->
+            b.setNodeId(nodeId)
+                .setBrowseName(new QualifiedName(1, "TestObject"))
+                .setDisplayName(LocalizedText.english("TestObject"))
+                .setTypeDefinition(Identifiers.FolderType)
+                .build()
+        );
 
         nodeManager.addNode(objectNode);
 

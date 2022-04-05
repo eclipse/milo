@@ -152,7 +152,7 @@ public final class TestServer {
             .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
             .setHttpsKeyPair(httpsKeyPair)
-            .setHttpsCertificate(httpsCertificate)
+            .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
             .setIdentityValidator(identityValidator)
             .setProductUri("urn:eclipse:milo:example-server")
             .build();

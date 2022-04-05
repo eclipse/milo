@@ -142,7 +142,7 @@ public abstract class StackIntegrationTest extends SecurityFixture {
                 .setCertificateManager(serverCertificateManager)
                 .setCertificateValidator(serverCertificateValidator)
                 .setHttpsKeyPair(httpsKeyPair)
-                .setHttpsCertificate(httpsCertificate)
+                .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
         ).build();
 
         stackServer = new UaStackServer(serverConfig);

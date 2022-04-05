@@ -54,12 +54,13 @@ public class VendorServerInfoNodes {
     }
 
     private static void addVendorInfoPlainJava(UaNodeContext context, UaObjectNode vendorServerInfo) {
-        UaVariableNode availableProcessors = UaVariableNode.builder(context)
-            .setNodeId(new NodeId(1, "VendorServerInfo/AvailableProcessors"))
-            .setBrowseName(new QualifiedName(1, "AvailableProcessors"))
-            .setDisplayName(LocalizedText.english("AvailableProcessors"))
-            .setDataType(Identifiers.Int32)
-            .buildAndAdd();
+        UaVariableNode availableProcessors = UaVariableNode.build(context, b ->
+            b.setNodeId(new NodeId(1, "VendorServerInfo/AvailableProcessors"))
+                .setBrowseName(new QualifiedName(1, "AvailableProcessors"))
+                .setDisplayName(LocalizedText.english("AvailableProcessors"))
+                .setDataType(Identifiers.Int32)
+                .buildAndAdd()
+        );
 
         availableProcessors.getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -75,12 +76,13 @@ public class VendorServerInfoNodes {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
-        UaVariableNode usedMemory = UaVariableNode.builder(context)
-            .setNodeId(new NodeId(1, "VendorServerInfo/UsedMemory"))
-            .setBrowseName(new QualifiedName(1, "UsedMemory"))
-            .setDisplayName(LocalizedText.english("UsedMemory"))
-            .setDataType(Identifiers.Int64)
-            .buildAndAdd();
+        UaVariableNode usedMemory = UaVariableNode.build(context, b ->
+            b.setNodeId(new NodeId(1, "VendorServerInfo/UsedMemory"))
+                .setBrowseName(new QualifiedName(1, "UsedMemory"))
+                .setDisplayName(LocalizedText.english("UsedMemory"))
+                .setDataType(Identifiers.Int64)
+                .buildAndAdd()
+        );
 
         usedMemory.getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -89,12 +91,13 @@ public class VendorServerInfoNodes {
             )
         );
 
-        UaVariableNode maxMemory = UaVariableNode.builder(context)
-            .setNodeId(new NodeId(1, "VendorServerInfo/MaxMemory"))
-            .setBrowseName(new QualifiedName(1, "MaxMemory"))
-            .setDisplayName(LocalizedText.english("MaxMemory"))
-            .setDataType(Identifiers.Int64)
-            .buildAndAdd();
+        UaVariableNode maxMemory = UaVariableNode.build(context, b ->
+            b.setNodeId(new NodeId(1, "VendorServerInfo/MaxMemory"))
+                .setBrowseName(new QualifiedName(1, "MaxMemory"))
+                .setDisplayName(LocalizedText.english("MaxMemory"))
+                .setDataType(Identifiers.Int64)
+                .buildAndAdd()
+        );
 
         maxMemory.getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -103,12 +106,13 @@ public class VendorServerInfoNodes {
             )
         );
 
-        UaVariableNode osName = UaVariableNode.builder(context)
-            .setNodeId(new NodeId(1, "VendorServerInfo/OsName"))
-            .setBrowseName(new QualifiedName(1, "OsName"))
-            .setDisplayName(LocalizedText.english("OsName"))
-            .setDataType(Identifiers.String)
-            .buildAndAdd();
+        UaVariableNode osName = UaVariableNode.build(context, b ->
+            b.setNodeId(new NodeId(1, "VendorServerInfo/OsName"))
+                .setBrowseName(new QualifiedName(1, "OsName"))
+                .setDisplayName(LocalizedText.english("OsName"))
+                .setDataType(Identifiers.String)
+                .buildAndAdd()
+        );
 
         osName.getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -117,12 +121,13 @@ public class VendorServerInfoNodes {
             )
         );
 
-        UaVariableNode osArch = UaVariableNode.builder(context)
-            .setNodeId(new NodeId(1, "VendorServerInfo/OsArch"))
-            .setBrowseName(new QualifiedName(1, "OsArch"))
-            .setDisplayName(LocalizedText.english("OsArch"))
-            .setDataType(Identifiers.String)
-            .buildAndAdd();
+        UaVariableNode osArch = UaVariableNode.build(context, b ->
+            b.setNodeId(new NodeId(1, "VendorServerInfo/OsArch"))
+                .setBrowseName(new QualifiedName(1, "OsArch"))
+                .setDisplayName(LocalizedText.english("OsArch"))
+                .setDataType(Identifiers.String)
+                .buildAndAdd()
+        );
 
         osArch.getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -131,12 +136,13 @@ public class VendorServerInfoNodes {
             )
         );
 
-        UaVariableNode osVersion = UaVariableNode.builder(context)
-            .setNodeId(new NodeId(1, "VendorServerInfo/OsVersion"))
-            .setBrowseName(new QualifiedName(1, "OsVersion"))
-            .setDisplayName(LocalizedText.english("OsVersion"))
-            .setDataType(Identifiers.String)
-            .buildAndAdd();
+        UaVariableNode osVersion = UaVariableNode.build(context, b ->
+            b.setNodeId(new NodeId(1, "VendorServerInfo/OsVersion"))
+                .setBrowseName(new QualifiedName(1, "OsVersion"))
+                .setDisplayName(LocalizedText.english("OsVersion"))
+                .setDataType(Identifiers.String)
+                .buildAndAdd()
+        );
 
         osVersion.getFilterChain().addLast(
             AttributeFilters.getValue(
@@ -159,12 +165,13 @@ public class VendorServerInfoNodes {
             com.sun.management.OperatingSystemMXBean sunOsMxBean =
                 (com.sun.management.OperatingSystemMXBean) osMxBean;
 
-            UaVariableNode processCpuLoad = UaVariableNode.builder(context)
-                .setNodeId(new NodeId(1, "VendorServerInfo/ProcessCpuLoad"))
-                .setBrowseName(new QualifiedName(1, "ProcessCpuLoad"))
-                .setDisplayName(LocalizedText.english("ProcessCpuLoad"))
-                .setDataType(Identifiers.Double)
-                .buildAndAdd();
+            UaVariableNode processCpuLoad = UaVariableNode.build(context, b ->
+                b.setNodeId(new NodeId(1, "VendorServerInfo/ProcessCpuLoad"))
+                    .setBrowseName(new QualifiedName(1, "ProcessCpuLoad"))
+                    .setDisplayName(LocalizedText.english("ProcessCpuLoad"))
+                    .setDataType(Identifiers.Double)
+                    .buildAndAdd()
+            );
 
             processCpuLoad.getFilterChain().addLast(
                 AttributeFilters.getValue(
@@ -173,12 +180,13 @@ public class VendorServerInfoNodes {
                 )
             );
 
-            UaVariableNode systemCpuLoad = UaVariableNode.builder(context)
-                .setNodeId(new NodeId(1, "VendorServerInfo/SystemCpuLoad"))
-                .setBrowseName(new QualifiedName(1, "SystemCpuLoad"))
-                .setDisplayName(LocalizedText.english("SystemCpuLoad"))
-                .setDataType(Identifiers.Double)
-                .buildAndAdd();
+            UaVariableNode systemCpuLoad = UaVariableNode.build(context, b ->
+                b.setNodeId(new NodeId(1, "VendorServerInfo/SystemCpuLoad"))
+                    .setBrowseName(new QualifiedName(1, "SystemCpuLoad"))
+                    .setDisplayName(LocalizedText.english("SystemCpuLoad"))
+                    .setDataType(Identifiers.Double)
+                    .buildAndAdd()
+            );
 
             systemCpuLoad.getFilterChain().addLast(
                 AttributeFilters.getValue(
@@ -193,12 +201,13 @@ public class VendorServerInfoNodes {
             if (sunOsMxBean instanceof UnixOperatingSystemMXBean) {
                 UnixOperatingSystemMXBean unixBean = (UnixOperatingSystemMXBean) sunOsMxBean;
 
-                UaVariableNode openFileDescriptors = UaVariableNode.builder(context)
-                    .setNodeId(new NodeId(1, "VendorServerInfo/OpenFileDescriptors"))
-                    .setBrowseName(new QualifiedName(1, "OpenFileDescriptors"))
-                    .setDisplayName(LocalizedText.english("OpenFileDescriptors"))
-                    .setDataType(Identifiers.Int64)
-                    .buildAndAdd();
+                UaVariableNode openFileDescriptors = UaVariableNode.build(context, b ->
+                    b.setNodeId(new NodeId(1, "VendorServerInfo/OpenFileDescriptors"))
+                        .setBrowseName(new QualifiedName(1, "OpenFileDescriptors"))
+                        .setDisplayName(LocalizedText.english("OpenFileDescriptors"))
+                        .setDataType(Identifiers.Int64)
+                        .buildAndAdd()
+                );
 
                 openFileDescriptors.getFilterChain().addLast(
                     AttributeFilters.getValue(
@@ -207,12 +216,13 @@ public class VendorServerInfoNodes {
                     )
                 );
 
-                UaVariableNode maxFileDescriptors = UaVariableNode.builder(context)
-                    .setNodeId(new NodeId(1, "VendorServerInfo/MaxFileDescriptors"))
-                    .setBrowseName(new QualifiedName(1, "MaxFileDescriptors"))
-                    .setDisplayName(LocalizedText.english("MaxFileDescriptors"))
-                    .setDataType(Identifiers.Int64)
-                    .buildAndAdd();
+                UaVariableNode maxFileDescriptors = UaVariableNode.build(context, b ->
+                    b.setNodeId(new NodeId(1, "VendorServerInfo/MaxFileDescriptors"))
+                        .setBrowseName(new QualifiedName(1, "MaxFileDescriptors"))
+                        .setDisplayName(LocalizedText.english("MaxFileDescriptors"))
+                        .setDataType(Identifiers.Int64)
+                        .buildAndAdd()
+                );
 
                 maxFileDescriptors.getFilterChain().addLast(
                     AttributeFilters.getValue(
