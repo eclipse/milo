@@ -76,10 +76,11 @@ public class MethodExample2 implements ClientExample {
                 assert dataType != null;
                 String dataTypeName = dataType.getBrowseName().getName();
 
-                logger.info("  {}: {} ({})",
+                logger.info("  {}: {} ({}) \"{}\"",
                     argument.getName(),
                     dataTypeName,
-                    dataTypeId.toParseableString()
+                    dataTypeId.toParseableString(),
+                    argument.getDescription().getText()
                 );
             }
         }

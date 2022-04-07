@@ -27,7 +27,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
         Identifiers.Double,
         ValueRanks.Scalar,
         null,
-        new LocalizedText("A value.")
+        new LocalizedText("The argument to the square root function.")
     );
 
     public static final Argument X_SQRT = new Argument(
@@ -35,7 +35,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
         Identifiers.Double,
         ValueRanks.Scalar,
         null,
-        new LocalizedText("A value.")
+        new LocalizedText("The square root of the input argument.")
     );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
