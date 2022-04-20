@@ -73,6 +73,20 @@ public class SelfSignedCertificateGenerator {
         return generator.generateKeyPair();
     }
 
+    /**
+     * Generate an Ed25519 {@link KeyPair} of bit length {@code length}.
+     *
+     * @param length the length, in bits, of the key to generate.
+     * @return a {@link KeyPair} of bit length {@code length}.
+     * @throws NoSuchAlgorithmException if no {@link Provider} supports Ed25519 KeyPair generation.
+     */
+    public static KeyPair generateEd25519KeyPair(int length) throws NoSuchAlgorithmException {
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("Ed25519");
+        generator.initialize(length, new SecureRandom());
+
+        return generator.generateKeyPair();
+    }
+
     public X509Certificate generateSelfSigned(
         KeyPair keyPair,
         Date notBefore,
@@ -86,7 +100,8 @@ public class SelfSignedCertificateGenerator {
         @Nullable String applicationUri,
         List<String> dnsNames,
         List<String> ipAddresses,
-        String signatureAlgorithm) throws Exception {
+        String signatureAlgorithm
+    ) throws Exception {
 
         X500NameBuilder nameBuilder = new X500NameBuilder();
 
@@ -149,6 +164,11 @@ public class SelfSignedCertificateGenerator {
             .setProvider(new BouncyCastleProvider())
             .build(keyPair.getPrivate());
 
+//        AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(signatureAlgorithm);
+//        AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
+//        AsymmetricKeyParameter parameter = PrivateKeyFactory.createKey(keyPair.getPrivate().getEncoded());
+//        ContentSigner contentSigner = new BcDSAContentSignerBuilder(sigAlgId, digAlgId).build(parameter);
+
         X509CertificateHolder certificateHolder = certificateBuilder.build(contentSigner);
 
         return new JcaX509CertificateConverter().getCertificate(certificateHolder);
@@ -159,7 +179,8 @@ public class SelfSignedCertificateGenerator {
         KeyPair keyPair,
         @Nullable String applicationUri,
         List<String> dnsNames,
-        List<String> ipAddresses) throws CertIOException, NoSuchAlgorithmException {
+        List<String> ipAddresses
+    ) throws CertIOException, NoSuchAlgorithmException {
 
         List<GeneralName> generalNames = new ArrayList<>();
 
@@ -222,7 +243,8 @@ public class SelfSignedCertificateGenerator {
 
     protected void addBasicConstraints(
         X509v3CertificateBuilder certificateBuilder,
-        BasicConstraints basicConstraints) throws CertIOException {
+        BasicConstraints basicConstraints
+    ) throws CertIOException {
 
         certificateBuilder.addExtension(
             Extension.basicConstraints,
@@ -233,7 +255,8 @@ public class SelfSignedCertificateGenerator {
 
     protected void addAuthorityKeyIdentifier(
         X509v3CertificateBuilder certificateBuilder,
-        KeyPair keyPair) throws CertIOException, NoSuchAlgorithmException {
+        KeyPair keyPair
+    ) throws CertIOException, NoSuchAlgorithmException {
 
         certificateBuilder.addExtension(
             Extension.authorityKeyIdentifier,

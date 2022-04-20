@@ -72,7 +72,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
         if (messageSecurity == MessageSecurityMode.None) {
             clientChannel.setChannelSecurity(new ChannelSecurity(null, clientToken));
         } else {
-            ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.generateKeyPair(
+            ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.deriveSecurityKeys(
                 clientChannel,
                 clientChannel.getLocalNonce(),
                 clientChannel.getRemoteNonce()
@@ -89,7 +89,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
         if (messageSecurity == MessageSecurityMode.None) {
             serverChannel.setChannelSecurity(new ChannelSecurity(null, serverToken));
         } else {
-            ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.generateKeyPair(
+            ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.deriveSecurityKeys(
                 serverChannel,
                 serverChannel.getRemoteNonce(),
                 serverChannel.getLocalNonce()
@@ -139,7 +139,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
             uint(0), uint(1), DateTime.now(), uint(60000)
         );
 
-        ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.generateKeyPair(
+        ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.deriveSecurityKeys(
             clientChannel,
             clientChannel.getLocalNonce(),
             clientChannel.getRemoteNonce()
@@ -152,7 +152,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
             uint(0), uint(1), DateTime.now(), uint(60000)
         );
 
-        ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.generateKeyPair(
+        ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.deriveSecurityKeys(
             serverChannel,
             serverChannel.getRemoteNonce(),
             serverChannel.getLocalNonce()

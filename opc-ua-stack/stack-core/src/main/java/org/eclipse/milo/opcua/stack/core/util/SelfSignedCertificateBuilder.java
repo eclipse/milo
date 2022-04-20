@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bouncycastle.jcajce.interfaces.EdDSAPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,15 +37,30 @@ public class SelfSignedCertificateBuilder {
 
     /**
      * Signature Algorithm for SHA256 with RSA.
+     * <p>
+     * May only be used with RSA KeyPairs and security profiles.
+     *
+     * @see SelfSignedCertificateGenerator#generateRsaKeyPair(int)
      */
     public static final String SA_SHA256_RSA = "SHA256withRSA";
 
     /**
      * Signature Algorithm for SHA256 with ECDSA.
      * <p>
-     * May only be uses with EC-based KeyPairs and security profiles.
+     * May only be used with EC-based KeyPairs and security profiles.
+     *
+     * @see SelfSignedCertificateGenerator#generateEcKeyPair(int)
      */
     public static final String SA_SHA256_ECDSA = "SHA256withECDSA";
+
+    /**
+     * Signature Algorithm for Ed25519.
+     * <p>
+     * May only be used with Ed25519 KeyPairs and security profiles.
+     *
+     * @see SelfSignedCertificateGenerator#generateEd25519KeyPair(int)
+     */
+    public static final String SA_ED25519 = "Ed25519";
 
     private Period validityPeriod = Period.ofYears(3);
 
@@ -82,8 +98,10 @@ public class SelfSignedCertificateBuilder {
                 Logger logger = LoggerFactory.getLogger(getClass());
                 logger.warn("Using legacy key size: {}", bitLength);
             }
-        } else if (keyPair.getPublic() instanceof ECPublicKey) {
+        } else if (publicKey instanceof ECPublicKey) {
             signatureAlgorithm = SA_SHA256_ECDSA;
+        } else if (publicKey instanceof EdDSAPublicKey) {
+            signatureAlgorithm = SA_ED25519;
         }
     }
 

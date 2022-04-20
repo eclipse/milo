@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder.EncodedMessage;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageDecodeException;
 import org.eclipse.milo.opcua.stack.core.channel.MessageEncodeException;
+import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
@@ -62,6 +63,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EccKeyExchange;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
@@ -191,11 +193,26 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     }
 
     private void sendOpenSecureChannelRequest(ChannelHandlerContext ctx, SecurityTokenRequestType requestType) {
-        ByteString clientNonce = secureChannel.isSymmetricSigningEnabled() ?
-            NonceUtil.generateNonce(secureChannel.getSecurityPolicy()) :
-            ByteString.NULL_VALUE;
+        switch (secureChannel.getSecurityPolicy()) {
+            case ECC_curve25519:
+            case ECC_nistP256: {
+                try {
+                    // TODO store this exchange for after we get the OpenSecureChannelResponse
+                    EccKeyExchange.ClientKeyExchange keyExchange =
+                        new EccKeyExchange.ClientKeyExchange();
 
-        secureChannel.setLocalNonce(clientNonce);
+                    secureChannel.setLocalNonce(ByteString.of(keyExchange.getClientNonce()));
+                } catch (UaException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            default: {
+                ByteString clientNonce =
+                    NonceUtil.generateNonce(secureChannel.getSecurityPolicy());
+
+                secureChannel.setLocalNonce(clientNonce);
+            }
+        }
 
         RequestHeader header = new RequestHeader(
             null,
@@ -552,11 +569,24 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         if (secureChannel.isSymmetricSigningEnabled()) {
             secureChannel.setRemoteNonce(response.getServerNonce());
 
-            newKeys = ChannelSecurity.generateKeyPair(
-                secureChannel,
-                secureChannel.getLocalNonce(),
-                secureChannel.getRemoteNonce()
-            );
+            switch (secureChannel.getSecurityPolicy()) {
+                case ECC_curve25519:
+                case ECC_nistP256: {
+                    newKeys = ChannelSecurity.deriveEccSecurityKeys(
+                        secureChannel,
+                        SecureChannel::getLocalNonce,
+                        SecureChannel::getRemoteNonce
+                    );
+                }
+                default: {
+                    newKeys = ChannelSecurity.deriveSecurityKeys(
+                        secureChannel,
+                        secureChannel.getLocalNonce(),
+                        secureChannel.getRemoteNonce()
+                    );
+                }
+            }
+
         }
 
         ChannelSecurity oldSecrets = secureChannel.getChannelSecurity();

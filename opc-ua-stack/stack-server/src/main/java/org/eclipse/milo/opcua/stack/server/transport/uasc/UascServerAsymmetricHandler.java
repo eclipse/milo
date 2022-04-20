@@ -438,7 +438,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             secureChannel.setLocalNonce(localNonce);
             secureChannel.setRemoteNonce(remoteNonce);
 
-            newKeys = ChannelSecurity.generateKeyPair(
+            newKeys = ChannelSecurity.deriveSecurityKeys(
                 secureChannel,
                 secureChannel.getRemoteNonce(),
                 secureChannel.getLocalNonce()

@@ -33,6 +33,18 @@ public enum SecurityAlgorithm {
     HmacSha256("http://www.w3.org/2000/09/xmldsig#hmac-sha256", "HmacSHA256"),
 
     /**
+     * Symmetric Signature; transformation to be used with {@link Mac#getInstance(String)}.
+     * Requires Bouncy Castle installed as a Security Provider.
+     * <p>
+     * An algorithm to create a message authentication code defined in
+     * <a href="https://tools.ietf.org/html/rfc8439">https://tools.ietf.org/html/rfc8439</a>.
+     * <p>
+     * When using SignOnly, the Poly1305 key is generated using the algorithm specified in 2.6 of
+     * RFC8439.
+     */
+    Poly1305("https://tools.ietf.org/html/rfc8439", "POLY1305"),
+
+    /**
      * Symmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
     Aes128("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES/CBC/NoPadding"),
@@ -41,6 +53,14 @@ public enum SecurityAlgorithm {
      * Symmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
     Aes256("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES/CBC/NoPadding"),
+
+    /**
+     * Symmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
+     * <p>
+     * A symmetric authenticated encryption algorithm defined in
+     * <a href="https://tools.ietf.org/html/rfc7539">https://tools.ietf.org/html/rfc7539</a>.
+     */
+    ChaCha20_Poly1305("https://tools.ietf.org/html/rfc7539", ""),
 
     /**
      * Asymmetric Signature; transformation to be used with {@link Signature#getInstance(String)}.
@@ -58,6 +78,25 @@ public enum SecurityAlgorithm {
      * Requires Bouncy Castle installed as a Security Provider.
      */
     RsaSha256Pss("http://opcfoundation.org/UA/security/rsa-pss-sha2-256", "SHA256withRSA/PSS"),
+
+    /**
+     * Asymmetric Signature; transformation to be used with {@link Signature#getInstance(String)}.
+     * <p>
+     * ECC digital signature algorithm Ed25519 described in
+     * <a href="http://tools.ietf.org/html/rfc8032">http://tools.ietf.org/html/rfc8032</a>.
+     */
+    PureEdDSA_25519("http://tools.ietf.org/html/rfc8032", "Ed25519"),
+
+    /**
+     * Asymmetric Signature; transformation to be used with {@link Signature#getInstance(String)}.
+     * <p>
+     * ECC digital signature algorithm described in
+     * <a href="http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf">http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf</a>.
+     * <p>
+     * The hash algorithm is SHA2 with 256 bits and is described in
+     * <a href="http://tools.ietf.org/html/rfc6234">http://tools.ietf.org/html/rfc6234</a>.
+     */
+    ECDSA_SHA2_256("http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf", "SHA256withECDSA"),
 
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
@@ -100,6 +139,17 @@ public enum SecurityAlgorithm {
      * Key Derivation
      */
     PSha256("http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512/dk/p_sha256", ""),
+
+    /**
+     * Key Derivation
+     * <p>
+     * The HKDF pseudo-random function defined in
+     * <a href="http://tools.ietf.org/html/rfc5869">http://tools.ietf.org/html/rfc5869</a>.
+     * <p>
+     * The hash algorithm is SHA2 with 256 bits and is described in
+     * <a href="http://tools.ietf.org/html/rfc6234">http://tools.ietf.org/html/rfc6234</a>.
+     */
+    HKDF_SHA2_256("http://tools.ietf.org/html/rfc5869", ""),
 
     /**
      * Cryptographic Hash; transformation to be used with {@link MessageDigest#getInstance(String)}.

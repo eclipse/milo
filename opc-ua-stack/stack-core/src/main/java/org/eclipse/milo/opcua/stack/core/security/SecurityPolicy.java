@@ -87,6 +87,42 @@ public enum SecurityPolicy {
         null, // N/A
         SecurityAlgorithm.PSha256,
         SecurityAlgorithm.Sha256
+    ),
+
+    /**
+     * This Facet defines an ECC based security policy for configurations with average security
+     * needs. It is equivalent to the Aes128-Sha256-RsaOaep policy, however, the key sizes are
+     * much smaller and therefore better suited for embedded systems.
+     *
+     * @see <a href="http://opcfoundation.org/UA/SecurityPolicy#ECC_curve25519">http://opcfoundation.org/UA/SecurityPolicy#ECC_curve25519</a>
+     */
+    ECC_curve25519(
+        "http://opcfoundation.org/UA/SecurityPolicy#ECC_curve25519",
+        SecurityAlgorithm.Poly1305,
+        SecurityAlgorithm.ChaCha20_Poly1305,
+        SecurityAlgorithm.PureEdDSA_25519,
+        null,
+        null,
+        SecurityAlgorithm.HKDF_SHA2_256,
+        SecurityAlgorithm.PureEdDSA_25519
+    ),
+
+    /**
+     * This Facet defines an ECC based security policy for configurations with average security
+     * needs. It is equivalent to the Aes128-Sha256-RsaOaep policy, however, the key sizes are
+     * much smaller and therefore better suited for embedded systems.
+     *
+     * @see <a href="http://opcfoundation.org/UA/SecurityPolicy#ECC_nistP256">http://opcfoundation.org/UA/SecurityPolicy#ECC_nistP256</a>
+     */
+    ECC_nistP256(
+        "http://opcfoundation.org/UA/SecurityPolicy#ECC_nistP256",
+        SecurityAlgorithm.HmacSha256,
+        SecurityAlgorithm.Aes128,
+        SecurityAlgorithm.ECDSA_SHA2_256,
+        null,
+        null,
+        SecurityAlgorithm.HKDF_SHA2_256,
+        SecurityAlgorithm.ECDSA_SHA2_256
     );
 
     private final String securityPolicyUri;
@@ -98,14 +134,16 @@ public enum SecurityPolicy {
     private final SecurityAlgorithm keyDerivationAlgorithm;
     private final SecurityAlgorithm certificateSignatureAlgorithm;
 
-    SecurityPolicy(String securityPolicyUri,
-                   SecurityAlgorithm symmetricSignatureAlgorithm,
-                   SecurityAlgorithm symmetricEncryptionAlgorithm,
-                   SecurityAlgorithm asymmetricSignatureAlgorithm,
-                   SecurityAlgorithm asymmetricEncryptionAlgorithm,
-                   SecurityAlgorithm asymmetricKeyWrapAlgorithm,
-                   SecurityAlgorithm keyDerivationAlgorithm,
-                   SecurityAlgorithm certificateSignatureAlgorithm) {
+    SecurityPolicy(
+        String securityPolicyUri,
+        SecurityAlgorithm symmetricSignatureAlgorithm,
+        SecurityAlgorithm symmetricEncryptionAlgorithm,
+        SecurityAlgorithm asymmetricSignatureAlgorithm,
+        SecurityAlgorithm asymmetricEncryptionAlgorithm,
+        SecurityAlgorithm asymmetricKeyWrapAlgorithm,
+        SecurityAlgorithm keyDerivationAlgorithm,
+        SecurityAlgorithm certificateSignatureAlgorithm
+    ) {
 
         this.securityPolicyUri = securityPolicyUri;
         this.symmetricSignatureAlgorithm = symmetricSignatureAlgorithm;

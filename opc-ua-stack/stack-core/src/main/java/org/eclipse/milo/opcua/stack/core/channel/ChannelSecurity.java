@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -30,10 +31,12 @@ public class ChannelSecurity {
         this(currentSecurityKeys, currentToken, null, null);
     }
 
-    public ChannelSecurity(SecurityKeys currentKeys,
-                           ChannelSecurityToken currentToken,
-                           @Nullable SecurityKeys previousKeys,
-                           @Nullable ChannelSecurityToken previousToken) {
+    public ChannelSecurity(
+        SecurityKeys currentKeys,
+        ChannelSecurityToken currentToken,
+        @Nullable SecurityKeys previousKeys,
+        @Nullable ChannelSecurityToken previousToken
+    ) {
 
         this.currentKeys = currentKeys;
         this.currentToken = currentToken;
@@ -57,9 +60,37 @@ public class ChannelSecurity {
         return Optional.ofNullable(previousToken);
     }
 
-    public static SecurityKeys generateKeyPair(SecureChannel channel,
-                                               ByteString clientNonce,
-                                               ByteString serverNonce) {
+    public static SecurityKeys deriveSecurityKeys(
+        SecureChannel channel,
+        ByteString clientNonce,
+        ByteString serverNonce
+    ) {
+
+        switch (channel.getSecurityPolicy()) {
+            case ECC_curve25519:
+            case ECC_nistP256:
+                return deriveEccSecurityKeys(channel, c -> clientNonce, c -> serverNonce);
+
+            default:
+                return deriveRsaSecurityKeys(channel, clientNonce, serverNonce);
+        }
+    }
+
+    public static SecurityKeys deriveEccSecurityKeys(
+        SecureChannel channel,
+        Function<SecureChannel, ByteString> getClientNonce,
+        Function<SecureChannel, ByteString> getServiceNonce
+    ) {
+
+        // TODO derive ECC SecurityKeys
+        throw new RuntimeException("TODO");
+    }
+
+    public static SecurityKeys deriveRsaSecurityKeys(
+        SecureChannel channel,
+        ByteString clientNonce,
+        ByteString serverNonce
+    ) {
 
         SecurityAlgorithm keyDerivation = channel.getSecurityPolicy().getKeyDerivationAlgorithm();
 
@@ -127,7 +158,7 @@ public class ChannelSecurity {
         private final byte[] encryptionKey;
         private final byte[] initializationVector;
 
-        SecretKeys(byte[] signatureKey, byte[] encryptionKey, byte[] initializationVector) {
+        public SecretKeys(byte[] signatureKey, byte[] encryptionKey, byte[] initializationVector) {
             this.signatureKey = signatureKey;
             this.encryptionKey = encryptionKey;
             this.initializationVector = initializationVector;
