@@ -483,7 +483,8 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
             checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
 
-            String dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI).orElse(null);
+            String dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI)
+                .orElse(null);
 
             checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
 
