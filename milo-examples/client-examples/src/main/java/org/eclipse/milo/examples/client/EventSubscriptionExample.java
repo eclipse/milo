@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class EventSubscriptionExample implements ClientExample {
@@ -114,7 +113,7 @@ public class EventSubscriptionExample implements ClientExample {
         );
 
         List<UaMonitoredItem> items = subscription
-            .createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
+            .createMonitoredItems(TimestampsToReturn.Both, List.of(request)).get();
 
         // do something with the value updates
         UaMonitoredItem monitoredItem = items.get(0);

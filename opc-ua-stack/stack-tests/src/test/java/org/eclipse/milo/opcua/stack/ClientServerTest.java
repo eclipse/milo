@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack;
 
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import com.beust.jcommander.internal.Lists;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
@@ -64,7 +64,6 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
@@ -475,7 +474,7 @@ public class ClientServerTest extends SecurityFixture {
 
         client.connect().get();
 
-        List<CompletableFuture<ReadResponse>> responses = Lists.newArrayList();
+        var responses = new ArrayList<CompletableFuture<ReadResponse>>();
 
         for (int i = 0; i < 100; i++) {
             RequestHeader header = new RequestHeader(
@@ -521,7 +520,7 @@ public class ClientServerTest extends SecurityFixture {
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
         Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
 
-        List<String> bindAddresses = newArrayList();
+        List<String> bindAddresses = new ArrayList<>();
         bindAddresses.add("localhost");
 
         Set<String> hostnames = new LinkedHashSet<>();

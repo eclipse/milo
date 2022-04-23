@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.stack.client;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.http.OpcHttpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
@@ -51,7 +51,7 @@ public class UaStackClient {
 
     private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
-    private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
+    private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = new ConcurrentHashMap<>();
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();

@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +27,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Ints;
@@ -79,7 +79,7 @@ public class Subscription {
     private volatile Iterator<BaseMonitoredItem<?>> lastIterator = Collections.emptyIterator();
 
     private final AtomicLong itemIds = new AtomicLong(1L);
-    private final Map<UInteger, BaseMonitoredItem<?>> itemsById = Maps.newConcurrentMap();
+    private final Map<UInteger, BaseMonitoredItem<?>> itemsById = new ConcurrentHashMap<>();
 
     private final AtomicReference<State> state = new AtomicReference<>(State.Normal);
     private final AtomicReference<StateListener> stateListener = new AtomicReference<>();
@@ -171,7 +171,7 @@ public class Subscription {
 
         logger.debug("[id={}] subscription deleted.", subscriptionId);
 
-        return Lists.newArrayList(itemsById.values());
+        return List.copyOf(itemsById.values());
     }
 
     public synchronized void setPublishingMode(SetPublishingModeRequest request) {
@@ -452,7 +452,7 @@ public class Subscription {
         PeekingIterator<BaseMonitoredItem<?>> iterator,
         ServiceRequest service) {
 
-        List<UaStructure> notifications = Lists.newArrayList();
+        var notifications = new ArrayList<UaStructure>();
 
         while (notifications.size() < maxNotificationsPerPublish && iterator.hasNext()) {
             BaseMonitoredItem<?> item = iterator.peek();
@@ -491,8 +491,8 @@ public class Subscription {
     }
 
     private void sendNotifications(ServiceRequest service, List<UaStructure> notifications) {
-        List<MonitoredItemNotification> dataNotifications = Lists.newArrayList();
-        List<EventFieldList> eventNotifications = Lists.newArrayList();
+        var dataNotifications = new ArrayList<MonitoredItemNotification>();
+        var eventNotifications = new ArrayList<EventFieldList>();
 
         notifications.forEach(notification -> {
             if (notification instanceof MonitoredItemNotification) {
@@ -502,7 +502,7 @@ public class Subscription {
             }
         });
 
-        List<ExtensionObject> notificationData = Lists.newArrayList();
+        var notificationData = new ArrayList<ExtensionObject>();
 
         if (dataNotifications.size() > 0) {
             DataChangeNotification dataChange = new DataChangeNotification(

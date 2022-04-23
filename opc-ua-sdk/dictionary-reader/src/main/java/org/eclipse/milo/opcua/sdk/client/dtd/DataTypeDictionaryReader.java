@@ -72,7 +72,6 @@ import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -606,7 +605,7 @@ public class DataTypeDictionaryReader {
     }
 
     private CompletableFuture<DataValue> readNode(ReadValueId readValueId) {
-        return readNodes(newArrayList(readValueId)).thenApply(values -> values.get(0));
+        return readNodes(List.of(readValueId)).thenApply(values -> values.get(0));
     }
 
     private CompletableFuture<List<DataValue>> readNodes(List<ReadValueId> readValueIds) {

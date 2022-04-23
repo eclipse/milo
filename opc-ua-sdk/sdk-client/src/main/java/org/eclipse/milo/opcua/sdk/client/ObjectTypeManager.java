@@ -11,9 +11,9 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class ObjectTypeManager {
 
-    private final ConcurrentMap<NodeId, ObjectTypeDefinition> typeDefinitions = Maps.newConcurrentMap();
+    private final ConcurrentMap<NodeId, ObjectTypeDefinition> typeDefinitions = new ConcurrentHashMap<>();
 
     public void registerObjectType(
         NodeId typeDefinition,

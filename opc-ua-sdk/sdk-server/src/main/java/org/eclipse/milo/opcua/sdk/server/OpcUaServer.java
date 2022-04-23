@@ -12,15 +12,15 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
@@ -70,9 +70,9 @@ public class OpcUaServer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
+    private final Map<NodeId, ReferenceType> referenceTypes = new ConcurrentHashMap<>();
 
-    private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
+    private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
 
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
@@ -243,7 +243,7 @@ public class OpcUaServer {
         return config.getScheduledExecutorService();
     }
 
-    public ImmutableList<EndpointDescription> getEndpointDescriptions() {
+    public List<EndpointDescription> getEndpointDescriptions() {
         return stackServer.getEndpointDescriptions();
     }
 

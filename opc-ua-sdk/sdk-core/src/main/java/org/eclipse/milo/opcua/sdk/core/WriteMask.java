@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.core;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public enum WriteMask {
@@ -45,7 +44,7 @@ public enum WriteMask {
     AccessRestrictions(1 << 24),
     AccessLevelEx(1 << 25);
 
-    public static final Set<WriteMask> NONE = ImmutableSet.of();
+    public static final Set<WriteMask> NONE = Set.of();
 
     private final int value;
 

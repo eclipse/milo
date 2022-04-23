@@ -64,7 +64,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.jetbrains.annotations.Nullable;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -844,7 +843,7 @@ public abstract class UaNode implements Node {
         CompletableFuture<ReadResponse> future = client.read(
             0.0,
             TimestampsToReturn.Both,
-            newArrayList(readValueId)
+            List.of(readValueId)
         );
 
         return future.thenApply(response -> response.getResults()[0]);
@@ -864,7 +863,7 @@ public abstract class UaNode implements Node {
             value
         );
 
-        CompletableFuture<WriteResponse> future = client.write(newArrayList(writeValue));
+        CompletableFuture<WriteResponse> future = client.write(List.of(writeValue));
 
         return future.thenApply(response -> response.getResults()[0]);
     }
@@ -1034,7 +1033,7 @@ public abstract class UaNode implements Node {
                 }
             }
 
-            return newArrayList(values);
+            return List.of(values);
         });
     }
 
@@ -1075,7 +1074,7 @@ public abstract class UaNode implements Node {
         return client.write(writeValues).thenApply(response -> {
             StatusCode[] results = response.getResults();
 
-            return newArrayList(results);
+            return List.of(results);
         });
     }
 

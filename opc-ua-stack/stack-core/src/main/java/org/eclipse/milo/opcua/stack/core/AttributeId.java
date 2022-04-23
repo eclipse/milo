@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -49,69 +49,87 @@ public enum AttributeId {
     AccessRestrictions(26),
     AccessLevelEx(27);
 
-    public static final Set<AttributeId> BASE_ATTRIBUTES = ImmutableSet.copyOf(
-        ImmutableSet.of(
-            NodeId,
-            NodeClass,
-            BrowseName,
-            DisplayName,
-            Description,
-            WriteMask,
-            UserWriteMask,
-            RolePermissions,
-            UserRolePermissions,
-            AccessRestrictions
-        )
-    );
+    public static final Set<AttributeId> BASE_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> DATA_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(IsAbstract, DataTypeDefinition))
-    );
+    public static final Set<AttributeId> DATA_TYPE_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> METHOD_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(Executable, UserExecutable))
-    );
+    public static final Set<AttributeId> METHOD_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> OBJECT_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(EventNotifier))
-    );
+    public static final Set<AttributeId> OBJECT_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> OBJECT_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(IsAbstract))
-    );
+    public static final Set<AttributeId> OBJECT_TYPE_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> REFERENCE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(IsAbstract, Symmetric, InverseName))
-    );
+    public static final Set<AttributeId> REFERENCE_TYPE_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> VARIABLE_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions,
-                AccessLevel, UserAccessLevel, MinimumSamplingInterval, Historizing, AccessLevelEx))
-    );
+    public static final Set<AttributeId> VARIABLE_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> VARIABLE_TYPE_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(Value, DataType, ValueRank, ArrayDimensions, IsAbstract))
-    );
+    public static final Set<AttributeId> VARIABLE_TYPE_ATTRIBUTES;
 
-    public static final ImmutableSet<AttributeId> VIEW_ATTRIBUTES = ImmutableSet.copyOf(
-        Sets.union(
-            BASE_ATTRIBUTES,
-            ImmutableSet.of(ContainsNoLoops, EventNotifier))
-    );
+    public static final Set<AttributeId> VIEW_ATTRIBUTES;
+
+    static {
+        var baseAttributes = new LinkedHashSet<AttributeId>();
+        baseAttributes.add(NodeId);
+        baseAttributes.add(NodeClass);
+        baseAttributes.add(BrowseName);
+        baseAttributes.add(DisplayName);
+        baseAttributes.add(Description);
+        baseAttributes.add(WriteMask);
+        baseAttributes.add(UserWriteMask);
+        baseAttributes.add(RolePermissions);
+        baseAttributes.add(UserRolePermissions);
+        baseAttributes.add(AccessRestrictions);
+        BASE_ATTRIBUTES = Collections.unmodifiableSet(baseAttributes);
+
+        var dataTypeAttributes = new LinkedHashSet<>(baseAttributes);
+        dataTypeAttributes.add(IsAbstract);
+        dataTypeAttributes.add(DataTypeDefinition);
+        DATA_TYPE_ATTRIBUTES = Collections.unmodifiableSet(dataTypeAttributes);
+
+        var methodAttributes = new LinkedHashSet<>(baseAttributes);
+        methodAttributes.add(Executable);
+        methodAttributes.add(UserExecutable);
+        METHOD_ATTRIBUTES = Collections.unmodifiableSet(methodAttributes);
+
+        var objectAttributes = new LinkedHashSet<>(baseAttributes);
+        objectAttributes.add(EventNotifier);
+        OBJECT_ATTRIBUTES = Collections.unmodifiableSet(objectAttributes);
+
+        var objectTypeAttributes = new LinkedHashSet<>(baseAttributes);
+        objectTypeAttributes.add(IsAbstract);
+        OBJECT_TYPE_ATTRIBUTES = Collections.unmodifiableSet(objectTypeAttributes);
+
+        var referenceTypeAttributes = new LinkedHashSet<>(baseAttributes);
+        referenceTypeAttributes.add(IsAbstract);
+        referenceTypeAttributes.add(Symmetric);
+        referenceTypeAttributes.add(InverseName);
+        REFERENCE_TYPE_ATTRIBUTES = Collections.unmodifiableSet(referenceTypeAttributes);
+
+        var variableAttributes = new LinkedHashSet<>(baseAttributes);
+        variableAttributes.add(Value);
+        variableAttributes.add(DataType);
+        variableAttributes.add(ValueRank);
+        variableAttributes.add(ArrayDimensions);
+        variableAttributes.add(AccessLevel);
+        variableAttributes.add(UserAccessLevel);
+        variableAttributes.add(MinimumSamplingInterval);
+        variableAttributes.add(Historizing);
+        variableAttributes.add(AccessLevelEx);
+        VARIABLE_ATTRIBUTES = Collections.unmodifiableSet(variableAttributes);
+
+        var variableTypeAttributes = new LinkedHashSet<>(baseAttributes);
+        variableTypeAttributes.add(Value);
+        variableTypeAttributes.add(DataType);
+        variableTypeAttributes.add(ValueRank);
+        variableTypeAttributes.add(ArrayDimensions);
+        variableTypeAttributes.add(IsAbstract);
+        VARIABLE_TYPE_ATTRIBUTES = Collections.unmodifiableSet(variableTypeAttributes);
+
+        var viewAttributes = new LinkedHashSet<>(baseAttributes);
+        viewAttributes.add(ContainsNoLoops);
+        viewAttributes.add(EventNotifier);
+        VIEW_ATTRIBUTES = Collections.unmodifiableSet(viewAttributes);
+    }
 
     private final int id;
 
@@ -169,8 +187,9 @@ public enum AttributeId {
      * @param nodeClass the {@link org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass}.
      * @return the set of valid attributes for {@code nodeClass}.
      */
-    public static ImmutableSet<AttributeId> getAttributes(
-        org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass nodeClass) {
+    public static Set<AttributeId> getAttributes(
+        org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass nodeClass
+    ) {
 
         //@formatter:off
         switch (nodeClass) {
@@ -182,7 +201,7 @@ public enum AttributeId {
             case ReferenceType: return REFERENCE_TYPE_ATTRIBUTES;
             case DataType:      return DATA_TYPE_ATTRIBUTES;
             case View:          return VIEW_ATTRIBUTES;
-            default:            return ImmutableSet.of();
+            default:            return Set.of();
         }
         //@formatter:on
     }

@@ -55,9 +55,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-
 public class CertificateValidationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateValidationUtil.class);
@@ -187,7 +184,7 @@ public class CertificateValidationUtil {
             try {
                 CertPathValidator certPathValidator = CertPathValidator.getInstance("PKIX", "SUN");
 
-                PKIXParameters parameters = new PKIXParameters(newHashSet(trustAnchor));
+                PKIXParameters parameters = new PKIXParameters(Set.of(trustAnchor));
 
                 parameters.addCertPathChecker(
                     new OpcUaCertificateUsageChecker(
@@ -231,7 +228,7 @@ public class CertificateValidationUtil {
                         PKIXRevocationChecker pkixRevocationChecker =
                             (PKIXRevocationChecker) certPathValidator.getRevocationChecker();
 
-                        pkixRevocationChecker.setOptions(newHashSet(
+                        pkixRevocationChecker.setOptions(Set.of(
                             PKIXRevocationChecker.Option.NO_FALLBACK,
                             PKIXRevocationChecker.Option.PREFER_CRLS,
                             PKIXRevocationChecker.Option.SOFT_FAIL
@@ -380,8 +377,10 @@ public class CertificateValidationUtil {
             PKIXBuilderParameters builderParams = new PKIXBuilderParameters(trustAnchors, selector);
 
             // Add a CertStore containing potential intermediate certs
-            Collection<Object> intermediates = newArrayList();
-            intermediates.addAll(certificateChain.subList(1, certificateChain.size()));
+            var intermediates = new ArrayList<>(
+                certificateChain.subList(1, certificateChain.size())
+            );
+
             for (X509Certificate c : trustedCertificates) {
                 if (certificateIsCa(c) && !certificateIsSelfSigned(c)) {
                     intermediates.add(c);

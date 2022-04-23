@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack;
 
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
@@ -22,7 +23,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;
 
@@ -41,9 +41,9 @@ public abstract class SecureChannelFixture extends SecurityFixture {
         ClientSecureChannel clientChannel = new ClientSecureChannel(
             securityPolicy == SecurityPolicy.None ? null : clientKeyPair,
             securityPolicy == SecurityPolicy.None ? null : clientCertificate,
-            securityPolicy == SecurityPolicy.None ? null : newArrayList(clientCertificate),
+            securityPolicy == SecurityPolicy.None ? null : List.of(clientCertificate),
             securityPolicy == SecurityPolicy.None ? null : serverCertificate,
-            securityPolicy == SecurityPolicy.None ? null : newArrayList(serverCertificate),
+            securityPolicy == SecurityPolicy.None ? null : List.of(serverCertificate),
             securityPolicy,
             messageSecurity
         );
@@ -113,9 +113,9 @@ public abstract class SecureChannelFixture extends SecurityFixture {
         ClientSecureChannel clientChannel = new ClientSecureChannel(
             clientKeyPair4096,
             clientCertificate4096,
-            newArrayList(clientCertificate4096),
+            List.of(clientCertificate4096),
             serverCertificate4096,
-            newArrayList(serverCertificate4096),
+            List.of(serverCertificate4096),
             securityPolicy,
             messageSecurity
         );

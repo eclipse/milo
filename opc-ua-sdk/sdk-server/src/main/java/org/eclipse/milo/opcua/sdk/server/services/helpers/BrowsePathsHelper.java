@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.services.helpers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -82,7 +81,7 @@ public class BrowsePathsHelper {
             return;
         }
 
-        List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.size());
+        var futures = new ArrayList<CompletableFuture<BrowsePathResult>>(browsePaths.size());
 
         for (BrowsePath browsePath : browsePaths) {
             futures.add(translate(browsePath));
@@ -192,7 +191,7 @@ public class BrowsePathsHelper {
                     UInteger remaining = nextElements.isEmpty() ?
                         UInteger.MAX : uint(nextElements.size());
 
-                    List<BrowsePathTarget> targets = newArrayList(
+                    List<BrowsePathTarget> targets = List.of(
                         new BrowsePathTarget(nextExId, remaining)
                     );
 
@@ -288,7 +287,7 @@ public class BrowsePathsHelper {
                 return failedUaFuture(StatusCodes.Bad_NoMatch);
             } else {
                 return readTargetBrowseNames(targetNodeIds).thenApply(browseNames -> {
-                    List<ExpandedNodeId> targets = newArrayList();
+                    var targets = new ArrayList<ExpandedNodeId>();
 
                     for (int i = 0; i < targetNodeIds.size(); i++) {
                         ExpandedNodeId targetNodeId = targetNodeIds.get(i);
@@ -305,7 +304,7 @@ public class BrowsePathsHelper {
     }
 
     private CompletableFuture<List<QualifiedName>> readTargetBrowseNames(List<ExpandedNodeId> targetNodeIds) {
-        List<CompletableFuture<List<DataValue>>> futures = newArrayListWithCapacity(targetNodeIds.size());
+        var futures = new ArrayList<CompletableFuture<List<DataValue>>>(targetNodeIds.size());
 
         for (ExpandedNodeId xni : targetNodeIds) {
             CompletableFuture<List<DataValue>> future = xni.toNodeId(server.getNamespaceTable())
@@ -323,12 +322,12 @@ public class BrowsePathsHelper {
                         context,
                         0.0,
                         TimestampsToReturn.Neither,
-                        newArrayList(readValueId)
+                        List.of(readValueId)
                     );
 
                     return context.getFuture();
                 })
-                .orElse(completedFuture(newArrayList(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
+                .orElse(completedFuture(List.of(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
 
             futures.add(future);
         }

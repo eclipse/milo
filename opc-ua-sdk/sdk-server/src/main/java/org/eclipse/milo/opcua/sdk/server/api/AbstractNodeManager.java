@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.MapMaker;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -29,24 +28,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
-    private final ConcurrentMap<NodeId, T> nodeMap;
-    private final ConcurrentMap<NodeId, LinkedHashMultiset<Reference>> referenceMap;
-
-    public AbstractNodeManager() {
-        nodeMap = makeNodeMap(new MapMaker());
-
-        referenceMap = new ConcurrentHashMap<>();
-    }
-
-    /**
-     * Optionally customize the backing {@link ConcurrentMap} with the provided {@link MapMaker}.
-     *
-     * @param mapMaker the {@link MapMaker} that make the backing map with.
-     * @return a {@link ConcurrentMap}.
-     */
-    protected ConcurrentMap<NodeId, T> makeNodeMap(MapMaker mapMaker) {
-        return mapMaker.makeMap();
-    }
+    private final ConcurrentMap<NodeId, T> nodeMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<NodeId, LinkedHashMultiset<Reference>> referenceMap = new ConcurrentHashMap<>();
 
     /**
      * Get the backing {@link ConcurrentMap} holding this {@link NodeManager}'s Nodes.

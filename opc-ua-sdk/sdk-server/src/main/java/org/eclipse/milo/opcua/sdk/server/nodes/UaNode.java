@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
@@ -373,8 +372,8 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public ImmutableList<Reference> getReferences() {
-        return ImmutableList.copyOf(
+    public List<Reference> getReferences() {
+        return List.copyOf(
             context.getServer()
                 .getAddressSpaceManager()
                 .getManagedReferences(getNodeId())

@@ -35,12 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBufUtil;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -61,11 +59,11 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTrustListManager.class);
 
-    private final Set<X509Certificate> issuerCertificates = Sets.newConcurrentHashSet();
-    private final Set<X509CRL> issuerCrls = Sets.newConcurrentHashSet();
+    private final Set<X509Certificate> issuerCertificates = ConcurrentHashMap.newKeySet();
+    private final Set<X509CRL> issuerCrls = ConcurrentHashMap.newKeySet();
 
-    private final Set<X509Certificate> trustedCertificates = Sets.newConcurrentHashSet();
-    private final Set<X509CRL> trustedCrls = Sets.newConcurrentHashSet();
+    private final Set<X509Certificate> trustedCertificates = ConcurrentHashMap.newKeySet();
+    private final Set<X509CRL> trustedCrls = ConcurrentHashMap.newKeySet();
 
     private final WatchService watchService;
     private final Thread watchThread;
@@ -109,7 +107,7 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
         watchService = FileSystems.getDefault().newWatchService();
 
-        Map<WatchKey, Runnable> watchKeys = Maps.newConcurrentMap();
+        Map<WatchKey, Runnable> watchKeys = new ConcurrentHashMap<>();
 
         watchKeys.put(
             issuerCertsDir.toPath().register(
@@ -183,31 +181,31 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     @Override
-    public synchronized ImmutableList<X509CRL> getIssuerCrls() {
-        return ImmutableList.copyOf(issuerCrls);
+    public synchronized List<X509CRL> getIssuerCrls() {
+        return List.copyOf(issuerCrls);
     }
 
     @Override
-    public synchronized ImmutableList<X509CRL> getTrustedCrls() {
-        return ImmutableList.copyOf(trustedCrls);
+    public synchronized List<X509CRL> getTrustedCrls() {
+        return List.copyOf(trustedCrls);
     }
 
     @Override
-    public synchronized ImmutableList<X509Certificate> getIssuerCertificates() {
-        return ImmutableList.copyOf(issuerCertificates);
+    public synchronized List<X509Certificate> getIssuerCertificates() {
+        return List.copyOf(issuerCertificates);
     }
 
     @Override
-    public synchronized ImmutableList<X509Certificate> getTrustedCertificates() {
-        return ImmutableList.copyOf(trustedCertificates);
+    public synchronized List<X509Certificate> getTrustedCertificates() {
+        return List.copyOf(trustedCertificates);
     }
 
     @Override
-    public synchronized ImmutableList<X509Certificate> getRejectedCertificates() {
+    public synchronized List<X509Certificate> getRejectedCertificates() {
         File[] files = rejectedDir.listFiles();
         if (files == null) files = new File[0];
 
-        return ImmutableList.copyOf(
+        return List.copyOf(
             Arrays.stream(files)
                 .flatMap(cert ->
                     decodeCertificateFile(cert)

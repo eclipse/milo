@@ -17,8 +17,8 @@ import java.net.ServerSocket;
 import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.security.DefaultServerCertificateValidator;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_X509;
@@ -163,11 +162,10 @@ public final class TestServer {
     private static Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate, int port) {
         Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
 
-        List<String> bindAddresses = newArrayList();
+        var bindAddresses = new ArrayList<String>();
         bindAddresses.add("localhost");
 
-        Set<String> hostnames = new LinkedHashSet<>();
-        hostnames.addAll(HostnameUtil.getHostnames("localhost", true));
+        Set<String> hostnames = HostnameUtil.getHostnames("localhost", true);
 
         for (String bindAddress : bindAddresses) {
             for (String hostname : hostnames) {

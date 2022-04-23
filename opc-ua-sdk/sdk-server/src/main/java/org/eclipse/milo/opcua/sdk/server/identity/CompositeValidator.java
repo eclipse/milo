@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server.identity;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -30,14 +29,14 @@ public class CompositeValidator<T> implements IdentityValidator<T> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ImmutableList<IdentityValidator<T>> validators;
+    private final List<IdentityValidator<T>> validators;
 
     public CompositeValidator(IdentityValidator<T>... validators) {
-        this.validators = ImmutableList.copyOf(validators);
+        this.validators = List.of(validators);
     }
 
     public CompositeValidator(List<IdentityValidator<T>> validators) {
-        this.validators = ImmutableList.copyOf(validators);
+        this.validators = List.copyOf(validators);
     }
 
     @Override

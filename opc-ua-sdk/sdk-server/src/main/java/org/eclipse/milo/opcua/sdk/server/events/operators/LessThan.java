@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.operators;
 
-import com.google.common.primitives.UnsignedLongs;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -44,7 +43,7 @@ public class LessThan extends ImplicitConversionBinaryOperator<Boolean> {
                     return n0.longValue() < n1.longValue();
 
                 case UInt64:
-                    return UnsignedLongs.compare(n0.longValue(), n1.longValue()) < 0;
+                    return Long.compareUnsigned(n0.longValue(), n1.longValue()) < 0;
 
                 case Float:
                     return n0.floatValue() < n1.floatValue();

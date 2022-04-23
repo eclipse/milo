@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -408,8 +408,8 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
 
-            List<UInteger> serverHandleList = Lists.newArrayList();
-            List<UInteger> clientHandleList = Lists.newArrayList();
+            var serverHandleList = new ArrayList<UInteger>();
+            var clientHandleList = new ArrayList<UInteger>();
 
             for (BaseMonitoredItem<?> item : subscription.getMonitoredItems().values()) {
                 serverHandleList.add(item.getId());

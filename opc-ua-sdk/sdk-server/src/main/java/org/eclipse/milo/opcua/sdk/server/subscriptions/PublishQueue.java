@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
@@ -42,7 +41,7 @@ public class PublishQueue {
      * @param service the Publish {@link ServiceRequest}.
      */
     public synchronized void addRequest(ServiceRequest service) {
-        List<WaitingSubscription> waitingSubscriptions = Lists.newArrayList(waitList.values());
+        List<WaitingSubscription> waitingSubscriptions = List.copyOf(waitList.values());
 
         if (waitingSubscriptions.isEmpty()) {
             serviceQueue.add(service);

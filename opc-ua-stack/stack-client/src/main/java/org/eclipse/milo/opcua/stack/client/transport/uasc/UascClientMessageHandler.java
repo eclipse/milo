@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.Channel;
@@ -77,7 +77,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
     private final AtomicReference<AsymmetricSecurityHeader> headerRef = new AtomicReference<>();
 
-    private final Map<Long, UaTransportRequest> pending = Maps.newConcurrentMap();
+    private final Map<Long, UaTransportRequest> pending = new ConcurrentHashMap<>();
     private final LongSequence requestIdSequence = new LongSequence(1L, UInteger.MAX_VALUE);
 
     private ScheduledFuture renewFuture;

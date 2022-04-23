@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
@@ -227,14 +227,14 @@ public enum BuiltinReferenceType implements ReferenceType {
         return Optional.ofNullable(superTypeId);
     }
 
-    private static final ImmutableMap<NodeId, ReferenceType> BUILTIN_REFERENCE_MAP;
+    private static final Map<NodeId, ReferenceType> BUILTIN_REFERENCE_MAP;
 
     static {
-        ImmutableMap.Builder<NodeId, ReferenceType> builder = ImmutableMap.builder();
+        Map<NodeId, ReferenceType> map = new HashMap<>();
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
-            builder.put(referenceType.getNodeId(), referenceType);
+            map.put(referenceType.getNodeId(), referenceType);
         }
-        BUILTIN_REFERENCE_MAP = builder.build();
+        BUILTIN_REFERENCE_MAP = Map.copyOf(map);
     }
 
     public static Map<NodeId, ReferenceType> getReferenceMap() {

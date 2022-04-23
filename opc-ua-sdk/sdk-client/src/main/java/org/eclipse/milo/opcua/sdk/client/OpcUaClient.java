@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -131,7 +132,6 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
@@ -242,7 +242,7 @@ public class OpcUaClient implements UaClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
+    private final List<ServiceFaultListener> faultListeners = new CopyOnWriteArrayList<>();
     private final ExecutionQueue faultNotificationQueue;
 
     private final AddressSpace addressSpace;
