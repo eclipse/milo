@@ -16,14 +16,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
@@ -42,15 +40,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class OpcUaSubscription implements UaSubscription {
 
-    private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = Maps.newConcurrentMap();
-    private final Map<UInteger, OpcUaMonitoredItem> itemsByServerHandle = Maps.newConcurrentMap();
+    private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = new ConcurrentHashMap<>();
+    private final Map<UInteger, OpcUaMonitoredItem> itemsByServerHandle = new ConcurrentHashMap<>();
 
     private final List<NotificationListener> notificationListeners = new CopyOnWriteArrayList<>();
 
@@ -114,7 +110,7 @@ public class OpcUaSubscription implements UaSubscription {
         return future.thenApply(response -> {
             List<MonitoredItemCreateResult> results = l(response.getResults());
 
-            List<UaMonitoredItem> createdItems = newArrayListWithCapacity(itemsToCreate.size());
+            List<UaMonitoredItem> createdItems = new ArrayList<>(itemsToCreate.size());
 
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest request = itemsToCreate.get(i);
@@ -184,7 +180,7 @@ public class OpcUaSubscription implements UaSubscription {
             client.modifyMonitoredItems(subscriptionId, timestampsToReturn, itemsToModify);
 
         return future.thenApply(response -> {
-            List<StatusCode> statusCodes = newArrayList();
+            var statusCodes = new ArrayList<StatusCode>();
 
             List<MonitoredItemModifyResult> results = l(response.getResults());
 
@@ -270,7 +266,7 @@ public class OpcUaSubscription implements UaSubscription {
 
     @Override
     public CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled) {
-        return client.setPublishingMode(publishingEnabled, newArrayList(subscriptionId))
+        return client.setPublishingMode(publishingEnabled, List.of(subscriptionId))
             .thenApply(response -> {
                 StatusCode statusCode = l(response.getResults()).get(0);
 
@@ -366,8 +362,8 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
-    public ImmutableList<UaMonitoredItem> getMonitoredItems() {
-        return ImmutableList.copyOf(itemsByClientHandle.values());
+    public List<UaMonitoredItem> getMonitoredItems() {
+        return List.copyOf(itemsByClientHandle.values());
     }
 
     @Override
@@ -456,7 +452,6 @@ public class OpcUaSubscription implements UaSubscription {
             this(handleInUse, 0L);
         }
 
-        @VisibleForTesting
         ClientHandleSequence(Predicate<UInteger> handleInUse, long initialValue) {
             this.handleInUse = handleInUse;
 

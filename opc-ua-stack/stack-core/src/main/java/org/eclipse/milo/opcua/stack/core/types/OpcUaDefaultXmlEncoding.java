@@ -12,8 +12,8 @@ package org.eclipse.milo.opcua.stack.core.types;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-import com.google.common.base.Charsets;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
@@ -103,7 +103,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
             String xml = xmlBody.getFragmentOrEmpty();
 
             OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder(context);
-            reader.setInput(new ByteArrayInputStream(xml.getBytes(Charsets.UTF_8)));
+            reader.setInput(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
 
             // We have to use reader.readStruct() instead of codec.encode() because
             // XML-encoded structs are wrapped in a container element with the struct name.

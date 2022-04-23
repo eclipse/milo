@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SessionSecurityDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
@@ -64,13 +64,13 @@ public class Session implements SessionServiceSet {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<LifecycleListener> listeners = Lists.newCopyOnWriteArrayList();
+    private final List<LifecycleListener> listeners = new CopyOnWriteArrayList<>();
 
     private final SubscriptionManager subscriptionManager;
 
     private final LinkedList<String> clientUserIdHistory = new LinkedList<>();
 
-    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
+    private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = new ConcurrentHashMap<>();
 
     private volatile Object identityObject;
     private volatile UserIdentityToken identityToken;

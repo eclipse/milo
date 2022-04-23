@@ -18,7 +18,6 @@ import java.util.function.Supplier;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -37,7 +36,7 @@ public class EndpointConfiguration {
     private final Supplier<X509Certificate> certificateSupplier;
     private final SecurityPolicy securityPolicy;
     private final MessageSecurityMode securityMode;
-    private final ImmutableList<UserTokenPolicy> tokenPolicies;
+    private final List<UserTokenPolicy> tokenPolicies;
 
     private EndpointConfiguration(
         TransportProfile transportProfile,
@@ -48,7 +47,8 @@ public class EndpointConfiguration {
         Supplier<X509Certificate> certificateSupplier,
         SecurityPolicy securityPolicy,
         MessageSecurityMode securityMode,
-        List<UserTokenPolicy> tokenPolicies) {
+        List<UserTokenPolicy> tokenPolicies
+    ) {
 
         this.transportProfile = transportProfile;
         this.bindAddress = bindAddress;
@@ -58,7 +58,7 @@ public class EndpointConfiguration {
         this.certificateSupplier = certificateSupplier;
         this.securityPolicy = securityPolicy;
         this.securityMode = securityMode;
-        this.tokenPolicies = ImmutableList.copyOf(tokenPolicies);
+        this.tokenPolicies = List.copyOf(tokenPolicies);
     }
 
     public TransportProfile getTransportProfile() {
@@ -94,7 +94,7 @@ public class EndpointConfiguration {
         return securityMode;
     }
 
-    public ImmutableList<UserTokenPolicy> getTokenPolicies() {
+    public List<UserTokenPolicy> getTokenPolicies() {
         return tokenPolicies;
     }
 

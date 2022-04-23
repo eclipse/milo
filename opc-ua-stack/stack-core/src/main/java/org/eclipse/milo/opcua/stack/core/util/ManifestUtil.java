@@ -20,10 +20,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class ManifestUtil {
     }
 
     private static Map<String, String> load() {
-        Map<String, String> attributes = Maps.newConcurrentMap();
+        Map<String, String> attributes = new ConcurrentHashMap<>();
 
         for (URI uri : uris()) {
             try {
@@ -59,7 +59,7 @@ public class ManifestUtil {
     }
 
     private static Map<String, String> load(InputStream stream) {
-        Map<String, String> props = Maps.newConcurrentMap();
+        Map<String, String> props = new ConcurrentHashMap<>();
 
         try {
             Manifest manifest = new Manifest(stream);

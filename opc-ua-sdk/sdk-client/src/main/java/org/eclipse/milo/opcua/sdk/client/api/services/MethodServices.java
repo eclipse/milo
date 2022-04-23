@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public interface MethodServices {
@@ -40,7 +39,7 @@ public interface MethodServices {
      * @see #call(List)
      */
     default CompletableFuture<CallMethodResult> call(CallMethodRequest request) {
-        return call(newArrayList(request))
+        return call(List.of(request))
             .thenApply(response -> l(response.getResults()).get(0));
     }
 

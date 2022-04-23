@@ -10,7 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
-import com.google.common.base.Charsets;
+import java.nio.charset.StandardCharsets;
+
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -169,7 +170,7 @@ public class HelloMessage {
             buffer.writeIntLE(-1);
         } else {
             buffer.writeIntLE(s.length());
-            buffer.writeBytes(s.getBytes(Charsets.UTF_8));
+            buffer.writeBytes(s.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -193,7 +194,7 @@ public class HelloMessage {
             }
             byte[] bs = new byte[length];
             buffer.readBytes(bs);
-            return new String(bs, Charsets.UTF_8);
+            return new String(bs, StandardCharsets.UTF_8);
         }
     }
 

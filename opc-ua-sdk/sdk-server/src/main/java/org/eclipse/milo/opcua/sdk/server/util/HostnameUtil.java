@@ -17,11 +17,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.LoggerFactory;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 public class HostnameUtil {
 
@@ -54,7 +53,7 @@ public class HostnameUtil {
      * @return the addresses and hostnames that were resolved from {@code address}.
      */
     public static Set<String> getHostnames(String address, boolean includeLoopback) {
-        Set<String> hostnames = newHashSet();
+        var hostnames = new HashSet<String>();
 
         try {
             InetAddress inetAddress = InetAddress.getByName(address);

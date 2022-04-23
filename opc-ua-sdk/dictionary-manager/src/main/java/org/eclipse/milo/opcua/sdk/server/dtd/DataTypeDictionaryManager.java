@@ -21,10 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator;
 import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator.DataTypeLocation;
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -70,8 +70,8 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
     private final Lazy<File> dictionaryFile = new Lazy<>();
 
-    private final Map<NodeId, EnumDescription> enumDescriptions = Maps.newConcurrentMap();
-    private final Map<NodeId, StructureDescription> structureDescriptions = Maps.newConcurrentMap();
+    private final Map<NodeId, EnumDescription> enumDescriptions = new ConcurrentHashMap<>();
+    private final Map<NodeId, StructureDescription> structureDescriptions = new ConcurrentHashMap<>();
 
     private final OpcUaBinaryDataTypeDictionary dictionary;
 

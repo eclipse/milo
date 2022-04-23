@@ -15,7 +15,6 @@ import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
@@ -46,12 +45,12 @@ public class TestCertificateManager implements CertificateManager {
 
     @Override
     public Set<KeyPair> getKeyPairs() {
-        return Sets.newHashSet(keyPair);
+        return Set.of(keyPair);
     }
 
     @Override
     public Set<X509Certificate> getCertificates() {
-        return Sets.newHashSet(certificate);
+        return Set.of(certificate);
     }
 
 }

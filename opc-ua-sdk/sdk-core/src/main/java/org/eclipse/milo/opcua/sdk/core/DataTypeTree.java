@@ -12,8 +12,8 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DataTypeTree {
 
-    private final Map<NodeId, Tree<DataType>> dataTypes = Maps.newConcurrentMap();
+    private final Map<NodeId, Tree<DataType>> dataTypes = new ConcurrentHashMap<>();
 
     private final Tree<DataType> tree;
 

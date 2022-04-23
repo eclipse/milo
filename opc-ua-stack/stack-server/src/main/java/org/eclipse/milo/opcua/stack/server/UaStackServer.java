@@ -13,10 +13,13 @@ package org.eclipse.milo.opcua.stack.server;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
@@ -24,8 +27,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ForwardingTable;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import io.netty.channel.Channel;
@@ -106,8 +107,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.base.Strings.nullToEmpty;
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
@@ -134,7 +133,7 @@ public class UaStackServer {
 
     private final List<Channel> channels = new CopyOnWriteArrayList<>();
 
-    private final Set<EndpointConfiguration> boundEndpoints = Sets.newConcurrentHashSet();
+    private final Set<EndpointConfiguration> boundEndpoints = ConcurrentHashMap.newKeySet();
 
     private final ServerChannelManager channelManager;
     private final SerializationContext serializationContext;
@@ -372,15 +371,11 @@ public class UaStackServer {
         });
     }
 
-    public ImmutableList<EndpointDescription> getEndpointDescriptions() {
-        return ImmutableList.<EndpointDescription>builder()
-            .addAll(
-                config.getEndpoints()
-                    .stream()
-                    .map(this::transformEndpoint)
-                    .iterator()
-            )
-            .build();
+    public List<EndpointDescription> getEndpointDescriptions() {
+        return config.getEndpoints()
+            .stream()
+            .map(this::transformEndpoint)
+            .collect(Collectors.toUnmodifiableList());
     }
 
     private EndpointDescription transformEndpoint(EndpointConfiguration endpoint) {
@@ -559,8 +554,8 @@ public class UaStackServer {
             GetEndpointsRequest request = (GetEndpointsRequest) serviceRequest.getRequest();
 
             List<String> profileUris = request.getProfileUris() != null ?
-                newArrayList(request.getProfileUris()) :
-                new ArrayList<>();
+                List.of(request.getProfileUris()) :
+                Collections.emptyList();
 
             List<EndpointDescription> allEndpoints = stackServer.getEndpointDescriptions()
                 .stream()
@@ -602,7 +597,7 @@ public class UaStackServer {
                 String requestedHost = EndpointUtil.getHost(endpointUrl);
                 String endpointHost = EndpointUtil.getHost(endpoint.getEndpointUrl());
 
-                return nullToEmpty(requestedHost).equalsIgnoreCase(endpointHost);
+                return Objects.requireNonNullElse(requestedHost, "").equalsIgnoreCase(endpointHost);
             } catch (Throwable e) {
                 logger.debug("Unable to create URI.", e);
                 return false;
@@ -630,11 +625,11 @@ public class UaStackServer {
             FindServersRequest request = (FindServersRequest) serviceRequest.getRequest();
 
             List<String> serverUris = request.getServerUris() != null ?
-                newArrayList(request.getServerUris()) :
-                new ArrayList<>();
+                List.of(request.getServerUris()) :
+                Collections.emptyList();
 
             List<ApplicationDescription> applicationDescriptions =
-                newArrayList(getFilteredApplicationDescription(request.getEndpointUrl()));
+                List.of(getFilteredApplicationDescription(request.getEndpointUrl()));
 
             applicationDescriptions = applicationDescriptions.stream()
                 .filter(ad -> filterServerUris(ad, serverUris))
@@ -673,7 +668,7 @@ public class UaStackServer {
 
                         logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
 
-                        return nullToEmpty(requestedHost).equalsIgnoreCase(discoveryHost);
+                        return Objects.requireNonNullElse(requestedHost, "").equalsIgnoreCase(discoveryHost);
                     } catch (Throwable e) {
                         logger.debug("Unable to create URI.", e);
                         return false;

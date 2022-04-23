@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -58,7 +57,7 @@ public interface ViewServices {
      * @return a {@link CompletableFuture} containing the {@link BrowseResult}.
      */
     default CompletableFuture<BrowseResult> browse(BrowseDescription nodeToBrowse) {
-        return browse(newArrayList(nodeToBrowse)).thenApply(rs -> rs.get(0));
+        return browse(List.of(nodeToBrowse)).thenApply(rs -> rs.get(0));
     }
 
     /**
@@ -107,7 +106,7 @@ public interface ViewServices {
         boolean releaseContinuationPoint,
         ByteString continuationPoint) {
 
-        return browseNext(releaseContinuationPoint, newArrayList(continuationPoint))
+        return browseNext(releaseContinuationPoint, List.of(continuationPoint))
             .thenApply(response -> response.getResults()[0]);
     }
 

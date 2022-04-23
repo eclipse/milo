@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -17,14 +17,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.netty.util.AttributeKey;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
@@ -94,7 +94,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -118,8 +117,8 @@ public class SubscriptionManager {
 
     private final PublishQueue publishQueue = new PublishQueue();
 
-    private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
-    private final List<Subscription> transferred = Lists.newCopyOnWriteArrayList();
+    private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
+    private final List<Subscription> transferred = new CopyOnWriteArrayList<>();
 
     private final Session session;
     private final OpcUaServer server;
@@ -169,13 +168,13 @@ public class SubscriptionManager {
         subscriptions.put(subscriptionId, subscription);
         server.getSubscriptions().put(subscriptionId, subscription);
         server.getDiagnosticsSummary().getCumulatedSubscriptionCount().increment();
-        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
+        server.getInternalEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
-                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
+                server.getInternalEventBus().post(new SubscriptionDeletedEvent(subscription));
             }
         });
 
@@ -234,7 +233,7 @@ public class SubscriptionManager {
 
             if (subscription != null) {
                 server.getSubscriptions().remove(subscription.getId());
-                server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
+                server.getInternalEventBus().post(new SubscriptionDeletedEvent(subscription));
 
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
@@ -938,7 +937,7 @@ public class SubscriptionManager {
         }
 
         StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
-        List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.size());
+        var deletedItems = new ArrayList<BaseMonitoredItem<?>>(itemsToDelete.size());
 
         synchronized (subscription) {
             for (int i = 0; i < itemsToDelete.size(); i++) {
@@ -1003,7 +1002,7 @@ public class SubscriptionManager {
 
             MonitoringMode monitoringMode = request.getMonitoringMode();
             StatusCode[] results = new StatusCode[itemsToModify.size()];
-            List<MonitoredItem> modified = newArrayListWithCapacity(itemsToModify.size());
+            var modified = new ArrayList<MonitoredItem>(itemsToModify.size());
 
             for (int i = 0; i < itemsToModify.size(); i++) {
                 UInteger itemId = itemsToModify.get(i);
@@ -1205,7 +1204,7 @@ public class SubscriptionManager {
 
             if (deleteSubscriptions) {
                 server.getSubscriptions().remove(s.getId());
-                server.getEventBus().post(new SubscriptionDeletedEvent(s));
+                server.getInternalEventBus().post(new SubscriptionDeletedEvent(s));
 
                 List<BaseMonitoredItem<?>> deletedItems = s.deleteSubscription();
 
@@ -1240,13 +1239,13 @@ public class SubscriptionManager {
      */
     public void addSubscription(Subscription subscription) {
         subscriptions.put(subscription.getId(), subscription);
-        server.getEventBus().post(new SubscriptionCreatedEvent(subscription));
+        server.getInternalEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
             if (cs == State.Closed) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
-                server.getEventBus().post(new SubscriptionDeletedEvent(s));
+                server.getInternalEventBus().post(new SubscriptionDeletedEvent(s));
             }
         });
     }
@@ -1259,7 +1258,7 @@ public class SubscriptionManager {
      */
     public Subscription removeSubscription(UInteger subscriptionId) {
         Subscription subscription = subscriptions.remove(subscriptionId);
-        server.getEventBus().post(new SubscriptionDeletedEvent(subscription));
+        server.getInternalEventBus().post(new SubscriptionDeletedEvent(subscription));
 
         if (subscription != null) {
             subscription.setStateListener(null);
@@ -1292,8 +1291,8 @@ public class SubscriptionManager {
         Consumer<List<EventItem>> eventItemConsumer
     ) {
 
-        List<DataItem> dataItems = Lists.newArrayList();
-        List<EventItem> eventItems = Lists.newArrayList();
+        var dataItems = new ArrayList<DataItem>();
+        var eventItems = new ArrayList<EventItem>();
 
         for (BaseMonitoredItem<?> item : monitoredItems) {
             if (item instanceof MonitoredDataItem) {

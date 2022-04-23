@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -80,9 +79,9 @@ public interface UaSubscription {
     UByte getPriority();
 
     /**
-     * @return an {@link ImmutableList} of this {@link UaSubscription}'s {@link UaMonitoredItem}s.
+     * @return a {@link List} of this {@link UaSubscription}'s {@link UaMonitoredItem}s.
      */
-    ImmutableList<UaMonitoredItem> getMonitoredItems();
+    List<UaMonitoredItem> getMonitoredItems();
 
     /**
      * @return the next available client handle, unique within the context of this {@link UaSubscription}.
@@ -264,7 +263,8 @@ public interface UaSubscription {
         default void onDataChangeNotification(UaSubscription subscription,
                                               List<UaMonitoredItem> monitoredItems,
                                               List<DataValue> dataValues,
-                                              DateTime publishTime) {}
+                                              DateTime publishTime) {
+        }
 
         /**
          * A notification containing events for this {@link UaSubscription} has arrived.
@@ -280,7 +280,8 @@ public interface UaSubscription {
         default void onEventNotification(UaSubscription subscription,
                                          List<UaMonitoredItem> monitoredItems,
                                          List<Variant[]> eventFields,
-                                         DateTime publishTime) {}
+                                         DateTime publishTime) {
+        }
 
         /**
          * A keep-alive message was received.
@@ -288,7 +289,8 @@ public interface UaSubscription {
          * @param subscription the {@link UaSubscription} that received the keep-alive.
          * @param publishTime  the time the server published the keep-alive.
          */
-        default void onKeepAliveNotification(UaSubscription subscription, DateTime publishTime) {}
+        default void onKeepAliveNotification(UaSubscription subscription, DateTime publishTime) {
+        }
 
         /**
          * A status change notification was received.
@@ -296,7 +298,8 @@ public interface UaSubscription {
          * @param subscription the {@link UaSubscription} that received the status change.
          * @param status       the new subscription status.
          */
-        default void onStatusChangedNotification(UaSubscription subscription, StatusCode status) {}
+        default void onStatusChangedNotification(UaSubscription subscription, StatusCode status) {
+        }
 
         /**
          * Attempts to recover missed notification data have failed.
@@ -306,7 +309,8 @@ public interface UaSubscription {
          *
          * @param subscription the subscription that missed notification data.
          */
-        default void onNotificationDataLost(UaSubscription subscription) {}
+        default void onNotificationDataLost(UaSubscription subscription) {
+        }
 
         /**
          * A new {@link UaSession} was established, and upon attempting to transfer an existing subscription to this
@@ -317,7 +321,8 @@ public interface UaSubscription {
          * @param subscription the {@link UaSubscription} that could not be transferred.
          * @param statusCode   the {@link StatusCode} for the transfer failure.
          */
-        default void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {}
+        default void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {
+        }
 
         /**
          * The subscription watchdog timer has elapsed. The receiver of this callback should
@@ -332,7 +337,8 @@ public interface UaSubscription {
          *
          * @param subscription the {@link UaSubscription} that has not received a response.
          */
-        default void onSubscriptionWatchdogTimerElapsed(UaSubscription subscription) {}
+        default void onSubscriptionWatchdogTimerElapsed(UaSubscription subscription) {
+        }
 
     }
 

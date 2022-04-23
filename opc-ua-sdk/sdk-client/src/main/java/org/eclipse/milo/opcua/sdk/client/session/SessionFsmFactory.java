@@ -27,7 +27,6 @@ import com.digitalpetri.strictmachine.Fsm;
 import com.digitalpetri.strictmachine.FsmContext;
 import com.digitalpetri.strictmachine.dsl.ActionContext;
 import com.digitalpetri.strictmachine.dsl.FsmBuilder;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -936,7 +935,7 @@ public class SessionFsmFactory {
 
         UaStackClient stackClient = client.getStackClient();
         OpcUaSubscriptionManager subscriptionManager = client.getSubscriptionManager();
-        ImmutableList<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
+        List<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
 
         if (subscriptions.isEmpty()) {
             return completedFuture(Unit.VALUE);

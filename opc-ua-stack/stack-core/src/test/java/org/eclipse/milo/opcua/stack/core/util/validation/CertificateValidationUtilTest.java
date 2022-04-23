@@ -20,8 +20,8 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.CRLReason;
@@ -36,8 +36,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.buildTrustedCertPath;
 import static org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil.validateTrustedCertPath;
@@ -86,18 +84,18 @@ public class CertificateValidationUtilTest {
 
     @Test
     public void testBuildTrustedCertPath_LeafSelfSigned() throws Exception {
-        List<X509Certificate> certificateChain = newArrayList(leafSelfSigned);
+        List<X509Certificate> certificateChain = List.of(leafSelfSigned);
 
         buildTrustedCertPath(
             certificateChain,
-            newHashSet(leafSelfSigned),
+            Set.of(leafSelfSigned),
             emptySet()
         );
     }
 
     @Test
     public void testBuildTrustedCertPath_LeafSelfSigned_NotTrusted() {
-        List<X509Certificate> certificateChain = newArrayList(leafSelfSigned);
+        List<X509Certificate> certificateChain = List.of(leafSelfSigned);
 
         expectThrows(
             UaException.class,
@@ -115,12 +113,12 @@ public class CertificateValidationUtilTest {
         // trusted: ca-intermedate
         // issuers: ca-root
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caIntermediate),
-                newHashSet(caRoot)
+                Set.of(caIntermediate),
+                Set.of(caRoot)
             );
         }
 
@@ -128,23 +126,23 @@ public class CertificateValidationUtilTest {
         // trusted: ca-intermediate
         // issuers: ca-root
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caIntermediate),
-                newHashSet(caRoot)
+                Set.of(caIntermediate),
+                Set.of(caRoot)
             );
         }
 
         // chain: leaf, ca-intermediate
         // trusted: ca-root
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caRoot),
+                Set.of(caRoot),
                 emptySet()
             );
         }
@@ -153,23 +151,23 @@ public class CertificateValidationUtilTest {
         // trusted: ca-intermediate
         // issuers: ca-root
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate, caRoot);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caIntermediate),
-                newHashSet(caRoot)
+                Set.of(caIntermediate),
+                Set.of(caRoot)
             );
         }
 
         // chain: leaf, ca-intermediate, ca-root
         // trusted: ca-root
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate, caRoot);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caRoot),
+                Set.of(caRoot),
                 emptySet()
             );
         }
@@ -177,11 +175,11 @@ public class CertificateValidationUtilTest {
         // chain: leaf, ca-intermediate, ca-root
         // trusted: ca-intermediate, ca-root
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate, caRoot);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caIntermediate, caRoot),
+                Set.of(caIntermediate, caRoot),
                 emptySet()
             );
         }
@@ -194,10 +192,10 @@ public class CertificateValidationUtilTest {
         // issuers: ca-root
         // crls: ca-intermediate revokes leaf
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned);
 
             UaException e = expectThrows(UaException.class, () -> {
-                HashSet<X509CRL> x509CRLS = newHashSet(
+                Set<X509CRL> x509CRLS = Set.of(
                     generateCrl(
                         caIntermediate,
                         (PrivateKey) keyStore.getKey(
@@ -208,8 +206,8 @@ public class CertificateValidationUtilTest {
 
                 PKIXCertPathBuilderResult pathBuilderResult = buildTrustedCertPath(
                     certificateChain,
-                    newHashSet(caIntermediate),
-                    newHashSet(caRoot)
+                    Set.of(caIntermediate),
+                    Set.of(caRoot)
                 );
 
                 validateTrustedCertPath(
@@ -237,21 +235,22 @@ public class CertificateValidationUtilTest {
         // issuers: ca-root
         // crls: ca-root revokes ca-intermediate
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned);
 
             UaException e = expectThrows(UaException.class, () -> {
-                HashSet<X509CRL> x509CRLS = newHashSet(
+                Set<X509CRL> x509CRLS = Set.of(
                     generateCrl(
                         caRoot,
                         (PrivateKey) keyStore.getKey(
                             ALIAS_CA_ROOT, "password".toCharArray()),
-                        caIntermediate)
+                        caIntermediate
+                    )
                 );
 
                 PKIXCertPathBuilderResult pathBuilderResult = buildTrustedCertPath(
                     certificateChain,
-                    newHashSet(caIntermediate),
-                    newHashSet(caRoot)
+                    Set.of(caIntermediate),
+                    Set.of(caRoot)
                 );
 
                 validateTrustedCertPath(
@@ -279,7 +278,7 @@ public class CertificateValidationUtilTest {
     public void testBuildTrustedCertPath_NoTrusted_NoIssuers() {
         expectThrows(UaException.class, () ->
             buildTrustedCertPath(
-                newArrayList(leafSelfSigned),
+                List.of(leafSelfSigned),
                 emptySet(),
                 emptySet()
             )
@@ -287,7 +286,7 @@ public class CertificateValidationUtilTest {
 
         expectThrows(UaException.class, () ->
             buildTrustedCertPath(
-                newArrayList(leafIntermediateSigned),
+                List.of(leafIntermediateSigned),
                 emptySet(),
                 emptySet()
             )
@@ -295,7 +294,7 @@ public class CertificateValidationUtilTest {
 
         expectThrows(UaException.class, () ->
             buildTrustedCertPath(
-                newArrayList(leafIntermediateSigned, caIntermediate),
+                List.of(leafIntermediateSigned, caIntermediate),
                 emptySet(),
                 emptySet()
             )
@@ -303,7 +302,7 @@ public class CertificateValidationUtilTest {
 
         expectThrows(UaException.class, () ->
             buildTrustedCertPath(
-                newArrayList(leafIntermediateSigned, caIntermediate, caRoot),
+                List.of(leafIntermediateSigned, caIntermediate, caRoot),
                 emptySet(),
                 emptySet()
             )
@@ -316,12 +315,12 @@ public class CertificateValidationUtilTest {
         // trusted: ca-root
         // issuers: ca-intermediate
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caRoot),
-                newHashSet(caIntermediate)
+                Set.of(caRoot),
+                Set.of(caIntermediate)
             );
         }
 
@@ -329,12 +328,12 @@ public class CertificateValidationUtilTest {
         // trusted: ca-root
         // issuers: ca-intermediate
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caRoot),
-                newHashSet(caIntermediate)
+                Set.of(caRoot),
+                Set.of(caIntermediate)
             );
         }
 
@@ -342,12 +341,12 @@ public class CertificateValidationUtilTest {
         // trusted: ca-root
         // issuers: ca-intermediate
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned, caIntermediate, caRoot);
 
             buildTrustedCertPath(
                 certificateChain,
-                newHashSet(caRoot),
-                newHashSet(caIntermediate)
+                Set.of(caRoot),
+                Set.of(caIntermediate)
             );
         }
     }
@@ -359,21 +358,22 @@ public class CertificateValidationUtilTest {
         // issuers: ca-intermediate
         // crls: ca-root revokes ca-intermediate
         {
-            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+            List<X509Certificate> certificateChain = List.of(leafIntermediateSigned);
 
             UaException e = expectThrows(UaException.class, () -> {
-                HashSet<X509CRL> x509CRLS = newHashSet(
+                Set<X509CRL> x509CRLS = Set.of(
                     generateCrl(
                         caRoot,
                         (PrivateKey) keyStore.getKey(
                             ALIAS_CA_ROOT, "password".toCharArray()),
-                        caIntermediate)
+                        caIntermediate
+                    )
                 );
 
                 PKIXCertPathBuilderResult pathBuilderResult = buildTrustedCertPath(
                     certificateChain,
-                    newHashSet(caRoot),
-                    newHashSet(caIntermediate)
+                    Set.of(caRoot),
+                    Set.of(caIntermediate)
                 );
 
                 CertificateValidationUtil.validateTrustedCertPath(

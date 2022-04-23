@@ -10,7 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.operators;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
 import org.eclipse.milo.opcua.sdk.server.events.ValidationException;
@@ -50,16 +51,16 @@ public class Operators {
         }
     };
 
-    public static final ImmutableSet<FilterOperator> SUPPORTED_OPERATORS = ImmutableSet.<FilterOperator>builder()
-        .add(FilterOperator.Equals)
-        .add(FilterOperator.IsNull)
-        .add(FilterOperator.GreaterThan)
-        .add(FilterOperator.LessThan)
-        .add(FilterOperator.GreaterThanOrEqual)
-        .add(FilterOperator.LessThanOrEqual)
-        .add(FilterOperator.Not)
-        .add(FilterOperator.Cast)
-        .add(FilterOperator.OfType)
-        .build();
+    public static final Set<FilterOperator> SUPPORTED_OPERATORS = Set.of(
+        FilterOperator.Equals,
+        FilterOperator.IsNull,
+        FilterOperator.GreaterThan,
+        FilterOperator.LessThan,
+        FilterOperator.GreaterThanOrEqual,
+        FilterOperator.LessThanOrEqual,
+        FilterOperator.Not,
+        FilterOperator.Cast,
+        FilterOperator.OfType
+    );
 
 }

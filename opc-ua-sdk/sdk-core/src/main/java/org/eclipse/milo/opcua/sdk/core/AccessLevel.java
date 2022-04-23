@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.core;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -28,12 +27,12 @@ public enum AccessLevel {
     StatusWrite(0x20),
     TimestampWrite(0x40);
 
-    public static final ImmutableSet<AccessLevel> NONE = ImmutableSet.of();
-    public static final ImmutableSet<AccessLevel> READ_ONLY = ImmutableSet.of(CurrentRead);
-    public static final ImmutableSet<AccessLevel> WRITE_ONLY = ImmutableSet.of(CurrentWrite);
-    public static final ImmutableSet<AccessLevel> READ_WRITE = ImmutableSet.of(CurrentRead, CurrentWrite);
-    public static final ImmutableSet<AccessLevel> HISTORY_READ_ONLY = ImmutableSet.of(HistoryRead);
-    public static final ImmutableSet<AccessLevel> HISTORY_READ_WRITE = ImmutableSet.of(HistoryRead, HistoryWrite);
+    public static final Set<AccessLevel> NONE = Set.of();
+    public static final Set<AccessLevel> READ_ONLY = Set.of(CurrentRead);
+    public static final Set<AccessLevel> WRITE_ONLY = Set.of(CurrentWrite);
+    public static final Set<AccessLevel> READ_WRITE = Set.of(CurrentRead, CurrentWrite);
+    public static final Set<AccessLevel> HISTORY_READ_ONLY = Set.of(HistoryRead);
+    public static final Set<AccessLevel> HISTORY_READ_WRITE = Set.of(HistoryRead, HistoryWrite);
 
     private final int value;
 

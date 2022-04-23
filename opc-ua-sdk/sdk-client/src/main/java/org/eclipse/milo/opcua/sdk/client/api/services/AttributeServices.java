@@ -10,13 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.services;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import com.google.common.collect.Streams;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -77,13 +76,15 @@ public interface AttributeServices {
             failed.completeExceptionally(new IllegalArgumentException("nodeIds.size() != attributeIds.size()"));
             return failed;
         } else {
-            Stream<ReadValueId> stream = Streams.zip(
-                nodeIds.stream(),
-                attributeIds.stream(),
-                (nId, aId) -> new ReadValueId(nId, aId, null, QualifiedName.NULL_VALUE)
-            );
+            var readValueIds = new ArrayList<ReadValueId>(nodeIds.size());
 
-            return read(maxAge, timestampsToReturn, stream.collect(Collectors.toList()))
+            for (int i = 0; i < nodeIds.size(); i++) {
+                NodeId nodeId = nodeIds.get(i);
+                UInteger attributeId = attributeIds.get(i);
+                readValueIds.add(new ReadValueId(nodeId, attributeId, null, QualifiedName.NULL_VALUE));
+            }
+
+            return read(maxAge, timestampsToReturn, readValueIds)
                 .thenApply(r -> l(r.getResults()));
         }
     }
@@ -152,13 +153,15 @@ public interface AttributeServices {
             failed.completeExceptionally(new IllegalArgumentException("nodeIds.size() != values.size()"));
             return failed;
         } else {
-            Stream<WriteValue> stream = Streams.zip(
-                nodeIds.stream(),
-                values.stream(),
-                (nodeId, value) -> new WriteValue(nodeId, uint(13), null, value)
-            );
+            var writeValues = new ArrayList<WriteValue>(nodeIds.size());
 
-            return write(stream.collect(Collectors.toList()))
+            for (int i = 0; i < nodeIds.size(); i++) {
+                NodeId nodeId = nodeIds.get(i);
+                DataValue value = values.get(i);
+                writeValues.add(new WriteValue(nodeId, AttributeId.Value.uid(), null, value));
+            }
+
+            return write(writeValues)
                 .thenApply(response -> l(response.getResults()));
         }
     }

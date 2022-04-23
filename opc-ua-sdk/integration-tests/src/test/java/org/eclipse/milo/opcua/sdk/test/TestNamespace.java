@@ -316,8 +316,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                         eventNode.setMessage(LocalizedText.english("event message!"));
                         eventNode.setSeverity(ushort(2));
 
-                        //noinspection UnstableApiUsage
-                        getServer().getEventBus().post(eventNode);
+                        getServer().getEventNotifier().fire(eventNode);
 
                         eventNode.delete();
                     } catch (Throwable e) {
