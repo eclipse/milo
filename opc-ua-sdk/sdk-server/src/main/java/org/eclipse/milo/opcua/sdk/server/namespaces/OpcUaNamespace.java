@@ -125,23 +125,23 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     public void onEventItemsCreated(List<EventItem> eventItems) {
         eventItems.stream()
             .filter(MonitoredItem::isSamplingEnabled)
-            .forEach(item -> server.getEventBus().register(item));
+            .forEach(item -> server.getEventNotifier().register(item));
     }
 
     @Override
     public void onEventItemsModified(List<EventItem> eventItems) {
         for (EventItem item : eventItems) {
             if (item.isSamplingEnabled()) {
-                server.getEventBus().register(item);
+                server.getEventNotifier().register(item);
             } else {
-                server.getEventBus().unregister(item);
+                server.getEventNotifier().unregister(item);
             }
         }
     }
 
     @Override
     public void onEventItemsDeleted(List<EventItem> eventItems) {
-        eventItems.forEach(item -> server.getEventBus().unregister(item));
+        eventItems.forEach(item -> server.getEventNotifier().unregister(item));
     }
 
     private void loadNodes() {
@@ -360,8 +360,8 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                     refreshEnd.setMessage(LocalizedText.english("RefreshEnd"));
                     refreshEnd.setSeverity(ushort(0));
 
-                    server.getEventBus().post(refreshStart);
-                    server.getEventBus().post(refreshEnd);
+                    server.getEventNotifier().fire(refreshStart);
+                    server.getEventNotifier().fire(refreshEnd);
 
                     refreshStart.delete();
                     refreshEnd.delete();

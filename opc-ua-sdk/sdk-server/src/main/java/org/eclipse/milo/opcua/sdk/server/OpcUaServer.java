@@ -12,6 +12,8 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,10 +25,13 @@ import java.util.stream.Stream;
 
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
+import org.eclipse.milo.opcua.sdk.server.api.EventListener;
+import org.eclipse.milo.opcua.sdk.server.api.EventNotifier;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
@@ -83,6 +88,7 @@ public class OpcUaServer {
 
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
+    private final EventNotifier eventNotifier = new ServerEventNotifier();
 
     private final UaStackServer stackServer;
 
@@ -198,6 +204,7 @@ public class OpcUaServer {
      *
      * @return the Server-wide {@link EventBus}.
      */
+    @Deprecated
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -209,6 +216,15 @@ public class OpcUaServer {
      */
     public EventFactory getEventFactory() {
         return eventFactory;
+    }
+
+    /**
+     * Get the Server's {@link EventNotifier}.
+     *
+     * @return the Server's {@link EventNotifier}.
+     */
+    public EventNotifier getEventNotifier() {
+        return eventNotifier;
     }
 
     public ObjectTypeManager getObjectTypeManager() {
@@ -249,6 +265,32 @@ public class OpcUaServer {
 
     public Map<NodeId, ReferenceType> getReferenceTypes() {
         return referenceTypes;
+    }
+
+    private static class ServerEventNotifier implements EventNotifier {
+
+        private final List<EventListener> eventListeners = Collections.synchronizedList(new ArrayList<>());
+
+        @Override
+        public void fire(BaseEventTypeNode event) {
+            List<EventListener> toNotify;
+            synchronized (eventListeners) {
+                toNotify = List.copyOf(eventListeners);
+            }
+
+            toNotify.forEach(eventListener -> eventListener.onEvent(event));
+        }
+
+        @Override
+        public void register(EventListener eventListener) {
+            eventListeners.add(eventListener);
+        }
+
+        @Override
+        public void unregister(EventListener eventListener) {
+            eventListeners.remove(eventListener);
+        }
+
     }
 
 }

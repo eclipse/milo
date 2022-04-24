@@ -102,7 +102,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         {"Variant", Identifiers.BaseDataType, new Variant(32)},
         {"Duration", Identifiers.Duration, new Variant(1.0)},
         {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
-    };
+        };
 
     private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
         {"BooleanArray", Identifiers.Boolean, false},
@@ -250,8 +250,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                         eventNode.setMessage(LocalizedText.english("event message!"));
                         eventNode.setSeverity(ushort(2));
 
-                        //noinspection UnstableApiUsage
-                        getServer().getEventBus().post(eventNode);
+                        getServer().getEventNotifier().fire(eventNode);
 
                         eventNode.delete();
                     } catch (Throwable e) {
