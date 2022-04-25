@@ -230,11 +230,17 @@ public class DataTypeDictionaryGenerator {
             String dataTypeName = dataTypeLocation.dataTypeName;
             String dictionaryNamespaceUri = dataTypeLocation.dictionaryNamespaceUri;
 
-            namespaces.add(dictionaryNamespaceUri);
+            if (!dictionaryNamespaceUri.isEmpty()) {
+                namespaces.add(dictionaryNamespaceUri);
+            }
 
             FieldType fieldType = new FieldType();
             fieldType.setName(fieldName);
-            fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            if (dictionaryNamespaceUri.isEmpty()) {
+                fieldType.setTypeName(new QName(namespaceUri, dataTypeName));
+            } else {
+                fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            }
 
             if (structureType == StructureType.StructureWithOptionalFields) {
                 if (field.getIsOptional()) {
