@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -100,7 +100,6 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
         if (diagnosticsEnabled.get()) {
-            //noinspection UnstableApiUsage
             server.getEventBus().register(eventSubscriber = new EventSubscriber());
         }
 
@@ -116,12 +115,10 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                         getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
 
                         if (eventSubscriber == null) {
-                            //noinspection UnstableApiUsage
                             server.getEventBus().register(eventSubscriber = new EventSubscriber());
                         }
                     } else if (previous && !current) {
                         if (eventSubscriber != null) {
-                            //noinspection UnstableApiUsage
                             server.getEventBus().unregister(eventSubscriber);
                             eventSubscriber = null;
                         }
@@ -162,7 +159,6 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         }
 
         if (eventSubscriber != null) {
-            //noinspection UnstableApiUsage
             server.getEventBus().unregister(eventSubscriber);
             eventSubscriber = null;
         }
