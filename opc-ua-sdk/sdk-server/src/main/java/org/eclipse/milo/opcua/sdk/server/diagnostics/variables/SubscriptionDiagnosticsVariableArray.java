@@ -100,7 +100,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
         if (diagnosticsEnabled.get()) {
-            server.getEventBus().register(eventSubscriber = new EventSubscriber());
+            server.getInternalEventBus().register(eventSubscriber = new EventSubscriber());
         }
 
         attributeObserver = (node, attributeId, value) -> {
@@ -115,11 +115,11 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
                         getSubscriptions().forEach(this::createSubscriptionDiagnosticsNode);
 
                         if (eventSubscriber == null) {
-                            server.getEventBus().register(eventSubscriber = new EventSubscriber());
+                            server.getInternalEventBus().register(eventSubscriber = new EventSubscriber());
                         }
                     } else if (previous && !current) {
                         if (eventSubscriber != null) {
-                            server.getEventBus().unregister(eventSubscriber);
+                            server.getInternalEventBus().unregister(eventSubscriber);
                             eventSubscriber = null;
                         }
 
@@ -159,7 +159,7 @@ public abstract class SubscriptionDiagnosticsVariableArray extends AbstractLifec
         }
 
         if (eventSubscriber != null) {
-            server.getEventBus().unregister(eventSubscriber);
+            server.getInternalEventBus().unregister(eventSubscriber);
             eventSubscriber = null;
         }
 

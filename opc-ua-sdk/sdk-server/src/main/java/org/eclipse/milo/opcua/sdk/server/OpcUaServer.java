@@ -198,14 +198,15 @@ public class OpcUaServer {
     }
 
     /**
-     * Get the Server-wide {@link EventBus}.
+     * Get an internal EventBus used to decouple communication between internal components of the
+     * Server implementation.
      * <p>
-     * Events posted to the EventBus are delivered synchronously to registered subscribers.
+     * This EventBus is not intended for use by user implementations.
      *
-     * @return the Server-wide {@link EventBus}.
+     * @return an internal EventBus used to decouple communication between internal components of
+     * the Server implementation.
      */
-    @Deprecated
-    public EventBus getEventBus() {
+    public EventBus getInternalEventBus() {
         return eventBus;
     }
 
