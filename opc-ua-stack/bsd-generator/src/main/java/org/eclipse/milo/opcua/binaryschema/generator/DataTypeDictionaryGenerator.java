@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -230,11 +230,17 @@ public class DataTypeDictionaryGenerator {
             String dataTypeName = dataTypeLocation.dataTypeName;
             String dictionaryNamespaceUri = dataTypeLocation.dictionaryNamespaceUri;
 
-            namespaces.add(dictionaryNamespaceUri);
+            if (!dictionaryNamespaceUri.isEmpty()) {
+                namespaces.add(dictionaryNamespaceUri);
+            }
 
             FieldType fieldType = new FieldType();
             fieldType.setName(fieldName);
-            fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            if (dictionaryNamespaceUri.isEmpty()) {
+                fieldType.setTypeName(new QName(namespaceUri, dataTypeName));
+            } else {
+                fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            }
 
             if (structureType == StructureType.StructureWithOptionalFields) {
                 if (field.getIsOptional()) {

@@ -857,6 +857,16 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 null,
                 uint(0),
                 false
+            ),
+            new StructureField(
+                "customEnumType",
+                LocalizedText.NULL_VALUE,
+                CustomEnumType.TYPE_ID
+                    .toNodeIdOrThrow(getServer().getNamespaceTable()),
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
             )
         };
 
@@ -970,7 +980,8 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         CustomStructType value = new CustomStructType(
             "foo",
             uint(42),
-            true
+            true,
+            CustomEnumType.Field0
         );
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -431,8 +431,6 @@ public class DataTypeDictionaryManager implements Lifecycle {
     ) {
 
         Function<NodeId, DataTypeLocation> dataTypeLookup = dataTypeId -> {
-            String dataTypeName;
-            String dictionaryNamespaceUri;
 
             UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
 
@@ -442,6 +440,18 @@ public class DataTypeDictionaryManager implements Lifecycle {
                 long id = ((UInteger) dataTypeId.getIdentifier()).longValue();
                 String uri = id <= 15L ? Namespaces.OPC_UA_BSD : Namespaces.OPC_UA;
                 return new DataTypeLocation(dataTypeNode.getBrowseName().getName(), uri);
+            }
+
+            QualifiedName parentTypeName = dataTypeNode.getReferences()
+                .stream()
+                .filter(Reference.SUBTYPE_OF)
+                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
+                .findFirst()
+                .map(UaNode::getBrowseName)
+                .orElse(QualifiedName.NULL_VALUE);
+
+            if (parentTypeName.equals(new QualifiedName(0, "Enumeration"))) {
+                return new DataTypeLocation(dataTypeNode.getBrowseName().getName(), "");
             }
 
             UaNode dataTypeEncodingNode = dataTypeNode.getReferences()
@@ -463,7 +473,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
             checkNotNull(dataTypeDescriptionNode, "dataTypeDescriptionNode for dataTypeId=" + dataTypeId);
 
-            dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
+            String dataTypeName = dataTypeDescriptionNode.getBrowseName().getName();
 
             UaNode dictionaryNode = dataTypeDescriptionNode.getReferences().stream()
                 .filter(Reference.COMPONENT_OF_PREDICATE)
@@ -473,7 +483,8 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
             checkNotNull(dictionaryNode, "dictionaryNode for dataTypeId=" + dataTypeId);
 
-            dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI).orElse(null);
+            String dictionaryNamespaceUri = dictionaryNode.getProperty(DataTypeDictionaryType.NAMESPACE_URI)
+                .orElse(null);
 
             checkNotNull(dictionaryNamespaceUri, "dictionaryNamespaceUri for dataTypeId=" + dataTypeId);
 

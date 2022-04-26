@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -171,10 +172,22 @@ public class SubscriptionManager {
         server.getInternalEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
-            if (cs == State.Closed) {
+            if (cs == State.Closing) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
-                server.getInternalEventBus().post(new SubscriptionDeletedEvent(subscription));
+                server.getInternalEventBus().post(new SubscriptionDeletedEvent(s));
+
+                /*
+                 * Notify AddressSpaces the items for this subscription are deleted.
+                 */
+
+                byMonitoredItemType(
+                    s.getMonitoredItems().values(),
+                    dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
+                    eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
+                );
+
+                s.getMonitoredItems().clear();
             }
         });
 
@@ -1086,7 +1099,10 @@ public class SubscriptionManager {
             return;
         }
 
-        if (subscriptions.isEmpty()) {
+        // waitList must also be empty because the last remaining subscription could have
+        // expired, which removes it from bookkeeping, but leaves it in the PublishQueue
+        // waitList if there were no available requests to send Bad_Timeout.
+        if (subscriptions.isEmpty() && publishQueue.isWaitListEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NoSubscription);
             return;
         }
@@ -1242,10 +1258,22 @@ public class SubscriptionManager {
         server.getInternalEventBus().post(new SubscriptionCreatedEvent(subscription));
 
         subscription.setStateListener((s, ps, cs) -> {
-            if (cs == State.Closed) {
+            if (cs == State.Closing) {
                 subscriptions.remove(s.getId());
                 server.getSubscriptions().remove(s.getId());
                 server.getInternalEventBus().post(new SubscriptionDeletedEvent(s));
+
+                /*
+                 * Notify AddressSpaces the items for this subscription are deleted.
+                 */
+
+                byMonitoredItemType(
+                    s.getMonitoredItems().values(),
+                    dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
+                    eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
+                );
+
+                s.getMonitoredItems().clear();
             }
         });
     }
@@ -1286,7 +1314,7 @@ public class SubscriptionManager {
      * @param eventItemConsumer a {@link Consumer} that accepts a non-empty list of {@link EventItem}s.
      */
     private static void byMonitoredItemType(
-        List<BaseMonitoredItem<?>> monitoredItems,
+        Collection<BaseMonitoredItem<?>> monitoredItems,
         Consumer<List<DataItem>> dataItemConsumer,
         Consumer<List<EventItem>> eventItemConsumer
     ) {

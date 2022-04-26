@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -894,7 +894,7 @@ public class SessionFsmFactory {
                 client.newRequestHeader(csr.getAuthenticationToken()),
                 buildClientSignature(client.getConfig(), csrNonce),
                 new SignedSoftwareCertificate[0],
-                new String[0],
+                client.getConfig().getSessionLocaleIds(),
                 ExtensionObject.encode(client.getStaticSerializationContext(), userIdentityToken),
                 userTokenSignature
             );

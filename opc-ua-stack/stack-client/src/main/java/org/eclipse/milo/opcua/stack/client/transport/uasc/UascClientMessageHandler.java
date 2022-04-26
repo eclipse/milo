@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,7 +31,6 @@ import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
@@ -516,8 +515,6 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                         secureChannel.setChannelId(oscr.getSecurityToken().getChannelId().longValue());
                         logger.debug("Received OpenSecureChannelResponse.");
 
-                        NonceUtil.validateNonce(oscr.getServerNonce(), secureChannel.getSecurityPolicy());
-
                         installSecurityToken(ctx, oscr);
 
                         handshakeFuture.complete(secureChannel);
@@ -540,17 +537,25 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         }
     }
 
-    private void installSecurityToken(ChannelHandlerContext ctx, OpenSecureChannelResponse response) {
-        ChannelSecurity.SecurityKeys newKeys = null;
+    private void installSecurityToken(
+        ChannelHandlerContext ctx,
+        OpenSecureChannelResponse response
+    ) throws UaException {
+
         if (response.getServerProtocolVersion().longValue() < PROTOCOL_VERSION) {
-            throw new UaRuntimeException(StatusCodes.Bad_ProtocolVersionUnsupported,
+            throw new UaException(StatusCodes.Bad_ProtocolVersionUnsupported,
                 "server protocol version unsupported: " + response.getServerProtocolVersion());
         }
 
+        ChannelSecurity.SecurityKeys newKeys = null;
         ChannelSecurityToken newToken = response.getSecurityToken();
 
         if (secureChannel.isSymmetricSigningEnabled()) {
-            secureChannel.setRemoteNonce(response.getServerNonce());
+            ByteString serverNonce = response.getServerNonce();
+
+            NonceUtil.validateNonce(serverNonce, secureChannel.getSecurityPolicy());
+
+            secureChannel.setRemoteNonce(serverNonce);
 
             newKeys = ChannelSecurity.generateKeyPair(
                 secureChannel,

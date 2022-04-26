@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -528,10 +528,17 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
 
     private static String getFilename(X509Certificate certificate) throws Exception {
         String[] ss = certificate.getSubjectX500Principal().getName().split(",");
-        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
         String thumbprint = ByteBufUtil.hexDump(sha1(certificate.getSignature()));
+        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
 
-        return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
+        return String.format("%s [%s].der", thumbprint, sanitizeForUseInFilename(name));
+    }
+
+    static String sanitizeForUseInFilename(String name) throws Exception {
+        String encoded = URLEncoder.encode(name, "UTF-8");
+
+        // '*' is excluded from escaping by URLEncoder
+        return encoded.replaceAll("\\*", "_");
     }
 
     private static void ensureDirectoryExists(File dir) throws IOException {
