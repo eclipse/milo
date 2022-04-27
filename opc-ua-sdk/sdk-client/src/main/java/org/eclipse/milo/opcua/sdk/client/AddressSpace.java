@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,14 +39,18 @@ import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -1139,20 +1144,24 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
 
             Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
             DataTypeDefinition dataTypeDefinition = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(11),
                 DataTypeDefinition.class
             );
@@ -1199,14 +1208,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1261,14 +1273,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1320,14 +1335,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1379,14 +1397,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1443,14 +1464,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1521,14 +1545,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1584,14 +1611,17 @@ public class AddressSpace {
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
             RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(7),
                 RolePermissionType[].class
             );
             RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(8),
                 RolePermissionType[].class
             );
             AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
                 attributeValues.get(9),
                 AccessRestrictionType.class
             );
@@ -1632,6 +1662,52 @@ public class AddressSpace {
             try {
                 return attributeClazz.cast(attributeValue);
             } catch (ClassCastException e) {
+                return null;
+            }
+        }
+    }
+
+    @Nullable
+    private static <T> T getAttributeOrNull(
+        SerializationContext context,
+        DataValue value,
+        Class<T> attributeClazz
+    ) {
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            return null;
+        } else {
+            Object o = value.getValue().getValue();
+
+            try {
+                if (o instanceof ExtensionObject) {
+                    ExtensionObject xo = (ExtensionObject) o;
+                    Object decoded = xo.decode(context);
+                    return attributeClazz.cast(decoded);
+                } else if (o instanceof ExtensionObject[]) {
+                    ExtensionObject[] xos = (ExtensionObject[]) o;
+                    Class<?> componentType = attributeClazz.getComponentType();
+                    Object array = Array.newInstance(componentType, xos.length);
+
+                    for (int i = 0; i < xos.length; i++) {
+                        ExtensionObject xo = xos[i];
+                        Object decoded = xo.decode(context);
+                        Array.set(array, i, componentType.cast(decoded));
+                    }
+
+                    return attributeClazz.cast(array);
+                } else if (OptionSetUInteger.class.isAssignableFrom(attributeClazz) && o instanceof UNumber) {
+                    Object optionSet = attributeClazz
+                        .getDeclaredConstructor(o.getClass())
+                        .newInstance(o);
+
+                    return attributeClazz.cast(optionSet);
+                } else {
+                    return null;
+                }
+            } catch (Throwable t) {
                 return null;
             }
         }

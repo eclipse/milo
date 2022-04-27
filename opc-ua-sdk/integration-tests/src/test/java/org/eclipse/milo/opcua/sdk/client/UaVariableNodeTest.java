@@ -59,7 +59,7 @@ public class UaVariableNodeTest extends AbstractClientServerTest {
 
     @Test
     public void readAttributeWithIncorrectDataType() throws UaException {
-        testNamespace.configureNode((nodeContext, nodeManager) -> {
+        testNamespace.configure((nodeContext, nodeManager) -> {
             org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode serverNode =
                 new org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode.UaVariableNodeBuilder(nodeContext)
                     .setNodeId(new NodeId(testNamespace.getNamespaceIndex(), "IncorrectMinimumSamplingIntervalDataType"))

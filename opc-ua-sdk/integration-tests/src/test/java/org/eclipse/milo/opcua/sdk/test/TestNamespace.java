@@ -356,7 +356,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
     }
 
-    public void configureNode(BiConsumer<UaNodeContext, UaNodeManager> consumer) {
+    public void configure(BiConsumer<UaNodeContext, UaNodeManager> consumer) {
         consumer.accept(getNodeContext(), getNodeManager());
     }
 
