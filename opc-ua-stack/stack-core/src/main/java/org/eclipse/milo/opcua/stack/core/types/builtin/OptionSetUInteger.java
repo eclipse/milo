@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
@@ -102,6 +103,19 @@ public abstract class OptionSetUInteger<F extends Enum<F> & OptionSetUInteger.Bi
      * @return the {@link Set} of fields that have their bit set.
      */
     public abstract Set<F> toSet();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OptionSetUInteger<?> that = (OptionSetUInteger<?>) o;
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 
     /**
      * Identifiers a type that has a corresponding bit index.
