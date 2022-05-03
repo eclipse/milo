@@ -183,4 +183,12 @@ public class NodeIdTest {
         assertEquals(xni.getNamespaceUri(), "urn:test");
     }
 
+    @Test
+    public void parseIdentifierContainingSemiColons() {
+        NodeId nodeId = NodeId.parse("ns=14;s=O=::/#pc;B=::/#pc;S=pc;");
+
+        assertEquals(nodeId.getNamespaceIndex(), ushort(14));
+        assertEquals(nodeId.getIdentifier(), "O=::/#pc;B=::/#pc;S=pc;");
+    }
+
 }
