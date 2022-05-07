@@ -102,14 +102,20 @@ public abstract class ManagedAddressSpace implements AddressSpace {
 
     @Override
     public void browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
-        if (nodeManager.containsNode(nodeId)) {
-            List<Reference> references = nodeManager.getReferences(nodeId);
+        if (viewDescription.getViewId().isNull()) {
+            if (nodeManager.containsNode(nodeId)) {
+                List<Reference> references = nodeManager.getReferences(nodeId);
 
-            logger.debug("Browsed {} references for {}", references.size(), nodeId);
+                logger.debug("Browsed {} references for {}", references.size(), nodeId);
 
-            context.success(references);
+                context.success(references);
+            } else {
+                context.failure(StatusCodes.Bad_NodeIdUnknown);
+            }
         } else {
-            context.failure(StatusCodes.Bad_NodeIdUnknown);
+            // ManagedAddressSpace does not support Views at this time, so any non-null viewId is
+            // unknown.
+            context.failure(StatusCodes.Bad_ViewIdUnknown);
         }
     }
 
