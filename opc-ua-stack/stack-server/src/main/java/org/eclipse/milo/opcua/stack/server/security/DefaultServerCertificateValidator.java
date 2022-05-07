@@ -75,6 +75,8 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
             long statusCode = e.getStatusCode().getValue();
 
+            LOGGER.debug("validateCertificateChain failed, underlying status: {}", statusCode, e);
+
             if (statusCode == StatusCodes.Bad_CertificateUntrusted) {
                 // servers need to report a less informative StatusCode if the
                 // certificate was not trusted, either explicitly or because it
@@ -82,7 +84,7 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
             } else {
-                throw e;
+                throw new UaException(e.getStatusCode());
             }
         }
 
@@ -101,6 +103,8 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
         } catch (UaException e) {
             long statusCode = e.getStatusCode().getValue();
 
+            LOGGER.debug("validateCertificateChain failed, underlying status: {}", statusCode, e);
+
             if (statusCode == StatusCodes.Bad_CertificateRevoked ||
                 statusCode == StatusCodes.Bad_CertificateIssuerRevoked
             ) {
@@ -110,7 +114,7 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
 
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
             } else {
-                throw e;
+                throw new UaException(e.getStatusCode());
             }
         }
     }
