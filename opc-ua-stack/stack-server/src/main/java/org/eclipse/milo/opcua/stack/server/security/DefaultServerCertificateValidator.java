@@ -80,7 +80,7 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
                 // certificate was not trusted, either explicitly or because it
                 // or one if its issuers was revoked.
 
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e.getMessage(), e);
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
             } else {
                 throw e;
             }
@@ -108,7 +108,7 @@ public class DefaultServerCertificateValidator implements ServerCertificateValid
                 // certificate was not trusted, either explicitly or because it
                 // or one if its issuers was revoked.
 
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e.getMessage(), e);
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
             } else {
                 throw e;
             }
