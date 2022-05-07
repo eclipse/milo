@@ -96,17 +96,27 @@ public class BrowseHelper {
         OpcUaServer server,
         ViewDescription viewDescription,
         UInteger maxReferencesPerNode,
-        BrowseDescription browseDescription) {
+        BrowseDescription browseDescription
+    ) {
 
-        Browse browse = new Browse(
-            context,
-            server,
-            viewDescription,
-            maxReferencesPerNode,
-            browseDescription
-        );
+        if (browseDescription.getBrowseDirection() == null) {
+            BrowseResult result = new BrowseResult(
+                new StatusCode(StatusCodes.Bad_BrowseDirectionInvalid),
+                ByteString.NULL_VALUE,
+                null
+            );
+            return CompletableFuture.completedFuture(result);
+        } else {
+            Browse browse = new Browse(
+                context,
+                server,
+                viewDescription,
+                maxReferencesPerNode,
+                browseDescription
+            );
 
-        return browse.browse();
+            return browse.browse();
+        }
     }
 
     public void browseNext(ServiceRequest service) {
