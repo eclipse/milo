@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.digitalpetri.netty</groupId>
             <artifactId>netty-channel-fsm</artifactId>
-            <version>0.7</version>
+            <version>0.8</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
