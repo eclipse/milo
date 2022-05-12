@@ -14,6 +14,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
@@ -80,6 +82,8 @@ public class OpcUaServer {
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
 
     private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
@@ -221,6 +225,10 @@ public class OpcUaServer {
 
     public VariableTypeManager getVariableTypeManager() {
         return variableTypeManager;
+    }
+
+    public Set<NodeId> getRegisteredViews() {
+        return registeredViews;
     }
 
     public Map<UInteger, Subscription> getSubscriptions() {
