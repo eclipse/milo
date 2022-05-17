@@ -285,7 +285,7 @@ public class BrowseHelper {
             boolean forward = masks.contains(BrowseResultMask.IsForward) && reference.isForward();
 
             return targetNodeId.toNodeId(server.getNamespaceTable()).map(nodeId -> {
-                CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
+                CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId);
 
                 CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {
                     if (masks.contains(BrowseResultMask.TypeDefinition) &&
@@ -299,9 +299,12 @@ public class BrowseHelper {
                                     referenceTypeId,
                                     forward,
                                     targetNodeId,
-                                    attributes.getBrowseName(),
-                                    attributes.getDisplayName(),
-                                    attributes.getNodeClass(),
+                                    masks.contains(BrowseResultMask.BrowseName) ?
+                                        attributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                                    masks.contains(BrowseResultMask.DisplayName) ?
+                                        attributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                                    masks.contains(BrowseResultMask.NodeClass) ?
+                                        attributes.getNodeClass() : NodeClass.Unspecified,
                                     typeDefinition
                                 )
                         );
@@ -311,9 +314,12 @@ public class BrowseHelper {
                             referenceTypeId,
                             forward,
                             targetNodeId,
-                            attributes.getBrowseName(),
-                            attributes.getDisplayName(),
-                            attributes.getNodeClass(),
+                            masks.contains(BrowseResultMask.BrowseName) ?
+                                attributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                            masks.contains(BrowseResultMask.DisplayName) ?
+                                attributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                            masks.contains(BrowseResultMask.NodeClass) ?
+                                attributes.getNodeClass() : NodeClass.Unspecified,
                             ExpandedNodeId.NULL_VALUE
                         ));
                     }
@@ -348,7 +354,7 @@ public class BrowseHelper {
             });
         }
 
-        private CompletableFuture<BrowseAttributes> browseAttributes(NodeId nodeId, EnumSet<BrowseResultMask> masks) {
+        private CompletableFuture<BrowseAttributes> browseAttributes(NodeId nodeId) {
             List<ReadValueId> readValueIds = Lists.newArrayList();
 
             readValueIds.add(new ReadValueId(nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE));
@@ -369,25 +375,19 @@ public class BrowseHelper {
                 LocalizedText displayName = LocalizedText.NULL_VALUE;
                 NodeClass nodeClass = NodeClass.Unspecified;
 
-                if (masks.contains(BrowseResultMask.BrowseName)) {
-                    DataValue value0 = values.get(0);
-                    if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
-                        browseName = (QualifiedName) value0.getValue().getValue();
-                    }
+                DataValue value0 = values.get(0);
+                if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
+                    browseName = (QualifiedName) value0.getValue().getValue();
                 }
 
-                if (masks.contains(BrowseResultMask.DisplayName)) {
-                    DataValue value1 = values.get(1);
-                    if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
-                        displayName = (LocalizedText) value1.getValue().getValue();
-                    }
+                DataValue value1 = values.get(1);
+                if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
+                    displayName = (LocalizedText) value1.getValue().getValue();
                 }
 
-                if (masks.contains(BrowseResultMask.NodeClass)) {
-                    DataValue value2 = values.get(2);
-                    if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
-                        nodeClass = (NodeClass) value2.getValue().getValue();
-                    }
+                DataValue value2 = values.get(2);
+                if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
+                    nodeClass = (NodeClass) value2.getValue().getValue();
                 }
 
                 return new BrowseAttributes(browseName, displayName, nodeClass);
