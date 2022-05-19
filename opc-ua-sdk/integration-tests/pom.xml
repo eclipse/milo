@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>opc-ua-sdk</artifactId>
-        <version>0.6.6-SNAPSHOT</version>
+        <version>0.6.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>integration-tests</artifactId>
