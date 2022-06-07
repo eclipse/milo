@@ -84,8 +84,8 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     UInteger getKeepAliveTimeout();
 
     /**
-     * The multiplier applied to a subscription's expected keep-alive interval, used the watchdog
-     * timer to determine how "late" a keep-alive can arrive before it fires.
+     * The multiplier applied to a subscription's expected keep-alive interval, used by the
+     * watchdog timer to determine how "late" a keep-alive can arrive before it fires.
      *
      * @return the multiplier applied to a subscription's expected keep-alive interval.
      */
