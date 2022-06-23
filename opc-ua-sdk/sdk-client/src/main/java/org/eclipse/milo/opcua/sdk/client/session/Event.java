@@ -199,4 +199,11 @@ interface Event {
         }
     }
 
+    class ConnectionLost implements Event {
+        @Override
+        public String toString() {
+            return getClass().getSimpleName();
+        }
+    }
+
 }
