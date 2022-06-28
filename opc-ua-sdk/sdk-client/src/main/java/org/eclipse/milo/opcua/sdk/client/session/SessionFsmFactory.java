@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.digitalpetri.netty.fsm.ChannelFsm;
 import com.digitalpetri.strictmachine.Fsm;
 import com.digitalpetri.strictmachine.FsmContext;
 import com.digitalpetri.strictmachine.dsl.ActionContext;
@@ -39,6 +40,8 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionFuture;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
+import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -101,7 +104,8 @@ public class SessionFsmFactory {
 
     private static final int MAX_WAIT_SECONDS = 16;
 
-    private SessionFsmFactory() {}
+    private SessionFsmFactory() {
+    }
 
     public static SessionFsm newSessionFsm(OpcUaClient client) {
         FsmBuilder<State, Event> builder = new FsmBuilder<>(
@@ -497,7 +501,9 @@ public class SessionFsmFactory {
         fb.when(State.Active)
             .on(e ->
                 e.getClass() == Event.KeepAliveFailure.class ||
-                    e.getClass() == Event.ServiceFault.class)
+                    e.getClass() == Event.ServiceFault.class ||
+                    e.getClass() == Event.ConnectionLost.class
+            )
             .transitionTo(State.CreatingWait);
 
 
@@ -526,6 +532,33 @@ public class SessionFsmFactory {
                 KEY_SESSION.set(ctx, event.session);
 
                 SessionFuture sessionFuture = KEY_SESSION_FUTURE.get(ctx);
+
+                UaTransport transport = client.getStackClient().getTransport();
+
+                if (transport instanceof OpcTcpTransport) {
+                    ChannelFsm channelFsm = ((OpcTcpTransport) transport).channelFsm();
+
+                    channelFsm.addTransitionListener(new ChannelFsm.TransitionListener() {
+                        @Override
+                        public void onStateTransition(
+                            com.digitalpetri.netty.fsm.State from,
+                            com.digitalpetri.netty.fsm.State to,
+                            com.digitalpetri.netty.fsm.Event via
+                        ) {
+
+                            if (from == com.digitalpetri.netty.fsm.State.Connected &&
+                                to != com.digitalpetri.netty.fsm.State.Connected
+                            ) {
+
+                                channelFsm.removeTransitionListener(this);
+
+                                LOGGER.debug("ChannelFsm transition from={} to={} via={}", from, to, via);
+
+                                ctx.fireEvent(new Event.ConnectionLost());
+                            }
+                        }
+                    });
+                }
 
                 client.getConfig().getExecutor().execute(() ->
                     sessionFuture.future.complete(event.session)
