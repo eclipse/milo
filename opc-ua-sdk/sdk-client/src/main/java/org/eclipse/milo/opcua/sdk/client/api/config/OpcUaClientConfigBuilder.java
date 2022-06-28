@@ -49,6 +49,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     private UInteger keepAliveFailuresAllowed = uint(1);
     private UInteger keepAliveInterval = uint(5000);
     private UInteger keepAliveTimeout = uint(5000);
+    private double subscriptionWatchdogMultiplier = 2.0;
 
     public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
         this.applicationName = applicationName;
@@ -107,6 +108,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setKeepAliveTimeout(UInteger keepAliveTimeout) {
         this.keepAliveTimeout = keepAliveTimeout;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setSubscriptionWatchdogMultiplier(double subscriptionWatchdogMultiplier) {
+        this.subscriptionWatchdogMultiplier = subscriptionWatchdogMultiplier;
         return this;
     }
 
@@ -218,7 +224,8 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             identityProvider,
             keepAliveFailuresAllowed,
             keepAliveInterval,
-            keepAliveTimeout
+            keepAliveTimeout,
+            subscriptionWatchdogMultiplier
         );
     }
 
@@ -237,6 +244,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final UInteger keepAliveFailuresAllowed;
         private final UInteger keepAliveInterval;
         private final UInteger keepAliveTimeout;
+        private final double subscriptionWatchdogMultiplier;
 
         OpcUaClientConfigImpl(
             UaStackClientConfig stackClientConfig,
@@ -251,7 +259,8 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             IdentityProvider identityProvider,
             UInteger keepAliveFailuresAllowed,
             UInteger keepAliveInterval,
-            UInteger keepAliveTimeout
+            UInteger keepAliveTimeout,
+            double subscriptionWatchdogMultiplier
         ) {
 
             this.stackClientConfig = stackClientConfig;
@@ -267,6 +276,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
             this.keepAliveInterval = keepAliveInterval;
             this.keepAliveTimeout = keepAliveTimeout;
+            this.subscriptionWatchdogMultiplier = subscriptionWatchdogMultiplier;
         }
 
         @Override
@@ -327,6 +337,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public UInteger getKeepAliveTimeout() {
             return keepAliveTimeout;
+        }
+
+        @Override
+        public double getSubscriptionWatchdogMultiplier() {
+            return subscriptionWatchdogMultiplier;
         }
 
         @Override

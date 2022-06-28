@@ -205,7 +205,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                     subscriptions.put(subscription.getSubscriptionId(), subscription);
 
-                    WatchdogTimer watchdogTimer = new WatchdogTimer(subscription);
+                    WatchdogTimer watchdogTimer = new WatchdogTimer(
+                        subscription,
+                        client.getConfig().getSubscriptionWatchdogMultiplier()
+                    );
                     watchdogTimers.put(subscription.getSubscriptionId(), watchdogTimer);
                     watchdogTimer.kick();
 
@@ -216,7 +219,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             } else {
                 subscriptions.put(subscription.getSubscriptionId(), subscription);
 
-                WatchdogTimer watchdogTimer = new WatchdogTimer(subscription);
+                WatchdogTimer watchdogTimer = new WatchdogTimer(
+                    subscription,
+                    client.getConfig().getSubscriptionWatchdogMultiplier()
+                );
                 watchdogTimers.put(subscription.getSubscriptionId(), watchdogTimer);
                 watchdogTimer.kick();
 
@@ -846,9 +852,11 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();
 
         private final OpcUaSubscription subscription;
+        private final double multiplier;
 
-        WatchdogTimer(OpcUaSubscription subscription) {
+        WatchdogTimer(OpcUaSubscription subscription, double multiplier) {
             this.subscription = subscription;
+            this.multiplier = Math.max(1.0, multiplier);
         }
 
         void kick() {
@@ -865,7 +873,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         private void scheduleNext() {
             long delay = Math.round(subscription.getRevisedPublishingInterval() *
-                subscription.getRevisedMaxKeepAliveCount().longValue() * 1.25);
+                subscription.getRevisedMaxKeepAliveCount().longValue() * multiplier);
 
             ScheduledFuture<?> nextSf = client.getConfig().getScheduledExecutor().schedule(
                 () -> client.getConfig().getExecutor().execute(this::notifyListeners),
