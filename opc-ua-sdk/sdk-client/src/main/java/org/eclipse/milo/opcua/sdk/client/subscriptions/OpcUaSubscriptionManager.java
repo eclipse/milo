@@ -847,6 +847,16 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         deliveryQueue.resume();
     }
 
+    /**
+     * Cancel all WatchdogTimers and clear the map.
+     * <p>
+     * Used to clean up after subscriptions are deleted implicitly by closing the Session.
+     */
+    public void cancelWatchdogTimers() {
+        watchdogTimers.values().forEach(WatchdogTimer::cancel);
+        watchdogTimers.clear();
+    }
+
     private class WatchdogTimer {
 
         private final AtomicReference<ScheduledFuture<?>> scheduledFuture = new AtomicReference<>();

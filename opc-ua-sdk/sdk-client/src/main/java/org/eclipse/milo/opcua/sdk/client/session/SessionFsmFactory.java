@@ -785,8 +785,11 @@ public class SessionFsmFactory {
         LOGGER.debug("[{}] Sending CloseSessionRequest...", ctx.getInstanceId());
 
         stackClient.sendRequest(request).whenCompleteAsync(
-            (csr, ex2) ->
-                closeFuture.complete(Unit.VALUE),
+            (csr, ex2) -> {
+                client.getSubscriptionManager().cancelWatchdogTimers();
+
+                closeFuture.complete(Unit.VALUE);
+            },
             client.getConfig().getExecutor()
         );
 
