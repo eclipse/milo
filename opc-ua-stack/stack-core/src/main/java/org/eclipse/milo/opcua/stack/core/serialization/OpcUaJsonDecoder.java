@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
@@ -36,6 +37,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
+
 public class OpcUaJsonDecoder implements UaDecoder {
 
     JsonReader jsonReader;
@@ -50,51 +55,262 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Boolean readBoolean(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readFloat: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.BOOLEAN) {
+                return jsonReader.nextBoolean();
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readBoolean: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Byte readSByte(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readSByte: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                return (byte) jsonReader.nextInt();
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readSByte: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Short readInt16(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readInt16: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                return (short) jsonReader.nextInt();
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readInt16: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Integer readInt32(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readInt32: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                return jsonReader.nextInt();
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readInt32: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Long readInt64(String field) throws UaSerializationException {
-        return null;
+        // Int64 and UInt64 values shall be formatted as a decimal number
+        // encoded as a JSON string (See the XML encoding of 64-bit values
+        // described in 5.3.1.3).
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readInt64: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                try {
+                    return Long.valueOf(jsonReader.nextString());
+                } catch (NumberFormatException e) {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                }
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readInt64: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public UByte readByte(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readByte: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                return ubyte(jsonReader.nextInt());
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readByte: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public UShort readUInt16(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readUInt16: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                return ushort(jsonReader.nextInt());
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readUInt16: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public UInteger readUInt32(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readUInt32: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                return uint(jsonReader.nextLong());
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readUInt32: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public ULong readUInt64(String field) throws UaSerializationException {
-        return null;
+        // Int64 and UInt64 values shall be formatted as a decimal number
+        // encoded as a JSON string (See the XML encoding of 64-bit values
+        // described in 5.3.1.3).
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readUInt64: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                try {
+                    return ULong.valueOf(jsonReader.nextString());
+                } catch (NumberFormatException e) {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                }
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readUInt64: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Float readFloat(String field) throws UaSerializationException {
+        // Normal Float and Double values shall be encoded as a JSON number.
+        // Special floating-point numbers such as positive infinity (INF),
+        // negative infinity (-INF) and not-a-number (NaN) shall be
+        // represented by the values "Infinity", "-Infinity" and "NaN" encoded
+        // as a JSON string.
+
         try {
             if (field != null) {
                 String nextName = jsonReader.nextName();
@@ -138,7 +354,51 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Double readDouble(String field) throws UaSerializationException {
-        return null;
+        // Normal Float and Double values shall be encoded as a JSON number.
+        // Special floating-point numbers such as positive infinity (INF),
+        // negative infinity (-INF) and not-a-number (NaN) shall be
+        // represented by the values "Infinity", "-Infinity" and "NaN" encoded
+        // as a JSON string.
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readDouble: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            switch (jsonReader.peek()) {
+                case NUMBER:
+                    return jsonReader.nextDouble();
+                case STRING: {
+                    String s = jsonReader.nextString();
+                    switch (s) {
+                        case "Infinity":
+                            return Double.POSITIVE_INFINITY;
+                        case "-Infinity":
+                            return Double.NEGATIVE_INFINITY;
+                        case "NaN":
+                            return Double.NaN;
+                        default:
+                            throw new UaSerializationException(
+                                StatusCodes.Bad_DecodingError,
+                                "readDouble: unexpected string value: " + s
+                            );
+                    }
+                }
+                default:
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "readDouble: unexpected token: " + jsonReader.peek()
+                    );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override

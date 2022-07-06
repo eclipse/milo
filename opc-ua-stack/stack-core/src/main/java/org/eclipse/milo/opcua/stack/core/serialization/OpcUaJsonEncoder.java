@@ -252,7 +252,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     public void writeFloat(String field, Float value) throws UaSerializationException {
         // Normal Float and Double values shall be encoded as a JSON number.
         // Special floating-point numbers such as positive infinity (INF),
-        // negative infinity (-INF) and not-a- number (NaN) shall be
+        // negative infinity (-INF) and not-a-number (NaN) shall be
         // represented by the values "Infinity", "-Infinity" and "NaN" encoded
         // as a JSON string.
 
@@ -278,7 +278,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     public void writeDouble(String field, Double value) throws UaSerializationException {
         // Normal Float and Double values shall be encoded as a JSON number.
         // Special floating-point numbers such as positive infinity (INF),
-        // negative infinity (-INF) and not-a- number (NaN) shall be
+        // negative infinity (-INF) and not-a-number (NaN) shall be
         // represented by the values "Infinity", "-Infinity" and "NaN" encoded
         // as a JSON string.
 
@@ -943,6 +943,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
                     "namespace not registered: " + xEncodingId.getNamespaceUri())
             );
 
+        @SuppressWarnings("unchecked")
         OpcUaJsonDataTypeCodec<UaMessage> codec =
             (OpcUaJsonDataTypeCodec<UaMessage>) serializationContext.getDataTypeManager().getCodec(encodingId);
 
