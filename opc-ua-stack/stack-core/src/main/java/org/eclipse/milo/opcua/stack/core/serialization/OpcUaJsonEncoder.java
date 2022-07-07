@@ -15,10 +15,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -53,40 +51,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class OpcUaJsonEncoder implements UaEncoder {
 
-    /**
-     * Shared ISO-8601 {@link DateFormat} instance.
-     * <p>
-     * Do not access directly; use {@link #dateTimeToIso8601UtcString(DateTime)}.
-     */
-    private static final DateFormat ISO_8601_UTC_DATE_FORMAT;
-
-    static {
-        ISO_8601_UTC_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        ISO_8601_UTC_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-
-    /**
-     * Minimum ISO-8601 formatted string.
-     */
-    static final String MIN_ISO_8601 = "0001-01-01T00:00:00Z";
-
-    /**
-     * Maximum ISO-8601 formatted string.
-     */
-    static final String MAX_ISO_8601 = "9999-12-31T23:59:59Z";
-
-    /**
-     * Minimum DateTime value that can be formatted in ISO-8601, i.e.
-     * "0001-01-01T00:00:00Z".
-     */
-    static final DateTime MIN_DATE_TIME = new DateTime(-504912960000000000L);
-
-    /**
-     * Maximum DateTime value that can be formatted in ISO-8601, i.e.
-     * "9999-12-31T23:59:59Z".
-     */
-    static final DateTime MAX_DATE_TIME = new DateTime(2650467743990000000L);
-
     boolean reversible = true;
     SerializationContext serializationContext;
 
@@ -119,18 +83,6 @@ public class OpcUaJsonEncoder implements UaEncoder {
     void reset(OutputStream outputStream) {
         jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream));
         jsonWriter.setHtmlSafe(false);
-    }
-
-    /**
-     * Format {@param dateTime} as an ISO-8601 String.
-     *
-     * @param dateTime the {@link DateTime} to format.
-     * @return an ISO-8601 formatted date string.
-     */
-    static String dateTimeToIso8601UtcString(DateTime dateTime) {
-        synchronized (ISO_8601_UTC_DATE_FORMAT) {
-            return ISO_8601_UTC_DATE_FORMAT.format(dateTime.getJavaDate());
-        }
     }
 
     @Override
@@ -330,12 +282,13 @@ public class OpcUaJsonEncoder implements UaEncoder {
             if (field != null) {
                 jsonWriter.name(field);
             }
-            if (value.getUtcTime() < MIN_DATE_TIME.getUtcTime()) {
-                jsonWriter.value(MIN_ISO_8601);
-            } else if (value.getUtcTime() > MAX_DATE_TIME.getUtcTime()) {
-                jsonWriter.value(MAX_ISO_8601);
+
+            if (value.getJavaInstant().isBefore(DateTime.MIN_ISO_8601_INSTANT)) {
+                jsonWriter.value(DateTime.MIN_ISO_8601_STRING);
+            } else if (value.getJavaInstant().isAfter(DateTime.MAX_ISO_8601_INSTANT)) {
+                jsonWriter.value(DateTime.MAX_ISO_8601_STRING);
             } else {
-                jsonWriter.value(dateTimeToIso8601UtcString(value));
+                jsonWriter.value(DateTimeFormatter.ISO_INSTANT.format(value.getJavaInstant()));
             }
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);

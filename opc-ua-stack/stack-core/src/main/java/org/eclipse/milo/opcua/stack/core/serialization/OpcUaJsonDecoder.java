@@ -12,6 +12,9 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -403,27 +406,169 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public String readString(String field) throws UaSerializationException {
-        return null;
+        // String values shall be encoded as JSON strings.
+        // Any characters which are not allowed in JSON strings are escaped
+        // using the rules defined in RFC 7159.
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readString: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                return jsonReader.nextString();
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readString: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public DateTime readDateTime(String field) throws UaSerializationException {
-        return null;
+        // DateTime values shall be formatted as specified by ISO 8601:2004
+        // and encoded as a JSON string.
+        // DateTime values which exceed the minimum or maximum values supported
+        // on a platform shall be encoded as "0001-01-01T00:00:00Z" or
+        // "9999-12-31T23:59:59Z" respectively. During decoding, these values
+        // shall be converted to the minimum or maximum values supported on the
+        // platform.
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readDateTime: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                String s = jsonReader.nextString();
+                try {
+                    Instant instant = Instant.parse(s);
+
+                    if (instant.isBefore(DateTime.MIN_ISO_8601_INSTANT)) {
+                        return DateTime.MIN_DATE_TIME;
+                    } else if (instant.isAfter(DateTime.MAX_ISO_8601_INSTANT)) {
+                        return DateTime.MAX_DATE_TIME;
+                    } else {
+                        return new DateTime(instant);
+                    }
+                } catch (DateTimeParseException e) {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                }
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readDateTime: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public UUID readGuid(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readGuid: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                String s = jsonReader.nextString();
+
+                return UUID.fromString(s);
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readGuid: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public ByteString readByteString(String field) throws UaSerializationException {
-        return null;
+        // ByteString values shall be formatted as a Base64 text and encoded as
+        // a JSON string.
+        // Any characters which are not allowed in JSON strings are escaped
+        // using the rules defined in RFC 7159.
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readByteString: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                String s = jsonReader.nextString();
+                byte[] bs = Base64.getDecoder().decode(s);
+
+                return ByteString.of(bs);
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readByteString: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public XmlElement readXmlElement(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readXmlElement: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.STRING) {
+                String s = jsonReader.nextString();
+
+                return new XmlElement(s);
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readXmlElement: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override

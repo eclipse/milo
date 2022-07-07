@@ -11,16 +11,51 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
 public final class DateTime {
 
+
+    /**
+     * Minimum ISO-8601 formatted string.
+     */
+    public static final String MIN_ISO_8601_STRING = "0001-01-01T00:00:00Z";
+
+    /**
+     * Maximum ISO-8601 formatted string.
+     */
+    public static final String MAX_ISO_8601_STRING = "9999-12-31T23:59:59Z";
+
+    /**
+     * Minimum {@link Instant} that can be formatted in ISO-8601, i.e.
+     * "0001-01-01T00:00:00Z".
+     */
+    public static final Instant MIN_ISO_8601_INSTANT = Instant.parse(MIN_ISO_8601_STRING);
+
+    /**
+     * Minimum {@link Instant} that can be formatted in ISO-8601, i.e.
+     * "0001-01-01T00:00:00Z".
+     */
+    public static final Instant MAX_ISO_8601_INSTANT = Instant.parse(MAX_ISO_8601_STRING);
+
+    /**
+     * Minimum DateTime that can be represented on this "DevelopmentPlatform".
+     */
+    public static final DateTime MIN_DATE_TIME = new DateTime(MIN_ISO_8601_INSTANT);
+
+    /**
+     * Maximum DateTime that can be represented on this "DevelopmentPlatform".
+     */
+    public static final DateTime MAX_DATE_TIME = new DateTime(MAX_ISO_8601_INSTANT);
+
     /**
      * When {@code true}, {@link #now()} will use nanosecond precision.
      */
-    public static volatile boolean USE_NANOS = false;
+    public static volatile boolean USE_NANOS = true;
 
     public static final DateTime MIN_VALUE = new DateTime(0L);
 
@@ -31,80 +66,123 @@ public final class DateTime {
      */
     private static final long EPOCH_DELTA = 116444736000000000L;
 
-    private final long utcTime;
+    //private final long utcTime;
+    private final Instant instant;
 
     public DateTime() {
-        this(javaToUtc(System.currentTimeMillis()));
+        this.instant = Instant.now();
     }
 
+    @Deprecated
     public DateTime(long utcTime) {
-        this.utcTime = utcTime;
+        this.instant = Instant.ofEpochSecond(
+            utcToJava(utcTime) / 1_000,
+            (utcTime % 10_000_000) * 100
+        );
     }
 
     public DateTime(Date date) {
-        this(javaToUtc(date.getTime()));
+        this(date.toInstant());
     }
 
     public DateTime(Instant instant) {
-        this(javaToUtc(instant.toEpochMilli()) + (instant.getNano() % 1_000_000) / 100);
+//        this(
+//            Math.addExact(
+//                Math.multiplyExact(
+//                    Math.subtractExact(
+//                        instant.getEpochSecond(),
+//                        UTC_EPOCH.getEpochSecond()
+//                    ),
+//                    10_000_000L
+//                ),
+//                (instant.getNano() - UTC_EPOCH.getNano()) / 100
+//            )
+//        );
+//        this(javaToUtc(instant.toEpochMilli()) + (instant.getNano() % 1_000_000) / 100);
+        this.instant = instant;
     }
 
     /**
      * @return this time as 100 nanosecond intervals since UTC epoch.
      */
     public long getUtcTime() {
-        return utcTime;
+//        Math.addExact(
+//            Math.multiplyExact(
+//                Math.subtractExact(
+//                    instant.getEpochSecond(),
+//                    UTC_EPOCH.getEpochSecond()
+//                ),
+//                10_000_000L
+//            ),
+//            (instant.getNano() - UTC_EPOCH.getNano()) / 100
+//        );
+
+        return javaToUtc(instant.toEpochMilli()) + (instant.getNano() % 1_000_000) / 100;
     }
 
     /**
      * @return this time as milliseconds since Java epoch.
      */
     public long getJavaTime() {
-        return utcToJava(utcTime);
+        return getJavaDate().getTime();
     }
 
     /**
      * @return this time as a {@link Date}.
      */
     public Date getJavaDate() {
-        return new Date(utcToJava(utcTime));
+        return Date.from(instant);
     }
 
     /**
      * @return this time as an {@link Instant}.
      */
     public Instant getJavaInstant() {
-        return Instant.ofEpochSecond(utcToJava(utcTime) / 1_000, (utcTime % 10_000_000) * 100);
+        return instant;
+//        return Instant.ofEpochSecond(utcToJava(utcTime) / 1_000, (utcTime % 10_000_000) * 100);
     }
 
+    public boolean isValid() {
+        return instant.isAfter(MIN_ISO_8601_INSTANT) && instant.isBefore(MAX_ISO_8601_INSTANT);
+    }
+
+    public boolean isInvalid() {
+        return !isValid();
+    }
+
+    @Deprecated
     public boolean isNull() {
-        return utcTime == 0;
+        return getUtcTime() == 0;
+//        return utcTime == 0;
     }
 
+    @Deprecated
     public boolean isNotNull() {
         return !isNull();
+    }
+
+    public String toIso8601String() {
+        return DateTimeFormatter.ISO_INSTANT.format(instant);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         DateTime dateTime = (DateTime) o;
-
-        return utcTime == dateTime.utcTime;
+        return instant.equals(dateTime.instant);
     }
 
     @Override
     public int hashCode() {
-        return (int) (utcTime ^ (utcTime >>> 32));
+        return Objects.hash(instant);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("utcTime", utcTime)
-            .add("javaDate", getJavaDate())
+            .add("date", getJavaDate())
+            .add("instant", getJavaInstant())
             .toString();
     }
 
@@ -127,7 +205,7 @@ public final class DateTime {
      * @return a {@link DateTime} initialized to now with millisecond precision.
      */
     public static DateTime nowMillis() {
-        return new DateTime();
+        return new DateTime(new Date());
     }
 
     /**

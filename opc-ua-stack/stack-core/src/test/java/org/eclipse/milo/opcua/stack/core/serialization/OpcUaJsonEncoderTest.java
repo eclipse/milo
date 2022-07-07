@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
@@ -376,15 +377,15 @@ class OpcUaJsonEncoderTest {
             // DateTime values shall be formatted as specified by ISO 8601:2004
             // and encoded as a JSON string.
 
-            encoder.writeDateTime(null, OpcUaJsonEncoder.MIN_DATE_TIME);
-            assertEquals("\"" + OpcUaJsonEncoder.MIN_ISO_8601 + "\"", writer.toString());
+            encoder.writeDateTime(null, new DateTime(DateTime.MIN_ISO_8601_INSTANT));
+            assertEquals("\"" + DateTime.MIN_ISO_8601_STRING + "\"", writer.toString());
 
             encoder.reset(writer = new StringWriter());
-            encoder.writeDateTime(null, OpcUaJsonEncoder.MAX_DATE_TIME);
+            encoder.writeDateTime(null, new DateTime(DateTime.MAX_ISO_8601_INSTANT));
             assertEquals("\"9999-12-31T23:59:59Z\"", writer.toString());
 
-            DateTime now = DateTime.now();
-            String isoNow = OpcUaJsonEncoder.dateTimeToIso8601UtcString(now);
+            DateTime now = DateTime.nowNanos();
+            String isoNow = now.toIso8601String();
             encoder.reset(writer = new StringWriter());
             encoder.writeDateTime(null, now);
             assertEquals("\"" + isoNow + "\"", writer.toString());
@@ -396,17 +397,17 @@ class OpcUaJsonEncoderTest {
             // platform.
 
             encoder.reset(writer = new StringWriter());
-            encoder.writeDateTime(null, new DateTime(OpcUaJsonEncoder.MIN_DATE_TIME.getUtcTime() - 1));
-            assertEquals("\"" + OpcUaJsonEncoder.MIN_ISO_8601 + "\"", writer.toString());
+            encoder.writeDateTime(null, new DateTime(DateTime.MIN_ISO_8601_INSTANT.minus(1, ChronoUnit.SECONDS)));
+            assertEquals("\"" + DateTime.MIN_ISO_8601_STRING + "\"", writer.toString());
 
             encoder.reset(writer = new StringWriter());
-            encoder.writeDateTime(null, new DateTime(OpcUaJsonEncoder.MAX_DATE_TIME.getUtcTime() + 1));
-            assertEquals("\"" + OpcUaJsonEncoder.MAX_ISO_8601 + "\"", writer.toString());
+            encoder.writeDateTime(null, new DateTime(DateTime.MAX_ISO_8601_INSTANT.plus(1, ChronoUnit.SECONDS)));
+            assertEquals("\"" + DateTime.MAX_ISO_8601_STRING + "\"", writer.toString());
         }
 
         {
-            DateTime now = DateTime.now();
-            String isoNow = OpcUaJsonEncoder.dateTimeToIso8601UtcString(now);
+            DateTime now = DateTime.nowNanos();
+            String isoNow = now.toIso8601String();
 
             encoder.reset(writer = new StringWriter());
             encoder.jsonWriter.beginObject();
@@ -782,7 +783,7 @@ class OpcUaJsonEncoderTest {
         var encoder = new OpcUaJsonEncoder(writer);
 
         DateTime now = DateTime.now();
-        String isoNow = OpcUaJsonEncoder.dateTimeToIso8601UtcString(now);
+        String isoNow = now.toIso8601String();
 
         DataValue allFieldsValue = new DataValue(
             new Variant("foo"),

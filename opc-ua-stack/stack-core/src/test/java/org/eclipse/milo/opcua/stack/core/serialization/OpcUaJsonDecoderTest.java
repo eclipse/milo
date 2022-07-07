@@ -12,8 +12,16 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Base64;
+import java.util.Random;
+import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
@@ -319,6 +327,112 @@ class OpcUaJsonDecoderTest {
             decoder.readDouble("bar");
             decoder.jsonReader.endObject();
         });
+    }
+
+    @Test
+    void readString() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        decoder.reset(new StringReader("\"\""));
+        assertEquals("", decoder.readString(null));
+
+        decoder.reset(new StringReader("\"foo\""));
+        assertEquals("foo", decoder.readString(null));
+
+        decoder.reset(new StringReader("{\"foo\":\"bar\"}"));
+        decoder.jsonReader.beginObject();
+        assertEquals("bar", decoder.readString("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    @Test
+    void readDateTime() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        decoder.reset(new StringReader(String.format("\"%s\"", DateTime.MIN_ISO_8601_STRING)));
+        assertEquals(DateTime.MIN_DATE_TIME, decoder.readDateTime(null));
+
+        decoder.reset(new StringReader(String.format("\"%s\"", DateTime.MAX_ISO_8601_STRING)));
+        assertEquals(DateTime.MAX_DATE_TIME, decoder.readDateTime(null));
+
+        Instant minus1 = DateTime.MIN_ISO_8601_INSTANT.minus(1, ChronoUnit.SECONDS);
+        decoder.reset(new StringReader(String.format("\"%s\"", minus1)));
+        assertEquals(DateTime.MIN_DATE_TIME, decoder.readDateTime(null));
+
+        Instant plus1 = DateTime.MAX_ISO_8601_INSTANT.plus(1, ChronoUnit.SECONDS);
+        decoder.reset(new StringReader(String.format("\"%s\"", plus1)));
+        assertEquals(DateTime.MAX_DATE_TIME, decoder.readDateTime(null));
+
+        DateTime now = DateTime.nowNanos();
+        String isoNow = now.toIso8601String();
+        decoder.reset(new StringReader(String.format("\"%s\"", isoNow)));
+        assertEquals(now, decoder.readDateTime(null));
+
+        decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", isoNow)));
+        decoder.jsonReader.beginObject();
+        assertEquals(now, decoder.readDateTime("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    @Test
+    void readGuid() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        UUID uuid = UUID.randomUUID();
+
+        decoder.reset(new StringReader(String.format("\"%s\"", uuid.toString().toLowerCase())));
+        assertEquals(uuid, decoder.readGuid(null));
+
+        decoder.reset(new StringReader(String.format("\"%s\"", uuid.toString().toUpperCase())));
+        assertEquals(uuid, decoder.readGuid(null));
+
+        decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", uuid)));
+        decoder.jsonReader.beginObject();
+        assertEquals(uuid, decoder.readGuid("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    @Test
+    void readByteString() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        byte[] emptyBytes = new byte[0];
+        decoder.reset(new StringReader(String.format("\"%s\"", Base64.getEncoder().encodeToString(emptyBytes))));
+        assertEquals(ByteString.of(emptyBytes), decoder.readByteString(null));
+
+        byte[] randomBytes = randomBytes(16);
+        decoder.reset(new StringReader(String.format("\"%s\"", Base64.getEncoder().encodeToString(randomBytes))));
+        assertEquals(ByteString.of(randomBytes), decoder.readByteString(null));
+
+        decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", Base64.getEncoder().encodeToString(randomBytes))));
+        decoder.jsonReader.beginObject();
+        assertEquals(ByteString.of(randomBytes), decoder.readByteString("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    @Test
+    void readXmlElement() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        var emptyElement = new XmlElement("");
+        decoder.reset(new StringReader("\"\""));
+        assertEquals(emptyElement, decoder.readXmlElement(null));
+
+        var element = new XmlElement("<foo>bar</foo>");
+        decoder.reset(new StringReader(String.format("\"%s\"", element.getFragment())));
+        assertEquals(element, decoder.readXmlElement(null));
+
+        decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", element.getFragment())));
+        decoder.jsonReader.beginObject();
+        assertEquals(element, decoder.readXmlElement("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    private static byte[] randomBytes(int length) {
+        var random = new Random();
+        var bs = new byte[length];
+        random.nextBytes(bs);
+        return bs;
     }
 
 }
