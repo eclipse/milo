@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -427,6 +428,92 @@ class OpcUaJsonDecoderTest {
         assertEquals(element, decoder.readXmlElement("foo"));
         decoder.jsonReader.endObject();
     }
+
+    @Test
+    void readNodeId() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        // IdType == UInt32, Namespace = 0
+        var nodeId = new NodeId(0, 0);
+        decoder.reset(new StringReader("{\"Id\":0}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == UInt32, Namespace != 0
+        nodeId = new NodeId(1, 0);
+        decoder.reset(new StringReader("{\"Id\":0,\"Namespace\":1}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == String, Namespace = 0
+        nodeId = new NodeId(0, "foo");
+        decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\"}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == String, Namespace != 0
+        nodeId = new NodeId(1, "foo");
+        decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\",\"Namespace\":1}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == Guid, Namespace = 0
+        UUID uuid = UUID.randomUUID();
+        nodeId = new NodeId(0, uuid);
+        decoder.reset(new StringReader("{\"IdType\":2,\"Id\":\"" + uuid.toString().toUpperCase() + "\"}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == Guid, Namespace != 0
+        nodeId = new NodeId(1, uuid);
+        decoder.reset(new StringReader("{\"IdType\":2,\"Id\":\"" + uuid.toString().toUpperCase() + "\",\"Namespace\":1}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == ByteString, Namespace = 0
+        ByteString bs = ByteString.of(randomBytes(16));
+        nodeId = new NodeId(0, bs);
+        decoder.reset(new StringReader("{\"IdType\":3,\"Id\":\"" + Base64.getEncoder().encodeToString(bs.bytesOrEmpty()) + "\"}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        // IdType == ByteString, Namespace != 0
+        nodeId = new NodeId(1, bs);
+        decoder.reset(new StringReader("{\"IdType\":3,\"Id\":\"" + Base64.getEncoder().encodeToString(bs.bytesOrEmpty()) + "\",\"Namespace\":1}"));
+        assertEquals(nodeId, decoder.readNodeId(null));
+
+        nodeId = new NodeId(0, 0);
+        decoder.reset(new StringReader("{\"foo\":{\"Id\":0}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(nodeId, decoder.readNodeId("foo"));
+        decoder.jsonReader.endObject();
+    }
+
+    @Test
+    void readExpandedNodeId() throws IOException {}
+
+    @Test
+    void readStatusCode() throws IOException {}
+
+    @Test
+    void readQualifiedName() throws IOException {}
+
+    @Test
+    void readLocalizedText() throws IOException {}
+
+    @Test
+    void readExtensionObject() throws IOException {}
+
+    @Test
+    void readDataValue() throws IOException {}
+
+    @Test
+    void readVariant() throws IOException {}
+
+    @Test
+    void readDiagnosticInfo() throws IOException {}
+
+    @Test
+    void readMessage() throws IOException {}
+
+    @Test
+    void readEnum() throws IOException {}
+
+    @Test
+    void readStruct() throws IOException {}
 
     private static byte[] randomBytes(int length) {
         var random = new Random();

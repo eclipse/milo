@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -573,7 +574,91 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public NodeId readNodeId(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readNodeId: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            IdType idType = IdType.Numeric;
+            int namespaceIndex = 0;
+            Object id = null;
+
+            try {
+                jsonReader.beginObject();
+
+                while (jsonReader.peek() == JsonToken.NAME) {
+                    String propertyName = jsonReader.nextName();
+
+                    switch (propertyName) {
+                        case "IdType": {
+                            int value = jsonReader.nextInt();
+                            idType = IdType.from(value);
+                            if (idType == null) {
+                                throw new UaSerializationException(
+                                    StatusCodes.Bad_DecodingError,
+                                    "readNodeId: invalid IdType: " + value
+                                );
+                            }
+                            break;
+                        }
+                        case "Id": {
+                            switch (idType) {
+                                case Numeric:
+                                    id = uint(jsonReader.nextInt());
+                                    break;
+                                case String:
+                                    id = jsonReader.nextString();
+                                    break;
+                                case Guid:
+                                    id = UUID.fromString(jsonReader.nextString());
+                                    break;
+                                case Opaque:
+                                    id = ByteString.of(Base64.getDecoder().decode(jsonReader.nextString()));
+                                    break;
+                            }
+                            break;
+                        }
+                        case "Namespace": {
+                            namespaceIndex = jsonReader.nextInt();
+                            break;
+                        }
+                    }
+                }
+
+                jsonReader.endObject();
+
+                if (id == null) {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, "id == null");
+                } else {
+                    switch (idType) {
+                        case Numeric:
+                            assert id instanceof UInteger;
+                            return new NodeId(namespaceIndex, (UInteger) id);
+                        case String:
+                            assert id instanceof String;
+                            return new NodeId(namespaceIndex, (String) id);
+                        case Guid:
+                            assert id instanceof UUID;
+                            return new NodeId(namespaceIndex, (UUID) id);
+                        case Opaque:
+                            assert id instanceof ByteString;
+                            return new NodeId(namespaceIndex, (ByteString) id);
+                        default:
+                            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "idType: " + idType);
+                    }
+                }
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
