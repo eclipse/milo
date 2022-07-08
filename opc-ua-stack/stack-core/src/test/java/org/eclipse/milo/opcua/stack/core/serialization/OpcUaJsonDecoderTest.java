@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -29,6 +30,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.junit.jupiter.api.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -483,7 +486,24 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readExpandedNodeId() throws IOException {}
+    void readExpandedNodeId() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        // namespace URI specified
+        var xni = new ExpandedNodeId(ushort(0), "http://opcfoundation.org/UA/", "foo");
+        decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\",\"Namespace\":\"http://opcfoundation.org/UA/\"}"));
+        assertEquals(xni, decoder.readExpandedNodeId(null));
+
+        // remote server index
+        xni = new ExpandedNodeId(ushort(0), null, "foo", uint(1));
+        decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":1}"));
+        assertEquals(xni, decoder.readExpandedNodeId(null));
+
+        decoder.reset(new StringReader("{\"foo\":{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":1}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(xni, decoder.readExpandedNodeId("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
     void readStatusCode() throws IOException {}

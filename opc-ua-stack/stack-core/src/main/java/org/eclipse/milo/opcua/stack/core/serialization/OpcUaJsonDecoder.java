@@ -47,6 +47,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaJsonDecoder implements UaDecoder {
 
+    SerializationContext serializationContext;
+
     JsonReader jsonReader;
 
     public OpcUaJsonDecoder(Reader reader) {
@@ -634,7 +636,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 jsonReader.endObject();
 
                 if (id == null) {
-                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, "id == null");
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "readNodeId: id == null"
+                    );
                 } else {
                     switch (idType) {
                         case Numeric:
@@ -650,7 +655,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
                             assert id instanceof ByteString;
                             return new NodeId(namespaceIndex, (ByteString) id);
                         default:
-                            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "idType: " + idType);
+                            throw new UaSerializationException(
+                                StatusCodes.Bad_DecodingError,
+                                "readNodeId: idType: " + idType
+                            );
                     }
                 }
             } catch (IOException e) {
@@ -663,7 +671,101 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public ExpandedNodeId readExpandedNodeId(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readExpandedNodeId: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            IdType idType = IdType.Numeric;
+            Object id = null;
+            int namespaceIndex = 0;
+            String namespaceUri = null;
+            int serverIndex = 0;
+
+            try {
+                jsonReader.beginObject();
+
+                while (jsonReader.peek() == JsonToken.NAME) {
+                    String propertyName = jsonReader.nextName();
+
+                    switch (propertyName) {
+                        case "IdType": {
+                            int value = jsonReader.nextInt();
+                            idType = IdType.from(value);
+                            if (idType == null) {
+                                throw new UaSerializationException(
+                                    StatusCodes.Bad_DecodingError,
+                                    "readExpandedNodeId: invalid IdType: " + value
+                                );
+                            }
+                            break;
+                        }
+                        case "Id": {
+                            switch (idType) {
+                                case Numeric:
+                                    id = uint(jsonReader.nextInt());
+                                    break;
+                                case String:
+                                    id = jsonReader.nextString();
+                                    break;
+                                case Guid:
+                                    id = UUID.fromString(jsonReader.nextString());
+                                    break;
+                                case Opaque:
+                                    id = ByteString.of(Base64.getDecoder().decode(jsonReader.nextString()));
+                                    break;
+                            }
+                            break;
+                        }
+                        case "Namespace": {
+                            switch (jsonReader.peek()) {
+                                case NUMBER:
+                                    namespaceIndex = jsonReader.nextInt();
+                                    break;
+                                case STRING:
+                                    namespaceUri = jsonReader.nextString();
+                                    break;
+                                default:
+                                    throw new UaSerializationException(
+                                        StatusCodes.Bad_DecodingError,
+                                        "readExpandedNodeId: unexpected Namespace token: " + jsonReader.peek()
+                                    );
+                            }
+                            break;
+                        }
+                        case "ServerUri": {
+                            serverIndex = jsonReader.nextInt();
+                            break;
+                        }
+                    }
+                }
+
+                jsonReader.endObject();
+
+                if (id == null) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        "readExpandedNodeId: id == null"
+                    );
+                } else {
+                    if (namespaceUri == null) {
+                        return new ExpandedNodeId(ushort(namespaceIndex), null, id, uint(serverIndex));
+                    } else {
+                        return new ExpandedNodeId(ushort(namespaceIndex), namespaceUri, id, uint(serverIndex));
+                    }
+                }
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
