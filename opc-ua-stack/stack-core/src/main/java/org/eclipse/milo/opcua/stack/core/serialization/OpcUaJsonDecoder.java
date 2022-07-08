@@ -610,21 +610,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                             break;
                         }
                         case "Id": {
-                            switch (idType) {
-                                case Numeric:
-                                    id = uint(jsonReader.nextInt());
-                                    break;
-                                case String:
-                                    id = jsonReader.nextString();
-                                    break;
-                                case Guid:
-                                    id = UUID.fromString(jsonReader.nextString());
-                                    break;
-                                case Opaque:
-                                    id = ByteString.of(Base64.getDecoder().decode(jsonReader.nextString()));
-                                    break;
-                            }
-                            break;
+                            id = readIdObject(jsonReader, idType);
                         }
                         case "Namespace": {
                             namespaceIndex = jsonReader.nextInt();
@@ -707,20 +693,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                             break;
                         }
                         case "Id": {
-                            switch (idType) {
-                                case Numeric:
-                                    id = uint(jsonReader.nextInt());
-                                    break;
-                                case String:
-                                    id = jsonReader.nextString();
-                                    break;
-                                case Guid:
-                                    id = UUID.fromString(jsonReader.nextString());
-                                    break;
-                                case Opaque:
-                                    id = ByteString.of(Base64.getDecoder().decode(jsonReader.nextString()));
-                                    break;
-                            }
+                            id = readIdObject(jsonReader, idType);
                             break;
                         }
                         case "Namespace": {
@@ -768,9 +741,62 @@ public class OpcUaJsonDecoder implements UaDecoder {
         }
     }
 
+    /**
+     * Read the {@code id} Object for a {@link NodeId} or {@link ExpandedNodeId}.
+     *
+     * @param jsonReader the {@link JsonReader} to read from.
+     * @param idType     the expected {@link IdType}.
+     * @return the {@code id} Object read from {@code jsonReader}.
+     * @throws IOException if {@code jsonReader} throws while reading the next token.
+     */
+    private static Object readIdObject(JsonReader jsonReader, IdType idType) throws IOException {
+        Object id = null;
+        switch (idType) {
+            case Numeric:
+                id = uint(jsonReader.nextInt());
+                break;
+            case String:
+                id = jsonReader.nextString();
+                break;
+            case Guid:
+                id = UUID.fromString(jsonReader.nextString());
+                break;
+            case Opaque:
+                id = ByteString.of(Base64.getDecoder().decode(jsonReader.nextString()));
+                break;
+        }
+        return id;
+    }
+
     @Override
     public StatusCode readStatusCode(String field) throws UaSerializationException {
-        return null;
+        // StatusCode values shall be encoded as a JSON number for the
+        // reversible encoding.
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readStatusCode: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            if (jsonReader.peek() == JsonToken.NUMBER) {
+                long value = jsonReader.nextLong();
+
+                return new StatusCode(value);
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readStatusCode: unexpected token: " + jsonReader.peek()
+                );
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override

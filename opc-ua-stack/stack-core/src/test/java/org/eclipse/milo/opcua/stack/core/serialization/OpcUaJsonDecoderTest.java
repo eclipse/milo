@@ -18,11 +18,13 @@ import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
 
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -506,7 +508,34 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readStatusCode() throws IOException {}
+    void readStatusCode() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        decoder.reset(new StringReader("0"));
+        assertEquals(StatusCode.GOOD, decoder.readStatusCode(null));
+
+        decoder.reset(new StringReader(String.valueOf(StatusCode.UNCERTAIN.getValue())));
+        assertEquals(StatusCode.UNCERTAIN, decoder.readStatusCode(null));
+
+        decoder.reset(new StringReader(String.valueOf(StatusCode.BAD.getValue())));
+        assertEquals(StatusCode.BAD, decoder.readStatusCode(null));
+
+        StatusCode[] statusCodes = new StatusCode[]{
+            new StatusCode(StatusCodes.Good_Overload),
+            new StatusCode(StatusCodes.Uncertain_InitialValue),
+            new StatusCode(StatusCodes.Bad_DecodingError)
+        };
+
+        for (StatusCode statusCode : statusCodes) {
+            decoder.reset(new StringReader(String.valueOf(statusCode.getValue())));
+            assertEquals(statusCode, decoder.readStatusCode(null));
+        }
+
+        decoder.reset(new StringReader("{\"foo\":0}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(StatusCode.GOOD, decoder.readStatusCode("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
     void readQualifiedName() throws IOException {}
