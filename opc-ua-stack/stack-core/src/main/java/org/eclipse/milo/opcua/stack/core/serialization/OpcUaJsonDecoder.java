@@ -18,6 +18,8 @@ import java.util.Base64;
 import java.util.UUID;
 import java.util.function.Function;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -67,7 +69,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
-                        String.format("readFloat: %s != %s", field, nextName)
+                        String.format("readBoolean: %s != %s", field, nextName)
                     );
                 }
             }
@@ -611,6 +613,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                         }
                         case "Id": {
                             id = readIdObject(jsonReader, idType);
+                            break;
                         }
                         case "Namespace": {
                             namespaceIndex = jsonReader.nextInt();
@@ -889,7 +892,82 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public ExtensionObject readExtensionObject(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readExtensionObject: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            jsonReader.beginObject();
+
+            NodeId encodingId = null;
+            int encoding = 0;
+            Object body = null;
+
+            while (jsonReader.peek() == JsonToken.NAME) {
+                String nextName = jsonReader.nextName();
+
+                switch (nextName) {
+                    case "TypeId":
+                        encodingId = readNodeId(null);
+                        break;
+                    case "Encoding":
+                        encoding = jsonReader.nextInt();
+                        break;
+                    case "Body":
+                        switch (encoding) {
+                            case 0:
+                                body = JsonParser.parseReader(jsonReader);
+                                break;
+                            case 1:
+                                body = readByteString(null);
+                                break;
+                            case 2:
+                                body = readXmlElement(null);
+                                break;
+                        }
+                        break;
+                    default:
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readExtensionObject: unexpected field: " + nextName)
+                        );
+                }
+            }
+
+            jsonReader.endObject();
+
+            if (encodingId == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "readExtensionObject: encodingId == null"
+                );
+            } else {
+                switch (encoding) {
+                    case 0:
+                        assert body instanceof JsonElement;
+                        return new ExtensionObject(body.toString(), encodingId);
+                    case 1:
+                        assert body instanceof ByteString;
+                        return new ExtensionObject((ByteString) body, encodingId);
+                    case 2:
+                        assert body instanceof XmlElement;
+                        return new ExtensionObject((XmlElement) body, encodingId);
+                    default:
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            "readExtensionObject: unexpected encoding: " + encoding
+                        );
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override

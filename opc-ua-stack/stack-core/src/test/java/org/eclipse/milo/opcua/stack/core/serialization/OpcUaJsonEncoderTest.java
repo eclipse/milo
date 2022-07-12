@@ -757,7 +757,7 @@ class OpcUaJsonEncoderTest {
         );
 
         encoder.writeExtensionObject(null, jsonStringXo);
-        assertEquals("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":\"{\\\"foo\\\":\\\"bar\\\",\\\"baz\\\":42}\"}", writer.toString());
+        assertEquals("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":{\"foo\":\"bar\",\"baz\":42}}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
         encoder.writeExtensionObject(null, xmlElementXo);

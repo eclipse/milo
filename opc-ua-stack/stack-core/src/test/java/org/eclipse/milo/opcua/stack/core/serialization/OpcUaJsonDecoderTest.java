@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -581,7 +582,38 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readExtensionObject() throws IOException {}
+    void readExtensionObject() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        var jsonStringXo = new ExtensionObject(
+            "{\"foo\":\"bar\",\"baz\":42}",
+            new NodeId(2, 42)
+        );
+
+        var byteStringXo = new ExtensionObject(
+            ByteString.of(new byte[]{0x00, 0x01, 0x02, 0x03}),
+            new NodeId(2, 42)
+        );
+
+        var xmlElementXo = new ExtensionObject(
+            new XmlElement("<foo>bar</foo>"),
+            new NodeId(2, 42)
+        );
+
+        decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":{\"foo\":\"bar\",\"baz\":42}}"));
+        assertEquals(jsonStringXo, decoder.readExtensionObject(null));
+
+        decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":1,\"Body\":\"AAECAw==\"}"));
+        assertEquals(byteStringXo, decoder.readExtensionObject(null));
+
+        decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":2,\"Body\":\"<foo>bar</foo>\"}"));
+        assertEquals(xmlElementXo, decoder.readExtensionObject(null));
+
+        decoder.reset(new StringReader("{\"foo\":{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":{\"foo\":\"bar\",\"baz\":42}}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(jsonStringXo, decoder.readExtensionObject("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
     void readDataValue() throws IOException {}

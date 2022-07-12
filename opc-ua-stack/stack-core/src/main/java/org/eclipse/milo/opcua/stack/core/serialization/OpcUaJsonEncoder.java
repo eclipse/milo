@@ -537,7 +537,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
                 switch (value.getBodyType()) {
                     case JsonString:
                         // Encoding field omitted for JSON body
-                        jsonWriter.name("Body").value((String) value.getBody());
+                        jsonWriter.name("Body").jsonValue((String) value.getBody());
                         break;
                     case ByteString:
                         jsonWriter.name("Encoding").value(1);
