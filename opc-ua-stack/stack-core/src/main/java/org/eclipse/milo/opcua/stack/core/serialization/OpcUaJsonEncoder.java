@@ -509,8 +509,12 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
             if (reversible) {
                 jsonWriter.beginObject();
-                jsonWriter.name("Locale").value(value.getLocale());
-                jsonWriter.name("Text").value(value.getText());
+                if (value.getLocale() != null) {
+                    jsonWriter.name("Locale").value(value.getLocale());
+                }
+                if (value.getText() != null) {
+                    jsonWriter.name("Text").value(value.getText());
+                }
                 jsonWriter.endObject();
             } else {
                 jsonWriter.value(value.getText());

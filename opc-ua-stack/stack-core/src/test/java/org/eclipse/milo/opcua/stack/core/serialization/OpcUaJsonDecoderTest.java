@@ -23,7 +23,9 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -538,10 +540,45 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readQualifiedName() throws IOException {}
+    void readQualifiedName() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        decoder.reset(new StringReader("{}"));
+        assertEquals(new QualifiedName(0, null), decoder.readQualifiedName(null));
+
+        decoder.reset(new StringReader("{\"Uri\":1}"));
+        assertEquals(new QualifiedName(1, null), decoder.readQualifiedName(null));
+
+        decoder.reset(new StringReader("{\"Name\":\"foo\"}"));
+        assertEquals(new QualifiedName(0, "foo"), decoder.readQualifiedName(null));
+
+        decoder.reset(new StringReader("{\"Name\":\"foo\",\"Uri\":1}"));
+        assertEquals(new QualifiedName(1, "foo"), decoder.readQualifiedName(null));
+
+        decoder.reset(new StringReader("{\"foo\":{\"Name\":\"foo\"}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(new QualifiedName(0, "foo"), decoder.readQualifiedName("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
-    void readLocalizedText() throws IOException {}
+    void readLocalizedText() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        decoder.reset(new StringReader("{\"Locale\":\"en\",\"Text\":\"foo\"}"));
+        assertEquals(LocalizedText.english("foo"), decoder.readLocalizedText(null));
+
+        decoder.reset(new StringReader("{\"Locale\":\"en\"}"));
+        assertEquals(new LocalizedText("en", null), decoder.readLocalizedText(null));
+
+        decoder.reset(new StringReader("{\"Text\":\"foo\"}"));
+        assertEquals(new LocalizedText(null, "foo"), decoder.readLocalizedText(null));
+
+        decoder.reset(new StringReader("{\"foo\":{\"Locale\":\"en\",\"Text\":\"foo\"}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(LocalizedText.english("foo"), decoder.readLocalizedText("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
     void readExtensionObject() throws IOException {}

@@ -713,11 +713,15 @@ class OpcUaJsonEncoderTest {
 
         encoder.reset(writer = new StringWriter());
         encoder.writeLocalizedText(null, new LocalizedText("en", null));
-        assertEquals("{\"Locale\":\"en\",\"Text\":null}", writer.toString());
+        assertEquals("{\"Locale\":\"en\"}", writer.toString());
 
         encoder.reset(writer = new StringWriter());
         encoder.writeLocalizedText(null, new LocalizedText(null, "foo"));
-        assertEquals("{\"Locale\":null,\"Text\":\"foo\"}", writer.toString());
+        assertEquals("{\"Text\":\"foo\"}", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeLocalizedText(null, new LocalizedText(null, null));
+        assertEquals("{}", writer.toString());
 
         encoder.reversible = false;
         encoder.reset(writer = new StringWriter());

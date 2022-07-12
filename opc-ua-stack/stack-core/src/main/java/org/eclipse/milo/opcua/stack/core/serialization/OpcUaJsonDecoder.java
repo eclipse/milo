@@ -801,12 +801,90 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public QualifiedName readQualifiedName(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readQualifiedName: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            jsonReader.beginObject();
+
+            String name = null;
+            int namespaceIndex = 0;
+
+            while (jsonReader.peek() == JsonToken.NAME) {
+                String nextName = jsonReader.nextName();
+
+                switch (nextName) {
+                    case "Name":
+                        name = jsonReader.nextString();
+                        break;
+                    case "Uri":
+                        namespaceIndex = jsonReader.nextInt();
+                        break;
+                    default:
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readQualifiedName: unexpected field: " + nextName)
+                        );
+                }
+            }
+
+            jsonReader.endObject();
+
+            return new QualifiedName(namespaceIndex, name);
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public LocalizedText readLocalizedText(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readLocalizedText: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            jsonReader.beginObject();
+
+            String locale = null;
+            String text = null;
+
+            while (jsonReader.peek() == JsonToken.NAME) {
+                String nextName = jsonReader.nextName();
+
+                switch (nextName) {
+                    case "Locale":
+                        locale = jsonReader.nextString();
+                        break;
+                    case "Text":
+                        text = jsonReader.nextString();
+                        break;
+                    default:
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readLocalizedText: unexpected field: " + nextName)
+                        );
+                }
+            }
+
+            jsonReader.endObject();
+
+            return new LocalizedText(locale, text);
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
