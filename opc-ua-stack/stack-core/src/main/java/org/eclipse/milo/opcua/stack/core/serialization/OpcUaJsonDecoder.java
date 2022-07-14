@@ -12,8 +12,12 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.function.Function;
@@ -42,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -972,12 +977,240 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public DataValue readDataValue(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readDataValue: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            jsonReader.beginObject();
+
+            DataValue.Builder b = DataValue.newValue();
+            b.setStatus(StatusCode.GOOD);
+
+            while (jsonReader.peek() == JsonToken.NAME) {
+                String nextName = jsonReader.nextName();
+
+                switch (nextName) {
+                    case "Value":
+                        b.setValue(readVariant(null));
+                        break;
+
+                    case "Status":
+                        b.setStatus(readStatusCode(null));
+                        break;
+
+                    case "SourceTimestamp":
+                        b.setSourceTime(readDateTime(null));
+                        break;
+
+                    case "SourcePicoseconds":
+                        b.setSourcePicoseconds(readUInt16(null));
+                        break;
+
+                    case "ServerTimestamp":
+                        b.setServerTime(readDateTime(null));
+                        break;
+
+                    case "ServerPicoseconds":
+                        b.setServerPicoseconds(readUInt16(null));
+                        break;
+                }
+            }
+
+            jsonReader.endObject();
+
+            return b.build();
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Variant readVariant(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readDataValue: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            jsonReader.beginObject();
+
+            int typeId = 0;
+            JsonElement bodyElement = null;
+            int[] dimensions = null;
+
+            while (jsonReader.peek() == JsonToken.NAME) {
+                String nextName = jsonReader.nextName();
+
+                switch (nextName) {
+                    case "Type":
+                        typeId = jsonReader.nextInt();
+                        break;
+                    case "Body":
+                        bodyElement = JsonParser.parseReader(jsonReader);
+                        break;
+                    case "Dimensions":
+                        var dims = new ArrayList<Integer>();
+                        jsonReader.beginArray();
+                        while (jsonReader.peek() == JsonToken.NUMBER) {
+                            dims.add(jsonReader.nextInt());
+                        }
+                        jsonReader.endArray();
+                        dimensions = new int[dims.size()];
+                        for (int i = 0; i < dims.size(); i++) {
+                            dimensions[i] = dims.get(i);
+                        }
+                        break;
+                }
+            }
+
+            jsonReader.endObject();
+
+            if (bodyElement == null) {
+                return Variant.NULL_VALUE;
+            } else if (dimensions == null) {
+                // scalar or one-dimensional array value
+                JsonReader reader = jsonReader;
+                try {
+                    jsonReader = new JsonReader(new StringReader(bodyElement.toString()));
+
+                    if (bodyElement.isJsonArray()) {
+                        var elements = new ArrayList<>();
+                        jsonReader.beginArray();
+                        while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                            elements.add(readBuiltinTypeValue(null, typeId));
+                        }
+                        jsonReader.endArray();
+                        Object value = Array.newInstance(TypeUtil.getPrimitiveBackingClass(typeId), elements.size());
+                        for (int i = 0; i < elements.size(); i++) {
+                            Array.set(value, i, elements.get(i));
+                        }
+                        return new Variant(value);
+                    } else {
+                        Object value = readBuiltinTypeValue(null, typeId);
+                        return new Variant(value);
+                    }
+                } finally {
+                    jsonReader = reader;
+                }
+            } else {
+                // multi-dimensional array value
+                JsonReader reader = jsonReader;
+                try {
+                    jsonReader = new JsonReader(new StringReader(bodyElement.toString()));
+
+                    Object value = readFlattenedMultiDimensionalVariantValue(typeId, dimensions);
+
+                    return new Variant(value);
+                } finally {
+                    jsonReader = reader;
+                }
+            }
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    private Object readFlattenedMultiDimensionalVariantValue(int typeId, int[] dimensions) throws IOException {
+        jsonReader.beginArray();
+        try {
+            return readFlattenedMultiDimensionalVariantValue(typeId, dimensions, 0);
+        } finally {
+            jsonReader.endArray();
+        }
+    }
+
+    private Object readFlattenedMultiDimensionalVariantValue(int typeId, int[] dimensions, int dimensionIndex) {
+        Object value;
+        Class<?> backingClass = TypeUtil.getPrimitiveBackingClass(typeId);
+
+        if (dimensionIndex == dimensions.length - 1) {
+            value = Array.newInstance(backingClass, dimensions[dimensionIndex]);
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = readBuiltinTypeValue(null, typeId);
+                Array.set(value, i, e);
+            }
+        } else {
+            value = Array.newInstance(backingClass, Arrays.copyOfRange(dimensions, dimensionIndex, dimensions.length));
+            for (int i = 0; i < dimensions[dimensionIndex]; i++) {
+                Object e = readFlattenedMultiDimensionalVariantValue(typeId, dimensions, dimensionIndex + 1);
+                Array.set(value, i, e);
+            }
+        }
+
+        return value;
+    }
+
+    private Object readBuiltinTypeValue(String field, int typeId) throws UaSerializationException {
+        switch (typeId) {
+            case 1:
+                return readBoolean(field);
+            case 2:
+                return readSByte(field);
+            case 3:
+                return readByte(field);
+            case 4:
+                return readInt16(field);
+            case 5:
+                return readUInt16(field);
+            case 6:
+                return readInt32(field);
+            case 7:
+                return readUInt32(field);
+            case 8:
+                return readInt64(field);
+            case 9:
+                return readUInt64(field);
+            case 10:
+                return readFloat(field);
+            case 11:
+                return readDouble(field);
+            case 12:
+                return readString(field);
+            case 13:
+                return readDateTime(field);
+            case 14:
+                return readGuid(field);
+            case 15:
+                return readByteString(field);
+            case 16:
+                return readXmlElement(field);
+            case 17:
+                return readNodeId(field);
+            case 18:
+                return readExpandedNodeId(field);
+            case 19:
+                return readStatusCode(field);
+            case 20:
+                return readQualifiedName(field);
+            case 21:
+                return readLocalizedText(field);
+            case 22:
+                return readExtensionObject(field);
+            case 23:
+                return readDataValue(field);
+            case 24:
+                return readVariant(field);
+            case 25:
+                return readDiagnosticInfo(field);
+
+            default:
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "not a built-in type: " + typeId
+                );
+        }
     }
 
     @Override

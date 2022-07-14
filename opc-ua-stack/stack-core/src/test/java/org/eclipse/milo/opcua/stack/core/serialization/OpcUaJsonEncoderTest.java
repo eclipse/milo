@@ -817,7 +817,7 @@ class OpcUaJsonEncoderTest {
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setSourceTime(null)));
         assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow), writer.toString());
 
-        // omit "SourcePicoseconds
+        // omit "SourcePicoseconds"
         encoder.reset(writer = new StringWriter());
         encoder.writeDataValue(null, allFieldsValue.copy(b -> b.setSourcePicoseconds(null)));
         assertEquals(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow), writer.toString());

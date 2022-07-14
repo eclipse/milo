@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -616,10 +618,101 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readDataValue() throws IOException {}
+    void readDataValue() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        DateTime now = DateTime.now();
+        String isoNow = now.toIso8601String();
+
+        var allFieldsValue = new DataValue(
+            new Variant("foo"),
+            new StatusCode(StatusCodes.Good_Overload),
+            now,
+            ushort(100),
+            now,
+            ushort(200)
+        );
+
+        decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
+        assertEquals(allFieldsValue, decoder.readDataValue(null));
+
+        // omit "Value"
+        decoder.reset(new StringReader(String.format("{\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
+        assertEquals(allFieldsValue.copy(b -> b.setValue(Variant.NULL_VALUE)), decoder.readDataValue(null));
+
+        // omit "Status"
+        decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
+        assertEquals(allFieldsValue.copy(b -> b.setStatus(StatusCode.GOOD)), decoder.readDataValue(null));
+
+        // omit "SourceTimestamp"
+        decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow)));
+        assertEquals(allFieldsValue.copy(b -> b.setSourceTime(null)), decoder.readDataValue(null));
+
+        // omit "SourcePicoseconds"
+        decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
+        assertEquals(allFieldsValue.copy(b -> b.setSourcePicoseconds(null)), decoder.readDataValue(null));
+
+        // omit "ServerTimestamp"
+        decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerPicoseconds\":200}", isoNow)));
+        assertEquals(allFieldsValue.copy(b -> b.setServerTime(null)), decoder.readDataValue(null));
+
+        // omit "ServerPicoseconds"
+        decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\"}", isoNow, isoNow)));
+        assertEquals(allFieldsValue.copy(b -> b.setServerPicoseconds(null)), decoder.readDataValue(null));
+
+        // omit all fields
+        decoder.reset(new StringReader("{}"));
+        assertEquals(new DataValue(Variant.NULL_VALUE, StatusCode.GOOD, null), decoder.readDataValue(null));
+
+        decoder.reset(new StringReader(String.format("{\"foo\":{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}}", isoNow, isoNow)));
+        decoder.jsonReader.beginObject();
+        assertEquals(allFieldsValue, decoder.readDataValue("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
-    void readVariant() throws IOException {}
+    void readVariant() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        decoder.reset(new StringReader("{\"Type\":1,\"Body\":true}"));
+        assertEquals(new Variant(true), decoder.readVariant(null));
+
+        decoder.reset(new StringReader("{\"Type\":20,\"Body\":{\"Name\":\"foo\",\"Uri\":1}}"));
+        assertEquals(new Variant(new QualifiedName(1, "foo")), decoder.readVariant(null));
+
+        decoder.reset(new StringReader("{\"Type\":24,\"Body\":[{\"Type\":12,\"Body\":\"foo\"},{\"Type\":12,\"Body\":\"bar\"}]}"));
+        assertEquals(new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}), decoder.readVariant(null));
+
+        int[] value1d = {0, 1, 2, 3};
+        int[][] value2d = {
+            {0, 2, 3},
+            {1, 3, 4}
+        };
+        int[][][] value3d = {
+            {
+                {0, 1},
+                {2, 3}
+            },
+            {
+                {4, 5},
+                {6, 7},
+            }
+        };
+
+        decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,1,2,3]}"));
+        assertEquals(new Variant(value1d), decoder.readVariant(null));
+
+        decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,2,3,1,3,4],\"Dimensions\":[2,3]}"));
+        assertEquals(new Variant(value2d), decoder.readVariant(null));
+
+        decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,1,2,3,4,5,6,7],\"Dimensions\":[2,2,2]}"));
+        assertEquals(new Variant(value3d), decoder.readVariant(null));
+
+        decoder.reset(new StringReader("{\"foo\":{\"Type\":1,\"Body\":true}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(new Variant(true), decoder.readVariant("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
     void readDiagnosticInfo() throws IOException {}
