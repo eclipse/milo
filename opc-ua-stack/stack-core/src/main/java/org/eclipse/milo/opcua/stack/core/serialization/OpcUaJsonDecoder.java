@@ -1133,16 +1133,18 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     private Object readFlattenedMultiDimensionalVariantValue(int typeId, int[] dimensions, int dimensionIndex) {
         Object value;
-        Class<?> backingClass = TypeUtil.getPrimitiveBackingClass(typeId);
 
         if (dimensionIndex == dimensions.length - 1) {
-            value = Array.newInstance(backingClass, dimensions[dimensionIndex]);
+            value = Array.newInstance(TypeUtil.getPrimitiveBackingClass(typeId), dimensions[dimensionIndex]);
             for (int i = 0; i < dimensions[dimensionIndex]; i++) {
                 Object e = readBuiltinTypeValue(null, typeId);
                 Array.set(value, i, e);
             }
         } else {
-            value = Array.newInstance(backingClass, Arrays.copyOfRange(dimensions, dimensionIndex, dimensions.length));
+            value = Array.newInstance(
+                TypeUtil.getPrimitiveBackingClass(typeId),
+                Arrays.copyOfRange(dimensions, dimensionIndex, dimensions.length)
+            );
             for (int i = 0; i < dimensions[dimensionIndex]; i++) {
                 Object e = readFlattenedMultiDimensionalVariantValue(typeId, dimensions, dimensionIndex + 1);
                 Array.set(value, i, e);
