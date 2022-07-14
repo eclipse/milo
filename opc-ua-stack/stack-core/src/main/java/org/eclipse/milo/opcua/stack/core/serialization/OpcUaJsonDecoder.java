@@ -1217,7 +1217,69 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException {
-        return null;
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readDiagnosticInfo: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            jsonReader.beginObject();
+
+            int symbolicId = 0;
+            int namespaceUri = 0;
+            int locale = 0;
+            int localizedText = 0;
+            String additionalInfo = null;
+            StatusCode innerStatusCode = null;
+            DiagnosticInfo innerDiagnosticInfo = null;
+
+            while (jsonReader.peek() == JsonToken.NAME) {
+                String nextName = jsonReader.nextName();
+
+                switch (nextName) {
+                    case "SymbolicId":
+                        symbolicId = jsonReader.nextInt();
+                        break;
+                    case "NamespaceUri":
+                        namespaceUri = jsonReader.nextInt();
+                        break;
+                    case "Locale":
+                        locale = jsonReader.nextInt();
+                        break;
+                    case "LocalizedText":
+                        localizedText = jsonReader.nextInt();
+                        break;
+                    case "AdditionalInfo":
+                        additionalInfo = jsonReader.nextString();
+                        break;
+                    case "InnerStatusCode":
+                        innerStatusCode = readStatusCode(null);
+                        break;
+                    case "InnerDiagnosticInfo":
+                        innerDiagnosticInfo = readDiagnosticInfo(null);
+                        break;
+                }
+            }
+
+            jsonReader.endObject();
+
+            return new DiagnosticInfo(
+                namespaceUri,
+                symbolicId,
+                locale,
+                localizedText,
+                additionalInfo,
+                innerStatusCode,
+                innerDiagnosticInfo
+            );
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -715,7 +716,40 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readDiagnosticInfo() throws IOException {}
+    void readDiagnosticInfo() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        var diagnosticInfo = new DiagnosticInfo(
+            0,
+            1,
+            2,
+            3,
+            "foo",
+            null,
+            null
+        );
+
+        var nestedDiagnosticInfo = new DiagnosticInfo(
+            4,
+            5,
+            6,
+            7,
+            "bar",
+            StatusCode.GOOD,
+            diagnosticInfo
+        );
+
+        decoder.reset(new StringReader("{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}"));
+        assertEquals(diagnosticInfo, decoder.readDiagnosticInfo(null));
+
+        decoder.reset(new StringReader("{\"SymbolicId\":5,\"NamespaceUri\":4,\"Locale\":6,\"LocalizedText\":7,\"AdditionalInfo\":\"bar\",\"InnerStatusCode\":0,\"InnerDiagnosticInfo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}"));
+        assertEquals(nestedDiagnosticInfo, decoder.readDiagnosticInfo(null));
+
+        decoder.reset(new StringReader("{\"foo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(diagnosticInfo, decoder.readDiagnosticInfo("foo"));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
     void readMessage() throws IOException {}
