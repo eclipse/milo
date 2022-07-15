@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ import com.google.gson.stream.JsonToken;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaJsonDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -1284,172 +1288,306 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public UaMessage readMessage(String field) throws UaSerializationException {
-        return null;
+        try {
+            ExtensionObject xo = readExtensionObject(field);
+
+            return (UaMessage) xo.decode(serializationContext);
+        } catch (ClassCastException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
-    public <T extends Enum<?> & UaEnumeration> T readEnum(String field, Class<T> enumType) throws UaSerializationException {
-        return null;
+    public <T extends Enum<?> & UaEnumeration> T readEnum(
+        String field,
+        Class<T> enumType
+    ) throws UaSerializationException {
+
+        int value = readInt32(field);
+
+        try {
+            Method m = enumType.getDeclaredMethod("from", int.class);
+            Object o = m.invoke(null, value);
+            return enumType.cast(o);
+        } catch (ClassCastException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        return null;
+        @SuppressWarnings("unchecked")
+        OpcUaJsonDataTypeCodec<Object> codec =
+            (OpcUaJsonDataTypeCodec<Object>) serializationContext.getDataTypeManager()
+                .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+
+        if (codec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "readStruct: no codec registered: " + dataTypeId
+            );
+        }
+
+        return readStruct(field, codec);
     }
 
     @Override
     public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return null;
+        NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "readStruct: no codec registered: " + dataTypeId
+            ));
+
+        return readStruct(field, localDataTypeId);
     }
 
     @Override
     public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
-        return null;
+        if (codec instanceof OpcUaJsonDataTypeCodec) {
+            @SuppressWarnings("unchecked")
+            OpcUaJsonDataTypeCodec<Object> jsonCodec = (OpcUaJsonDataTypeCodec<Object>) codec;
+
+            try {
+                if (field != null) {
+                    String nextName = jsonReader.nextName();
+                    if (!field.equals(nextName)) {
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readStruct: %s != %s", field, nextName)
+                        );
+                    }
+                }
+
+                Object value;
+
+                jsonReader.beginObject();
+                value = jsonCodec.decode(serializationContext, this);
+                jsonReader.endObject();
+
+                return value;
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                new IllegalArgumentException("readStruct: codec: " + codec)
+            );
+        }
     }
 
     @Override
     public Boolean[] readBooleanArray(String field) throws UaSerializationException {
-        return new Boolean[0];
+        return readArray(field, this::readBoolean, Boolean.class);
     }
 
     @Override
     public Byte[] readSByteArray(String field) throws UaSerializationException {
-        return new Byte[0];
+        return readArray(field, this::readSByte, Byte.class);
     }
 
     @Override
     public Short[] readInt16Array(String field) throws UaSerializationException {
-        return new Short[0];
+        return readArray(field, this::readInt16, Short.class);
     }
 
     @Override
     public Integer[] readInt32Array(String field) throws UaSerializationException {
-        return new Integer[0];
+        return readArray(field, this::readInt32, Integer.class);
     }
 
     @Override
     public Long[] readInt64Array(String field) throws UaSerializationException {
-        return new Long[0];
+        return readArray(field, this::readInt64, Long.class);
     }
 
     @Override
     public UByte[] readByteArray(String field) throws UaSerializationException {
-        return new UByte[0];
+        return readArray(field, this::readByte, UByte.class);
     }
 
     @Override
     public UShort[] readUInt16Array(String field) throws UaSerializationException {
-        return new UShort[0];
+        return readArray(field, this::readUInt16, UShort.class);
     }
 
     @Override
     public UInteger[] readUInt32Array(String field) throws UaSerializationException {
-        return new UInteger[0];
+        return readArray(field, this::readUInt32, UInteger.class);
     }
 
     @Override
     public ULong[] readUInt64Array(String field) throws UaSerializationException {
-        return new ULong[0];
+        return readArray(field, this::readUInt64, ULong.class);
     }
 
     @Override
     public Float[] readFloatArray(String field) throws UaSerializationException {
-        return new Float[0];
+        return readArray(field, this::readFloat, Float.class);
     }
 
     @Override
     public Double[] readDoubleArray(String field) throws UaSerializationException {
-        return new Double[0];
+        return readArray(field, this::readDouble, Double.class);
     }
 
     @Override
     public String[] readStringArray(String field) throws UaSerializationException {
-        return new String[0];
+        return readArray(field, this::readString, String.class);
     }
 
     @Override
     public DateTime[] readDateTimeArray(String field) throws UaSerializationException {
-        return new DateTime[0];
+        return readArray(field, this::readDateTime, DateTime.class);
     }
 
     @Override
     public UUID[] readGuidArray(String field) throws UaSerializationException {
-        return new UUID[0];
+        return readArray(field, this::readGuid, UUID.class);
     }
 
     @Override
     public ByteString[] readByteStringArray(String field) throws UaSerializationException {
-        return new ByteString[0];
+        return readArray(field, this::readByteString, ByteString.class);
     }
 
     @Override
     public XmlElement[] readXmlElementArray(String field) throws UaSerializationException {
-        return new XmlElement[0];
+        return readArray(field, this::readXmlElement, XmlElement.class);
     }
 
     @Override
     public NodeId[] readNodeIdArray(String field) throws UaSerializationException {
-        return new NodeId[0];
+        return readArray(field, this::readNodeId, NodeId.class);
     }
 
     @Override
     public ExpandedNodeId[] readExpandedNodeIdArray(String field) throws UaSerializationException {
-        return new ExpandedNodeId[0];
+        return readArray(field, this::readExpandedNodeId, ExpandedNodeId.class);
     }
 
     @Override
     public StatusCode[] readStatusCodeArray(String field) throws UaSerializationException {
-        return new StatusCode[0];
+        return readArray(field, this::readStatusCode, StatusCode.class);
     }
 
     @Override
     public QualifiedName[] readQualifiedNameArray(String field) throws UaSerializationException {
-        return new QualifiedName[0];
+        return readArray(field, this::readQualifiedName, QualifiedName.class);
     }
 
     @Override
     public LocalizedText[] readLocalizedTextArray(String field) throws UaSerializationException {
-        return new LocalizedText[0];
+        return readArray(field, this::readLocalizedText, LocalizedText.class);
     }
 
     @Override
     public ExtensionObject[] readExtensionObjectArray(String field) throws UaSerializationException {
-        return new ExtensionObject[0];
+        return readArray(field, this::readExtensionObject, ExtensionObject.class);
     }
 
     @Override
     public DataValue[] readDataValueArray(String field) throws UaSerializationException {
-        return new DataValue[0];
+        return readArray(field, this::readDataValue, DataValue.class);
     }
 
     @Override
     public Variant[] readVariantArray(String field) throws UaSerializationException {
-        return new Variant[0];
+        return readArray(field, this::readVariant, Variant.class);
     }
 
     @Override
     public DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException {
-        return new DiagnosticInfo[0];
+        return readArray(field, this::readDiagnosticInfo, DiagnosticInfo.class);
     }
 
     @Override
     public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(String field, Class<T> enumType) throws UaSerializationException {
-        return new Object[0];
+        return readArray(field, s -> readEnum(s, enumType), enumType);
     }
 
     @Override
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
-        return new Object[0];
+        @SuppressWarnings("unchecked")
+        OpcUaJsonDataTypeCodec<Object> codec =
+            (OpcUaJsonDataTypeCodec<Object>) serializationContext.getDataTypeManager()
+                .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+
+        if (codec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "readStructArray: no codec registered: " + dataTypeId
+            );
+        }
+
+        try {
+            var elements = new ArrayList<>();
+
+            jsonReader.beginArray();
+            while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                elements.add(readStruct(null, codec));
+            }
+            jsonReader.endArray();
+
+            Object array = Array.newInstance(codec.getType());
+            for (int i = 0; i < elements.size(); i++) {
+                Array.set(array, i, elements.get(i));
+            }
+
+            return (Object[]) array;
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
     @Override
     public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return new Object[0];
+        NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "readStructArray: no codec registered: " + dataTypeId
+            ));
+
+        return readStructArray(field, localDataTypeId);
     }
 
     @Override
-    public <T> T[] readArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException {
-        return null;
+    public <T> T[] readArray(
+        String field,
+        Function<String, T> decoder,
+        Class<T> clazz
+    ) throws UaSerializationException {
+
+        try {
+            if (field != null) {
+                String nextName = jsonReader.nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readDataValue: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            var elements = new ArrayList<T>();
+
+            jsonReader.beginArray();
+            while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                elements.add(decoder.apply(null));
+            }
+            jsonReader.endArray();
+
+            Object array = Array.newInstance(clazz, elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+                Array.set(array, i, elements.get(i));
+            }
+
+            //noinspection unchecked
+            return (T[]) array;
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
     }
 
 }

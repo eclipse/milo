@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -752,13 +753,29 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    void readMessage() throws IOException {}
+    void readMessage() throws IOException {
+        // TODO
+    }
 
     @Test
-    void readEnum() throws IOException {}
+    void readEnum() throws IOException {
+        var decoder = new OpcUaJsonDecoder(new StringReader(""));
+
+        for (ApplicationType applicationType : ApplicationType.values()) {
+            decoder.reset(new StringReader(String.valueOf(applicationType.getValue())));
+            assertEquals(applicationType, decoder.readEnum(null, ApplicationType.class));
+        }
+
+        decoder.reset(new StringReader("{\"foo\":0}"));
+        decoder.jsonReader.beginObject();
+        assertEquals(ApplicationType.Server, decoder.readEnum("foo", ApplicationType.class));
+        decoder.jsonReader.endObject();
+    }
 
     @Test
-    void readStruct() throws IOException {}
+    void readStruct() throws IOException {
+        // TODO
+    }
 
     private static byte[] randomBytes(int length) {
         var random = new Random();
