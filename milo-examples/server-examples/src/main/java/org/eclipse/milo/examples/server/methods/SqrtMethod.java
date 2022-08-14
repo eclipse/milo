@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
         Identifiers.Double,
         ValueRanks.Scalar,
         null,
-        new LocalizedText("A value.")
+        new LocalizedText("The argument to the square root function.")
     );
 
     public static final Argument X_SQRT = new Argument(
@@ -35,7 +35,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
         Identifiers.Double,
         ValueRanks.Scalar,
         null,
-        new LocalizedText("A value.")
+        new LocalizedText("The square root of the input argument.")
     );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

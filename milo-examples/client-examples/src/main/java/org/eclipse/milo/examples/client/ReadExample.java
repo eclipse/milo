@@ -13,7 +13,6 @@ package org.eclipse.milo.examples.client;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -58,9 +57,10 @@ public class ReadExample implements ClientExample {
     }
 
     private CompletableFuture<List<DataValue>> readServerStateAndTime(OpcUaClient client) {
-        List<NodeId> nodeIds = ImmutableList.of(
+        List<NodeId> nodeIds = List.of(
             Identifiers.Server_ServerStatus_State,
-            Identifiers.Server_ServerStatus_CurrentTime);
+            Identifiers.Server_ServerStatus_CurrentTime
+        );
 
         return client.readValues(0.0, TimestampsToReturn.Both, nodeIds);
     }

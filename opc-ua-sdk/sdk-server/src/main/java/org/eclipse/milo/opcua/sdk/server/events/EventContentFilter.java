@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
@@ -146,7 +146,7 @@ public class EventContentFilter {
 
             UInteger attributeId = select.getAttributeId();
 
-            ImmutableSet<AttributeId> validAttributes =
+            Set<AttributeId> validAttributes =
                 AttributeId.getAttributes(relativeNode.getNodeClass());
 
             boolean validAttribute = AttributeId.from(attributeId)

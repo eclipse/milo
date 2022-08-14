@@ -13,9 +13,9 @@ package org.eclipse.milo.opcua.stack.core.util;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 import com.google.common.base.Preconditions;
-import com.google.common.primitives.Ints;
 
 public class ArrayUtil {
 
@@ -90,18 +90,18 @@ public class ArrayUtil {
     }
 
     public static int[] getDimensions(Object array) {
-        int[] dimensions = new int[0];
+        IntStream dimensions = IntStream.empty();
         Class<?> type = array.getClass();
 
         while (type.isArray()) {
             int length = array != null ? Array.getLength(array) : 0;
-            dimensions = Ints.concat(dimensions, new int[]{length});
+            dimensions = IntStream.concat(dimensions, IntStream.of(length));
 
             array = length > 0 ? Array.get(array, 0) : null;
             type = type.getComponentType();
         }
 
-        return dimensions;
+        return dimensions.toArray();
     }
 
     public static Class<?> getType(Object array) {

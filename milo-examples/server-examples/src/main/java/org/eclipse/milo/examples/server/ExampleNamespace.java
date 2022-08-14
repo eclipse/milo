@@ -102,7 +102,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         {"Variant", Identifiers.BaseDataType, new Variant(32)},
         {"Duration", Identifiers.Duration, new Variant(1.0)},
         {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
-    };
+        };
 
     private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
         {"BooleanArray", Identifiers.Boolean, false},
@@ -250,8 +250,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                         eventNode.setMessage(LocalizedText.english("event message!"));
                         eventNode.setSeverity(ushort(2));
 
-                        //noinspection UnstableApiUsage
-                        getServer().getEventBus().post(eventNode);
+                        getServer().getEventNotifier().fire(eventNode);
 
                         eventNode.delete();
                     } catch (Throwable e) {
@@ -656,14 +655,15 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             .build();
 
         // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
-        UaVariableNode foo = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("ObjectTypes/MyObjectType.Foo"))
-            .setAccessLevel(AccessLevel.READ_WRITE)
-            .setBrowseName(newQualifiedName("Foo"))
-            .setDisplayName(LocalizedText.english("Foo"))
-            .setDataType(Identifiers.Int16)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
-            .build();
+        UaVariableNode foo = UaVariableNode.build(getNodeContext(), b ->
+            b.setNodeId(newNodeId("ObjectTypes/MyObjectType.Foo"))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setBrowseName(newQualifiedName("Foo"))
+                .setDisplayName(LocalizedText.english("Foo"))
+                .setDataType(Identifiers.Int16)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build()
+        );
 
         foo.addReference(new Reference(
             foo.getNodeId(),
@@ -675,14 +675,15 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         foo.setValue(new DataValue(new Variant(0)));
         objectTypeNode.addComponent(foo);
 
-        UaVariableNode bar = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("ObjectTypes/MyObjectType.Bar"))
-            .setAccessLevel(AccessLevel.READ_WRITE)
-            .setBrowseName(newQualifiedName("Bar"))
-            .setDisplayName(LocalizedText.english("Bar"))
-            .setDataType(Identifiers.String)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
-            .build();
+        UaVariableNode bar = UaVariableNode.build(getNodeContext(), b ->
+            b.setNodeId(newNodeId("ObjectTypes/MyObjectType.Bar"))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setBrowseName(newQualifiedName("Bar"))
+                .setDisplayName(LocalizedText.english("Bar"))
+                .setDataType(Identifiers.String)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build()
+        );
 
         bar.addReference(new Reference(
             bar.getNodeId(),
@@ -695,11 +696,19 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         objectTypeNode.addComponent(bar);
 
         // Tell the ObjectTypeManager about our new type.
-        // This let's us use NodeFactory to instantiate instances of the type.
+        // This lets us use NodeFactory to instantiate instances of the type.
         getServer().getObjectTypeManager().registerObjectType(
             objectTypeNode.getNodeId(),
             UaObjectNode.class,
-            UaObjectNode::new
+            (context, nodeId, browseName, displayName, description, writeMask, userWriteMask) -> new UaObjectNode(
+                context,
+                nodeId,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask
+            )
         );
 
         // Add the inverse SubtypeOf relationship.
@@ -848,6 +857,16 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
                 null,
                 uint(0),
                 false
+            ),
+            new StructureField(
+                "customEnumType",
+                LocalizedText.NULL_VALUE,
+                CustomEnumType.TYPE_ID
+                    .toNodeIdOrThrow(getServer().getNamespaceTable()),
+                ValueRanks.Scalar,
+                null,
+                uint(0),
+                false
             )
         };
 
@@ -919,15 +938,16 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     private void addCustomEnumTypeVariable(UaFolderNode rootFolder) throws Exception {
         NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        UaVariableNode customEnumTypeVariable = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
-            .setAccessLevel(AccessLevel.READ_WRITE)
-            .setUserAccessLevel(AccessLevel.READ_WRITE)
-            .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
-            .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
-            .setDataType(dataTypeId)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
-            .build();
+        UaVariableNode customEnumTypeVariable = UaVariableNode.build(getNodeContext(), b ->
+            b.setNodeId(newNodeId("HelloWorld/CustomEnumTypeVariable"))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
+                .setBrowseName(newQualifiedName("CustomEnumTypeVariable"))
+                .setDisplayName(LocalizedText.english("CustomEnumTypeVariable"))
+                .setDataType(dataTypeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build()
+        );
 
         customEnumTypeVariable.setValue(new DataValue(new Variant(CustomEnumType.Field1)));
 
@@ -946,20 +966,22 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        UaVariableNode customStructTypeVariable = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
-            .setAccessLevel(AccessLevel.READ_WRITE)
-            .setUserAccessLevel(AccessLevel.READ_WRITE)
-            .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
-            .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
-            .setDataType(dataTypeId)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
-            .build();
+        UaVariableNode customStructTypeVariable = UaVariableNode.build(getNodeContext(), b ->
+            b.setNodeId(newNodeId("HelloWorld/CustomStructTypeVariable"))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
+                .setBrowseName(newQualifiedName("CustomStructTypeVariable"))
+                .setDisplayName(LocalizedText.english("CustomStructTypeVariable"))
+                .setDataType(dataTypeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build()
+        );
 
         CustomStructType value = new CustomStructType(
             "foo",
             uint(42),
-            true
+            true,
+            CustomEnumType.Field0
         );
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
@@ -985,15 +1007,16 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        UaVariableNode customUnionTypeVariable = UaVariableNode.builder(getNodeContext())
-            .setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))
-            .setAccessLevel(AccessLevel.READ_WRITE)
-            .setUserAccessLevel(AccessLevel.READ_WRITE)
-            .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
-            .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
-            .setDataType(dataTypeId)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
-            .build();
+        UaVariableNode customUnionTypeVariable = UaVariableNode.build(getNodeContext(), b ->
+            b.setNodeId(newNodeId("HelloWorld/CustomUnionTypeVariable"))
+                .setAccessLevel(AccessLevel.READ_WRITE)
+                .setUserAccessLevel(AccessLevel.READ_WRITE)
+                .setBrowseName(newQualifiedName("CustomUnionTypeVariable"))
+                .setDisplayName(LocalizedText.english("CustomUnionTypeVariable"))
+                .setDataType(dataTypeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build()
+        );
 
         CustomUnionType value = CustomUnionType.ofBar("hello");
 

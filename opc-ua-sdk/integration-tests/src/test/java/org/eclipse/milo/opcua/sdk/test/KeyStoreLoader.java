@@ -20,11 +20,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
@@ -68,11 +67,10 @@ class KeyStoreLoader {
                 .setCountryCode("US")
                 .setApplicationUri(applicationUri);
 
-            // Get as many hostnames and IP addresses as we can listed in the certificate.
-            Set<String> hostnames = Sets.union(
-                Sets.newHashSet(HostnameUtil.getHostname()),
-                HostnameUtil.getHostnames("0.0.0.0", false)
-            );
+            // Get as many hostnames and IP addresses as we can to list in the certificate.
+            var hostnames = new HashSet<String>();
+            hostnames.add(HostnameUtil.getHostname());
+            hostnames.addAll(HostnameUtil.getHostnames("0.0.0.0", false));
 
             for (String hostname : hostnames) {
                 if (IP_ADDR_PATTERN.matcher(hostname).matches()) {

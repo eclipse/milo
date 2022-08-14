@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
@@ -36,16 +38,59 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         UInteger userWriteMask,
         Boolean isAbstract,
         Boolean symmetric,
-        LocalizedText inverseName) {
+        LocalizedText inverseName
+    ) {
 
-        super(context, nodeId, NodeClass.ReferenceType,
-            browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            context,
+            nodeId,
+            NodeClass.ReferenceType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
 
         this.isAbstract = isAbstract;
         this.symmetric = symmetric;
         this.inverseName = inverseName;
     }
 
+    public UaReferenceTypeNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        Boolean isAbstract,
+        Boolean symmetric,
+        LocalizedText inverseName
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.ReferenceType,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.isAbstract = isAbstract;
+        this.symmetric = symmetric;
+        this.inverseName = inverseName;
+    }
 
     @Override
     public Boolean getIsAbstract() {

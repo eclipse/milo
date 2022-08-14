@@ -10,7 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
+
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
@@ -98,7 +99,7 @@ public class EndpointConfigurationTest {
         EndpointConfiguration endpointConfiguration =
             EndpointConfiguration.newBuilder().build();
 
-        ImmutableList<UserTokenPolicy> tokenPolicies = endpointConfiguration.getTokenPolicies();
+        List<UserTokenPolicy> tokenPolicies = endpointConfiguration.getTokenPolicies();
         assertEquals(tokenPolicies.size(), 1);
         assertEquals(tokenPolicies.get(0), EndpointConfiguration.Builder.USER_TOKEN_POLICY_ANONYMOUS);
     }

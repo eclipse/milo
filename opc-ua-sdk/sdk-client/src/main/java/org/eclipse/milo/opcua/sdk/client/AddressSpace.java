@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,23 +39,31 @@ import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1134,8 +1143,28 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
+            DataTypeDefinition dataTypeDefinition = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(11),
+                DataTypeDefinition.class
+            );
 
             return new UaDataTypeNode(
                 client,
@@ -1146,7 +1175,11 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
-                isAbstract
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
+                isAbstract,
+                dataTypeDefinition
             );
         } catch (Throwable t) {
             throw UaException.extract(t)
@@ -1174,9 +1207,24 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean executable = (Boolean) attributeValues.get(7).getValue().getValue();
-            Boolean userExecutable = (Boolean) attributeValues.get(8).getValue().getValue();
+            Boolean executable = (Boolean) attributeValues.get(10).getValue().getValue();
+            Boolean userExecutable = (Boolean) attributeValues.get(11).getValue().getValue();
 
             return new UaMethodNode(
                 client,
@@ -1187,6 +1235,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 executable,
                 userExecutable
             );
@@ -1221,8 +1272,23 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            UByte eventNotifier = (UByte) attributeValues.get(7).getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues.get(10).getValue().getValue();
 
             ObjectNodeConstructor constructor = client.getObjectTypeManager()
                 .getNodeConstructor(typeDefinitionId)
@@ -1237,6 +1303,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 eventNotifier
             );
         } catch (Throwable t) {
@@ -1265,8 +1334,23 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
+            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
 
             return new UaObjectTypeNode(
                 client,
@@ -1277,6 +1361,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 isAbstract
             );
         } catch (Throwable t) {
@@ -1309,10 +1396,25 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean isAbstract = (Boolean) attributeValues.get(7).getValue().getValue();
-            Boolean symmetric = (Boolean) attributeValues.get(8).getValue().getValue();
-            LocalizedText inverseName = getAttributeOrNull(attributeValues.get(9), LocalizedText.class);
+            Boolean isAbstract = (Boolean) attributeValues.get(10).getValue().getValue();
+            Boolean symmetric = (Boolean) attributeValues.get(11).getValue().getValue();
+            LocalizedText inverseName = getAttributeOrNull(attributeValues.get(12), LocalizedText.class);
 
             return new UaReferenceTypeNode(
                 client,
@@ -1323,6 +1425,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 isAbstract,
                 symmetric,
                 inverseName
@@ -1358,15 +1463,34 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            DataValue value = attributeValues.get(7);
-            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-            UByte accessLevel = (UByte) attributeValues.get(11).getValue().getValue();
-            UByte userAccessLevel = (UByte) attributeValues.get(12).getValue().getValue();
-            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(13), Double.class);
-            Boolean historizing = (Boolean) attributeValues.get(14).getValue().getValue();
+            DataValue value = attributeValues.get(10);
+            NodeId dataType = (NodeId) attributeValues.get(11).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(12).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(13), UInteger[].class);
+            UByte accessLevel = (UByte) attributeValues.get(14).getValue().getValue();
+            UByte userAccessLevel = (UByte) attributeValues.get(15).getValue().getValue();
+            Double minimumSamplingInterval = getAttributeOrNull(attributeValues.get(16), Double.class);
+            Boolean historizing = (Boolean) attributeValues.get(17).getValue().getValue();
+            AccessLevelExType accessLevelEx = getAttributeOrNull(
+                attributeValues.get(18),
+                AccessLevelExType.class
+            );
 
             VariableTypeManager.VariableNodeConstructor constructor = client.getVariableTypeManager()
                 .getNodeConstructor(typeDefinitionId)
@@ -1381,6 +1505,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
@@ -1388,7 +1515,8 @@ public class AddressSpace {
                 accessLevel,
                 userAccessLevel,
                 minimumSamplingInterval,
-                historizing
+                historizing,
+                accessLevelEx
             );
         } catch (Throwable t) {
             throw UaException.extract(t)
@@ -1416,12 +1544,27 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            DataValue value = attributeValues.get(7);
-            NodeId dataType = (NodeId) attributeValues.get(8).getValue().getValue();
-            Integer valueRank = (Integer) attributeValues.get(9).getValue().getValue();
-            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(10), UInteger[].class);
-            Boolean isAbstract = (Boolean) attributeValues.get(11).getValue().getValue();
+            DataValue value = attributeValues.get(10);
+            NodeId dataType = (NodeId) attributeValues.get(11).getValue().getValue();
+            Integer valueRank = (Integer) attributeValues.get(12).getValue().getValue();
+            UInteger[] arrayDimensions = getAttributeOrNull(attributeValues.get(13), UInteger[].class);
+            Boolean isAbstract = (Boolean) attributeValues.get(14).getValue().getValue();
 
             return new UaVariableTypeNode(
                 client,
@@ -1432,6 +1575,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 value,
                 dataType,
                 valueRank,
@@ -1464,9 +1610,24 @@ public class AddressSpace {
             LocalizedText description = getAttributeOrNull(attributeValues.get(4), LocalizedText.class);
             UInteger writeMask = getAttributeOrNull(attributeValues.get(5), UInteger.class);
             UInteger userWriteMask = getAttributeOrNull(attributeValues.get(6), UInteger.class);
+            RolePermissionType[] rolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(7),
+                RolePermissionType[].class
+            );
+            RolePermissionType[] userRolePermissions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(8),
+                RolePermissionType[].class
+            );
+            AccessRestrictionType accessRestrictions = getAttributeOrNull(
+                client.getStaticSerializationContext(),
+                attributeValues.get(9),
+                AccessRestrictionType.class
+            );
 
-            Boolean containsNoLoops = (Boolean) attributeValues.get(7).getValue().getValue();
-            UByte eventNotifier = (UByte) attributeValues.get(8).getValue().getValue();
+            Boolean containsNoLoops = (Boolean) attributeValues.get(10).getValue().getValue();
+            UByte eventNotifier = (UByte) attributeValues.get(11).getValue().getValue();
 
             return new UaViewNode(
                 client,
@@ -1477,6 +1638,9 @@ public class AddressSpace {
                 description,
                 writeMask,
                 userWriteMask,
+                rolePermissions,
+                userRolePermissions,
+                accessRestrictions,
                 containsNoLoops,
                 eventNotifier
             );
@@ -1498,6 +1662,52 @@ public class AddressSpace {
             try {
                 return attributeClazz.cast(attributeValue);
             } catch (ClassCastException e) {
+                return null;
+            }
+        }
+    }
+
+    @Nullable
+    private static <T> T getAttributeOrNull(
+        SerializationContext context,
+        DataValue value,
+        Class<T> attributeClazz
+    ) {
+
+        StatusCode statusCode = value.getStatusCode();
+
+        if (statusCode != null && statusCode.isBad()) {
+            return null;
+        } else {
+            Object o = value.getValue().getValue();
+
+            try {
+                if (o instanceof ExtensionObject) {
+                    ExtensionObject xo = (ExtensionObject) o;
+                    Object decoded = xo.decode(context);
+                    return attributeClazz.cast(decoded);
+                } else if (o instanceof ExtensionObject[]) {
+                    ExtensionObject[] xos = (ExtensionObject[]) o;
+                    Class<?> componentType = attributeClazz.getComponentType();
+                    Object array = Array.newInstance(componentType, xos.length);
+
+                    for (int i = 0; i < xos.length; i++) {
+                        ExtensionObject xo = xos[i];
+                        Object decoded = xo.decode(context);
+                        Array.set(array, i, componentType.cast(decoded));
+                    }
+
+                    return attributeClazz.cast(array);
+                } else if (OptionSetUInteger.class.isAssignableFrom(attributeClazz) && o instanceof UNumber) {
+                    Object optionSet = attributeClazz
+                        .getDeclaredConstructor(o.getClass())
+                        .newInstance(o);
+
+                    return attributeClazz.cast(optionSet);
+                } else {
+                    return null;
+                }
+            } catch (Throwable t) {
                 return null;
             }
         }

@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class SubscriptionExample implements ClientExample {
@@ -83,7 +82,7 @@ public class SubscriptionExample implements ClientExample {
 
         List<UaMonitoredItem> items = subscription.createMonitoredItems(
             TimestampsToReturn.Both,
-            newArrayList(request),
+            List.of(request),
             onItemCreated
         ).get();
 

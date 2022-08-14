@@ -77,7 +77,7 @@ public class GenerateEventMethod extends AbstractMethodInvocationHandler {
         eventNode.setMessage(LocalizedText.english("event message!"));
         eventNode.setSeverity(ushort(2));
 
-        server.getEventBus().post(eventNode);
+        server.getEventNotifier().fire(eventNode);
 
         eventNode.delete();
 

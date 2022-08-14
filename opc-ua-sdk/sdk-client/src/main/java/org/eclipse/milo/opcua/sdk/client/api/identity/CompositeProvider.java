@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.client.api.identity;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;
@@ -26,15 +25,14 @@ public class CompositeProvider implements IdentityProvider {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ImmutableList<IdentityProvider> providers;
+    private final List<IdentityProvider> providers;
 
     public CompositeProvider(IdentityProvider... providers) {
-        this(ImmutableList.copyOf(providers));
+        this.providers = List.of(providers);
     }
 
     public CompositeProvider(List<IdentityProvider> providers) {
-        this.providers = ImmutableList.copyOf(providers);
-
+        this.providers = List.copyOf(providers);
     }
 
     @Override

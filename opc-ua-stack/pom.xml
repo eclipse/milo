@@ -23,10 +23,9 @@
 
     <properties>
         <bouncycastle.version>1.69</bouncycastle.version>
-        <guava.version>31.0.1-jre</guava.version>
         <javassist.version>3.23.1-GA</javassist.version>
         <annotations.version>22.0.0</annotations.version>
-        <netty.version>4.1.70.Final</netty.version>
+        <netty.version>4.1.75.Final</netty.version>
         <slf4j.version>1.7.32</slf4j.version>
         <testng.version>6.9.10</testng.version>
     </properties>
@@ -36,6 +35,7 @@
         <module>bsd-generator</module>
         <module>bsd-parser</module>
         <module>bsd-parser-gson</module>
+        <module>guava-dependencies</module>
         <module>stack-client</module>
         <module>stack-core</module>
         <module>stack-server</module>
@@ -107,6 +107,38 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <artifactSet>
+                                    <includes>
+                                        <include>org.eclipse.milo:${artifactId}</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>org.eclipse.milo:guava-dependencies</exclude>
+                                    </excludes>
+                                </artifactSet>
+                                <relocations>
+                                    <relocation>
+                                        <pattern>com.google.common</pattern>
+                                        <shadedPattern>org.eclipse.milo.shaded.com.google.common</shadedPattern>
+                                    </relocation>
+                                </relocations>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>

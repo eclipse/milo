@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,12 +26,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class UaViewNode extends UaNode implements ViewNode {
 
     private Boolean containsNoLoops;
     private UByte eventNotifier;
 
+    /**
+     * Construct a {@link UaViewNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaViewNode(
         OpcUaClient client,
         NodeId nodeId,
@@ -46,6 +51,43 @@ public class UaViewNode extends UaNode implements ViewNode {
     ) {
 
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.containsNoLoops = containsNoLoops;
+        this.eventNotifier = eventNotifier;
+    }
+
+    /**
+     * Construct a {@link UaViewNode} using all attributes, including those defined by OPC UA 1.04.
+     */
+    public UaViewNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        Boolean containsNoLoops,
+        UByte eventNotifier
+    ) {
+
+        super(
+            client,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.containsNoLoops = containsNoLoops;
         this.eventNotifier = eventNotifier;

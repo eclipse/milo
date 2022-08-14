@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -125,23 +125,23 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     public void onEventItemsCreated(List<EventItem> eventItems) {
         eventItems.stream()
             .filter(MonitoredItem::isSamplingEnabled)
-            .forEach(item -> server.getEventBus().register(item));
+            .forEach(item -> server.getEventNotifier().register(item));
     }
 
     @Override
     public void onEventItemsModified(List<EventItem> eventItems) {
         for (EventItem item : eventItems) {
             if (item.isSamplingEnabled()) {
-                server.getEventBus().register(item);
+                server.getEventNotifier().register(item);
             } else {
-                server.getEventBus().unregister(item);
+                server.getEventNotifier().unregister(item);
             }
         }
     }
 
     @Override
     public void onEventItemsDeleted(List<EventItem> eventItems) {
-        eventItems.forEach(item -> server.getEventBus().unregister(item));
+        eventItems.forEach(item -> server.getEventNotifier().unregister(item));
     }
 
     private void loadNodes() {
@@ -360,8 +360,8 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                     refreshEnd.setMessage(LocalizedText.english("RefreshEnd"));
                     refreshEnd.setSeverity(ushort(0));
 
-                    server.getEventBus().post(refreshStart);
-                    server.getEventBus().post(refreshEnd);
+                    server.getEventNotifier().fire(refreshStart);
+                    server.getEventNotifier().fire(refreshEnd);
 
                     refreshStart.delete();
                     refreshEnd.delete();
@@ -408,8 +408,8 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
 
-            List<UInteger> serverHandleList = Lists.newArrayList();
-            List<UInteger> clientHandleList = Lists.newArrayList();
+            var serverHandleList = new ArrayList<UInteger>();
+            var clientHandleList = new ArrayList<UInteger>();
 
             for (BaseMonitoredItem<?> item : subscription.getMonitoredItems().values()) {
                 serverHandleList.add(item.getId());

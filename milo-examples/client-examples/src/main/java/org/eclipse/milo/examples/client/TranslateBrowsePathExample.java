@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -24,7 +25,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class TranslateBrowsePathExample implements ClientExample {
@@ -42,7 +42,7 @@ public class TranslateBrowsePathExample implements ClientExample {
         // synchronous connect
         client.connect().get();
 
-        TranslateBrowsePathsToNodeIdsResponse response = client.translateBrowsePaths(newArrayList(new BrowsePath(
+        TranslateBrowsePathsToNodeIdsResponse response = client.translateBrowsePaths(List.of(new BrowsePath(
             Identifiers.ObjectsFolder,
             new RelativePath(new RelativePathElement[]{
                 new RelativePathElement(

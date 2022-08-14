@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -140,7 +140,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
         List<ReadValueId> readValueIds
     ) {
 
-        List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
+        var results = new ArrayList<DataValue>(readValueIds.size());
 
         for (ReadValueId readValueId : readValueIds) {
             UaServerNode node = nodeManager.get(readValueId.getNodeId());
@@ -176,7 +176,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
         List<WriteValue> writeValues
     ) {
 
-        List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
+        var results = new ArrayList<StatusCode>(writeValues.size());
 
         for (WriteValue writeValue : writeValues) {
             UaServerNode node = nodeManager.get(writeValue.getNodeId());
@@ -219,7 +219,7 @@ public abstract class ManagedAddressSpace implements AddressSpace {
      */
     @Override
     public void call(CallContext context, List<CallMethodRequest> requests) {
-        List<CallMethodResult> results = Lists.newArrayListWithCapacity(requests.size());
+        var results = new ArrayList<CallMethodResult>(requests.size());
 
         for (CallMethodRequest request : requests) {
             MethodInvocationHandler handler = getInvocationHandler(

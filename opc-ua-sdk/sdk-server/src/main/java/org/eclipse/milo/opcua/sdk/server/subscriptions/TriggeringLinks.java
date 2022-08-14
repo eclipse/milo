@@ -11,14 +11,14 @@
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class TriggeringLinks {
 
-    private final Map<UInteger, BaseMonitoredItem<?>> triggeredItems = Maps.newConcurrentMap();
+    private final Map<UInteger, BaseMonitoredItem<?>> triggeredItems = new ConcurrentHashMap<>();
 
     private final BaseMonitoredItem<?> triggeringItem;
 

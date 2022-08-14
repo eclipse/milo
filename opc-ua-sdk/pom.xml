@@ -9,7 +9,8 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -82,8 +83,39 @@
                     <excludeFilterFile>${basedir}/../findbugs-exclude.xml</excludeFilterFile>
                 </configuration>
             </plugin>
-
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <artifactSet>
+                                    <includes>
+                                        <include>org.eclipse.milo:${artifactId}</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>org.eclipse.milo:guava-dependencies</exclude>
+                                    </excludes>
+                                </artifactSet>
+                                <relocations>
+                                    <relocation>
+                                        <pattern>com.google.common</pattern>
+                                        <shadedPattern>org.eclipse.milo.shaded.com.google.common</shadedPattern>
+                                    </relocation>
+                                </relocations>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <pluginRepositories>

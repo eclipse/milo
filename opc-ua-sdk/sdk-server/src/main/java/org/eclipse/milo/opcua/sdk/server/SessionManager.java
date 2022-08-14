@@ -21,11 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
@@ -78,8 +77,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.base.Strings.nullToEmpty;
-import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
+import static java.util.Objects.requireNonNullElse;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
@@ -97,8 +95,8 @@ public class SessionManager implements
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<NodeId, Session> createdSessions = Maps.newConcurrentMap();
-    private final Map<NodeId, Session> activeSessions = Maps.newConcurrentMap();
+    private final Map<NodeId, Session> createdSessions = new ConcurrentHashMap<>();
+    private final Map<NodeId, Session> activeSessions = new ConcurrentHashMap<>();
 
     private final List<SessionListener> sessionListeners = new CopyOnWriteArrayList<>();
 
@@ -107,7 +105,7 @@ public class SessionManager implements
      * <p>
      * This number is arbitrary; trying to prevent clients from re-using nonces is merely to satisfy the CTT.
      */
-    private final List<ByteString> clientNonces = newCopyOnWriteArrayList();
+    private final List<ByteString> clientNonces = new CopyOnWriteArrayList<>();
 
     private final OpcUaServer server;
 
@@ -415,7 +413,7 @@ public class SessionManager implements
                 .getConfig()
                 .getCertificateManager()
                 .getCertificateChain(thumbprint)
-                .map(Lists::newArrayList)
+                .map(List::of)
                 .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
         }
 
@@ -436,10 +434,11 @@ public class SessionManager implements
      * @return {@code true} if the host in {@code endpoint} matches the host in {@code requestedEndpointUrl}.
      */
     private static boolean endpointMatchesUrl(EndpointDescription endpoint, String requestedEndpointUrl) {
-        String endpointHost = EndpointUtil.getHost(nullToEmpty(endpoint.getEndpointUrl()));
-        String requestedHost = EndpointUtil.getHost(nullToEmpty(requestedEndpointUrl));
+        String endpointHost = EndpointUtil.getHost(requireNonNullElse(endpoint.getEndpointUrl(), ""));
+        String requestedHost = EndpointUtil.getHost(requireNonNullElse(requestedEndpointUrl, ""));
 
-        return nullToEmpty(endpointHost).equalsIgnoreCase(nullToEmpty(requestedHost));
+        return requireNonNullElse(endpointHost, "")
+            .equalsIgnoreCase(requireNonNullElse(requestedHost, ""));
     }
 
     /**

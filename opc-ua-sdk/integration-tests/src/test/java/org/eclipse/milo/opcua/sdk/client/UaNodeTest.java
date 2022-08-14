@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,8 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
@@ -26,8 +29,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,6 +100,40 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         DataValue descriptionValue = testNode.readAttribute(AttributeId.Description);
         assertNotNull(descriptionValue);
+    }
+
+    @Test
+    public void readBaseNodeAttributes() throws ExecutionException, InterruptedException {
+        NodeId nodeId = new NodeId(2, "TestInt32");
+
+        List<ReadValueId> readValueIds = AttributeId.BASE_ATTRIBUTES.stream()
+            .map(
+                aid ->
+                    new ReadValueId(nodeId, aid.uid(), null, QualifiedName.NULL_VALUE)
+            )
+            .collect(Collectors.toList());
+
+        ReadResponse response = client.read(
+            0.0,
+            TimestampsToReturn.Both,
+            readValueIds
+        ).get();
+
+        Arrays.stream(response.getResults()).forEach(v -> System.out.println(v.getValue().getValue()));
+    }
+
+    // TODO (2.0) re-enable when new initializers and node loaders have been generated.
+    //  New attributes for OPC UA 1.04 will be null until then.
+    @Disabled
+    @Test
+    public void readBaseNodeAttributes2() throws UaException {
+        NodeId nodeId = new NodeId(2, "TestInt32");
+
+        UaNode node = client.getAddressSpace().getNode(nodeId);
+
+        assertNotNull(node.getRolePermissions());
+        assertNotNull(node.getUserRolePermissions());
+        assertNotNull(node.getAccessRestrictions());
     }
 
     @Test

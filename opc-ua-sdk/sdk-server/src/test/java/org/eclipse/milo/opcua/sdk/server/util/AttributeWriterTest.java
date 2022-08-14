@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -121,7 +121,14 @@ public class AttributeWriterTest {
         final LocalizedText displayName = LocalizedText.english(id);
 
         final UaVariableNode node = new UaVariableNode(
-            null, nodeId, browseName, displayName);
+            null,
+            nodeId,
+            browseName,
+            displayName,
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0)
+        );
 
         if (nodeCustomizer != null) {
             nodeCustomizer.accept(node);

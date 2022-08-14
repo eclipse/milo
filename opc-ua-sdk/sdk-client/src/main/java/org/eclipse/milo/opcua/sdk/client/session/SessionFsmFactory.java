@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,6 @@ import com.digitalpetri.strictmachine.Fsm;
 import com.digitalpetri.strictmachine.FsmContext;
 import com.digitalpetri.strictmachine.dsl.ActionContext;
 import com.digitalpetri.strictmachine.dsl.FsmBuilder;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -895,7 +894,7 @@ public class SessionFsmFactory {
                 client.newRequestHeader(csr.getAuthenticationToken()),
                 buildClientSignature(client.getConfig(), csrNonce),
                 new SignedSoftwareCertificate[0],
-                new String[0],
+                client.getConfig().getSessionLocaleIds(),
                 ExtensionObject.encode(client.getStaticSerializationContext(), userIdentityToken),
                 userTokenSignature
             );
@@ -936,7 +935,7 @@ public class SessionFsmFactory {
 
         UaStackClient stackClient = client.getStackClient();
         OpcUaSubscriptionManager subscriptionManager = client.getSubscriptionManager();
-        ImmutableList<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
+        List<UaSubscription> subscriptions = subscriptionManager.getSubscriptions();
 
         if (subscriptions.isEmpty()) {
             return completedFuture(Unit.VALUE);

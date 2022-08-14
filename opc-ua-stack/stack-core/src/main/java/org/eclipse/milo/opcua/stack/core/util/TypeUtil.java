@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -34,11 +34,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class TypeUtil {
 
-    private static final ImmutableMap<Integer, Class<?>> BUILTIN_TYPES;
-    private static final ImmutableMap<Class<?>, Integer> BUILTIN_TYPES_INVERSE;
+    private static final Map<Integer, Class<?>> BUILTIN_TYPES;
+    private static final Map<Class<?>, Integer> BUILTIN_TYPES_INVERSE;
 
-    private static final ImmutableMap<Class<?>, Integer> PRIMITIVE_BUILTIN_TYPES;
-    private static final ImmutableMap<Integer, Class<?>> PRIMITIVE_BUILTIN_TYPES_INVERSE;
+    private static final Map<Class<?>, Integer> PRIMITIVE_BUILTIN_TYPES;
+    private static final Map<Integer, Class<?>> PRIMITIVE_BUILTIN_TYPES_INVERSE;
 
     static {
         HashBiMap<Integer, Class<?>> builtinTypes = HashBiMap.create();
@@ -68,8 +68,8 @@ public class TypeUtil {
         builtinTypes.put(24, Variant.class);
         builtinTypes.put(25, DiagnosticInfo.class);
 
-        BUILTIN_TYPES = ImmutableMap.copyOf(builtinTypes);
-        BUILTIN_TYPES_INVERSE = ImmutableMap.copyOf(builtinTypes.inverse());
+        BUILTIN_TYPES = Map.copyOf(builtinTypes);
+        BUILTIN_TYPES_INVERSE = Map.copyOf(builtinTypes.inverse());
 
         HashBiMap<Class<?>, Integer> primitiveBuiltinTypes = HashBiMap.create();
         primitiveBuiltinTypes.put(boolean.class, 1);
@@ -80,8 +80,8 @@ public class TypeUtil {
         primitiveBuiltinTypes.put(float.class, 10);
         primitiveBuiltinTypes.put(double.class, 11);
 
-        PRIMITIVE_BUILTIN_TYPES = ImmutableMap.copyOf(primitiveBuiltinTypes);
-        PRIMITIVE_BUILTIN_TYPES_INVERSE = ImmutableMap.copyOf(primitiveBuiltinTypes.inverse());
+        PRIMITIVE_BUILTIN_TYPES = Map.copyOf(primitiveBuiltinTypes);
+        PRIMITIVE_BUILTIN_TYPES_INVERSE = Map.copyOf(primitiveBuiltinTypes.inverse());
     }
 
     /**

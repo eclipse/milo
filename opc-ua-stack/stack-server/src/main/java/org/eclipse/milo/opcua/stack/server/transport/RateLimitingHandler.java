@@ -13,12 +13,12 @@ package org.eclipse.milo.opcua.stack.server.transport;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.collect.ConcurrentHashMultiset;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
@@ -74,15 +74,15 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Multiset<InetAddress> connections = ConcurrentHashMultiset.create();
-    private final ConcurrentMap<InetAddress, LinkedList<Long>> timestamps = Maps.newConcurrentMap();
+    private final ConcurrentMap<InetAddress, LinkedList<Long>> timestamps = new ConcurrentHashMap<>();
 
     private final boolean enabled;
     private final int maxAttempts;
     private final int rateLimitWindowMs;
     private final int maxConnections;
     private final int maxConnectionsPerAddress;
+
+    private final Multiset<InetAddress> connections = ConcurrentHashMultiset.create();
 
     private RateLimitingHandler(
         boolean enabled,

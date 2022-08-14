@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2021 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -9,6 +9,8 @@
  */
 
 package org.eclipse.milo.opcua.sdk.core.nodes;
+
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 
 public interface DataTypeNode extends Node {
 
@@ -29,5 +31,25 @@ public interface DataTypeNode extends Node {
      * @param isAbstract {@code true} if this
      */
     void setIsAbstract(Boolean isAbstract);
+
+    /**
+     * Get the DataTypeDefinition attribute.
+     * <p>
+     * The DataTypeDefinition Attribute is used to provide the metadata and encoding information
+     * for custom DataTypes.
+     * <p>
+     * See OPC UA Part 3, section 5.8.3.
+     *
+     * @return the DataTypeDefinition of this Node.
+     */
+    DataTypeDefinition getDataTypeDefinition();
+
+    /**
+     * Set the DataTypeDefinition attribute.
+     *
+     * @param dataTypeDefinition the DataTypeDefinition to set.
+     * @see #getDataTypeDefinition()
+     */
+    void setDataTypeDefinition(DataTypeDefinition dataTypeDefinition);
 
 }

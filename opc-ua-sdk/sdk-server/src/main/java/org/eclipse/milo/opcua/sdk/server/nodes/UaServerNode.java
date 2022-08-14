@@ -10,9 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.List;
 import java.util.Optional;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
@@ -51,9 +51,9 @@ public interface UaServerNode extends Node {
     void removeReference(Reference reference);
 
     /**
-     * @return this node's {@link Reference}s.
+     * @return a {@link List} of this node's {@link Reference}s.
      */
-    ImmutableList<Reference> getReferences();
+    List<Reference> getReferences();
 
     /**
      * Read the specified attribute.

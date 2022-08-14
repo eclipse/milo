@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -76,10 +76,11 @@ public class MethodExample2 implements ClientExample {
                 assert dataType != null;
                 String dataTypeName = dataType.getBrowseName().getName();
 
-                logger.info("  {}: {} ({})",
+                logger.info("  {}: {} ({}) \"{}\"",
                     argument.getName(),
                     dataTypeName,
-                    dataTypeId.toParseableString()
+                    dataTypeId.toParseableString(),
+                    argument.getDescription().getText()
                 );
             }
         }

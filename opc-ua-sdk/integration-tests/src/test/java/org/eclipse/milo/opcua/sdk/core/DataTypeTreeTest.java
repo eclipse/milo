@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -169,8 +170,40 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
             if (!Objects.equals(dataType.getBrowseName().getName(), "Structure")) {
                 assertNotNull(dataType.getBinaryEncodingId());
                 assertNotNull(dataType.getXmlEncodingId());
+                // TODO assertNotNull(dataType.getJsonEncodingId());
                 assertNotNull(dataTypeTree.getBinaryEncodingId(dataType.getNodeId()));
                 assertNotNull(dataTypeTree.getXmlEncodingId(dataType.getNodeId()));
+                // TODO assertNotNull(dataTypeTree.getJsonEncodingId(dataType.getNodeId()));
+            }
+        });
+    }
+
+    // TODO enable once DataTypeDefinitions are generated
+    @Disabled
+    @Test
+    public void enumerationsHaveDataTypeDefinitions() {
+        Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(Identifiers.Enumeration);
+        assertNotNull(treeNode);
+
+        treeNode.traverse(dataType -> {
+            if (!Objects.equals(dataType.getBrowseName().getName(), "Enumeration")) {
+                assertNotNull(dataType.getDataTypeDefinition());
+                assertNotNull(dataTypeTree.getDataTypeDefinition(dataType.getNodeId()));
+            }
+        });
+    }
+
+    // TODO enable once DataTypeDefinitions are generated
+    @Disabled
+    @Test
+    public void structuresHaveDataTypeDefinitions() {
+        Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(Identifiers.Structure);
+        assertNotNull(treeNode);
+
+        treeNode.traverse(dataType -> {
+            if (!Objects.equals(dataType.getBrowseName().getName(), "Structure")) {
+                assertNotNull(dataType.getDataTypeDefinition());
+                assertNotNull(dataTypeTree.getDataTypeDefinition(dataType.getNodeId()));
             }
         });
     }

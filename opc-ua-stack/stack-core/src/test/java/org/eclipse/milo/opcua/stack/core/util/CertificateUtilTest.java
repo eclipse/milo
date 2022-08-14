@@ -17,7 +17,6 @@ import java.util.List;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.testng.annotations.Test;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -78,13 +77,13 @@ public class CertificateUtilTest {
     @Test
     public void testGetSanDnsNames() {
         List<String> sanDnsNames = CertificateUtil.getSanDnsNames(certificate);
-        assertEquals(sanDnsNames, newArrayList("localhost", "hostname"));
+        assertEquals(sanDnsNames, List.of("localhost", "hostname"));
     }
 
     @Test
     public void testGetSanIpAddresses() {
         List<String> sanDnsNames = CertificateUtil.getSanIpAddresses(certificate);
-        assertEquals(sanDnsNames, newArrayList("127.0.0.1", "127.0.0.2"));
+        assertEquals(sanDnsNames, List.of("127.0.0.1", "127.0.0.2"));
     }
 
 }

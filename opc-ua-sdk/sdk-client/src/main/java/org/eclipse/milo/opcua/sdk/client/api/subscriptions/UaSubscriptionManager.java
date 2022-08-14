@@ -10,11 +10,11 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -137,9 +137,9 @@ public interface UaSubscriptionManager {
     CompletableFuture<UaSubscription> deleteSubscription(UInteger subscriptionId);
 
     /**
-     * @return an {@link ImmutableList} of {@link UaSubscription}s managed by this {@link UaSubscriptionManager}.
+     * @return a {@link List} of {@link UaSubscription}s managed by this {@link UaSubscriptionManager}.
      */
-    ImmutableList<UaSubscription> getSubscriptions();
+    List<UaSubscription> getSubscriptions();
 
     /**
      * Add a {@link SubscriptionListener}.

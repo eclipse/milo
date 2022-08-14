@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,7 @@ package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.examples.server.types.CustomEnumType;
 import org.eclipse.milo.examples.server.types.CustomStructType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
@@ -66,7 +67,8 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         CustomStructType modified = new CustomStructType(
             decoded.getFoo() + "bar",
             uint(decoded.getBar().intValue() + 1),
-            !decoded.isBaz()
+            !decoded.isBaz(),
+            CustomEnumType.Field1
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
             client.getStaticSerializationContext(),
