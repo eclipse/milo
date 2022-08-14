@@ -16,22 +16,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 abstract class NodeIds2 extends NodeIds3 {
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_PublishRequestCount = new NodeId(UShort.MIN, uint(12802));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_DataChangeNotificationsCount = new NodeId(UShort.MIN, uint(12803));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventNotificationsCount = new NodeId(UShort.MIN, uint(12804));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_NotificationsCount = new NodeId(UShort.MIN, uint(12805));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_LatePublishRequestCount = new NodeId(UShort.MIN, uint(12806));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_CurrentKeepAliveCount = new NodeId(UShort.MIN, uint(12807));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_CurrentLifetimeCount = new NodeId(UShort.MIN, uint(12808));
-
-    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_UnacknowledgedMessageCount = new NodeId(UShort.MIN, uint(12809));
-
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_DiscardedMessageCount = new NodeId(UShort.MIN, uint(12810));
 
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_MonitoredItemCount = new NodeId(UShort.MIN, uint(12811));
@@ -5015,4 +4999,20 @@ abstract class NodeIds2 extends NodeIds3 {
     public static final NodeId NonExclusiveLevelAlarmType_SilenceState_TrueState = new NodeId(UShort.MIN, uint(16674));
 
     public static final NodeId NonExclusiveLevelAlarmType_SilenceState_FalseState = new NodeId(UShort.MIN, uint(16675));
+
+    public static final NodeId NonExclusiveLevelAlarmType_AudibleEnabled = new NodeId(UShort.MIN, uint(16676));
+
+    public static final NodeId NonExclusiveLevelAlarmType_AudibleSound = new NodeId(UShort.MIN, uint(16677));
+
+    public static final NodeId PublishSubscribeType_PublishedDataSets_AddDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(16678));
+
+    public static final NodeId PublishSubscribeType_PublishedDataSets_AddDataSetFolder_OutputArguments = new NodeId(UShort.MIN, uint(16679));
+
+    public static final NodeId PublishSubscribeType_PublishedDataSets_RemoveDataSetFolder = new NodeId(UShort.MIN, uint(16680));
+
+    public static final NodeId PublishSubscribeType_PublishedDataSets_RemoveDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(16681));
+
+    public static final NodeId NonExclusiveLevelAlarmType_OnDelay = new NodeId(UShort.MIN, uint(16682));
+
+    public static final NodeId NonExclusiveLevelAlarmType_OffDelay = new NodeId(UShort.MIN, uint(16683));
 }

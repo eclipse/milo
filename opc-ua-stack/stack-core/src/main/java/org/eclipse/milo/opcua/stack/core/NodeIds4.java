@@ -16,22 +16,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 abstract class NodeIds4 extends NodeIds5 {
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_Classification = new NodeId(UShort.MIN, uint(19180));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_DiagnosticsLevel = new NodeId(UShort.MIN, uint(19181));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_TimeFirstChange = new NodeId(UShort.MIN, uint(19182));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError = new NodeId(UShort.MIN, uint(19183));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_Active = new NodeId(UShort.MIN, uint(19184));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_Classification = new NodeId(UShort.MIN, uint(19185));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_DiagnosticsLevel = new NodeId(UShort.MIN, uint(19186));
-
-    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_TimeFirstChange = new NodeId(UShort.MIN, uint(19187));
-
     public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_Reset = new NodeId(UShort.MIN, uint(19188));
 
     public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_SubError = new NodeId(UShort.MIN, uint(19189));
@@ -5015,4 +4999,20 @@ abstract class NodeIds4 extends NodeIds5 {
     public static final NodeId CertificateGroupFolderType_AdditionalGroup_Placeholder_TrustListOutOfDate_UpdateFrequency = new NodeId(UShort.MIN, uint(21678));
 
     public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_TrustList_UpdateFrequency = new NodeId(UShort.MIN, uint(21679));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired = new NodeId(UShort.MIN, uint(21680));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_EventId = new NodeId(UShort.MIN, uint(21681));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_EventType = new NodeId(UShort.MIN, uint(21682));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_SourceNode = new NodeId(UShort.MIN, uint(21683));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_SourceName = new NodeId(UShort.MIN, uint(21684));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_Time = new NodeId(UShort.MIN, uint(21685));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_ReceiveTime = new NodeId(UShort.MIN, uint(21686));
+
+    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_LocalTime = new NodeId(UShort.MIN, uint(21687));
 }

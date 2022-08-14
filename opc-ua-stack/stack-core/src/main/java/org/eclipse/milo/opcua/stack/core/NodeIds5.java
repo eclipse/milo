@@ -15,23 +15,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-abstract class NodeIds5 extends NodeIdsBase {
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired = new NodeId(UShort.MIN, uint(21680));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_EventId = new NodeId(UShort.MIN, uint(21681));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_EventType = new NodeId(UShort.MIN, uint(21682));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_SourceNode = new NodeId(UShort.MIN, uint(21683));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_SourceName = new NodeId(UShort.MIN, uint(21684));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_Time = new NodeId(UShort.MIN, uint(21685));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_ReceiveTime = new NodeId(UShort.MIN, uint(21686));
-
-    public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_LocalTime = new NodeId(UShort.MIN, uint(21687));
-
+abstract class NodeIds5 extends NodeIds6 {
     public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_Message = new NodeId(UShort.MIN, uint(21688));
 
     public static final NodeId ServerConfigurationType_CertificateGroups_DefaultApplicationGroup_CertificateExpired_Severity = new NodeId(UShort.MIN, uint(21689));
@@ -3778,6 +3762,582 @@ abstract class NodeIds5 extends NodeIdsBase {
 
     public static final NodeId AuthorizationServicesConfigurationFolderType_ServiceName_Placeholder_IssuerEndpointUrl = new NodeId(UShort.MIN, uint(23560));
 
+    public static final NodeId IsDeprecated = new NodeId(UShort.MIN, uint(23562));
+
+    public static final NodeId StandaloneSubscribedDataSetRefDataType = new NodeId(UShort.MIN, uint(23599));
+
+    public static final NodeId StandaloneSubscribedDataSetDataType = new NodeId(UShort.MIN, uint(23600));
+
+    public static final NodeId SecurityGroupDataType = new NodeId(UShort.MIN, uint(23601));
+
+    public static final NodeId PubSubConfiguration2DataType = new NodeId(UShort.MIN, uint(23602));
+
+    public static final NodeId QosDataType = new NodeId(UShort.MIN, uint(23603));
+
+    public static final NodeId TransmitQosDataType = new NodeId(UShort.MIN, uint(23604));
+
+    public static final NodeId TransmitQosPriorityDataType = new NodeId(UShort.MIN, uint(23605));
+
+    public static final NodeId AuditClientEventType = new NodeId(UShort.MIN, uint(23606));
+
+    public static final NodeId AuditClientEventType_EventId = new NodeId(UShort.MIN, uint(23607));
+
+    public static final NodeId ReceiveQosDataType = new NodeId(UShort.MIN, uint(23608));
+
+    public static final NodeId ReceiveQosPriorityDataType = new NodeId(UShort.MIN, uint(23609));
+
+    public static final NodeId AuditClientEventType_EventType = new NodeId(UShort.MIN, uint(23610));
+
+    public static final NodeId AuditClientEventType_SourceNode = new NodeId(UShort.MIN, uint(23611));
+
+    public static final NodeId DatagramConnectionTransport2DataType = new NodeId(UShort.MIN, uint(23612));
+
+    public static final NodeId DatagramWriterGroupTransport2DataType = new NodeId(UShort.MIN, uint(23613));
+
+    public static final NodeId DatagramDataSetReaderTransportDataType = new NodeId(UShort.MIN, uint(23614));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets = new NodeId(UShort.MIN, uint(23622));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_AddDataSetFolder = new NodeId(UShort.MIN, uint(23637));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_AddDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23638));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_AddDataSetFolder_OutputArguments = new NodeId(UShort.MIN, uint(23639));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_RemoveDataSetFolder = new NodeId(UShort.MIN, uint(23640));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_RemoveDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23641));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities = new NodeId(UShort.MIN, uint(23642));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities_MaxPubSubConnections = new NodeId(UShort.MIN, uint(23643));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities_MaxWriterGroups = new NodeId(UShort.MIN, uint(23644));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities_MaxReaderGroups = new NodeId(UShort.MIN, uint(23645));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities_MaxDataSetWriters = new NodeId(UShort.MIN, uint(23646));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities_MaxDataSetReaders = new NodeId(UShort.MIN, uint(23647));
+
+    public static final NodeId PublishSubscribeType_PubSubCapablities_MaxFieldsPerDataSet = new NodeId(UShort.MIN, uint(23648));
+
+    public static final NodeId PublishSubscribeType_DataSetClasses = new NodeId(UShort.MIN, uint(23649));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets = new NodeId(UShort.MIN, uint(23658));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_AddDataSetFolder = new NodeId(UShort.MIN, uint(23673));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_AddDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23674));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_AddDataSetFolder_OutputArguments = new NodeId(UShort.MIN, uint(23675));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_RemoveDataSetFolder = new NodeId(UShort.MIN, uint(23676));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_RemoveDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23677));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities = new NodeId(UShort.MIN, uint(23678));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities_MaxPubSubConnections = new NodeId(UShort.MIN, uint(23679));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities_MaxWriterGroups = new NodeId(UShort.MIN, uint(23680));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities_MaxReaderGroups = new NodeId(UShort.MIN, uint(23681));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities_MaxDataSetWriters = new NodeId(UShort.MIN, uint(23682));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities_MaxDataSetReaders = new NodeId(UShort.MIN, uint(23683));
+
+    public static final NodeId PublishSubscribe_PubSubCapablities_MaxFieldsPerDataSet = new NodeId(UShort.MIN, uint(23684));
+
+    public static final NodeId PublishSubscribe_DataSetClasses = new NodeId(UShort.MIN, uint(23685));
+
+    public static final NodeId GetConnectionMethodType = new NodeId(UShort.MIN, uint(23726));
+
+    public static final NodeId GetConnectionMethodType_InputArguments = new NodeId(UShort.MIN, uint(23727));
+
+    public static final NodeId GetConnectionMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23728));
+
+    public static final NodeId ModifyConnectionMethodType = new NodeId(UShort.MIN, uint(23729));
+
+    public static final NodeId ModifyConnectionMethodType_InputArguments = new NodeId(UShort.MIN, uint(23730));
+
+    public static final NodeId ModifyConnectionMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23731));
+
+    public static final NodeId GetWriterGroupMethodType = new NodeId(UShort.MIN, uint(23745));
+
+    public static final NodeId GetWriterGroupMethodType_InputArguments = new NodeId(UShort.MIN, uint(23746));
+
+    public static final NodeId GetWriterGroupMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23747));
+
+    public static final NodeId ModifyWriterGroupMethodType = new NodeId(UShort.MIN, uint(23748));
+
+    public static final NodeId ModifyWriterGroupMethodType_InputArguments = new NodeId(UShort.MIN, uint(23749));
+
+    public static final NodeId ModifyWriterGroupMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23750));
+
+    public static final NodeId UriString = new NodeId(UShort.MIN, uint(23751));
+
+    public static final NodeId ServerType_ServerCapabilities_MaxSessions = new NodeId(UShort.MIN, uint(23752));
+
+    public static final NodeId ServerType_ServerCapabilities_MaxSubscriptions = new NodeId(UShort.MIN, uint(23753));
+
+    public static final NodeId GetReaderGroupMethodType = new NodeId(UShort.MIN, uint(23767));
+
+    public static final NodeId GetReaderGroupMethodType_InputArguments = new NodeId(UShort.MIN, uint(23768));
+
+    public static final NodeId GetReaderGroupMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23769));
+
+    public static final NodeId ModifyReaderGroupMethodType = new NodeId(UShort.MIN, uint(23770));
+
+    public static final NodeId ModifyReaderGroupMethodType_InputArguments = new NodeId(UShort.MIN, uint(23771));
+
+    public static final NodeId ModifyReaderGroupMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23772));
+
+    public static final NodeId GetDataSetWriterMethodType = new NodeId(UShort.MIN, uint(23779));
+
+    public static final NodeId GetDataSetWriterMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23780));
+
+    public static final NodeId ModifyDataSetWriterMethodType = new NodeId(UShort.MIN, uint(23781));
+
+    public static final NodeId ModifyDataSetWriterMethodType_InputArguments = new NodeId(UShort.MIN, uint(23782));
+
+    public static final NodeId ModifyDataSetWriterMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23783));
+
+    public static final NodeId GetDataSetReaderMethodType = new NodeId(UShort.MIN, uint(23790));
+
+    public static final NodeId GetDataSetReaderMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23791));
+
+    public static final NodeId ModifyDataSetReaderMethodType = new NodeId(UShort.MIN, uint(23792));
+
+    public static final NodeId ModifyDataSetReaderMethodType_InputArguments = new NodeId(UShort.MIN, uint(23793));
+
+    public static final NodeId ModifyDataSetReaderMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23794));
+
+    public static final NodeId SubscribedDataSetFolderType = new NodeId(UShort.MIN, uint(23795));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder = new NodeId(UShort.MIN, uint(23796));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_AddSubscribedDataSet = new NodeId(UShort.MIN, uint(23797));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_AddSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(23798));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_AddSubscribedDataSet_OutputArguments = new NodeId(UShort.MIN, uint(23799));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_RemoveSubscribedDataSet = new NodeId(UShort.MIN, uint(23800));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_RemoveSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(23801));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_AddDataSetFolder = new NodeId(UShort.MIN, uint(23802));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_AddDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23803));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_AddDataSetFolder_OutputArguments = new NodeId(UShort.MIN, uint(23804));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_RemoveDataSetFolder = new NodeId(UShort.MIN, uint(23805));
+
+    public static final NodeId SubscribedDataSetFolderType_SubscribedDataSetFolderName_Placeholder_RemoveDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23806));
+
+    public static final NodeId SubscribedDataSetFolderType_StandaloneSubscribedDataSetName_Placeholder = new NodeId(UShort.MIN, uint(23807));
+
+    public static final NodeId SubscribedDataSetFolderType_StandaloneSubscribedDataSetName_Placeholder_SubscribedDataSet = new NodeId(UShort.MIN, uint(23808));
+
+    public static final NodeId SubscribedDataSetFolderType_StandaloneSubscribedDataSetName_Placeholder_DataSetMetaData = new NodeId(UShort.MIN, uint(23809));
+
+    public static final NodeId SubscribedDataSetFolderType_StandaloneSubscribedDataSetName_Placeholder_IsConnected = new NodeId(UShort.MIN, uint(23810));
+
+    public static final NodeId SubscribedDataSetFolderType_AddSubscribedDataSet = new NodeId(UShort.MIN, uint(23811));
+
+    public static final NodeId SubscribedDataSetFolderType_AddSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(23812));
+
+    public static final NodeId SubscribedDataSetFolderType_AddSubscribedDataSet_OutputArguments = new NodeId(UShort.MIN, uint(23813));
+
+    public static final NodeId SubscribedDataSetFolderType_RemoveSubscribedDataSet = new NodeId(UShort.MIN, uint(23814));
+
+    public static final NodeId SubscribedDataSetFolderType_RemoveSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(23815));
+
+    public static final NodeId SubscribedDataSetFolderType_AddDataSetFolder = new NodeId(UShort.MIN, uint(23816));
+
+    public static final NodeId SubscribedDataSetFolderType_AddDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23817));
+
+    public static final NodeId SubscribedDataSetFolderType_AddDataSetFolder_OutputArguments = new NodeId(UShort.MIN, uint(23818));
+
+    public static final NodeId SubscribedDataSetFolderType_RemoveDataSetFolder = new NodeId(UShort.MIN, uint(23819));
+
+    public static final NodeId SubscribedDataSetFolderType_RemoveDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(23820));
+
+    public static final NodeId AddSubscribedDataSetMethodType = new NodeId(UShort.MIN, uint(23821));
+
+    public static final NodeId AddSubscribedDataSetMethodType_InputArguments = new NodeId(UShort.MIN, uint(23822));
+
+    public static final NodeId AddSubscribedDataSetMethodType_OutputArguments = new NodeId(UShort.MIN, uint(23823));
+
+    public static final NodeId RemoveSubscribedDataSetMethodType = new NodeId(UShort.MIN, uint(23824));
+
+    public static final NodeId RemoveSubscribedDataSetMethodType_InputArguments = new NodeId(UShort.MIN, uint(23825));
+
+    public static final NodeId StandaloneSubscribedDataSetType = new NodeId(UShort.MIN, uint(23828));
+
+    public static final NodeId StandaloneSubscribedDataSetType_SubscribedDataSet = new NodeId(UShort.MIN, uint(23829));
+
+    public static final NodeId StandaloneSubscribedDataSetType_DataSetMetaData = new NodeId(UShort.MIN, uint(23830));
+
+    public static final NodeId StandaloneSubscribedDataSetType_IsConnected = new NodeId(UShort.MIN, uint(23831));
+
+    public static final NodeId PubSubCapabilitiesType = new NodeId(UShort.MIN, uint(23832));
+
+    public static final NodeId PubSubCapabilitiesType_MaxPubSubConnections = new NodeId(UShort.MIN, uint(23833));
+
+    public static final NodeId PubSubCapabilitiesType_MaxWriterGroups = new NodeId(UShort.MIN, uint(23834));
+
+    public static final NodeId PubSubCapabilitiesType_MaxReaderGroups = new NodeId(UShort.MIN, uint(23835));
+
+    public static final NodeId PubSubCapabilitiesType_MaxDataSetWriters = new NodeId(UShort.MIN, uint(23836));
+
+    public static final NodeId PubSubCapabilitiesType_MaxDataSetReaders = new NodeId(UShort.MIN, uint(23837));
+
+    public static final NodeId PubSubCapabilitiesType_MaxFieldsPerDataSet = new NodeId(UShort.MIN, uint(23838));
+
+    public static final NodeId DatagramConnectionTransportType_DiscoveryAnnounceRate = new NodeId(UShort.MIN, uint(23839));
+
+    public static final NodeId DatagramConnectionTransportType_DiscoveryMaxMessageSize = new NodeId(UShort.MIN, uint(23840));
+
+    public static final NodeId DatagramWriterGroupTransportType_Address = new NodeId(UShort.MIN, uint(23842));
+
+    public static final NodeId DatagramWriterGroupTransportType_Address_NetworkInterface = new NodeId(UShort.MIN, uint(23843));
+
+    public static final NodeId DatagramWriterGroupTransportType_Address_NetworkInterface_Selections = new NodeId(UShort.MIN, uint(23844));
+
+    public static final NodeId DatagramWriterGroupTransportType_Address_NetworkInterface_SelectionDescriptions = new NodeId(UShort.MIN, uint(23845));
+
+    public static final NodeId DatagramWriterGroupTransportType_Address_NetworkInterface_RestrictToList = new NodeId(UShort.MIN, uint(23846));
+
+    public static final NodeId DatagramWriterGroupTransportType_DatagramQos = new NodeId(UShort.MIN, uint(23847));
+
+    public static final NodeId DatagramWriterGroupTransportType_DiscoveryAnnounceRate = new NodeId(UShort.MIN, uint(23848));
+
+    public static final NodeId DatagramWriterGroupTransportType_Topic = new NodeId(UShort.MIN, uint(23849));
+
+    public static final NodeId StandaloneSubscribedDataSetRefDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23851));
+
+    public static final NodeId StandaloneSubscribedDataSetDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23852));
+
+    public static final NodeId SecurityGroupDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23853));
+
+    public static final NodeId PubSubConfiguration2DataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23854));
+
+    public static final NodeId QosDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23855));
+
+    public static final NodeId TransmitQosDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23856));
+
+    public static final NodeId TransmitQosPriorityDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23857));
+
+    public static final NodeId ReceiveQosDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23860));
+
+    public static final NodeId ReceiveQosPriorityDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23861));
+
+    public static final NodeId DatagramConnectionTransport2DataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23864));
+
+    public static final NodeId DatagramWriterGroupTransport2DataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23865));
+
+    public static final NodeId DatagramDataSetReaderTransportDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(23866));
+
+    public static final NodeId OpcUa_BinarySchema_StandaloneSubscribedDataSetRefDataType = new NodeId(UShort.MIN, uint(23870));
+
+    public static final NodeId OpcUa_BinarySchema_StandaloneSubscribedDataSetRefDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23871));
+
+    public static final NodeId OpcUa_BinarySchema_StandaloneSubscribedDataSetRefDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23872));
+
+    public static final NodeId OpcUa_BinarySchema_StandaloneSubscribedDataSetDataType = new NodeId(UShort.MIN, uint(23873));
+
+    public static final NodeId OpcUa_BinarySchema_StandaloneSubscribedDataSetDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23874));
+
+    public static final NodeId OpcUa_BinarySchema_StandaloneSubscribedDataSetDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23875));
+
+    public static final NodeId OpcUa_BinarySchema_SecurityGroupDataType = new NodeId(UShort.MIN, uint(23876));
+
+    public static final NodeId OpcUa_BinarySchema_SecurityGroupDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23877));
+
+    public static final NodeId OpcUa_BinarySchema_SecurityGroupDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23878));
+
+    public static final NodeId OpcUa_BinarySchema_PubSubConfiguration2DataType = new NodeId(UShort.MIN, uint(23879));
+
+    public static final NodeId OpcUa_BinarySchema_PubSubConfiguration2DataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23880));
+
+    public static final NodeId OpcUa_BinarySchema_PubSubConfiguration2DataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23881));
+
+    public static final NodeId OpcUa_BinarySchema_QosDataType = new NodeId(UShort.MIN, uint(23882));
+
+    public static final NodeId OpcUa_BinarySchema_QosDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23883));
+
+    public static final NodeId OpcUa_BinarySchema_QosDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23884));
+
+    public static final NodeId OpcUa_BinarySchema_TransmitQosDataType = new NodeId(UShort.MIN, uint(23885));
+
+    public static final NodeId OpcUa_BinarySchema_TransmitQosDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23886));
+
+    public static final NodeId OpcUa_BinarySchema_TransmitQosDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23887));
+
+    public static final NodeId OpcUa_BinarySchema_TransmitQosPriorityDataType = new NodeId(UShort.MIN, uint(23888));
+
+    public static final NodeId OpcUa_BinarySchema_TransmitQosPriorityDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23889));
+
+    public static final NodeId OpcUa_BinarySchema_TransmitQosPriorityDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23890));
+
+    public static final NodeId AuditClientEventType_SourceName = new NodeId(UShort.MIN, uint(23891));
+
+    public static final NodeId AuditClientEventType_Time = new NodeId(UShort.MIN, uint(23892));
+
+    public static final NodeId AuditClientEventType_ReceiveTime = new NodeId(UShort.MIN, uint(23893));
+
+    public static final NodeId AuditClientEventType_LocalTime = new NodeId(UShort.MIN, uint(23894));
+
+    public static final NodeId AuditClientEventType_Message = new NodeId(UShort.MIN, uint(23895));
+
+    public static final NodeId AuditClientEventType_Severity = new NodeId(UShort.MIN, uint(23896));
+
+    public static final NodeId OpcUa_BinarySchema_ReceiveQosDataType = new NodeId(UShort.MIN, uint(23897));
+
+    public static final NodeId OpcUa_BinarySchema_ReceiveQosDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23898));
+
+    public static final NodeId OpcUa_BinarySchema_ReceiveQosDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23899));
+
+    public static final NodeId OpcUa_BinarySchema_ReceiveQosPriorityDataType = new NodeId(UShort.MIN, uint(23900));
+
+    public static final NodeId OpcUa_BinarySchema_ReceiveQosPriorityDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23901));
+
+    public static final NodeId OpcUa_BinarySchema_ReceiveQosPriorityDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23902));
+
+    public static final NodeId AuditClientEventType_ActionTimeStamp = new NodeId(UShort.MIN, uint(23903));
+
+    public static final NodeId AuditClientEventType_Status = new NodeId(UShort.MIN, uint(23904));
+
+    public static final NodeId AuditClientEventType_ServerId = new NodeId(UShort.MIN, uint(23905));
+
+    public static final NodeId AuditClientEventType_ClientAuditEntryId = new NodeId(UShort.MIN, uint(23906));
+
+    public static final NodeId AuditClientEventType_ClientUserId = new NodeId(UShort.MIN, uint(23907));
+
+    public static final NodeId AuditClientEventType_ServerUri = new NodeId(UShort.MIN, uint(23908));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramConnectionTransport2DataType = new NodeId(UShort.MIN, uint(23909));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramConnectionTransport2DataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23910));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramConnectionTransport2DataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23911));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramWriterGroupTransport2DataType = new NodeId(UShort.MIN, uint(23912));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramWriterGroupTransport2DataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23913));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramWriterGroupTransport2DataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23914));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramDataSetReaderTransportDataType = new NodeId(UShort.MIN, uint(23915));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramDataSetReaderTransportDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23916));
+
+    public static final NodeId OpcUa_BinarySchema_DatagramDataSetReaderTransportDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23917));
+
+    public static final NodeId StandaloneSubscribedDataSetRefDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23919));
+
+    public static final NodeId StandaloneSubscribedDataSetDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23920));
+
+    public static final NodeId SecurityGroupDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23921));
+
+    public static final NodeId PubSubConfiguration2DataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23922));
+
+    public static final NodeId QosDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23923));
+
+    public static final NodeId TransmitQosDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23924));
+
+    public static final NodeId TransmitQosPriorityDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23925));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType = new NodeId(UShort.MIN, uint(23926));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_EventId = new NodeId(UShort.MIN, uint(23927));
+
+    public static final NodeId ReceiveQosDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23928));
+
+    public static final NodeId ReceiveQosPriorityDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23929));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_EventType = new NodeId(UShort.MIN, uint(23930));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_SourceNode = new NodeId(UShort.MIN, uint(23931));
+
+    public static final NodeId DatagramConnectionTransport2DataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23932));
+
+    public static final NodeId DatagramWriterGroupTransport2DataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23933));
+
+    public static final NodeId DatagramDataSetReaderTransportDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(23934));
+
+    public static final NodeId OpcUa_XmlSchema_StandaloneSubscribedDataSetRefDataType = new NodeId(UShort.MIN, uint(23938));
+
+    public static final NodeId OpcUa_XmlSchema_StandaloneSubscribedDataSetRefDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23939));
+
+    public static final NodeId OpcUa_XmlSchema_StandaloneSubscribedDataSetRefDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23940));
+
+    public static final NodeId OpcUa_XmlSchema_StandaloneSubscribedDataSetDataType = new NodeId(UShort.MIN, uint(23941));
+
+    public static final NodeId OpcUa_XmlSchema_StandaloneSubscribedDataSetDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23942));
+
+    public static final NodeId OpcUa_XmlSchema_StandaloneSubscribedDataSetDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23943));
+
+    public static final NodeId OpcUa_XmlSchema_SecurityGroupDataType = new NodeId(UShort.MIN, uint(23944));
+
+    public static final NodeId OpcUa_XmlSchema_SecurityGroupDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23945));
+
+    public static final NodeId OpcUa_XmlSchema_SecurityGroupDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23946));
+
+    public static final NodeId OpcUa_XmlSchema_PubSubConfiguration2DataType = new NodeId(UShort.MIN, uint(23947));
+
+    public static final NodeId OpcUa_XmlSchema_PubSubConfiguration2DataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23948));
+
+    public static final NodeId OpcUa_XmlSchema_PubSubConfiguration2DataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23949));
+
+    public static final NodeId OpcUa_XmlSchema_QosDataType = new NodeId(UShort.MIN, uint(23950));
+
+    public static final NodeId OpcUa_XmlSchema_QosDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23951));
+
+    public static final NodeId OpcUa_XmlSchema_QosDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23952));
+
+    public static final NodeId OpcUa_XmlSchema_TransmitQosDataType = new NodeId(UShort.MIN, uint(23953));
+
+    public static final NodeId OpcUa_XmlSchema_TransmitQosDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23954));
+
+    public static final NodeId OpcUa_XmlSchema_TransmitQosDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23955));
+
+    public static final NodeId OpcUa_XmlSchema_TransmitQosPriorityDataType = new NodeId(UShort.MIN, uint(23956));
+
+    public static final NodeId OpcUa_XmlSchema_TransmitQosPriorityDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23957));
+
+    public static final NodeId OpcUa_XmlSchema_TransmitQosPriorityDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23958));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_SourceName = new NodeId(UShort.MIN, uint(23959));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_Time = new NodeId(UShort.MIN, uint(23960));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ReceiveTime = new NodeId(UShort.MIN, uint(23961));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_LocalTime = new NodeId(UShort.MIN, uint(23962));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_Message = new NodeId(UShort.MIN, uint(23963));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_Severity = new NodeId(UShort.MIN, uint(23964));
+
+    public static final NodeId OpcUa_XmlSchema_ReceiveQosDataType = new NodeId(UShort.MIN, uint(23965));
+
+    public static final NodeId OpcUa_XmlSchema_ReceiveQosDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23966));
+
+    public static final NodeId OpcUa_XmlSchema_ReceiveQosDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23967));
+
+    public static final NodeId OpcUa_XmlSchema_ReceiveQosPriorityDataType = new NodeId(UShort.MIN, uint(23968));
+
+    public static final NodeId OpcUa_XmlSchema_ReceiveQosPriorityDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23969));
+
+    public static final NodeId OpcUa_XmlSchema_ReceiveQosPriorityDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23970));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ActionTimeStamp = new NodeId(UShort.MIN, uint(23971));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_Status = new NodeId(UShort.MIN, uint(23972));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ServerId = new NodeId(UShort.MIN, uint(23973));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ClientAuditEntryId = new NodeId(UShort.MIN, uint(23974));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ClientUserId = new NodeId(UShort.MIN, uint(23975));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ServerUri = new NodeId(UShort.MIN, uint(23976));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramConnectionTransport2DataType = new NodeId(UShort.MIN, uint(23977));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramConnectionTransport2DataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23978));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramConnectionTransport2DataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23979));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramWriterGroupTransport2DataType = new NodeId(UShort.MIN, uint(23980));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramWriterGroupTransport2DataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23981));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramWriterGroupTransport2DataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23982));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramDataSetReaderTransportDataType = new NodeId(UShort.MIN, uint(23983));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramDataSetReaderTransportDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(23984));
+
+    public static final NodeId OpcUa_XmlSchema_DatagramDataSetReaderTransportDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(23985));
+
+    public static final NodeId StandaloneSubscribedDataSetRefDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23987));
+
+    public static final NodeId StandaloneSubscribedDataSetDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23988));
+
+    public static final NodeId SecurityGroupDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23989));
+
+    public static final NodeId PubSubConfiguration2DataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23990));
+
+    public static final NodeId QosDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23991));
+
+    public static final NodeId TransmitQosDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23992));
+
+    public static final NodeId TransmitQosPriorityDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23993));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_ObjectId = new NodeId(UShort.MIN, uint(23994));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_MethodId = new NodeId(UShort.MIN, uint(23995));
+
+    public static final NodeId ReceiveQosDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23996));
+
+    public static final NodeId ReceiveQosPriorityDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(23997));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_StatusCodeId = new NodeId(UShort.MIN, uint(23998));
+
+    public static final NodeId AuditClientUpdateMethodResultEventType_InputArguments = new NodeId(UShort.MIN, uint(23999));
+
+    public static final NodeId DatagramConnectionTransport2DataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24000));
+
+    public static final NodeId DatagramWriterGroupTransport2DataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24001));
+
+    public static final NodeId DatagramDataSetReaderTransportDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24002));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_AddSubscribedDataSet = new NodeId(UShort.MIN, uint(24004));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_AddSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(24005));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_AddSubscribedDataSet_OutputArguments = new NodeId(UShort.MIN, uint(24006));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_RemoveSubscribedDataSet = new NodeId(UShort.MIN, uint(24007));
+
+    public static final NodeId PublishSubscribeType_SubscribedDataSets_RemoveSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(24008));
+
+    public static final NodeId PublishSubscribeType_DataSetClasses_DataSetName_Placeholder = new NodeId(UShort.MIN, uint(24009));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_AddSubscribedDataSet = new NodeId(UShort.MIN, uint(24010));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_AddSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(24011));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_AddSubscribedDataSet_OutputArguments = new NodeId(UShort.MIN, uint(24012));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_RemoveSubscribedDataSet = new NodeId(UShort.MIN, uint(24013));
+
+    public static final NodeId PublishSubscribe_SubscribedDataSets_RemoveSubscribedDataSet_InputArguments = new NodeId(UShort.MIN, uint(24014));
+
+    public static final NodeId PublishSubscribe_DataSetClasses_DataSetName_Placeholder = new NodeId(UShort.MIN, uint(24015));
+
+    public static final NodeId DatagramDataSetReaderTransportType = new NodeId(UShort.MIN, uint(24016));
+
+    public static final NodeId DatagramDataSetReaderTransportType_Address = new NodeId(UShort.MIN, uint(24017));
+
+    public static final NodeId DatagramDataSetReaderTransportType_Address_NetworkInterface = new NodeId(UShort.MIN, uint(24018));
+
+    public static final NodeId DatagramDataSetReaderTransportType_Address_NetworkInterface_Selections = new NodeId(UShort.MIN, uint(24019));
+
+    public static final NodeId DatagramDataSetReaderTransportType_Address_NetworkInterface_SelectionDescriptions = new NodeId(UShort.MIN, uint(24020));
+
+    public static final NodeId DatagramDataSetReaderTransportType_Address_NetworkInterface_RestrictToList = new NodeId(UShort.MIN, uint(24021));
+
+    public static final NodeId DatagramDataSetReaderTransportType_DatagramQos = new NodeId(UShort.MIN, uint(24022));
+
+    public static final NodeId DatagramDataSetReaderTransportType_Topic = new NodeId(UShort.MIN, uint(24023));
+
     public static final NodeId ProgramDiagnostic2DataType = new NodeId(UShort.MIN, uint(24033));
 
     public static final NodeId ProgramDiagnostic2DataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(24034));
@@ -3798,9 +4358,73 @@ abstract class NodeIds5 extends NodeIdsBase {
 
     public static final NodeId ProgramDiagnostic2DataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24042));
 
+    public static final NodeId ServerType_ServerCapabilities_MaxMonitoredItems = new NodeId(UShort.MIN, uint(24083));
+
+    public static final NodeId ServerType_ServerCapabilities_MaxSubscriptionsPerSession = new NodeId(UShort.MIN, uint(24084));
+
+    public static final NodeId ServerType_ServerCapabilities_MaxSelectClauseParameters = new NodeId(UShort.MIN, uint(24085));
+
+    public static final NodeId ServerType_ServerCapabilities_MaxWhereClauseParameters = new NodeId(UShort.MIN, uint(24086));
+
+    public static final NodeId ServerType_ServerCapabilities_ConformanceUnits = new NodeId(UShort.MIN, uint(24087));
+
+    public static final NodeId ServerCapabilitiesType_MaxSessions = new NodeId(UShort.MIN, uint(24088));
+
+    public static final NodeId ServerCapabilitiesType_MaxSubscriptions = new NodeId(UShort.MIN, uint(24089));
+
+    public static final NodeId ServerCapabilitiesType_MaxMonitoredItems = new NodeId(UShort.MIN, uint(24090));
+
+    public static final NodeId ServerCapabilitiesType_MaxSubscriptionsPerSession = new NodeId(UShort.MIN, uint(24091));
+
+    public static final NodeId ServerCapabilitiesType_MaxSelectClauseParameters = new NodeId(UShort.MIN, uint(24092));
+
+    public static final NodeId ServerCapabilitiesType_MaxWhereClauseParameters = new NodeId(UShort.MIN, uint(24093));
+
+    public static final NodeId ServerCapabilitiesType_ConformanceUnits = new NodeId(UShort.MIN, uint(24094));
+
+    public static final NodeId Server_ServerCapabilities_MaxSessions = new NodeId(UShort.MIN, uint(24095));
+
+    public static final NodeId Server_ServerCapabilities_MaxSubscriptions = new NodeId(UShort.MIN, uint(24096));
+
+    public static final NodeId Server_ServerCapabilities_MaxMonitoredItems = new NodeId(UShort.MIN, uint(24097));
+
+    public static final NodeId Server_ServerCapabilities_MaxSubscriptionsPerSession = new NodeId(UShort.MIN, uint(24098));
+
+    public static final NodeId Server_ServerCapabilities_MaxSelectClauseParameters = new NodeId(UShort.MIN, uint(24099));
+
+    public static final NodeId Server_ServerCapabilities_MaxWhereClauseParameters = new NodeId(UShort.MIN, uint(24100));
+
+    public static final NodeId Server_ServerCapabilities_ConformanceUnits = new NodeId(UShort.MIN, uint(24101));
+
+    public static final NodeId ServerType_ServerCapabilities_MaxMonitoredItemsPerSubscription = new NodeId(UShort.MIN, uint(24102));
+
+    public static final NodeId ServerCapabilitiesType_MaxMonitoredItemsPerSubscription = new NodeId(UShort.MIN, uint(24103));
+
+    public static final NodeId Server_ServerCapabilities_MaxMonitoredItemsPerSubscription = new NodeId(UShort.MIN, uint(24104));
+
+    public static final NodeId PortableQualifiedName = new NodeId(UShort.MIN, uint(24105));
+
+    public static final NodeId PortableNodeId = new NodeId(UShort.MIN, uint(24106));
+
     public static final NodeId UnsignedRationalNumber = new NodeId(UShort.MIN, uint(24107));
 
+    public static final NodeId PortableQualifiedName_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(24108));
+
+    public static final NodeId PortableNodeId_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(24109));
+
     public static final NodeId UnsignedRationalNumber_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(24110));
+
+    public static final NodeId OpcUa_BinarySchema_PortableQualifiedName = new NodeId(UShort.MIN, uint(24111));
+
+    public static final NodeId OpcUa_BinarySchema_PortableQualifiedName_DataTypeVersion = new NodeId(UShort.MIN, uint(24112));
+
+    public static final NodeId OpcUa_BinarySchema_PortableQualifiedName_DictionaryFragment = new NodeId(UShort.MIN, uint(24113));
+
+    public static final NodeId OpcUa_BinarySchema_PortableNodeId = new NodeId(UShort.MIN, uint(24114));
+
+    public static final NodeId OpcUa_BinarySchema_PortableNodeId_DataTypeVersion = new NodeId(UShort.MIN, uint(24115));
+
+    public static final NodeId OpcUa_BinarySchema_PortableNodeId_DictionaryFragment = new NodeId(UShort.MIN, uint(24116));
 
     public static final NodeId OpcUa_BinarySchema_UnsignedRationalNumber = new NodeId(UShort.MIN, uint(24117));
 
@@ -3808,7 +4432,23 @@ abstract class NodeIds5 extends NodeIdsBase {
 
     public static final NodeId OpcUa_BinarySchema_UnsignedRationalNumber_DictionaryFragment = new NodeId(UShort.MIN, uint(24119));
 
+    public static final NodeId PortableQualifiedName_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(24120));
+
+    public static final NodeId PortableNodeId_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(24121));
+
     public static final NodeId UnsignedRationalNumber_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(24122));
+
+    public static final NodeId OpcUa_XmlSchema_PortableQualifiedName = new NodeId(UShort.MIN, uint(24123));
+
+    public static final NodeId OpcUa_XmlSchema_PortableQualifiedName_DataTypeVersion = new NodeId(UShort.MIN, uint(24124));
+
+    public static final NodeId OpcUa_XmlSchema_PortableQualifiedName_DictionaryFragment = new NodeId(UShort.MIN, uint(24125));
+
+    public static final NodeId OpcUa_XmlSchema_PortableNodeId = new NodeId(UShort.MIN, uint(24126));
+
+    public static final NodeId OpcUa_XmlSchema_PortableNodeId_DataTypeVersion = new NodeId(UShort.MIN, uint(24127));
+
+    public static final NodeId OpcUa_XmlSchema_PortableNodeId_DictionaryFragment = new NodeId(UShort.MIN, uint(24128));
 
     public static final NodeId OpcUa_XmlSchema_UnsignedRationalNumber = new NodeId(UShort.MIN, uint(24129));
 
@@ -3816,7 +4456,37 @@ abstract class NodeIds5 extends NodeIdsBase {
 
     public static final NodeId OpcUa_XmlSchema_UnsignedRationalNumber_DictionaryFragment = new NodeId(UShort.MIN, uint(24131));
 
+    public static final NodeId PortableQualifiedName_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24132));
+
+    public static final NodeId PortableNodeId_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24133));
+
     public static final NodeId UnsignedRationalNumber_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24134));
+
+    public static final NodeId AuditOpenSecureChannelEventType_CertificateErrorEventId = new NodeId(UShort.MIN, uint(24135));
+
+    public static final NodeId HasStructuredComponent = new NodeId(UShort.MIN, uint(24136));
+
+    public static final NodeId AssociatedWith = new NodeId(UShort.MIN, uint(24137));
+
+    public static final NodeId RoleSetType_RoleName_Placeholder_CustomConfiguration = new NodeId(UShort.MIN, uint(24138));
+
+    public static final NodeId RoleType_CustomConfiguration = new NodeId(UShort.MIN, uint(24139));
+
+    public static final NodeId WellKnownRole_Anonymous_CustomConfiguration = new NodeId(UShort.MIN, uint(24140));
+
+    public static final NodeId WellKnownRole_AuthenticatedUser_CustomConfiguration = new NodeId(UShort.MIN, uint(24141));
+
+    public static final NodeId WellKnownRole_Observer_CustomConfiguration = new NodeId(UShort.MIN, uint(24142));
+
+    public static final NodeId WellKnownRole_Operator_CustomConfiguration = new NodeId(UShort.MIN, uint(24143));
+
+    public static final NodeId WellKnownRole_Engineer_CustomConfiguration = new NodeId(UShort.MIN, uint(24144));
+
+    public static final NodeId WellKnownRole_Supervisor_CustomConfiguration = new NodeId(UShort.MIN, uint(24145));
+
+    public static final NodeId WellKnownRole_ConfigureAdmin_CustomConfiguration = new NodeId(UShort.MIN, uint(24146));
+
+    public static final NodeId WellKnownRole_SecurityAdmin_CustomConfiguration = new NodeId(UShort.MIN, uint(24147));
 
     public static final NodeId IIetfBaseNetworkInterfaceType = new NodeId(UShort.MIN, uint(24148));
 
@@ -4029,4 +4699,320 @@ abstract class NodeIds5 extends NodeIdsBase {
     public static final NodeId ServerConfiguration_CertificateGroups_DefaultHttpsGroup_TrustList_MaxByteStringLength = new NodeId(UShort.MIN, uint(24260));
 
     public static final NodeId ServerConfiguration_CertificateGroups_DefaultUserTokenGroup_TrustList_MaxByteStringLength = new NodeId(UShort.MIN, uint(24261));
+
+    public static final NodeId SemanticVersionString = new NodeId(UShort.MIN, uint(24263));
+
+    public static final NodeId UserManagementType = new NodeId(UShort.MIN, uint(24264));
+
+    public static final NodeId UserManagementType_Users = new NodeId(UShort.MIN, uint(24265));
+
+    public static final NodeId UserManagementType_PasswordLength = new NodeId(UShort.MIN, uint(24266));
+
+    public static final NodeId UserManagementType_PasswordOptions = new NodeId(UShort.MIN, uint(24267));
+
+    public static final NodeId UserManagementType_PasswordRestrictions = new NodeId(UShort.MIN, uint(24268));
+
+    public static final NodeId UserManagementType_AddUser = new NodeId(UShort.MIN, uint(24269));
+
+    public static final NodeId UserManagementType_AddUser_InputArguments = new NodeId(UShort.MIN, uint(24270));
+
+    public static final NodeId UserManagementType_ModifyUser = new NodeId(UShort.MIN, uint(24271));
+
+    public static final NodeId UserManagementType_ModifyUser_InputArguments = new NodeId(UShort.MIN, uint(24272));
+
+    public static final NodeId UserManagementType_RemoveUser = new NodeId(UShort.MIN, uint(24273));
+
+    public static final NodeId UserManagementType_RemoveUser_InputArguments = new NodeId(UShort.MIN, uint(24274));
+
+    public static final NodeId UserManagementType_ChangePassword = new NodeId(UShort.MIN, uint(24275));
+
+    public static final NodeId UserManagementType_ChangePassword_InputArguments = new NodeId(UShort.MIN, uint(24276));
+
+    public static final NodeId PasswordOptionsMask = new NodeId(UShort.MIN, uint(24277));
+
+    public static final NodeId PasswordOptionsMask_OptionSetValues = new NodeId(UShort.MIN, uint(24278));
+
+    public static final NodeId UserConfigurationMask = new NodeId(UShort.MIN, uint(24279));
+
+    public static final NodeId UserConfigurationMask_OptionSetValues = new NodeId(UShort.MIN, uint(24280));
+
+    public static final NodeId UserManagementDataType = new NodeId(UShort.MIN, uint(24281));
+
+    public static final NodeId AddUserMethodType = new NodeId(UShort.MIN, uint(24282));
+
+    public static final NodeId AddUserMethodType_InputArguments = new NodeId(UShort.MIN, uint(24283));
+
+    public static final NodeId ModifyUserMethodType = new NodeId(UShort.MIN, uint(24284));
+
+    public static final NodeId ModifyUserMethodType_InputArguments = new NodeId(UShort.MIN, uint(24285));
+
+    public static final NodeId RemoveUserMethodType = new NodeId(UShort.MIN, uint(24286));
+
+    public static final NodeId RemoveUserMethodType_InputArguments = new NodeId(UShort.MIN, uint(24287));
+
+    public static final NodeId ChangePasswordMethodType = new NodeId(UShort.MIN, uint(24288));
+
+    public static final NodeId ChangePasswordMethodType_InputArguments = new NodeId(UShort.MIN, uint(24289));
+
+    public static final NodeId UserManagement = new NodeId(UShort.MIN, uint(24290));
+
+    public static final NodeId UserManagement_PasswordRestrictions = new NodeId(UShort.MIN, uint(24291));
+
+    public static final NodeId UserManagementDataType_Encoding_DefaultBinary = new NodeId(UShort.MIN, uint(24292));
+
+    public static final NodeId OpcUa_BinarySchema_UserManagementDataType = new NodeId(UShort.MIN, uint(24293));
+
+    public static final NodeId OpcUa_BinarySchema_UserManagementDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(24294));
+
+    public static final NodeId OpcUa_BinarySchema_UserManagementDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(24295));
+
+    public static final NodeId UserManagementDataType_Encoding_DefaultXml = new NodeId(UShort.MIN, uint(24296));
+
+    public static final NodeId OpcUa_XmlSchema_UserManagementDataType = new NodeId(UShort.MIN, uint(24297));
+
+    public static final NodeId OpcUa_XmlSchema_UserManagementDataType_DataTypeVersion = new NodeId(UShort.MIN, uint(24298));
+
+    public static final NodeId OpcUa_XmlSchema_UserManagementDataType_DictionaryFragment = new NodeId(UShort.MIN, uint(24299));
+
+    public static final NodeId UserManagementDataType_Encoding_DefaultJson = new NodeId(UShort.MIN, uint(24300));
+
+    public static final NodeId UserManagement_Users = new NodeId(UShort.MIN, uint(24301));
+
+    public static final NodeId UserManagement_PasswordLength = new NodeId(UShort.MIN, uint(24302));
+
+    public static final NodeId UserManagement_PasswordOptions = new NodeId(UShort.MIN, uint(24303));
+
+    public static final NodeId UserManagement_AddUser = new NodeId(UShort.MIN, uint(24304));
+
+    public static final NodeId UserManagement_AddUser_InputArguments = new NodeId(UShort.MIN, uint(24305));
+
+    public static final NodeId UserManagement_ModifyUser = new NodeId(UShort.MIN, uint(24306));
+
+    public static final NodeId UserManagement_ModifyUser_InputArguments = new NodeId(UShort.MIN, uint(24307));
+
+    public static final NodeId UserManagement_RemoveUser = new NodeId(UShort.MIN, uint(24308));
+
+    public static final NodeId UserManagement_RemoveUser_InputArguments = new NodeId(UShort.MIN, uint(24309));
+
+    public static final NodeId UserManagement_ChangePassword = new NodeId(UShort.MIN, uint(24310));
+
+    public static final NodeId UserManagement_ChangePassword_InputArguments = new NodeId(UShort.MIN, uint(24311));
+
+    public static final NodeId DialogConditionType_Respond2 = new NodeId(UShort.MIN, uint(24312));
+
+    public static final NodeId DialogConditionType_Respond2_InputArguments = new NodeId(UShort.MIN, uint(24313));
+
+    public static final NodeId DialogResponse2MethodType = new NodeId(UShort.MIN, uint(24314));
+
+    public static final NodeId DialogResponse2MethodType_InputArguments = new NodeId(UShort.MIN, uint(24315));
+
+    public static final NodeId AlarmConditionType_Suppress2 = new NodeId(UShort.MIN, uint(24316));
+
+    public static final NodeId AlarmConditionType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24317));
+
+    public static final NodeId AlarmConditionType_Unsuppress2 = new NodeId(UShort.MIN, uint(24318));
+
+    public static final NodeId AlarmConditionType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24319));
+
+    public static final NodeId AlarmConditionType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24320));
+
+    public static final NodeId AlarmConditionType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24321));
+
+    public static final NodeId AlarmConditionType_PlaceInService2 = new NodeId(UShort.MIN, uint(24322));
+
+    public static final NodeId AlarmConditionType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24323));
+
+    public static final NodeId AlarmConditionType_Reset2 = new NodeId(UShort.MIN, uint(24324));
+
+    public static final NodeId AlarmConditionType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24325));
+
+    public static final NodeId WithCommentMethodType = new NodeId(UShort.MIN, uint(24326));
+
+    public static final NodeId WithCommentMethodType_InputArguments = new NodeId(UShort.MIN, uint(24327));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_Suppress2 = new NodeId(UShort.MIN, uint(24328));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24329));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_Unsuppress2 = new NodeId(UShort.MIN, uint(24330));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24331));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_RemoveFromService2 = new NodeId(UShort.MIN, uint(24332));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24333));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_PlaceInService2 = new NodeId(UShort.MIN, uint(24334));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24335));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_Reset2 = new NodeId(UShort.MIN, uint(24336));
+
+    public static final NodeId AlarmGroupType_AlarmConditionInstance_Placeholder_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24337));
+
+    public static final NodeId LimitAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24338));
+
+    public static final NodeId LimitAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24339));
+
+    public static final NodeId LimitAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24340));
+
+    public static final NodeId LimitAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24341));
+
+    public static final NodeId LimitAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24342));
+
+    public static final NodeId LimitAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24343));
+
+    public static final NodeId LimitAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24344));
+
+    public static final NodeId LimitAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24345));
+
+    public static final NodeId LimitAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24346));
+
+    public static final NodeId LimitAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24347));
+
+    public static final NodeId ExclusiveLimitAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24348));
+
+    public static final NodeId ExclusiveLimitAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24349));
+
+    public static final NodeId ExclusiveLimitAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24350));
+
+    public static final NodeId ExclusiveLimitAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24351));
+
+    public static final NodeId ExclusiveLimitAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24352));
+
+    public static final NodeId ExclusiveLimitAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24353));
+
+    public static final NodeId ExclusiveLimitAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24354));
+
+    public static final NodeId ExclusiveLimitAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24355));
+
+    public static final NodeId ExclusiveLimitAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24356));
+
+    public static final NodeId ExclusiveLimitAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24357));
+
+    public static final NodeId NonExclusiveLimitAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24358));
+
+    public static final NodeId NonExclusiveLimitAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24359));
+
+    public static final NodeId NonExclusiveLimitAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24360));
+
+    public static final NodeId NonExclusiveLimitAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24361));
+
+    public static final NodeId NonExclusiveLimitAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24362));
+
+    public static final NodeId NonExclusiveLimitAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24363));
+
+    public static final NodeId NonExclusiveLimitAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24364));
+
+    public static final NodeId NonExclusiveLimitAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24365));
+
+    public static final NodeId NonExclusiveLimitAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24366));
+
+    public static final NodeId NonExclusiveLimitAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24367));
+
+    public static final NodeId NonExclusiveLevelAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24368));
+
+    public static final NodeId NonExclusiveLevelAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24369));
+
+    public static final NodeId NonExclusiveLevelAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24370));
+
+    public static final NodeId NonExclusiveLevelAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24371));
+
+    public static final NodeId NonExclusiveLevelAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24372));
+
+    public static final NodeId NonExclusiveLevelAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24373));
+
+    public static final NodeId NonExclusiveLevelAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24374));
+
+    public static final NodeId NonExclusiveLevelAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24375));
+
+    public static final NodeId NonExclusiveLevelAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24376));
+
+    public static final NodeId NonExclusiveLevelAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24377));
+
+    public static final NodeId ExclusiveLevelAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24378));
+
+    public static final NodeId ExclusiveLevelAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24379));
+
+    public static final NodeId ExclusiveLevelAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24380));
+
+    public static final NodeId ExclusiveLevelAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24381));
+
+    public static final NodeId ExclusiveLevelAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24382));
+
+    public static final NodeId ExclusiveLevelAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24383));
+
+    public static final NodeId ExclusiveLevelAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24384));
+
+    public static final NodeId ExclusiveLevelAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24385));
+
+    public static final NodeId ExclusiveLevelAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24386));
+
+    public static final NodeId ExclusiveLevelAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24387));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24388));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24389));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24390));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24391));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24392));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24393));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24394));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24395));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24396));
+
+    public static final NodeId NonExclusiveDeviationAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24397));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24398));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24399));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24400));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24401));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24402));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24403));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24404));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24405));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24406));
+
+    public static final NodeId NonExclusiveRateOfChangeAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24407));
+
+    public static final NodeId ExclusiveDeviationAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24408));
+
+    public static final NodeId ExclusiveDeviationAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24409));
+
+    public static final NodeId ExclusiveDeviationAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24410));
+
+    public static final NodeId ExclusiveDeviationAlarmType_Unsuppress2_InputArguments = new NodeId(UShort.MIN, uint(24411));
+
+    public static final NodeId ExclusiveDeviationAlarmType_RemoveFromService2 = new NodeId(UShort.MIN, uint(24412));
+
+    public static final NodeId ExclusiveDeviationAlarmType_RemoveFromService2_InputArguments = new NodeId(UShort.MIN, uint(24413));
+
+    public static final NodeId ExclusiveDeviationAlarmType_PlaceInService2 = new NodeId(UShort.MIN, uint(24414));
+
+    public static final NodeId ExclusiveDeviationAlarmType_PlaceInService2_InputArguments = new NodeId(UShort.MIN, uint(24415));
+
+    public static final NodeId ExclusiveDeviationAlarmType_Reset2 = new NodeId(UShort.MIN, uint(24416));
+
+    public static final NodeId ExclusiveDeviationAlarmType_Reset2_InputArguments = new NodeId(UShort.MIN, uint(24417));
+
+    public static final NodeId ExclusiveRateOfChangeAlarmType_Suppress2 = new NodeId(UShort.MIN, uint(24418));
+
+    public static final NodeId ExclusiveRateOfChangeAlarmType_Suppress2_InputArguments = new NodeId(UShort.MIN, uint(24419));
+
+    public static final NodeId ExclusiveRateOfChangeAlarmType_Unsuppress2 = new NodeId(UShort.MIN, uint(24420));
 }

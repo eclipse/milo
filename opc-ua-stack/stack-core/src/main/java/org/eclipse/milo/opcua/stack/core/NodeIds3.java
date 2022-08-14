@@ -16,22 +16,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 abstract class NodeIds3 extends NodeIds4 {
-    public static final NodeId NonExclusiveLevelAlarmType_AudibleEnabled = new NodeId(UShort.MIN, uint(16676));
-
-    public static final NodeId NonExclusiveLevelAlarmType_AudibleSound = new NodeId(UShort.MIN, uint(16677));
-
-    public static final NodeId PublishSubscribeType_PublishedDataSets_AddDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(16678));
-
-    public static final NodeId PublishSubscribeType_PublishedDataSets_AddDataSetFolder_OutputArguments = new NodeId(UShort.MIN, uint(16679));
-
-    public static final NodeId PublishSubscribeType_PublishedDataSets_RemoveDataSetFolder = new NodeId(UShort.MIN, uint(16680));
-
-    public static final NodeId PublishSubscribeType_PublishedDataSets_RemoveDataSetFolder_InputArguments = new NodeId(UShort.MIN, uint(16681));
-
-    public static final NodeId NonExclusiveLevelAlarmType_OnDelay = new NodeId(UShort.MIN, uint(16682));
-
-    public static final NodeId NonExclusiveLevelAlarmType_OffDelay = new NodeId(UShort.MIN, uint(16683));
-
     public static final NodeId NonExclusiveLevelAlarmType_FirstInGroupFlag = new NodeId(UShort.MIN, uint(16684));
 
     public static final NodeId NonExclusiveLevelAlarmType_FirstInGroup = new NodeId(UShort.MIN, uint(16685));
@@ -1106,7 +1090,7 @@ abstract class NodeIds3 extends NodeIds4 {
 
     public static final NodeId TrainingConditionClassType = new NodeId(UShort.MIN, uint(17220));
 
-    public static final NodeId TestingConditionSubClassType = new NodeId(UShort.MIN, uint(17221));
+    public static final NodeId TestingConditionClassType = new NodeId(UShort.MIN, uint(17221));
 
     public static final NodeId AuditConditionCommentEventType_ConditionEventId = new NodeId(UShort.MIN, uint(17222));
 
@@ -5015,4 +4999,20 @@ abstract class NodeIds3 extends NodeIds4 {
     public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation = new NodeId(UShort.MIN, uint(19178));
 
     public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_Active = new NodeId(UShort.MIN, uint(19179));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_Classification = new NodeId(UShort.MIN, uint(19180));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_DiagnosticsLevel = new NodeId(UShort.MIN, uint(19181));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalInformation_TimeFirstChange = new NodeId(UShort.MIN, uint(19182));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError = new NodeId(UShort.MIN, uint(19183));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_Active = new NodeId(UShort.MIN, uint(19184));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_Classification = new NodeId(UShort.MIN, uint(19185));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_DiagnosticsLevel = new NodeId(UShort.MIN, uint(19186));
+
+    public static final NodeId PubSubConnectionType_ReaderGroupName_Placeholder_Diagnostics_TotalError_TimeFirstChange = new NodeId(UShort.MIN, uint(19187));
 }

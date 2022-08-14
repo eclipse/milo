@@ -194,14 +194,6 @@ abstract class NodeIds0 extends NodeIds1 {
 
     public static final NodeId DataTypeDictionaryType_NamespaceUri = new NodeId(UShort.MIN, uint(107));
 
-    public static final NodeId ModellingRuleType_NamingRule = new NodeId(UShort.MIN, uint(111));
-
-    public static final NodeId ModellingRule_Mandatory_NamingRule = new NodeId(UShort.MIN, uint(112));
-
-    public static final NodeId ModellingRule_Optional_NamingRule = new NodeId(UShort.MIN, uint(113));
-
-    public static final NodeId ModellingRule_ExposesItsArray_NamingRule = new NodeId(UShort.MIN, uint(114));
-
     public static final NodeId HasSubStateMachine = new NodeId(UShort.MIN, uint(117));
 
     public static final NodeId NamingRuleType = new NodeId(UShort.MIN, uint(120));
@@ -297,10 +289,6 @@ abstract class NodeIds0 extends NodeIds1 {
     public static final NodeId Duration = new NodeId(UShort.MIN, uint(290));
 
     public static final NodeId NumericRange = new NodeId(UShort.MIN, uint(291));
-
-    public static final NodeId Time = new NodeId(UShort.MIN, uint(292));
-
-    public static final NodeId Date = new NodeId(UShort.MIN, uint(293));
 
     public static final NodeId UtcTime = new NodeId(UShort.MIN, uint(294));
 
@@ -5015,4 +5003,16 @@ abstract class NodeIds0 extends NodeIds1 {
     public static final NodeId ConditionType_EnabledState_TrueState = new NodeId(UShort.MIN, uint(9018));
 
     public static final NodeId ConditionType_EnabledState_FalseState = new NodeId(UShort.MIN, uint(9019));
+
+    public static final NodeId ConditionType_Quality = new NodeId(UShort.MIN, uint(9020));
+
+    public static final NodeId ConditionType_Quality_SourceTimestamp = new NodeId(UShort.MIN, uint(9021));
+
+    public static final NodeId ConditionType_LastSeverity = new NodeId(UShort.MIN, uint(9022));
+
+    public static final NodeId ConditionType_LastSeverity_SourceTimestamp = new NodeId(UShort.MIN, uint(9023));
+
+    public static final NodeId ConditionType_Comment = new NodeId(UShort.MIN, uint(9024));
+
+    public static final NodeId ConditionType_Comment_SourceTimestamp = new NodeId(UShort.MIN, uint(9025));
 }

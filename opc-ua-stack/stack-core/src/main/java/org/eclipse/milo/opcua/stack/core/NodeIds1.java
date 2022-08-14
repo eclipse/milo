@@ -16,18 +16,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 abstract class NodeIds1 extends NodeIds2 {
-    public static final NodeId ConditionType_Quality = new NodeId(UShort.MIN, uint(9020));
-
-    public static final NodeId ConditionType_Quality_SourceTimestamp = new NodeId(UShort.MIN, uint(9021));
-
-    public static final NodeId ConditionType_LastSeverity = new NodeId(UShort.MIN, uint(9022));
-
-    public static final NodeId ConditionType_LastSeverity_SourceTimestamp = new NodeId(UShort.MIN, uint(9023));
-
-    public static final NodeId ConditionType_Comment = new NodeId(UShort.MIN, uint(9024));
-
-    public static final NodeId ConditionType_Comment_SourceTimestamp = new NodeId(UShort.MIN, uint(9025));
-
     public static final NodeId ConditionType_ClientUserId = new NodeId(UShort.MIN, uint(9026));
 
     public static final NodeId ConditionType_Enable = new NodeId(UShort.MIN, uint(9027));
@@ -3532,11 +3520,7 @@ abstract class NodeIds1 extends NodeIds2 {
 
     public static final NodeId ModellingRule_OptionalPlaceholder = new NodeId(UShort.MIN, uint(11508));
 
-    public static final NodeId ModellingRule_OptionalPlaceholder_NamingRule = new NodeId(UShort.MIN, uint(11509));
-
     public static final NodeId ModellingRule_MandatoryPlaceholder = new NodeId(UShort.MIN, uint(11510));
-
-    public static final NodeId ModellingRule_MandatoryPlaceholder_NamingRule = new NodeId(UShort.MIN, uint(11511));
 
     public static final NodeId MaxArrayLength = new NodeId(UShort.MIN, uint(11512));
 
@@ -5015,4 +4999,20 @@ abstract class NodeIds1 extends NodeIds2 {
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_TransferredToAltClientCount = new NodeId(UShort.MIN, uint(12800));
 
     public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_TransferredToSameClientCount = new NodeId(UShort.MIN, uint(12801));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_PublishRequestCount = new NodeId(UShort.MIN, uint(12802));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_DataChangeNotificationsCount = new NodeId(UShort.MIN, uint(12803));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_EventNotificationsCount = new NodeId(UShort.MIN, uint(12804));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_NotificationsCount = new NodeId(UShort.MIN, uint(12805));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_LatePublishRequestCount = new NodeId(UShort.MIN, uint(12806));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_CurrentKeepAliveCount = new NodeId(UShort.MIN, uint(12807));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_CurrentLifetimeCount = new NodeId(UShort.MIN, uint(12808));
+
+    public static final NodeId SubscriptionDiagnosticsArrayType_SubscriptionDiagnostics_UnacknowledgedMessageCount = new NodeId(UShort.MIN, uint(12809));
 }
