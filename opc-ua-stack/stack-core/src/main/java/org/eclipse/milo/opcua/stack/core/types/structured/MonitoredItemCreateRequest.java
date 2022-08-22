@@ -1,41 +1,37 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.2/#5.12.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.12.2/#5.12.2.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class MonitoredItemCreateRequest extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=743");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=743");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=745");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=745");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=744");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=744");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15321");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15321");
 
     private final ReadValueId itemToMonitor;
 
@@ -82,6 +78,19 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
         return requestedParameters;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 745),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("ItemToMonitor", LocalizedText.NULL_VALUE, new NodeId(0, 626), -1, null, UInteger.valueOf(0), false),
+                new StructureField("MonitoringMode", LocalizedText.NULL_VALUE, new NodeId(0, 716), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RequestedParameters", LocalizedText.NULL_VALUE, new NodeId(0, 740), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<MonitoredItemCreateRequest> {
         @Override
         public Class<MonitoredItemCreateRequest> getType() {
@@ -91,7 +100,7 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
         @Override
         public MonitoredItemCreateRequest decode(SerializationContext context, UaDecoder decoder) {
             ReadValueId itemToMonitor = (ReadValueId) decoder.readStruct("ItemToMonitor", ReadValueId.TYPE_ID);
-            MonitoringMode monitoringMode = decoder.readEnum("MonitoringMode", MonitoringMode.class);
+            MonitoringMode monitoringMode = (MonitoringMode) decoder.readEnum("MonitoringMode", MonitoringMode.class);
             MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemCreateRequest(itemToMonitor, monitoringMode, requestedParameters);
         }

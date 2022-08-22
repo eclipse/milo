@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.StructureField;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 class AttributeTestHelper {
 
@@ -63,7 +64,7 @@ class AttributeTestHelper {
     /**
      * Static test value used for AccessRestrictions attributes.
      */
-    static final AccessRestrictionType ACCESS_RESTRICTIONS = new AccessRestrictionType(uint(0));
+    static final AccessRestrictionType ACCESS_RESTRICTIONS = new AccessRestrictionType(ushort(0));
 
     /**
      * Static test value used for DataTypeDefinition attributes.

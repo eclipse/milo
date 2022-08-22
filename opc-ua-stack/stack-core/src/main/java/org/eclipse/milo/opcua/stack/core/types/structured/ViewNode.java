@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -26,22 +17,21 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
 @EqualsAndHashCode(
     callSuper = true
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class ViewNode extends InstanceNode implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=279");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=279");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=281");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=281");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=280");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=280");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15078");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15078");
 
     private final Boolean containsNoLoops;
 
@@ -85,6 +75,29 @@ public class ViewNode extends InstanceNode implements UaStructure {
         return eventNotifier;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 281),
+            new NodeId(0, 11879),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("NodeId", LocalizedText.NULL_VALUE, new NodeId(0, 17), -1, null, UInteger.valueOf(0), false),
+                new StructureField("NodeClass", LocalizedText.NULL_VALUE, new NodeId(0, 257), -1, null, UInteger.valueOf(0), false),
+                new StructureField("BrowseName", LocalizedText.NULL_VALUE, new NodeId(0, 20), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DisplayName", LocalizedText.NULL_VALUE, new NodeId(0, 21), -1, null, UInteger.valueOf(0), false),
+                new StructureField("Description", LocalizedText.NULL_VALUE, new NodeId(0, 21), -1, null, UInteger.valueOf(0), false),
+                new StructureField("WriteMask", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("UserWriteMask", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RolePermissions", LocalizedText.NULL_VALUE, new NodeId(0, 96), 1, null, UInteger.valueOf(0), false),
+                new StructureField("UserRolePermissions", LocalizedText.NULL_VALUE, new NodeId(0, 96), 1, null, UInteger.valueOf(0), false),
+                new StructureField("AccessRestrictions", LocalizedText.NULL_VALUE, new NodeId(0, 5), -1, null, UInteger.valueOf(0), false),
+                new StructureField("References", LocalizedText.NULL_VALUE, new NodeId(0, 285), 1, null, UInteger.valueOf(0), false),
+                new StructureField("ContainsNoLoops", LocalizedText.NULL_VALUE, new NodeId(0, 1), -1, null, UInteger.valueOf(0), false),
+                new StructureField("EventNotifier", LocalizedText.NULL_VALUE, new NodeId(0, 3), -1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<ViewNode> {
         @Override
         public Class<ViewNode> getType() {
@@ -94,7 +107,7 @@ public class ViewNode extends InstanceNode implements UaStructure {
         @Override
         public ViewNode decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            NodeClass nodeClass = decoder.readEnum("NodeClass", NodeClass.class);
+            NodeClass nodeClass = (NodeClass) decoder.readEnum("NodeClass", NodeClass.class);
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");

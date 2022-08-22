@@ -101,7 +101,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                 .setUserRolePermissions(new RolePermissionType[] {
                     new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
                 })
-                .setAccessRestrictions(new AccessRestrictionType(uint(0)))
+                .setAccessRestrictions(new AccessRestrictionType(ushort(0)))
                 .build();
 
             testInt32Node.setValue(new DataValue(new Variant(0)));

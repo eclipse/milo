@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -20,23 +11,28 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.3/#5.10.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.3/#5.10.3.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class HistoryReadRequest extends Structure implements UaRequestMessage {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=662");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=662");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=664");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=664");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=663");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=663");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15274");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15274");
 
     private final RequestHeader requestHeader;
 
@@ -78,7 +74,6 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         return JSON_ENCODING_ID;
     }
 
-    @Override
     public RequestHeader getRequestHeader() {
         return requestHeader;
     }
@@ -99,6 +94,21 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         return nodesToRead;
     }
 
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 664),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("RequestHeader", LocalizedText.NULL_VALUE, new NodeId(0, 389), -1, null, UInteger.valueOf(0), false),
+                new StructureField("HistoryReadDetails", LocalizedText.NULL_VALUE, new NodeId(0, 22), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TimestampsToReturn", LocalizedText.NULL_VALUE, new NodeId(0, 625), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ReleaseContinuationPoints", LocalizedText.NULL_VALUE, new NodeId(0, 1), -1, null, UInteger.valueOf(0), false),
+                new StructureField("NodesToRead", LocalizedText.NULL_VALUE, new NodeId(0, 635), 1, null, UInteger.valueOf(0), false)
+            }
+        );
+    }
+
     public static final class Codec extends GenericDataTypeCodec<HistoryReadRequest> {
         @Override
         public Class<HistoryReadRequest> getType() {
@@ -109,7 +119,7 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         public HistoryReadRequest decode(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ExtensionObject historyReadDetails = decoder.readExtensionObject("HistoryReadDetails");
-            TimestampsToReturn timestampsToReturn = decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
+            TimestampsToReturn timestampsToReturn = (TimestampsToReturn) decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
             Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
             HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.readStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
             return new HistoryReadRequest(requestHeader, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead);

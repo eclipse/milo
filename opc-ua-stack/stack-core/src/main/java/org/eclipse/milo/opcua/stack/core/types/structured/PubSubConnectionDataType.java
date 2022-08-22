@@ -1,42 +1,37 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.7/#6.2.7.5.1</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class PubSubConnectionDataType extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15617");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15617");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15694");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15694");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15992");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=15992");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=16281");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=16281");
 
     private final String name;
 
@@ -46,20 +41,20 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
 
     private final String transportProfileUri;
 
-    private final ExtensionObject address;
+    private final NetworkAddressDataType address;
 
     private final KeyValuePair[] connectionProperties;
 
-    private final ExtensionObject transportSettings;
+    private final ConnectionTransportDataType transportSettings;
 
     private final WriterGroupDataType[] writerGroups;
 
     private final ReaderGroupDataType[] readerGroups;
 
     public PubSubConnectionDataType(String name, Boolean enabled, Variant publisherId,
-                                    String transportProfileUri, ExtensionObject address, KeyValuePair[] connectionProperties,
-                                    ExtensionObject transportSettings, WriterGroupDataType[] writerGroups,
-                                    ReaderGroupDataType[] readerGroups) {
+                                    String transportProfileUri, NetworkAddressDataType address,
+                                    KeyValuePair[] connectionProperties, ConnectionTransportDataType transportSettings,
+                                    WriterGroupDataType[] writerGroups, ReaderGroupDataType[] readerGroups) {
         this.name = name;
         this.enabled = enabled;
         this.publisherId = publisherId;
@@ -107,7 +102,7 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
         return transportProfileUri;
     }
 
-    public ExtensionObject getAddress() {
+    public NetworkAddressDataType getAddress() {
         return address;
     }
 
@@ -115,7 +110,7 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
         return connectionProperties;
     }
 
-    public ExtensionObject getTransportSettings() {
+    public ConnectionTransportDataType getTransportSettings() {
         return transportSettings;
     }
 
@@ -125,6 +120,25 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
 
     public ReaderGroupDataType[] getReaderGroups() {
         return readerGroups;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 15694),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("Name", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("Enabled", LocalizedText.NULL_VALUE, new NodeId(0, 1), -1, null, UInteger.valueOf(0), false),
+                new StructureField("PublisherId", LocalizedText.NULL_VALUE, new NodeId(0, 24), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TransportProfileUri", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("Address", LocalizedText.NULL_VALUE, new NodeId(0, 15502), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ConnectionProperties", LocalizedText.NULL_VALUE, new NodeId(0, 14533), 1, null, UInteger.valueOf(0), false),
+                new StructureField("TransportSettings", LocalizedText.NULL_VALUE, new NodeId(0, 15618), -1, null, UInteger.valueOf(0), false),
+                new StructureField("WriterGroups", LocalizedText.NULL_VALUE, new NodeId(0, 15480), 1, null, UInteger.valueOf(0), false),
+                new StructureField("ReaderGroups", LocalizedText.NULL_VALUE, new NodeId(0, 15520), 1, null, UInteger.valueOf(0), false)
+            }
+        );
     }
 
     public static final class Codec extends GenericDataTypeCodec<PubSubConnectionDataType> {
@@ -139,9 +153,9 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
             Boolean enabled = decoder.readBoolean("Enabled");
             Variant publisherId = decoder.readVariant("PublisherId");
             String transportProfileUri = decoder.readString("TransportProfileUri");
-            ExtensionObject address = decoder.readExtensionObject("Address");
+            NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
             KeyValuePair[] connectionProperties = (KeyValuePair[]) decoder.readStructArray("ConnectionProperties", KeyValuePair.TYPE_ID);
-            ExtensionObject transportSettings = decoder.readExtensionObject("TransportSettings");
+            ConnectionTransportDataType transportSettings = (ConnectionTransportDataType) decoder.readStruct("TransportSettings", ConnectionTransportDataType.TYPE_ID);
             WriterGroupDataType[] writerGroups = (WriterGroupDataType[]) decoder.readStructArray("WriterGroups", WriterGroupDataType.TYPE_ID);
             ReaderGroupDataType[] readerGroups = (ReaderGroupDataType[]) decoder.readStructArray("ReaderGroups", ReaderGroupDataType.TYPE_ID);
             return new PubSubConnectionDataType(name, enabled, publisherId, transportProfileUri, address, connectionProperties, transportSettings, writerGroups, readerGroups);
@@ -154,9 +168,9 @@ public class PubSubConnectionDataType extends Structure implements UaStructure {
             encoder.writeBoolean("Enabled", value.getEnabled());
             encoder.writeVariant("PublisherId", value.getPublisherId());
             encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
-            encoder.writeExtensionObject("Address", value.getAddress());
+            encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
             encoder.writeStructArray("ConnectionProperties", value.getConnectionProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeExtensionObject("TransportSettings", value.getTransportSettings());
+            encoder.writeStruct("TransportSettings", value.getTransportSettings(), ConnectionTransportDataType.TYPE_ID);
             encoder.writeStructArray("WriterGroups", value.getWriterGroups(), WriterGroupDataType.TYPE_ID);
             encoder.writeStructArray("ReaderGroups", value.getReaderGroups(), ReaderGroupDataType.TYPE_ID);
         }

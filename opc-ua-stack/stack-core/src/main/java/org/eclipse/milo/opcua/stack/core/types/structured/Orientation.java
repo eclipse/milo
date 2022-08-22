@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
@@ -16,21 +6,22 @@ import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.27">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.27</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public abstract class Orientation extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=18811");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=18811");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=18820");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=18820");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=18856");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=18856");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=19069");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=19069");
 
     public Orientation() {
     }

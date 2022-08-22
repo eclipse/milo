@@ -601,7 +601,7 @@ public abstract class UaNode implements Node {
             throw new UaException(statusCode, "read AccessRestriction failed");
         } else {
             AccessRestrictionType accessRestrictions = new AccessRestrictionType(
-                (UInteger) value.getValue().getValue()
+                (UShort) value.getValue().getValue()
             );
             setAccessRestrictions(accessRestrictions);
             return accessRestrictions;
@@ -1174,7 +1174,7 @@ public abstract class UaNode implements Node {
                 break;
             }
             case AccessRestrictions: {
-                setAccessRestrictions(new AccessRestrictionType((UInteger) value.getValue().getValue()));
+                setAccessRestrictions(new AccessRestrictionType((UShort) value.getValue().getValue()));
                 break;
             }
             default:

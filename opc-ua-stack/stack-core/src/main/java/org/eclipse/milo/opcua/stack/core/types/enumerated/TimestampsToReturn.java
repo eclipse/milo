@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,8 +6,14 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.40">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.40</a>
+ */
 public enum TimestampsToReturn implements UaEnumeration {
     Source(0),
 
@@ -40,8 +36,11 @@ public enum TimestampsToReturn implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static TimestampsToReturn from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=625");
+    }
+
+    public static @Nullable TimestampsToReturn from(int value) {
         switch (value) {
             case 0:
                 return Source;
@@ -58,11 +57,17 @@ public enum TimestampsToReturn implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=625");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Source"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Server"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Both"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Neither"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Invalid")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<TimestampsToReturn> {
+    public static final class Codec extends GenericDataTypeCodec<TimestampsToReturn> {
         @Override
         public Class<TimestampsToReturn> getType() {
             return TimestampsToReturn.class;
@@ -70,7 +75,7 @@ public enum TimestampsToReturn implements UaEnumeration {
 
         @Override
         public TimestampsToReturn decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, TimestampsToReturn.class);
+            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn.class);
         }
 
         @Override

@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,6 +6,9 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
 public enum ModelChangeStructureVerbMask implements UaEnumeration {
@@ -40,8 +33,11 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static ModelChangeStructureVerbMask from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=11941");
+    }
+
+    public static @Nullable ModelChangeStructureVerbMask from(int value) {
         switch (value) {
             case 1:
                 return NodeAdded;
@@ -58,11 +54,17 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11941");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "NodeAdded"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "NodeDeleted"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceAdded"),
+            new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceDeleted"),
+            new EnumField(16L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "DataTypeChanged")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<ModelChangeStructureVerbMask> {
+    public static final class Codec extends GenericDataTypeCodec<ModelChangeStructureVerbMask> {
         @Override
         public Class<ModelChangeStructureVerbMask> getType() {
             return ModelChangeStructureVerbMask.class;
@@ -70,7 +72,7 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
 
         @Override
         public ModelChangeStructureVerbMask decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, ModelChangeStructureVerbMask.class);
+            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.ModelChangeStructureVerbMask.class);
         }
 
         @Override

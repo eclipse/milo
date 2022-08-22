@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,6 +6,9 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
 public enum OpenFileMode implements UaEnumeration {
@@ -38,8 +31,11 @@ public enum OpenFileMode implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static OpenFileMode from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=11939");
+    }
+
+    public static @Nullable OpenFileMode from(int value) {
         switch (value) {
             case 1:
                 return Read;
@@ -54,11 +50,16 @@ public enum OpenFileMode implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11939");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Read"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Write"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "EraseExisting"),
+            new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Append")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<OpenFileMode> {
+    public static final class Codec extends GenericDataTypeCodec<OpenFileMode> {
         @Override
         public Class<OpenFileMode> getType() {
             return OpenFileMode.class;
@@ -66,7 +67,7 @@ public enum OpenFileMode implements UaEnumeration {
 
         @Override
         public OpenFileMode decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, OpenFileMode.class);
+            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.OpenFileMode.class);
         }
 
         @Override

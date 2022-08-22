@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,6 +6,9 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
 public enum BrowseResultMask implements UaEnumeration {
@@ -50,8 +43,11 @@ public enum BrowseResultMask implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static BrowseResultMask from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=517");
+    }
+
+    public static @Nullable BrowseResultMask from(int value) {
         switch (value) {
             case 0:
                 return None;
@@ -78,11 +74,22 @@ public enum BrowseResultMask implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=517");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "None"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceTypeId"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "IsForward"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "NodeClass"),
+            new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BrowseName"),
+            new EnumField(16L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "DisplayName"),
+            new EnumField(32L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "TypeDefinition"),
+            new EnumField(63L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "All"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceTypeInfo"),
+            new EnumField(60L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "TargetInfo")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<BrowseResultMask> {
+    public static final class Codec extends GenericDataTypeCodec<BrowseResultMask> {
         @Override
         public Class<BrowseResultMask> getType() {
             return BrowseResultMask.class;
@@ -90,7 +97,7 @@ public enum BrowseResultMask implements UaEnumeration {
 
         @Override
         public BrowseResultMask decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, BrowseResultMask.class);
+            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask.class);
         }
 
         @Override

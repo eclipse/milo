@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,13 +6,28 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part3/8.29">https://reference.opcfoundation.org/v104/Core/docs/Part3/8.29</a>
+ */
 public enum NamingRuleType implements UaEnumeration {
+    /**
+     * The BrowseName must appear in all instances of the type.
+     */
     Mandatory(1),
 
+    /**
+     * The BrowseName may appear in an instance of the type.
+     */
     Optional(2),
 
+    /**
+     * The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.
+     */
     Constraint(3);
 
     private final int value;
@@ -36,8 +41,11 @@ public enum NamingRuleType implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static NamingRuleType from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=120");
+    }
+
+    public static @Nullable NamingRuleType from(int value) {
         switch (value) {
             case 1:
                 return Mandatory;
@@ -50,11 +58,15 @@ public enum NamingRuleType implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=120");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(1L, LocalizedText.NULL_VALUE, new LocalizedText("", "The BrowseName must appear in all instances of the type."), "Mandatory"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, new LocalizedText("", "The BrowseName may appear in an instance of the type."), "Optional"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, new LocalizedText("", "The modelling rule defines a constraint and the BrowseName is not used in an instance of the type."), "Constraint")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<NamingRuleType> {
+    public static final class Codec extends GenericDataTypeCodec<NamingRuleType> {
         @Override
         public Class<NamingRuleType> getType() {
             return NamingRuleType.class;
@@ -62,7 +74,7 @@ public enum NamingRuleType implements UaEnumeration {
 
         @Override
         public NamingRuleType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, NamingRuleType.class);
+            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType.class);
         }
 
         @Override
