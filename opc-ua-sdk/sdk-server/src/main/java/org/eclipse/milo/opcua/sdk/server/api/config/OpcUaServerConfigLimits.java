@@ -90,6 +90,24 @@ public interface OpcUaServerConfigLimits {
         return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
     }
 
+    /**
+     * Get the maximum number of Subscriptions, across all Sessions, that can be created.
+     *
+     * @return the maximum number of Subscriptions, across all Sessions, that can be created.
+     */
+    default UInteger getMaxSubscriptions() {
+        return uint(Integer.MAX_VALUE);
+    }
+
+    /**
+     * Get the maximum number of Subscriptions, per Session, that can be created.
+     *
+     * @return the maximum number of Subscriptions, per Session, that can be created.
+     */
+    default UInteger getMaxSubscriptionsPerSession() {
+        return uint(Integer.MAX_VALUE);
+    }
+
     default Double getMaxSupportedSampleRate() {
         return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
     }

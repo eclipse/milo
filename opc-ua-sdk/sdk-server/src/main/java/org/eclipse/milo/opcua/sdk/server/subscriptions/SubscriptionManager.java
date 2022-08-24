@@ -156,6 +156,16 @@ public class SubscriptionManager {
     public void createSubscription(ServiceRequest service) {
         CreateSubscriptionRequest request = (CreateSubscriptionRequest) service.getRequest();
 
+        if (subscriptions.size() >= server.getConfig().getLimits().getMaxSubscriptionsPerSession().intValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManySubscriptions);
+            return;
+        }
+
+        if (server.getSubscriptions().size() >= server.getConfig().getLimits().getMaxSubscriptions().intValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManySubscriptions);
+            return;
+        }
+
         UInteger subscriptionId = nextSubscriptionId();
 
         Subscription subscription = new Subscription(
@@ -204,7 +214,8 @@ public class SubscriptionManager {
         ResponseHeader header = service.createResponseHeader();
 
         CreateSubscriptionResponse response = new CreateSubscriptionResponse(
-            header, subscriptionId,
+            header,
+            subscriptionId,
             subscription.getPublishingInterval(),
             uint(subscription.getLifetimeCount()),
             uint(subscription.getMaxKeepAliveCount())
