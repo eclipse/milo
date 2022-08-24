@@ -122,6 +122,8 @@ public class SubscriptionManager {
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
     private final List<Subscription> transferred = Lists.newCopyOnWriteArrayList();
 
+    private final AtomicLong monitoredItemCount = new AtomicLong(0L);
+
     private final Session session;
     private final OpcUaServer server;
 
@@ -190,6 +192,7 @@ public class SubscriptionManager {
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
+                monitoredItemCount.getAndUpdate(count -> count - monitoredItems.size());
                 server.getMonitoredItemCount().getAndUpdate(count -> count - monitoredItems.size());
 
                 monitoredItems.clear();
@@ -267,6 +270,7 @@ public class SubscriptionManager {
 
                 results[i] = StatusCode.GOOD;
 
+                monitoredItemCount.getAndUpdate(count -> count - deletedItems.size());
                 server.getMonitoredItemCount().getAndUpdate(count -> count - deletedItems.size());
             } else {
                 results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -348,13 +352,20 @@ public class SubscriptionManager {
 
             List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
 
+            long globalMax = server.getConfig()
+                .getLimits().getMaxMonitoredItems().longValue();
+
+            long sessionMax = server.getConfig()
+                .getLimits().getMaxMonitoredItemsPerSession().longValue();
+
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest createRequest = itemsToCreate.get(i);
 
                 try {
-                    long maxMonitoredItems = server.getConfig().getLimits().getMaxMonitoredItems().longValue();
+                    long globalCount = server.getMonitoredItemCount().incrementAndGet();
+                    long sessionCount = monitoredItemCount.incrementAndGet();
 
-                    if (server.getMonitoredItemCount().incrementAndGet() <= maxMonitoredItems) {
+                    if (globalCount <= globalMax && sessionCount <= sessionMax) {
                         BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
                             createRequest,
                             subscription,
@@ -375,6 +386,7 @@ public class SubscriptionManager {
                         throw new UaException(StatusCodes.Bad_TooManyMonitoredItems);
                     }
                 } catch (UaException e) {
+                    monitoredItemCount.decrementAndGet();
                     server.getMonitoredItemCount().decrementAndGet();
 
                     createResults[i] = new MonitoredItemCreateResult(
@@ -979,6 +991,7 @@ public class SubscriptionManager {
 
                     deleteResults[i] = StatusCode.GOOD;
 
+                    monitoredItemCount.decrementAndGet();
                     server.getMonitoredItemCount().decrementAndGet();
                 }
             }
@@ -1250,6 +1263,7 @@ public class SubscriptionManager {
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
+                monitoredItemCount.getAndUpdate(count -> count - deletedItems.size());
                 server.getMonitoredItemCount().getAndUpdate(count -> count - deletedItems.size());
             }
 
@@ -1293,6 +1307,7 @@ public class SubscriptionManager {
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
+                monitoredItemCount.getAndUpdate(count -> count - monitoredItems.size());
                 server.getMonitoredItemCount().getAndUpdate(count -> count - monitoredItems.size());
 
                 monitoredItems.clear();
@@ -1312,6 +1327,8 @@ public class SubscriptionManager {
 
         if (subscription != null) {
             subscription.setStateListener(null);
+
+            monitoredItemCount.getAndUpdate(count -> count - subscription.getMonitoredItems().size());
         }
 
         return subscription;

@@ -112,6 +112,15 @@ public interface OpcUaServerConfigLimits {
         return uint(Integer.MAX_VALUE);
     }
 
+    /**
+     * Get the maximum number of MonitoredItems, per Session, that can be created.
+     *
+     * @return the maximum number of MonitoredItems, per Session, that can be created.
+     */
+    default UInteger getMaxMonitoredItemsPerSession() {
+        return uint(Integer.MAX_VALUE);
+    }
+
     //region ServerCapabilities
 
     default Double getMinSupportedSampleRate() {
