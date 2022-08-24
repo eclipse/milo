@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,19 +11,21 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.3">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.3</a>
+ */
 public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEventType {
     QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "UpdatedNode",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
-        ValueRanks.Scalar,
+        -1,
         NodeId.class
     );
 
@@ -31,7 +33,7 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
         "http://opcfoundation.org/UA/",
         "PerformInsertReplace",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11293"),
-        ValueRanks.Scalar,
+        -1,
         PerformUpdateType.class
     );
 
@@ -39,7 +41,7 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
         "http://opcfoundation.org/UA/",
         "NewValues",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23"),
-        ValueRanks.OneDimension,
+        1,
         DataValue[].class
     );
 
@@ -47,31 +49,31 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
         "http://opcfoundation.org/UA/",
         "OldValues",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23"),
-        ValueRanks.OneDimension,
+        1,
         DataValue[].class
     );
-
-    PropertyType getUpdatedNodeNode();
 
     NodeId getUpdatedNode();
 
     void setUpdatedNode(NodeId value);
 
-    PropertyType getPerformInsertReplaceNode();
+    PropertyType getUpdatedNodeNode();
 
     PerformUpdateType getPerformInsertReplace();
 
     void setPerformInsertReplace(PerformUpdateType value);
 
-    PropertyType getNewValuesNode();
+    PropertyType getPerformInsertReplaceNode();
 
     DataValue[] getNewValues();
 
     void setNewValues(DataValue[] value);
 
-    PropertyType getOldValuesNode();
+    PropertyType getNewValuesNode();
 
     DataValue[] getOldValues();
 
     void setOldValues(DataValue[] value);
+
+    PropertyType getOldValuesNode();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,20 +21,27 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class OptionSetTypeNode extends BaseDataVariableTypeNode implements OptionSetType {
     public OptionSetTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                             UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                             UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                             RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                             DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                             UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, boolean historizing,
+                             AccessLevelExType accessLevelEx) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
     }
 
     public OptionSetTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                             UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
-                             UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                             double minimumSamplingInterval, boolean historizing) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+                             UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                             RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                             DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions);
     }
 
     @Override
@@ -45,8 +52,7 @@ public class OptionSetTypeNode extends BaseDataVariableTypeNode implements Optio
 
     @Override
     public LocalizedText[] getOptionSetValues() {
-        Optional<LocalizedText[]> propertyValue = getProperty(OptionSetType.OPTION_SET_VALUES);
-        return propertyValue.orElse(null);
+        return getProperty(OptionSetType.OPTION_SET_VALUES).orElse(null);
     }
 
     @Override
@@ -62,8 +68,7 @@ public class OptionSetTypeNode extends BaseDataVariableTypeNode implements Optio
 
     @Override
     public Boolean[] getBitMask() {
-        Optional<Boolean[]> propertyValue = getProperty(OptionSetType.BIT_MASK);
-        return propertyValue.orElse(null);
+        return getProperty(OptionSetType.BIT_MASK).orElse(null);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,17 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.3.3/#5.3.3.4">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.3.3/#5.3.3.4</a>
+ */
 public interface MultiStateValueDiscreteType extends DiscreteItemType {
     QualifiedProperty<EnumValueType[]> ENUM_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EnumValues",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7594"),
-        ValueRanks.OneDimension,
+        1,
         EnumValueType[].class
     );
 
@@ -29,19 +31,19 @@ public interface MultiStateValueDiscreteType extends DiscreteItemType {
         "http://opcfoundation.org/UA/",
         "ValueAsText",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
-        ValueRanks.Scalar,
+        -1,
         LocalizedText.class
     );
-
-    PropertyType getEnumValuesNode();
 
     EnumValueType[] getEnumValues();
 
     void setEnumValues(EnumValueType[] value);
 
-    PropertyType getValueAsTextNode();
+    PropertyType getEnumValuesNode();
 
     LocalizedText getValueAsText();
 
     void setValueAsText(LocalizedText value);
+
+    PropertyType getValueAsTextNode();
 }

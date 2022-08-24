@@ -60,7 +60,7 @@ import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaVariableNode extends UaNode implements VariableNode {
 
-    private static final DataValue INITIAL_VALUE = new DataValue(new StatusCode(StatusCodes.Uncertain_InitialValue));
+    static final DataValue INITIAL_VALUE = new DataValue(new StatusCode(StatusCodes.Uncertain_InitialValue));
 
     private DataValue value = INITIAL_VALUE;
     private NodeId dataType = Identifiers.BaseDataType;

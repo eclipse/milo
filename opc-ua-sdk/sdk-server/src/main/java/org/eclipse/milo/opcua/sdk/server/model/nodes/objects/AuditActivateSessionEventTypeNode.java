@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,20 +21,25 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 
 public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode implements AuditActivateSessionEventType {
     public AuditActivateSessionEventTypeNode(UaNodeContext context, NodeId nodeId,
                                              QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                             UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                             UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                             RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                             UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditActivateSessionEventTypeNode(UaNodeContext context, NodeId nodeId,
                                              QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                             UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                             UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                             RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -45,8 +50,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public SignedSoftwareCertificate[] getClientSoftwareCertificates() {
-        Optional<SignedSoftwareCertificate[]> propertyValue = getProperty(AuditActivateSessionEventType.CLIENT_SOFTWARE_CERTIFICATES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditActivateSessionEventType.CLIENT_SOFTWARE_CERTIFICATES).orElse(null);
     }
 
     @Override
@@ -62,8 +66,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public UserIdentityToken getUserIdentityToken() {
-        Optional<UserIdentityToken> propertyValue = getProperty(AuditActivateSessionEventType.USER_IDENTITY_TOKEN);
-        return propertyValue.orElse(null);
+        return getProperty(AuditActivateSessionEventType.USER_IDENTITY_TOKEN).orElse(null);
     }
 
     @Override
@@ -79,8 +82,7 @@ public class AuditActivateSessionEventTypeNode extends AuditSessionEventTypeNode
 
     @Override
     public String getSecureChannelId() {
-        Optional<String> propertyValue = getProperty(AuditActivateSessionEventType.SECURE_CHANNEL_ID);
-        return propertyValue.orElse(null);
+        return getProperty(AuditActivateSessionEventType.SECURE_CHANNEL_ID).orElse(null);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,42 +13,49 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.BaseDataVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.ProgramTransitionEventType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class ProgramTransitionEventTypeNode extends TransitionEventTypeNode implements ProgramTransitionEventType {
     public ProgramTransitionEventTypeNode(UaNodeContext context, NodeId nodeId,
                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                          UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                          UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                          RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                          UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public ProgramTransitionEventTypeNode(UaNodeContext context, NodeId nodeId,
                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                          UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                          RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
-    public PropertyTypeNode getIntermediateResultNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ProgramTransitionEventType.INTERMEDIATE_RESULT);
-        return (PropertyTypeNode) propertyNode.orElse(null);
+    public BaseDataVariableTypeNode getIntermediateResultNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "IntermediateResult");
+        return (BaseDataVariableTypeNode) component.orElse(null);
     }
 
     @Override
     public Object getIntermediateResult() {
-        Optional<Object> propertyValue = getProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT);
-        return propertyValue.orElse(null);
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "IntermediateResult");
+        return component.map(node -> (Object) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
     public void setIntermediateResult(Object value) {
-        setProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT, value);
+        getVariableComponent("http://opcfoundation.org/UA/", "IntermediateResult").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 }

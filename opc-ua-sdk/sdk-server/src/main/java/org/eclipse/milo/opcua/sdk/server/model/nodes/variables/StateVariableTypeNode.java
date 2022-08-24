@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,20 +21,27 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class StateVariableTypeNode extends BaseDataVariableTypeNode implements StateVariableType {
     public StateVariableTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                  LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                 UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                 RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                 DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                                 UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, boolean historizing,
+                                 AccessLevelExType accessLevelEx) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
     }
 
     public StateVariableTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                  LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
-                                 UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                 double minimumSamplingInterval, boolean historizing) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+                                 UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                 RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                 DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions);
     }
 
     @Override
@@ -45,8 +52,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public Object getId() {
-        Optional<Object> propertyValue = getProperty(StateVariableType.ID);
-        return propertyValue.orElse(null);
+        return getProperty(StateVariableType.ID).orElse(null);
     }
 
     @Override
@@ -62,8 +68,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public QualifiedName getName() {
-        Optional<QualifiedName> propertyValue = getProperty(StateVariableType.NAME);
-        return propertyValue.orElse(null);
+        return getProperty(StateVariableType.NAME).orElse(null);
     }
 
     @Override
@@ -79,8 +84,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public UInteger getNumber() {
-        Optional<UInteger> propertyValue = getProperty(StateVariableType.NUMBER);
-        return propertyValue.orElse(null);
+        return getProperty(StateVariableType.NUMBER).orElse(null);
     }
 
     @Override
@@ -96,8 +100,7 @@ public class StateVariableTypeNode extends BaseDataVariableTypeNode implements S
 
     @Override
     public LocalizedText getEffectiveDisplayName() {
-        Optional<LocalizedText> propertyValue = getProperty(StateVariableType.EFFECTIVE_DISPLAY_NAME);
-        return propertyValue.orElse(null);
+        return getProperty(StateVariableType.EFFECTIVE_DISPLAY_NAME).orElse(null);
     }
 
     @Override

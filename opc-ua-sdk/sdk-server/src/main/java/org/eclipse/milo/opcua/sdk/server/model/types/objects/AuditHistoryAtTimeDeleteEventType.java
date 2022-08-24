@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,18 +11,20 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.7">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.6.7</a>
+ */
 public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEventType {
     QualifiedProperty<DateTime[]> REQ_TIMES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ReqTimes",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.OneDimension,
+        1,
         DateTime[].class
     );
 
@@ -30,19 +32,19 @@ public interface AuditHistoryAtTimeDeleteEventType extends AuditHistoryDeleteEve
         "http://opcfoundation.org/UA/",
         "OldValues",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=23"),
-        ValueRanks.OneDimension,
+        1,
         DataValue[].class
     );
-
-    PropertyType getReqTimesNode();
 
     DateTime[] getReqTimes();
 
     void setReqTimes(DateTime[] value);
 
-    PropertyType getOldValuesNode();
+    PropertyType getReqTimesNode();
 
     DataValue[] getOldValues();
 
     void setOldValues(DataValue[] value);
+
+    PropertyType getOldValuesNode();
 }

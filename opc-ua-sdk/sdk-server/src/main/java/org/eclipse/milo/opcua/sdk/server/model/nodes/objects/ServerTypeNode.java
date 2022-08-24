@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
@@ -29,19 +30,25 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
 public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     public ServerTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                           LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                          UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                          UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                          RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                          UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public ServerTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                           LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                          UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                          UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                          RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -52,8 +59,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public String[] getServerArray() {
-        Optional<String[]> propertyValue = getProperty(ServerType.SERVER_ARRAY);
-        return propertyValue.orElse(null);
+        return getProperty(ServerType.SERVER_ARRAY).orElse(null);
     }
 
     @Override
@@ -69,13 +75,28 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public String[] getNamespaceArray() {
-        Optional<String[]> propertyValue = getProperty(ServerType.NAMESPACE_ARRAY);
-        return propertyValue.orElse(null);
+        return getProperty(ServerType.NAMESPACE_ARRAY).orElse(null);
     }
 
     @Override
     public void setNamespaceArray(String[] value) {
         setProperty(ServerType.NAMESPACE_ARRAY, value);
+    }
+
+    @Override
+    public PropertyTypeNode getUrisVersionNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerType.URIS_VERSION);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getUrisVersion() {
+        return getProperty(ServerType.URIS_VERSION).orElse(null);
+    }
+
+    @Override
+    public void setUrisVersion(UInteger value) {
+        setProperty(ServerType.URIS_VERSION, value);
     }
 
     @Override
@@ -86,8 +107,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public UByte getServiceLevel() {
-        Optional<UByte> propertyValue = getProperty(ServerType.SERVICE_LEVEL);
-        return propertyValue.orElse(null);
+        return getProperty(ServerType.SERVICE_LEVEL).orElse(null);
     }
 
     @Override
@@ -103,8 +123,7 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public Boolean getAuditing() {
-        Optional<Boolean> propertyValue = getProperty(ServerType.AUDITING);
-        return propertyValue.orElse(null);
+        return getProperty(ServerType.AUDITING).orElse(null);
     }
 
     @Override
@@ -120,13 +139,28 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
 
     @Override
     public DateTime getEstimatedReturnTime() {
-        Optional<DateTime> propertyValue = getProperty(ServerType.ESTIMATED_RETURN_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(ServerType.ESTIMATED_RETURN_TIME).orElse(null);
     }
 
     @Override
     public void setEstimatedReturnTime(DateTime value) {
         setProperty(ServerType.ESTIMATED_RETURN_TIME, value);
+    }
+
+    @Override
+    public PropertyTypeNode getLocalTimeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerType.LOCAL_TIME);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public TimeZoneDataType getLocalTime() {
+        return getProperty(ServerType.LOCAL_TIME).orElse(null);
+    }
+
+    @Override
+    public void setLocalTime(TimeZoneDataType value) {
+        setProperty(ServerType.LOCAL_TIME, value);
     }
 
     @Override
@@ -177,25 +211,25 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public UaMethodNode getGetMonitoredItemsMethodNode() {
+    public MethodNode getGetMonitoredItemsMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetMonitoredItems", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getResendDataMethodNode() {
+    public MethodNode getResendDataMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ResendData", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getSetSubscriptionDurableMethodNode() {
+    public MethodNode getSetSubscriptionDurableMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "SetSubscriptionDurable", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getRequestServerStateChangeMethodNode() {
+    public MethodNode getRequestServerStateChangeMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RequestServerStateChange", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

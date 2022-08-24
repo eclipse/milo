@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,12 +13,14 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.FileType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -26,18 +28,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     public FileTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                        UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                        RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                        UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public FileTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                        UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                        RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -48,8 +55,7 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
 
     @Override
     public ULong getSize() {
-        Optional<ULong> propertyValue = getProperty(FileType.SIZE);
-        return propertyValue.orElse(null);
+        return getProperty(FileType.SIZE).orElse(null);
     }
 
     @Override
@@ -65,8 +71,7 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
 
     @Override
     public Boolean getWritable() {
-        Optional<Boolean> propertyValue = getProperty(FileType.WRITABLE);
-        return propertyValue.orElse(null);
+        return getProperty(FileType.WRITABLE).orElse(null);
     }
 
     @Override
@@ -82,8 +87,7 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
 
     @Override
     public Boolean getUserWritable() {
-        Optional<Boolean> propertyValue = getProperty(FileType.USER_WRITABLE);
-        return propertyValue.orElse(null);
+        return getProperty(FileType.USER_WRITABLE).orElse(null);
     }
 
     @Override
@@ -99,8 +103,7 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
 
     @Override
     public UShort getOpenCount() {
-        Optional<UShort> propertyValue = getProperty(FileType.OPEN_COUNT);
-        return propertyValue.orElse(null);
+        return getProperty(FileType.OPEN_COUNT).orElse(null);
     }
 
     @Override
@@ -116,8 +119,7 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
 
     @Override
     public String getMimeType() {
-        Optional<String> propertyValue = getProperty(FileType.MIME_TYPE);
-        return propertyValue.orElse(null);
+        return getProperty(FileType.MIME_TYPE).orElse(null);
     }
 
     @Override
@@ -126,37 +128,69 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public UaMethodNode getOpenMethodNode() {
+    public PropertyTypeNode getMaxByteStringLengthNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(FileType.MAX_BYTE_STRING_LENGTH);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getMaxByteStringLength() {
+        return getProperty(FileType.MAX_BYTE_STRING_LENGTH).orElse(null);
+    }
+
+    @Override
+    public void setMaxByteStringLength(UInteger value) {
+        setProperty(FileType.MAX_BYTE_STRING_LENGTH, value);
+    }
+
+    @Override
+    public PropertyTypeNode getLastModifiedTimeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(FileType.LAST_MODIFIED_TIME);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public DateTime getLastModifiedTime() {
+        return getProperty(FileType.LAST_MODIFIED_TIME).orElse(null);
+    }
+
+    @Override
+    public void setLastModifiedTime(DateTime value) {
+        setProperty(FileType.LAST_MODIFIED_TIME, value);
+    }
+
+    @Override
+    public MethodNode getOpenMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Open", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getCloseMethodNode() {
+    public MethodNode getCloseMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Close", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getReadMethodNode() {
+    public MethodNode getReadMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Read", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getWriteMethodNode() {
+    public MethodNode getWriteMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Write", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getGetPositionMethodNode() {
+    public MethodNode getGetPositionMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetPosition", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public UaMethodNode getSetPositionMethodNode() {
+    public MethodNode getSetPositionMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "SetPosition", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

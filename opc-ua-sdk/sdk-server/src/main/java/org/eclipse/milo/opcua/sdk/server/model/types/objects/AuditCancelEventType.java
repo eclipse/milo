@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,23 +11,25 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.11">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.11</a>
+ */
 public interface AuditCancelEventType extends AuditSessionEventType {
     QualifiedProperty<UInteger> REQUEST_HANDLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RequestHandle",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
-
-    PropertyType getRequestHandleNode();
 
     UInteger getRequestHandle();
 
     void setRequestHandle(UInteger value);
+
+    PropertyType getRequestHandleNode();
 }

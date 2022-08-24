@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,20 +22,27 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class TransitionVariableTypeNode extends BaseDataVariableTypeNode implements TransitionVariableType {
     public TransitionVariableTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                      UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                      UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                      RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                      DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                                      UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, boolean historizing,
+                                      AccessLevelExType accessLevelEx) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
     }
 
     public TransitionVariableTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                      UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
-                                      UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                      double minimumSamplingInterval, boolean historizing) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+                                      UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                      RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                      DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions);
     }
 
     @Override
@@ -46,8 +53,7 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public Object getId() {
-        Optional<Object> propertyValue = getProperty(TransitionVariableType.ID);
-        return propertyValue.orElse(null);
+        return getProperty(TransitionVariableType.ID).orElse(null);
     }
 
     @Override
@@ -63,8 +69,7 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public QualifiedName getName() {
-        Optional<QualifiedName> propertyValue = getProperty(TransitionVariableType.NAME);
-        return propertyValue.orElse(null);
+        return getProperty(TransitionVariableType.NAME).orElse(null);
     }
 
     @Override
@@ -80,8 +85,7 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public UInteger getNumber() {
-        Optional<UInteger> propertyValue = getProperty(TransitionVariableType.NUMBER);
-        return propertyValue.orElse(null);
+        return getProperty(TransitionVariableType.NUMBER).orElse(null);
     }
 
     @Override
@@ -97,8 +101,7 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public DateTime getTransitionTime() {
-        Optional<DateTime> propertyValue = getProperty(TransitionVariableType.TRANSITION_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(TransitionVariableType.TRANSITION_TIME).orElse(null);
     }
 
     @Override
@@ -114,8 +117,7 @@ public class TransitionVariableTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public DateTime getEffectiveTransitionTime() {
-        Optional<DateTime> propertyValue = getProperty(TransitionVariableType.EFFECTIVE_TRANSITION_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(TransitionVariableType.EFFECTIVE_TRANSITION_TIME).orElse(null);
     }
 
     @Override

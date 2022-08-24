@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,18 +23,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditHistoryAtTimeDeleteEventTypeNode extends AuditHistoryDeleteEventTypeNode implements AuditHistoryAtTimeDeleteEventType {
     public AuditHistoryAtTimeDeleteEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                  QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                 UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                                 UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                 RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                                 UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditHistoryAtTimeDeleteEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                  QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                 UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                                 UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                 RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -45,8 +50,7 @@ public class AuditHistoryAtTimeDeleteEventTypeNode extends AuditHistoryDeleteEve
 
     @Override
     public DateTime[] getReqTimes() {
-        Optional<DateTime[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES).orElse(null);
     }
 
     @Override
@@ -62,8 +66,7 @@ public class AuditHistoryAtTimeDeleteEventTypeNode extends AuditHistoryDeleteEve
 
     @Override
     public DataValue[] getOldValues() {
-        Optional<DataValue[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES).orElse(null);
     }
 
     @Override

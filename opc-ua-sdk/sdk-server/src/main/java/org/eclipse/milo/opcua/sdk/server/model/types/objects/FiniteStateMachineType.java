@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,10 +10,15 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
+import org.eclipse.milo.opcua.sdk.server.model.types.variables.BaseDataVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteStateVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part16/4.4.5">https://reference.opcfoundation.org/v105/Core/docs/Part16/4.4.5</a>
+ */
 public interface FiniteStateMachineType extends StateMachineType {
     FiniteStateVariableType getCurrentStateNode();
 
@@ -26,4 +31,16 @@ public interface FiniteStateMachineType extends StateMachineType {
     LocalizedText getLastTransition();
 
     void setLastTransition(LocalizedText value);
+
+    BaseDataVariableType getAvailableStatesNode();
+
+    NodeId[] getAvailableStates();
+
+    void setAvailableStates(NodeId[] value);
+
+    BaseDataVariableType getAvailableTransitionsNode();
+
+    NodeId[] getAvailableTransitions();
+
+    void setAvailableTransitions(NodeId[] value);
 }

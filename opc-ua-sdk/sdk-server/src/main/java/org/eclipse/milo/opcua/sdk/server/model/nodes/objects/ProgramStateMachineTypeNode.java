@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,16 +12,13 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.FiniteStateVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.FiniteTransitionVariableTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ProgramDiagnosticTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ProgramDiagnostic2TypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.ProgramStateMachineType;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -30,19 +27,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnostic2DataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode implements ProgramStateMachineType {
     public ProgramStateMachineTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                       UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                       UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                       RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                       UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public ProgramStateMachineTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                       UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                       UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                       RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -53,8 +55,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public Boolean getCreatable() {
-        Optional<Boolean> propertyValue = getProperty(ProgramStateMachineType.CREATABLE);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.CREATABLE).orElse(null);
     }
 
     @Override
@@ -70,8 +71,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public Boolean getDeletable() {
-        Optional<Boolean> propertyValue = getProperty(ProgramStateMachineType.DELETABLE);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.DELETABLE).orElse(null);
     }
 
     @Override
@@ -87,8 +87,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public Boolean getAutoDelete() {
-        Optional<Boolean> propertyValue = getProperty(ProgramStateMachineType.AUTO_DELETE);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.AUTO_DELETE).orElse(null);
     }
 
     @Override
@@ -104,8 +103,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public Integer getRecycleCount() {
-        Optional<Integer> propertyValue = getProperty(ProgramStateMachineType.RECYCLE_COUNT);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.RECYCLE_COUNT).orElse(null);
     }
 
     @Override
@@ -121,8 +119,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public UInteger getInstanceCount() {
-        Optional<UInteger> propertyValue = getProperty(ProgramStateMachineType.INSTANCE_COUNT);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.INSTANCE_COUNT).orElse(null);
     }
 
     @Override
@@ -138,8 +135,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public UInteger getMaxInstanceCount() {
-        Optional<UInteger> propertyValue = getProperty(ProgramStateMachineType.MAX_INSTANCE_COUNT);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.MAX_INSTANCE_COUNT).orElse(null);
     }
 
     @Override
@@ -155,8 +151,7 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
 
     @Override
     public UInteger getMaxRecycleCount() {
-        Optional<UInteger> propertyValue = getProperty(ProgramStateMachineType.MAX_RECYCLE_COUNT);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramStateMachineType.MAX_RECYCLE_COUNT).orElse(null);
     }
 
     @Override
@@ -199,26 +194,32 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public ProgramDiagnosticTypeNode getProgramDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics");
-        return (ProgramDiagnosticTypeNode) component.orElse(null);
+    public ProgramDiagnostic2TypeNode getProgramDiagnosticNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostic");
+        return (ProgramDiagnostic2TypeNode) component.orElse(null);
     }
 
     @Override
-    public ProgramDiagnosticDataType getProgramDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics");
-        return component.map(node -> (ProgramDiagnosticDataType) node.getValue().getValue().getValue()).orElse(null);
+    public ProgramDiagnostic2DataType getProgramDiagnostic() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostic");
+        return component.map(node -> (ProgramDiagnostic2DataType) node.getValue().getValue().getValue()).orElse(null);
     }
 
     @Override
-    public void setProgramDiagnostics(ProgramDiagnosticDataType value) {
-        getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    public void setProgramDiagnostic(ProgramDiagnostic2DataType value) {
+        getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostic").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
     @Override
     public BaseObjectTypeNode getFinalResultDataNode() {
         Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "FinalResultData");
         return (BaseObjectTypeNode) component.orElse(null);
+    }
+
+    @Override
+    public StateTypeNode getHaltedNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Halted");
+        return (StateTypeNode) component.orElse(null);
     }
 
     @Override
@@ -236,12 +237,6 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     @Override
     public StateTypeNode getSuspendedNode() {
         Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Suspended");
-        return (StateTypeNode) component.orElse(null);
-    }
-
-    @Override
-    public StateTypeNode getHaltedNode() {
-        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Halted");
         return (StateTypeNode) component.orElse(null);
     }
 
@@ -297,35 +292,5 @@ public class ProgramStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     public TransitionTypeNode getReadyToHaltedNode() {
         Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ReadyToHalted");
         return (TransitionTypeNode) component.orElse(null);
-    }
-
-    @Override
-    public UaMethodNode getStartMethodNode() {
-        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Start", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
-        return (UaMethodNode) methodNode.orElse(null);
-    }
-
-    @Override
-    public UaMethodNode getSuspendMethodNode() {
-        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Suspend", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
-        return (UaMethodNode) methodNode.orElse(null);
-    }
-
-    @Override
-    public UaMethodNode getResumeMethodNode() {
-        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Resume", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
-        return (UaMethodNode) methodNode.orElse(null);
-    }
-
-    @Override
-    public UaMethodNode getHaltMethodNode() {
-        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Halt", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
-        return (UaMethodNode) methodNode.orElse(null);
-    }
-
-    @Override
-    public UaMethodNode getResetMethodNode() {
-        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Reset", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
-        return (UaMethodNode) methodNode.orElse(null);
     }
 }

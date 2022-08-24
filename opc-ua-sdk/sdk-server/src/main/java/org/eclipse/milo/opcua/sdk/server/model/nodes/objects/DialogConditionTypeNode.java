@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.TwoStateVariableTypeNode;
@@ -27,18 +28,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class DialogConditionTypeNode extends ConditionTypeNode implements DialogConditionType {
     public DialogConditionTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                    LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                   UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                   UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                   RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                   UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public DialogConditionTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                    LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                   UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                   UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                   RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -49,8 +55,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public LocalizedText getPrompt() {
-        Optional<LocalizedText> propertyValue = getProperty(DialogConditionType.PROMPT);
-        return propertyValue.orElse(null);
+        return getProperty(DialogConditionType.PROMPT).orElse(null);
     }
 
     @Override
@@ -66,8 +71,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public LocalizedText[] getResponseOptionSet() {
-        Optional<LocalizedText[]> propertyValue = getProperty(DialogConditionType.RESPONSE_OPTION_SET);
-        return propertyValue.orElse(null);
+        return getProperty(DialogConditionType.RESPONSE_OPTION_SET).orElse(null);
     }
 
     @Override
@@ -83,8 +87,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public Integer getDefaultResponse() {
-        Optional<Integer> propertyValue = getProperty(DialogConditionType.DEFAULT_RESPONSE);
-        return propertyValue.orElse(null);
+        return getProperty(DialogConditionType.DEFAULT_RESPONSE).orElse(null);
     }
 
     @Override
@@ -100,8 +103,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public Integer getOkResponse() {
-        Optional<Integer> propertyValue = getProperty(DialogConditionType.OK_RESPONSE);
-        return propertyValue.orElse(null);
+        return getProperty(DialogConditionType.OK_RESPONSE).orElse(null);
     }
 
     @Override
@@ -117,8 +119,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public Integer getCancelResponse() {
-        Optional<Integer> propertyValue = getProperty(DialogConditionType.CANCEL_RESPONSE);
-        return propertyValue.orElse(null);
+        return getProperty(DialogConditionType.CANCEL_RESPONSE).orElse(null);
     }
 
     @Override
@@ -134,8 +135,7 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
 
     @Override
     public Integer getLastResponse() {
-        Optional<Integer> propertyValue = getProperty(DialogConditionType.LAST_RESPONSE);
-        return propertyValue.orElse(null);
+        return getProperty(DialogConditionType.LAST_RESPONSE).orElse(null);
     }
 
     @Override
@@ -178,8 +178,14 @@ public class DialogConditionTypeNode extends ConditionTypeNode implements Dialog
     }
 
     @Override
-    public UaMethodNode getRespondMethodNode() {
+    public MethodNode getRespondMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Respond", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
+        return (UaMethodNode) methodNode.orElse(null);
+    }
+
+    @Override
+    public MethodNode getRespond2MethodNode() {
+        Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Respond2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 }

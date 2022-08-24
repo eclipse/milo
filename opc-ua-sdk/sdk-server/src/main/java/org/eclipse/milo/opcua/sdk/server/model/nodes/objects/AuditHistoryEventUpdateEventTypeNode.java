@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,20 +22,25 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEventTypeNode implements AuditHistoryEventUpdateEventType {
     public AuditHistoryEventUpdateEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                                UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                                UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditHistoryEventUpdateEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                                UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -46,8 +51,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public NodeId getUpdatedNode() {
-        Optional<NodeId> propertyValue = getProperty(AuditHistoryEventUpdateEventType.UPDATED_NODE);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventUpdateEventType.UPDATED_NODE).orElse(null);
     }
 
     @Override
@@ -63,8 +67,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public PerformUpdateType getPerformInsertReplace() {
-        Optional<PerformUpdateType> propertyValue = getProperty(AuditHistoryEventUpdateEventType.PERFORM_INSERT_REPLACE);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventUpdateEventType.PERFORM_INSERT_REPLACE).orElse(null);
     }
 
     @Override
@@ -80,8 +83,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public EventFilter getFilter() {
-        Optional<EventFilter> propertyValue = getProperty(AuditHistoryEventUpdateEventType.FILTER);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventUpdateEventType.FILTER).orElse(null);
     }
 
     @Override
@@ -97,8 +99,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public HistoryEventFieldList[] getNewValues() {
-        Optional<HistoryEventFieldList[]> propertyValue = getProperty(AuditHistoryEventUpdateEventType.NEW_VALUES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventUpdateEventType.NEW_VALUES).orElse(null);
     }
 
     @Override
@@ -114,8 +115,7 @@ public class AuditHistoryEventUpdateEventTypeNode extends AuditHistoryUpdateEven
 
     @Override
     public HistoryEventFieldList[] getOldValues() {
-        Optional<HistoryEventFieldList[]> propertyValue = getProperty(AuditHistoryEventUpdateEventType.OLD_VALUES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventUpdateEventType.OLD_VALUES).orElse(null);
     }
 
     @Override

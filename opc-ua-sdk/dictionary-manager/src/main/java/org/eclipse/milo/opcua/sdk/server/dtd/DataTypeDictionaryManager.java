@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator
 import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator.DataTypeLocation;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
@@ -117,7 +118,14 @@ public class DataTypeDictionaryManager implements Lifecycle {
             LocalizedText.english(namespaceUri),
             LocalizedText.english("DataTypeDictionary for " + namespaceUri),
             uint(0),
-            uint(0)
+            uint(0),
+            null,
+            null,
+            null,
+            new DataValue(Variant.NULL_VALUE),
+            Identifiers.BaseDataType,
+            ValueRanks.Scalar,
+            null
         );
 
         dictionaryNode.setNamespaceUri(namespaceUri);
@@ -296,7 +304,14 @@ public class DataTypeDictionaryManager implements Lifecycle {
             LocalizedText.english(description.getName().getName()),
             LocalizedText.NULL_VALUE,
             uint(0),
-            uint(0)
+            uint(0),
+            null,
+            null,
+            null,
+            new DataValue(Variant.NULL_VALUE),
+            Identifiers.BaseDataType,
+            ValueRanks.Scalar,
+            null
         );
 
         descriptionNode.setValue(new DataValue(new Variant(description.getName().getName())));
@@ -328,7 +343,10 @@ public class DataTypeDictionaryManager implements Lifecycle {
             LocalizedText.english("Default Binary"),
             LocalizedText.NULL_VALUE,
             uint(0),
-            uint(0)
+            uint(0),
+            null,
+            null,
+            null
         );
 
         dataTypeEncodingNode.addReference(new Reference(

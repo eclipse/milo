@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,15 +11,17 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.3.1">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.3.1</a>
+ */
 public interface DataItemType extends BaseDataVariableType {
     QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Definition",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
 
@@ -27,19 +29,19 @@ public interface DataItemType extends BaseDataVariableType {
         "http://opcfoundation.org/UA/",
         "ValuePrecision",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11"),
-        ValueRanks.Scalar,
+        -1,
         Double.class
     );
-
-    PropertyType getDefinitionNode();
 
     String getDefinition();
 
     void setDefinition(String value);
 
-    PropertyType getValuePrecisionNode();
+    PropertyType getDefinitionNode();
 
     Double getValuePrecision();
 
     void setValuePrecision(Double value);
+
+    PropertyType getValuePrecisionNode();
 }

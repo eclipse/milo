@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,9 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -22,7 +21,7 @@ public interface ServerConfigurationType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "ServerCapabilities",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.OneDimension,
+        1,
         String[].class
     );
 
@@ -30,7 +29,7 @@ public interface ServerConfigurationType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "SupportedPrivateKeyFormats",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.OneDimension,
+        1,
         String[].class
     );
 
@@ -38,7 +37,7 @@ public interface ServerConfigurationType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxTrustListSize",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -46,41 +45,41 @@ public interface ServerConfigurationType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MulticastDnsEnabled",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
-
-    PropertyType getServerCapabilitiesNode();
 
     String[] getServerCapabilities();
 
     void setServerCapabilities(String[] value);
 
-    PropertyType getSupportedPrivateKeyFormatsNode();
+    PropertyType getServerCapabilitiesNode();
 
     String[] getSupportedPrivateKeyFormats();
 
     void setSupportedPrivateKeyFormats(String[] value);
 
-    PropertyType getMaxTrustListSizeNode();
+    PropertyType getSupportedPrivateKeyFormatsNode();
 
     UInteger getMaxTrustListSize();
 
     void setMaxTrustListSize(UInteger value);
 
-    PropertyType getMulticastDnsEnabledNode();
+    PropertyType getMaxTrustListSizeNode();
 
     Boolean getMulticastDnsEnabled();
 
     void setMulticastDnsEnabled(Boolean value);
 
+    PropertyType getMulticastDnsEnabledNode();
+
     CertificateGroupFolderType getCertificateGroupsNode();
 
-    UaMethodNode getUpdateCertificateMethodNode();
+    MethodNode getUpdateCertificateMethodNode();
 
-    UaMethodNode getApplyChangesMethodNode();
+    MethodNode getApplyChangesMethodNode();
 
-    UaMethodNode getCreateSigningRequestMethodNode();
+    MethodNode getCreateSigningRequestMethodNode();
 
-    UaMethodNode getGetRejectedListMethodNode();
+    MethodNode getGetRejectedListMethodNode();
 }

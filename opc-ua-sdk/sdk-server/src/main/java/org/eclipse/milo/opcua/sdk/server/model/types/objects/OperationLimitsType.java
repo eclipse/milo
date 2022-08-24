@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,17 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.11">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.11</a>
+ */
 public interface OperationLimitsType extends FolderType {
     QualifiedProperty<UInteger> MAX_NODES_PER_READ = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "MaxNodesPerRead",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -29,7 +31,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerHistoryReadData",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -37,7 +39,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerHistoryReadEvents",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -45,7 +47,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerWrite",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -53,7 +55,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerHistoryUpdateData",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -61,7 +63,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerHistoryUpdateEvents",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -69,7 +71,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerMethodCall",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -77,7 +79,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerBrowse",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -85,7 +87,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerRegisterNodes",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -93,7 +95,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerTranslateBrowsePathsToNodeIds",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -101,7 +103,7 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxNodesPerNodeManagement",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -109,79 +111,79 @@ public interface OperationLimitsType extends FolderType {
         "http://opcfoundation.org/UA/",
         "MaxMonitoredItemsPerCall",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
-
-    PropertyType getMaxNodesPerReadNode();
 
     UInteger getMaxNodesPerRead();
 
     void setMaxNodesPerRead(UInteger value);
 
-    PropertyType getMaxNodesPerHistoryReadDataNode();
+    PropertyType getMaxNodesPerReadNode();
 
     UInteger getMaxNodesPerHistoryReadData();
 
     void setMaxNodesPerHistoryReadData(UInteger value);
 
-    PropertyType getMaxNodesPerHistoryReadEventsNode();
+    PropertyType getMaxNodesPerHistoryReadDataNode();
 
     UInteger getMaxNodesPerHistoryReadEvents();
 
     void setMaxNodesPerHistoryReadEvents(UInteger value);
 
-    PropertyType getMaxNodesPerWriteNode();
+    PropertyType getMaxNodesPerHistoryReadEventsNode();
 
     UInteger getMaxNodesPerWrite();
 
     void setMaxNodesPerWrite(UInteger value);
 
-    PropertyType getMaxNodesPerHistoryUpdateDataNode();
+    PropertyType getMaxNodesPerWriteNode();
 
     UInteger getMaxNodesPerHistoryUpdateData();
 
     void setMaxNodesPerHistoryUpdateData(UInteger value);
 
-    PropertyType getMaxNodesPerHistoryUpdateEventsNode();
+    PropertyType getMaxNodesPerHistoryUpdateDataNode();
 
     UInteger getMaxNodesPerHistoryUpdateEvents();
 
     void setMaxNodesPerHistoryUpdateEvents(UInteger value);
 
-    PropertyType getMaxNodesPerMethodCallNode();
+    PropertyType getMaxNodesPerHistoryUpdateEventsNode();
 
     UInteger getMaxNodesPerMethodCall();
 
     void setMaxNodesPerMethodCall(UInteger value);
 
-    PropertyType getMaxNodesPerBrowseNode();
+    PropertyType getMaxNodesPerMethodCallNode();
 
     UInteger getMaxNodesPerBrowse();
 
     void setMaxNodesPerBrowse(UInteger value);
 
-    PropertyType getMaxNodesPerRegisterNodesNode();
+    PropertyType getMaxNodesPerBrowseNode();
 
     UInteger getMaxNodesPerRegisterNodes();
 
     void setMaxNodesPerRegisterNodes(UInteger value);
 
-    PropertyType getMaxNodesPerTranslateBrowsePathsToNodeIdsNode();
+    PropertyType getMaxNodesPerRegisterNodesNode();
 
     UInteger getMaxNodesPerTranslateBrowsePathsToNodeIds();
 
     void setMaxNodesPerTranslateBrowsePathsToNodeIds(UInteger value);
 
-    PropertyType getMaxNodesPerNodeManagementNode();
+    PropertyType getMaxNodesPerTranslateBrowsePathsToNodeIdsNode();
 
     UInteger getMaxNodesPerNodeManagement();
 
     void setMaxNodesPerNodeManagement(UInteger value);
 
-    PropertyType getMaxMonitoredItemsPerCallNode();
+    PropertyType getMaxNodesPerNodeManagementNode();
 
     UInteger getMaxMonitoredItemsPerCall();
 
     void setMaxMonitoredItemsPerCall(UInteger value);
+
+    PropertyType getMaxMonitoredItemsPerCallNode();
 }

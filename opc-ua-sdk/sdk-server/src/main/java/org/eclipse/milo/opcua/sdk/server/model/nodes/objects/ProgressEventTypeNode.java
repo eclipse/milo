@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,18 +22,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class ProgressEventTypeNode extends BaseEventTypeNode implements ProgressEventType {
     public ProgressEventTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                  LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                 UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                 RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                 UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public ProgressEventTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                  LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                 UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                 RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -44,8 +49,7 @@ public class ProgressEventTypeNode extends BaseEventTypeNode implements Progress
 
     @Override
     public Object getContext() {
-        Optional<Object> propertyValue = getProperty(ProgressEventType.CONTEXT);
-        return propertyValue.orElse(null);
+        return getProperty(ProgressEventType.CONTEXT).orElse(null);
     }
 
     @Override
@@ -61,8 +65,7 @@ public class ProgressEventTypeNode extends BaseEventTypeNode implements Progress
 
     @Override
     public UShort getProgress() {
-        Optional<UShort> propertyValue = getProperty(ProgressEventType.PROGRESS);
-        return propertyValue.orElse(null);
+        return getProperty(ProgressEventType.PROGRESS).orElse(null);
     }
 
     @Override

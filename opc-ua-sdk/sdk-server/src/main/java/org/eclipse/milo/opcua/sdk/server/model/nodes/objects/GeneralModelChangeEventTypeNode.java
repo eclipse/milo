@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,19 +21,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModelChangeStructureDataType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class GeneralModelChangeEventTypeNode extends BaseModelChangeEventTypeNode implements GeneralModelChangeEventType {
     public GeneralModelChangeEventTypeNode(UaNodeContext context, NodeId nodeId,
                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                           UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                           RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                           UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public GeneralModelChangeEventTypeNode(UaNodeContext context, NodeId nodeId,
                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                           UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                           RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -44,8 +49,7 @@ public class GeneralModelChangeEventTypeNode extends BaseModelChangeEventTypeNod
 
     @Override
     public ModelChangeStructureDataType[] getChanges() {
-        Optional<ModelChangeStructureDataType[]> propertyValue = getProperty(GeneralModelChangeEventType.CHANGES);
-        return propertyValue.orElse(null);
+        return getProperty(GeneralModelChangeEventType.CHANGES).orElse(null);
     }
 
     @Override

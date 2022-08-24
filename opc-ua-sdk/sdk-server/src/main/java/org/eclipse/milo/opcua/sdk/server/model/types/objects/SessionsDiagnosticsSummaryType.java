@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,9 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.SessionSecurityDi
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.4">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.4</a>
+ */
 public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
     SessionDiagnosticsArrayType getSessionDiagnosticsArrayNode();
 

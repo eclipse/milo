@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,17 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/5.4.2">https://reference.opcfoundation.org/v104/Core/docs/Part11/5.4.2</a>
+ */
 public interface HistoryServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<Boolean> ACCESS_HISTORY_DATA_CAPABILITY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AccessHistoryDataCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -29,7 +31,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "AccessHistoryEventsCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -37,7 +39,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxReturnDataValues",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -45,7 +47,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxReturnEventValues",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -53,7 +55,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "InsertDataCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -61,7 +63,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "ReplaceDataCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -69,7 +71,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "UpdateDataCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -77,7 +79,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "DeleteRawCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -85,7 +87,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "DeleteAtTimeCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -93,7 +95,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "InsertEventCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -101,7 +103,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "ReplaceEventCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -109,7 +111,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "UpdateEventCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -117,7 +119,7 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "DeleteEventCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -125,93 +127,107 @@ public interface HistoryServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "InsertAnnotationCapability",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
-    PropertyType getAccessHistoryDataCapabilityNode();
+    QualifiedProperty<Boolean> SERVER_TIMESTAMP_SUPPORTED = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServerTimestampSupported",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
+        -1,
+        Boolean.class
+    );
 
     Boolean getAccessHistoryDataCapability();
 
     void setAccessHistoryDataCapability(Boolean value);
 
-    PropertyType getAccessHistoryEventsCapabilityNode();
+    PropertyType getAccessHistoryDataCapabilityNode();
 
     Boolean getAccessHistoryEventsCapability();
 
     void setAccessHistoryEventsCapability(Boolean value);
 
-    PropertyType getMaxReturnDataValuesNode();
+    PropertyType getAccessHistoryEventsCapabilityNode();
 
     UInteger getMaxReturnDataValues();
 
     void setMaxReturnDataValues(UInteger value);
 
-    PropertyType getMaxReturnEventValuesNode();
+    PropertyType getMaxReturnDataValuesNode();
 
     UInteger getMaxReturnEventValues();
 
     void setMaxReturnEventValues(UInteger value);
 
-    PropertyType getInsertDataCapabilityNode();
+    PropertyType getMaxReturnEventValuesNode();
 
     Boolean getInsertDataCapability();
 
     void setInsertDataCapability(Boolean value);
 
-    PropertyType getReplaceDataCapabilityNode();
+    PropertyType getInsertDataCapabilityNode();
 
     Boolean getReplaceDataCapability();
 
     void setReplaceDataCapability(Boolean value);
 
-    PropertyType getUpdateDataCapabilityNode();
+    PropertyType getReplaceDataCapabilityNode();
 
     Boolean getUpdateDataCapability();
 
     void setUpdateDataCapability(Boolean value);
 
-    PropertyType getDeleteRawCapabilityNode();
+    PropertyType getUpdateDataCapabilityNode();
 
     Boolean getDeleteRawCapability();
 
     void setDeleteRawCapability(Boolean value);
 
-    PropertyType getDeleteAtTimeCapabilityNode();
+    PropertyType getDeleteRawCapabilityNode();
 
     Boolean getDeleteAtTimeCapability();
 
     void setDeleteAtTimeCapability(Boolean value);
 
-    PropertyType getInsertEventCapabilityNode();
+    PropertyType getDeleteAtTimeCapabilityNode();
 
     Boolean getInsertEventCapability();
 
     void setInsertEventCapability(Boolean value);
 
-    PropertyType getReplaceEventCapabilityNode();
+    PropertyType getInsertEventCapabilityNode();
 
     Boolean getReplaceEventCapability();
 
     void setReplaceEventCapability(Boolean value);
 
-    PropertyType getUpdateEventCapabilityNode();
+    PropertyType getReplaceEventCapabilityNode();
 
     Boolean getUpdateEventCapability();
 
     void setUpdateEventCapability(Boolean value);
 
-    PropertyType getDeleteEventCapabilityNode();
+    PropertyType getUpdateEventCapabilityNode();
 
     Boolean getDeleteEventCapability();
 
     void setDeleteEventCapability(Boolean value);
 
-    PropertyType getInsertAnnotationCapabilityNode();
+    PropertyType getDeleteEventCapabilityNode();
 
     Boolean getInsertAnnotationCapability();
 
     void setInsertAnnotationCapability(Boolean value);
+
+    PropertyType getInsertAnnotationCapabilityNode();
+
+    Boolean getServerTimestampSupported();
+
+    void setServerTimestampSupported(Boolean value);
+
+    PropertyType getServerTimestampSupportedNode();
 
     FolderType getAggregateFunctionsNode();
 }

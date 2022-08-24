@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,9 +11,8 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
@@ -22,21 +21,35 @@ public interface TrustListType extends FileType {
         "http://opcfoundation.org/UA/",
         "LastUpdateTime",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.Scalar,
+        -1,
         DateTime.class
     );
 
-    PropertyType getLastUpdateTimeNode();
+    QualifiedProperty<Double> UPDATE_FREQUENCY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdateFrequency",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
+        -1,
+        Double.class
+    );
 
     DateTime getLastUpdateTime();
 
     void setLastUpdateTime(DateTime value);
 
-    UaMethodNode getOpenWithMasksMethodNode();
+    PropertyType getLastUpdateTimeNode();
 
-    UaMethodNode getCloseAndUpdateMethodNode();
+    Double getUpdateFrequency();
 
-    UaMethodNode getAddCertificateMethodNode();
+    void setUpdateFrequency(Double value);
 
-    UaMethodNode getRemoveCertificateMethodNode();
+    PropertyType getUpdateFrequencyNode();
+
+    MethodNode getOpenWithMasksMethodNode();
+
+    MethodNode getCloseAndUpdateMethodNode();
+
+    MethodNode getAddCertificateMethodNode();
+
+    MethodNode getRemoveCertificateMethodNode();
 }

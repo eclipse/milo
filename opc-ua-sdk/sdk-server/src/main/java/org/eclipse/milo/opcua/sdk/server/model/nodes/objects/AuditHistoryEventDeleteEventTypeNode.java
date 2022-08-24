@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,19 +22,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEventTypeNode implements AuditHistoryEventDeleteEventType {
     public AuditHistoryEventDeleteEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                                UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                                UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditHistoryEventDeleteEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                                UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -45,8 +50,7 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
 
     @Override
     public ByteString[] getEventIds() {
-        Optional<ByteString[]> propertyValue = getProperty(AuditHistoryEventDeleteEventType.EVENT_IDS);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventDeleteEventType.EVENT_IDS).orElse(null);
     }
 
     @Override
@@ -62,8 +66,7 @@ public class AuditHistoryEventDeleteEventTypeNode extends AuditHistoryDeleteEven
 
     @Override
     public HistoryEventFieldList getOldValues() {
-        Optional<HistoryEventFieldList> propertyValue = getProperty(AuditHistoryEventDeleteEventType.OLD_VALUES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryEventDeleteEventType.OLD_VALUES).orElse(null);
     }
 
     @Override

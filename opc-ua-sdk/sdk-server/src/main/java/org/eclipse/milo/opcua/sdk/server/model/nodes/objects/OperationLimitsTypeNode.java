@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,18 +21,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class OperationLimitsTypeNode extends FolderTypeNode implements OperationLimitsType {
     public OperationLimitsTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                    LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                   UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                   UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                   RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                   UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public OperationLimitsTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                    LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                   UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                   UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                   RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -43,8 +48,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerRead() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_READ);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_READ).orElse(null);
     }
 
     @Override
@@ -60,8 +64,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerHistoryReadData() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_DATA);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_DATA).orElse(null);
     }
 
     @Override
@@ -77,8 +80,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerHistoryReadEvents() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_EVENTS);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_READ_EVENTS).orElse(null);
     }
 
     @Override
@@ -94,8 +96,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerWrite() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_WRITE);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_WRITE).orElse(null);
     }
 
     @Override
@@ -111,8 +112,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerHistoryUpdateData() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_DATA);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_DATA).orElse(null);
     }
 
     @Override
@@ -128,8 +128,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerHistoryUpdateEvents() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_EVENTS);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_HISTORY_UPDATE_EVENTS).orElse(null);
     }
 
     @Override
@@ -145,8 +144,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerMethodCall() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_METHOD_CALL);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_METHOD_CALL).orElse(null);
     }
 
     @Override
@@ -162,8 +160,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerBrowse() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_BROWSE);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_BROWSE).orElse(null);
     }
 
     @Override
@@ -179,8 +176,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerRegisterNodes() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_REGISTER_NODES);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_REGISTER_NODES).orElse(null);
     }
 
     @Override
@@ -196,8 +192,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerTranslateBrowsePathsToNodeIds() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_TRANSLATE_BROWSE_PATHS_TO_NODE_IDS);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_TRANSLATE_BROWSE_PATHS_TO_NODE_IDS).orElse(null);
     }
 
     @Override
@@ -213,8 +208,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxNodesPerNodeManagement() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_NODES_PER_NODE_MANAGEMENT);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_NODES_PER_NODE_MANAGEMENT).orElse(null);
     }
 
     @Override
@@ -230,8 +224,7 @@ public class OperationLimitsTypeNode extends FolderTypeNode implements Operation
 
     @Override
     public UInteger getMaxMonitoredItemsPerCall() {
-        Optional<UInteger> propertyValue = getProperty(OperationLimitsType.MAX_MONITORED_ITEMS_PER_CALL);
-        return propertyValue.orElse(null);
+        return getProperty(OperationLimitsType.MAX_MONITORED_ITEMS_PER_CALL).orElse(null);
     }
 
     @Override

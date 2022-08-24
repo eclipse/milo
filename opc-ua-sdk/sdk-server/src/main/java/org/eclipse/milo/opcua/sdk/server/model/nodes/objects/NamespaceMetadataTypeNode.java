@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,18 +24,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements NamespaceMetadataType {
     public NamespaceMetadataTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                     UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                     UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                     RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                     UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public NamespaceMetadataTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                     UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                     UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                     RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -46,8 +51,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public String getNamespaceUri() {
-        Optional<String> propertyValue = getProperty(NamespaceMetadataType.NAMESPACE_URI);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.NAMESPACE_URI).orElse(null);
     }
 
     @Override
@@ -63,8 +67,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public String getNamespaceVersion() {
-        Optional<String> propertyValue = getProperty(NamespaceMetadataType.NAMESPACE_VERSION);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.NAMESPACE_VERSION).orElse(null);
     }
 
     @Override
@@ -80,8 +83,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public DateTime getNamespacePublicationDate() {
-        Optional<DateTime> propertyValue = getProperty(NamespaceMetadataType.NAMESPACE_PUBLICATION_DATE);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.NAMESPACE_PUBLICATION_DATE).orElse(null);
     }
 
     @Override
@@ -97,8 +99,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public Boolean getIsNamespaceSubset() {
-        Optional<Boolean> propertyValue = getProperty(NamespaceMetadataType.IS_NAMESPACE_SUBSET);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.IS_NAMESPACE_SUBSET).orElse(null);
     }
 
     @Override
@@ -114,8 +115,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public IdType[] getStaticNodeIdTypes() {
-        Optional<IdType[]> propertyValue = getProperty(NamespaceMetadataType.STATIC_NODE_ID_TYPES);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.STATIC_NODE_ID_TYPES).orElse(null);
     }
 
     @Override
@@ -131,8 +131,7 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public String[] getStaticNumericNodeIdRange() {
-        Optional<String[]> propertyValue = getProperty(NamespaceMetadataType.STATIC_NUMERIC_NODE_ID_RANGE);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.STATIC_NUMERIC_NODE_ID_RANGE).orElse(null);
     }
 
     @Override
@@ -148,13 +147,76 @@ public class NamespaceMetadataTypeNode extends BaseObjectTypeNode implements Nam
 
     @Override
     public String getStaticStringNodeIdPattern() {
-        Optional<String> propertyValue = getProperty(NamespaceMetadataType.STATIC_STRING_NODE_ID_PATTERN);
-        return propertyValue.orElse(null);
+        return getProperty(NamespaceMetadataType.STATIC_STRING_NODE_ID_PATTERN).orElse(null);
     }
 
     @Override
     public void setStaticStringNodeIdPattern(String value) {
         setProperty(NamespaceMetadataType.STATIC_STRING_NODE_ID_PATTERN, value);
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultRolePermissionsNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NamespaceMetadataType.DEFAULT_ROLE_PERMISSIONS);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public RolePermissionType[] getDefaultRolePermissions() {
+        return getProperty(NamespaceMetadataType.DEFAULT_ROLE_PERMISSIONS).orElse(null);
+    }
+
+    @Override
+    public void setDefaultRolePermissions(RolePermissionType[] value) {
+        setProperty(NamespaceMetadataType.DEFAULT_ROLE_PERMISSIONS, value);
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultUserRolePermissionsNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NamespaceMetadataType.DEFAULT_USER_ROLE_PERMISSIONS);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public RolePermissionType[] getDefaultUserRolePermissions() {
+        return getProperty(NamespaceMetadataType.DEFAULT_USER_ROLE_PERMISSIONS).orElse(null);
+    }
+
+    @Override
+    public void setDefaultUserRolePermissions(RolePermissionType[] value) {
+        setProperty(NamespaceMetadataType.DEFAULT_USER_ROLE_PERMISSIONS, value);
+    }
+
+    @Override
+    public PropertyTypeNode getDefaultAccessRestrictionsNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NamespaceMetadataType.DEFAULT_ACCESS_RESTRICTIONS);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public AccessRestrictionType getDefaultAccessRestrictions() {
+        return getProperty(NamespaceMetadataType.DEFAULT_ACCESS_RESTRICTIONS).orElse(null);
+    }
+
+    @Override
+    public void setDefaultAccessRestrictions(AccessRestrictionType value) {
+        setProperty(NamespaceMetadataType.DEFAULT_ACCESS_RESTRICTIONS, value);
+    }
+
+    @Override
+    public PropertyTypeNode getConfigurationVersionNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NamespaceMetadataType.CONFIGURATION_VERSION);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public UInteger getConfigurationVersion() {
+        return getProperty(NamespaceMetadataType.CONFIGURATION_VERSION).orElse(null);
+    }
+
+    @Override
+    public void setConfigurationVersion(UInteger value) {
+        setProperty(NamespaceMetadataType.CONFIGURATION_VERSION, value);
     }
 
     @Override

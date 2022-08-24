@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,35 +22,39 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeNode implements AuditConditionConfirmEventType {
     public AuditConditionConfirmEventTypeNode(UaNodeContext context, NodeId nodeId,
                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                              UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                              UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                              RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                              UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditConditionConfirmEventTypeNode(UaNodeContext context, NodeId nodeId,
                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                              UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                              UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                              RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
-    public PropertyTypeNode getEventIdNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionConfirmEventType.EVENT_ID);
+    public PropertyTypeNode getConditionEventIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionConfirmEventType.CONDITION_EVENT_ID);
         return (PropertyTypeNode) propertyNode.orElse(null);
     }
 
     @Override
-    public ByteString getEventId() {
-        Optional<ByteString> propertyValue = getProperty(AuditConditionConfirmEventType.EVENT_ID);
-        return propertyValue.orElse(null);
+    public ByteString getConditionEventId() {
+        return getProperty(AuditConditionConfirmEventType.CONDITION_EVENT_ID).orElse(null);
     }
 
     @Override
-    public void setEventId(ByteString value) {
-        setProperty(AuditConditionConfirmEventType.EVENT_ID, value);
+    public void setConditionEventId(ByteString value) {
+        setProperty(AuditConditionConfirmEventType.CONDITION_EVENT_ID, value);
     }
 
     @Override
@@ -61,8 +65,7 @@ public class AuditConditionConfirmEventTypeNode extends AuditConditionEventTypeN
 
     @Override
     public LocalizedText getComment() {
-        Optional<LocalizedText> propertyValue = getProperty(AuditConditionConfirmEventType.COMMENT);
-        return propertyValue.orElse(null);
+        return getProperty(AuditConditionConfirmEventType.COMMENT).orElse(null);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,23 +11,39 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.21/#5.8.21.3">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.21/#5.8.21.3</a>
+ */
 public interface ExclusiveDeviationAlarmType extends ExclusiveLimitAlarmType {
     QualifiedProperty<NodeId> SETPOINT_NODE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SetpointNode",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
-        ValueRanks.Scalar,
+        -1,
         NodeId.class
     );
 
-    PropertyType getSetpointNodeNode();
+    QualifiedProperty<NodeId> BASE_SETPOINT_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "BaseSetpointNode",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
+        -1,
+        NodeId.class
+    );
 
     NodeId getSetpointNode();
 
     void setSetpointNode(NodeId value);
+
+    PropertyType getSetpointNodeNode();
+
+    NodeId getBaseSetpointNode();
+
+    void setBaseSetpointNode(NodeId value);
+
+    PropertyType getBaseSetpointNodeNode();
 }

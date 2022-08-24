@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,18 +24,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNode implements AuditOpenSecureChannelEventType {
     public AuditOpenSecureChannelEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                               UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                               UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                               RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                               UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditOpenSecureChannelEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                               UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                               UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                               RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -46,8 +51,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public ByteString getClientCertificate() {
-        Optional<ByteString> propertyValue = getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
-        return propertyValue.orElse(null);
+        return getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE).orElse(null);
     }
 
     @Override
@@ -63,8 +67,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public String getClientCertificateThumbprint() {
-        Optional<String> propertyValue = getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
-        return propertyValue.orElse(null);
+        return getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT).orElse(null);
     }
 
     @Override
@@ -80,8 +83,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public SecurityTokenRequestType getRequestType() {
-        Optional<SecurityTokenRequestType> propertyValue = getProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE);
-        return propertyValue.orElse(null);
+        return getProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE).orElse(null);
     }
 
     @Override
@@ -97,8 +99,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public String getSecurityPolicyUri() {
-        Optional<String> propertyValue = getProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
-        return propertyValue.orElse(null);
+        return getProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI).orElse(null);
     }
 
     @Override
@@ -114,8 +115,7 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public MessageSecurityMode getSecurityMode() {
-        Optional<MessageSecurityMode> propertyValue = getProperty(AuditOpenSecureChannelEventType.SECURITY_MODE);
-        return propertyValue.orElse(null);
+        return getProperty(AuditOpenSecureChannelEventType.SECURITY_MODE).orElse(null);
     }
 
     @Override
@@ -131,12 +131,27 @@ public class AuditOpenSecureChannelEventTypeNode extends AuditChannelEventTypeNo
 
     @Override
     public Double getRequestedLifetime() {
-        Optional<Double> propertyValue = getProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
-        return propertyValue.orElse(null);
+        return getProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME).orElse(null);
     }
 
     @Override
     public void setRequestedLifetime(Double value) {
         setProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME, value);
+    }
+
+    @Override
+    public PropertyTypeNode getCertificateErrorEventIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.CERTIFICATE_ERROR_EVENT_ID);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public String getCertificateErrorEventId() {
+        return getProperty(AuditOpenSecureChannelEventType.CERTIFICATE_ERROR_EVENT_ID).orElse(null);
+    }
+
+    @Override
+    public void setCertificateErrorEventId(String value) {
+        setProperty(AuditOpenSecureChannelEventType.CERTIFICATE_ERROR_EVENT_ID, value);
     }
 }

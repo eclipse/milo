@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,16 +11,18 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part16/4.4.17">https://reference.opcfoundation.org/v105/Core/docs/Part16/4.4.17</a>
+ */
 public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
     QualifiedProperty<Object> OLD_STATE_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldStateId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
-        ValueRanks.Scalar,
+        -1,
         Object.class
     );
 
@@ -28,19 +30,19 @@ public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
         "http://opcfoundation.org/UA/",
         "NewStateId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
-        ValueRanks.Scalar,
+        -1,
         Object.class
     );
-
-    PropertyType getOldStateIdNode();
 
     Object getOldStateId();
 
     void setOldStateId(Object value);
 
-    PropertyType getNewStateIdNode();
+    PropertyType getOldStateIdNode();
 
     Object getNewStateId();
 
     void setNewStateId(Object value);
+
+    PropertyType getNewStateIdNode();
 }

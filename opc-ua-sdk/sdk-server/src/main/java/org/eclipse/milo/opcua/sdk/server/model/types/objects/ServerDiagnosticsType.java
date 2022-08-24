@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.SamplingIntervalDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.ServerDiagnosticsSummaryType;
@@ -21,20 +20,23 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagno
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.3">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.3</a>
+ */
 public interface ServerDiagnosticsType extends BaseObjectType {
     QualifiedProperty<Boolean> ENABLED_FLAG = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EnabledFlag",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
-
-    PropertyType getEnabledFlagNode();
 
     Boolean getEnabledFlag();
 
     void setEnabledFlag(Boolean value);
+
+    PropertyType getEnabledFlagNode();
 
     ServerDiagnosticsSummaryType getServerDiagnosticsSummaryNode();
 

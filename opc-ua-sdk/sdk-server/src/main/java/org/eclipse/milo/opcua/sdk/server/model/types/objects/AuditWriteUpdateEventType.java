@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,17 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.25">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.25</a>
+ */
 public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
     QualifiedProperty<UInteger> ATTRIBUTE_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AttributeId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -29,7 +31,7 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
         "http://opcfoundation.org/UA/",
         "IndexRange",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=291"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
 
@@ -37,7 +39,7 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
         "http://opcfoundation.org/UA/",
         "OldValue",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
-        ValueRanks.Scalar,
+        -1,
         Object.class
     );
 
@@ -45,31 +47,31 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
         "http://opcfoundation.org/UA/",
         "NewValue",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=24"),
-        ValueRanks.Scalar,
+        -1,
         Object.class
     );
-
-    PropertyType getAttributeIdNode();
 
     UInteger getAttributeId();
 
     void setAttributeId(UInteger value);
 
-    PropertyType getIndexRangeNode();
+    PropertyType getAttributeIdNode();
 
     String getIndexRange();
 
     void setIndexRange(String value);
 
-    PropertyType getOldValueNode();
+    PropertyType getIndexRangeNode();
 
     Object getOldValue();
 
     void setOldValue(Object value);
 
-    PropertyType getNewValueNode();
+    PropertyType getOldValueNode();
 
     Object getNewValue();
 
     void setNewValue(Object value);
+
+    PropertyType getNewValueNode();
 }

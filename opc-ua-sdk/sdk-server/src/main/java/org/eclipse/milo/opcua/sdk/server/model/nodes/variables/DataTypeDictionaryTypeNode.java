@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,20 +21,27 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class DataTypeDictionaryTypeNode extends BaseDataVariableTypeNode implements DataTypeDictionaryType {
     public DataTypeDictionaryTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                      UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                      UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                      RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                      DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                                      UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, boolean historizing,
+                                      AccessLevelExType accessLevelEx) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
     }
 
     public DataTypeDictionaryTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                      UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
-                                      UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                      double minimumSamplingInterval, boolean historizing) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+                                      UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                      RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                      DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions);
     }
 
     @Override
@@ -45,8 +52,7 @@ public class DataTypeDictionaryTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public String getDataTypeVersion() {
-        Optional<String> propertyValue = getProperty(DataTypeDictionaryType.DATA_TYPE_VERSION);
-        return propertyValue.orElse(null);
+        return getProperty(DataTypeDictionaryType.DATA_TYPE_VERSION).orElse(null);
     }
 
     @Override
@@ -62,12 +68,27 @@ public class DataTypeDictionaryTypeNode extends BaseDataVariableTypeNode impleme
 
     @Override
     public String getNamespaceUri() {
-        Optional<String> propertyValue = getProperty(DataTypeDictionaryType.NAMESPACE_URI);
-        return propertyValue.orElse(null);
+        return getProperty(DataTypeDictionaryType.NAMESPACE_URI).orElse(null);
     }
 
     @Override
     public void setNamespaceUri(String value) {
         setProperty(DataTypeDictionaryType.NAMESPACE_URI, value);
+    }
+
+    @Override
+    public PropertyTypeNode getDeprecatedNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(DataTypeDictionaryType.DEPRECATED);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Boolean getDeprecated() {
+        return getProperty(DataTypeDictionaryType.DEPRECATED).orElse(null);
+    }
+
+    @Override
+    public void setDeprecated(Boolean value) {
+        setProperty(DataTypeDictionaryType.DEPRECATED, value);
     }
 }

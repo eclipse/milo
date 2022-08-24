@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,18 +24,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode implements HistoricalDataConfigurationType {
     public HistoricalDataConfigurationTypeNode(UaNodeContext context, NodeId nodeId,
                                                QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                               UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                               UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                               RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                               UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public HistoricalDataConfigurationTypeNode(UaNodeContext context, NodeId nodeId,
                                                QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                               UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                               UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                               RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -46,8 +51,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public Boolean getStepped() {
-        Optional<Boolean> propertyValue = getProperty(HistoricalDataConfigurationType.STEPPED);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.STEPPED).orElse(null);
     }
 
     @Override
@@ -63,8 +67,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public String getDefinition() {
-        Optional<String> propertyValue = getProperty(HistoricalDataConfigurationType.DEFINITION);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.DEFINITION).orElse(null);
     }
 
     @Override
@@ -80,8 +83,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public Double getMaxTimeInterval() {
-        Optional<Double> propertyValue = getProperty(HistoricalDataConfigurationType.MAX_TIME_INTERVAL);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.MAX_TIME_INTERVAL).orElse(null);
     }
 
     @Override
@@ -97,8 +99,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public Double getMinTimeInterval() {
-        Optional<Double> propertyValue = getProperty(HistoricalDataConfigurationType.MIN_TIME_INTERVAL);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.MIN_TIME_INTERVAL).orElse(null);
     }
 
     @Override
@@ -114,8 +115,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public Double getExceptionDeviation() {
-        Optional<Double> propertyValue = getProperty(HistoricalDataConfigurationType.EXCEPTION_DEVIATION);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.EXCEPTION_DEVIATION).orElse(null);
     }
 
     @Override
@@ -131,8 +131,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public ExceptionDeviationFormat getExceptionDeviationFormat() {
-        Optional<ExceptionDeviationFormat> propertyValue = getProperty(HistoricalDataConfigurationType.EXCEPTION_DEVIATION_FORMAT);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.EXCEPTION_DEVIATION_FORMAT).orElse(null);
     }
 
     @Override
@@ -148,8 +147,7 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public DateTime getStartOfArchive() {
-        Optional<DateTime> propertyValue = getProperty(HistoricalDataConfigurationType.START_OF_ARCHIVE);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.START_OF_ARCHIVE).orElse(null);
     }
 
     @Override
@@ -165,13 +163,28 @@ public class HistoricalDataConfigurationTypeNode extends BaseObjectTypeNode impl
 
     @Override
     public DateTime getStartOfOnlineArchive() {
-        Optional<DateTime> propertyValue = getProperty(HistoricalDataConfigurationType.START_OF_ONLINE_ARCHIVE);
-        return propertyValue.orElse(null);
+        return getProperty(HistoricalDataConfigurationType.START_OF_ONLINE_ARCHIVE).orElse(null);
     }
 
     @Override
     public void setStartOfOnlineArchive(DateTime value) {
         setProperty(HistoricalDataConfigurationType.START_OF_ONLINE_ARCHIVE, value);
+    }
+
+    @Override
+    public PropertyTypeNode getServerTimestampSupportedNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(HistoricalDataConfigurationType.SERVER_TIMESTAMP_SUPPORTED);
+        return (PropertyTypeNode) propertyNode.orElse(null);
+    }
+
+    @Override
+    public Boolean getServerTimestampSupported() {
+        return getProperty(HistoricalDataConfigurationType.SERVER_TIMESTAMP_SUPPORTED).orElse(null);
+    }
+
+    @Override
+    public void setServerTimestampSupported(Boolean value) {
+        setProperty(HistoricalDataConfigurationType.SERVER_TIMESTAMP_SUPPORTED, value);
     }
 
     @Override

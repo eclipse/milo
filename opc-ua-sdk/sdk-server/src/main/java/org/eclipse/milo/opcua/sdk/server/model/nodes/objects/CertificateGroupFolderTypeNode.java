@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -10,9 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
-import java.util.Optional;
-
-import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.CertificateGroupFolderType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -20,35 +17,22 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class CertificateGroupFolderTypeNode extends FolderTypeNode implements CertificateGroupFolderType {
     public CertificateGroupFolderTypeNode(UaNodeContext context, NodeId nodeId,
                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                          UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                          UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                          RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                          UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public CertificateGroupFolderTypeNode(UaNodeContext context, NodeId nodeId,
                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-    }
-
-    @Override
-    public CertificateGroupTypeNode getDefaultApplicationGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultApplicationGroup");
-        return (CertificateGroupTypeNode) component.orElse(null);
-    }
-
-    @Override
-    public CertificateGroupTypeNode getDefaultHttpsGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultHttpsGroup");
-        return (CertificateGroupTypeNode) component.orElse(null);
-    }
-
-    @Override
-    public CertificateGroupTypeNode getDefaultUserTokenGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultUserTokenGroup");
-        return (CertificateGroupTypeNode) component.orElse(null);
+                                          UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                          RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,17 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.3">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.3</a>
+ */
 public interface AuditEventType extends BaseEventType {
     QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ActionTimeStamp",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.Scalar,
+        -1,
         DateTime.class
     );
 
@@ -29,7 +31,7 @@ public interface AuditEventType extends BaseEventType {
         "http://opcfoundation.org/UA/",
         "Status",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -37,7 +39,7 @@ public interface AuditEventType extends BaseEventType {
         "http://opcfoundation.org/UA/",
         "ServerId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
 
@@ -45,7 +47,7 @@ public interface AuditEventType extends BaseEventType {
         "http://opcfoundation.org/UA/",
         "ClientAuditEntryId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
 
@@ -53,37 +55,37 @@ public interface AuditEventType extends BaseEventType {
         "http://opcfoundation.org/UA/",
         "ClientUserId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
-
-    PropertyType getActionTimeStampNode();
 
     DateTime getActionTimeStamp();
 
     void setActionTimeStamp(DateTime value);
 
-    PropertyType getStatusNode();
+    PropertyType getActionTimeStampNode();
 
     Boolean getStatus();
 
     void setStatus(Boolean value);
 
-    PropertyType getServerIdNode();
+    PropertyType getStatusNode();
 
     String getServerId();
 
     void setServerId(String value);
 
-    PropertyType getClientAuditEntryIdNode();
+    PropertyType getServerIdNode();
 
     String getClientAuditEntryId();
 
     void setClientAuditEntryId(String value);
 
-    PropertyType getClientUserIdNode();
+    PropertyType getClientAuditEntryIdNode();
 
     String getClientUserId();
 
     void setClientUserId(String value);
+
+    PropertyType getClientUserIdNode();
 }

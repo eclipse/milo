@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,22 +22,28 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
 
 public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implements ProgramDiagnosticType {
     public ProgramDiagnosticTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                     UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                     UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                     RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                     DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                                     UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, boolean historizing,
+                                     AccessLevelExType accessLevelEx) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
     }
 
     public ProgramDiagnosticTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                     UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
-                                     UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                     double minimumSamplingInterval, boolean historizing) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+                                     UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                     RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                     DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions);
     }
 
     @Override
@@ -48,8 +54,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public NodeId getCreateSessionId() {
-        Optional<NodeId> propertyValue = getProperty(ProgramDiagnosticType.CREATE_SESSION_ID);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.CREATE_SESSION_ID).orElse(null);
     }
 
     @Override
@@ -65,8 +70,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public String getCreateClientName() {
-        Optional<String> propertyValue = getProperty(ProgramDiagnosticType.CREATE_CLIENT_NAME);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.CREATE_CLIENT_NAME).orElse(null);
     }
 
     @Override
@@ -82,8 +86,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public DateTime getInvocationCreationTime() {
-        Optional<DateTime> propertyValue = getProperty(ProgramDiagnosticType.INVOCATION_CREATION_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.INVOCATION_CREATION_TIME).orElse(null);
     }
 
     @Override
@@ -99,8 +102,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public DateTime getLastTransitionTime() {
-        Optional<DateTime> propertyValue = getProperty(ProgramDiagnosticType.LAST_TRANSITION_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.LAST_TRANSITION_TIME).orElse(null);
     }
 
     @Override
@@ -116,8 +118,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public String getLastMethodCall() {
-        Optional<String> propertyValue = getProperty(ProgramDiagnosticType.LAST_METHOD_CALL);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.LAST_METHOD_CALL).orElse(null);
     }
 
     @Override
@@ -133,8 +134,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public NodeId getLastMethodSessionId() {
-        Optional<NodeId> propertyValue = getProperty(ProgramDiagnosticType.LAST_METHOD_SESSION_ID);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.LAST_METHOD_SESSION_ID).orElse(null);
     }
 
     @Override
@@ -149,13 +149,12 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public Argument[] getLastMethodInputArguments() {
-        Optional<Argument[]> propertyValue = getProperty(ProgramDiagnosticType.LAST_METHOD_INPUT_ARGUMENTS);
-        return propertyValue.orElse(null);
+    public Object[] getLastMethodInputArguments() {
+        return getProperty(ProgramDiagnosticType.LAST_METHOD_INPUT_ARGUMENTS).orElse(null);
     }
 
     @Override
-    public void setLastMethodInputArguments(Argument[] value) {
+    public void setLastMethodInputArguments(Object[] value) {
         setProperty(ProgramDiagnosticType.LAST_METHOD_INPUT_ARGUMENTS, value);
     }
 
@@ -166,13 +165,12 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
     }
 
     @Override
-    public Argument[] getLastMethodOutputArguments() {
-        Optional<Argument[]> propertyValue = getProperty(ProgramDiagnosticType.LAST_METHOD_OUTPUT_ARGUMENTS);
-        return propertyValue.orElse(null);
+    public Object[] getLastMethodOutputArguments() {
+        return getProperty(ProgramDiagnosticType.LAST_METHOD_OUTPUT_ARGUMENTS).orElse(null);
     }
 
     @Override
-    public void setLastMethodOutputArguments(Argument[] value) {
+    public void setLastMethodOutputArguments(Object[] value) {
         setProperty(ProgramDiagnosticType.LAST_METHOD_OUTPUT_ARGUMENTS, value);
     }
 
@@ -184,8 +182,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public DateTime getLastMethodCallTime() {
-        Optional<DateTime> propertyValue = getProperty(ProgramDiagnosticType.LAST_METHOD_CALL_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.LAST_METHOD_CALL_TIME).orElse(null);
     }
 
     @Override
@@ -201,8 +198,7 @@ public class ProgramDiagnosticTypeNode extends BaseDataVariableTypeNode implemen
 
     @Override
     public StatusResult getLastMethodReturnStatus() {
-        Optional<StatusResult> propertyValue = getProperty(ProgramDiagnosticType.LAST_METHOD_RETURN_STATUS);
-        return propertyValue.orElse(null);
+        return getProperty(ProgramDiagnosticType.LAST_METHOD_RETURN_STATUS).orElse(null);
     }
 
     @Override

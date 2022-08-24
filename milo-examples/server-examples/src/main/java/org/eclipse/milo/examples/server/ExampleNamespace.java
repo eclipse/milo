@@ -588,7 +588,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             node.setDataType(Identifiers.Double);
             node.setValue(new DataValue(new Variant(3.14d)));
 
-            node.setEURange(new Range(0.0, 100.0));
+            node.setEuRange(new Range(0.0, 100.0));
 
             getNodeManager().addNode(node);
             dataAccessFolder.addOrganizes(node);

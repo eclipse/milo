@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,18 +11,20 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.10</a>
+ */
 public interface AuditActivateSessionEventType extends AuditSessionEventType {
     QualifiedProperty<SignedSoftwareCertificate[]> CLIENT_SOFTWARE_CERTIFICATES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientSoftwareCertificates",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=344"),
-        ValueRanks.OneDimension,
+        1,
         SignedSoftwareCertificate[].class
     );
 
@@ -30,7 +32,7 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
         "http://opcfoundation.org/UA/",
         "UserIdentityToken",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=316"),
-        ValueRanks.Scalar,
+        -1,
         UserIdentityToken.class
     );
 
@@ -38,25 +40,25 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
-
-    PropertyType getClientSoftwareCertificatesNode();
 
     SignedSoftwareCertificate[] getClientSoftwareCertificates();
 
     void setClientSoftwareCertificates(SignedSoftwareCertificate[] value);
 
-    PropertyType getUserIdentityTokenNode();
+    PropertyType getClientSoftwareCertificatesNode();
 
     UserIdentityToken getUserIdentityToken();
 
     void setUserIdentityToken(UserIdentityToken value);
 
-    PropertyType getSecureChannelIdNode();
+    PropertyType getUserIdentityTokenNode();
 
     String getSecureChannelId();
 
     void setSecureChannelId(String value);
+
+    PropertyType getSecureChannelIdNode();
 }

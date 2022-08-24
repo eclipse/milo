@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -21,18 +21,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateEventTypeNode implements AuditCertificateDataMismatchEventType {
     public AuditCertificateDataMismatchEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                      QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                     UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                                     UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                     RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                                     UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditCertificateDataMismatchEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                      QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                     UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                                     UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                     RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -43,8 +48,7 @@ public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateE
 
     @Override
     public String getInvalidHostname() {
-        Optional<String> propertyValue = getProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
-        return propertyValue.orElse(null);
+        return getProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME).orElse(null);
     }
 
     @Override
@@ -60,8 +64,7 @@ public class AuditCertificateDataMismatchEventTypeNode extends AuditCertificateE
 
     @Override
     public String getInvalidUri() {
-        Optional<String> propertyValue = getProperty(AuditCertificateDataMismatchEventType.INVALID_URI);
-        return propertyValue.orElse(null);
+        return getProperty(AuditCertificateDataMismatchEventType.INVALID_URI).orElse(null);
     }
 
     @Override

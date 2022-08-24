@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
@@ -452,7 +453,14 @@ public abstract class UaNode implements UaServerNode {
                 LocalizedText.english(browseName),
                 LocalizedText.NULL_VALUE,
                 uint(0),
-                uint(0)
+                uint(0),
+                null,
+                null,
+                null,
+                UaVariableNode.INITIAL_VALUE,
+                Identifiers.BaseDataType,
+                ValueRanks.Scalar,
+                null
             );
 
             NodeId dataType = property.getDataType()

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,18 +22,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode implements AuditCreateSessionEventType {
     public AuditCreateSessionEventTypeNode(UaNodeContext context, NodeId nodeId,
                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                           UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                           RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                           UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditCreateSessionEventTypeNode(UaNodeContext context, NodeId nodeId,
                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                           UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                           RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -44,8 +49,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public String getSecureChannelId() {
-        Optional<String> propertyValue = getProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID);
-        return propertyValue.orElse(null);
+        return getProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID).orElse(null);
     }
 
     @Override
@@ -61,8 +65,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public ByteString getClientCertificate() {
-        Optional<ByteString> propertyValue = getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE);
-        return propertyValue.orElse(null);
+        return getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE).orElse(null);
     }
 
     @Override
@@ -78,8 +81,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public String getClientCertificateThumbprint() {
-        Optional<String> propertyValue = getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT);
-        return propertyValue.orElse(null);
+        return getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT).orElse(null);
     }
 
     @Override
@@ -95,8 +97,7 @@ public class AuditCreateSessionEventTypeNode extends AuditSessionEventTypeNode i
 
     @Override
     public Double getRevisedSessionTimeout() {
-        Optional<Double> propertyValue = getProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT);
-        return propertyValue.orElse(null);
+        return getProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT).orElse(null);
     }
 
     @Override

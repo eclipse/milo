@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -21,12 +20,15 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.4.2</a>
+ */
 public interface BaseEventType extends BaseObjectType {
     QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EventId",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15"),
-        ValueRanks.Scalar,
+        -1,
         ByteString.class
     );
 
@@ -34,7 +36,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "EventType",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
-        ValueRanks.Scalar,
+        -1,
         NodeId.class
     );
 
@@ -42,7 +44,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "SourceNode",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17"),
-        ValueRanks.Scalar,
+        -1,
         NodeId.class
     );
 
@@ -50,7 +52,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "SourceName",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.Scalar,
+        -1,
         String.class
     );
 
@@ -58,7 +60,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "Time",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.Scalar,
+        -1,
         DateTime.class
     );
 
@@ -66,7 +68,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "ReceiveTime",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.Scalar,
+        -1,
         DateTime.class
     );
 
@@ -74,7 +76,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "LocalTime",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8912"),
-        ValueRanks.Scalar,
+        -1,
         TimeZoneDataType.class
     );
 
@@ -82,7 +84,7 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "Message",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
-        ValueRanks.Scalar,
+        -1,
         LocalizedText.class
     );
 
@@ -90,61 +92,61 @@ public interface BaseEventType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "Severity",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
-        ValueRanks.Scalar,
+        -1,
         UShort.class
     );
-
-    PropertyType getEventIdNode();
 
     ByteString getEventId();
 
     void setEventId(ByteString value);
 
-    PropertyType getEventTypeNode();
+    PropertyType getEventIdNode();
 
     NodeId getEventType();
 
     void setEventType(NodeId value);
 
-    PropertyType getSourceNodeNode();
+    PropertyType getEventTypeNode();
 
     NodeId getSourceNode();
 
     void setSourceNode(NodeId value);
 
-    PropertyType getSourceNameNode();
+    PropertyType getSourceNodeNode();
 
     String getSourceName();
 
     void setSourceName(String value);
 
-    PropertyType getTimeNode();
+    PropertyType getSourceNameNode();
 
     DateTime getTime();
 
     void setTime(DateTime value);
 
-    PropertyType getReceiveTimeNode();
+    PropertyType getTimeNode();
 
     DateTime getReceiveTime();
 
     void setReceiveTime(DateTime value);
 
-    PropertyType getLocalTimeNode();
+    PropertyType getReceiveTimeNode();
 
     TimeZoneDataType getLocalTime();
 
     void setLocalTime(TimeZoneDataType value);
 
-    PropertyType getMessageNode();
+    PropertyType getLocalTimeNode();
 
     LocalizedText getMessage();
 
     void setMessage(LocalizedText value);
 
-    PropertyType getSeverityNode();
+    PropertyType getMessageNode();
 
     UShort getSeverity();
 
     void setSeverity(UShort value);
+
+    PropertyType getSeverityNode();
 }

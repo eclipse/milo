@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,19 +11,22 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.2">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.2</a>
+ */
 public interface ServerCapabilitiesType extends BaseObjectType {
     QualifiedProperty<String[]> SERVER_PROFILE_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ServerProfileArray",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12"),
-        ValueRanks.OneDimension,
+        1,
         String[].class
     );
 
@@ -31,7 +34,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "LocaleIdArray",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=295"),
-        ValueRanks.OneDimension,
+        1,
         String[].class
     );
 
@@ -39,7 +42,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MinSupportedSampleRate",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290"),
-        ValueRanks.Scalar,
+        -1,
         Double.class
     );
 
@@ -47,7 +50,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxBrowseContinuationPoints",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
-        ValueRanks.Scalar,
+        -1,
         UShort.class
     );
 
@@ -55,7 +58,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxQueryContinuationPoints",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
-        ValueRanks.Scalar,
+        -1,
         UShort.class
     );
 
@@ -63,7 +66,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxHistoryContinuationPoints",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=5"),
-        ValueRanks.Scalar,
+        -1,
         UShort.class
     );
 
@@ -71,7 +74,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "SoftwareCertificates",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=344"),
-        ValueRanks.OneDimension,
+        1,
         SignedSoftwareCertificate[].class
     );
 
@@ -79,7 +82,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxArrayLength",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -87,7 +90,7 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxStringLength",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
@@ -95,73 +98,187 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         "http://opcfoundation.org/UA/",
         "MaxByteStringLength",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
-        ValueRanks.Scalar,
+        -1,
         UInteger.class
     );
 
-    PropertyType getServerProfileArrayNode();
+    QualifiedProperty<UInteger> MAX_SESSIONS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxSessions",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_SUBSCRIPTIONS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxSubscriptions",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_MONITORED_ITEMS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxMonitoredItems",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_SUBSCRIPTIONS_PER_SESSION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxSubscriptionsPerSession",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_MONITORED_ITEMS_PER_SUBSCRIPTION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxMonitoredItemsPerSubscription",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_SELECT_CLAUSE_PARAMETERS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxSelectClauseParameters",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_WHERE_CLAUSE_PARAMETERS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxWhereClauseParameters",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7"),
+        -1,
+        UInteger.class
+    );
+
+    QualifiedProperty<QualifiedName[]> CONFORMANCE_UNITS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ConformanceUnits",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=20"),
+        1,
+        QualifiedName[].class
+    );
 
     String[] getServerProfileArray();
 
     void setServerProfileArray(String[] value);
 
-    PropertyType getLocaleIdArrayNode();
+    PropertyType getServerProfileArrayNode();
 
     String[] getLocaleIdArray();
 
     void setLocaleIdArray(String[] value);
 
-    PropertyType getMinSupportedSampleRateNode();
+    PropertyType getLocaleIdArrayNode();
 
     Double getMinSupportedSampleRate();
 
     void setMinSupportedSampleRate(Double value);
 
-    PropertyType getMaxBrowseContinuationPointsNode();
+    PropertyType getMinSupportedSampleRateNode();
 
     UShort getMaxBrowseContinuationPoints();
 
     void setMaxBrowseContinuationPoints(UShort value);
 
-    PropertyType getMaxQueryContinuationPointsNode();
+    PropertyType getMaxBrowseContinuationPointsNode();
 
     UShort getMaxQueryContinuationPoints();
 
     void setMaxQueryContinuationPoints(UShort value);
 
-    PropertyType getMaxHistoryContinuationPointsNode();
+    PropertyType getMaxQueryContinuationPointsNode();
 
     UShort getMaxHistoryContinuationPoints();
 
     void setMaxHistoryContinuationPoints(UShort value);
 
-    PropertyType getSoftwareCertificatesNode();
+    PropertyType getMaxHistoryContinuationPointsNode();
 
     SignedSoftwareCertificate[] getSoftwareCertificates();
 
     void setSoftwareCertificates(SignedSoftwareCertificate[] value);
 
-    PropertyType getMaxArrayLengthNode();
+    PropertyType getSoftwareCertificatesNode();
 
     UInteger getMaxArrayLength();
 
     void setMaxArrayLength(UInteger value);
 
-    PropertyType getMaxStringLengthNode();
+    PropertyType getMaxArrayLengthNode();
 
     UInteger getMaxStringLength();
 
     void setMaxStringLength(UInteger value);
 
-    PropertyType getMaxByteStringLengthNode();
+    PropertyType getMaxStringLengthNode();
 
     UInteger getMaxByteStringLength();
 
     void setMaxByteStringLength(UInteger value);
+
+    PropertyType getMaxByteStringLengthNode();
+
+    UInteger getMaxSessions();
+
+    void setMaxSessions(UInteger value);
+
+    PropertyType getMaxSessionsNode();
+
+    UInteger getMaxSubscriptions();
+
+    void setMaxSubscriptions(UInteger value);
+
+    PropertyType getMaxSubscriptionsNode();
+
+    UInteger getMaxMonitoredItems();
+
+    void setMaxMonitoredItems(UInteger value);
+
+    PropertyType getMaxMonitoredItemsNode();
+
+    UInteger getMaxSubscriptionsPerSession();
+
+    void setMaxSubscriptionsPerSession(UInteger value);
+
+    PropertyType getMaxSubscriptionsPerSessionNode();
+
+    UInteger getMaxMonitoredItemsPerSubscription();
+
+    void setMaxMonitoredItemsPerSubscription(UInteger value);
+
+    PropertyType getMaxMonitoredItemsPerSubscriptionNode();
+
+    UInteger getMaxSelectClauseParameters();
+
+    void setMaxSelectClauseParameters(UInteger value);
+
+    PropertyType getMaxSelectClauseParametersNode();
+
+    UInteger getMaxWhereClauseParameters();
+
+    void setMaxWhereClauseParameters(UInteger value);
+
+    PropertyType getMaxWhereClauseParametersNode();
+
+    QualifiedName[] getConformanceUnits();
+
+    void setConformanceUnits(QualifiedName[] value);
+
+    PropertyType getConformanceUnitsNode();
 
     OperationLimitsType getOperationLimitsNode();
 
     FolderType getModellingRulesNode();
 
     FolderType getAggregateFunctionsNode();
+
+    RoleSetType getRoleSetNode();
 }

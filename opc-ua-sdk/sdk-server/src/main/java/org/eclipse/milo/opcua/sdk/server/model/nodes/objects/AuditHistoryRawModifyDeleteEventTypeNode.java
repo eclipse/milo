@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -23,18 +23,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class AuditHistoryRawModifyDeleteEventTypeNode extends AuditHistoryDeleteEventTypeNode implements AuditHistoryRawModifyDeleteEventType {
     public AuditHistoryRawModifyDeleteEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                    UInteger writeMask, UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                                    UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                    RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                                    UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public AuditHistoryRawModifyDeleteEventTypeNode(UaNodeContext context, NodeId nodeId,
                                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                                    UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                                                    UInteger writeMask, UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                                    RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -45,8 +50,7 @@ public class AuditHistoryRawModifyDeleteEventTypeNode extends AuditHistoryDelete
 
     @Override
     public Boolean getIsDeleteModified() {
-        Optional<Boolean> propertyValue = getProperty(AuditHistoryRawModifyDeleteEventType.IS_DELETE_MODIFIED);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryRawModifyDeleteEventType.IS_DELETE_MODIFIED).orElse(null);
     }
 
     @Override
@@ -62,8 +66,7 @@ public class AuditHistoryRawModifyDeleteEventTypeNode extends AuditHistoryDelete
 
     @Override
     public DateTime getStartTime() {
-        Optional<DateTime> propertyValue = getProperty(AuditHistoryRawModifyDeleteEventType.START_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryRawModifyDeleteEventType.START_TIME).orElse(null);
     }
 
     @Override
@@ -79,8 +82,7 @@ public class AuditHistoryRawModifyDeleteEventTypeNode extends AuditHistoryDelete
 
     @Override
     public DateTime getEndTime() {
-        Optional<DateTime> propertyValue = getProperty(AuditHistoryRawModifyDeleteEventType.END_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryRawModifyDeleteEventType.END_TIME).orElse(null);
     }
 
     @Override
@@ -96,8 +98,7 @@ public class AuditHistoryRawModifyDeleteEventTypeNode extends AuditHistoryDelete
 
     @Override
     public DataValue[] getOldValues() {
-        Optional<DataValue[]> propertyValue = getProperty(AuditHistoryRawModifyDeleteEventType.OLD_VALUES);
-        return propertyValue.orElse(null);
+        return getProperty(AuditHistoryRawModifyDeleteEventType.OLD_VALUES).orElse(null);
     }
 
     @Override

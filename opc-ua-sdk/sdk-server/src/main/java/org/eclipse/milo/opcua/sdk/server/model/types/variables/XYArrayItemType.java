@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,22 +11,24 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.3.4/#5.3.4.3">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.3.4/#5.3.4.3</a>
+ */
 public interface XYArrayItemType extends ArrayItemType {
     QualifiedProperty<AxisInformation> X_AXIS_DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "XAxisDefinition",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12079"),
-        ValueRanks.Scalar,
+        -1,
         AxisInformation.class
     );
-
-    PropertyType getXAxisDefinitionNode();
 
     AxisInformation getXAxisDefinition();
 
     void setXAxisDefinition(AxisInformation value);
+
+    PropertyType getXAxisDefinitionNode();
 }

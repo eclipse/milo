@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,17 +11,19 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.2</a>
+ */
 public interface TwoStateVariableType extends StateVariableType {
     QualifiedProperty<Boolean> ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Id",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=1"),
-        ValueRanks.Scalar,
+        -1,
         Boolean.class
     );
 
@@ -29,7 +31,7 @@ public interface TwoStateVariableType extends StateVariableType {
         "http://opcfoundation.org/UA/",
         "TransitionTime",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.Scalar,
+        -1,
         DateTime.class
     );
 
@@ -37,7 +39,7 @@ public interface TwoStateVariableType extends StateVariableType {
         "http://opcfoundation.org/UA/",
         "EffectiveTransitionTime",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=294"),
-        ValueRanks.Scalar,
+        -1,
         DateTime.class
     );
 
@@ -45,7 +47,7 @@ public interface TwoStateVariableType extends StateVariableType {
         "http://opcfoundation.org/UA/",
         "TrueState",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
-        ValueRanks.Scalar,
+        -1,
         LocalizedText.class
     );
 
@@ -53,37 +55,37 @@ public interface TwoStateVariableType extends StateVariableType {
         "http://opcfoundation.org/UA/",
         "FalseState",
         ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21"),
-        ValueRanks.Scalar,
+        -1,
         LocalizedText.class
     );
-
-    PropertyType getIdNode();
 
     Boolean getId();
 
     void setId(Boolean value);
 
-    PropertyType getTransitionTimeNode();
+    PropertyType getIdNode();
 
     DateTime getTransitionTime();
 
     void setTransitionTime(DateTime value);
 
-    PropertyType getEffectiveTransitionTimeNode();
+    PropertyType getTransitionTimeNode();
 
     DateTime getEffectiveTransitionTime();
 
     void setEffectiveTransitionTime(DateTime value);
 
-    PropertyType getTrueStateNode();
+    PropertyType getEffectiveTransitionTimeNode();
 
     LocalizedText getTrueState();
 
     void setTrueState(LocalizedText value);
 
-    PropertyType getFalseStateNode();
+    PropertyType getTrueStateNode();
 
     LocalizedText getFalseState();
 
     void setFalseState(LocalizedText value);
+
+    PropertyType getFalseStateNode();
 }

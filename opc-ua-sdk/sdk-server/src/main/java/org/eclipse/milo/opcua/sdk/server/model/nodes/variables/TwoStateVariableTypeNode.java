@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,20 +22,27 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessLevelExType;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 
 public class TwoStateVariableTypeNode extends StateVariableTypeNode implements TwoStateVariableType {
     public TwoStateVariableTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                    UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                                    UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                    RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                    DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions,
+                                    UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, boolean historizing,
+                                    AccessLevelExType accessLevelEx) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing, accessLevelEx);
     }
 
     public TwoStateVariableTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                    UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
-                                    UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
-                                    double minimumSamplingInterval, boolean historizing) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+                                    UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                                    RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                                    DataValue value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, value, dataType, valueRank, arrayDimensions);
     }
 
     @Override
@@ -46,8 +53,7 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
 
     @Override
     public Boolean getId() {
-        Optional<Boolean> propertyValue = getProperty(TwoStateVariableType.ID);
-        return propertyValue.orElse(null);
+        return getProperty(TwoStateVariableType.ID).orElse(null);
     }
 
     @Override
@@ -63,8 +69,7 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
 
     @Override
     public DateTime getTransitionTime() {
-        Optional<DateTime> propertyValue = getProperty(TwoStateVariableType.TRANSITION_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(TwoStateVariableType.TRANSITION_TIME).orElse(null);
     }
 
     @Override
@@ -80,8 +85,7 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
 
     @Override
     public DateTime getEffectiveTransitionTime() {
-        Optional<DateTime> propertyValue = getProperty(TwoStateVariableType.EFFECTIVE_TRANSITION_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(TwoStateVariableType.EFFECTIVE_TRANSITION_TIME).orElse(null);
     }
 
     @Override
@@ -97,8 +101,7 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
 
     @Override
     public LocalizedText getTrueState() {
-        Optional<LocalizedText> propertyValue = getProperty(TwoStateVariableType.TRUE_STATE);
-        return propertyValue.orElse(null);
+        return getProperty(TwoStateVariableType.TRUE_STATE).orElse(null);
     }
 
     @Override
@@ -114,8 +117,7 @@ public class TwoStateVariableTypeNode extends StateVariableTypeNode implements T
 
     @Override
     public LocalizedText getFalseState() {
-        Optional<LocalizedText> propertyValue = getProperty(TwoStateVariableType.FALSE_STATE);
-        return propertyValue.orElse(null);
+        return getProperty(TwoStateVariableType.FALSE_STATE).orElse(null);
     }
 
     @Override

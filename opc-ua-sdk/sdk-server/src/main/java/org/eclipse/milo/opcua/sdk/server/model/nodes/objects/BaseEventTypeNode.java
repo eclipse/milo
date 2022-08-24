@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -24,19 +24,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
 public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventType {
     public BaseEventTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                             UInteger userWriteMask) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+                             UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                             RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions,
+                             UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, eventNotifier);
     }
 
     public BaseEventTypeNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                             UInteger userWriteMask, UByte eventNotifier) {
-        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+                             UInteger userWriteMask, RolePermissionType[] rolePermissions,
+                             RolePermissionType[] userRolePermissions, AccessRestrictionType accessRestrictions) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions);
     }
 
     @Override
@@ -47,8 +52,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public ByteString getEventId() {
-        Optional<ByteString> propertyValue = getProperty(BaseEventType.EVENT_ID);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.EVENT_ID).orElse(null);
     }
 
     @Override
@@ -64,8 +68,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public NodeId getEventType() {
-        Optional<NodeId> propertyValue = getProperty(BaseEventType.EVENT_TYPE);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.EVENT_TYPE).orElse(null);
     }
 
     @Override
@@ -81,8 +84,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public NodeId getSourceNode() {
-        Optional<NodeId> propertyValue = getProperty(BaseEventType.SOURCE_NODE);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.SOURCE_NODE).orElse(null);
     }
 
     @Override
@@ -98,8 +100,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public String getSourceName() {
-        Optional<String> propertyValue = getProperty(BaseEventType.SOURCE_NAME);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.SOURCE_NAME).orElse(null);
     }
 
     @Override
@@ -115,8 +116,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public DateTime getTime() {
-        Optional<DateTime> propertyValue = getProperty(BaseEventType.TIME);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.TIME).orElse(null);
     }
 
     @Override
@@ -132,8 +132,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public DateTime getReceiveTime() {
-        Optional<DateTime> propertyValue = getProperty(BaseEventType.RECEIVE_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.RECEIVE_TIME).orElse(null);
     }
 
     @Override
@@ -149,8 +148,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public TimeZoneDataType getLocalTime() {
-        Optional<TimeZoneDataType> propertyValue = getProperty(BaseEventType.LOCAL_TIME);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.LOCAL_TIME).orElse(null);
     }
 
     @Override
@@ -166,8 +164,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public LocalizedText getMessage() {
-        Optional<LocalizedText> propertyValue = getProperty(BaseEventType.MESSAGE);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.MESSAGE).orElse(null);
     }
 
     @Override
@@ -183,8 +180,7 @@ public class BaseEventTypeNode extends BaseObjectTypeNode implements BaseEventTy
 
     @Override
     public UShort getSeverity() {
-        Optional<UShort> propertyValue = getProperty(BaseEventType.SEVERITY);
-        return propertyValue.orElse(null);
+        return getProperty(BaseEventType.SEVERITY).orElse(null);
     }
 
     @Override
