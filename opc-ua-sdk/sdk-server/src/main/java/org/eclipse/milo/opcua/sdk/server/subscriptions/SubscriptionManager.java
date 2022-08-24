@@ -182,13 +182,17 @@ public class SubscriptionManager {
                  * Notify AddressSpaces the items for this subscription are deleted.
                  */
 
+                Map<UInteger, BaseMonitoredItem<?>> monitoredItems = s.getMonitoredItems();
+
                 byMonitoredItemType(
-                    s.getMonitoredItems().values(),
+                    monitoredItems.values(),
                     dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
-                s.getMonitoredItems().clear();
+                server.getMonitoredItemCount().getAndUpdate(count -> count - monitoredItems.size());
+
+                monitoredItems.clear();
             }
         });
 
@@ -262,6 +266,8 @@ public class SubscriptionManager {
                 );
 
                 results[i] = StatusCode.GOOD;
+
+                server.getMonitoredItemCount().getAndUpdate(count -> count - deletedItems.size());
             } else {
                 results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
             }
@@ -346,23 +352,31 @@ public class SubscriptionManager {
                 MonitoredItemCreateRequest createRequest = itemsToCreate.get(i);
 
                 try {
-                    BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
-                        createRequest,
-                        subscription,
-                        timestamps,
-                        attributeGroups
-                    );
+                    long maxMonitoredItems = server.getConfig().getLimits().getMaxMonitoredItems().longValue();
 
-                    monitoredItems.add(monitoredItem);
+                    if (server.getMonitoredItemCount().incrementAndGet() <= maxMonitoredItems) {
+                        BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
+                            createRequest,
+                            subscription,
+                            timestamps,
+                            attributeGroups
+                        );
 
-                    createResults[i] = new MonitoredItemCreateResult(
-                        StatusCode.GOOD,
-                        monitoredItem.getId(),
-                        monitoredItem.getSamplingInterval(),
-                        uint(monitoredItem.getQueueSize()),
-                        monitoredItem.getFilterResult()
-                    );
+                        monitoredItems.add(monitoredItem);
+
+                        createResults[i] = new MonitoredItemCreateResult(
+                            StatusCode.GOOD,
+                            monitoredItem.getId(),
+                            monitoredItem.getSamplingInterval(),
+                            uint(monitoredItem.getQueueSize()),
+                            monitoredItem.getFilterResult()
+                        );
+                    } else {
+                        throw new UaException(StatusCodes.Bad_TooManyMonitoredItems);
+                    }
                 } catch (UaException e) {
+                    server.getMonitoredItemCount().decrementAndGet();
+
                     createResults[i] = new MonitoredItemCreateResult(
                         e.getStatusCode(),
                         UInteger.MIN,
@@ -964,6 +978,8 @@ public class SubscriptionManager {
                     deletedItems.add(item);
 
                     deleteResults[i] = StatusCode.GOOD;
+
+                    server.getMonitoredItemCount().decrementAndGet();
                 }
             }
 
@@ -992,7 +1008,6 @@ public class SubscriptionManager {
         );
 
         service.setResponse(response);
-
     }
 
     public void setMonitoringMode(ServiceRequest service) {
@@ -1234,6 +1249,8 @@ public class SubscriptionManager {
                     dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
+
+                server.getMonitoredItemCount().getAndUpdate(count -> count - deletedItems.size());
             }
 
             iterator.remove();
@@ -1268,13 +1285,17 @@ public class SubscriptionManager {
                  * Notify AddressSpaces the items for this subscription are deleted.
                  */
 
+                Map<UInteger, BaseMonitoredItem<?>> monitoredItems = s.getMonitoredItems();
+
                 byMonitoredItemType(
-                    s.getMonitoredItems().values(),
+                    monitoredItems.values(),
                     dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
-                s.getMonitoredItems().clear();
+                server.getMonitoredItemCount().getAndUpdate(count -> count - monitoredItems.size());
+
+                monitoredItems.clear();
             }
         });
     }

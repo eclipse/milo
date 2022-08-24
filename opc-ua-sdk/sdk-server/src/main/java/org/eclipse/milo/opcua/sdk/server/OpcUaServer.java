@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
@@ -75,6 +76,8 @@ public class OpcUaServer {
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
+
+    private final AtomicLong monitoredItemCount = new AtomicLong(0L);
 
     private final ServerTable serverTable = new ServerTable();
 
@@ -233,6 +236,10 @@ public class OpcUaServer {
 
     public Map<UInteger, Subscription> getSubscriptions() {
         return subscriptions;
+    }
+
+    public AtomicLong getMonitoredItemCount() {
+        return monitoredItemCount;
     }
 
     public Optional<KeyPair> getKeyPair(ByteString thumbprint) {

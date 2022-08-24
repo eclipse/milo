@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -101,6 +101,15 @@ public interface OpcUaServerConfigLimits {
      */
     default UInteger getMaxPasswordLength() {
         return uint(1024);
+    }
+
+    /**
+     * Get the maximum number of MonitoredItems, across all Sessions, that can be created.
+     *
+     * @return the maximum number of MonitoredItems, across all Sessions, that can be created.
+     */
+    default UInteger getMaxMonitoredItems() {
+        return uint(Integer.MAX_VALUE);
     }
 
     //region ServerCapabilities
