@@ -1784,7 +1784,7 @@ class DataTypeNodeLoader {
         this.nodeManager.addNode(node);
     }
 
-    void load() {
+    void load() throws Exception {
         loadNode0();
         loadNode1();
         loadNode2();
