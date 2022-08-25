@@ -70,7 +70,7 @@ public enum ApplicationType implements UaEnumeration {
 
         @Override
         public ApplicationType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType.class);
+            return decoder.readEnum(null, ApplicationType.class);
         }
 
         @Override

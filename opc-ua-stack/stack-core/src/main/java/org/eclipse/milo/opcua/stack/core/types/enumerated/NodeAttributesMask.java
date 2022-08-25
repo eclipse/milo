@@ -222,7 +222,7 @@ public enum NodeAttributesMask implements UaEnumeration {
 
         @Override
         public NodeAttributesMask decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.NodeAttributesMask.class);
+            return decoder.readEnum(null, NodeAttributesMask.class);
         }
 
         @Override

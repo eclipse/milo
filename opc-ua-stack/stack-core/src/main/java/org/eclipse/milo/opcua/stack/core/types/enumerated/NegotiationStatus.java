@@ -90,7 +90,7 @@ public enum NegotiationStatus implements UaEnumeration {
 
         @Override
         public NegotiationStatus decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.NegotiationStatus.class);
+            return decoder.readEnum(null, NegotiationStatus.class);
         }
 
         @Override

@@ -70,7 +70,7 @@ public enum BrowseDirection implements UaEnumeration {
 
         @Override
         public BrowseDirection decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection.class);
+            return decoder.readEnum(null, BrowseDirection.class);
         }
 
         @Override

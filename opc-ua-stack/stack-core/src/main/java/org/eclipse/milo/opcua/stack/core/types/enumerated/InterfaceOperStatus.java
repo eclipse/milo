@@ -106,7 +106,7 @@ public enum InterfaceOperStatus implements UaEnumeration {
 
         @Override
         public InterfaceOperStatus decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.InterfaceOperStatus.class);
+            return decoder.readEnum(null, InterfaceOperStatus.class);
         }
 
         @Override

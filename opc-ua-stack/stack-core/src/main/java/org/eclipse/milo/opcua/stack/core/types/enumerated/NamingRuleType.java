@@ -74,7 +74,7 @@ public enum NamingRuleType implements UaEnumeration {
 
         @Override
         public NamingRuleType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType.class);
+            return decoder.readEnum(null, NamingRuleType.class);
         }
 
         @Override

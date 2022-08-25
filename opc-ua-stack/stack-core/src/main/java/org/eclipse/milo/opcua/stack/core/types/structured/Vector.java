@@ -3,8 +3,11 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.23">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.23</a>
@@ -44,5 +47,16 @@ public abstract class Vector extends Structure implements UaStructure {
     @Override
     public ExpandedNodeId getJsonEncodingId() {
         return JSON_ENCODING_ID;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 18816),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+
+            }
+        );
     }
 }

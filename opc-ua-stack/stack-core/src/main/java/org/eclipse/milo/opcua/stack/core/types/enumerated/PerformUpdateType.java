@@ -70,7 +70,7 @@ public enum PerformUpdateType implements UaEnumeration {
 
         @Override
         public PerformUpdateType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType.class);
+            return decoder.readEnum(null, PerformUpdateType.class);
         }
 
         @Override

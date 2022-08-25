@@ -74,7 +74,7 @@ public enum TsnTalkerStatus implements UaEnumeration {
 
         @Override
         public TsnTalkerStatus decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.TsnTalkerStatus.class);
+            return decoder.readEnum(null, TsnTalkerStatus.class);
         }
 
         @Override

@@ -3,8 +3,11 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.1.5">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.4.1/#6.4.1.1.5</a>
@@ -44,5 +47,16 @@ public abstract class ReceiveQosDataType extends QosDataType implements UaStruct
     @Override
     public ExpandedNodeId getJsonEncodingId() {
         return JSON_ENCODING_ID;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 23860),
+            new NodeId(0, 23603),
+            StructureType.Structure,
+            new StructureField[]{
+
+            }
+        );
     }
 }

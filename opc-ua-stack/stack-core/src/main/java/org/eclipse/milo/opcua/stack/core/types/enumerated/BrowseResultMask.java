@@ -97,7 +97,7 @@ public enum BrowseResultMask implements UaEnumeration {
 
         @Override
         public BrowseResultMask decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask.class);
+            return decoder.readEnum(null, BrowseResultMask.class);
         }
 
         @Override

@@ -60,7 +60,7 @@ public enum SecurityTokenRequestType implements UaEnumeration {
 
         @Override
         public SecurityTokenRequestType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType.class);
+            return decoder.readEnum(null, SecurityTokenRequestType.class);
         }
 
         @Override

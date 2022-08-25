@@ -65,7 +65,7 @@ public enum DataSetOrderingType implements UaEnumeration {
 
         @Override
         public DataSetOrderingType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.DataSetOrderingType.class);
+            return decoder.readEnum(null, DataSetOrderingType.class);
         }
 
         @Override

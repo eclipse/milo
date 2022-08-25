@@ -61,7 +61,7 @@ public enum PubSubDiagnosticsCounterClassification implements UaEnumeration {
         @Override
         public PubSubDiagnosticsCounterClassification decode(SerializationContext context,
                                                              UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.PubSubDiagnosticsCounterClassification.class);
+            return decoder.readEnum(null, PubSubDiagnosticsCounterClassification.class);
         }
 
         @Override

@@ -74,7 +74,7 @@ public enum Duplex implements UaEnumeration {
 
         @Override
         public Duplex decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.Duplex.class);
+            return decoder.readEnum(null, Duplex.class);
         }
 
         @Override

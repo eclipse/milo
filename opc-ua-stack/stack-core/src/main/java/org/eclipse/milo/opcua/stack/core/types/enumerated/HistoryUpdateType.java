@@ -70,7 +70,7 @@ public enum HistoryUpdateType implements UaEnumeration {
 
         @Override
         public HistoryUpdateType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.HistoryUpdateType.class);
+            return decoder.readEnum(null, HistoryUpdateType.class);
         }
 
         @Override

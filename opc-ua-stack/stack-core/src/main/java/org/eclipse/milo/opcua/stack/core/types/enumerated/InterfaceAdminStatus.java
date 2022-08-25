@@ -74,7 +74,7 @@ public enum InterfaceAdminStatus implements UaEnumeration {
 
         @Override
         public InterfaceAdminStatus decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.InterfaceAdminStatus.class);
+            return decoder.readEnum(null, InterfaceAdminStatus.class);
         }
 
         @Override

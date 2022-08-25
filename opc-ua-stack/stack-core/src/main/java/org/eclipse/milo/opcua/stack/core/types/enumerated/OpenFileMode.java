@@ -67,7 +67,7 @@ public enum OpenFileMode implements UaEnumeration {
 
         @Override
         public OpenFileMode decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.OpenFileMode.class);
+            return decoder.readEnum(null, OpenFileMode.class);
         }
 
         @Override

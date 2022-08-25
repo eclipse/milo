@@ -75,7 +75,7 @@ public enum PubSubState implements UaEnumeration {
 
         @Override
         public PubSubState decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.PubSubState.class);
+            return decoder.readEnum(null, PubSubState.class);
         }
 
         @Override

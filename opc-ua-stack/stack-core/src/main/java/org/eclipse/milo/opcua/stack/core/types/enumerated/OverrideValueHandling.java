@@ -65,7 +65,7 @@ public enum OverrideValueHandling implements UaEnumeration {
 
         @Override
         public OverrideValueHandling decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.OverrideValueHandling.class);
+            return decoder.readEnum(null, OverrideValueHandling.class);
         }
 
         @Override

@@ -65,7 +65,7 @@ public enum AxisScaleEnumeration implements UaEnumeration {
 
         @Override
         public AxisScaleEnumeration decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration.class);
+            return decoder.readEnum(null, AxisScaleEnumeration.class);
         }
 
         @Override

@@ -65,7 +65,7 @@ public enum DataChangeTrigger implements UaEnumeration {
 
         @Override
         public DataChangeTrigger decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger.class);
+            return decoder.readEnum(null, DataChangeTrigger.class);
         }
 
         @Override

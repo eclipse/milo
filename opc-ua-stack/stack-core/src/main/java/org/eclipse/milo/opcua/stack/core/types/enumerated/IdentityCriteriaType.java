@@ -114,7 +114,7 @@ public enum IdentityCriteriaType implements UaEnumeration {
 
         @Override
         public IdentityCriteriaType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.IdentityCriteriaType.class);
+            return decoder.readEnum(null, IdentityCriteriaType.class);
         }
 
         @Override

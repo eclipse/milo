@@ -140,7 +140,7 @@ public enum FilterOperator implements UaEnumeration {
 
         @Override
         public FilterOperator decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator.class);
+            return decoder.readEnum(null, FilterOperator.class);
         }
 
         @Override

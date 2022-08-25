@@ -77,7 +77,7 @@ public enum TrustListMasks implements UaEnumeration {
 
         @Override
         public TrustListMasks decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.TrustListMasks.class);
+            return decoder.readEnum(null, TrustListMasks.class);
         }
 
         @Override

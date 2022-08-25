@@ -70,7 +70,7 @@ public enum IdType implements UaEnumeration {
 
         @Override
         public IdType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.IdType.class);
+            return decoder.readEnum(null, IdType.class);
         }
 
         @Override

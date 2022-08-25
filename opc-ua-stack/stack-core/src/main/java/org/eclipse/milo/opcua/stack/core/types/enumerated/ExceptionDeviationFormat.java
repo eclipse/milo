@@ -75,7 +75,7 @@ public enum ExceptionDeviationFormat implements UaEnumeration {
 
         @Override
         public ExceptionDeviationFormat decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat.class);
+            return decoder.readEnum(null, ExceptionDeviationFormat.class);
         }
 
         @Override

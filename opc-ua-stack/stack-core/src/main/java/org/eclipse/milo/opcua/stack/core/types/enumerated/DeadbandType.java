@@ -62,7 +62,7 @@ public enum DeadbandType implements UaEnumeration {
 
         @Override
         public DeadbandType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType.class);
+            return decoder.readEnum(null, DeadbandType.class);
         }
 
         @Override

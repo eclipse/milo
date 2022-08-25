@@ -70,7 +70,7 @@ public enum UserTokenType implements UaEnumeration {
 
         @Override
         public UserTokenType decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType.class);
+            return decoder.readEnum(null, UserTokenType.class);
         }
 
         @Override

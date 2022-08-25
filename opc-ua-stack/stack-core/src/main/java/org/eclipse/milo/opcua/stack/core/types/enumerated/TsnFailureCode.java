@@ -258,7 +258,7 @@ public enum TsnFailureCode implements UaEnumeration {
 
         @Override
         public TsnFailureCode decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.TsnFailureCode.class);
+            return decoder.readEnum(null, TsnFailureCode.class);
         }
 
         @Override

@@ -122,7 +122,7 @@ public enum NodeClass implements UaEnumeration {
 
         @Override
         public NodeClass decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass.class);
+            return decoder.readEnum(null, NodeClass.class);
         }
 
         @Override

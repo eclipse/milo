@@ -90,7 +90,7 @@ public enum TsnStreamState implements UaEnumeration {
 
         @Override
         public TsnStreamState decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.TsnStreamState.class);
+            return decoder.readEnum(null, TsnStreamState.class);
         }
 
         @Override

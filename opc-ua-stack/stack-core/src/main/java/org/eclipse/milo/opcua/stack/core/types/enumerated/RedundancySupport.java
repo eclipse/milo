@@ -80,7 +80,7 @@ public enum RedundancySupport implements UaEnumeration {
 
         @Override
         public RedundancySupport decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport.class);
+            return decoder.readEnum(null, RedundancySupport.class);
         }
 
         @Override

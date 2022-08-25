@@ -75,7 +75,7 @@ public enum BrokerTransportQualityOfService implements UaEnumeration {
 
         @Override
         public BrokerTransportQualityOfService decode(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, org.eclipse.milo.opcua.stack.core.types.enumerated.BrokerTransportQualityOfService.class);
+            return decoder.readEnum(null, BrokerTransportQualityOfService.class);
         }
 
         @Override
