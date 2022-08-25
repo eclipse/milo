@@ -1,0 +1,25 @@
+package org.eclipse.milo.opcua.sdk.server.model.objects;
+
+import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
+import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.structured.NetworkGroupDataType;
+
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/6.3.10</a>
+ */
+public interface NonTransparentNetworkRedundancyType extends NonTransparentRedundancyType {
+    QualifiedProperty<NetworkGroupDataType[]> SERVER_NETWORK_GROUPS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServerNetworkGroups",
+        ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11944"),
+        1,
+        NetworkGroupDataType[].class
+    );
+
+    NetworkGroupDataType[] getServerNetworkGroups();
+
+    void setServerNetworkGroups(NetworkGroupDataType[] value);
+
+    PropertyType getServerNetworkGroupsNode();
+}
