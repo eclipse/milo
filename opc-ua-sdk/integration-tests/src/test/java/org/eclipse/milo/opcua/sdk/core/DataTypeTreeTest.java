@@ -107,7 +107,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
         // Check that subtypes resolve to their builtin types
         assertEquals(BuiltinDataType.String, dataTypeTree.getBuiltinType(Identifiers.NumericRange));
-        assertEquals(BuiltinDataType.DateTime, dataTypeTree.getBuiltinType(Identifiers.Date));
+        assertEquals(BuiltinDataType.DateTime, dataTypeTree.getBuiltinType(Identifiers.DateTime));
         assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(Identifiers.Image));
         assertEquals(BuiltinDataType.ByteString, dataTypeTree.getBuiltinType(Identifiers.ImageBMP));
         assertEquals(BuiltinDataType.NodeId, dataTypeTree.getBuiltinType(Identifiers.SessionAuthenticationToken));
@@ -122,7 +122,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
     @Test
     public void testIsAssignable() {
         assertTrue(dataTypeTree.isAssignable(Identifiers.NumericRange, String.class));
-        assertTrue(dataTypeTree.isAssignable(Identifiers.Date, DateTime.class));
+        assertTrue(dataTypeTree.isAssignable(Identifiers.DateTime, DateTime.class));
         assertTrue(dataTypeTree.isAssignable(Identifiers.Image, ByteString.class));
         assertTrue(dataTypeTree.isAssignable(Identifiers.ImageBMP, ByteString.class));
         assertTrue(dataTypeTree.isAssignable(Identifiers.SessionAuthenticationToken, NodeId.class));
