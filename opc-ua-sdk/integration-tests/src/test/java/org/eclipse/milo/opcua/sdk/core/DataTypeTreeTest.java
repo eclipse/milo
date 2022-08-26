@@ -27,7 +27,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -178,8 +177,6 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         });
     }
 
-    // TODO enable once DataTypeDefinitions are generated
-    @Disabled
     @Test
     public void enumerationsHaveDataTypeDefinitions() {
         Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(Identifiers.Enumeration);
@@ -193,8 +190,6 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
         });
     }
 
-    // TODO enable once DataTypeDefinitions are generated
-    @Disabled
     @Test
     public void structuresHaveDataTypeDefinitions() {
         Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(Identifiers.Structure);
