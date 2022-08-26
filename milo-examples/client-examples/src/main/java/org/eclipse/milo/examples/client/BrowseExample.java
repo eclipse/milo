@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
@@ -45,7 +45,7 @@ public class BrowseExample implements ClientExample {
         client.connect().get();
 
         // start browsing at root folder
-        browseNode("", client, Identifiers.RootFolder);
+        browseNode("", client, NodeIds.RootFolder);
 
         future.complete(client);
     }
@@ -54,7 +54,7 @@ public class BrowseExample implements ClientExample {
         BrowseDescription browse = new BrowseDescription(
             browseRoot,
             BrowseDirection.Forward,
-            Identifiers.References,
+            NodeIds.References,
             true,
             uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
             uint(BrowseResultMask.All.getValue())

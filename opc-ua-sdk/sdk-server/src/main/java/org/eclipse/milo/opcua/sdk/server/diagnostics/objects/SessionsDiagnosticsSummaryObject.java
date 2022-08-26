@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.model.objects.SessionsDiagnosticsSummar
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -117,14 +117,14 @@ public class SessionsDiagnosticsSummaryObject extends AbstractLifecycle {
         try {
             SessionDiagnosticsObjectTypeNode sdoNode = (SessionDiagnosticsObjectTypeNode) nodeFactory.createNode(
                 new NodeId(1, UUID.randomUUID()),
-                Identifiers.SessionDiagnosticsObjectType
+                NodeIds.SessionDiagnosticsObjectType
             );
             sdoNode.setBrowseName(new QualifiedName(1, session.getSessionName()));
             sdoNode.setDisplayName(LocalizedText.english(session.getSessionName()));
 
             sdoNode.addReference(new Reference(
                 sdoNode.getNodeId(),
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 node.getNodeId().expanded(),
                 Reference.Direction.INVERSE
             ));

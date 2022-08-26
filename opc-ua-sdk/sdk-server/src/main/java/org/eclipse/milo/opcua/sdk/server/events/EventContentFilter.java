@@ -33,8 +33,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -125,7 +125,7 @@ public class EventContentFilter {
 
         NodeId eventTypeId = select.getTypeDefinitionId();
 
-        if (eventTypeId != null && !eventTypeId.equals(Identifiers.BaseEventType)) {
+        if (eventTypeId != null && !eventTypeId.equals(NodeIds.BaseEventType)) {
             UaNode node = context.getServer().getAddressSpaceManager().getManagedNode(eventTypeId).orElse(null);
 
             if (node == null || node.getNodeClass() != NodeClass.ObjectType) {
@@ -185,7 +185,7 @@ public class EventContentFilter {
 
         Predicate<Reference> referencePredicate = r ->
             r.isForward() &&
-                r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes());
+                r.subtypeOf(NodeIds.HierarchicalReferences, context.getServer().getReferenceTypes());
 
         // find the Node relative to eventNode using browsePath.
         for (QualifiedName targetBrowsePath : browsePath) {
@@ -428,7 +428,7 @@ public class EventContentFilter {
 
         NodeId typeDefinitionId = operand.getTypeDefinitionId();
 
-        if (typeDefinitionId != null && !typeDefinitionId.equals(Identifiers.BaseEventType)) {
+        if (typeDefinitionId != null && !typeDefinitionId.equals(NodeIds.BaseEventType)) {
             NodeId eventTypeDefinitionId = eventNode.getTypeDefinitionNode().getNodeId();
 
             boolean sameOrSubtype = typeDefinitionId.equals(eventTypeDefinitionId) ||
@@ -449,7 +449,7 @@ public class EventContentFilter {
 
             Predicate<Reference> referencePredicate = r ->
                 r.isForward() &&
-                    r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes());
+                    r.subtypeOf(NodeIds.HierarchicalReferences, context.getServer().getReferenceTypes());
 
             // find the Node relative to eventNode using browsePath.
             for (QualifiedName targetBrowsePath : browsePath) {

@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.model.objects.ServerDiagnosticsTypeNode
 import org.eclipse.milo.opcua.sdk.server.model.variables.ServerDiagnosticsSummaryTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeObserver;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -46,8 +46,8 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
     @Override
     protected void onStartup() {
         ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server_ServerDiagnostics)
-            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+            .getManagedNode(NodeIds.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
@@ -137,8 +137,8 @@ public class ServerDiagnosticsSummaryVariable extends AbstractLifecycle {
         AttributeObserver observer = attributeObserver;
         if (observer != null) {
             ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
-                .getManagedNode(Identifiers.Server_ServerDiagnostics)
-                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+                .getManagedNode(NodeIds.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
             diagnosticsNode.getEnabledFlagNode().removeAttributeObserver(observer);
             attributeObserver = null;

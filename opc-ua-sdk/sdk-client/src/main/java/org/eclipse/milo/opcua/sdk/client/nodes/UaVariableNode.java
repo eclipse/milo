@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -847,7 +847,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 false,
                 nodeClassMask,
                 resultMask

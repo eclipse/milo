@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
@@ -1266,7 +1266,7 @@ public abstract class UaNode implements Node {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 false,
                 nodeClassMask,
                 resultMask
@@ -1305,7 +1305,7 @@ public abstract class UaNode implements Node {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasProperty,
+                NodeIds.HasProperty,
                 false,
                 nodeClassMask,
                 resultMask

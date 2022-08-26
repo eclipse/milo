@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.api.SimpleAddressSpaceFilter;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.objects.ServerDiagnosticsObject;
 import org.eclipse.milo.opcua.sdk.server.model.objects.ServerDiagnosticsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public class ServerNamespace extends AddressSpaceComposite implements Lifecycle, Namespace {
@@ -96,8 +96,8 @@ public class ServerNamespace extends AddressSpaceComposite implements Lifecycle,
 
             ServerDiagnosticsTypeNode serverDiagnosticsNode = (ServerDiagnosticsTypeNode) getServer()
                 .getAddressSpaceManager()
-                .getManagedNode(Identifiers.Server_ServerDiagnostics)
-                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+                .getManagedNode(NodeIds.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
             serverDiagnosticsNode.getEnabledFlagNode().setUserAccessLevel(
                 AccessLevel.toValue(AccessLevel.READ_WRITE)

@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -35,18 +35,18 @@ public class UaVariableNodeTest extends AbstractClientServerTest {
 
     @Test
     public void getVariableComponent() throws UaException {
-        UaVariableNode variableNode = client.getAddressSpace().getVariableNode(Identifiers.Server_ServerStatus);
+        UaVariableNode variableNode = client.getAddressSpace().getVariableNode(NodeIds.Server_ServerStatus);
 
         assertNotNull(variableNode.getVariableComponent("CurrentTime"));
     }
 
     @Test
     public void getTypeDefinition() throws UaException {
-        UaVariableNode variableNode = client.getAddressSpace().getVariableNode(Identifiers.Server_ServerStatus);
+        UaVariableNode variableNode = client.getAddressSpace().getVariableNode(NodeIds.Server_ServerStatus);
 
         UaVariableTypeNode variableTypeNode = variableNode.getTypeDefinition();
 
-        assertEquals(Identifiers.ServerStatusType, variableTypeNode.getNodeId());
+        assertEquals(NodeIds.ServerStatusType, variableTypeNode.getNodeId());
     }
 
     @Test
@@ -67,8 +67,8 @@ public class UaVariableNodeTest extends AbstractClientServerTest {
                     .setUserAccessLevel(AccessLevel.READ_WRITE)
                     .setBrowseName(new QualifiedName(testNamespace.getNamespaceIndex(), "IncorrectMinimumSamplingIntervalDataType"))
                     .setDisplayName(LocalizedText.english("IncorrectMinimumSamplingIntervalDataType"))
-                    .setDataType(Identifiers.Double)
-                    .setTypeDefinition(Identifiers.BaseDataVariableType)
+                    .setDataType(NodeIds.Double)
+                    .setTypeDefinition(NodeIds.BaseDataVariableType)
                     .build();
 
             serverNode.getFilterChain().addLast(new AttributeFilter() {
@@ -85,8 +85,8 @@ public class UaVariableNodeTest extends AbstractClientServerTest {
 
             serverNode.addReference(new Reference(
                 serverNode.getNodeId(),
-                Identifiers.HasComponent,
-                Identifiers.ObjectsFolder.expanded(),
+                NodeIds.HasComponent,
+                NodeIds.ObjectsFolder.expanded(),
                 Reference.Direction.INVERSE
             ));
 

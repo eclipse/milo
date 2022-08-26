@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
@@ -30,7 +30,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -50,7 +50,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<LocalizedText[]> EnumStrings = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "EnumStrings",
-        Identifiers.LocalizedText.expanded(),
+        NodeIds.LocalizedText.expanded(),
         ValueRanks.OneDimension,
         LocalizedText[].class
     );
@@ -71,7 +71,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<EnumValueType[]> EnumValues = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "EnumValues",
-        Identifiers.EnumValueType.expanded(),
+        NodeIds.EnumValueType.expanded(),
         ValueRanks.OneDimension,
         EnumValueType[].class
     );
@@ -89,7 +89,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<LocalizedText[]> OptionSetValues = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "OptionSetValues",
-        Identifiers.LocalizedText.expanded(),
+        NodeIds.LocalizedText.expanded(),
         ValueRanks.OneDimension,
         LocalizedText[].class
     );

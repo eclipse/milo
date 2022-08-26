@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -69,7 +69,7 @@ public class TriggeringExample implements ClientExample {
 
         // subscribe to a dynamic value that only samples
         ReadValueId readValueId2 = new ReadValueId(
-            Identifiers.Server_ServerStatus_CurrentTime,
+            NodeIds.Server_ServerStatus_CurrentTime,
             AttributeId.Value.uid(),
             null,
             QualifiedName.NULL_VALUE

@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -164,14 +164,14 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public void addComponent(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             getNodeId().expanded(),
             false
         ));
@@ -186,14 +186,14 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public void addSubtype(UaObjectTypeNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasSubtype,
+            NodeIds.HasSubtype,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasSubtype,
+            NodeIds.HasSubtype,
             getNodeId().expanded(),
             false
         ));

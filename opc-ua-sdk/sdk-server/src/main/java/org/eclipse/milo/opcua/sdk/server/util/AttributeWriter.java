@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -348,9 +348,9 @@ public class AttributeWriter {
 
         if (TypeUtil.isBuiltin(dataTypeId)) {
             return TypeUtil.getBackingClass(dataTypeId);
-        } else if (subtypeOf(server, dataTypeId, Identifiers.Structure)) {
+        } else if (subtypeOf(server, dataTypeId, NodeIds.Structure)) {
             return ExtensionObject.class;
-        } else if (subtypeOf(server, dataTypeId, Identifiers.Enumeration)) {
+        } else if (subtypeOf(server, dataTypeId, NodeIds.Enumeration)) {
             return Integer.class;
         } else {
             NodeId superBuiltInType = findConcreteBuiltInSuperTypeId(server, dataTypeId);

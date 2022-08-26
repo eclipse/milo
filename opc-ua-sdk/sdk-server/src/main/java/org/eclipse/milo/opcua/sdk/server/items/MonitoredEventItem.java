@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.events.EventContentFilter;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
@@ -187,7 +187,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
             overflowEvent = server.getEventFactory().createEvent(
                 new NodeId(1, eventId),
-                Identifiers.EventQueueOverflowEventType
+                NodeIds.EventQueueOverflowEventType
             );
 
             overflowEvent.setBrowseName(new QualifiedName(1, "EventQueueOverflow"));
@@ -198,8 +198,8 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             buffer.putLong(eventId.getLeastSignificantBits());
 
             overflowEvent.setEventId(ByteString.of(buffer.array()));
-            overflowEvent.setEventType(Identifiers.EventQueueOverflowEventType);
-            overflowEvent.setSourceNode(Identifiers.Server);
+            overflowEvent.setEventType(NodeIds.EventQueueOverflowEventType);
+            overflowEvent.setSourceNode(NodeIds.Server);
             overflowEvent.setSourceName("Server");
             overflowEvent.setTime(DateTime.now());
             overflowEvent.setReceiveTime(DateTime.NULL_VALUE);

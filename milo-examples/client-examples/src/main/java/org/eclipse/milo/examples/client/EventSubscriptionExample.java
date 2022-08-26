@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -58,7 +58,7 @@ public class EventSubscriptionExample implements ClientExample {
             .createSubscription(1000.0).get();
 
         ReadValueId readValueId = new ReadValueId(
-            Identifiers.Server,
+            NodeIds.Server,
             AttributeId.EventNotifier.uid(),
             null,
             QualifiedName.NULL_VALUE
@@ -70,27 +70,27 @@ public class EventSubscriptionExample implements ClientExample {
         EventFilter eventFilter = new EventFilter(
             new SimpleAttributeOperand[]{
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventId")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventType")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Severity")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Time")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Message")},
                     AttributeId.Value.uid(),
                     null)

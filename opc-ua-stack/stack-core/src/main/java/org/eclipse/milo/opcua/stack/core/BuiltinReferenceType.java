@@ -21,150 +21,150 @@ import org.jetbrains.annotations.Nullable;
 public enum BuiltinReferenceType implements ReferenceType {
 
     References(
-        Identifiers.References,
+        NodeIds.References,
         "References",
         null,
         true, true, null),
 
     HierarchicalReferences(
-        Identifiers.HierarchicalReferences,
+        NodeIds.HierarchicalReferences,
         "HierarchicalReferences",
         null,
         false, true, References),
 
     NonHierarchicalReferences(
-        Identifiers.NonHierarchicalReferences,
+        NodeIds.NonHierarchicalReferences,
         "NonHierarchicalReferences",
         null,
         true, true, References),
 
     HasChild(
-        Identifiers.HasChild,
+        NodeIds.HasChild,
         "HasChild",
         null,
         false, true, HierarchicalReferences),
 
     Aggregates(
-        Identifiers.Aggregates,
+        NodeIds.Aggregates,
         "Aggregates",
         null,
         false, true, HasChild),
 
     Organizes(
-        Identifiers.Organizes,
+        NodeIds.Organizes,
         "Organizes",
         "OrganizedBy",
         false, false, HierarchicalReferences),
 
     HasComponent(
-        Identifiers.HasComponent,
+        NodeIds.HasComponent,
         "HasComponent",
         "ComponentOf",
         false, false, Aggregates),
 
     HasOrderedComponent(
-        Identifiers.HasOrderedComponent,
+        NodeIds.HasOrderedComponent,
         "HasOrderedComponent",
         "OrderedComponentOf",
         false, false, HasComponent),
 
     HasProperty(
-        Identifiers.HasProperty,
+        NodeIds.HasProperty,
         "HasProperty",
         "PropertyOf",
         false, false, Aggregates),
 
     HasSubtype(
-        Identifiers.HasSubtype,
+        NodeIds.HasSubtype,
         "HasSubtype",
         "SubtypeOf", false, false, HasChild),
 
     HasModellingRule(
-        Identifiers.HasModellingRule,
+        NodeIds.HasModellingRule,
         "HasModellingRule",
         "ModellingRuleOf",
         false, false, NonHierarchicalReferences),
 
     HasTypeDefinition(
-        Identifiers.HasTypeDefinition,
+        NodeIds.HasTypeDefinition,
         "HasTypeDefinition",
         "TypeDefinitionOf",
         false, false, NonHierarchicalReferences),
 
     HasEncoding(
-        Identifiers.HasEncoding,
+        NodeIds.HasEncoding,
         "HasEncoding",
         "EncodingOf",
         false, false, NonHierarchicalReferences),
 
     HasDescription(
-        Identifiers.HasDescription,
+        NodeIds.HasDescription,
         "HasDescription",
         "DescriptionOf",
         false, false, NonHierarchicalReferences),
 
     HasEventSource(
-        Identifiers.HasEventSource,
+        NodeIds.HasEventSource,
         "HasEventSource",
         "EventSourceOf",
         false, false, HierarchicalReferences),
 
     HasNotifier(
-        Identifiers.HasNotifier,
+        NodeIds.HasNotifier,
         "HasNotifier",
         "NotifierOf",
         false, false, HasEventSource),
 
     GeneratesEvent(
-        Identifiers.GeneratesEvent,
+        NodeIds.GeneratesEvent,
         "GeneratesEvent",
         "GeneratedBy",
         false, false, NonHierarchicalReferences),
 
     AlwaysGeneratesEvent(
-        Identifiers.AlwaysGeneratesEvent,
+        NodeIds.AlwaysGeneratesEvent,
         "AlwaysGeneratesEvent",
         "AlwaysGeneratedBy",
         false, false, GeneratesEvent),
 
     FromState(
-        Identifiers.FromState,
+        NodeIds.FromState,
         "FromState",
         "ToTransition",
         false, false, NonHierarchicalReferences),
 
     ToState(
-        Identifiers.ToState,
+        NodeIds.ToState,
         "ToState",
         "FromTransition",
         false, false, NonHierarchicalReferences),
 
     HasCause(
-        Identifiers.HasCause,
+        NodeIds.HasCause,
         "HasCause",
         "MayBeCausedBy",
         false, false, NonHierarchicalReferences),
 
     HasEffect(
-        Identifiers.HasEffect,
+        NodeIds.HasEffect,
         "HasEffect",
         "MayBeEffectedBy",
         false, false, NonHierarchicalReferences),
 
     HasSubStateMachine(
-        Identifiers.HasSubStateMachine,
+        NodeIds.HasSubStateMachine,
         "HasSubStateMachine",
         "SubStateMachineOf",
         false, false, NonHierarchicalReferences),
 
     HasTrueSubState(
-        Identifiers.HasTrueSubState,
+        NodeIds.HasTrueSubState,
         "HasTrueSubState",
         "IsTrueSubStateOf",
         false, false, NonHierarchicalReferences),
 
     HasFalseSubState(
-        Identifiers.HasFalseSubState,
+        NodeIds.HasFalseSubState,
         "HasFalseSubState",
         "IsFalseSubStateOf",
         false, false, NonHierarchicalReferences);

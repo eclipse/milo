@@ -33,7 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -93,8 +93,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                 .setUserAccessLevel(AccessLevel.READ_WRITE)
                 .setBrowseName(newQualifiedName("TestInt32"))
                 .setDisplayName(LocalizedText.english("TestInt32"))
-                .setDataType(Identifiers.Int32)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setDataType(NodeIds.Int32)
+                .setTypeDefinition(NodeIds.BaseDataVariableType)
                 .setRolePermissions(new RolePermissionType[] {
                     new RolePermissionType(newNodeId("roleId"), new PermissionType(uint(0)))
                 })
@@ -108,8 +108,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
             testInt32Node.addReference(new Reference(
                 testInt32Node.getNodeId(),
-                Identifiers.HasComponent,
-                Identifiers.ObjectsFolder.expanded(),
+                NodeIds.HasComponent,
+                NodeIds.ObjectsFolder.expanded(),
                 Reference.Direction.INVERSE
             ));
 
@@ -120,7 +120,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
             try {
                 AnalogItemTypeNode node = (AnalogItemTypeNode) getNodeFactory().createNode(
                     newNodeId("TestAnalogValue"),
-                    Identifiers.AnalogItemType,
+                    NodeIds.AnalogItemType,
                     new NodeFactory.InstantiationCallback() {
                         @Override
                         public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
@@ -131,7 +131,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 node.setBrowseName(newQualifiedName("TestAnalogValue"));
                 node.setDisplayName(LocalizedText.english("TestAnalogValue"));
-                node.setDataType(Identifiers.Double);
+                node.setDataType(NodeIds.Double);
                 node.setValue(new DataValue(new Variant(3.14d)));
 
                 node.setEuRange(new Range(0.0, 100.0));
@@ -150,8 +150,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -172,8 +172,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasOrderedComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -194,8 +194,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasOrderedComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -228,8 +228,8 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
 
                 b.addReference(new Reference(
                     b.getNodeId(),
-                    Identifiers.HasOrderedComponent,
-                    Identifiers.ObjectsFolder.expanded(),
+                    NodeIds.HasOrderedComponent,
+                    NodeIds.ObjectsFolder.expanded(),
                     Reference.Direction.INVERSE
                 ));
 
@@ -241,7 +241,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                         return new Argument[]{
                             new Argument(
                                 "i",
-                                Identifiers.Int32,
+                                NodeIds.Int32,
                                 ValueRanks.Scalar,
                                 null,
                                 LocalizedText.NULL_VALUE)
@@ -284,7 +284,7 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
         // Set the EventNotifier bit on Server Node for Events.
         UaNode serverNode = getServer()
             .getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server)
+            .getManagedNode(NodeIds.Server)
             .orElse(null);
 
         if (serverNode instanceof ServerTypeNode) {
@@ -302,13 +302,13 @@ public class TestNamespace extends ManagedNamespaceWithLifecycle {
                     try {
                         BaseEventTypeNode eventNode = getServer().getEventFactory().createEvent(
                             newNodeId(UUID.randomUUID()),
-                            Identifiers.BaseEventType
+                            NodeIds.BaseEventType
                         );
 
                         eventNode.setBrowseName(new QualifiedName(1, "foo"));
                         eventNode.setDisplayName(LocalizedText.english("foo"));
                         eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                        eventNode.setEventType(Identifiers.BaseEventType);
+                        eventNode.setEventType(NodeIds.BaseEventType);
                         eventNode.setSourceNode(serverNode.getNodeId());
                         eventNode.setSourceName(serverNode.getDisplayName().getText());
                         eventNode.setTime(DateTime.now());

@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -301,7 +301,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 true,
                 nodeClassMask,
                 resultMask
@@ -512,7 +512,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 false,
                 nodeClassMask,
                 resultMask

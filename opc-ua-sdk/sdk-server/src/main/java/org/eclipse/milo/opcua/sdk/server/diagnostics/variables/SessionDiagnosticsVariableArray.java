@@ -33,7 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -91,8 +91,8 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
     @Override
     protected void onStartup() {
         ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
-            .getManagedNode(Identifiers.Server_ServerDiagnostics)
-            .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+            .getManagedNode(NodeIds.Server_ServerDiagnostics)
+            .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
         diagnosticsEnabled.set(diagnosticsNode.getEnabledFlag());
 
@@ -175,7 +175,7 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
             SessionDiagnosticsVariableTypeNode elementNode =
                 (SessionDiagnosticsVariableTypeNode) nodeFactory.createNode(
                     elementNodeId,
-                    Identifiers.SessionDiagnosticsVariableType
+                    NodeIds.SessionDiagnosticsVariableType
                 );
 
             elementNode.setBrowseName(new QualifiedName(1, "SessionDiagnostics"));
@@ -185,13 +185,13 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
             ));
             elementNode.setArrayDimensions(null);
             elementNode.setValueRank(ValueRank.Scalar.getValue());
-            elementNode.setDataType(Identifiers.SessionDiagnosticsDataType);
+            elementNode.setDataType(NodeIds.SessionDiagnosticsDataType);
             elementNode.setAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
             elementNode.setUserAccessLevel(AccessLevel.toValue(AccessLevel.READ_ONLY));
 
             elementNode.addReference(new Reference(
                 elementNode.getNodeId(),
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 node.getNodeId().expanded(),
                 Reference.Direction.INVERSE
             ));
@@ -215,8 +215,8 @@ public class SessionDiagnosticsVariableArray extends AbstractLifecycle {
         AttributeObserver observer = attributeObserver;
         if (observer != null) {
             ServerDiagnosticsTypeNode diagnosticsNode = (ServerDiagnosticsTypeNode) server.getAddressSpaceManager()
-                .getManagedNode(Identifiers.Server_ServerDiagnostics)
-                .orElseThrow(() -> new NoSuchElementException("NodeId: " + Identifiers.Server_ServerDiagnostics));
+                .getManagedNode(NodeIds.Server_ServerDiagnostics)
+                .orElseThrow(() -> new NoSuchElementException("NodeId: " + NodeIds.Server_ServerDiagnostics));
 
             diagnosticsNode.getEnabledFlagNode().removeAttributeObserver(observer);
             attributeObserver = null;

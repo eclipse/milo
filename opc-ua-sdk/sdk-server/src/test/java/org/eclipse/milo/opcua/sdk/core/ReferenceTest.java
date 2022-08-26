@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.UUID;
 
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.testng.annotations.Test;
 
@@ -24,7 +24,7 @@ public class ReferenceTest {
     public void testEquality() {
         Reference reference1 = new Reference(
             new NodeId(1, UUID.randomUUID()),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             new NodeId(1, UUID.randomUUID()).expanded(),
             Reference.Direction.FORWARD
         );

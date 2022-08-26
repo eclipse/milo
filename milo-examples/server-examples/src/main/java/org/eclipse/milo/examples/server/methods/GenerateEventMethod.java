@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -33,7 +33,7 @@ public class GenerateEventMethod extends AbstractMethodInvocationHandler {
 
     public static final Argument EVENT_TYPE_ID = new Argument(
         "EventTypeId",
-        Identifiers.NodeId,
+        NodeIds.NodeId,
         ValueRanks.Scalar,
         null,
         new LocalizedText("NodeId of the TypeDefinition of the event to generate.")
@@ -69,7 +69,7 @@ public class GenerateEventMethod extends AbstractMethodInvocationHandler {
         eventNode.setBrowseName(new QualifiedName(1, "foo"));
         eventNode.setDisplayName(LocalizedText.english("foo"));
         eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-        eventNode.setEventType(Identifiers.BaseEventType);
+        eventNode.setEventType(NodeIds.BaseEventType);
         eventNode.setSourceNode(getNode().getNodeId());
         eventNode.setSourceName(getNode().getDisplayName().getText());
         eventNode.setTime(DateTime.now());

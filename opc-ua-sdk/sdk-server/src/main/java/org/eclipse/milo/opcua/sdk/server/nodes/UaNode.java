@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -340,7 +340,7 @@ public abstract class UaNode implements UaServerNode {
         nodeManager.removeNode(getNodeId());
 
         for (Reference reference : nodeManager.getReferences(getNodeId())) {
-            if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
+            if (reference.isForward() && reference.subtypeOf(NodeIds.HasChild)) {
                 Optional<UaNode> targetNode = nodeManager.getNode(
                     reference.getTargetNodeId(),
                     getNodeContext().getServer().getNamespaceTable()
@@ -458,7 +458,7 @@ public abstract class UaNode implements UaServerNode {
                 null,
                 null,
                 UaVariableNode.INITIAL_VALUE,
-                Identifiers.BaseDataType,
+                NodeIds.BaseDataType,
                 ValueRanks.Scalar,
                 null
             );
@@ -473,8 +473,8 @@ public abstract class UaNode implements UaServerNode {
 
             propertyNode.addReference(new Reference(
                 propertyNode.getNodeId(),
-                Identifiers.HasTypeDefinition,
-                Identifiers.PropertyType.expanded(),
+                NodeIds.HasTypeDefinition,
+                NodeIds.PropertyType.expanded(),
                 true
             ));
 
@@ -518,14 +518,14 @@ public abstract class UaNode implements UaServerNode {
     void addProperty(UaVariableNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             getNodeId().expanded(),
             false
         ));
@@ -534,14 +534,14 @@ public abstract class UaNode implements UaServerNode {
     void removeProperty(UaVariableNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             node.getNodeId().expanded(),
             true
         ));
 
         node.removeReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             getNodeId().expanded(),
             false
         ));

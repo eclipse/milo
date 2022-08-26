@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
@@ -36,7 +36,7 @@ public final class MethodNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -48,7 +48,7 @@ public final class MethodNodeProperties {
     public static final QualifiedProperty<Argument[]> InputArguments = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "InputArguments",
-        Identifiers.Argument.expanded(),
+        NodeIds.Argument.expanded(),
         ValueRanks.OneDimension,
         Argument[].class
     );
@@ -60,7 +60,7 @@ public final class MethodNodeProperties {
     public static final QualifiedProperty<Argument[]> OutputArguments = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "OutputArguments",
-        Identifiers.Argument.expanded(),
+        NodeIds.Argument.expanded(),
         ValueRanks.OneDimension,
         Argument[].class
     );

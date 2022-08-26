@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaViewNode;
 import org.eclipse.milo.opcua.sdk.test.TestNamespace;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -71,13 +71,13 @@ class AttributeTestHelper {
      */
     static final DataTypeDefinition DATA_TYPE_DEFINITION = new StructureDefinition(
         NodeId.NULL_VALUE,
-        Identifiers.Structure,
+        NodeIds.Structure,
         StructureType.Structure,
         new StructureField[]{
             new StructureField(
                 "foo",
                 LocalizedText.NULL_VALUE,
-                Identifiers.String,
+                NodeIds.String,
                 ValueRanks.Scalar,
                 null,
                 uint(0),
@@ -105,8 +105,8 @@ class AttributeTestHelper {
 
             dataTypeNode.addReference(new Reference(
                 dataTypeNode.getNodeId(),
-                Identifiers.HasSubtype,
-                Identifiers.Structure.expanded(),
+                NodeIds.HasSubtype,
+                NodeIds.Structure.expanded(),
                 Reference.Direction.INVERSE
             ));
 

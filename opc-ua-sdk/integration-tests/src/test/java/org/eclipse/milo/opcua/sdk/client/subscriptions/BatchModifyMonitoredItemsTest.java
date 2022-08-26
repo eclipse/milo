@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -39,7 +39,7 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
             OpcUaMonitoredItem monitoredItem;
             if (i % 2 == 0) {
                 monitoredItem = subscription
-                    .createDataItem(Identifiers.Server_ServerStatus_CurrentTime)
+                    .createDataItem(NodeIds.Server_ServerStatus_CurrentTime)
                     .getMonitoredItem();
             } else {
                 monitoredItem = subscription
@@ -86,10 +86,10 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
 
     @Test
     public void multipleTimestampsToReturn() throws UaException, InterruptedException {
-        ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item4 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item1 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item2 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item3 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item4 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
 
         item1.setTimestampsToReturn(TimestampsToReturn.Source);
         item2.setTimestampsToReturn(TimestampsToReturn.Server);
@@ -124,7 +124,7 @@ public class BatchModifyMonitoredItemsTest extends AbstractSubscriptionTest {
     @Test
     public void operationResultCount() throws Exception {
         OpcUaMonitoredItem monitoredItem = subscription
-            .createDataItem(Identifiers.Server_ServerStatus_CurrentTime)
+            .createDataItem(NodeIds.Server_ServerStatus_CurrentTime)
             .getMonitoredItem();
 
         BatchModifyMonitoredItems batch = new BatchModifyMonitoredItems(

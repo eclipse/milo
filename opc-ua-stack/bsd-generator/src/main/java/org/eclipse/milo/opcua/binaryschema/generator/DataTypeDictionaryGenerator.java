@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -159,8 +159,8 @@ public class DataTypeDictionaryGenerator {
         NodeId baseDataTypeId = definition.getBaseDataType();
 
         while (baseDataTypeId != null && baseDataTypeId.isNotNull() &&
-            !Identifiers.Structure.equals(baseDataTypeId) &&
-            !Identifiers.Union.equals(baseDataTypeId)
+            !NodeIds.Structure.equals(baseDataTypeId) &&
+            !NodeIds.Union.equals(baseDataTypeId)
         ) {
 
             StructureDescription baseDescription = structureDescriptions.get(baseDataTypeId);

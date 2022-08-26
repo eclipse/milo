@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -40,7 +40,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -63,7 +63,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<TimeZoneDataType> LocalTime = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "LocalTime",
-        Identifiers.TimeZoneDataType.expanded(),
+        NodeIds.TimeZoneDataType.expanded(),
         ValueRanks.Scalar,
         TimeZoneDataType.class
     );
@@ -77,7 +77,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<String> DataTypeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "DataTypeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -91,7 +91,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<ByteString> DictionaryFragment = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "DictionaryFragment",
-        Identifiers.ByteString.expanded(),
+        NodeIds.ByteString.expanded(),
         ValueRanks.Scalar,
         ByteString.class
     );
@@ -114,7 +114,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<Boolean> AllowNulls = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "AllowNulls",
-        Identifiers.Boolean.expanded(),
+        NodeIds.Boolean.expanded(),
         ValueRanks.Scalar,
         Boolean.class
     );
@@ -132,7 +132,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<LocalizedText> ValueAsText = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "ValueAsText",
-        Identifiers.LocalizedText.expanded(),
+        NodeIds.LocalizedText.expanded(),
         ValueRanks.Scalar,
         LocalizedText.class
     );
@@ -148,7 +148,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<UInteger> MaxStringLength = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "MaxStringLength",
-        Identifiers.UInt32.expanded(),
+        NodeIds.UInt32.expanded(),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -170,7 +170,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<UInteger> MaxArrayLength = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "MaxArrayLength",
-        Identifiers.UInt32.expanded(),
+        NodeIds.UInt32.expanded(),
         ValueRanks.Scalar,
         UInteger.class
     );
@@ -188,7 +188,7 @@ public final class VariableNodeProperties {
     public static final QualifiedProperty<EUInformation> EngineeringUnits = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "EngineeringUnits",
-        Identifiers.EUInformation.expanded(),
+        NodeIds.EUInformation.expanded(),
         ValueRanks.Scalar,
         EUInformation.class
     );

@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -49,39 +49,39 @@ public class UaNodeTest extends AbstractClientServerTest {
     public void browse() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         BrowseOptions browseOptions = BrowseOptions.builder()
-            .setReferenceType(Identifiers.HasProperty)
+            .setReferenceType(NodeIds.HasProperty)
             .build();
 
         List<ReferenceDescription> references = serverNode.browse(browseOptions);
         assertEquals(5, references.size());
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_ServerArray)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_NamespaceArray)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_ServiceLevel)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_Auditing)));
-        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(Identifiers.Server_EstimatedReturnTime)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_ServerArray)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_NamespaceArray)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_ServiceLevel)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_Auditing)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_EstimatedReturnTime)));
     }
 
     @Test
     public void browseNodes() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         BrowseOptions browseOptions = BrowseOptions.builder()
-            .setReferenceType(Identifiers.HasProperty)
+            .setReferenceType(NodeIds.HasProperty)
             .build();
 
         List<? extends UaNode> nodes = serverNode.browseNodes(browseOptions);
 
         assertEquals(5, nodes.size());
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServerArray)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_NamespaceArray)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServiceLevel)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_Auditing)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_EstimatedReturnTime)));
     }
 
     @Test
@@ -164,7 +164,7 @@ public class UaNodeTest extends AbstractClientServerTest {
     public void refresh() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         List<DataValue> values = serverNode.refresh(AttributeId.OBJECT_ATTRIBUTES);
 
@@ -194,7 +194,7 @@ public class UaNodeTest extends AbstractClientServerTest {
     public void serverNode_ServerStatusNode_BuildInfo() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getNode(NodeIds.Server);
 
         BuildInfo buildInfo1 = serverNode.getServerStatusNode().getBuildInfo();
         assertNotNull(buildInfo1);
@@ -209,20 +209,20 @@ public class UaNodeTest extends AbstractClientServerTest {
     public void canonicalize() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getNode(NodeIds.Server);
         assertSame(serverNode, serverNode.canonicalize());
         assertSame(serverNode, serverNode.canonicalize());
-        assertSame(serverNode, addressSpace.getNode(Identifiers.Server));
+        assertSame(serverNode, addressSpace.getNode(NodeIds.Server));
     }
 
     @Test
     public void invalidate() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        ServerTypeNode serverNode1 = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        ServerTypeNode serverNode1 = (ServerTypeNode) addressSpace.getNode(NodeIds.Server);
         serverNode1.invalidate();
 
-        ServerTypeNode serverNode2 = (ServerTypeNode) addressSpace.getNode(Identifiers.Server);
+        ServerTypeNode serverNode2 = (ServerTypeNode) addressSpace.getNode(NodeIds.Server);
 
         assertNotSame(serverNode1, serverNode2);
     }

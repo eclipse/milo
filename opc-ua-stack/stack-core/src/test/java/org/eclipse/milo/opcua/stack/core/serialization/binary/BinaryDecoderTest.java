@@ -10,8 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -31,7 +31,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
     public void testDecodeNullArray() {
         Argument argument = new Argument(
             "test",
-            Identifiers.Int16,
+            NodeIds.Int16,
             1,
             null,
             LocalizedText.NULL_VALUE

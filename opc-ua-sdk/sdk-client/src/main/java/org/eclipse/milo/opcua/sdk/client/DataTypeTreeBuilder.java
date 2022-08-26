@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -50,7 +50,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 /**
  * Builds a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
- * {@link Identifiers#BaseDataType}.
+ * {@link NodeIds#BaseDataType}.
  */
 public final class DataTypeTreeBuilder {
 
@@ -58,7 +58,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client a connected {@link OpcUaClient}.
      * @return a {@link DataTypeTree}.
@@ -77,7 +77,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client  a connected {@link UaStackClient}.
      * @param session an active {@link OpcUaSession}.
@@ -97,7 +97,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client a connected {@link OpcUaClient}.
      * @return a {@link DataTypeTree}.
@@ -111,7 +111,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client  a connected {@link UaStackClient}.
      * @param session an active {@link OpcUaSession}.
@@ -122,7 +122,7 @@ public final class DataTypeTreeBuilder {
             null,
             new DataTypeTree.DataType(
                 QualifiedName.parse("0:BaseDataType"),
-                Identifiers.BaseDataType,
+                NodeIds.BaseDataType,
                 null,
                 null,
                 null,
@@ -148,7 +148,7 @@ public final class DataTypeTreeBuilder {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_NamespaceArray,
+                        NodeIds.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)}
@@ -179,7 +179,7 @@ public final class DataTypeTreeBuilder {
             new BrowseDescription(
                 tree.getValue().getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasSubtype,
+                NodeIds.HasSubtype,
                 false,
                 uint(NodeClass.DataType.getValue()),
                 uint(BrowseResultMask.All.getValue())
@@ -199,7 +199,7 @@ public final class DataTypeTreeBuilder {
                         new BrowseDescription(
                             dataTypeId,
                             BrowseDirection.Forward,
-                            Identifiers.HasEncoding,
+                            NodeIds.HasEncoding,
                             false,
                             uint(NodeClass.Object.getValue()),
                             uint(BrowseResultMask.All.getValue())

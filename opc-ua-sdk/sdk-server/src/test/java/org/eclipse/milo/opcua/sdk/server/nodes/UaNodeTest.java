@@ -22,8 +22,8 @@ import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -108,7 +108,7 @@ public class UaNodeTest {
             b.setNodeId(nodeId)
                 .setBrowseName(new QualifiedName(1, "TestObject"))
                 .setDisplayName(LocalizedText.english("TestObject"))
-                .setTypeDefinition(Identifiers.FolderType)
+                .setTypeDefinition(NodeIds.FolderType)
                 .build()
         );
 
@@ -116,20 +116,20 @@ public class UaNodeTest {
 
         objectNode.addReference(new Reference(
             nodeId,
-            Identifiers.HasComponent,
-            Identifiers.ObjectNode.expanded(),
+            NodeIds.HasComponent,
+            NodeIds.ObjectNode.expanded(),
             Reference.Direction.INVERSE
         ));
 
         assertTrue(nodeManager.containsNode(nodeId));
         assertTrue(nodeManager.getReferences(nodeId).size() > 0);
-        assertTrue(nodeManager.getReferences(Identifiers.ObjectNode).size() > 0);
+        assertTrue(nodeManager.getReferences(NodeIds.ObjectNode).size() > 0);
 
         objectNode.delete();
 
         assertFalse(nodeManager.containsNode(nodeId));
         assertEquals(0, nodeManager.getReferences(nodeId).size());
-        assertEquals(0, nodeManager.getReferences(Identifiers.ObjectNode).size());
+        assertEquals(0, nodeManager.getReferences(NodeIds.ObjectNode).size());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class UaNodeTest {
 
         AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             nodeId,
-            Identifiers.AnalogItemType,
+            NodeIds.AnalogItemType,
             new NodeFactory.InstantiationCallback() {
                 @Override
                 public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {

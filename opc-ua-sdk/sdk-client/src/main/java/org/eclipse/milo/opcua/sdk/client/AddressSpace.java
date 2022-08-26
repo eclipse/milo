@@ -36,7 +36,7 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -794,7 +794,7 @@ public class AddressSpace {
         CompletableFuture<BrowseResult> browseFuture = client.browse(new BrowseDescription(
             nodeId,
             BrowseDirection.Forward,
-            Identifiers.HasTypeDefinition,
+            NodeIds.HasTypeDefinition,
             false,
             uint(NodeClass.ObjectType.getValue() | NodeClass.VariableType.getValue()),
             uint(BrowseResultMask.All.getValue())
@@ -804,7 +804,7 @@ public class AddressSpace {
             if (result.getStatusCode().isGood()) {
                 Optional<ExpandedNodeId> typeDefinitionId = l(result.getReferences())
                     .stream()
-                    .filter(r -> Objects.equals(Identifiers.HasTypeDefinition, r.getReferenceTypeId()))
+                    .filter(r -> Objects.equals(NodeIds.HasTypeDefinition, r.getReferenceTypeId()))
                     .map(ReferenceDescription::getNodeId)
                     .findFirst();
 
@@ -1722,7 +1722,7 @@ public class AddressSpace {
         private final UInteger maxReferencesPerNode;
 
         public BrowseOptions() {
-            this(BrowseDirection.Forward, Identifiers.HierarchicalReferences, true, uint(0xFF), uint(0));
+            this(BrowseDirection.Forward, NodeIds.HierarchicalReferences, true, uint(0xFF), uint(0));
         }
 
         public BrowseOptions(
@@ -1775,7 +1775,7 @@ public class AddressSpace {
         public static class Builder {
 
             private BrowseDirection browseDirection = BrowseDirection.Forward;
-            private NodeId referenceTypeId = Identifiers.HierarchicalReferences;
+            private NodeId referenceTypeId = NodeIds.HierarchicalReferences;
             private boolean includeSubtypes = true;
             private UInteger nodeClassMask = uint(0xFF);
             private UInteger maxReferencesPerNode = uint(0);

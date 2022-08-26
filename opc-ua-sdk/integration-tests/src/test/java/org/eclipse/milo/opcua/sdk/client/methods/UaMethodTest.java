@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -36,11 +36,11 @@ public class UaMethodTest extends AbstractClientServerTest {
     @Test
     public void findMethod() throws UaException {
         ManagedSubscription subscription = ManagedSubscription.create(client);
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem dataItem = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
 
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
+        UaObjectNode serverNode = addressSpace.getObjectNode(NodeIds.Server);
 
         UaMethod getMonitoredItems = serverNode.getMethod("GetMonitoredItems");
 
@@ -70,11 +70,11 @@ public class UaMethodTest extends AbstractClientServerTest {
     @Test
     public void callMethod() throws UaException {
         ManagedSubscription subscription = ManagedSubscription.create(client);
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem dataItem = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
 
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
+        UaObjectNode serverNode = addressSpace.getObjectNode(NodeIds.Server);
 
         Variant[] outputs = serverNode.callMethod(
             "GetMonitoredItems",
@@ -93,7 +93,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void callMethodException() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
+        UaObjectNode serverNode = addressSpace.getObjectNode(NodeIds.Server);
 
         assertThrows(
             UaMethodException.class,
@@ -110,7 +110,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void findMethodNotFound() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode serverNode = addressSpace.getObjectNode(Identifiers.Server);
+        UaObjectNode serverNode = addressSpace.getObjectNode(NodeIds.Server);
 
         assertThrows(UaException.class, () -> serverNode.getMethod("foo"));
     }
@@ -120,7 +120,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void callMethodWithHasComponentReference() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(NodeIds.ObjectsFolder);
 
         Variant[] outputs = objectsNode.callMethod(
             new QualifiedName(2, "sqrt(x)"),
@@ -134,7 +134,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void callMethodWithHasOrderedComponentReference() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(NodeIds.ObjectsFolder);
 
         Variant[] outputs = objectsNode.callMethod(
             new QualifiedName(2, "sqrt2(x)"),
@@ -148,7 +148,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void callMethodWithNoInputsOrOutputs() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(NodeIds.ObjectsFolder);
 
         Variant[] outputs = objectsNode.callMethod(
             new QualifiedName(2, "hasNoInputsOrOutputs()"),
@@ -162,7 +162,7 @@ public class UaMethodTest extends AbstractClientServerTest {
     public void throwsUaMethodException() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(NodeIds.ObjectsFolder);
 
         assertThrows(UaMethodException.class, () -> {
             try {
