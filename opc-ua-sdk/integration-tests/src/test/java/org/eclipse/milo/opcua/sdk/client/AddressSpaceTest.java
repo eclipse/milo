@@ -83,10 +83,11 @@ public class AddressSpaceTest extends AbstractClientServerTest {
             );
 
             List<? extends UaNode> nodes = addressSpace.browseNodes(objectsFolderNode, browseOptions);
-
-            assertEquals(7, nodes.size());
+            
+            assertEquals(8, nodes.size());
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.RootFolder)));
             assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server)));
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Aliases)));
         }
     }
 
@@ -103,12 +104,14 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
         List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-        assertEquals(5, nodes.size());
+        assertEquals(7, nodes.size());
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServerArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_NamespaceArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServiceLevel)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_Auditing)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_EstimatedReturnTime)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_UrisVersion)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_LocalTime)));
     }
 
     @Test

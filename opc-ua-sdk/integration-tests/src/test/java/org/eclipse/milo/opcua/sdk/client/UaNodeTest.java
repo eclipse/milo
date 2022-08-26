@@ -56,12 +56,14 @@ public class UaNodeTest extends AbstractClientServerTest {
             .build();
 
         List<ReferenceDescription> references = serverNode.browse(browseOptions);
-        assertEquals(5, references.size());
+        assertEquals(7, references.size());
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_ServerArray)));
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_NamespaceArray)));
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_ServiceLevel)));
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_Auditing)));
         assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_EstimatedReturnTime)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_UrisVersion)));
+        assertTrue(references.stream().anyMatch(n -> n.getNodeId().equalTo(NodeIds.Server_LocalTime)));
     }
 
     @Test
@@ -76,12 +78,14 @@ public class UaNodeTest extends AbstractClientServerTest {
 
         List<? extends UaNode> nodes = serverNode.browseNodes(browseOptions);
 
-        assertEquals(5, nodes.size());
+        assertEquals(7, nodes.size());
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServerArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_NamespaceArray)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServiceLevel)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_Auditing)));
         assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_EstimatedReturnTime)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_UrisVersion)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_LocalTime)));
     }
 
     @Test
