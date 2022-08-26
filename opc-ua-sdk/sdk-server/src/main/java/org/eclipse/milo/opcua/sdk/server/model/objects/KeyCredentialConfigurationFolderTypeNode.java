@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -32,7 +31,7 @@ public class KeyCredentialConfigurationFolderTypeNode extends FolderTypeNode imp
     }
 
     @Override
-    public MethodNode getCreateCredentialMethodNode() {
+    public UaMethodNode getCreateCredentialMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CreateCredential", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

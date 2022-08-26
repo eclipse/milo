@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -105,37 +104,37 @@ public class ShelvedStateMachineTypeNode extends FiniteStateMachineTypeNode impl
     }
 
     @Override
-    public MethodNode getTimedShelveMethodNode() {
+    public UaMethodNode getTimedShelveMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "TimedShelve", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getTimedShelve2MethodNode() {
+    public UaMethodNode getTimedShelve2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "TimedShelve2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getUnshelveMethodNode() {
+    public UaMethodNode getUnshelveMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Unshelve", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getUnshelve2MethodNode() {
+    public UaMethodNode getUnshelve2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Unshelve2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getOneShotShelveMethodNode() {
+    public UaMethodNode getOneShotShelveMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "OneShotShelve", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getOneShotShelve2MethodNode() {
+    public UaMethodNode getOneShotShelve2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "OneShotShelve2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

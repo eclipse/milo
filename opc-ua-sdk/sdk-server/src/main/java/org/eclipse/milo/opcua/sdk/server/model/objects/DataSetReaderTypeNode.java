@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -263,13 +262,13 @@ public class DataSetReaderTypeNode extends BaseObjectTypeNode implements DataSet
     }
 
     @Override
-    public MethodNode getCreateTargetVariablesMethodNode() {
+    public UaMethodNode getCreateTargetVariablesMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CreateTargetVariables", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getCreateDataSetMirrorMethodNode() {
+    public UaMethodNode getCreateDataSetMirrorMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CreateDataSetMirror", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

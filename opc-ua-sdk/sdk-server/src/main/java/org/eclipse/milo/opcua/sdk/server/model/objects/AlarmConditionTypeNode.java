@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AudioVariableTypeNode;
@@ -318,73 +317,73 @@ public class AlarmConditionTypeNode extends AcknowledgeableConditionTypeNode imp
     }
 
     @Override
-    public MethodNode getSilenceMethodNode() {
+    public UaMethodNode getSilenceMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Silence", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getSuppressMethodNode() {
+    public UaMethodNode getSuppressMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Suppress", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getSuppress2MethodNode() {
+    public UaMethodNode getSuppress2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Suppress2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getUnsuppressMethodNode() {
+    public UaMethodNode getUnsuppressMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Unsuppress", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getUnsuppress2MethodNode() {
+    public UaMethodNode getUnsuppress2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Unsuppress2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveFromServiceMethodNode() {
+    public UaMethodNode getRemoveFromServiceMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveFromService", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveFromService2MethodNode() {
+    public UaMethodNode getRemoveFromService2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveFromService2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getPlaceInServiceMethodNode() {
+    public UaMethodNode getPlaceInServiceMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "PlaceInService", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getPlaceInService2MethodNode() {
+    public UaMethodNode getPlaceInService2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "PlaceInService2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getResetMethodNode() {
+    public UaMethodNode getResetMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Reset", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getReset2MethodNode() {
+    public UaMethodNode getReset2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Reset2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getGetGroupMembershipsMethodNode() {
+    public UaMethodNode getGetGroupMembershipsMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetGroupMemberships", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

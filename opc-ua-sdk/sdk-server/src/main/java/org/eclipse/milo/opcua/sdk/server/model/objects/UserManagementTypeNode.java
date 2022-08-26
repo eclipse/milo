@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -101,25 +100,25 @@ public class UserManagementTypeNode extends BaseObjectTypeNode implements UserMa
     }
 
     @Override
-    public MethodNode getAddUserMethodNode() {
+    public UaMethodNode getAddUserMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddUser", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getModifyUserMethodNode() {
+    public UaMethodNode getModifyUserMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ModifyUser", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveUserMethodNode() {
+    public UaMethodNode getRemoveUserMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveUser", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getChangePasswordMethodNode() {
+    public UaMethodNode getChangePasswordMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ChangePassword", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

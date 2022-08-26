@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.ConditionVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -236,31 +235,31 @@ public class ConditionTypeNode extends BaseEventTypeNode implements ConditionTyp
     }
 
     @Override
-    public MethodNode getDisableMethodNode() {
+    public UaMethodNode getDisableMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Disable", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getEnableMethodNode() {
+    public UaMethodNode getEnableMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Enable", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getAddCommentMethodNode() {
+    public UaMethodNode getAddCommentMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddComment", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getConditionRefreshMethodNode() {
+    public UaMethodNode getConditionRefreshMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ConditionRefresh", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getConditionRefresh2MethodNode() {
+    public UaMethodNode getConditionRefresh2MethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ConditionRefresh2", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

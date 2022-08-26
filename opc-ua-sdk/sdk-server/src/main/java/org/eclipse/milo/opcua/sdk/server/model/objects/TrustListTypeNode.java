@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -67,25 +66,25 @@ public class TrustListTypeNode extends FileTypeNode implements TrustListType {
     }
 
     @Override
-    public MethodNode getOpenWithMasksMethodNode() {
+    public UaMethodNode getOpenWithMasksMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "OpenWithMasks", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getCloseAndUpdateMethodNode() {
+    public UaMethodNode getCloseAndUpdateMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CloseAndUpdate", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getAddCertificateMethodNode() {
+    public UaMethodNode getAddCertificateMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddCertificate", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveCertificateMethodNode() {
+    public UaMethodNode getRemoveCertificateMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveCertificate", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

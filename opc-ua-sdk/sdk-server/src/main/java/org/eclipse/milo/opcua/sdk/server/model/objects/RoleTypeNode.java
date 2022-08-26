@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -132,37 +131,37 @@ public class RoleTypeNode extends BaseObjectTypeNode implements RoleType {
     }
 
     @Override
-    public MethodNode getAddIdentityMethodNode() {
+    public UaMethodNode getAddIdentityMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddIdentity", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveIdentityMethodNode() {
+    public UaMethodNode getRemoveIdentityMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveIdentity", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getAddApplicationMethodNode() {
+    public UaMethodNode getAddApplicationMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddApplication", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveApplicationMethodNode() {
+    public UaMethodNode getRemoveApplicationMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveApplication", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getAddEndpointMethodNode() {
+    public UaMethodNode getAddEndpointMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddEndpoint", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveEndpointMethodNode() {
+    public UaMethodNode getRemoveEndpointMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveEndpoint", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

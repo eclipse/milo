@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -57,7 +56,7 @@ public class CertificateGroupTypeNode extends BaseObjectTypeNode implements Cert
     }
 
     @Override
-    public MethodNode getGetRejectedListMethodNode() {
+    public UaMethodNode getGetRejectedListMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetRejectedList", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -200,25 +199,25 @@ public class ServerTypeNode extends BaseObjectTypeNode implements ServerType {
     }
 
     @Override
-    public MethodNode getGetMonitoredItemsMethodNode() {
+    public UaMethodNode getGetMonitoredItemsMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetMonitoredItems", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getResendDataMethodNode() {
+    public UaMethodNode getResendDataMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ResendData", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getSetSubscriptionDurableMethodNode() {
+    public UaMethodNode getSetSubscriptionDurableMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "SetSubscriptionDurable", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRequestServerStateChangeMethodNode() {
+    public UaMethodNode getRequestServerStateChangeMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RequestServerStateChange", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

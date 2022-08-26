@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
@@ -150,13 +149,13 @@ public class WriterGroupTypeNode extends PubSubGroupTypeNode implements WriterGr
     }
 
     @Override
-    public MethodNode getAddDataSetWriterMethodNode() {
+    public UaMethodNode getAddDataSetWriterMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddDataSetWriter", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getRemoveDataSetWriterMethodNode() {
+    public UaMethodNode getRemoveDataSetWriterMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "RemoveDataSetWriter", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

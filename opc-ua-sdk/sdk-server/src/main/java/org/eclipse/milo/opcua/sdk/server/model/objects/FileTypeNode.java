@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -149,37 +148,37 @@ public class FileTypeNode extends BaseObjectTypeNode implements FileType {
     }
 
     @Override
-    public MethodNode getOpenMethodNode() {
+    public UaMethodNode getOpenMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Open", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getCloseMethodNode() {
+    public UaMethodNode getCloseMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Close", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getReadMethodNode() {
+    public UaMethodNode getReadMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Read", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getWriteMethodNode() {
+    public UaMethodNode getWriteMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Write", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getGetPositionMethodNode() {
+    public UaMethodNode getGetPositionMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "GetPosition", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getSetPositionMethodNode() {
+    public UaMethodNode getSetPositionMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "SetPosition", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

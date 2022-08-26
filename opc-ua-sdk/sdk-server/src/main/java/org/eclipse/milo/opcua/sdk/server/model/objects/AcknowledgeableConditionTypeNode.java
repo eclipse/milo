@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.TwoStateVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -87,13 +86,13 @@ public class AcknowledgeableConditionTypeNode extends ConditionTypeNode implemen
     }
 
     @Override
-    public MethodNode getAcknowledgeMethodNode() {
+    public UaMethodNode getAcknowledgeMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Acknowledge", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getConfirmMethodNode() {
+    public UaMethodNode getConfirmMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Confirm", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

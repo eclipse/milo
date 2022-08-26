@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -51,13 +50,13 @@ public class PriorityMappingTableTypeNode extends BaseObjectTypeNode implements 
     }
 
     @Override
-    public MethodNode getAddPriorityMappingEntryMethodNode() {
+    public UaMethodNode getAddPriorityMappingEntryMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "AddPriorityMappingEntry", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getDeletePriorityMappingEntryMethodNode() {
+    public UaMethodNode getDeletePriorityMappingEntryMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "DeletePriorityMappingEntry", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -84,7 +83,7 @@ public class PublishedEventsTypeNode extends PublishedDataSetTypeNode implements
     }
 
     @Override
-    public MethodNode getModifyFieldSelectionMethodNode() {
+    public UaMethodNode getModifyFieldSelectionMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "ModifyFieldSelection", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }

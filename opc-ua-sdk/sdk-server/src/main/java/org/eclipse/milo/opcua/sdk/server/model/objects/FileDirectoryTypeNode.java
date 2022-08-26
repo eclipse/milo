@@ -3,7 +3,6 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -32,25 +31,25 @@ public class FileDirectoryTypeNode extends FolderTypeNode implements FileDirecto
     }
 
     @Override
-    public MethodNode getCreateDirectoryMethodNode() {
+    public UaMethodNode getCreateDirectoryMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CreateDirectory", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getCreateFileMethodNode() {
+    public UaMethodNode getCreateFileMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "CreateFile", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getDeleteFileSystemObjectMethodNode() {
+    public UaMethodNode getDeleteFileSystemObjectMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "Delete", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
 
     @Override
-    public MethodNode getMoveOrCopyMethodNode() {
+    public UaMethodNode getMoveOrCopyMethodNode() {
         Optional<UaNode> methodNode = findNode("http://opcfoundation.org/UA/", "MoveOrCopy", node -> node instanceof UaMethodNode, Reference.HAS_COMPONENT_PREDICATE);
         return (UaMethodNode) methodNode.orElse(null);
     }
