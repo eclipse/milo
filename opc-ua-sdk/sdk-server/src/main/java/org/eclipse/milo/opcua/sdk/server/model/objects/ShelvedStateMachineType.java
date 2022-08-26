@@ -2,8 +2,16 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.16/#5.8.16.1">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.16/#5.8.16.1</a>
@@ -52,4 +60,198 @@ public interface ShelvedStateMachineType extends FiniteStateMachineType {
     MethodNode getOneShotShelveMethodNode();
 
     MethodNode getOneShotShelve2MethodNode();
+
+    abstract class TimedShelveMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public TimedShelveMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ShelvingTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            Double shelvingTime = (Double) inputValues[0].getValue();
+            invoke(context, shelvingTime);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       Double shelvingTime) throws UaException;
+    }
+
+    abstract class TimedShelve2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public TimedShelve2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ShelvingTime", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=290").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            Double shelvingTime = (Double) inputValues[0].getValue();
+            LocalizedText comment = (LocalizedText) inputValues[1].getValue();
+            invoke(context, shelvingTime, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       Double shelvingTime, LocalizedText comment) throws UaException;
+    }
+
+    abstract class UnshelveMethod extends AbstractMethodInvocationHandler {
+        public UnshelveMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class Unshelve2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public Unshelve2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
+
+    abstract class OneShotShelveMethod extends AbstractMethodInvocationHandler {
+        public OneShotShelveMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class OneShotShelve2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public OneShotShelve2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
 }

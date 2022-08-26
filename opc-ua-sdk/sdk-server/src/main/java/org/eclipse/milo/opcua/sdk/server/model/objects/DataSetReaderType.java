@@ -2,15 +2,29 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.ConfigurationVersionDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataSetFieldContentMask;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataSetMetaDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.FieldTargetDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.KeyValuePair;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.8/#9.1.8.2">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.8/#9.1.8.2</a>
@@ -197,4 +211,99 @@ public interface DataSetReaderType extends BaseObjectType {
     MethodNode getCreateTargetVariablesMethodNode();
 
     MethodNode getCreateDataSetMirrorMethodNode();
+
+    abstract class CreateTargetVariablesMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        private final Lazy<Argument[]> outputArguments = new Lazy<>();
+
+        public CreateTargetVariablesMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ConfigurationVersion", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=14593").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("TargetVariablesToAdd", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=14744").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return outputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("AddResults", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=19").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
+            FieldTargetDataType[] targetVariablesToAdd = (FieldTargetDataType[]) inputValues[1].getValue();
+            Out<StatusCode[]> addResults = new Out<>();
+            invoke(context, configurationVersion, targetVariablesToAdd, addResults);
+            return new Variant[]{new Variant(addResults.get())};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       ConfigurationVersionDataType configurationVersion,
+                                       FieldTargetDataType[] targetVariablesToAdd, Out<StatusCode[]> addResults) throws
+            UaException;
+    }
+
+    abstract class CreateDataSetMirrorMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        private final Lazy<Argument[]> outputArguments = new Lazy<>();
+
+        public CreateDataSetMirrorMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ParentNodeName", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", "")),
+                    new Argument("RolePermissions", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=96").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return outputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ParentNodeId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            String parentNodeName = (String) inputValues[0].getValue();
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) inputValues[1].getValue();
+            Out<NodeId> parentNodeId = new Out<>();
+            invoke(context, parentNodeName, rolePermissions, parentNodeId);
+            return new Variant[]{new Variant(parentNodeId.get())};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       String parentNodeName, RolePermissionType[] rolePermissions, Out<NodeId> parentNodeId)
+            throws UaException;
+    }
 }

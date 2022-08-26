@@ -2,9 +2,14 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/8.4.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/8.4.1</a>
@@ -83,4 +88,56 @@ public interface SecurityGroupType extends BaseObjectType {
     MethodNode getInvalidateKeysMethodNode();
 
     MethodNode getForceKeyRotationMethodNode();
+
+    abstract class InvalidateKeysMethod extends AbstractMethodInvocationHandler {
+        public InvalidateKeysMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class ForceKeyRotationMethod extends AbstractMethodInvocationHandler {
+        public ForceKeyRotationMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
 }

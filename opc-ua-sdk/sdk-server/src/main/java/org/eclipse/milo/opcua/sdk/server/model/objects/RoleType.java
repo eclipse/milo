@@ -2,10 +2,18 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointType;
 import org.eclipse.milo.opcua.stack.core.types.structured.IdentityMappingRuleType;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.1">https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.1</a>
@@ -106,4 +114,214 @@ public interface RoleType extends BaseObjectType {
     MethodNode getAddEndpointMethodNode();
 
     MethodNode getRemoveEndpointMethodNode();
+
+    abstract class AddIdentityMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public AddIdentityMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Rule", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15634").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            IdentityMappingRuleType rule = (IdentityMappingRuleType) inputValues[0].getValue();
+            invoke(context, rule);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       IdentityMappingRuleType rule) throws UaException;
+    }
+
+    abstract class RemoveIdentityMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public RemoveIdentityMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Rule", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15634").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            IdentityMappingRuleType rule = (IdentityMappingRuleType) inputValues[0].getValue();
+            invoke(context, rule);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       IdentityMappingRuleType rule) throws UaException;
+    }
+
+    abstract class AddApplicationMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public AddApplicationMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ApplicationUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            String applicationUri = (String) inputValues[0].getValue();
+            invoke(context, applicationUri);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       String applicationUri) throws UaException;
+    }
+
+    abstract class RemoveApplicationMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public RemoveApplicationMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("ApplicationUri", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            String applicationUri = (String) inputValues[0].getValue();
+            invoke(context, applicationUri);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       String applicationUri) throws UaException;
+    }
+
+    abstract class AddEndpointMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public AddEndpointMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Endpoint", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15528").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            EndpointType endpoint = (EndpointType) inputValues[0].getValue();
+            invoke(context, endpoint);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       EndpointType endpoint) throws UaException;
+    }
+
+    abstract class RemoveEndpointMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public RemoveEndpointMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Endpoint", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15528").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            EndpointType endpoint = (EndpointType) inputValues[0].getValue();
+            invoke(context, endpoint);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       EndpointType endpoint) throws UaException;
+    }
 }

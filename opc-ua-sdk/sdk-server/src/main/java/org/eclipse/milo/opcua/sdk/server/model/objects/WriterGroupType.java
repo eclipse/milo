@@ -2,10 +2,21 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataSetWriterDataType;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.6/#9.1.6.3">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.6/#9.1.6.3</a>
@@ -104,4 +115,83 @@ public interface WriterGroupType extends PubSubGroupType {
     MethodNode getAddDataSetWriterMethodNode();
 
     MethodNode getRemoveDataSetWriterMethodNode();
+
+    abstract class AddDataSetWriterMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        private final Lazy<Argument[]> outputArguments = new Lazy<>();
+
+        public AddDataSetWriterMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Configuration", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15597").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return outputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("DataSetWriterNodeId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            DataSetWriterDataType configuration = (DataSetWriterDataType) inputValues[0].getValue();
+            Out<NodeId> dataSetWriterNodeId = new Out<>();
+            invoke(context, configuration, dataSetWriterNodeId);
+            return new Variant[]{new Variant(dataSetWriterNodeId.get())};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       DataSetWriterDataType configuration, Out<NodeId> dataSetWriterNodeId) throws UaException;
+    }
+
+    abstract class RemoveDataSetWriterMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public RemoveDataSetWriterMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("DataSetWriterNodeId", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            NodeId dataSetWriterNodeId = (NodeId) inputValues[0].getValue();
+            invoke(context, dataSetWriterNodeId);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       NodeId dataSetWriterNodeId) throws UaException;
+    }
 }

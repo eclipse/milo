@@ -2,14 +2,23 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.nodes.MethodNode;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AudioVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.variables.BaseDataVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.model.variables.TwoStateVariableType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.2">https://reference.opcfoundation.org/v105/Core/docs/Part9/5.8.2</a>
@@ -194,4 +203,370 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
     MethodNode getReset2MethodNode();
 
     MethodNode getGetGroupMembershipsMethodNode();
+
+    abstract class SilenceMethod extends AbstractMethodInvocationHandler {
+        public SilenceMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class SuppressMethod extends AbstractMethodInvocationHandler {
+        public SuppressMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class Suppress2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public Suppress2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
+
+    abstract class UnsuppressMethod extends AbstractMethodInvocationHandler {
+        public UnsuppressMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class Unsuppress2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public Unsuppress2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
+
+    abstract class RemoveFromServiceMethod extends AbstractMethodInvocationHandler {
+        public RemoveFromServiceMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class RemoveFromService2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public RemoveFromService2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
+
+    abstract class PlaceInServiceMethod extends AbstractMethodInvocationHandler {
+        public PlaceInServiceMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class PlaceInService2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public PlaceInService2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
+
+    abstract class ResetMethod extends AbstractMethodInvocationHandler {
+        public ResetMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            invoke(context);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context) throws
+            UaException;
+    }
+
+    abstract class Reset2Method extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> inputArguments = new Lazy<>();
+
+        public Reset2Method(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return inputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Comment", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=21").toNodeId(namespaceTable).orElseThrow(), -1, null, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            LocalizedText comment = (LocalizedText) inputValues[0].getValue();
+            invoke(context, comment);
+            return new Variant[]{};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       LocalizedText comment) throws UaException;
+    }
+
+    abstract class GetGroupMembershipsMethod extends AbstractMethodInvocationHandler {
+        private final Lazy<Argument[]> outputArguments = new Lazy<>();
+
+        public GetGroupMembershipsMethod(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        public Argument[] getInputArguments() {
+            return new Argument[]{};
+        }
+
+        @Override
+        public Argument[] getOutputArguments() {
+            return outputArguments.getOrCompute(() -> {
+                NamespaceTable namespaceTable = getNode().getNodeContext().getNamespaceTable();
+
+                return new Argument[]{
+                    new Argument("Groups", ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=17").toNodeId(namespaceTable).orElseThrow(), 1, new UInteger[]{UInteger.valueOf(0)}, new LocalizedText("", ""))
+                };
+            });
+        }
+
+        @Override
+        protected Variant[] invoke(InvocationContext context,
+                                   Variant[] inputValues) throws UaException {
+            Out<NodeId[]> groups = new Out<>();
+            invoke(context, groups);
+            return new Variant[]{new Variant(groups.get())};
+        }
+
+        protected abstract void invoke(InvocationContext context,
+                                       Out<NodeId[]> groups) throws UaException;
+    }
 }

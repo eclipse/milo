@@ -28,12 +28,11 @@ import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHan
 import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
-import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
-import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItemsMethod;
-import org.eclipse.milo.opcua.sdk.server.model.methods.ResendDataMethod;
 import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ConditionType;
 import org.eclipse.milo.opcua.sdk.server.model.objects.OperationLimitsTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.objects.ServerCapabilitiesTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerType;
 import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
@@ -310,7 +309,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
         methodNode.setOutputArguments(invocationHandler.getOutputArguments());
     }
 
-    private static class ConditionRefreshMethodImpl extends ConditionRefreshMethod {
+    private static class ConditionRefreshMethodImpl extends ConditionType.ConditionRefreshMethod {
 
         private final OpcUaServer server;
 
@@ -375,7 +374,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
     }
 
-    private static class GetMonitoredItemsMethodImpl extends GetMonitoredItemsMethod {
+    private static class GetMonitoredItemsMethodImpl extends ServerType.GetMonitoredItemsMethod {
 
         private final OpcUaServer server;
 
@@ -422,7 +421,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
     }
 
-    private static class ResendDataMethodImpl extends ResendDataMethod {
+    private static class ResendDataMethodImpl extends ServerType.ResendDataMethod {
 
         ResendDataMethodImpl(UaMethodNode node) {
             super(node);
