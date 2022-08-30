@@ -103,7 +103,7 @@ public interface PubSubConnectionType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             WriterGroupDataType configuration = (WriterGroupDataType) inputValues[0].getValue();
             Out<NodeId> groupId = new Out<>();
@@ -111,7 +111,7 @@ public interface PubSubConnectionType extends BaseObjectType {
             return new Variant[]{new Variant(groupId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        WriterGroupDataType configuration, Out<NodeId> groupId) throws UaException;
     }
 
@@ -147,7 +147,7 @@ public interface PubSubConnectionType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ReaderGroupDataType configuration = (ReaderGroupDataType) inputValues[0].getValue();
             Out<NodeId> groupId = new Out<>();
@@ -155,7 +155,7 @@ public interface PubSubConnectionType extends BaseObjectType {
             return new Variant[]{new Variant(groupId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ReaderGroupDataType configuration, Out<NodeId> groupId) throws UaException;
     }
 
@@ -183,14 +183,14 @@ public interface PubSubConnectionType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId groupId = (NodeId) inputValues[0].getValue();
             invoke(context, groupId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId groupId) throws UaException;
     }
 }

@@ -74,7 +74,7 @@ public interface TemporaryFileTransferType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             Object generateOptions = (Object) inputValues[0].getValue();
             Out<NodeId> fileNodeId = new Out<>();
@@ -84,7 +84,7 @@ public interface TemporaryFileTransferType extends BaseObjectType {
             return new Variant[]{new Variant(fileNodeId.get()), new Variant(fileHandle.get()), new Variant(completionStateMachine.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        Object generateOptions, Out<NodeId> fileNodeId, Out<UInteger> fileHandle,
                                        Out<NodeId> completionStateMachine) throws UaException;
     }
@@ -122,7 +122,7 @@ public interface TemporaryFileTransferType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             Object generateOptions = (Object) inputValues[0].getValue();
             Out<NodeId> fileNodeId = new Out<>();
@@ -131,7 +131,7 @@ public interface TemporaryFileTransferType extends BaseObjectType {
             return new Variant[]{new Variant(fileNodeId.get()), new Variant(fileHandle.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        Object generateOptions, Out<NodeId> fileNodeId, Out<UInteger> fileHandle) throws
             UaException;
     }
@@ -168,7 +168,7 @@ public interface TemporaryFileTransferType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             Out<NodeId> completionStateMachine = new Out<>();
@@ -176,7 +176,7 @@ public interface TemporaryFileTransferType extends BaseObjectType {
             return new Variant[]{new Variant(completionStateMachine.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, Out<NodeId> completionStateMachine) throws UaException;
     }
 }

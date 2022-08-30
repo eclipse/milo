@@ -76,7 +76,7 @@ public interface PublishedDataItemsType extends PublishedDataSetType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
             String[] fieldNameAliases = (String[]) inputValues[1].getValue();
@@ -88,7 +88,7 @@ public interface PublishedDataItemsType extends PublishedDataSetType {
             return new Variant[]{new Variant(newConfigurationVersion.get()), new Variant(addResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ConfigurationVersionDataType configurationVersion, String[] fieldNameAliases,
                                        Boolean[] promotedFields, PublishedVariableDataType[] variablesToAdd,
                                        Out<ConfigurationVersionDataType> newConfigurationVersion, Out<StatusCode[]> addResults)
@@ -129,7 +129,7 @@ public interface PublishedDataItemsType extends PublishedDataSetType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
             UInteger[] variablesToRemove = (UInteger[]) inputValues[1].getValue();
@@ -139,7 +139,7 @@ public interface PublishedDataItemsType extends PublishedDataSetType {
             return new Variant[]{new Variant(newConfigurationVersion.get()), new Variant(removeResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ConfigurationVersionDataType configurationVersion, UInteger[] variablesToRemove,
                                        Out<ConfigurationVersionDataType> newConfigurationVersion, Out<StatusCode[]> removeResults)
             throws UaException;

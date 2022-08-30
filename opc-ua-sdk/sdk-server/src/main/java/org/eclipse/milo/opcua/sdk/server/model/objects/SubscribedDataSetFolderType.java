@@ -58,7 +58,7 @@ public interface SubscribedDataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             StandaloneSubscribedDataSetDataType subscribedDataSet = (StandaloneSubscribedDataSetDataType) inputValues[0].getValue();
             Out<NodeId> subscribedDataSetNodeId = new Out<>();
@@ -66,7 +66,7 @@ public interface SubscribedDataSetFolderType extends FolderType {
             return new Variant[]{new Variant(subscribedDataSetNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        StandaloneSubscribedDataSetDataType subscribedDataSet, Out<NodeId> subscribedDataSetNodeId)
             throws UaException;
     }
@@ -95,14 +95,14 @@ public interface SubscribedDataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId subscribedDataSetNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, subscribedDataSetNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId subscribedDataSetNodeId) throws UaException;
     }
 
@@ -138,7 +138,7 @@ public interface SubscribedDataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             Out<NodeId> dataSetFolderNodeId = new Out<>();
@@ -146,7 +146,7 @@ public interface SubscribedDataSetFolderType extends FolderType {
             return new Variant[]{new Variant(dataSetFolderNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, Out<NodeId> dataSetFolderNodeId) throws UaException;
     }
 
@@ -174,14 +174,14 @@ public interface SubscribedDataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId dataSetFolderNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, dataSetFolderNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId dataSetFolderNodeId) throws UaException;
     }
 }

@@ -71,7 +71,7 @@ public interface ExtensionFieldsType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             QualifiedName fieldName = (QualifiedName) inputValues[0].getValue();
             Object fieldValue = (Object) inputValues[1].getValue();
@@ -80,7 +80,7 @@ public interface ExtensionFieldsType extends BaseObjectType {
             return new Variant[]{new Variant(fieldId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        QualifiedName fieldName, Object fieldValue, Out<NodeId> fieldId) throws UaException;
     }
 
@@ -108,14 +108,14 @@ public interface ExtensionFieldsType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId fieldId = (NodeId) inputValues[0].getValue();
             invoke(context, fieldId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId fieldId) throws UaException;
     }
 }

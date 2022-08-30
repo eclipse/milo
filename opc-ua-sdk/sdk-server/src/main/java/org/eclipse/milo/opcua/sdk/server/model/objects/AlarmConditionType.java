@@ -220,13 +220,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -246,13 +246,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -280,14 +280,14 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             LocalizedText comment = (LocalizedText) inputValues[0].getValue();
             invoke(context, comment);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        LocalizedText comment) throws UaException;
     }
 
@@ -307,13 +307,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -341,14 +341,14 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             LocalizedText comment = (LocalizedText) inputValues[0].getValue();
             invoke(context, comment);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        LocalizedText comment) throws UaException;
     }
 
@@ -368,13 +368,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -402,14 +402,14 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             LocalizedText comment = (LocalizedText) inputValues[0].getValue();
             invoke(context, comment);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        LocalizedText comment) throws UaException;
     }
 
@@ -429,13 +429,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -463,14 +463,14 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             LocalizedText comment = (LocalizedText) inputValues[0].getValue();
             invoke(context, comment);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        LocalizedText comment) throws UaException;
     }
 
@@ -490,13 +490,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -524,14 +524,14 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             LocalizedText comment = (LocalizedText) inputValues[0].getValue();
             invoke(context, comment);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        LocalizedText comment) throws UaException;
     }
 
@@ -559,14 +559,14 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             Out<NodeId[]> groups = new Out<>();
             invoke(context, groups);
             return new Variant[]{new Variant(groups.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        Out<NodeId[]> groups) throws UaException;
     }
 }

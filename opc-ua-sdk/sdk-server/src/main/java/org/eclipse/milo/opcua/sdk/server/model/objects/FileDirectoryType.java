@@ -58,7 +58,7 @@ public interface FileDirectoryType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String directoryName = (String) inputValues[0].getValue();
             Out<NodeId> directoryNodeId = new Out<>();
@@ -66,7 +66,7 @@ public interface FileDirectoryType extends FolderType {
             return new Variant[]{new Variant(directoryNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String directoryName, Out<NodeId> directoryNodeId) throws UaException;
     }
 
@@ -104,7 +104,7 @@ public interface FileDirectoryType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String fileName = (String) inputValues[0].getValue();
             Boolean requestFileOpen = (Boolean) inputValues[1].getValue();
@@ -114,7 +114,7 @@ public interface FileDirectoryType extends FolderType {
             return new Variant[]{new Variant(fileNodeId.get()), new Variant(fileHandle.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String fileName, Boolean requestFileOpen, Out<NodeId> fileNodeId, Out<UInteger> fileHandle)
             throws UaException;
     }
@@ -143,14 +143,14 @@ public interface FileDirectoryType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId objectToDelete = (NodeId) inputValues[0].getValue();
             invoke(context, objectToDelete);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId objectToDelete) throws UaException;
     }
 
@@ -189,7 +189,7 @@ public interface FileDirectoryType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId objectToMoveOrCopy = (NodeId) inputValues[0].getValue();
             NodeId targetDirectory = (NodeId) inputValues[1].getValue();
@@ -200,7 +200,7 @@ public interface FileDirectoryType extends FolderType {
             return new Variant[]{new Variant(newNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId objectToMoveOrCopy, NodeId targetDirectory, Boolean createCopy, String newName,
                                        Out<NodeId> newNodeId) throws UaException;
     }

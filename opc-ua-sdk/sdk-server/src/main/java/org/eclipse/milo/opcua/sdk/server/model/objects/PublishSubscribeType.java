@@ -115,7 +115,7 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String securityGroupId = (String) inputValues[0].getValue();
             String securityPolicyUri = (String) inputValues[1].getValue();
@@ -128,7 +128,7 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String securityGroupId, String securityPolicyUri, UInteger currentTokenId,
                                        ByteString currentKey, ByteString[] futureKeys, Double timeToNextKey, Double keyLifetime)
             throws UaException;
@@ -166,7 +166,7 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             PubSubConnectionDataType configuration = (PubSubConnectionDataType) inputValues[0].getValue();
             Out<NodeId> connectionId = new Out<>();
@@ -174,7 +174,7 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
             return new Variant[]{new Variant(connectionId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        PubSubConnectionDataType configuration, Out<NodeId> connectionId) throws UaException;
     }
 
@@ -202,14 +202,14 @@ public interface PublishSubscribeType extends PubSubKeyServiceType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId connectionId = (NodeId) inputValues[0].getValue();
             invoke(context, connectionId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId connectionId) throws UaException;
     }
 }

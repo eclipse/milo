@@ -186,13 +186,13 @@ public interface ConditionType extends BaseEventType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -212,13 +212,13 @@ public interface ConditionType extends BaseEventType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -247,7 +247,7 @@ public interface ConditionType extends BaseEventType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ByteString eventId = (ByteString) inputValues[0].getValue();
             LocalizedText comment = (LocalizedText) inputValues[1].getValue();
@@ -255,7 +255,7 @@ public interface ConditionType extends BaseEventType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ByteString eventId, LocalizedText comment) throws UaException;
     }
 
@@ -283,14 +283,14 @@ public interface ConditionType extends BaseEventType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger subscriptionId = (UInteger) inputValues[0].getValue();
             invoke(context, subscriptionId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger subscriptionId) throws UaException;
     }
 
@@ -319,7 +319,7 @@ public interface ConditionType extends BaseEventType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger subscriptionId = (UInteger) inputValues[0].getValue();
             UInteger monitoredItemId = (UInteger) inputValues[1].getValue();

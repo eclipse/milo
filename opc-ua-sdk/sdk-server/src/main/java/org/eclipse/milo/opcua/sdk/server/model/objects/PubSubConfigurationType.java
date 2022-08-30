@@ -62,7 +62,7 @@ public interface PubSubConfigurationType extends FileType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String transportProfileUri = (String) inputValues[0].getValue();
             UShort numReqWriterGroupIds = (UShort) inputValues[1].getValue();
@@ -74,7 +74,7 @@ public interface PubSubConfigurationType extends FileType {
             return new Variant[]{new Variant(defaultPublisherId.get()), new Variant(writerGroupIds.get()), new Variant(dataSetWriterIds.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String transportProfileUri, UShort numReqWriterGroupIds, UShort numReqDataSetWriterIds,
                                        Out<Object> defaultPublisherId, Out<UShort> writerGroupIds, Out<UShort> dataSetWriterIds)
             throws UaException;
@@ -117,7 +117,7 @@ public interface PubSubConfigurationType extends FileType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             Boolean requireCompleteUpdate = (Boolean) inputValues[1].getValue();
@@ -130,7 +130,7 @@ public interface PubSubConfigurationType extends FileType {
             return new Variant[]{new Variant(changesApplied.get()), new Variant(referencesResults.get()), new Variant(configurationValues.get()), new Variant(configurationObjects.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, Boolean requireCompleteUpdate,
                                        PubSubConfigurationRefDataType[] configurationReferences, Out<Boolean> changesApplied,
                                        Out<StatusCode[]> referencesResults,

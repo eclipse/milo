@@ -57,13 +57,13 @@ public interface FileTransferStateMachineType extends FiniteStateMachineType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 }

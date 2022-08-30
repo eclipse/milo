@@ -79,7 +79,7 @@ public interface SecurityGroupFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String securityGroupName = (String) inputValues[0].getValue();
             Double keyLifetime = (Double) inputValues[1].getValue();
@@ -92,7 +92,7 @@ public interface SecurityGroupFolderType extends FolderType {
             return new Variant[]{new Variant(securityGroupId.get()), new Variant(securityGroupNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String securityGroupName, Double keyLifetime, String securityPolicyUri,
                                        UInteger maxFutureKeyCount, UInteger maxPastKeyCount, Out<String> securityGroupId,
                                        Out<NodeId> securityGroupNodeId) throws UaException;
@@ -122,14 +122,14 @@ public interface SecurityGroupFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId securityGroupNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, securityGroupNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId securityGroupNodeId) throws UaException;
     }
 
@@ -165,7 +165,7 @@ public interface SecurityGroupFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             Out<NodeId> securityGroupFolderNodeId = new Out<>();
@@ -173,7 +173,7 @@ public interface SecurityGroupFolderType extends FolderType {
             return new Variant[]{new Variant(securityGroupFolderNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, Out<NodeId> securityGroupFolderNodeId) throws UaException;
     }
 
@@ -201,14 +201,14 @@ public interface SecurityGroupFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId securityGroupFolderNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, securityGroupFolderNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId securityGroupFolderNodeId) throws UaException;
     }
 }

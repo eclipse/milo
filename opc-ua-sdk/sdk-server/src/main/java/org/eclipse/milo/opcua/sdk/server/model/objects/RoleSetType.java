@@ -54,7 +54,7 @@ public interface RoleSetType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String roleName = (String) inputValues[0].getValue();
             String namespaceUri = (String) inputValues[1].getValue();
@@ -63,7 +63,7 @@ public interface RoleSetType extends BaseObjectType {
             return new Variant[]{new Variant(roleNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String roleName, String namespaceUri, Out<NodeId> roleNodeId) throws UaException;
     }
 
@@ -91,14 +91,14 @@ public interface RoleSetType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId roleNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, roleNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId roleNodeId) throws UaException;
     }
 }

@@ -102,7 +102,7 @@ public interface PublishedEventsType extends PublishedDataSetType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
             String[] fieldNameAliases = (String[]) inputValues[1].getValue();
@@ -113,7 +113,7 @@ public interface PublishedEventsType extends PublishedDataSetType {
             return new Variant[]{new Variant(newConfigurationVersion.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ConfigurationVersionDataType configurationVersion, String[] fieldNameAliases,
                                        Boolean[] promotedFields, SimpleAttributeOperand[] selectedFields,
                                        Out<ConfigurationVersionDataType> newConfigurationVersion) throws UaException;

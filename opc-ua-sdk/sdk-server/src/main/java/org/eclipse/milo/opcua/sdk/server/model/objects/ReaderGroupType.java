@@ -60,7 +60,7 @@ public interface ReaderGroupType extends PubSubGroupType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             DataSetReaderDataType configuration = (DataSetReaderDataType) inputValues[0].getValue();
             Out<NodeId> dataSetReaderNodeId = new Out<>();
@@ -68,7 +68,7 @@ public interface ReaderGroupType extends PubSubGroupType {
             return new Variant[]{new Variant(dataSetReaderNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        DataSetReaderDataType configuration, Out<NodeId> dataSetReaderNodeId) throws UaException;
     }
 
@@ -96,14 +96,14 @@ public interface ReaderGroupType extends PubSubGroupType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId dataSetReaderNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, dataSetReaderNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId dataSetReaderNodeId) throws UaException;
     }
 }

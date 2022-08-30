@@ -65,7 +65,7 @@ public interface PubSubKeyServiceType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String securityGroupId = (String) inputValues[0].getValue();
             UInteger startingTokenId = (UInteger) inputValues[1].getValue();
@@ -79,7 +79,7 @@ public interface PubSubKeyServiceType extends BaseObjectType {
             return new Variant[]{new Variant(securityPolicyUri.get()), new Variant(firstTokenId.get()), new Variant(keys.get()), new Variant(timeToNextKey.get()), new Variant(keyLifetime.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String securityGroupId, UInteger startingTokenId, UInteger requestedKeyCount,
                                        Out<String> securityPolicyUri, Out<UInteger> firstTokenId, Out<ByteString[]> keys,
                                        Out<Double> timeToNextKey, Out<Double> keyLifetime) throws UaException;
@@ -117,7 +117,7 @@ public interface PubSubKeyServiceType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String securityGroupId = (String) inputValues[0].getValue();
             Out<NodeId> securityGroupNodeId = new Out<>();
@@ -125,7 +125,7 @@ public interface PubSubKeyServiceType extends BaseObjectType {
             return new Variant[]{new Variant(securityGroupNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String securityGroupId, Out<NodeId> securityGroupNodeId) throws UaException;
     }
 }

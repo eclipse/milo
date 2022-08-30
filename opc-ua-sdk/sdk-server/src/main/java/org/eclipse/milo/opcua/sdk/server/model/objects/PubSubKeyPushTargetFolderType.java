@@ -64,7 +64,7 @@ public interface PubSubKeyPushTargetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String applicationUri = (String) inputValues[0].getValue();
             String endpointUrl = (String) inputValues[1].getValue();
@@ -77,7 +77,7 @@ public interface PubSubKeyPushTargetFolderType extends FolderType {
             return new Variant[]{new Variant(pushTargetId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String applicationUri, String endpointUrl, String securityPolicyUri,
                                        UserTokenPolicy userTokenType, UShort requestedKeyCount, Double retryInterval,
                                        Out<NodeId> pushTargetId) throws UaException;
@@ -107,14 +107,14 @@ public interface PubSubKeyPushTargetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId pushTargetId = (NodeId) inputValues[0].getValue();
             invoke(context, pushTargetId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId pushTargetId) throws UaException;
     }
 
@@ -150,7 +150,7 @@ public interface PubSubKeyPushTargetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             Out<NodeId> pushTargetFolderNodeId = new Out<>();
@@ -158,7 +158,7 @@ public interface PubSubKeyPushTargetFolderType extends FolderType {
             return new Variant[]{new Variant(pushTargetFolderNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, Out<NodeId> pushTargetFolderNodeId) throws UaException;
     }
 
@@ -186,14 +186,14 @@ public interface PubSubKeyPushTargetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId pushTargetFolderNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, pushTargetFolderNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId pushTargetFolderNodeId) throws UaException;
     }
 }

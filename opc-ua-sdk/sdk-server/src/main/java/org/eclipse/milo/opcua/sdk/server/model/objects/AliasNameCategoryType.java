@@ -54,7 +54,7 @@ public interface AliasNameCategoryType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String aliasNameSearchPattern = (String) inputValues[0].getValue();
             NodeId referenceTypeFilter = (NodeId) inputValues[1].getValue();
@@ -63,7 +63,7 @@ public interface AliasNameCategoryType extends FolderType {
             return new Variant[]{new Variant(aliasNodeList.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String aliasNameSearchPattern, NodeId referenceTypeFilter,
                                        Out<AliasNameDataType[]> aliasNodeList) throws UaException;
     }

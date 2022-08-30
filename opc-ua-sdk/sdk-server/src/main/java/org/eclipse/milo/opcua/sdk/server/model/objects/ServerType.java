@@ -180,7 +180,7 @@ public interface ServerType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger subscriptionId = (UInteger) inputValues[0].getValue();
             Out<UInteger[]> serverHandles = new Out<>();
@@ -189,7 +189,7 @@ public interface ServerType extends BaseObjectType {
             return new Variant[]{new Variant(serverHandles.get()), new Variant(clientHandles.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger subscriptionId, Out<UInteger[]> serverHandles, Out<UInteger[]> clientHandles)
             throws UaException;
     }
@@ -218,14 +218,14 @@ public interface ServerType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger subscriptionId = (UInteger) inputValues[0].getValue();
             invoke(context, subscriptionId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger subscriptionId) throws UaException;
     }
 
@@ -262,7 +262,7 @@ public interface ServerType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger subscriptionId = (UInteger) inputValues[0].getValue();
             UInteger lifetimeInHours = (UInteger) inputValues[1].getValue();
@@ -271,7 +271,7 @@ public interface ServerType extends BaseObjectType {
             return new Variant[]{new Variant(revisedLifetimeInHours.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger subscriptionId, UInteger lifetimeInHours, Out<UInteger> revisedLifetimeInHours)
             throws UaException;
     }
@@ -304,7 +304,7 @@ public interface ServerType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ServerState state = (ServerState) inputValues[0].getValue();
             DateTime estimatedReturnTime = (DateTime) inputValues[1].getValue();
@@ -315,7 +315,7 @@ public interface ServerType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ServerState state, DateTime estimatedReturnTime, UInteger secondsTillShutdown,
                                        LocalizedText reason, Boolean restart) throws UaException;
     }

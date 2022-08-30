@@ -166,7 +166,7 @@ public interface FileType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UByte mode = (UByte) inputValues[0].getValue();
             Out<UInteger> fileHandle = new Out<>();
@@ -174,7 +174,7 @@ public interface FileType extends BaseObjectType {
             return new Variant[]{new Variant(fileHandle.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UByte mode, Out<UInteger> fileHandle) throws UaException;
     }
 
@@ -202,14 +202,14 @@ public interface FileType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             invoke(context, fileHandle);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle) throws UaException;
     }
 
@@ -246,7 +246,7 @@ public interface FileType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             Integer length = (Integer) inputValues[1].getValue();
@@ -255,7 +255,7 @@ public interface FileType extends BaseObjectType {
             return new Variant[]{new Variant(data.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, Integer length, Out<ByteString> data) throws UaException;
     }
 
@@ -284,7 +284,7 @@ public interface FileType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             ByteString data = (ByteString) inputValues[1].getValue();
@@ -292,7 +292,7 @@ public interface FileType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, ByteString data) throws UaException;
     }
 
@@ -328,7 +328,7 @@ public interface FileType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             Out<ULong> position = new Out<>();
@@ -336,7 +336,7 @@ public interface FileType extends BaseObjectType {
             return new Variant[]{new Variant(position.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, Out<ULong> position) throws UaException;
     }
 
@@ -365,7 +365,7 @@ public interface FileType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             ULong position = (ULong) inputValues[1].getValue();
@@ -373,7 +373,7 @@ public interface FileType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, ULong position) throws UaException;
     }
 }

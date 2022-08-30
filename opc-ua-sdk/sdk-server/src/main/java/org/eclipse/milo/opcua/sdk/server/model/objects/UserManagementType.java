@@ -112,7 +112,7 @@ public interface UserManagementType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String userName = (String) inputValues[0].getValue();
             String password = (String) inputValues[1].getValue();
@@ -122,7 +122,7 @@ public interface UserManagementType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String userName, String password, UserConfigurationMask userConfiguration,
                                        String description) throws UaException;
     }
@@ -154,7 +154,7 @@ public interface UserManagementType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String userName = (String) inputValues[0].getValue();
             String password = (String) inputValues[1].getValue();
@@ -164,7 +164,7 @@ public interface UserManagementType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String userName, String password, UserConfigurationMask userConfiguration,
                                        String description) throws UaException;
     }
@@ -196,7 +196,7 @@ public interface UserManagementType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String userName = (String) inputValues[0].getValue();
             String password = (String) inputValues[1].getValue();
@@ -206,7 +206,7 @@ public interface UserManagementType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String userName, String password, UserConfigurationMask userConfiguration,
                                        String description) throws UaException;
     }
@@ -238,7 +238,7 @@ public interface UserManagementType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String userName = (String) inputValues[0].getValue();
             String password = (String) inputValues[1].getValue();
@@ -248,7 +248,7 @@ public interface UserManagementType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String userName, String password, UserConfigurationMask userConfiguration,
                                        String description) throws UaException;
     }

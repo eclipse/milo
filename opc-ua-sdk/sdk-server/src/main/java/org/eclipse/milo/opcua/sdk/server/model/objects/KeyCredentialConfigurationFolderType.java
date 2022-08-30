@@ -51,7 +51,7 @@ public interface KeyCredentialConfigurationFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String resourceUri = (String) inputValues[0].getValue();
             String profileUri = (String) inputValues[1].getValue();
@@ -61,7 +61,7 @@ public interface KeyCredentialConfigurationFolderType extends FolderType {
             return new Variant[]{new Variant(credentialNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String resourceUri, String profileUri, String[] endpointUrls, Out<NodeId> credentialNodeId)
             throws UaException;
     }

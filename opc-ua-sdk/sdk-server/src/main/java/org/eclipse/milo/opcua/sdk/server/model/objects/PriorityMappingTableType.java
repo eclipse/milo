@@ -65,7 +65,7 @@ public interface PriorityMappingTableType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String mappingUri = (String) inputValues[0].getValue();
             String priorityLabel = (String) inputValues[1].getValue();
@@ -75,7 +75,7 @@ public interface PriorityMappingTableType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String mappingUri, String priorityLabel, UByte priorityValuePcp, UInteger priorityValueDscp)
             throws UaException;
     }
@@ -105,7 +105,7 @@ public interface PriorityMappingTableType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String mappingUri = (String) inputValues[0].getValue();
             String priorityLabel = (String) inputValues[1].getValue();
@@ -113,7 +113,7 @@ public interface PriorityMappingTableType extends BaseObjectType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String mappingUri, String priorityLabel) throws UaException;
     }
 }

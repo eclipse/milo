@@ -139,14 +139,14 @@ public interface RoleType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             IdentityMappingRuleType rule = (IdentityMappingRuleType) inputValues[0].getValue();
             invoke(context, rule);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        IdentityMappingRuleType rule) throws UaException;
     }
 
@@ -174,14 +174,14 @@ public interface RoleType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             IdentityMappingRuleType rule = (IdentityMappingRuleType) inputValues[0].getValue();
             invoke(context, rule);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        IdentityMappingRuleType rule) throws UaException;
     }
 
@@ -209,14 +209,14 @@ public interface RoleType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String applicationUri = (String) inputValues[0].getValue();
             invoke(context, applicationUri);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String applicationUri) throws UaException;
     }
 
@@ -244,14 +244,14 @@ public interface RoleType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String applicationUri = (String) inputValues[0].getValue();
             invoke(context, applicationUri);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String applicationUri) throws UaException;
     }
 
@@ -279,14 +279,14 @@ public interface RoleType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             EndpointType endpoint = (EndpointType) inputValues[0].getValue();
             invoke(context, endpoint);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        EndpointType endpoint) throws UaException;
     }
 
@@ -314,14 +314,14 @@ public interface RoleType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             EndpointType endpoint = (EndpointType) inputValues[0].getValue();
             invoke(context, endpoint);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        EndpointType endpoint) throws UaException;
     }
 }

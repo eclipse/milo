@@ -245,7 +245,7 @@ public interface DataSetReaderType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
             FieldTargetDataType[] targetVariablesToAdd = (FieldTargetDataType[]) inputValues[1].getValue();
@@ -254,7 +254,7 @@ public interface DataSetReaderType extends BaseObjectType {
             return new Variant[]{new Variant(addResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ConfigurationVersionDataType configurationVersion,
                                        FieldTargetDataType[] targetVariablesToAdd, Out<StatusCode[]> addResults) throws
             UaException;
@@ -293,7 +293,7 @@ public interface DataSetReaderType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String parentNodeName = (String) inputValues[0].getValue();
             RolePermissionType[] rolePermissions = (RolePermissionType[]) inputValues[1].getValue();
@@ -302,7 +302,7 @@ public interface DataSetReaderType extends BaseObjectType {
             return new Variant[]{new Variant(parentNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String parentNodeName, RolePermissionType[] rolePermissions, Out<NodeId> parentNodeId)
             throws UaException;
     }

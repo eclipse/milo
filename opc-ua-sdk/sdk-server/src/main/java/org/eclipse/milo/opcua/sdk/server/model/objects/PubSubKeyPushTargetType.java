@@ -174,7 +174,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId[] securityGroupIds = (NodeId[]) inputValues[0].getValue();
             Out<StatusCode[]> connectResults = new Out<>();
@@ -182,7 +182,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
             return new Variant[]{new Variant(connectResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId[] securityGroupIds, Out<StatusCode[]> connectResults) throws UaException;
     }
 
@@ -218,7 +218,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId[] securityGroupIds = (NodeId[]) inputValues[0].getValue();
             Out<StatusCode[]> disconnectResults = new Out<>();
@@ -226,7 +226,7 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
             return new Variant[]{new Variant(disconnectResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId[] securityGroupIds, Out<StatusCode[]> disconnectResults) throws UaException;
     }
 
@@ -246,13 +246,13 @@ public interface PubSubKeyPushTargetType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 }

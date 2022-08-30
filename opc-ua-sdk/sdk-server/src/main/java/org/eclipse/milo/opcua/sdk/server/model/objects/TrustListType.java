@@ -86,7 +86,7 @@ public interface TrustListType extends FileType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger masks = (UInteger) inputValues[0].getValue();
             Out<UInteger> fileHandle = new Out<>();
@@ -94,7 +94,7 @@ public interface TrustListType extends FileType {
             return new Variant[]{new Variant(fileHandle.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger masks, Out<UInteger> fileHandle) throws UaException;
     }
 
@@ -130,7 +130,7 @@ public interface TrustListType extends FileType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             UInteger fileHandle = (UInteger) inputValues[0].getValue();
             Out<Boolean> applyChangesRequired = new Out<>();
@@ -138,7 +138,7 @@ public interface TrustListType extends FileType {
             return new Variant[]{new Variant(applyChangesRequired.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger fileHandle, Out<Boolean> applyChangesRequired) throws UaException;
     }
 
@@ -167,7 +167,7 @@ public interface TrustListType extends FileType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ByteString certificate = (ByteString) inputValues[0].getValue();
             Boolean isTrustedCertificate = (Boolean) inputValues[1].getValue();
@@ -175,7 +175,7 @@ public interface TrustListType extends FileType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ByteString certificate, Boolean isTrustedCertificate) throws UaException;
     }
 
@@ -204,7 +204,7 @@ public interface TrustListType extends FileType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String thumbprint = (String) inputValues[0].getValue();
             Boolean isTrustedCertificate = (Boolean) inputValues[1].getValue();
@@ -212,7 +212,7 @@ public interface TrustListType extends FileType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String thumbprint, Boolean isTrustedCertificate) throws UaException;
     }
 }

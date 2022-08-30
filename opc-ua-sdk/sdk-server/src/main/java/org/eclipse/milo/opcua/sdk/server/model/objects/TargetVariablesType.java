@@ -73,7 +73,7 @@ public interface TargetVariablesType extends SubscribedDataSetType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
             FieldTargetDataType[] targetVariablesToAdd = (FieldTargetDataType[]) inputValues[1].getValue();
@@ -82,7 +82,7 @@ public interface TargetVariablesType extends SubscribedDataSetType {
             return new Variant[]{new Variant(addResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ConfigurationVersionDataType configurationVersion,
                                        FieldTargetDataType[] targetVariablesToAdd, Out<StatusCode[]> addResults) throws
             UaException;
@@ -121,7 +121,7 @@ public interface TargetVariablesType extends SubscribedDataSetType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             ConfigurationVersionDataType configurationVersion = (ConfigurationVersionDataType) inputValues[0].getValue();
             UInteger[] targetsToRemove = (UInteger[]) inputValues[1].getValue();
@@ -130,7 +130,7 @@ public interface TargetVariablesType extends SubscribedDataSetType {
             return new Variant[]{new Variant(removeResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        ConfigurationVersionDataType configurationVersion, UInteger[] targetsToRemove,
                                        Out<StatusCode[]> removeResults) throws UaException;
     }

@@ -121,7 +121,7 @@ public interface ServerConfigurationType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId certificateGroupId = (NodeId) inputValues[0].getValue();
             NodeId certificateTypeId = (NodeId) inputValues[1].getValue();
@@ -134,7 +134,7 @@ public interface ServerConfigurationType extends BaseObjectType {
             return new Variant[]{new Variant(applyChangesRequired.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId certificateGroupId, NodeId certificateTypeId, ByteString certificate,
                                        ByteString[] issuerCertificates, String privateKeyFormat, ByteString privateKey,
                                        Out<Boolean> applyChangesRequired) throws UaException;
@@ -156,13 +156,13 @@ public interface ServerConfigurationType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             invoke(context);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context) throws
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context) throws
             UaException;
     }
 
@@ -202,7 +202,7 @@ public interface ServerConfigurationType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId certificateGroupId = (NodeId) inputValues[0].getValue();
             NodeId certificateTypeId = (NodeId) inputValues[1].getValue();
@@ -214,7 +214,7 @@ public interface ServerConfigurationType extends BaseObjectType {
             return new Variant[]{new Variant(certificateRequest.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId certificateGroupId, NodeId certificateTypeId, String subjectName,
                                        Boolean regeneratePrivateKey, ByteString nonce, Out<ByteString> certificateRequest) throws
             UaException;
@@ -244,14 +244,14 @@ public interface ServerConfigurationType extends BaseObjectType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             Out<ByteString[]> certificates = new Out<>();
             invoke(context, certificates);
             return new Variant[]{new Variant(certificates.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        Out<ByteString[]> certificates) throws UaException;
     }
 }

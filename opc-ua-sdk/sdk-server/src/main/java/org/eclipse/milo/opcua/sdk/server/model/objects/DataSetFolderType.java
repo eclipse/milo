@@ -76,7 +76,7 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             String[] fieldNameAliases = (String[]) inputValues[1].getValue();
@@ -89,7 +89,7 @@ public interface DataSetFolderType extends FolderType {
             return new Variant[]{new Variant(dataSetNodeId.get()), new Variant(configurationVersion.get()), new Variant(addResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, String[] fieldNameAliases, DataSetFieldFlags[] fieldFlags,
                                        PublishedVariableDataType[] variablesToAdd, Out<NodeId> dataSetNodeId,
                                        Out<ConfigurationVersionDataType> configurationVersion, Out<StatusCode[]> addResults) throws
@@ -134,7 +134,7 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             NodeId eventNotifier = (NodeId) inputValues[1].getValue();
@@ -148,7 +148,7 @@ public interface DataSetFolderType extends FolderType {
             return new Variant[]{new Variant(configurationVersion.get()), new Variant(dataSetNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, NodeId eventNotifier, String[] fieldNameAliases,
                                        DataSetFieldFlags[] fieldFlags, SimpleAttributeOperand[] selectedFields,
                                        ContentFilter filter, Out<ConfigurationVersionDataType> configurationVersion,
@@ -190,7 +190,7 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) inputValues[1].getValue();
@@ -201,7 +201,7 @@ public interface DataSetFolderType extends FolderType {
             return new Variant[]{new Variant(dataSetNodeId.get()), new Variant(addResults.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, DataSetMetaDataType dataSetMetaData,
                                        PublishedVariableDataType[] variablesToAdd, Out<NodeId> dataSetNodeId,
                                        Out<StatusCode[]> addResults) throws UaException;
@@ -243,7 +243,7 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) inputValues[1].getValue();
@@ -255,7 +255,7 @@ public interface DataSetFolderType extends FolderType {
             return new Variant[]{new Variant(dataSetNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, DataSetMetaDataType dataSetMetaData, NodeId eventNotifier,
                                        SimpleAttributeOperand[] selectedFields, ContentFilter filter, Out<NodeId> dataSetNodeId)
             throws UaException;
@@ -285,14 +285,14 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId dataSetNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, dataSetNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId dataSetNodeId) throws UaException;
     }
 
@@ -328,7 +328,7 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             String name = (String) inputValues[0].getValue();
             Out<NodeId> dataSetFolderNodeId = new Out<>();
@@ -336,7 +336,7 @@ public interface DataSetFolderType extends FolderType {
             return new Variant[]{new Variant(dataSetFolderNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        String name, Out<NodeId> dataSetFolderNodeId) throws UaException;
     }
 
@@ -364,14 +364,14 @@ public interface DataSetFolderType extends FolderType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId dataSetFolderNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, dataSetFolderNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId dataSetFolderNodeId) throws UaException;
     }
 }

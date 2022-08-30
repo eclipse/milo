@@ -148,7 +148,7 @@ public interface WriterGroupType extends PubSubGroupType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             DataSetWriterDataType configuration = (DataSetWriterDataType) inputValues[0].getValue();
             Out<NodeId> dataSetWriterNodeId = new Out<>();
@@ -156,7 +156,7 @@ public interface WriterGroupType extends PubSubGroupType {
             return new Variant[]{new Variant(dataSetWriterNodeId.get())};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        DataSetWriterDataType configuration, Out<NodeId> dataSetWriterNodeId) throws UaException;
     }
 
@@ -184,14 +184,14 @@ public interface WriterGroupType extends PubSubGroupType {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext context,
+        protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Variant[] inputValues) throws UaException {
             NodeId dataSetWriterNodeId = (NodeId) inputValues[0].getValue();
             invoke(context, dataSetWriterNodeId);
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        NodeId dataSetWriterNodeId) throws UaException;
     }
 }
