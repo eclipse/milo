@@ -85,7 +85,7 @@ public interface ExtensionFieldsType extends BaseObjectType {
     PropertyType getExtensionFieldNamePlaceholderNode() throws UaException;
 
     /**
-     * Asynchronous implementation of {@link #getExtensionFieldName_PlaceholderNode()}.
+     * Asynchronous implementation of {@link #getExtensionFieldNamePlaceholderNode()}.
      *
      * @return a CompletableFuture that completes successfully with the
      * PropertyType Node or completes exceptionally if an error occurs creating or

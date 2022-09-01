@@ -223,7 +223,7 @@ public interface IPriorityMappingEntryType extends BaseInterfaceType {
     BaseDataVariableType getPriorityValuePcpNode() throws UaException;
 
     /**
-     * Asynchronous implementation of {@link #getPriorityValue_PCPNode()}.
+     * Asynchronous implementation of {@link #getPriorityValuePcpNode()}.
      *
      * @return a CompletableFuture that completes successfully with the
      * BaseDataVariableType Node or completes exceptionally if an error occurs creating or
@@ -296,7 +296,7 @@ public interface IPriorityMappingEntryType extends BaseInterfaceType {
     BaseDataVariableType getPriorityValueDscpNode() throws UaException;
 
     /**
-     * Asynchronous implementation of {@link #getPriorityValue_DSCPNode()}.
+     * Asynchronous implementation of {@link #getPriorityValueDscpNode()}.
      *
      * @return a CompletableFuture that completes successfully with the
      * BaseDataVariableType Node or completes exceptionally if an error occurs creating or

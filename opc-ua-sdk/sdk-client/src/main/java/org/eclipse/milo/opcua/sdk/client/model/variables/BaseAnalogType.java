@@ -175,7 +175,7 @@ public interface BaseAnalogType extends DataItemType {
     PropertyType getEuRangeNode() throws UaException;
 
     /**
-     * Asynchronous implementation of {@link #getEURangeNode()}.
+     * Asynchronous implementation of {@link #getEuRangeNode()}.
      *
      * @return a CompletableFuture that completes successfully with the
      * PropertyType Node or completes exceptionally if an error occurs creating or
