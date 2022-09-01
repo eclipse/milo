@@ -327,7 +327,7 @@ public interface ConditionType extends BaseEventType {
             return new Variant[]{};
         }
 
-        protected abstract void invoke(InvocationContext context,
+        protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                        UInteger subscriptionId, UInteger monitoredItemId) throws UaException;
     }
 }
