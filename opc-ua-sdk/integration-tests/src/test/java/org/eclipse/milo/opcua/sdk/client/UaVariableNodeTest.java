@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;

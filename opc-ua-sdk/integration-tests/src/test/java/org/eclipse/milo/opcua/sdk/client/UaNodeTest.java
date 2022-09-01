@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;

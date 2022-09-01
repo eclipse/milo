@@ -14,8 +14,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
