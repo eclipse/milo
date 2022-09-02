@@ -121,6 +121,8 @@ public class SubscriptionManager {
     private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
     private final List<Subscription> transferred = new CopyOnWriteArrayList<>();
 
+    private final AtomicLong monitoredItemCount = new AtomicLong(0L);
+
     private final Session session;
     private final OpcUaServer server;
 
@@ -153,6 +155,16 @@ public class SubscriptionManager {
     public void createSubscription(ServiceRequest service) {
         CreateSubscriptionRequest request = (CreateSubscriptionRequest) service.getRequest();
 
+        if (subscriptions.size() >= server.getConfig().getLimits().getMaxSubscriptionsPerSession().intValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManySubscriptions);
+            return;
+        }
+
+        if (server.getSubscriptions().size() >= server.getConfig().getLimits().getMaxSubscriptions().intValue()) {
+            service.setServiceFault(StatusCodes.Bad_TooManySubscriptions);
+            return;
+        }
+
         UInteger subscriptionId = nextSubscriptionId();
 
         Subscription subscription = new Subscription(
@@ -181,13 +193,18 @@ public class SubscriptionManager {
                  * Notify AddressSpaces the items for this subscription are deleted.
                  */
 
+                Map<UInteger, BaseMonitoredItem<?>> monitoredItems = s.getMonitoredItems();
+
                 byMonitoredItemType(
-                    s.getMonitoredItems().values(),
+                    monitoredItems.values(),
                     dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
-                s.getMonitoredItems().clear();
+                monitoredItemCount.getAndUpdate(count -> count - monitoredItems.size());
+                server.getMonitoredItemCount().getAndUpdate(count -> count - monitoredItems.size());
+
+                monitoredItems.clear();
             }
         });
 
@@ -196,7 +213,8 @@ public class SubscriptionManager {
         ResponseHeader header = service.createResponseHeader();
 
         CreateSubscriptionResponse response = new CreateSubscriptionResponse(
-            header, subscriptionId,
+            header,
+            subscriptionId,
             subscription.getPublishingInterval(),
             uint(subscription.getLifetimeCount()),
             uint(subscription.getMaxKeepAliveCount())
@@ -261,6 +279,9 @@ public class SubscriptionManager {
                 );
 
                 results[i] = StatusCode.GOOD;
+
+                monitoredItemCount.getAndUpdate(count -> count - deletedItems.size());
+                server.getMonitoredItemCount().getAndUpdate(count -> count - deletedItems.size());
             } else {
                 results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
             }
@@ -341,27 +362,43 @@ public class SubscriptionManager {
 
             List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
 
+            long globalMax = server.getConfig()
+                .getLimits().getMaxMonitoredItems().longValue();
+
+            long sessionMax = server.getConfig()
+                .getLimits().getMaxMonitoredItemsPerSession().longValue();
+
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest createRequest = itemsToCreate.get(i);
 
                 try {
-                    BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
-                        createRequest,
-                        subscription,
-                        timestamps,
-                        attributeGroups
-                    );
+                    long globalCount = server.getMonitoredItemCount().incrementAndGet();
+                    long sessionCount = monitoredItemCount.incrementAndGet();
 
-                    monitoredItems.add(monitoredItem);
+                    if (globalCount <= globalMax && sessionCount <= sessionMax) {
+                        BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
+                            createRequest,
+                            subscription,
+                            timestamps,
+                            attributeGroups
+                        );
 
-                    createResults[i] = new MonitoredItemCreateResult(
-                        StatusCode.GOOD,
-                        monitoredItem.getId(),
-                        monitoredItem.getSamplingInterval(),
-                        uint(monitoredItem.getQueueSize()),
-                        monitoredItem.getFilterResult()
-                    );
+                        monitoredItems.add(monitoredItem);
+
+                        createResults[i] = new MonitoredItemCreateResult(
+                            StatusCode.GOOD,
+                            monitoredItem.getId(),
+                            monitoredItem.getSamplingInterval(),
+                            uint(monitoredItem.getQueueSize()),
+                            monitoredItem.getFilterResult()
+                        );
+                    } else {
+                        throw new UaException(StatusCodes.Bad_TooManyMonitoredItems);
+                    }
                 } catch (UaException e) {
+                    monitoredItemCount.decrementAndGet();
+                    server.getMonitoredItemCount().decrementAndGet();
+
                     createResults[i] = new MonitoredItemCreateResult(
                         e.getStatusCode(),
                         UInteger.MIN,
@@ -963,6 +1000,9 @@ public class SubscriptionManager {
                     deletedItems.add(item);
 
                     deleteResults[i] = StatusCode.GOOD;
+
+                    monitoredItemCount.decrementAndGet();
+                    server.getMonitoredItemCount().decrementAndGet();
                 }
             }
 
@@ -991,7 +1031,6 @@ public class SubscriptionManager {
         );
 
         service.setResponse(response);
-
     }
 
     public void setMonitoringMode(ServiceRequest service) {
@@ -1233,6 +1272,9 @@ public class SubscriptionManager {
                     dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
+
+                monitoredItemCount.getAndUpdate(count -> count - deletedItems.size());
+                server.getMonitoredItemCount().getAndUpdate(count -> count - deletedItems.size());
             }
 
             iterator.remove();
@@ -1267,13 +1309,18 @@ public class SubscriptionManager {
                  * Notify AddressSpaces the items for this subscription are deleted.
                  */
 
+                Map<UInteger, BaseMonitoredItem<?>> monitoredItems = s.getMonitoredItems();
+
                 byMonitoredItemType(
-                    s.getMonitoredItems().values(),
+                    monitoredItems.values(),
                     dataItems -> server.getAddressSpaceManager().onDataItemsDeleted(dataItems),
                     eventItems -> server.getAddressSpaceManager().onEventItemsDeleted(eventItems)
                 );
 
-                s.getMonitoredItems().clear();
+                monitoredItemCount.getAndUpdate(count -> count - monitoredItems.size());
+                server.getMonitoredItemCount().getAndUpdate(count -> count - monitoredItems.size());
+
+                monitoredItems.clear();
             }
         });
     }
@@ -1290,6 +1337,8 @@ public class SubscriptionManager {
 
         if (subscription != null) {
             subscription.setStateListener(null);
+
+            monitoredItemCount.getAndUpdate(count -> count - subscription.getMonitoredItems().size());
         }
 
         return subscription;

@@ -435,7 +435,13 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                 Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
 
                 if (subscription == null) {
-                    throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+                    if (session.getServer().getSubscriptions().containsKey(subscriptionId)) {
+                        // Exists but belongs to another session
+                        throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                    } else {
+                        // Doesn't exist in any session
+                        throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+                    }
                 } else {
                     subscription.getMonitoredItems().values().stream()
                         .filter(item -> item instanceof MonitoredDataItem)

@@ -17,12 +17,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.EventListener;
@@ -79,10 +82,14 @@ public class OpcUaServer {
 
     private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
 
+    private final AtomicLong monitoredItemCount = new AtomicLong(0L);
+
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
 
     private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
@@ -236,8 +243,16 @@ public class OpcUaServer {
         return variableTypeManager;
     }
 
+    public Set<NodeId> getRegisteredViews() {
+        return registeredViews;
+    }
+
     public Map<UInteger, Subscription> getSubscriptions() {
         return subscriptions;
+    }
+
+    public AtomicLong getMonitoredItemCount() {
+        return monitoredItemCount;
     }
 
     public Optional<KeyPair> getKeyPair(ByteString thumbprint) {

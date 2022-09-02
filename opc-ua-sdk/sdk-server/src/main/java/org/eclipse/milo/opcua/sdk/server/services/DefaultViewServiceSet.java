@@ -78,6 +78,13 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             return;
         }
 
+        if (request.getView().getViewId().isNotNull() &&
+            !server.getRegisteredViews().contains(request.getView().getViewId())) {
+
+            service.setServiceFault(StatusCodes.Bad_ViewIdUnknown);
+            return;
+        }
+
         Stream<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream().map(
             browseDescription ->
                 browseHelper.browse(

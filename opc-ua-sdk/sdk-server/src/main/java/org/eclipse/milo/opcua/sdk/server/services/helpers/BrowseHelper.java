@@ -96,17 +96,27 @@ public class BrowseHelper {
         OpcUaServer server,
         ViewDescription viewDescription,
         UInteger maxReferencesPerNode,
-        BrowseDescription browseDescription) {
+        BrowseDescription browseDescription
+    ) {
 
-        Browse browse = new Browse(
-            context,
-            server,
-            viewDescription,
-            maxReferencesPerNode,
-            browseDescription
-        );
+        if (browseDescription.getBrowseDirection() == null) {
+            BrowseResult result = new BrowseResult(
+                new StatusCode(StatusCodes.Bad_BrowseDirectionInvalid),
+                ByteString.NULL_VALUE,
+                null
+            );
+            return CompletableFuture.completedFuture(result);
+        } else {
+            Browse browse = new Browse(
+                context,
+                server,
+                viewDescription,
+                maxReferencesPerNode,
+                browseDescription
+            );
 
-        return browse.browse();
+            return browse.browse();
+        }
     }
 
     public void browseNext(ServiceRequest service) {
@@ -275,7 +285,7 @@ public class BrowseHelper {
             boolean forward = masks.contains(BrowseResultMask.IsForward) && reference.isForward();
 
             return targetNodeId.toNodeId(server.getNamespaceTable()).map(nodeId -> {
-                CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
+                CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId);
 
                 CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {
                     if (masks.contains(BrowseResultMask.TypeDefinition) &&
@@ -289,9 +299,12 @@ public class BrowseHelper {
                                     referenceTypeId,
                                     forward,
                                     targetNodeId,
-                                    attributes.getBrowseName(),
-                                    attributes.getDisplayName(),
-                                    attributes.getNodeClass(),
+                                    masks.contains(BrowseResultMask.BrowseName) ?
+                                        attributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                                    masks.contains(BrowseResultMask.DisplayName) ?
+                                        attributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                                    masks.contains(BrowseResultMask.NodeClass) ?
+                                        attributes.getNodeClass() : NodeClass.Unspecified,
                                     typeDefinition
                                 )
                         );
@@ -301,9 +314,12 @@ public class BrowseHelper {
                             referenceTypeId,
                             forward,
                             targetNodeId,
-                            attributes.getBrowseName(),
-                            attributes.getDisplayName(),
-                            attributes.getNodeClass(),
+                            masks.contains(BrowseResultMask.BrowseName) ?
+                                attributes.getBrowseName() : QualifiedName.NULL_VALUE,
+                            masks.contains(BrowseResultMask.DisplayName) ?
+                                attributes.getDisplayName() : LocalizedText.NULL_VALUE,
+                            masks.contains(BrowseResultMask.NodeClass) ?
+                                attributes.getNodeClass() : NodeClass.Unspecified,
                             ExpandedNodeId.NULL_VALUE
                         ));
                     }
@@ -338,7 +354,7 @@ public class BrowseHelper {
             });
         }
 
-        private CompletableFuture<BrowseAttributes> browseAttributes(NodeId nodeId, EnumSet<BrowseResultMask> masks) {
+        private CompletableFuture<BrowseAttributes> browseAttributes(NodeId nodeId) {
             var readValueIds = new ArrayList<ReadValueId>();
 
             readValueIds.add(new ReadValueId(nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE));
@@ -359,25 +375,19 @@ public class BrowseHelper {
                 LocalizedText displayName = LocalizedText.NULL_VALUE;
                 NodeClass nodeClass = NodeClass.Unspecified;
 
-                if (masks.contains(BrowseResultMask.BrowseName)) {
-                    DataValue value0 = values.get(0);
-                    if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
-                        browseName = (QualifiedName) value0.getValue().getValue();
-                    }
+                DataValue value0 = values.get(0);
+                if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
+                    browseName = (QualifiedName) value0.getValue().getValue();
                 }
 
-                if (masks.contains(BrowseResultMask.DisplayName)) {
-                    DataValue value1 = values.get(1);
-                    if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
-                        displayName = (LocalizedText) value1.getValue().getValue();
-                    }
+                DataValue value1 = values.get(1);
+                if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
+                    displayName = (LocalizedText) value1.getValue().getValue();
                 }
 
-                if (masks.contains(BrowseResultMask.NodeClass)) {
-                    DataValue value2 = values.get(2);
-                    if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
-                        nodeClass = (NodeClass) value2.getValue().getValue();
-                    }
+                DataValue value2 = values.get(2);
+                if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
+                    nodeClass = (NodeClass) value2.getValue().getValue();
                 }
 
                 return new BrowseAttributes(browseName, displayName, nodeClass);

@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -222,13 +221,22 @@ public abstract class ManagedAddressSpace implements AddressSpace {
         var results = new ArrayList<CallMethodResult>(requests.size());
 
         for (CallMethodRequest request : requests) {
-            MethodInvocationHandler handler = getInvocationHandler(
-                request.getObjectId(),
-                request.getMethodId()
-            ).orElse(MethodInvocationHandler.NODE_ID_UNKNOWN);
-
             try {
+                MethodInvocationHandler handler = getInvocationHandler(
+                    request.getObjectId(),
+                    request.getMethodId()
+                );
+
                 results.add(handler.invoke(context, request));
+            } catch (UaException e) {
+                results.add(
+                    new CallMethodResult(
+                        e.getStatusCode(),
+                        new StatusCode[0],
+                        new DiagnosticInfo[0],
+                        new Variant[0]
+                    )
+                );
             } catch (Throwable t) {
                 LoggerFactory.getLogger(getClass())
                     .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
@@ -236,7 +244,10 @@ public abstract class ManagedAddressSpace implements AddressSpace {
                 results.add(
                     new CallMethodResult(
                         new StatusCode(StatusCodes.Bad_InternalError),
-                        new StatusCode[0], new DiagnosticInfo[0], new Variant[0])
+                        new StatusCode[0],
+                        new DiagnosticInfo[0],
+                        new Variant[0]
+                    )
                 );
             }
         }
@@ -245,32 +256,35 @@ public abstract class ManagedAddressSpace implements AddressSpace {
     }
 
     /**
-     * Get the {@link MethodInvocationHandler} for the method identified by {@code methodId}, if it exists.
+     * Get the {@link MethodInvocationHandler} for the method identified by {@code methodId}.
      *
      * @param objectId the {@link NodeId} identifying the object the method will be invoked on.
      * @param methodId the {@link NodeId} identifying the method.
-     * @return the {@link MethodInvocationHandler} for {@code methodId}, if it exists.
+     * @return the {@link MethodInvocationHandler} for {@code methodId}.
+     * @throws UaException a {@link UaException} containing the appropriate operation result if
+     *                     either the object or method can't be found.
      */
-    protected Optional<MethodInvocationHandler> getInvocationHandler(NodeId objectId, NodeId methodId) {
-        return nodeManager.getNode(objectId).flatMap(node -> {
-            UaMethodNode methodNode = null;
+    protected MethodInvocationHandler getInvocationHandler(NodeId objectId, NodeId methodId) throws UaException {
+        UaNode node = nodeManager.getNode(objectId)
+            .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
-            if (node instanceof UaObjectNode) {
-                UaObjectNode objectNode = (UaObjectNode) node;
+        UaMethodNode methodNode = null;
 
-                methodNode = objectNode.findMethodNode(methodId);
-            } else if (node instanceof UaObjectTypeNode) {
-                UaObjectTypeNode objectTypeNode = (UaObjectTypeNode) node;
+        if (node instanceof UaObjectNode) {
+            UaObjectNode objectNode = (UaObjectNode) node;
 
-                methodNode = objectTypeNode.findMethodNode(methodId);
-            }
+            methodNode = objectNode.findMethodNode(methodId);
+        } else if (node instanceof UaObjectTypeNode) {
+            UaObjectTypeNode objectTypeNode = (UaObjectTypeNode) node;
 
-            if (methodNode != null) {
-                return Optional.of(methodNode.getInvocationHandler());
-            } else {
-                return Optional.empty();
-            }
-        });
+            methodNode = objectTypeNode.findMethodNode(methodId);
+        }
+
+        if (methodNode != null) {
+            return methodNode.getInvocationHandler();
+        } else {
+            throw new UaException(StatusCodes.Bad_MethodInvalid);
+        }
     }
 
 }

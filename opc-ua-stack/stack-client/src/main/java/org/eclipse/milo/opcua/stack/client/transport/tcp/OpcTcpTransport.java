@@ -56,4 +56,11 @@ public class OpcTcpTransport extends AbstractTransport implements UaTransport {
         return channelFsm.getChannel();
     }
 
+    /**
+     * @return the {@link ChannelFsm} used by this transport.
+     */
+    public ChannelFsm channelFsm() {
+        return channelFsm;
+    }
+
 }

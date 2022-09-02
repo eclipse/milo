@@ -170,6 +170,15 @@ public class UaStackClient {
     }
 
     /**
+     * Get the {@link UaTransport} used by this client.
+     *
+     * @return the {@link UaTransport} used by this client.
+     */
+    public UaTransport getTransport() {
+        return transport;
+    }
+
+    /**
      * Get the local copy of the {@link NamespaceTable}.
      * <p>
      * Until explicitly updated this contains only

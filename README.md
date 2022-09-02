@@ -15,6 +15,8 @@ Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
 **Using JDK 8**, run `mvn clean install` from the project root.
 
+To maintain compatibility with Java 8 it is recommended that you build using JDK 8, however the library is runtime compatible with versions 8 and later (e.g. JDK 11, JDK 17).
+
 ### Releases
 
 Releases are published to Maven Central and snapshots to Sonatype.
@@ -25,7 +27,7 @@ Releases are published to Maven Central and snapshots to Sonatype.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>0.6.5</version>
+    <version>0.6.8</version>
 </dependency>
 ```
 
@@ -35,7 +37,7 @@ Releases are published to Maven Central and snapshots to Sonatype.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-server</artifactId>
-    <version>0.6.5</version>
+    <version>0.6.8</version>
 </dependency>
 ```
 
