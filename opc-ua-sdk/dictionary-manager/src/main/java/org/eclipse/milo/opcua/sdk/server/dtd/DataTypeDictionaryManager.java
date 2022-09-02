@@ -37,7 +37,6 @@ import org.eclipse.milo.opcua.sdk.server.model.objects.DataTypeEncodingTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDescriptionTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDictionaryType;
 import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDictionaryTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
@@ -191,28 +190,6 @@ public class DataTypeDictionaryManager implements Lifecycle {
     public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId dataTypeId) {
         dictionary.registerEnumCodec(codec, description, dataTypeId);
 
-        // Add a custom DataTypeNode with a SubtypeOf reference to Enumeration
-
-        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
-            getNodeContext(),
-            dataTypeId,
-            newQualifiedName(description),
-            LocalizedText.english(description),
-            LocalizedText.NULL_VALUE,
-            uint(0),
-            uint(0),
-            false
-        );
-
-        dataTypeNode.addReference(new Reference(
-            dataTypeId,
-            NodeIds.HasSubtype,
-            NodeIds.Enumeration.expanded(),
-            Direction.INVERSE
-        ));
-
-        addNode(dataTypeNode);
-
         // TODO figure out a way to not require re-registration every time...
         getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
     }
@@ -264,28 +241,6 @@ public class DataTypeDictionaryManager implements Lifecycle {
     ) {
 
         dictionary.registerStructCodec(codec, description, dataTypeId, binaryEncodingId);
-
-        // Add a custom DataTypeNode with a SubtypeOf reference to Structure
-
-        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
-            getNodeContext(),
-            dataTypeId,
-            newQualifiedName(description),
-            LocalizedText.english(description),
-            LocalizedText.NULL_VALUE,
-            uint(0),
-            uint(0),
-            false
-        );
-
-        dataTypeNode.addReference(new Reference(
-            dataTypeId,
-            NodeIds.HasSubtype,
-            parentType.expanded(),
-            Direction.INVERSE
-        ));
-
-        addNode(dataTypeNode);
 
         // TODO figure out a way to not require re-registration every time...
         getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);

@@ -47,6 +47,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -102,7 +103,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         {"Variant", NodeIds.BaseDataType, new Variant(32)},
         {"Duration", NodeIds.Duration, new Variant(1.0)},
         {"UtcTime", NodeIds.UtcTime, new Variant(DateTime.now())},
-        };
+    };
 
     private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
         {"BooleanArray", NodeIds.Boolean, false},
@@ -752,23 +753,28 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     private void registerCustomEnumType() throws Exception {
         NodeId dataTypeId = CustomEnumType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        dictionaryManager.registerEnumCodec(
-            new CustomEnumType.Codec().asBinaryCodec(),
-            "CustomEnumType",
-            dataTypeId
+        // Add a custom DataTypeNode with a SubtypeOf reference to Enumeration
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
+            dataTypeId,
+            newQualifiedName("CustomEnumType"),
+            LocalizedText.english("CustomEnumType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
         );
 
-        UaNode node = getNodeManager().get(dataTypeId);
-        if (node instanceof UaDataTypeNode) {
-            UaDataTypeNode dataTypeNode = (UaDataTypeNode) node;
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Enumeration.expanded(),
+            Reference.Direction.INVERSE
+        ));
 
-            dataTypeNode.setEnumStrings(new LocalizedText[]{
-                LocalizedText.english("Field0"),
-                LocalizedText.english("Field1"),
-                LocalizedText.english("Field2")
-            });
-        }
+        getNodeManager().addNode(dataTypeNode);
 
+        // Define the enum
         EnumField[] fields = new EnumField[]{
             new EnumField(
                 0L,
@@ -792,6 +798,28 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         EnumDefinition definition = new EnumDefinition(fields);
 
+        // This Enum is zero-based and naturally incrementing, so we set the EnumStrings property.
+        // If it were more complex the EnumValues property would be used instead.
+        dataTypeNode.setEnumStrings(new LocalizedText[]{
+            LocalizedText.english("Field0"),
+            LocalizedText.english("Field1"),
+            LocalizedText.english("Field2")
+        });
+
+        // Populate the OPC UA 1.04+ DataTypeDefinition attribute
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
+        // DataTypeDictionary from the server. We describe the type using StructureDefinition
+        // or EnumDefinition and register it with the dictionary manager.
+        // The dictionary manager will add all the necessary nodes to the AddressSpace and
+        // generate the required dictionary bsd.xml file.
+        dictionaryManager.registerEnumCodec(
+            new CustomEnumType.Codec().asBinaryCodec(),
+            "CustomEnumType",
+            dataTypeId
+        );
+
         EnumDescription description = new EnumDescription(
             dataTypeId,
             new QualifiedName(getNamespaceIndex(), "CustomEnumType"),
@@ -804,32 +832,31 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
     private void registerCustomStructType() throws Exception {
         // Get the NodeId for the DataType and encoding Nodes.
-
         NodeId dataTypeId = CustomStructType.TYPE_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
-
         NodeId binaryEncodingId = CustomStructType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        // At a minimum, custom types must have their codec registered.
-        // If clients don't need to dynamically discover types and will
-        // register the codecs on their own then this is all that is
-        // necessary.
-        // The dictionary manager will add a corresponding DataType Node to
-        // the AddressSpace.
-
-        dictionaryManager.registerStructureCodec(
-            new CustomStructType.Codec().asBinaryCodec(),
-            "CustomStructType",
+        // Add a custom DataTypeNode with a SubtypeOf reference to Structure
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
             dataTypeId,
-            binaryEncodingId
+            newQualifiedName("CustomStructType"),
+            LocalizedText.english("CustomStructType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
         );
 
-        // If the custom type also needs to be discoverable by clients then it
-        // needs an entry in a DataTypeDictionary that can be read by those
-        // clients. We describe the type using StructureDefinition or
-        // EnumDefinition and register it with the dictionary manager.
-        // The dictionary manager will add all the necessary nodes to the
-        // AddressSpace and generate the required dictionary bsd.xml file.
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Structure.expanded(),
+            Reference.Direction.INVERSE
+        ));
 
+        getNodeManager().addNode(dataTypeNode);
+
+        // Define the structure
         StructureField[] fields = new StructureField[]{
             new StructureField(
                 "foo",
@@ -877,6 +904,33 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             fields
         );
 
+        // Populate the OPC UA 1.04+ DataTypeDefinition attribute
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        // Register Codecs for each supported encoding with DataTypeManager
+        getNodeContext().getServer().getDataTypeManager().registerCodec(
+            binaryEncodingId,
+            new CustomStructType.Codec().asBinaryCodec()
+        );
+
+        getNodeContext().getServer().getDataTypeManager().registerCodec(
+            OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+            dataTypeId,
+            new CustomStructType.Codec().asBinaryCodec()
+        );
+
+        // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
+        // DataTypeDictionary from the server. We describe the type using StructureDefinition
+        // or EnumDefinition and register it with the dictionary manager.
+        // The dictionary manager will add all the necessary nodes to the AddressSpace and
+        // generate the required dictionary bsd.xml file.
+        dictionaryManager.registerStructureCodec(
+            new CustomStructType.Codec().asBinaryCodec(),
+            "CustomStructType",
+            dataTypeId,
+            binaryEncodingId
+        );
+
         StructureDescription description = new StructureDescription(
             dataTypeId,
             new QualifiedName(getNamespaceIndex(), "CustomStructType"),
@@ -891,12 +945,26 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
 
         NodeId binaryEncodingId = CustomUnionType.BINARY_ENCODING_ID.toNodeIdOrThrow(getServer().getNamespaceTable());
 
-        dictionaryManager.registerUnionCodec(
-            new CustomUnionType.Codec().asBinaryCodec(),
-            "CustomUnionType",
+        // Add a custom DataTypeNode with a SubtypeOf reference to Union
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            getNodeContext(),
             dataTypeId,
-            binaryEncodingId
+            newQualifiedName("CustomUnionType"),
+            LocalizedText.english("CustomUnionType"),
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0),
+            false
         );
+
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            NodeIds.HasSubtype,
+            NodeIds.Union.expanded(),
+            Reference.Direction.INVERSE
+        ));
+
+        getNodeManager().addNode(dataTypeNode);
 
         StructureField[] fields = new StructureField[]{
             new StructureField(
@@ -924,6 +992,15 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             NodeIds.Structure,
             StructureType.Union,
             fields
+        );
+
+        dataTypeNode.setDataTypeDefinition(definition);
+
+        dictionaryManager.registerUnionCodec(
+            new CustomUnionType.Codec().asBinaryCodec(),
+            "CustomUnionType",
+            dataTypeId,
+            binaryEncodingId
         );
 
         StructureDescription description = new StructureDescription(

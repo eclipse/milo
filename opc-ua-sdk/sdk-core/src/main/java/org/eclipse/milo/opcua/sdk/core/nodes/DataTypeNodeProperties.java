@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -65,8 +65,8 @@ public final class DataTypeNodeProperties {
      * Using the EnumValues Property it is possible to represent Enumerations
      * with integers that are not zero-based or have gaps (e.g. 1, 2, 4, 8,
      * 16). Each entry of the array of EnumValueType in this Property
-     * represents one enumeration value with its integer notation, human-
-     * readable representation, and help information.
+     * represents one enumeration value with its integer notation, human-readable
+     * representation, and help information.
      */
     public static final QualifiedProperty<EnumValueType[]> EnumValues = new QualifiedProperty<>(
         Namespaces.OPC_UA,
