@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription.ChangeListener;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -47,7 +47,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void createAndDeleteDataItem() throws UaException {
         ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
 
         assertTrue(dataItem.getStatusCode().isGood());
@@ -61,17 +61,17 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         EventFilter eventFilter = new EventFilter(
             new SimpleAttributeOperand[]{
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventId")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Time")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Message")},
                     AttributeId.Value.uid(),
                     null)
@@ -79,7 +79,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
             new ContentFilter(null)
         );
 
-        ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
+        ManagedEventItem eventItem = subscription.createEventItem(NodeIds.Server, eventFilter);
 
         assertTrue(eventItem.getStatusCode().isGood());
 
@@ -90,7 +90,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void createWithSamplingInterval() throws UaException {
         ReadValueId readValueId = new ReadValueId(
-            Identifiers.Server_ServerStatus_State,
+            NodeIds.Server_ServerStatus_State,
             AttributeId.Value.uid(),
             null,
             QualifiedName.NULL_VALUE
@@ -126,7 +126,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void defaultMonitoringMode() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(MonitoringMode.Reporting, dataItem1.getMonitoringMode());
         assertEquals(MonitoringMode.Reporting, dataItem1.getMonitoredItem().getMonitoringMode());
@@ -134,7 +134,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         subscription.setDefaultMonitoringMode(MonitoringMode.Sampling);
 
         ManagedDataItem dataItem2 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(MonitoringMode.Sampling, dataItem2.getMonitoringMode());
         assertEquals(MonitoringMode.Sampling, dataItem2.getMonitoredItem().getMonitoringMode());
@@ -142,7 +142,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         subscription.setDefaultMonitoringMode(MonitoringMode.Disabled);
 
         ManagedDataItem dataItem3 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(MonitoringMode.Disabled, dataItem3.getMonitoringMode());
         assertEquals(MonitoringMode.Disabled, dataItem3.getMonitoredItem().getMonitoringMode());
@@ -151,21 +151,21 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void defaultSamplingInterval() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem1.getMonitoredItem().getRevisedSamplingInterval());
 
         subscription.setDefaultSamplingInterval(100.0);
         ManagedDataItem dataItem2 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem2.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem2.getMonitoredItem().getRevisedSamplingInterval());
 
         subscription.setDefaultSamplingInterval(5000.0);
         ManagedDataItem dataItem3 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem3.getMonitoredItem().getRequestedSamplingInterval());
         assertEquals(subscription.getDefaultSamplingInterval(), dataItem3.getMonitoredItem().getRevisedSamplingInterval());
@@ -174,14 +174,14 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void defaultQueueSize() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultQueueSize(), dataItem1.getMonitoredItem().getRequestedQueueSize());
         assertEquals(subscription.getDefaultQueueSize(), dataItem1.getMonitoredItem().getRevisedQueueSize());
 
         subscription.setDefaultQueueSize(uint(subscription.getDefaultQueueSize().intValue() + 1));
         ManagedDataItem dataItem2 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultQueueSize(), dataItem2.getMonitoredItem().getRequestedQueueSize());
         assertEquals(subscription.getDefaultQueueSize(), dataItem2.getMonitoredItem().getRevisedQueueSize());
@@ -190,7 +190,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void defaultDataFilter() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultDataFilter(), dataItem1.getMonitoredItem().getMonitoringFilter());
 
@@ -203,7 +203,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         );
 
         ManagedDataItem dataItem2 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
 
         assertEquals(subscription.getDefaultDataFilter(), dataItem2.getMonitoredItem().getMonitoringFilter());
@@ -212,13 +212,13 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void defaultTimestamp() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultTimestamps(), dataItem1.getMonitoredItem().getTimestamps());
 
         subscription.setDefaultTimestamps(TimestampsToReturn.Neither);
         ManagedDataItem dataItem2 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertEquals(subscription.getDefaultTimestamps(), dataItem2.getMonitoredItem().getTimestamps());
     }
@@ -226,7 +226,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
     @Test
     public void defaultDiscardOldest() throws UaException {
         ManagedDataItem dataItem1 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertTrue(subscription.getDefaultDiscardOldest());
         assertTrue(dataItem1.getDiscardOldest());
@@ -236,7 +236,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         assertFalse(subscription.getDefaultDiscardOldest());
 
         ManagedDataItem dataItem2 = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
         assertFalse(dataItem2.getDiscardOldest());
         assertFalse(dataItem2.getMonitoredItem().getDiscardOldest());
@@ -249,7 +249,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         subscription.addChangeListener(new ChangeListener() {
             @Override
             public void onDataReceived(List<ManagedDataItem> dataItems, List<DataValue> dataValues) {
-                if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_State)) {
+                if (dataItems.get(0).getNodeId().equals(NodeIds.Server_ServerStatus_State)) {
                     latch.countDown();
                 }
             }
@@ -257,13 +257,13 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
         subscription.addDataChangeListener(
             (dataItems, dataValues) -> {
-                if (dataItems.get(0).getNodeId().equals(Identifiers.Server_ServerStatus_State)) {
+                if (dataItems.get(0).getNodeId().equals(NodeIds.Server_ServerStatus_State)) {
                     latch.countDown();
                 }
             }
         );
 
-        ManagedDataItem dataItem = subscription.createDataItem(Identifiers.Server_ServerStatus_State);
+        ManagedDataItem dataItem = subscription.createDataItem(NodeIds.Server_ServerStatus_State);
         assertTrue(dataItem.getStatusCode().isGood());
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
@@ -277,7 +277,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         subscription.addChangeListener(new ChangeListener() {
             @Override
             public void onEventReceived(List<ManagedEventItem> eventItems, List<Variant[]> eventFields) {
-                if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
+                if (eventItems.get(0).getNodeId().equals(NodeIds.Server)) {
                     latch1.countDown();
                 }
             }
@@ -285,7 +285,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
 
         subscription.addEventChangeListener(
             (eventItems, eventFields) -> {
-                if (eventItems.get(0).getNodeId().equals(Identifiers.Server)) {
+                if (eventItems.get(0).getNodeId().equals(NodeIds.Server)) {
                     latch2.countDown();
                 }
             }
@@ -294,17 +294,17 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
         EventFilter eventFilter = new EventFilter(
             new SimpleAttributeOperand[]{
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventId")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Time")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
-                    Identifiers.BaseEventType,
+                    NodeIds.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Message")},
                     AttributeId.Value.uid(),
                     null)
@@ -312,7 +312,7 @@ public class ManagedSubscriptionTest extends AbstractSubscriptionTest {
             new ContentFilter(null)
         );
 
-        ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
+        ManagedEventItem eventItem = subscription.createEventItem(NodeIds.Server, eventFilter);
         assertTrue(eventItem.getStatusCode().isGood());
 
         assertTrue(latch1.await(5, TimeUnit.SECONDS));

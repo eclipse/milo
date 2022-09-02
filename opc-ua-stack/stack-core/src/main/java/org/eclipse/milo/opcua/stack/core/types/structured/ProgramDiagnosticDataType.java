@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -20,23 +11,24 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class ProgramDiagnosticDataType extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=894");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=894");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=896");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=896");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=895");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=895");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15381");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15381");
 
     private final NodeId createSessionId;
 
@@ -133,6 +125,26 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructure 
 
     public StatusResult getLastMethodReturnStatus() {
         return lastMethodReturnStatus;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 896),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("CreateSessionId", LocalizedText.NULL_VALUE, new NodeId(0, 17), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CreateClientName", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("InvocationCreationTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LastTransitionTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LastMethodCall", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LastMethodSessionId", LocalizedText.NULL_VALUE, new NodeId(0, 17), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LastMethodInputArguments", LocalizedText.NULL_VALUE, new NodeId(0, 296), 1, null, UInteger.valueOf(0), false),
+                new StructureField("LastMethodOutputArguments", LocalizedText.NULL_VALUE, new NodeId(0, 296), 1, null, UInteger.valueOf(0), false),
+                new StructureField("LastMethodCallTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LastMethodReturnStatus", LocalizedText.NULL_VALUE, new NodeId(0, 299), -1, null, UInteger.valueOf(0), false)
+            }
+        );
     }
 
     public static final class Codec extends GenericDataTypeCodec<ProgramDiagnosticDataType> {

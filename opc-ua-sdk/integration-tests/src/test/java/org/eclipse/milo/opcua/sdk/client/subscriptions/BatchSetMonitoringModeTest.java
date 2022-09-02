@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions.BatchSetMonitoringMode.SetMonitoringModeResult;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.junit.jupiter.api.Test;
@@ -28,9 +28,9 @@ public class BatchSetMonitoringModeTest extends AbstractSubscriptionTest {
 
     @Test
     public void multipleOperations() throws UaException, InterruptedException {
-        ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item1 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item2 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item3 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
 
         BatchSetMonitoringMode batch = new BatchSetMonitoringMode(
             client,
@@ -57,9 +57,9 @@ public class BatchSetMonitoringModeTest extends AbstractSubscriptionTest {
 
     @Test
     public void multipleServiceInvocations() throws UaException, InterruptedException {
-        ManagedDataItem item1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item2 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
-        ManagedDataItem item3 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item1 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item2 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
+        ManagedDataItem item3 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
 
         item1.setMonitoringMode(MonitoringMode.Disabled);
         item2.setMonitoringMode(MonitoringMode.Sampling);

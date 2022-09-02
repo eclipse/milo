@@ -42,7 +42,7 @@ import org.eclipse.milo.opcua.sdk.server.items.MonitoredEventItem;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription.State;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -603,7 +603,7 @@ public class SubscriptionManager {
                         dataTypeId = NodeId.NULL_VALUE;
                     }
 
-                    if (!Identifiers.Number.equals(dataTypeId) && !subtypeOf(server, dataTypeId, Identifiers.Number)) {
+                    if (!NodeIds.Number.equals(dataTypeId) && !subtypeOf(server, dataTypeId, NodeIds.Number)) {
                         throw new UaException(StatusCodes.Bad_FilterNotAllowed);
                     }
                 }

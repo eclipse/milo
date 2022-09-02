@@ -1,17 +1,6 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +9,9 @@ import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/8.58">https://reference.opcfoundation.org/v105/Core/docs/Part3/8.58</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
@@ -69,6 +61,18 @@ public class AccessLevelExType extends OptionSetUInteger<AccessLevelExType.Field
         return get(Field.WriteFullArrayOnly);
     }
 
+    public boolean getNoSubDataTypes() {
+        return get(Field.NoSubDataTypes);
+    }
+
+    public boolean getNonVolatile() {
+        return get(Field.NonVolatile);
+    }
+
+    public boolean getConstant() {
+        return get(Field.Constant);
+    }
+
     @Override
     public UInteger getValue() {
         return (UInteger) value;
@@ -82,16 +86,6 @@ public class AccessLevelExType extends OptionSetUInteger<AccessLevelExType.Field
     }
 
     public static AccessLevelExType of(AccessLevelExType.Field... fields) {
-        long bits = 0L;
-
-        for (Field f : fields) {
-            bits |= (1L << f.bitIndex);
-        }
-
-        return new AccessLevelExType(UInteger.valueOf(bits));
-    }
-
-    public static AccessLevelExType of(Collection<AccessLevelExType.Field> fields) {
         long bits = 0L;
 
         for (Field f : fields) {
@@ -120,7 +114,13 @@ public class AccessLevelExType extends OptionSetUInteger<AccessLevelExType.Field
 
         NonatomicWrite(9),
 
-        WriteFullArrayOnly(10);
+        WriteFullArrayOnly(10),
+
+        NoSubDataTypes(11),
+
+        NonVolatile(12),
+
+        Constant(13);
 
         private final int bitIndex;
 

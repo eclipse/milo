@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -21,22 +12,27 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCod
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.2/#5.10.2.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.2/#5.10.2.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class ReadResponse extends Structure implements UaResponseMessage {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=632");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=632");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=634");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=634");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=633");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=633");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15258");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15258");
 
     private final ResponseHeader responseHeader;
 
@@ -71,7 +67,6 @@ public class ReadResponse extends Structure implements UaResponseMessage {
         return JSON_ENCODING_ID;
     }
 
-    @Override
     public ResponseHeader getResponseHeader() {
         return responseHeader;
     }
@@ -82,6 +77,19 @@ public class ReadResponse extends Structure implements UaResponseMessage {
 
     public DiagnosticInfo[] getDiagnosticInfos() {
         return diagnosticInfos;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 634),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("ResponseHeader", LocalizedText.NULL_VALUE, new NodeId(0, 392), -1, null, UInteger.valueOf(0), false),
+                new StructureField("Results", LocalizedText.NULL_VALUE, new NodeId(0, 23), 1, null, UInteger.valueOf(0), false),
+                new StructureField("DiagnosticInfos", LocalizedText.NULL_VALUE, new NodeId(0, 25), 1, null, UInteger.valueOf(0), false)
+            }
+        );
     }
 
     public static final class Codec extends GenericDataTypeCodec<ReadResponse> {

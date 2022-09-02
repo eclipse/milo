@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,8 +6,14 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.5">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.5</a>
+ */
 public enum BrowseDirection implements UaEnumeration {
     Forward(0),
 
@@ -38,8 +34,11 @@ public enum BrowseDirection implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static BrowseDirection from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=510");
+    }
+
+    public static @Nullable BrowseDirection from(int value) {
         switch (value) {
             case 0:
                 return Forward;
@@ -54,11 +53,16 @@ public enum BrowseDirection implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=510");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Forward"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Inverse"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Both"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Invalid")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<BrowseDirection> {
+    public static final class Codec extends GenericDataTypeCodec<BrowseDirection> {
         @Override
         public Class<BrowseDirection> getType() {
             return BrowseDirection.class;

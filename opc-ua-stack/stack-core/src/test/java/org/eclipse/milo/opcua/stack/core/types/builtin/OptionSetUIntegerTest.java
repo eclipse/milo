@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.junit.jupiter.api.Test;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OptionSetUIntegerTest {
@@ -22,11 +22,11 @@ class OptionSetUIntegerTest {
     public void equalsAndHashCode() {
         AccessRestrictionType[] arts = new AccessRestrictionType[8];
         for (int i = 0; i < 8; i++) {
-            arts[i] = new AccessRestrictionType(uint(i));
+            arts[i] = new AccessRestrictionType(ushort(i));
         }
 
         for (int i = 0; i < 8; i++) {
-            AccessRestrictionType expected = new AccessRestrictionType(uint(i));
+            AccessRestrictionType expected = new AccessRestrictionType(ushort(i));
             assertEquals(expected, arts[i]);
             assertEquals(expected.hashCode(), arts[i].hashCode());
         }

@@ -40,7 +40,7 @@ import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
@@ -103,9 +103,9 @@ public class DataTypeDictionaryReader {
 
     public CompletableFuture<List<DataTypeDictionary<?>>> readDataTypeDictionaries() {
         CompletableFuture<List<ReferenceDescription>> browseFuture = browseNode(new BrowseDescription(
-            Identifiers.OPCBinarySchema_TypeSystem,
+            NodeIds.OPCBinarySchema_TypeSystem,
             BrowseDirection.Forward,
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             false,
             uint(NodeClass.Variable.getValue()),
             uint(BrowseResultMask.All.getValue())
@@ -114,7 +114,7 @@ public class DataTypeDictionaryReader {
         CompletableFuture<Stream<NodeId>> dictionaryNodeIds = browseFuture.thenApply(
             references ->
                 references.stream()
-                    .filter(r -> r.getTypeDefinition().equalTo(Identifiers.DataTypeDictionaryType))
+                    .filter(r -> r.getTypeDefinition().equalTo(NodeIds.DataTypeDictionaryType))
                     .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
         );
 
@@ -142,7 +142,7 @@ public class DataTypeDictionaryReader {
     }
 
     CompletableFuture<ByteString> readDataTypeDictionaryBytes(NodeId nodeId, int fragmentSize) {
-        if (Identifiers.OpcUa_BinarySchema.equals(nodeId)) {
+        if (NodeIds.OpcUa_BinarySchema.equals(nodeId)) {
             try (InputStream inputStream =
                      DataTypeDictionaryReader.class.getResourceAsStream("/Opc.Ua.Types.bsd")) {
 
@@ -423,7 +423,7 @@ public class DataTypeDictionaryReader {
             new BrowseDescription(
                 dictionaryNodeId,
                 BrowseDirection.Forward,
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 false,
                 uint(NodeClass.Variable.getValue()),
                 uint(BrowseResultMask.All.getValue())
@@ -432,7 +432,7 @@ public class DataTypeDictionaryReader {
 
         return browseResult.thenApply(references ->
             references.stream()
-                .filter(r -> Identifiers.DataTypeDescriptionType.equalTo(r.getTypeDefinition()))
+                .filter(r -> NodeIds.DataTypeDescriptionType.equalTo(r.getTypeDefinition()))
                 .flatMap(r -> opt2stream(r.getNodeId().toNodeId(stackClient.getNamespaceTable())))
                 .collect(Collectors.toList())
         );
@@ -441,7 +441,7 @@ public class DataTypeDictionaryReader {
     private CompletableFuture<List<String>> readDataTypeDescriptionValues(List<NodeId> nodeIds) {
         CompletableFuture<UInteger> maxNodesPerRead = readNode(
             new ReadValueId(
-                Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerRead,
+                NodeIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerRead,
                 AttributeId.Value.uid(),
                 null,
                 QualifiedName.NULL_VALUE
@@ -484,7 +484,7 @@ public class DataTypeDictionaryReader {
             CompletableFuture<List<ReferenceDescription>> browse = browseNode(new BrowseDescription(
                 nodeId,
                 BrowseDirection.Inverse,
-                Identifiers.HasDescription,
+                NodeIds.HasDescription,
                 false,
                 uint(NodeClass.Object.getValue()),
                 uint(BrowseResultMask.All.getValue())
@@ -493,7 +493,7 @@ public class DataTypeDictionaryReader {
             return browse.thenApply(references -> {
                 Optional<ReferenceDescription> ref = references.stream()
                     .filter(r -> QN_DEFAULT_BINARY.equals(r.getBrowseName()) &&
-                        Identifiers.DataTypeEncodingType.equalTo(r.getTypeDefinition()))
+                        NodeIds.DataTypeEncodingType.equalTo(r.getTypeDefinition()))
                     .findFirst();
 
                 return ref.map(r ->
@@ -512,7 +512,7 @@ public class DataTypeDictionaryReader {
             CompletableFuture<List<ReferenceDescription>> browse = browseNode(new BrowseDescription(
                 nodeId,
                 BrowseDirection.Inverse,
-                Identifiers.HasEncoding,
+                NodeIds.HasEncoding,
                 false,
                 uint(NodeClass.DataType.getValue()),
                 uint(BrowseResultMask.All.getValue())

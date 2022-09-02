@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager.SubscriptionListener;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.junit.jupiter.api.Disabled;
@@ -31,7 +31,7 @@ public class SubscriptionWatchdogTimerTest extends AbstractSubscriptionTest {
     @Test
     public void testSubscriptionWatchdogTimer() throws UaException, InterruptedException {
         ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_State
+            NodeIds.Server_ServerStatus_State
         );
 
         assertTrue(dataItem.getStatusCode().isGood());

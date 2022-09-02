@@ -29,18 +29,19 @@ import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator
 import org.eclipse.milo.opcua.binaryschema.generator.DataTypeDictionaryGenerator.DataTypeLocation;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.Reference.Direction;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.DataTypeEncodingTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.DataTypeDescriptionTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.DataTypeDictionaryTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataTypeDictionaryType;
+import org.eclipse.milo.opcua.sdk.server.model.objects.DataTypeEncodingTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDescriptionTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDictionaryType;
+import org.eclipse.milo.opcua.sdk.server.model.variables.DataTypeDictionaryTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -117,7 +118,14 @@ public class DataTypeDictionaryManager implements Lifecycle {
             LocalizedText.english(namespaceUri),
             LocalizedText.english("DataTypeDictionary for " + namespaceUri),
             uint(0),
-            uint(0)
+            uint(0),
+            null,
+            null,
+            null,
+            new DataValue(Variant.NULL_VALUE),
+            NodeIds.BaseDataType,
+            ValueRanks.Scalar,
+            null
         );
 
         dictionaryNode.setNamespaceUri(namespaceUri);
@@ -154,15 +162,15 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
         dictionaryNode.addReference(new Reference(
             dictionaryNode.getNodeId(),
-            Identifiers.HasTypeDefinition,
-            Identifiers.DataTypeDictionaryType.expanded(),
+            NodeIds.HasTypeDefinition,
+            NodeIds.DataTypeDictionaryType.expanded(),
             Direction.FORWARD
         ));
 
         dictionaryNode.addReference(new Reference(
             dictionaryNode.getNodeId(),
-            Identifiers.HasComponent,
-            Identifiers.OPCBinarySchema_TypeSystem.expanded(),
+            NodeIds.HasComponent,
+            NodeIds.OPCBinarySchema_TypeSystem.expanded(),
             Direction.INVERSE
         ));
 
@@ -198,8 +206,8 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
         dataTypeNode.addReference(new Reference(
             dataTypeId,
-            Identifiers.HasSubtype,
-            Identifiers.Enumeration.expanded(),
+            NodeIds.HasSubtype,
+            NodeIds.Enumeration.expanded(),
             Direction.INVERSE
         ));
 
@@ -224,7 +232,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         NodeId binaryEncodingId
     ) {
 
-        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, Identifiers.OptionSet);
+        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, NodeIds.OptionSet);
     }
 
     public void registerStructureCodec(
@@ -234,7 +242,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         NodeId binaryEncodingId
     ) {
 
-        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, Identifiers.Structure);
+        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, NodeIds.Structure);
     }
 
     public void registerUnionCodec(
@@ -244,7 +252,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         NodeId binaryEncodingId
     ) {
 
-        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, Identifiers.Union);
+        registerStructureCodec(codec, description, dataTypeId, binaryEncodingId, NodeIds.Union);
     }
 
     public void registerStructureCodec(
@@ -272,7 +280,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
         dataTypeNode.addReference(new Reference(
             dataTypeId,
-            Identifiers.HasSubtype,
+            NodeIds.HasSubtype,
             parentType.expanded(),
             Direction.INVERSE
         ));
@@ -296,22 +304,29 @@ public class DataTypeDictionaryManager implements Lifecycle {
             LocalizedText.english(description.getName().getName()),
             LocalizedText.NULL_VALUE,
             uint(0),
-            uint(0)
+            uint(0),
+            null,
+            null,
+            null,
+            new DataValue(Variant.NULL_VALUE),
+            NodeIds.BaseDataType,
+            ValueRanks.Scalar,
+            null
         );
 
         descriptionNode.setValue(new DataValue(new Variant(description.getName().getName())));
-        descriptionNode.setDataType(Identifiers.String);
+        descriptionNode.setDataType(NodeIds.String);
 
         descriptionNode.addReference(new Reference(
             descriptionNode.getNodeId(),
-            Identifiers.HasTypeDefinition,
-            Identifiers.DataTypeDescriptionType.expanded(),
+            NodeIds.HasTypeDefinition,
+            NodeIds.DataTypeDescriptionType.expanded(),
             Direction.FORWARD
         ));
 
         descriptionNode.addReference(new Reference(
             descriptionNode.getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             dictionaryNode.getNodeId().expanded(),
             Direction.INVERSE
         ));
@@ -328,26 +343,29 @@ public class DataTypeDictionaryManager implements Lifecycle {
             LocalizedText.english("Default Binary"),
             LocalizedText.NULL_VALUE,
             uint(0),
-            uint(0)
+            uint(0),
+            null,
+            null,
+            null
         );
 
         dataTypeEncodingNode.addReference(new Reference(
             dataTypeEncodingNode.getNodeId(),
-            Identifiers.HasTypeDefinition,
-            Identifiers.DataTypeEncodingType.expanded(),
+            NodeIds.HasTypeDefinition,
+            NodeIds.DataTypeEncodingType.expanded(),
             Direction.FORWARD
         ));
 
         dataTypeEncodingNode.addReference(new Reference(
             dataTypeEncodingNode.getNodeId(),
-            Identifiers.HasDescription,
+            NodeIds.HasDescription,
             descriptionNode.getNodeId().expanded(),
             Direction.FORWARD
         ));
 
         dataTypeEncodingNode.addReference(new Reference(
             dataTypeEncodingNode.getNodeId(),
-            Identifiers.HasEncoding,
+            NodeIds.HasEncoding,
             description.getDataTypeId().expanded(),
             Direction.INVERSE
         ));

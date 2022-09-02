@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class BrowseNodeExample implements ClientExample {
         client.connect().get();
 
         // start browsing at root folder
-        browseNode("", client, Identifiers.RootFolder);
+        browseNode("", client, NodeIds.RootFolder);
 
         future.complete(client);
     }

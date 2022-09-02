@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.client.subscriptions.BatchModifyMonitoredItems.ModifyMonitoredItemResult;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -34,12 +34,12 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
 
     @Override
     protected ManagedDataItem createManagedItem() throws UaException {
-        return subscription.createDataItem(Identifiers.Server_ServerStatus_State);
+        return subscription.createDataItem(NodeIds.Server_ServerStatus_State);
     }
 
     @Test
     public void getStatusCode() throws UaException {
-        ManagedDataItem dataItem1 = subscription.createDataItem(Identifiers.Server_ServerStatus_CurrentTime);
+        ManagedDataItem dataItem1 = subscription.createDataItem(NodeIds.Server_ServerStatus_CurrentTime);
         assertTrue(dataItem1.getStatusCode().isGood());
 
         ManagedDataItem dataItem2 = subscription.createDataItem(NodeId.parse("ns=2;s=FooBarDoesNotExist"));
@@ -60,7 +60,7 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
 
     @Test
     public void samplingIntervalBatch() throws Exception {
-        subscription.createDataItems(Collections.nCopies(10, Identifiers.Server_ServerStatus_State));
+        subscription.createDataItems(Collections.nCopies(10, NodeIds.Server_ServerStatus_State));
 
         subscription.getDataItems().forEach(
             item -> {
@@ -128,7 +128,7 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_State,
+            NodeIds.Server_ServerStatus_State,
             item -> {
                 item.addDataValueListener((i, value) -> latch.countDown());
 
@@ -145,7 +145,7 @@ public class ManagedDataItemTest extends AbstractManagedItemTest {
     @Test
     public void addRemoveDataValueListener() throws UaException {
         ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_State
+            NodeIds.Server_ServerStatus_State
         );
 
         ManagedDataItem.DataValueListener listener = (item, value) -> {};

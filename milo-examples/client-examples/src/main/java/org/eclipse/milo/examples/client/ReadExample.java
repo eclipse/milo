@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -39,7 +39,7 @@ public class ReadExample implements ClientExample {
         client.connect().get();
 
         // synchronous read request via VariableNode
-        UaVariableNode node = client.getAddressSpace().getVariableNode(Identifiers.Server_ServerStatus_StartTime);
+        UaVariableNode node = client.getAddressSpace().getVariableNode(NodeIds.Server_ServerStatus_StartTime);
         DataValue value = node.readValue();
 
         logger.info("StartTime={}", value.getValue().getValue());
@@ -58,8 +58,8 @@ public class ReadExample implements ClientExample {
 
     private CompletableFuture<List<DataValue>> readServerStateAndTime(OpcUaClient client) {
         List<NodeId> nodeIds = List.of(
-            Identifiers.Server_ServerStatus_State,
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_State,
+            NodeIds.Server_ServerStatus_CurrentTime
         );
 
         return client.readValues(0.0, TimestampsToReturn.Both, nodeIds);

@@ -17,8 +17,8 @@ import java.util.function.Predicate;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -193,48 +193,48 @@ public class Reference {
     }
 
     public static final Predicate<Reference> HAS_COMPONENT_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasComponent.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_ORDERED_COMPONENT_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasOrderedComponent.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasOrderedComponent.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> COMPONENT_OF_PREDICATE =
-        (reference) -> reference.isInverse() && Identifiers.HasComponent.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isInverse() && NodeIds.HasComponent.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> ORDERED_COMPONENT_OF_PREDICATE =
-        (reference) -> reference.isInverse() && Identifiers.HasOrderedComponent.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isInverse() && NodeIds.HasOrderedComponent.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_PROPERTY_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasProperty.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasProperty.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_TYPE_DEFINITION_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasTypeDefinition.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasTypeDefinition.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_EVENT_SOURCE_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasEventSource.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasEventSource.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_NOTIFIER_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasNotifier.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasNotifier.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> ORGANIZES_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.Organizes.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.Organizes.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_ENCODING_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasEncoding.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasEncoding.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_DESCRIPTION_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasDescription.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasDescription.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_MODELLING_RULE_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.HasModellingRule.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasModellingRule.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> ALWAYS_GENERATES_EVENT_PREDICATE =
-        (reference) -> reference.isForward() && Identifiers.AlwaysGeneratesEvent.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.AlwaysGeneratesEvent.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> HAS_SUBTYPE =
-        (reference) -> reference.isForward() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isForward() && NodeIds.HasSubtype.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> SUBTYPE_OF =
-        (reference) -> reference.isInverse() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isInverse() && NodeIds.HasSubtype.equals(reference.getReferenceTypeId());
 
 }

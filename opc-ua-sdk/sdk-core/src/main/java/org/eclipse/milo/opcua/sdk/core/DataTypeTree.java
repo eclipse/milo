@@ -16,7 +16,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -58,7 +58,7 @@ public class DataTypeTree {
      * <p>
      * Builtin DataTypes are backed by their intrinsic backing class.
      * <p>
-     * Abstract types {@link Identifiers#Number}, {@link Identifiers#Integer}, and {@link Identifiers#UInteger}
+     * Abstract types {@link NodeIds#Number}, {@link NodeIds#Integer}, and {@link NodeIds#UInteger}
      * are backed by {@link Number}, {@link Integer}, and {@link UInteger} respectively.
      * <p>
      * Enumerations are backed by {@link Integer}.
@@ -74,13 +74,13 @@ public class DataTypeTree {
         if (BuiltinDataType.isBuiltin(dataTypeId)) {
             return BuiltinDataType.getBackingClass(dataTypeId);
         } else {
-            if (Identifiers.Enumeration.equals(dataTypeId)) {
+            if (NodeIds.Enumeration.equals(dataTypeId)) {
                 return Integer.class;
-            } else if (Identifiers.Number.equals(dataTypeId)) {
+            } else if (NodeIds.Number.equals(dataTypeId)) {
                 return Number.class;
-            } else if (Identifiers.Integer.equals(dataTypeId)) {
+            } else if (NodeIds.Integer.equals(dataTypeId)) {
                 return Number.class;
-            } else if (Identifiers.UInteger.equals(dataTypeId)) {
+            } else if (NodeIds.UInteger.equals(dataTypeId)) {
                 return UNumber.class;
             } else {
                 Tree<DataType> node = dataTypes.get(dataTypeId);
@@ -195,7 +195,7 @@ public class DataTypeTree {
     public boolean isAssignable(NodeId dataTypeId, Class<?> clazz) {
         Class<?> backingClass = getBackingClass(dataTypeId);
 
-        if (Identifiers.Integer.equals(dataTypeId)) {
+        if (NodeIds.Integer.equals(dataTypeId)) {
             // Can't just check that it's assignable from Number.class because
             // UNumber extends Number rather than the two sharing a common
             // superclass.
@@ -203,7 +203,7 @@ public class DataTypeTree {
                 clazz == short.class || clazz == Short.class ||
                 clazz == int.class || clazz == Integer.class ||
                 clazz == long.class || clazz == Long.class;
-        } else if (Identifiers.UInteger.equals(dataTypeId)) {
+        } else if (NodeIds.UInteger.equals(dataTypeId)) {
             return UNumber.class.isAssignableFrom(clazz);
         } else {
             return backingClass.isAssignableFrom(clazz);

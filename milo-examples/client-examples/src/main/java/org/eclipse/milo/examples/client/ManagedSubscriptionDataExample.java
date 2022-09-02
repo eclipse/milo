@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedSubscription;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class ManagedSubscriptionDataExample implements ClientExample {
         });
 
         ManagedDataItem dataItem = subscription.createDataItem(
-            Identifiers.Server_ServerStatus_CurrentTime
+            NodeIds.Server_ServerStatus_CurrentTime
         );
 
         if (dataItem.getStatusCode().isGood()) {

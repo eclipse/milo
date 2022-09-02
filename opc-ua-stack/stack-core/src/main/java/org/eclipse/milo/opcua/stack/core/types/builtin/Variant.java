@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
@@ -56,7 +56,7 @@ public final class Variant {
         if (value instanceof UaStructure) {
             return Optional.of(((UaStructure) value).getTypeId());
         } else if (value instanceof UaEnumeration) {
-            return Optional.of(Identifiers.Int32.expanded());
+            return Optional.of(NodeIds.Int32.expanded());
         } else {
             Class<?> clazz = value.getClass().isArray() ?
                 ArrayUtil.getType(value) : value.getClass();

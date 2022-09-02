@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -301,7 +301,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 true,
                 nodeClassMask,
                 resultMask
@@ -512,7 +512,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 false,
                 nodeClassMask,
                 resultMask
@@ -546,7 +546,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<String> getNodeVersionAsync() {
         return getProperty(ObjectNodeProperties.NodeVersion);
     }
 
@@ -556,7 +556,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return the value of the Icon Property, if it exists.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<ByteString> getIcon() {
+    public CompletableFuture<ByteString> getIconAsync() {
         return getProperty(ObjectNodeProperties.Icon);
     }
 
@@ -577,7 +577,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> setNodeVersionAsync(String nodeVersion) {
         return setProperty(ObjectNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -588,7 +588,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<StatusCode> setIcon(ByteString icon) {
+    public CompletableFuture<StatusCode> setIconAsync(ByteString icon) {
         return setProperty(ObjectNodeProperties.Icon, icon);
     }
 

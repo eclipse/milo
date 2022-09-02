@@ -39,7 +39,7 @@ import org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionFuture;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -1088,7 +1088,7 @@ public class SessionFsmFactory {
             0.0,
             TimestampsToReturn.Neither,
             new ReadValueId[]{new ReadValueId(
-                Identifiers.Server_ServerStatus_State,
+                NodeIds.Server_ServerStatus_State,
                 AttributeId.Value.uid(),
                 null,
                 QualifiedName.NULL_VALUE

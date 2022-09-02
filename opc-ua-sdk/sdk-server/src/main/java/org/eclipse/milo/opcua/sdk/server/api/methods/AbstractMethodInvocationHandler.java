@@ -21,7 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -85,7 +85,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                             if (type.equals(argument.getDataType())) {
                                 return true;
                             } else {
-                                if (Identifiers.Structure.equals(type) && value instanceof ExtensionObject) {
+                                if (NodeIds.Structure.equals(type) && value instanceof ExtensionObject) {
                                     SerializationContext serializationContext =
                                         getNode().getNodeContext().getServer().getSerializationContext();
 

@@ -14,13 +14,13 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.client.AddressSpace.BrowseOptions;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.client.model.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -41,7 +41,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     public void browse() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
         List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode);
 
         nodes.forEach(n -> {
@@ -63,7 +63,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
         AddressSpace addressSpace = client.getAddressSpace();
 
         {
-            UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+            UaNode serverNode = addressSpace.getNode(NodeIds.Server);
             BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
                 b ->
                     b.setBrowseDirection(BrowseDirection.Inverse)
@@ -72,21 +72,22 @@ public class AddressSpaceTest extends AbstractClientServerTest {
             List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
             assertEquals(1, nodes.size());
-            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.ObjectsFolder)));
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.ObjectsFolder)));
         }
 
         {
-            UaNode objectsFolderNode = addressSpace.getNode(Identifiers.ObjectsFolder);
+            UaNode objectsFolderNode = addressSpace.getNode(NodeIds.ObjectsFolder);
             BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
                 b ->
                     b.setBrowseDirection(BrowseDirection.Both)
             );
 
             List<? extends UaNode> nodes = addressSpace.browseNodes(objectsFolderNode, browseOptions);
-
-            assertEquals(7, nodes.size());
-            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.RootFolder)));
-            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server)));
+            
+            assertEquals(8, nodes.size());
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.RootFolder)));
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server)));
+            assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Aliases)));
         }
     }
 
@@ -94,7 +95,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     public void browseWithReferenceType() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
             b ->
@@ -103,18 +104,20 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
         List<? extends UaNode> nodes = addressSpace.browseNodes(serverNode, browseOptions);
 
-        assertEquals(5, nodes.size());
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServerArray)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_NamespaceArray)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_ServiceLevel)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_Auditing)));
-        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(Identifiers.Server_EstimatedReturnTime)));
+        assertEquals(7, nodes.size());
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServerArray)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_NamespaceArray)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_ServiceLevel)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_Auditing)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_EstimatedReturnTime)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_UrisVersion)));
+        assertTrue(nodes.stream().anyMatch(n -> n.getNodeId().equals(NodeIds.Server_LocalTime)));
     }
 
     @Test
     public void browseWithNodeClassMask() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         {
             BrowseOptions browseOptions = addressSpace.getBrowseOptions().copy(
@@ -156,7 +159,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     @Test
     public void modifyBrowseOptions() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
 
         {
             addressSpace.modifyBrowseOptions(
@@ -199,11 +202,11 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     public void getNode() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaNode serverNode = addressSpace.getNode(Identifiers.Server);
+        UaNode serverNode = addressSpace.getNode(NodeIds.Server);
         assertNotNull(serverNode);
         assertTrue(serverNode instanceof ServerTypeNode);
 
-        UaNode serverStatusNode = addressSpace.getNode(Identifiers.Server_ServerStatus);
+        UaNode serverStatusNode = addressSpace.getNode(NodeIds.Server_ServerStatus);
         assertNotNull(serverStatusNode);
         assertTrue(serverStatusNode instanceof ServerStatusTypeNode);
     }
@@ -211,13 +214,13 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     @Test
     public void getObjectNode() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
-        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getObjectNode(Identifiers.Server);
+        ServerTypeNode serverNode = (ServerTypeNode) addressSpace.getObjectNode(NodeIds.Server);
 
         assertNotNull(serverNode);
-        assertEquals(Identifiers.Server, serverNode.getNodeId());
+        assertEquals(NodeIds.Server, serverNode.getNodeId());
 
         // should be cached now, check instance equality
-        assertSame(serverNode, addressSpace.getObjectNode(Identifiers.Server));
+        assertSame(serverNode, addressSpace.getObjectNode(NodeIds.Server));
     }
 
     @Test
@@ -226,7 +229,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
         assertThrows(
             UaException.class,
-            () -> addressSpace.getObjectNode(Identifiers.Server_ServerStatus)
+            () -> addressSpace.getObjectNode(NodeIds.Server_ServerStatus)
         );
     }
 
@@ -234,13 +237,13 @@ public class AddressSpaceTest extends AbstractClientServerTest {
     public void getVariableNode() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
         ServerStatusTypeNode serverNode = (ServerStatusTypeNode)
-            addressSpace.getVariableNode(Identifiers.Server_ServerStatus);
+            addressSpace.getVariableNode(NodeIds.Server_ServerStatus);
 
         assertNotNull(serverNode);
-        assertEquals(Identifiers.Server_ServerStatus, serverNode.getNodeId());
+        assertEquals(NodeIds.Server_ServerStatus, serverNode.getNodeId());
 
         // should be cached now, check instance equality
-        assertSame(serverNode, addressSpace.getVariableNode(Identifiers.Server_ServerStatus));
+        assertSame(serverNode, addressSpace.getVariableNode(NodeIds.Server_ServerStatus));
     }
 
     @Test
@@ -249,7 +252,7 @@ public class AddressSpaceTest extends AbstractClientServerTest {
 
         assertThrows(
             UaException.class,
-            () -> addressSpace.getVariableNode(Identifiers.Server)
+            () -> addressSpace.getVariableNode(NodeIds.Server)
         );
     }
 

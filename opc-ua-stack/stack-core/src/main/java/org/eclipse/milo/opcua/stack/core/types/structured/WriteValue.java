@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -20,24 +11,27 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.4/#5.10.4.2">https://reference.opcfoundation.org/v105/Core/docs/Part4/5.10.4/#5.10.4.2</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class WriteValue extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=668");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=668");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=670");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=670");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=669");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=669");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15276");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15276");
 
     private final NodeId nodeId;
 
@@ -88,6 +82,20 @@ public class WriteValue extends Structure implements UaStructure {
 
     public DataValue getValue() {
         return value;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 670),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("NodeId", LocalizedText.NULL_VALUE, new NodeId(0, 17), -1, null, UInteger.valueOf(0), false),
+                new StructureField("AttributeId", LocalizedText.NULL_VALUE, new NodeId(0, 288), -1, null, UInteger.valueOf(0), false),
+                new StructureField("IndexRange", LocalizedText.NULL_VALUE, new NodeId(0, 291), -1, null, UInteger.valueOf(0), false),
+                new StructureField("Value", LocalizedText.NULL_VALUE, new NodeId(0, 23), -1, null, UInteger.valueOf(0), false)
+            }
+        );
     }
 
     public static final class Codec extends GenericDataTypeCodec<WriteValue> {

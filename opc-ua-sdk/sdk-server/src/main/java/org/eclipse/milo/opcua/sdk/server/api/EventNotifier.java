@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 
 public interface EventNotifier {
 

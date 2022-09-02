@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -30,8 +30,8 @@ public class UaFolderNode extends UaObjectNode {
 
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasTypeDefinition,
-            Identifiers.FolderType.expanded(),
+            NodeIds.HasTypeDefinition,
+            NodeIds.FolderType.expanded(),
             true
         ));
     }
@@ -45,7 +45,7 @@ public class UaFolderNode extends UaObjectNode {
     public void addOrganizes(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             node.getNodeId().expanded(),
             true
         ));
@@ -60,7 +60,7 @@ public class UaFolderNode extends UaObjectNode {
     public void removeOrganizes(UaNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             node.getNodeId().expanded(),
             true
         ));

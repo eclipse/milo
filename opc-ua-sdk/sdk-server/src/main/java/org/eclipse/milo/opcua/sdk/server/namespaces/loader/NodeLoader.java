@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -25,13 +25,13 @@ public class NodeLoader {
     }
 
     public void loadNodes() throws Exception {
-        new DataTypeNodeLoader(context, nodeManager).loadAllNodes();
-        new MethodNodeLoader(context, nodeManager).loadAllNodes();
-        new ObjectNodeLoader(context, nodeManager).loadAllNodes();
-        new ObjectTypeNodeLoader(context, nodeManager).loadAllNodes();
-        new ReferenceTypeNodeLoader(context, nodeManager).loadAllNodes();
-        new VariableNodeLoader(context, nodeManager).loadAllNodes();
-        new VariableTypeNodeLoader(context, nodeManager).loadAllNodes();
+        new DataTypeNodeLoader(context, nodeManager).load();
+        new MethodNodeLoader(context, nodeManager).load();
+        new ObjectNodeLoader(context, nodeManager).load();
+        new ObjectTypeNodeLoader(context, nodeManager).load();
+        new ReferenceTypeNodeLoader(context, nodeManager).load();
+        new VariableNodeLoader(context, nodeManager).load();
+        new VariableTypeNodeLoader(context, nodeManager).load();
     }
 
 }

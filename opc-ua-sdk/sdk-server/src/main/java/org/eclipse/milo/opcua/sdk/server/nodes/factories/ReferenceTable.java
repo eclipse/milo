@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -53,19 +53,19 @@ class ReferenceTable {
             NodeId referenceTypeId = row.nodeId;
             RefTarget target = row.target;
 
-            if (Identifiers.HasProperty.equals(referenceTypeId)) {
+            if (NodeIds.HasProperty.equals(referenceTypeId)) {
 
                 boolean hasPropertyReference = mergedTable.references.stream().anyMatch(
                     r ->
                         r.browsePath.equals(browsePath) &&
-                            r.nodeId.equals(Identifiers.HasProperty) &&
+                            r.nodeId.equals(NodeIds.HasProperty) &&
                             r.target.equals(target)
                 );
 
                 if (!hasPropertyReference) {
                     mergedTable.references.add(row);
                 }
-            } else if (Identifiers.HasTypeDefinition.equals(referenceTypeId)) {
+            } else if (NodeIds.HasTypeDefinition.equals(referenceTypeId)) {
                 // Don't merge a HasTypeDefinition reference if there's already one present
                 // for a given BrowsePath.
                 // This logic may need to be extended to include other Reference types for
@@ -74,7 +74,7 @@ class ReferenceTable {
                 boolean hasTypeDefinitionReference = mergedTable.references.stream().anyMatch(
                     r ->
                         r.browsePath.equals(browsePath) &&
-                            r.nodeId.equals(Identifiers.HasTypeDefinition)
+                            r.nodeId.equals(NodeIds.HasTypeDefinition)
                 );
 
                 if (!hasTypeDefinitionReference) {

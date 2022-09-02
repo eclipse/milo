@@ -28,14 +28,13 @@ import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHan
 import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
-import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
-import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItemsMethod;
-import org.eclipse.milo.opcua.sdk.server.model.methods.ResendDataMethod;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ConditionType;
+import org.eclipse.milo.opcua.sdk.server.model.objects.OperationLimitsTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerCapabilitiesTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerType;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.ServerStatusTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -43,7 +42,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -161,7 +160,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void configureServerObject() {
-        ServerTypeNode serverTypeNode = (ServerTypeNode) getNodeManager().get(Identifiers.Server);
+        ServerTypeNode serverTypeNode = (ServerTypeNode) getNodeManager().get(NodeIds.Server);
 
         assert serverTypeNode != null;
 
@@ -263,7 +262,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void configureGetMonitoredItems() {
-        UaNode node = getNodeManager().get(Identifiers.Server_GetMonitoredItems);
+        UaNode node = getNodeManager().get(NodeIds.Server_GetMonitoredItems);
 
         if (node instanceof UaMethodNode) {
             UaMethodNode methodNode = (UaMethodNode) node;
@@ -275,7 +274,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void configureResendData() {
-        UaNode node = getNodeManager().get(Identifiers.Server_ResendData);
+        UaNode node = getNodeManager().get(NodeIds.Server_ResendData);
 
         if (node instanceof UaMethodNode) {
             UaMethodNode resendDataNode = (UaMethodNode) node;
@@ -287,7 +286,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
     }
 
     private void configureConditionRefresh() {
-        UaNode node = getNodeManager().get(Identifiers.ConditionType_ConditionRefresh);
+        UaNode node = getNodeManager().get(NodeIds.ConditionType_ConditionRefresh);
 
         if (node instanceof UaMethodNode) {
             UaMethodNode conditionRefreshNode = (UaMethodNode) node;
@@ -310,7 +309,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
         methodNode.setOutputArguments(invocationHandler.getOutputArguments());
     }
 
-    private static class ConditionRefreshMethodImpl extends ConditionRefreshMethod {
+    private static class ConditionRefreshMethodImpl extends ConditionType.ConditionRefreshMethod {
 
         private final OpcUaServer server;
 
@@ -330,14 +329,14 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
                 if (subscription != null) {
                     BaseEventTypeNode refreshStart = server.getEventFactory().createEvent(
                         new NodeId(1, UUID.randomUUID()),
-                        Identifiers.RefreshStartEventType
+                        NodeIds.RefreshStartEventType
                     );
 
                     refreshStart.setBrowseName(new QualifiedName(1, "RefreshStart"));
                     refreshStart.setDisplayName(LocalizedText.english("RefreshStart"));
                     refreshStart.setEventId(NonceUtil.generateNonce(16));
-                    refreshStart.setEventType(Identifiers.RefreshStartEventType);
-                    refreshStart.setSourceNode(Identifiers.Server);
+                    refreshStart.setEventType(NodeIds.RefreshStartEventType);
+                    refreshStart.setSourceNode(NodeIds.Server);
                     refreshStart.setSourceName("Server");
                     refreshStart.setTime(DateTime.now());
                     refreshStart.setReceiveTime(DateTime.NULL_VALUE);
@@ -346,14 +345,14 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
                     BaseEventTypeNode refreshEnd = server.getEventFactory().createEvent(
                         new NodeId(1, UUID.randomUUID()),
-                        Identifiers.RefreshEndEventType
+                        NodeIds.RefreshEndEventType
                     );
 
                     refreshEnd.setBrowseName(new QualifiedName(1, "RefreshEnd"));
                     refreshEnd.setDisplayName(LocalizedText.english("RefreshEnd"));
                     refreshEnd.setEventId(NonceUtil.generateNonce(16));
-                    refreshEnd.setEventType(Identifiers.RefreshEndEventType);
-                    refreshEnd.setSourceNode(Identifiers.Server);
+                    refreshEnd.setEventType(NodeIds.RefreshEndEventType);
+                    refreshEnd.setSourceNode(NodeIds.Server);
                     refreshEnd.setSourceName("Server");
                     refreshEnd.setTime(DateTime.now());
                     refreshEnd.setReceiveTime(DateTime.NULL_VALUE);
@@ -375,7 +374,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
     }
 
-    private static class GetMonitoredItemsMethodImpl extends GetMonitoredItemsMethod {
+    private static class GetMonitoredItemsMethodImpl extends ServerType.GetMonitoredItemsMethod {
 
         private final OpcUaServer server;
 
@@ -422,7 +421,7 @@ public class OpcUaNamespace extends ManagedNamespaceWithLifecycle {
 
     }
 
-    private static class ResendDataMethodImpl extends ResendDataMethod {
+    private static class ResendDataMethodImpl extends ServerType.ResendDataMethod {
 
         ResendDataMethodImpl(UaMethodNode node) {
             super(node);

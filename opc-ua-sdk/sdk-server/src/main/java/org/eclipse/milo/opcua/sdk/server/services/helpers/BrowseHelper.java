@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadCont
 import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -407,7 +407,7 @@ public class BrowseHelper {
                 return browseFuture.thenApply(
                     references ->
                         references.stream()
-                            .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId()))
+                            .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId()))
                             .findFirst()
                             .map(Reference::getTargetNodeId)
                             .orElse(ExpandedNodeId.NULL_VALUE)

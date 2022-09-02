@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePath;
@@ -43,22 +43,22 @@ public class TranslateBrowsePathExample implements ClientExample {
         client.connect().get();
 
         TranslateBrowsePathsToNodeIdsResponse response = client.translateBrowsePaths(List.of(new BrowsePath(
-            Identifiers.ObjectsFolder,
+            NodeIds.ObjectsFolder,
             new RelativePath(new RelativePathElement[]{
                 new RelativePathElement(
-                    Identifiers.HierarchicalReferences,
+                    NodeIds.HierarchicalReferences,
                     false,
                     true,
                     new QualifiedName(2, "HelloWorld")
                 ),
                 new RelativePathElement(
-                    Identifiers.HierarchicalReferences,
+                    NodeIds.HierarchicalReferences,
                     false,
                     true,
                     new QualifiedName(2, "ScalarTypes")
                 ),
                 new RelativePathElement(
-                    Identifiers.HierarchicalReferences,
+                    NodeIds.HierarchicalReferences,
                     false,
                     true,
                     new QualifiedName(2, "UInt64")

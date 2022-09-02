@@ -86,7 +86,7 @@ public class DefaultDataTypeManager implements DataTypeManager {
     public static DataTypeManager createAndInitialize(NamespaceTable namespaceTable) {
         DefaultDataTypeManager dataTypeManager = new DefaultDataTypeManager();
 
-        DataTypeInitializer.initialize(namespaceTable, dataTypeManager);
+        new DataTypeInitializer().initialize(namespaceTable, dataTypeManager);
 
         return dataTypeManager;
     }
