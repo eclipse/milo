@@ -14,8 +14,16 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.core.DataTypeTree.DataType;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
+import org.eclipse.milo.opcua.stack.core.types.DynamicStructCodec;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
+import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.slf4j.LoggerFactory;
 
 /**
  * Builds a {@link DataTypeTree} and stores it on an {@link OpcUaSession} as an attribute under
@@ -34,7 +42,55 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
     @Override
     public CompletableFuture<Unit> initialize(UaStackClient stackClient, OpcUaSession session) {
         return DataTypeTreeBuilder.buildAsync(stackClient, session)
-            .thenAccept(tree -> session.setAttribute(SESSION_ATTRIBUTE_KEY, tree))
+            .thenAccept(tree -> {
+                session.setAttribute(SESSION_ATTRIBUTE_KEY, tree);
+
+                Tree<DataType> structureNode = tree.getTreeNode(NodeIds.Structure);
+                if (structureNode != null) {
+                    structureNode.traverse(dataType -> {
+                        DataTypeDefinition definition = dataType.getDataTypeDefinition();
+
+                        if (definition instanceof StructureDefinition) {
+                            var codec = new DynamicStructCodec((StructureDefinition) definition);
+                            if (dataType.getBinaryEncodingId() != null) {
+                                stackClient.getDynamicDataTypeManager().registerCodec(
+                                    dataType.getBinaryEncodingId(),
+                                    codec
+                                );
+                            }
+                            if (dataType.getXmlEncodingId() != null) {
+                                stackClient.getDynamicDataTypeManager().registerCodec(
+                                    dataType.getXmlEncodingId(),
+                                    codec
+                                );
+                            }
+                            if (dataType.getJsonEncodingId() != null) {
+                                stackClient.getDynamicDataTypeManager().registerCodec(
+                                    dataType.getJsonEncodingId(),
+                                    codec
+                                );
+                            }
+                        }
+                    });
+                } else {
+                    LoggerFactory.getLogger(DataTypeTreeSessionInitializer.class)
+                        .warn("Tree for NodeIds.Structure not found; is the server DataType hierarchy sane?");
+                }
+
+                Tree<DataType> enumerationNode = tree.getTreeNode(NodeIds.Enumeration);
+                if (enumerationNode != null) {
+                    enumerationNode.traverse(dataType -> {
+                        DataTypeDefinition definition = dataType.getDataTypeDefinition();
+
+                        if (definition instanceof EnumDefinition) {
+                            // TODO register DynamicEnumCodec
+                        }
+                    });
+                } else {
+                    LoggerFactory.getLogger(DataTypeTreeSessionInitializer.class)
+                        .warn("Tree for NodeIds.Enumeration not found; is the server DataType hierarchy sane?");
+                }
+            })
             .thenApply(v -> Unit.VALUE);
     }
 
