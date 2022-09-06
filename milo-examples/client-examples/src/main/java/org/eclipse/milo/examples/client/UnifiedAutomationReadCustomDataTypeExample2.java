@@ -12,9 +12,8 @@ package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
+import org.eclipse.milo.opcua.sdk.client.DataTypeTreeSessionInitializer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -28,11 +27,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Requires the Unified Automation CPP Demo server be running and the endpoint URL be pointing to it.
  */
-public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample {
+public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        UnifiedAutomationReadCustomDataTypeExample example =
-            new UnifiedAutomationReadCustomDataTypeExample();
+        UnifiedAutomationReadCustomDataTypeExample2 example =
+            new UnifiedAutomationReadCustomDataTypeExample2();
 
         new ClientExampleRunner(example, false).run();
     }
@@ -41,12 +40,9 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        // Decoding a struct with custom DataType requires a DataTypeManager
-        // that has the codec registered with it.
-        // Add a SessionInitializer that will read any DataTypeDictionary
-        // nodes present in the server every time the session is activated
-        // and dynamically generate codecs for custom structures.
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(new GenericBsdParser()));
+        // DataTypeTree reads DataTypeDefinition attributes while traversing the type hierarchy
+        // and registers codecs with the client's dynamic DataTypeManager.
+        client.addSessionInitializer(new DataTypeTreeSessionInitializer());
 
         client.connect().get();
 

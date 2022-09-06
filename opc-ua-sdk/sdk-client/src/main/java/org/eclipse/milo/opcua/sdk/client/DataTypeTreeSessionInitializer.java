@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,6 +18,8 @@ import org.eclipse.milo.opcua.sdk.core.DataTypeTree.DataType;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.DynamicStructCodec;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
@@ -55,21 +57,26 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                             if (dataType.getBinaryEncodingId() != null) {
                                 stackClient.getDynamicDataTypeManager().registerCodec(
                                     dataType.getBinaryEncodingId(),
-                                    codec
+                                    codec.asBinaryCodec()
+                                );
+                                stackClient.getDynamicDataTypeManager().registerCodec(
+                                    OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+                                    dataType.getNodeId(),
+                                    codec.asBinaryCodec()
                                 );
                             }
                             if (dataType.getXmlEncodingId() != null) {
                                 stackClient.getDynamicDataTypeManager().registerCodec(
                                     dataType.getXmlEncodingId(),
-                                    codec
+                                    codec.asXmlCodec()
                                 );
-                            }
-                            if (dataType.getJsonEncodingId() != null) {
                                 stackClient.getDynamicDataTypeManager().registerCodec(
-                                    dataType.getJsonEncodingId(),
-                                    codec
+                                    OpcUaDefaultXmlEncoding.ENCODING_NAME,
+                                    dataType.getNodeId(),
+                                    codec.asXmlCodec()
                                 );
                             }
+                            // TODO register JSON codec
                         }
                     });
                 } else {
