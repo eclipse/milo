@@ -10,29 +10,58 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicUnion extends DynamicStruct {
 
+    public DynamicUnion() {
+        this(new LinkedHashMap<>());
+    }
+
     public DynamicUnion(LinkedHashMap<String, Object> members) {
         super(members);
     }
 
     public @Nullable String getFieldName() {
-        return null;
+        return getMembers().keySet().stream().findFirst().orElse(null);
     }
 
     public @Nullable Object getFieldValue() {
-        return null;
+        return getMembers().values().stream().findFirst().orElse(null);
     }
 
     public boolean isNull() {
-        return true;
+        return getMembers().isEmpty();
     }
 
-    static DynamicUnion create(String fieldName, Object fieldValue) {
+    @Override
+    public String toString() {
+        return "DynamicUnion{" + joinMembers(getMembers()) + "}";
+    }
+
+    private static String joinMembers(LinkedHashMap<String, Object> members) {
+        return members.entrySet().stream()
+            .findFirst()
+            .map(e -> {
+                String k = e.getKey();
+                Object v = e.getValue();
+                if (v instanceof Object[]) {
+                    return String.format("%s=%s", k, Arrays.toString((Object[]) v));
+                } else {
+                    return String.format("%s=%s", k, v);
+                }
+            })
+            .orElse("null");
+    }
+
+    static DynamicUnion ofNull() {
+        return new DynamicUnion();
+    }
+
+    static DynamicUnion of(String fieldName, Object fieldValue) {
         LinkedHashMap<String, Object> members = new LinkedHashMap<>();
         members.put(fieldName, fieldValue);
         return new DynamicUnion(members);

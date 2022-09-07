@@ -14,9 +14,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
-import org.eclipse.milo.opcua.stack.core.types.structured.Structure;
-
-public class DynamicStruct extends Structure {
+public class DynamicStruct {
 
     private final LinkedHashMap<String, Object> members;
 
@@ -30,11 +28,7 @@ public class DynamicStruct extends Structure {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DynamicStruct{");
-        sb.append("members={");
-        sb.append(joinMembers(members));
-        sb.append('}');
-        return sb.toString();
+        return "DynamicStruct{" + "members={" + joinMembers(members) + "}}";
     }
 
     private static String joinMembers(LinkedHashMap<String, Object> members) {
@@ -50,5 +44,5 @@ public class DynamicStruct extends Structure {
             })
             .collect(Collectors.joining(", "));
     }
-    
+
 }

@@ -165,7 +165,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 } else {
                     value = decodeBuiltinDataType(decoder, fieldName, builtinDataType);
                 }
-                return DynamicUnion.create(fieldName, value);
+                return DynamicUnion.of(fieldName, value);
             } else if (valueRank == 1) {
                 Object value;
                 if (builtinDataType == null) {
@@ -173,7 +173,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 } else {
                     value = decodeBuiltinDataTypeArray(decoder, fieldName, builtinDataType);
                 }
-                return DynamicUnion.create(fieldName, value);
+                return DynamicUnion.of(fieldName, value);
             } else if (valueRank > 1) {
                 // TODO special matrix encoding for multi-dimensional array structure fields
                 throw new RuntimeException("not implemented");
