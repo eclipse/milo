@@ -8,21 +8,22 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.types;
+package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicUnion extends DynamicStruct {
 
-    public DynamicUnion() {
-        this(new LinkedHashMap<>());
+    public DynamicUnion(DataTypeTree.DataType dataType) {
+        this(dataType, new LinkedHashMap<>());
     }
 
-    public DynamicUnion(LinkedHashMap<String, Object> members) {
-        super(members);
+    public DynamicUnion(DataTypeTree.DataType dataType, LinkedHashMap<String, Object> members) {
+        super(dataType, members);
     }
 
     public @Nullable String getFieldName() {
@@ -57,14 +58,14 @@ public class DynamicUnion extends DynamicStruct {
             .orElse("null");
     }
 
-    static DynamicUnion ofNull() {
-        return new DynamicUnion();
+    static DynamicUnion ofNull(DataTypeTree.DataType dataType) {
+        return new DynamicUnion(dataType);
     }
 
-    static DynamicUnion of(String fieldName, Object fieldValue) {
+    static DynamicUnion of(DataTypeTree.DataType dataType, String fieldName, Object fieldValue) {
         LinkedHashMap<String, Object> members = new LinkedHashMap<>();
         members.put(fieldName, fieldValue);
-        return new DynamicUnion(members);
+        return new DynamicUnion(dataType, members);
     }
 
 }

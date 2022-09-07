@@ -8,18 +8,26 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.types;
+package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
+import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
+
 public class DynamicStruct {
 
+    private final DataTypeTree.DataType dataType;
     private final LinkedHashMap<String, Object> members;
 
-    public DynamicStruct(LinkedHashMap<String, Object> members) {
+    public DynamicStruct(DataTypeTree.DataType dataType, LinkedHashMap<String, Object> members) {
+        this.dataType = dataType;
         this.members = members;
+    }
+
+    public DataTypeTree.DataType getDataType() {
+        return dataType;
     }
 
     public LinkedHashMap<String, Object> getMembers() {

@@ -8,11 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.types;
+package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
+import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -45,8 +46,12 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
     private final StructureDefinition structureDefinition;
 
-    public DynamicStructCodec(StructureDefinition structureDefinition) {
-        this.structureDefinition = structureDefinition;
+    private final DataTypeTree.DataType dataType;
+
+    public DynamicStructCodec(DataTypeTree.DataType dataType) {
+        this.dataType = dataType;
+
+        this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();
     }
 
     @Override
@@ -140,7 +145,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
             }
         }
 
-        return new DynamicStruct(members);
+        return new DynamicStruct(dataType, members);
     }
 
     private @NotNull DynamicUnion decodeUnion(UaDecoder decoder) {
@@ -149,7 +154,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         StructureField[] fields = structureDefinition.getFields();
 
         if (switchField == 0) {
-            return new DynamicUnion(new LinkedHashMap<>());
+            return DynamicUnion.ofNull(dataType);
         } else if (switchField <= fields.length) {
             StructureField field = fields[switchField - 1];
             String fieldName = field.getName();
@@ -165,7 +170,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 } else {
                     value = decodeBuiltinDataType(decoder, fieldName, builtinDataType);
                 }
-                return DynamicUnion.of(fieldName, value);
+                return DynamicUnion.of(dataType, fieldName, value);
             } else if (valueRank == 1) {
                 Object value;
                 if (builtinDataType == null) {
@@ -173,7 +178,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 } else {
                     value = decodeBuiltinDataTypeArray(decoder, fieldName, builtinDataType);
                 }
-                return DynamicUnion.of(fieldName, value);
+                return DynamicUnion.of(dataType, fieldName, value);
             } else if (valueRank > 1) {
                 // TODO special matrix encoding for multi-dimensional array structure fields
                 throw new RuntimeException("not implemented");

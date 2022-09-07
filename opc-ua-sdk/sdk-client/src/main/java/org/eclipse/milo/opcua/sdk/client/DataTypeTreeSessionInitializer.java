@@ -15,9 +15,10 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree.DataType;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicEnumCodec;
+import org.eclipse.milo.opcua.sdk.core.types.DynamicStructCodec;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.types.DynamicStructCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
@@ -85,7 +86,8 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                 DataTypeDefinition definition = dataType.getDataTypeDefinition();
 
                 if (definition instanceof StructureDefinition) {
-                    var codec = new DynamicStructCodec((StructureDefinition) definition);
+                    var codec = new DynamicStructCodec(dataType);
+
                     if (dataType.getBinaryEncodingId() != null) {
                         stackClient.getDynamicDataTypeManager().registerCodec(
                             dataType.getBinaryEncodingId(),
@@ -122,7 +124,19 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                 DataTypeDefinition definition = dataType.getDataTypeDefinition();
 
                 if (definition instanceof EnumDefinition) {
-                    // TODO register DynamicEnumCodec
+                    var codec = new DynamicEnumCodec(dataType);
+
+                    stackClient.getDynamicDataTypeManager().registerCodec(
+                        OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+                        dataType.getNodeId(),
+                        codec.asBinaryCodec()
+                    );
+                    stackClient.getDynamicDataTypeManager().registerCodec(
+                        OpcUaDefaultXmlEncoding.ENCODING_NAME,
+                        dataType.getNodeId(),
+                        codec.asXmlCodec()
+                    );
+                    // TODO register JSON codec
                 }
             });
         } else {
