@@ -58,12 +58,17 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaJsonDecoder implements UaDecoder {
 
+    JsonReader jsonReader;
     SerializationContext serializationContext;
 
-    JsonReader jsonReader;
+    public OpcUaJsonDecoder(SerializationContext serializationContext) {
+        this.serializationContext = serializationContext;
+    }
 
-    public OpcUaJsonDecoder(Reader reader) {
-        this.jsonReader = new JsonReader(reader);
+    public OpcUaJsonDecoder(SerializationContext serializationContext, Reader reader) {
+        this.serializationContext = serializationContext;
+
+        reset(reader);
     }
 
     void reset(Reader reader) {

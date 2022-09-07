@@ -52,17 +52,17 @@ import org.jetbrains.annotations.NotNull;
 public class OpcUaJsonEncoder implements UaEncoder {
 
     boolean reversible = true;
+    JsonWriter jsonWriter;
     SerializationContext serializationContext;
 
-    JsonWriter jsonWriter;
-
-    public OpcUaJsonEncoder(Writer writer) {
-        jsonWriter = new JsonWriter(writer);
-        jsonWriter.setHtmlSafe(false);
+    public OpcUaJsonEncoder(SerializationContext serializationContext) {
+        this.serializationContext = serializationContext;
     }
 
-    public OpcUaJsonEncoder(OutputStream outputStream) {
-        this(new OutputStreamWriter(outputStream));
+    public OpcUaJsonEncoder(SerializationContext serializationContext, Writer writer) {
+        this.serializationContext = serializationContext;
+
+        reset(writer);
     }
 
     /**

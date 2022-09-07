@@ -17,6 +17,7 @@ import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
 
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -36,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
@@ -50,10 +52,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OpcUaJsonEncoderTest {
 
+    private final SerializationContext context = new TestSerializationContext();
+
     @Test
     void writeBoolean() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeBoolean(null, true);
         assertEquals("true", writer.toString());
@@ -72,7 +76,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeSByte() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeSByte(null, (byte) 0);
         assertEquals("0", writer.toString());
@@ -95,7 +99,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeInt16() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeInt16(null, (short) 0);
         assertEquals("0", writer.toString());
@@ -118,7 +122,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeInt32() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeInt32(null, 0);
         assertEquals("0", writer.toString());
@@ -141,7 +145,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeInt64() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // Int64 and UInt64 values shall be formatted as a decimal number
         // encoded as a JSON string.
@@ -167,7 +171,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeByte() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeByte(null, ubyte(0));
         assertEquals("0", writer.toString());
@@ -186,7 +190,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeUInt16() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeUInt16(null, ushort(0));
         assertEquals("0", writer.toString());
@@ -205,7 +209,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeUInt32() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeUInt32(null, uint(0));
         assertEquals("0", writer.toString());
@@ -224,7 +228,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeUInt64() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // Int64 and UInt64 values shall be formatted as a decimal number
         // encoded as a JSON string (See the XML encoding of 64-bit values
@@ -252,7 +256,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeFloat() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         {
             // Normal Float and Double values shall be encoded as a JSON number.
@@ -298,7 +302,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeDouble() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         {
             // Normal Float and Double values shall be encoded as a JSON number.
@@ -344,7 +348,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeString() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // String values shall be encoded as JSON strings.
         // Any characters which are not allowed in JSON strings are escaped
@@ -371,7 +375,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeDateTime() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         {
             // DateTime values shall be formatted as specified by ISO 8601:2004
@@ -420,7 +424,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeGuid() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeGuid(null, UUID.fromString("00000000-0000-0000-0000-000000000000"));
         assertEquals("\"00000000-0000-0000-0000-000000000000\"", writer.toString());
@@ -440,7 +444,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeByteString() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // ByteString values shall be formatted as a Base64 text and encoded as
         // a JSON string.
@@ -465,7 +469,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeXmlElement() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeXmlElement(null, new XmlElement(""));
         assertEquals("\"\"", writer.toString());
@@ -484,7 +488,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeNodeId() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // IdType == UInt32, Namespace = 0, reversible
         encoder.writeNodeId(null, new NodeId(0, uint(0)));
@@ -563,7 +567,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeExpandedNodeId() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // Two things differentiate the encoding of ExpandedNodeId from NodeId:
         // 1. if the namespace URI is specified it is encoded in the "Namespace" field
@@ -604,7 +608,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeStatusCode() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         // reversible form
         {
@@ -666,7 +670,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeQualifiedName() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeQualifiedName(null, new QualifiedName(0, "foo"));
         assertEquals("{\"Name\":\"foo\"}", writer.toString());
@@ -706,7 +710,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeLocalizedText() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         encoder.writeLocalizedText(null, LocalizedText.english("foo"));
         assertEquals("{\"Locale\":\"en\",\"Text\":\"foo\"}", writer.toString());
@@ -739,7 +743,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeExtensionObject() {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         var byteStringXo = new ExtensionObject(
             ByteString.of(new byte[]{0x00, 0x01, 0x02, 0x03}),
@@ -784,7 +788,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeDataValue() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         DateTime now = DateTime.now();
         String isoNow = now.toIso8601String();
@@ -848,7 +852,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeVariant() {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         //region reversible
         encoder.reset(writer = new StringWriter());
@@ -930,7 +934,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeDiagnosticInfo() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         var diagnosticInfo = new DiagnosticInfo(
             0,
@@ -966,11 +970,12 @@ class OpcUaJsonEncoderTest {
         assertEquals("{\"foo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}", writer.toString());
     }
 
-    @Disabled
     @Test
+    @Disabled
     public void writeMessage() {
+        // TODO
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
         encoder.serializationContext = new TestSerializationContext();
 
         var message = new ReadRequest(
@@ -1002,7 +1007,7 @@ class OpcUaJsonEncoderTest {
     @Test
     public void writeEnum() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
 
         for (ApplicationType applicationType : ApplicationType.values()) {
             encoder.reset(writer = new StringWriter());
@@ -1021,12 +1026,25 @@ class OpcUaJsonEncoderTest {
     @Disabled
     public void writeStruct() {
         // TODO
+        var writer = new StringWriter();
+        var encoder = new OpcUaJsonEncoder(context, writer);
+
+        var struct = new Argument(
+            "foo",
+            NodeIds.Int32,
+            -1,
+            null,
+            LocalizedText.english("foo desc")
+        );
+
+        encoder.writeStruct(null, struct, Argument.TYPE_ID);
+        assertEquals("TODO", writer.toString());
     }
 
     @Test
     public void writeBooleanArray() throws IOException {
         var writer = new StringWriter();
-        var encoder = new OpcUaJsonEncoder(writer);
+        var encoder = new OpcUaJsonEncoder(context, writer);
         encoder.serializationContext = new TestSerializationContext();
 
         encoder.reset(writer = new StringWriter());
