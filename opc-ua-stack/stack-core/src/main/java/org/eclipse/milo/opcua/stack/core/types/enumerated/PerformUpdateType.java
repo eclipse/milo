@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,8 +6,14 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.7">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.7</a>
+ */
 public enum PerformUpdateType implements UaEnumeration {
     Insert(1),
 
@@ -38,8 +34,11 @@ public enum PerformUpdateType implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static PerformUpdateType from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=11293");
+    }
+
+    public static @Nullable PerformUpdateType from(int value) {
         switch (value) {
             case 1:
                 return Insert;
@@ -54,11 +53,16 @@ public enum PerformUpdateType implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11293");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Insert"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Replace"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Update"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Remove")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<PerformUpdateType> {
+    public static final class Codec extends GenericDataTypeCodec<PerformUpdateType> {
         @Override
         public Class<PerformUpdateType> getType() {
             return PerformUpdateType.class;

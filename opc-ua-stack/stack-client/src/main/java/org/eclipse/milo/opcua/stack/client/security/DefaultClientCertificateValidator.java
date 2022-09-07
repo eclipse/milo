@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.util.validation.CertificateValidationUtil;
@@ -30,7 +29,7 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultClientCertificateValidator.class);
 
     private final TrustListManager trustListManager;
-    private final ImmutableSet<ValidationCheck> validationChecks;
+    private final Set<ValidationCheck> validationChecks;
 
     /**
      * Create a {@link ClientCertificateValidator} that performs no optional validation checks.
@@ -53,7 +52,7 @@ public class DefaultClientCertificateValidator implements ClientCertificateValid
     ) {
 
         this.trustListManager = trustListManager;
-        this.validationChecks = ImmutableSet.copyOf(validationChecks);
+        this.validationChecks = Set.copyOf(validationChecks);
     }
 
     @Override

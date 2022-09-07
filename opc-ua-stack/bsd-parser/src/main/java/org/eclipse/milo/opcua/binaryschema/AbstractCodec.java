@@ -18,10 +18,8 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
-import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
@@ -51,119 +49,6 @@ import org.opcfoundation.opcua.binaryschema.StructuredType;
 import org.opcfoundation.opcua.binaryschema.SwitchOperand;
 
 public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryDataTypeCodec<StructureT> {
-
-    private static final ImmutableMap<String, Function<OpcUaBinaryStreamDecoder, Object>> READERS;
-    private static final ImmutableMap<String, BiConsumer<OpcUaBinaryStreamEncoder, Object>> WRITERS;
-    private static final ImmutableMap<String, Class<?>> TYPE_CLASS_MAP;
-
-    static {
-        READERS = ImmutableMap.<String, Function<OpcUaBinaryStreamDecoder, Object>>builder()
-            .put("Boolean", OpcUaBinaryStreamDecoder::readBoolean)
-            .put("SByte", OpcUaBinaryStreamDecoder::readSByte)
-            .put("Int16", OpcUaBinaryStreamDecoder::readInt16)
-            .put("Int32", OpcUaBinaryStreamDecoder::readInt32)
-            .put("Int64", OpcUaBinaryStreamDecoder::readInt64)
-            .put("Byte", OpcUaBinaryStreamDecoder::readByte)
-            .put("UInt16", OpcUaBinaryStreamDecoder::readUInt16)
-            .put("UInt32", OpcUaBinaryStreamDecoder::readUInt32)
-            .put("UInt64", OpcUaBinaryStreamDecoder::readUInt64)
-            .put("Float", OpcUaBinaryStreamDecoder::readFloat)
-            .put("Double", OpcUaBinaryStreamDecoder::readDouble)
-            .put("String", OpcUaBinaryStreamDecoder::readUtf8CharArray)
-            .put("DateTime", OpcUaBinaryStreamDecoder::readDateTime)
-            .put("Guid", OpcUaBinaryStreamDecoder::readGuid)
-            .put("ByteString", OpcUaBinaryStreamDecoder::readByteString)
-            .put("XmlElement", OpcUaBinaryStreamDecoder::readXmlElement)
-            .put("NodeId", OpcUaBinaryStreamDecoder::readNodeId)
-            .put("ExpandedNodeId", OpcUaBinaryStreamDecoder::readExpandedNodeId)
-            .put("StatusCode", OpcUaBinaryStreamDecoder::readStatusCode)
-            .put("QualifiedName", OpcUaBinaryStreamDecoder::readQualifiedName)
-            .put("LocalizedText", OpcUaBinaryStreamDecoder::readLocalizedText)
-            .put("ExtensionObject", OpcUaBinaryStreamDecoder::readExtensionObject)
-            .put("DataValue", OpcUaBinaryStreamDecoder::readDataValue)
-            .put("Variant", OpcUaBinaryStreamDecoder::readVariant)
-            .put("DiagnosticInfo", OpcUaBinaryStreamDecoder::readDiagnosticInfo)
-
-            .put("Bit", OpcUaBinaryStreamDecoder::readBit)
-            .put("Char", OpcUaBinaryStreamDecoder::readCharacter)
-            .put("CharArray", OpcUaBinaryStreamDecoder::readUtf8CharArray)
-            .put("WideChar", OpcUaBinaryStreamDecoder::readWideChar)
-            .put("WideCharArray", OpcUaBinaryStreamDecoder::readUtf16CharArray)
-            .put("WideString", OpcUaBinaryStreamDecoder::readUtf16CharArray)
-
-            .build();
-
-        WRITERS = ImmutableMap.<String, BiConsumer<OpcUaBinaryStreamEncoder, Object>>builder()
-            .put("Boolean", (w, v) -> w.writeBoolean((Boolean) v))
-            .put("SByte", (w, v) -> w.writeSByte((Byte) v))
-            .put("Int16", (w, v) -> w.writeInt16((Short) v))
-            .put("Int32", (w, v) -> w.writeInt32((Integer) v))
-            .put("Int64", (w, v) -> w.writeInt64((Long) v))
-            .put("Byte", (w, v) -> w.writeByte((UByte) v))
-            .put("UInt16", (w, v) -> w.writeUInt16((UShort) v))
-            .put("UInt32", (w, v) -> w.writeUInt32((UInteger) v))
-            .put("UInt64", (w, v) -> w.writeUInt64((ULong) v))
-            .put("Float", (w, v) -> w.writeFloat((Float) v))
-            .put("Double", (w, v) -> w.writeDouble((Double) v))
-            .put("String", (w, v) -> w.writeUtf8CharArray((String) v))
-            .put("DateTime", (w, v) -> w.writeDateTime((DateTime) v))
-            .put("Guid", (w, v) -> w.writeGuid((UUID) v))
-            .put("ByteString", (w, v) -> w.writeByteString((ByteString) v))
-            .put("XmlElement", (w, v) -> w.writeXmlElement((XmlElement) v))
-            .put("NodeId", (w, v) -> w.writeNodeId((NodeId) v))
-            .put("ExpandedNodeId", (w, v) -> w.writeExpandedNodeId((ExpandedNodeId) v))
-            .put("StatusCode", (w, v) -> w.writeStatusCode((StatusCode) v))
-            .put("QualifiedName", (w, v) -> w.writeQualifiedName((QualifiedName) v))
-            .put("LocalizedText", (w, v) -> w.writeLocalizedText((LocalizedText) v))
-            .put("ExtensionObject", (w, v) -> w.writeExtensionObject((ExtensionObject) v))
-            .put("DataValue", (w, v) -> w.writeDataValue((DataValue) v))
-            .put("Variant", (w, v) -> w.writeVariant((Variant) v))
-            .put("DiagnosticInfo", (w, v) -> w.writeDiagnosticInfo((DiagnosticInfo) v))
-
-            .put("Bit", (w, v) -> w.writeBit((Integer) v))
-            .put("Char", (w, v) -> w.writeCharacter((Character) v))
-            .put("CharArray", (w, v) -> w.writeUtf8CharArray((String) v))
-            .put("WideChar", (w, v) -> w.writeWideChar((Character) v))
-            .put("WideCharArray", (w, v) -> w.writeUtf16CharArray((String) v))
-            .put("WideString", (w, v) -> w.writeUtf16CharArray((String) v))
-
-            .build();
-
-        TYPE_CLASS_MAP = ImmutableMap.<String, Class<?>>builder()
-            .put("Boolean", BuiltinDataType.Boolean.getBackingClass())
-            .put("SByte", BuiltinDataType.SByte.getBackingClass())
-            .put("Int16", BuiltinDataType.Int16.getBackingClass())
-            .put("Int32", BuiltinDataType.Int32.getBackingClass())
-            .put("Int64", BuiltinDataType.Int64.getBackingClass())
-            .put("Byte", BuiltinDataType.Byte.getBackingClass())
-            .put("UInt16", BuiltinDataType.UInt16.getBackingClass())
-            .put("UInt32", BuiltinDataType.UInt32.getBackingClass())
-            .put("UInt64", BuiltinDataType.UInt64.getBackingClass())
-            .put("Float", BuiltinDataType.Float.getBackingClass())
-            .put("Double", BuiltinDataType.Double.getBackingClass())
-            .put("String", BuiltinDataType.String.getBackingClass())
-            .put("DateTime", BuiltinDataType.DateTime.getBackingClass())
-            .put("Guid", BuiltinDataType.Guid.getBackingClass())
-            .put("ByteString", BuiltinDataType.ByteString.getBackingClass())
-            .put("XmlElement", BuiltinDataType.XmlElement.getBackingClass())
-            .put("NodeId", BuiltinDataType.NodeId.getBackingClass())
-            .put("ExpandedNodeId", BuiltinDataType.ExpandedNodeId.getBackingClass())
-            .put("StatusCode", BuiltinDataType.StatusCode.getBackingClass())
-            .put("QualifiedName", BuiltinDataType.QualifiedName.getBackingClass())
-            .put("LocalizedText", BuiltinDataType.LocalizedText.getBackingClass())
-            .put("ExtensionObject", BuiltinDataType.ExtensionObject.getBackingClass())
-            .put("DataValue", BuiltinDataType.DataValue.getBackingClass())
-            .put("Variant", BuiltinDataType.Variant.getBackingClass())
-            .put("DiagnosticInfo", BuiltinDataType.DiagnosticInfo.getBackingClass())
-
-            .put("Bit", Integer.class)
-            .put("Char", Character.class)
-            .put("CharArray", String.class)
-            .put("WideChar", Character.class)
-            .put("WideCharArray", String.class)
-            .put("WideString", String.class)
-            .build();
-    }
 
     private final Map<String, FieldType> fields = new HashMap<>();
     private final Map<String, FieldType> lengthFields = new HashMap<>();
@@ -213,8 +98,9 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                     Namespaces.OPC_UA_BSD.equals(typeNamespace);
 
             if (fieldIsScalar(field)) {
-                if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
-                    Object value = READERS.get(typeName).apply(decoder);
+                Function<OpcUaBinaryStreamDecoder, Object> reader;
+                if (typeNamespaceIsUa && (reader = getReader(typeName)) != null) {
+                    Object value = reader.apply(decoder);
 
                     members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value, typeName));
                 } else {
@@ -247,9 +133,10 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                     if (length >= 0) {
                         values = new Object[length];
 
-                        if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
+                        Function<OpcUaBinaryStreamDecoder, Object> reader;
+                        if (typeNamespaceIsUa && (reader = getReader(typeName)) != null) {
                             for (int i = 0; i < length; i++) {
-                                Object value = READERS.get(typeName).apply(decoder);
+                                Object value = reader.apply(decoder);
 
                                 values[i] = value;
                             }
@@ -322,8 +209,9 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
         if (fieldIsScalar(field)) {
             Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
 
-            if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
-                WRITERS.get(typeName).accept(encoder, scalarValue);
+            BiConsumer<OpcUaBinaryStreamEncoder, Object> writer;
+            if (typeNamespaceIsUa && (writer = getWriter(typeName)) != null) {
+                writer.accept(encoder, scalarValue);
             } else {
                 context.encode(typeNamespace, typeName, scalarValue, encoder);
             }
@@ -361,9 +249,10 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                 }
 
                 if (valueArray != null) {
-                    if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
+                    BiConsumer<OpcUaBinaryStreamEncoder, Object> writer;
+                    if (typeNamespaceIsUa && (writer = getWriter(typeName)) != null) {
                         for (Object value : valueArray) {
-                            WRITERS.get(typeName).accept(encoder, value);
+                            writer.accept(encoder, value);
                         }
                     } else {
                         for (Object value : valueArray) {
@@ -472,6 +361,88 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
     private static boolean fieldIsScalar(FieldType field) {
         return field.getLengthField() == null && field.getLength() == null;
+    }
+
+    private static Function<OpcUaBinaryStreamDecoder, Object> getReader(String typeName) {
+        switch (typeName) {
+            //@formatter:off
+            case "Boolean":         return OpcUaBinaryStreamDecoder::readBoolean;
+            case "SByte":           return OpcUaBinaryStreamDecoder::readSByte;
+            case "Int16":           return OpcUaBinaryStreamDecoder::readInt16;
+            case "Int32":           return OpcUaBinaryStreamDecoder::readInt32;
+            case "Int64":           return OpcUaBinaryStreamDecoder::readInt64;
+            case "Byte":            return OpcUaBinaryStreamDecoder::readByte;
+            case "UInt16":          return OpcUaBinaryStreamDecoder::readUInt16;
+            case "UInt32":          return OpcUaBinaryStreamDecoder::readUInt32;
+            case "UInt64":          return OpcUaBinaryStreamDecoder::readUInt64;
+            case "Float":           return OpcUaBinaryStreamDecoder::readFloat;
+            case "Double":          return OpcUaBinaryStreamDecoder::readDouble;
+            case "String":          return OpcUaBinaryStreamDecoder::readString;
+            case "DateTime":        return OpcUaBinaryStreamDecoder::readDateTime;
+            case "Guid":            return OpcUaBinaryStreamDecoder::readGuid;
+            case "ByteString":      return OpcUaBinaryStreamDecoder::readByteString;
+            case "XmlElement":      return OpcUaBinaryStreamDecoder::readXmlElement;
+            case "NodeId":          return OpcUaBinaryStreamDecoder::readNodeId;
+            case "ExpandedNodeId":  return OpcUaBinaryStreamDecoder::readExpandedNodeId;
+            case "StatusCode":      return OpcUaBinaryStreamDecoder::readStatusCode;
+            case "QualifiedName":   return OpcUaBinaryStreamDecoder::readQualifiedName;
+            case "LocalizedText":   return OpcUaBinaryStreamDecoder::readLocalizedText;
+            case "ExtensionObject": return OpcUaBinaryStreamDecoder::readExtensionObject;
+            case "DataValue":       return OpcUaBinaryStreamDecoder::readDataValue;
+            case "Variant":         return OpcUaBinaryStreamDecoder::readVariant;
+            case "DiagnosticInfo":  return OpcUaBinaryStreamDecoder::readDiagnosticInfo;
+
+            case "Bit":             return OpcUaBinaryStreamDecoder::readBit;
+            case "Char":            return OpcUaBinaryStreamDecoder::readCharacter;
+            case "CharArray":       return OpcUaBinaryStreamDecoder::readUtf8CharArray;
+            case "WideChar":        return OpcUaBinaryStreamDecoder::readWideChar;
+            case "WideCharArray":   // fall through
+            case "WideString":      return OpcUaBinaryStreamDecoder::readUtf16CharArray;
+            default:
+                return null;
+            //@formatter:on
+        }
+    }
+
+    private static BiConsumer<OpcUaBinaryStreamEncoder, Object> getWriter(String typeName) {
+        switch (typeName) {
+            //@formatter:off
+            case "Boolean":         return (w, v) -> w.writeBoolean((Boolean) v);
+            case "SByte":           return (w, v) -> w.writeSByte((Byte) v);
+            case "Int16":           return (w, v) -> w.writeInt16((Short) v);
+            case "Int32":           return (w, v) -> w.writeInt32((Integer) v);
+            case "Int64":           return (w, v) -> w.writeInt64((Long) v);
+            case "Byte":            return (w, v) -> w.writeByte((UByte) v);
+            case "UInt16":          return (w, v) -> w.writeUInt16((UShort) v);
+            case "UInt32":          return (w, v) -> w.writeUInt32((UInteger) v);
+            case "UInt64":          return (w, v) -> w.writeUInt64((ULong) v);
+            case "Float":           return (w, v) -> w.writeFloat((Float) v);
+            case "Double":          return (w, v) -> w.writeDouble((Double) v);
+            case "String":          return (w, v) -> w.writeString((String) v);
+            case "DateTime":        return (w, v) -> w.writeDateTime((DateTime) v);
+            case "Guid":            return (w, v) -> w.writeGuid((UUID) v);
+            case "ByteString":      return (w, v) -> w.writeByteString((ByteString) v);
+            case "XmlElement":      return (w, v) -> w.writeXmlElement((XmlElement) v);
+            case "NodeId":          return (w, v) -> w.writeNodeId((NodeId) v);
+            case "ExpandedNodeId":  return (w, v) -> w.writeExpandedNodeId((ExpandedNodeId) v);
+            case "StatusCode":      return (w, v) -> w.writeStatusCode((StatusCode) v);
+            case "QualifiedName":   return (w, v) -> w.writeQualifiedName((QualifiedName) v);
+            case "LocalizedText":   return (w, v) -> w.writeLocalizedText((LocalizedText) v);
+            case "ExtensionObject": return (w, v) -> w.writeExtensionObject((ExtensionObject) v);
+            case "DataValue":       return (w, v) -> w.writeDataValue((DataValue) v);
+            case "Variant":         return (w, v) -> w.writeVariant((Variant) v);
+            case "DiagnosticInfo":  return (w, v) -> w.writeDiagnosticInfo((DiagnosticInfo) v);
+
+            case "Bit":             return (w, v) -> w.writeBit((Integer) v);
+            case "Char":            return (w, v) -> w.writeCharacter((Character) v);
+            case "CharArray":       return (w, v) -> w.writeUtf8CharArray((String) v);
+            case "WideChar":        return (w, v) -> w.writeWideChar((Character) v);
+            case "WideCharArray":   // fall through
+            case "WideString":      return (w, v) -> w.writeUtf16CharArray((String) v);
+            default:
+                return null;
+            //@formatter:on
+        }
     }
 
 }

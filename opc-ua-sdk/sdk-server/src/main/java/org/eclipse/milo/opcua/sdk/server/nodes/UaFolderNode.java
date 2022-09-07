@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -11,10 +11,11 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class UaFolderNode extends UaObjectNode {
 
@@ -22,14 +23,15 @@ public class UaFolderNode extends UaObjectNode {
         UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
-        LocalizedText displayName) {
+        LocalizedText displayName
+    ) {
 
-        super(context, nodeId, browseName, displayName);
+        super(context, nodeId, browseName, displayName, LocalizedText.NULL_VALUE, UInteger.MIN, UInteger.MIN);
 
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasTypeDefinition,
-            Identifiers.FolderType.expanded(),
+            NodeIds.HasTypeDefinition,
+            NodeIds.FolderType.expanded(),
             true
         ));
     }
@@ -43,7 +45,7 @@ public class UaFolderNode extends UaObjectNode {
     public void addOrganizes(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             node.getNodeId().expanded(),
             true
         ));
@@ -58,7 +60,7 @@ public class UaFolderNode extends UaObjectNode {
     public void removeOrganizes(UaNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.Organizes,
+            NodeIds.Organizes,
             node.getNodeId().expanded(),
             true
         ));

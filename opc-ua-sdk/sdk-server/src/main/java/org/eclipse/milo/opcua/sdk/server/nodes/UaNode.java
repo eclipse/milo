@@ -17,18 +17,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -42,6 +42,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
@@ -64,16 +66,34 @@ public abstract class UaNode implements UaServerNode {
     private LocalizedText description;
     private UInteger writeMask;
     private UInteger userWriteMask;
+    private RolePermissionType[] rolePermissions;
+    private RolePermissionType[] userRolePermissions;
+    private AccessRestrictionType accessRestrictions;
 
     protected UaNode(
         UaNodeContext context,
         NodeId nodeId,
         NodeClass nodeClass,
         QualifiedName browseName,
-        LocalizedText displayName) {
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask
+    ) {
 
-        this(context, nodeId, nodeClass, browseName,
-            displayName, LocalizedText.NULL_VALUE, UInteger.MIN, UInteger.MIN);
+        this(
+            context,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            null,
+            null,
+            null
+        );
     }
 
     protected UaNode(
@@ -84,7 +104,11 @@ public abstract class UaNode implements UaServerNode {
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
-        UInteger userWriteMask) {
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions
+    ) {
 
         this.context = context;
 
@@ -95,6 +119,9 @@ public abstract class UaNode implements UaServerNode {
         this.description = description;
         this.writeMask = writeMask;
         this.userWriteMask = userWriteMask;
+        this.rolePermissions = rolePermissions;
+        this.userRolePermissions = userRolePermissions;
+        this.accessRestrictions = accessRestrictions;
     }
 
     @Override
@@ -133,6 +160,21 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
+    public RolePermissionType[] getRolePermissions() {
+        return (RolePermissionType[]) filterChain.getAttribute(this, AttributeId.RolePermissions);
+    }
+
+    @Override
+    public RolePermissionType[] getUserRolePermissions() {
+        return (RolePermissionType[]) filterChain.getAttribute(this, AttributeId.UserRolePermissions);
+    }
+
+    @Override
+    public AccessRestrictionType getAccessRestrictions() {
+        return (AccessRestrictionType) filterChain.getAttribute(this, AttributeId.AccessRestrictions);
+    }
+
+    @Override
     public void setNodeId(NodeId nodeId) {
         filterChain.setAttribute(this, AttributeId.NodeId, nodeId);
     }
@@ -167,6 +209,21 @@ public abstract class UaNode implements UaServerNode {
         filterChain.setAttribute(this, AttributeId.UserWriteMask, userWriteMask);
     }
 
+    @Override
+    public void setRolePermissions(RolePermissionType[] rolePermissions) {
+        filterChain.setAttribute(this, AttributeId.RolePermissions, rolePermissions);
+    }
+
+    @Override
+    public void setUserRolePermissions(RolePermissionType[] userRolePermissions) {
+        filterChain.setAttribute(this, AttributeId.UserRolePermissions, userRolePermissions);
+    }
+
+    @Override
+    public void setAccessRestrictions(AccessRestrictionType accessRestrictions) {
+        filterChain.setAttribute(this, AttributeId.AccessRestrictions, accessRestrictions);
+    }
+
     /**
      * Direct read access to the field for {@code attributeId}, bypassing the {@link AttributeFilterChain}.
      *
@@ -195,6 +252,15 @@ public abstract class UaNode implements UaServerNode {
 
             case UserWriteMask:
                 return userWriteMask;
+
+            case RolePermissions:
+                return rolePermissions;
+
+            case UserRolePermissions:
+                return userRolePermissions;
+
+            case AccessRestrictions:
+                return accessRestrictions;
 
             default:
                 throw new UaRuntimeException(
@@ -243,6 +309,18 @@ public abstract class UaNode implements UaServerNode {
                 userWriteMask = (UInteger) value;
                 break;
 
+            case RolePermissions:
+                rolePermissions = (RolePermissionType[]) value;
+                break;
+
+            case UserRolePermissions:
+                userRolePermissions = (RolePermissionType[]) value;
+                break;
+
+            case AccessRestrictions:
+                accessRestrictions = (AccessRestrictionType) value;
+                break;
+
             default:
                 throw new UaRuntimeException(
                     StatusCodes.Bad_AttributeIdInvalid,
@@ -262,7 +340,7 @@ public abstract class UaNode implements UaServerNode {
         nodeManager.removeNode(getNodeId());
 
         for (Reference reference : nodeManager.getReferences(getNodeId())) {
-            if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
+            if (reference.isForward() && reference.subtypeOf(NodeIds.HasChild)) {
                 Optional<UaNode> targetNode = nodeManager.getNode(
                     reference.getTargetNodeId(),
                     getNodeContext().getServer().getNamespaceTable()
@@ -295,8 +373,8 @@ public abstract class UaNode implements UaServerNode {
     }
 
     @Override
-    public ImmutableList<Reference> getReferences() {
-        return ImmutableList.copyOf(
+    public List<Reference> getReferences() {
+        return List.copyOf(
             context.getServer()
                 .getAddressSpaceManager()
                 .getManagedReferences(getNodeId())
@@ -375,7 +453,14 @@ public abstract class UaNode implements UaServerNode {
                 LocalizedText.english(browseName),
                 LocalizedText.NULL_VALUE,
                 uint(0),
-                uint(0)
+                uint(0),
+                null,
+                null,
+                null,
+                UaVariableNode.INITIAL_VALUE,
+                NodeIds.BaseDataType,
+                ValueRanks.Scalar,
+                null
             );
 
             NodeId dataType = property.getDataType()
@@ -388,8 +473,8 @@ public abstract class UaNode implements UaServerNode {
 
             propertyNode.addReference(new Reference(
                 propertyNode.getNodeId(),
-                Identifiers.HasTypeDefinition,
-                Identifiers.PropertyType.expanded(),
+                NodeIds.HasTypeDefinition,
+                NodeIds.PropertyType.expanded(),
                 true
             ));
 
@@ -433,14 +518,14 @@ public abstract class UaNode implements UaServerNode {
     void addProperty(UaVariableNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             node.getNodeId().expanded(),
             true
         ));
 
         node.addReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             getNodeId().expanded(),
             false
         ));
@@ -449,14 +534,14 @@ public abstract class UaNode implements UaServerNode {
     void removeProperty(UaVariableNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             node.getNodeId().expanded(),
             true
         ));
 
         node.removeReference(new Reference(
             node.getNodeId(),
-            Identifiers.HasProperty,
+            NodeIds.HasProperty,
             getNodeId().expanded(),
             false
         ));

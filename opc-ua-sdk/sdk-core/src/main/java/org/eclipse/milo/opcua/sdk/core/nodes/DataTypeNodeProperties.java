@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
@@ -30,7 +30,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -50,7 +50,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<LocalizedText[]> EnumStrings = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "EnumStrings",
-        Identifiers.LocalizedText.expanded(),
+        NodeIds.LocalizedText.expanded(),
         ValueRanks.OneDimension,
         LocalizedText[].class
     );
@@ -65,13 +65,13 @@ public final class DataTypeNodeProperties {
      * Using the EnumValues Property it is possible to represent Enumerations
      * with integers that are not zero-based or have gaps (e.g. 1, 2, 4, 8,
      * 16). Each entry of the array of EnumValueType in this Property
-     * represents one enumeration value with its integer notation, human-
-     * readable representation, and help information.
+     * represents one enumeration value with its integer notation, human-readable
+     * representation, and help information.
      */
     public static final QualifiedProperty<EnumValueType[]> EnumValues = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "EnumValues",
-        Identifiers.EnumValueType.expanded(),
+        NodeIds.EnumValueType.expanded(),
         ValueRanks.OneDimension,
         EnumValueType[].class
     );
@@ -89,7 +89,7 @@ public final class DataTypeNodeProperties {
     public static final QualifiedProperty<LocalizedText[]> OptionSetValues = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "OptionSetValues",
-        Identifiers.LocalizedText.expanded(),
+        NodeIds.LocalizedText.expanded(),
         ValueRanks.OneDimension,
         LocalizedText[].class
     );

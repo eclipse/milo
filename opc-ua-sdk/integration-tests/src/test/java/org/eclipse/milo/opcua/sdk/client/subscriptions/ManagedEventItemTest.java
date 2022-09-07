@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -35,17 +35,17 @@ public class ManagedEventItemTest extends AbstractManagedItemTest {
     private final EventFilter eventFilter = new EventFilter(
         new SimpleAttributeOperand[]{
             new SimpleAttributeOperand(
-                Identifiers.BaseEventType,
+                NodeIds.BaseEventType,
                 new QualifiedName[]{new QualifiedName(0, "EventId")},
                 AttributeId.Value.uid(),
                 null),
             new SimpleAttributeOperand(
-                Identifiers.BaseEventType,
+                NodeIds.BaseEventType,
                 new QualifiedName[]{new QualifiedName(0, "Time")},
                 AttributeId.Value.uid(),
                 null),
             new SimpleAttributeOperand(
-                Identifiers.BaseEventType,
+                NodeIds.BaseEventType,
                 new QualifiedName[]{new QualifiedName(0, "Message")},
                 AttributeId.Value.uid(),
                 null)
@@ -55,7 +55,7 @@ public class ManagedEventItemTest extends AbstractManagedItemTest {
 
     @Override
     protected ManagedEventItem createManagedItem() throws UaException {
-        return subscription.createEventItem(Identifiers.Server, eventFilter);
+        return subscription.createEventItem(NodeIds.Server, eventFilter);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ManagedEventItemTest extends AbstractManagedItemTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         ManagedEventItem eventItem = subscription.createEventItem(
-            Identifiers.Server,
+            NodeIds.Server,
             eventFilter,
             item -> {
                 item.addEventValueListener((i, value) -> latch.countDown());
@@ -92,7 +92,7 @@ public class ManagedEventItemTest extends AbstractManagedItemTest {
 
     @Test
     public void addRemoveEventValueListener() throws UaException {
-        ManagedEventItem eventItem = subscription.createEventItem(Identifiers.Server, eventFilter);
+        ManagedEventItem eventItem = subscription.createEventItem(NodeIds.Server, eventFilter);
 
         ManagedEventItem.EventValueListener listener = (item, value) -> {};
 

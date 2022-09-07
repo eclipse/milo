@@ -29,8 +29,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Sets.newHashSet;
-
 public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
 
     private static final Logger LOGGER =
@@ -55,10 +53,9 @@ public class OpcUaCertificateRevocationChecker extends PKIXRevocationChecker {
         this.parameters = parameters;
         this.validationChecks = validationChecks;
 
-        HashSet<Option> options = newHashSet(
-            Option.NO_FALLBACK,
-            Option.PREFER_CRLS
-        );
+        var options = new HashSet<Option>();
+        options.add(Option.NO_FALLBACK);
+        options.add(Option.PREFER_CRLS);
 
         // If the REVOCATION_LIST_FOUND check is suppressed, enable SOFT_FAIL.
         // Unfortunately these means we won't be able to log a warning when

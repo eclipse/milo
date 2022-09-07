@@ -12,21 +12,29 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
+import org.eclipse.milo.opcua.sdk.server.api.EventListener;
+import org.eclipse.milo.opcua.sdk.server.api.EventNotifier;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.ServerDiagnosticsSummary;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
@@ -70,19 +78,24 @@ public class OpcUaServer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
+    private final Map<NodeId, ReferenceType> referenceTypes = new ConcurrentHashMap<>();
 
-    private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
+    private final Map<UInteger, Subscription> subscriptions = new ConcurrentHashMap<>();
+
+    private final AtomicLong monitoredItemCount = new AtomicLong(0L);
 
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
+    private final Set<NodeId> registeredViews = Sets.newConcurrentHashSet();
+
     private final ServerDiagnosticsSummary diagnosticsSummary = new ServerDiagnosticsSummary(this);
 
     private final EventBus eventBus = new EventBus("server");
     private final EventFactory eventFactory = new EventFactory(this);
+    private final EventNotifier eventNotifier = new ServerEventNotifier();
 
     private final UaStackServer stackServer;
 
@@ -192,13 +205,15 @@ public class OpcUaServer {
     }
 
     /**
-     * Get the Server-wide {@link EventBus}.
+     * Get an internal EventBus used to decouple communication between internal components of the
+     * Server implementation.
      * <p>
-     * Events posted to the EventBus are delivered synchronously to registered subscribers.
+     * This EventBus is not intended for use by user implementations.
      *
-     * @return the Server-wide {@link EventBus}.
+     * @return an internal EventBus used to decouple communication between internal components of
+     * the Server implementation.
      */
-    public EventBus getEventBus() {
+    public EventBus getInternalEventBus() {
         return eventBus;
     }
 
@@ -211,6 +226,15 @@ public class OpcUaServer {
         return eventFactory;
     }
 
+    /**
+     * Get the Server's {@link EventNotifier}.
+     *
+     * @return the Server's {@link EventNotifier}.
+     */
+    public EventNotifier getEventNotifier() {
+        return eventNotifier;
+    }
+
     public ObjectTypeManager getObjectTypeManager() {
         return objectTypeManager;
     }
@@ -219,8 +243,16 @@ public class OpcUaServer {
         return variableTypeManager;
     }
 
+    public Set<NodeId> getRegisteredViews() {
+        return registeredViews;
+    }
+
     public Map<UInteger, Subscription> getSubscriptions() {
         return subscriptions;
+    }
+
+    public AtomicLong getMonitoredItemCount() {
+        return monitoredItemCount;
     }
 
     public Optional<KeyPair> getKeyPair(ByteString thumbprint) {
@@ -243,12 +275,38 @@ public class OpcUaServer {
         return config.getScheduledExecutorService();
     }
 
-    public ImmutableList<EndpointDescription> getEndpointDescriptions() {
+    public List<EndpointDescription> getEndpointDescriptions() {
         return stackServer.getEndpointDescriptions();
     }
 
     public Map<NodeId, ReferenceType> getReferenceTypes() {
         return referenceTypes;
+    }
+
+    private static class ServerEventNotifier implements EventNotifier {
+
+        private final List<EventListener> eventListeners = Collections.synchronizedList(new ArrayList<>());
+
+        @Override
+        public void fire(BaseEventTypeNode event) {
+            List<EventListener> toNotify;
+            synchronized (eventListeners) {
+                toNotify = List.copyOf(eventListeners);
+            }
+
+            toNotify.forEach(eventListener -> eventListener.onEvent(event));
+        }
+
+        @Override
+        public void register(EventListener eventListener) {
+            eventListeners.add(eventListener);
+        }
+
+        @Override
+        public void unregister(EventListener eventListener) {
+            eventListeners.remove(eventListener);
+        }
+
     }
 
 }

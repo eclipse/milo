@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNodeProperties;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -40,10 +40,12 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
@@ -56,6 +58,9 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     private UByte eventNotifier;
 
+    /**
+     * Construct a {@link UaObjectNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaObjectNode(
         OpcUaClient client,
         NodeId nodeId,
@@ -69,6 +74,41 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     ) {
 
         super(client, nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask);
+
+        this.eventNotifier = eventNotifier;
+    }
+
+    /**
+     * Construct a {@link UaObjectNode} using all attributes, including those defined by OPC UA 1.04.
+     */
+    public UaObjectNode(
+        OpcUaClient client,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        UByte eventNotifier
+    ) {
+
+        super(
+            client,
+            nodeId,
+            nodeClass,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.eventNotifier = eventNotifier;
     }
@@ -261,7 +301,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasComponent,
+                NodeIds.HasComponent,
                 true,
                 nodeClassMask,
                 resultMask
@@ -472,7 +512,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             new BrowseDescription(
                 getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 false,
                 nodeClassMask,
                 resultMask
@@ -506,7 +546,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return the value of the NodeVersion Property, if it exists.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<String> getNodeVersion() {
+    public CompletableFuture<String> getNodeVersionAsync() {
         return getProperty(ObjectNodeProperties.NodeVersion);
     }
 
@@ -516,7 +556,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return the value of the Icon Property, if it exists.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<ByteString> getIcon() {
+    public CompletableFuture<ByteString> getIconAsync() {
         return getProperty(ObjectNodeProperties.Icon);
     }
 
@@ -537,7 +577,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<StatusCode> setNodeVersion(String nodeVersion) {
+    public CompletableFuture<StatusCode> setNodeVersionAsync(String nodeVersion) {
         return setProperty(ObjectNodeProperties.NodeVersion, nodeVersion);
     }
 
@@ -548,7 +588,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * @return a {@link CompletableFuture} that completes with the {@link StatusCode} of the write operation.
      * @see ObjectNodeProperties
      */
-    public CompletableFuture<StatusCode> setIcon(ByteString icon) {
+    public CompletableFuture<StatusCode> setIconAsync(ByteString icon) {
         return setProperty(ObjectNodeProperties.Icon, icon);
     }
 

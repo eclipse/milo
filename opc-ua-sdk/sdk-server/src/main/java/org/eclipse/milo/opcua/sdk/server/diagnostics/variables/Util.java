@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterContext.GetAttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilters;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -36,7 +36,7 @@ class Util {
     }
 
     private static String buildBrowseNamePath(UaNode node, List<String> browseNames) {
-        if (node == null || node.getNodeId().equals(Identifiers.ObjectsFolder)) {
+        if (node == null || node.getNodeId().equals(NodeIds.ObjectsFolder)) {
             Collections.reverse(browseNames);
 
             return String.join(".", browseNames);
@@ -45,7 +45,7 @@ class Util {
         browseNames.add(node.getBrowseName().toParseableString());
 
         Optional<Reference> referenceToParent = node.getReferences().stream()
-            .filter(r -> r.isInverse() && r.subtypeOf(Identifiers.HierarchicalReferences))
+            .filter(r -> r.isInverse() && r.subtypeOf(NodeIds.HierarchicalReferences))
             .findFirst();
 
         Optional<UaNode> parentNode = referenceToParent

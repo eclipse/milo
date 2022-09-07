@@ -16,6 +16,8 @@ import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -48,6 +50,26 @@ public abstract class AbstractClientServerTest {
 
         testNamespace.shutdown();
         server.shutdown().get();
+    }
+
+    /**
+     * Create a new {@link NodeId} in the {@link TestNamespace}.
+     *
+     * @param id the identifier to use.
+     * @return a new {@link NodeId} in the {@link TestNamespace}.
+     */
+    protected NodeId newNodeId(String id) {
+        return new NodeId(testNamespace.getNamespaceIndex(), id);
+    }
+
+    /**
+     * Create a new {@link QualifiedName} in the {@link TestNamespace}.
+     *
+     * @param name the name to use.
+     * @return a new {@link QualifiedName} in the {@link TestNamespace}.
+     */
+    protected QualifiedName newQualifiedName(String name) {
+        return new QualifiedName(testNamespace.getNamespaceIndex(), name);
     }
 
 }

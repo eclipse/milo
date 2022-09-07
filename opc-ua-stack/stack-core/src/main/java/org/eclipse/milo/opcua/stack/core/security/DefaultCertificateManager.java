@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 import org.slf4j.Logger;
@@ -115,7 +114,7 @@ public class DefaultCertificateManager implements CertificateManager {
 
     @Override
     public synchronized Set<KeyPair> getKeyPairs() {
-        return Sets.newHashSet(privateKeys.values());
+        return Set.copyOf(privateKeys.values());
     }
 
     @Override

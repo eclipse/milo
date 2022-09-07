@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,8 +6,14 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.7">https://reference.opcfoundation.org/v105/Core/docs/Part8/5.6.7</a>
+ */
 public enum AxisScaleEnumeration implements UaEnumeration {
     Linear(0),
 
@@ -36,8 +32,11 @@ public enum AxisScaleEnumeration implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static AxisScaleEnumeration from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=12077");
+    }
+
+    public static @Nullable AxisScaleEnumeration from(int value) {
         switch (value) {
             case 0:
                 return Linear;
@@ -50,11 +49,15 @@ public enum AxisScaleEnumeration implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12077");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Linear"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Log"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Ln")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<AxisScaleEnumeration> {
+    public static final class Codec extends GenericDataTypeCodec<AxisScaleEnumeration> {
         @Override
         public Class<AxisScaleEnumeration> getType() {
             return AxisScaleEnumeration.class;

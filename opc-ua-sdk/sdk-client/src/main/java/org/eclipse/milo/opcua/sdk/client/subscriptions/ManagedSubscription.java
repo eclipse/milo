@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.ManagedDataItem.DataValueListener;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -1165,8 +1165,8 @@ public class ManagedSubscription {
         default void onNotificationDataLost(ManagedSubscription subscription) {
             subscription.getClient().call(
                 new CallMethodRequest(
-                    Identifiers.Server,
-                    Identifiers.Server_ResendData,
+                    NodeIds.Server,
+                    NodeIds.Server_ResendData,
                     new Variant[]{new Variant(subscription.getSubscription().getSubscriptionId())}
                 )
             );

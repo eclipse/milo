@@ -11,10 +11,10 @@
 package org.eclipse.milo.opcua.stack.client;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import com.google.common.base.Strings;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -204,7 +204,7 @@ public class DiscoveryClient {
 
         String profileUri;
 
-        switch (Strings.nullToEmpty(scheme).toLowerCase()) {
+        switch (Objects.requireNonNullElse(scheme, "").toLowerCase()) {
             case "opc.tcp":
                 profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
                 break;
@@ -225,7 +225,8 @@ public class DiscoveryClient {
                 return failedFuture(
                     new UaException(
                         StatusCodes.Bad_InternalError,
-                        "unsupported protocol: " + scheme));
+                        "unsupported protocol: " + scheme)
+                );
         }
 
         return getEndpoints(endpointUrl, profileUri, customizer);

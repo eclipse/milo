@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -20,24 +11,27 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.11">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.11</a>
+ */
 @EqualsAndHashCode(
     callSuper = false
 )
-@SuperBuilder(
-    toBuilder = true
-)
+@SuperBuilder
 @ToString
 public class SessionDiagnosticsDataType extends Structure implements UaStructure {
-    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=865");
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=865");
 
-    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=867");
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=867");
 
-    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=866");
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("i=866");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15368");
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("i=15368");
 
     private final NodeId sessionId;
 
@@ -384,6 +378,59 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
 
     public ServiceCounterDataType getUnregisterNodesCount() {
         return unregisterNodesCount;
+    }
+
+    public static StructureDefinition definition(NamespaceTable namespaceTable) {
+        return new StructureDefinition(
+            new NodeId(0, 867),
+            new NodeId(0, 22),
+            StructureType.Structure,
+            new StructureField[]{
+                new StructureField("SessionId", LocalizedText.NULL_VALUE, new NodeId(0, 17), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SessionName", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ClientDescription", LocalizedText.NULL_VALUE, new NodeId(0, 308), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ServerUri", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("EndpointUrl", LocalizedText.NULL_VALUE, new NodeId(0, 12), -1, null, UInteger.valueOf(0), false),
+                new StructureField("LocaleIds", LocalizedText.NULL_VALUE, new NodeId(0, 295), 1, null, UInteger.valueOf(0), false),
+                new StructureField("ActualSessionTimeout", LocalizedText.NULL_VALUE, new NodeId(0, 290), -1, null, UInteger.valueOf(0), false),
+                new StructureField("MaxResponseMessageSize", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ClientConnectionTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ClientLastContactTime", LocalizedText.NULL_VALUE, new NodeId(0, 294), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CurrentSubscriptionsCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CurrentMonitoredItemsCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CurrentPublishRequestsInQueue", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TotalRequestCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("UnauthorizedRequestCount", LocalizedText.NULL_VALUE, new NodeId(0, 7), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ReadCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("HistoryReadCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("WriteCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("HistoryUpdateCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CallCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CreateMonitoredItemsCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ModifyMonitoredItemsCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SetMonitoringModeCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SetTriggeringCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DeleteMonitoredItemsCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("CreateSubscriptionCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("ModifySubscriptionCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("SetPublishingModeCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("PublishCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RepublishCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TransferSubscriptionsCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DeleteSubscriptionsCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("AddNodesCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("AddReferencesCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DeleteNodesCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("DeleteReferencesCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("BrowseCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("BrowseNextCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("TranslateBrowsePathsToNodeIdsCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("QueryFirstCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("QueryNextCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("RegisterNodesCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false),
+                new StructureField("UnregisterNodesCount", LocalizedText.NULL_VALUE, new NodeId(0, 871), -1, null, UInteger.valueOf(0), false)
+            }
+        );
     }
 
     public static final class Codec extends GenericDataTypeCodec<SessionDiagnosticsDataType> {

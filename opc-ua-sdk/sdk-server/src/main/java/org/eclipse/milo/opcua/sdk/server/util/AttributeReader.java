@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
@@ -146,12 +146,12 @@ public class AttributeReader {
 
         if (dataTypeNode != null) {
             Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
-                .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(Identifiers.HasSubtype))
+                .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(NodeIds.HasSubtype))
                 .flatMap(r -> opt2stream(r.getTargetNodeId().toNodeId(server.getNamespaceTable())))
                 .findFirst();
 
             return superTypeId
-                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(server, id))
+                .map(id -> id.equals(NodeIds.Structure) || isStructureSubtype(server, id))
                 .orElse(false);
         } else {
             return false;
@@ -214,7 +214,7 @@ public class AttributeReader {
 
         if (dataTypeNode != null) {
             return dataTypeNode.getReferences().stream()
-                .filter(r -> r.isForward() && Identifiers.HasEncoding.equals(r.getReferenceTypeId()))
+                .filter(r -> r.isForward() && NodeIds.HasEncoding.equals(r.getReferenceTypeId()))
                 .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
                 .filter(n -> encodingName.equals(n.getBrowseName()))
                 .map(Node::getNodeId)

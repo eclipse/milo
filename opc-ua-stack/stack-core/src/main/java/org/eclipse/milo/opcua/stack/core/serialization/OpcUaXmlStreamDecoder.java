@@ -940,8 +940,8 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
             }
         } else {
             try {
-                return enumType.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                return enumType.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
             }
         }

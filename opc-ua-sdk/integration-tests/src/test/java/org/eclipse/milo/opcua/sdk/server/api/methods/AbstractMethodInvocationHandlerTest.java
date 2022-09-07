@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.sdk.client.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.methods.UaMethodException;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -35,7 +35,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
     @Test
     public void inputArgumentResultsIsEmptyOnSuccess() throws ExecutionException, InterruptedException {
         CallMethodResult result = client.call(new CallMethodRequest(
-            Identifiers.ObjectsFolder,
+            NodeIds.ObjectsFolder,
             NodeId.parse("ns=2;s=onlyAcceptsPositiveInputs()"),
             new Variant[]{new Variant(1)}
         )).get();
@@ -48,7 +48,7 @@ public class AbstractMethodInvocationHandlerTest extends AbstractClientServerTes
     public void implementationCanValidateArguments() throws UaException {
         AddressSpace addressSpace = client.getAddressSpace();
 
-        UaObjectNode objectsNode = addressSpace.getObjectNode(Identifiers.ObjectsFolder);
+        UaObjectNode objectsNode = addressSpace.getObjectNode(NodeIds.ObjectsFolder);
 
         try {
             objectsNode.callMethod(

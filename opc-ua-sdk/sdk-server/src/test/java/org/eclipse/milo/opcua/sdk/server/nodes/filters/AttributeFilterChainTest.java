@@ -20,8 +20,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -86,8 +86,8 @@ public class AttributeFilterChainTest {
             .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(QualifiedName.NULL_VALUE)
             .setDisplayName(LocalizedText.NULL_VALUE)
-            .setDataType(Identifiers.String)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .setDataType(NodeIds.String)
+            .setTypeDefinition(NodeIds.BaseDataVariableType)
             .build();
 
         node.setValue(new DataValue(new Variant("foo")));
@@ -105,8 +105,8 @@ public class AttributeFilterChainTest {
             .setAccessLevel(AccessLevel.READ_WRITE)
             .setBrowseName(QualifiedName.NULL_VALUE)
             .setDisplayName(LocalizedText.NULL_VALUE)
-            .setDataType(Identifiers.String)
-            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .setDataType(NodeIds.String)
+            .setTypeDefinition(NodeIds.BaseDataVariableType)
             .build();
 
         node.addAttributeObserver((node1, attributeId, value) -> {

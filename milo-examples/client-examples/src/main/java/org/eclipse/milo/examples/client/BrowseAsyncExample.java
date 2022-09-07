@@ -12,15 +12,15 @@ package org.eclipse.milo.examples.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class BrowseAsyncExample implements ClientExample {
         client.connect().get();
 
         // start browsing at root folder
-        UaNode rootNode = client.getAddressSpace().getNode(Identifiers.RootFolder);
+        UaNode rootNode = client.getAddressSpace().getNode(NodeIds.RootFolder);
 
         Tree<UaNode> tree = new Tree<>(rootNode);
 
@@ -87,7 +87,7 @@ public class BrowseAsyncExample implements ClientExample {
 
     private static class Tree<T> {
 
-        final List<Tree<T>> children = Lists.newCopyOnWriteArrayList();
+        final List<Tree<T>> children = new CopyOnWriteArrayList<>();
 
         final T node;
 

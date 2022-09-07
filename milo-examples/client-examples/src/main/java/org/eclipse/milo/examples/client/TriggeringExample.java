@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -33,7 +33,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class TriggeringExample implements ClientExample {
@@ -70,7 +69,7 @@ public class TriggeringExample implements ClientExample {
 
         // subscribe to a dynamic value that only samples
         ReadValueId readValueId2 = new ReadValueId(
-            Identifiers.Server_ServerStatus_CurrentTime,
+            NodeIds.Server_ServerStatus_CurrentTime,
             AttributeId.Value.uid(),
             null,
             QualifiedName.NULL_VALUE
@@ -78,7 +77,7 @@ public class TriggeringExample implements ClientExample {
 
         UaMonitoredItem samplingItem = createMonitoredItem(subscription, readValueId2, MonitoringMode.Sampling);
 
-        subscription.addTriggeringLinks(reportingItem, newArrayList(samplingItem)).get();
+        subscription.addTriggeringLinks(reportingItem, List.of(samplingItem)).get();
 
         // trigger reporting of both by writing to the static item and changing its value
         client.writeValue(
@@ -119,7 +118,7 @@ public class TriggeringExample implements ClientExample {
 
         List<UaMonitoredItem> items = subscription.createMonitoredItems(
             TimestampsToReturn.Both,
-            newArrayList(request),
+            List.of(request),
             onItemCreated
         ).get();
 

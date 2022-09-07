@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
@@ -29,7 +29,7 @@ public final class ViewNodeProperties {
     public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "NodeVersion",
-        Identifiers.String.expanded(),
+        NodeIds.String.expanded(),
         ValueRanks.Scalar,
         String.class
     );
@@ -46,7 +46,7 @@ public final class ViewNodeProperties {
     public static final QualifiedProperty<UInteger> ViewVersion = new QualifiedProperty<>(
         Namespaces.OPC_UA,
         "ViewVersion",
-        Identifiers.UInt32.expanded(),
+        NodeIds.UInt32.expanded(),
         ValueRanks.Scalar,
         UInteger.class
     );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,8 +28,8 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilter;
 import org.eclipse.milo.opcua.sdk.server.nodes.filters.AttributeFilterChain;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -38,6 +38,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
@@ -54,39 +56,9 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     private UByte eventNotifier = ubyte(0);
 
-    public UaObjectNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        ObjectTypeNode objectTypeNode) {
-
-        this(context, nodeId, objectTypeNode.getBrowseName(), objectTypeNode.getDisplayName());
-
-        setDescription(objectTypeNode.getDescription());
-        setWriteMask(objectTypeNode.getWriteMask());
-        setUserWriteMask(objectTypeNode.getUserWriteMask());
-    }
-
-    public UaObjectNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName) {
-
-        super(context, nodeId, NodeClass.Object, browseName, displayName);
-    }
-
-    public UaObjectNode(
-        UaNodeContext context,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask) {
-
-        super(context, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
-    }
-
+    /**
+     * Construct a {@link UaObjectNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaObjectNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -95,12 +67,119 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         LocalizedText description,
         UInteger writeMask,
         UInteger userWriteMask,
-        UByte eventNotifier) {
+        UByte eventNotifier
+    ) {
 
-        super(context, nodeId, NodeClass.Object,
-            browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            context,
+            nodeId,
+            NodeClass.Object,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
 
         this.eventNotifier = eventNotifier;
+    }
+
+    /**
+     * Construct a {@link UaObjectNode} using all attributes, including those defined by OPC UA 1.04.
+     */
+    public UaObjectNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        UByte eventNotifier
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Object,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
+
+        this.eventNotifier = eventNotifier;
+    }
+
+    /**
+     * Construct a {@link UaObjectNode} using all attributes in the intersection of attributes
+     * defined by Objects and ObjectTypes, making it suitable for use when instantiating an Object
+     * instance from an ObjectType.
+     * <p>
+     * This constructor requires only attributes defined prior to OPC UA 1.04.
+     */
+    public UaObjectNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Object,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
+    }
+
+    /**
+     * Construct a {@link UaObjectNode} using all attributes in the intersection of attributes
+     * defined by Objects and ObjectTypes, making it suitable for use when instantiating an Object
+     * instance from an ObjectType.
+     * <p>
+     * This constructor requires attributes defined by OPC UA 1.04.
+     */
+    public UaObjectNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.Object,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
     }
 
     @Override
@@ -264,7 +343,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public void addComponent(UaNode node) {
         addReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
@@ -279,7 +358,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public void removeComponent(UaNode node) {
         removeReference(new Reference(
             getNodeId(),
-            Identifiers.HasComponent,
+            NodeIds.HasComponent,
             node.getNodeId().expanded(),
             true
         ));
@@ -425,10 +504,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
             long hasTypeDefinitionCount = references.stream()
-                .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
+                .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId())).count();
 
             if (hasTypeDefinitionCount == 0) {
-                setTypeDefinition(Identifiers.BaseObjectType);
+                setTypeDefinition(NodeIds.BaseObjectType);
             } else {
                 Preconditions.checkState(
                     hasTypeDefinitionCount == 1,
@@ -567,7 +646,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
             references.add(new Reference(
                 nodeId,
-                Identifiers.HasTypeDefinition,
+                NodeIds.HasTypeDefinition,
                 typeDefinition.expanded(),
                 true
             ));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -44,17 +44,17 @@ public class AttributeWriterTest {
 
     @Test
     public void testStringToString() throws UaException {
-        testWriteConversion(new Variant("String"), Identifiers.String, null);
+        testWriteConversion(new Variant("String"), NodeIds.String, null);
     }
 
     @Test
     public void testStringToDouble() throws UaException {
-        expectFailure(StatusCodes.Bad_TypeMismatch, () -> testWriteConversion(new Variant("String"), Identifiers.Double, null));
+        expectFailure(StatusCodes.Bad_TypeMismatch, () -> testWriteConversion(new Variant("String"), NodeIds.Double, null));
     }
 
     @Test
     public void testByteStringToUByteArray() throws UaException {
-        testWriteConversion(new Variant(ByteString.of("foo".getBytes())), Identifiers.Byte, node -> {
+        testWriteConversion(new Variant(ByteString.of("foo".getBytes())), NodeIds.Byte, node -> {
             node.setValueRank(ValueRanks.OneDimension);
             node.setArrayDimensions(new UInteger[]{uint(0)});
         });
@@ -121,7 +121,14 @@ public class AttributeWriterTest {
         final LocalizedText displayName = LocalizedText.english(id);
 
         final UaVariableNode node = new UaVariableNode(
-            null, nodeId, browseName, displayName);
+            null,
+            nodeId,
+            browseName,
+            displayName,
+            LocalizedText.NULL_VALUE,
+            uint(0),
+            uint(0)
+        );
 
         if (nodeCustomizer != null) {
             nodeCustomizer.accept(node);

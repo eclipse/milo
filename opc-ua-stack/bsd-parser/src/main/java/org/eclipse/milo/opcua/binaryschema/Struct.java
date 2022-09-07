@@ -10,32 +10,29 @@
 
 package org.eclipse.milo.opcua.binaryschema;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Struct {
 
     private final String name;
-    private final ImmutableMap<String, Member> members;
+    private final Map<String, Member> members;
 
     public Struct(@NotNull String name, @NotNull Map<String, Member> members) {
-        this(name, ImmutableMap.copyOf(members));
-    }
-
-    public Struct(@NotNull String name, @NotNull ImmutableMap<String, Member> members) {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(members);
 
         this.name = name;
-        this.members = members;
+        this.members = Map.copyOf(members);
     }
 
     @NotNull
@@ -44,7 +41,7 @@ public class Struct {
     }
 
     @NotNull
-    public ImmutableMap<String, Member> getMembers() {
+    public Map<String, Member> getMembers() {
         return members;
     }
 
@@ -133,7 +130,7 @@ public class Struct {
     public static class Builder {
 
         private final String name;
-        private final LinkedList<Struct.Member> members = new LinkedList<>();
+        private final List<Member> members = new ArrayList<>();
 
         public Builder(String name) {
             this.name = name;
@@ -150,11 +147,10 @@ public class Struct {
         }
 
         public Struct build() {
-            ImmutableMap.Builder<String, Member> mapBuilder = ImmutableMap.builder();
+            Map<String, Member> memberMap = members.stream()
+                .collect(Collectors.toMap(Member::getName, m -> m));
 
-            members.forEach(m -> mapBuilder.put(m.name, m));
-
-            return new Struct(name, mapBuilder.build());
+            return new Struct(name, memberMap);
         }
 
     }

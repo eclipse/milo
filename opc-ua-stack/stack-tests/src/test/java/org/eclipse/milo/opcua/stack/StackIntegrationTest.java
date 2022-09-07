@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack;
 import java.security.KeyPair;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
@@ -41,7 +42,6 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public abstract class StackIntegrationTest extends SecurityFixture {
@@ -79,10 +79,10 @@ public abstract class StackIntegrationTest extends SecurityFixture {
             .setCommonName("localhost")
             .build();
 
-        List<String> bindAddresses = newArrayList();
+        List<String> bindAddresses = new ArrayList<>();
         bindAddresses.add("localhost");
 
-        List<String> hostnames = newArrayList();
+        List<String> hostnames = new ArrayList<>();
         hostnames.add("localhost");
 
         Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
@@ -142,7 +142,7 @@ public abstract class StackIntegrationTest extends SecurityFixture {
                 .setCertificateManager(serverCertificateManager)
                 .setCertificateValidator(serverCertificateValidator)
                 .setHttpsKeyPair(httpsKeyPair)
-                .setHttpsCertificate(httpsCertificate)
+                .setHttpsCertificateChain(new X509Certificate[]{httpsCertificate})
         ).build();
 
         stackServer = new UaStackServer(serverConfig);

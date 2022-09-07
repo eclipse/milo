@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -159,8 +159,8 @@ public class DataTypeDictionaryGenerator {
         NodeId baseDataTypeId = definition.getBaseDataType();
 
         while (baseDataTypeId != null && baseDataTypeId.isNotNull() &&
-            !Identifiers.Structure.equals(baseDataTypeId) &&
-            !Identifiers.Union.equals(baseDataTypeId)
+            !NodeIds.Structure.equals(baseDataTypeId) &&
+            !NodeIds.Union.equals(baseDataTypeId)
         ) {
 
             StructureDescription baseDescription = structureDescriptions.get(baseDataTypeId);
@@ -230,11 +230,17 @@ public class DataTypeDictionaryGenerator {
             String dataTypeName = dataTypeLocation.dataTypeName;
             String dictionaryNamespaceUri = dataTypeLocation.dictionaryNamespaceUri;
 
-            namespaces.add(dictionaryNamespaceUri);
+            if (!dictionaryNamespaceUri.isEmpty()) {
+                namespaces.add(dictionaryNamespaceUri);
+            }
 
             FieldType fieldType = new FieldType();
             fieldType.setName(fieldName);
-            fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            if (dictionaryNamespaceUri.isEmpty()) {
+                fieldType.setTypeName(new QName(namespaceUri, dataTypeName));
+            } else {
+                fieldType.setTypeName(new QName(dictionaryNamespaceUri, dataTypeName));
+            }
 
             if (structureType == StructureType.StructureWithOptionalFields) {
                 if (field.getIsOptional()) {

@@ -23,16 +23,16 @@ import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.ObjectTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
+import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -122,7 +122,7 @@ public class NodeFactoryTest {
     public void testCreateAnalogItemType() throws Exception {
         AnalogItemTypeNode analogItem = (AnalogItemTypeNode) nodeFactory.createNode(
             new NodeId(1, "TestAnalog"),
-            Identifiers.AnalogItemType,
+            NodeIds.AnalogItemType,
             new NodeFactory.InstantiationCallback() {
                 @Override
                 public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {
@@ -143,7 +143,7 @@ public class NodeFactoryTest {
 
         ServerTypeNode serverNode = (ServerTypeNode) nodeFactory.createNode(
             new NodeId(0, "Server"),
-            Identifiers.ServerType,
+            NodeIds.ServerType,
             new NodeFactory.InstantiationCallback() {
                 @Override
                 public boolean includeOptionalNode(NodeId typeDefinitionId, QualifiedName browseName) {

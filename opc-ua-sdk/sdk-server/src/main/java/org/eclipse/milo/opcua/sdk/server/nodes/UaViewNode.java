@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -19,6 +19,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.AccessRestrictionType;
+import org.eclipse.milo.opcua.stack.core.types.structured.RolePermissionType;
 import org.jetbrains.annotations.Nullable;
 
 public class UaViewNode extends UaNode implements ViewNode {
@@ -26,6 +28,9 @@ public class UaViewNode extends UaNode implements ViewNode {
     private Boolean containsNoLoops;
     private UByte eventNotifier;
 
+    /**
+     * Construct a {@link UaViewNode} using only attributes defined prior to OPC UA 1.04.
+     */
     public UaViewNode(
         UaNodeContext context,
         NodeId nodeId,
@@ -35,10 +40,55 @@ public class UaViewNode extends UaNode implements ViewNode {
         UInteger writeMask,
         UInteger userWriteMask,
         Boolean containsNoLoops,
-        UByte eventNotifier) {
+        UByte eventNotifier
+    ) {
 
-        super(context, nodeId, NodeClass.View,
-            browseName, displayName, description, writeMask, userWriteMask);
+        super(
+            context,
+            nodeId,
+            NodeClass.View,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask
+        );
+
+        this.containsNoLoops = containsNoLoops;
+        this.eventNotifier = eventNotifier;
+    }
+
+    /**
+     * Construct a {@link UaViewNode} using all available attributes.
+     */
+    public UaViewNode(
+        UaNodeContext context,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        RolePermissionType[] rolePermissions,
+        RolePermissionType[] userRolePermissions,
+        AccessRestrictionType accessRestrictions,
+        Boolean containsNoLoops,
+        UByte eventNotifier
+    ) {
+
+        super(
+            context,
+            nodeId,
+            NodeClass.View,
+            browseName,
+            displayName,
+            description,
+            writeMask,
+            userWriteMask,
+            rolePermissions,
+            userRolePermissions,
+            accessRestrictions
+        );
 
         this.containsNoLoops = containsNoLoops;
         this.eventNotifier = eventNotifier;

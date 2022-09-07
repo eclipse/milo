@@ -19,14 +19,15 @@ import java.util.stream.Stream;
 import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
@@ -34,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -42,12 +44,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 /**
  * Builds a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
- * {@link Identifiers#BaseDataType}.
+ * {@link NodeIds#BaseDataType}.
  */
 public final class DataTypeTreeBuilder {
 
@@ -55,7 +58,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client a connected {@link OpcUaClient}.
      * @return a {@link DataTypeTree}.
@@ -74,7 +77,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client  a connected {@link UaStackClient}.
      * @param session an active {@link OpcUaSession}.
@@ -94,7 +97,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client a connected {@link OpcUaClient}.
      * @return a {@link DataTypeTree}.
@@ -108,7 +111,7 @@ public final class DataTypeTreeBuilder {
 
     /**
      * Build a {@link DataTypeTree} by recursively browsing the DataType hierarchy starting at
-     * {@link Identifiers#BaseDataType}.
+     * {@link NodeIds#BaseDataType}.
      *
      * @param client  a connected {@link UaStackClient}.
      * @param session an active {@link OpcUaSession}.
@@ -119,7 +122,9 @@ public final class DataTypeTreeBuilder {
             null,
             new DataTypeTree.DataType(
                 QualifiedName.parse("0:BaseDataType"),
-                Identifiers.BaseDataType,
+                NodeIds.BaseDataType,
+                null,
+                null,
                 null,
                 null
             )
@@ -143,7 +148,7 @@ public final class DataTypeTreeBuilder {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_NamespaceArray,
+                        NodeIds.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)}
@@ -174,7 +179,7 @@ public final class DataTypeTreeBuilder {
             new BrowseDescription(
                 tree.getValue().getNodeId(),
                 BrowseDirection.Forward,
-                Identifiers.HasSubtype,
+                NodeIds.HasSubtype,
                 false,
                 uint(NodeClass.DataType.getValue()),
                 uint(BrowseResultMask.All.getValue())
@@ -188,38 +193,50 @@ public final class DataTypeTreeBuilder {
                         .toNodeId(namespaceTable)
                         .orElse(NodeId.NULL_VALUE);
 
-                    CompletableFuture<List<ReferenceDescription>> encodings = browseSafe(
+                    CompletableFuture<List<ReferenceDescription>> encodingsFuture = browseSafe(
                         client,
                         session,
                         new BrowseDescription(
                             dataTypeId,
                             BrowseDirection.Forward,
-                            Identifiers.HasEncoding,
+                            NodeIds.HasEncoding,
                             false,
                             uint(NodeClass.Object.getValue()),
                             uint(BrowseResultMask.All.getValue())
                         )
                     );
 
-                    return encodings.thenApply(encodingReferences -> {
-                        NodeId binaryEncodingId = null;
-                        NodeId xmlEncodingId = null;
+                    CompletableFuture<DataTypeDefinition> dataTypeDefinitionFuture =
+                        readDataTypeDefinition(client, session, dataTypeId);
 
-                        for (ReferenceDescription r : encodingReferences) {
-                            if (r.getBrowseName().equals(OpcUaDefaultBinaryEncoding.ENCODING_NAME)) {
-                                binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                            } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
-                                xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                    return encodingsFuture.thenCombine(
+                        dataTypeDefinitionFuture,
+                        (encodingReferences, dataTypeDefinition) -> {
+                            NodeId binaryEncodingId = null;
+                            NodeId xmlEncodingId = null;
+                            NodeId jsonEncodingId = null;
+
+                            for (ReferenceDescription r : encodingReferences) {
+                                if (r.getBrowseName().equals(OpcUaDefaultBinaryEncoding.ENCODING_NAME)) {
+                                    binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                                } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
+                                    xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                                } else if (r.getBrowseName().equals(new QualifiedName(0, "Default JSON"))) {
+                                    // TODO use OpcUaDefaultJsonEncoding.ENCODING_NAME
+                                    jsonEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
+                                }
                             }
-                        }
 
-                        return new DataTypeTree.DataType(
-                            dataTypeReference.getBrowseName(),
-                            dataTypeId,
-                            binaryEncodingId,
-                            xmlEncodingId
-                        );
-                    });
+                            return new DataTypeTree.DataType(
+                                dataTypeReference.getBrowseName(),
+                                dataTypeId,
+                                binaryEncodingId,
+                                xmlEncodingId,
+                                jsonEncodingId,
+                                dataTypeDefinition
+                            );
+                        }
+                    );
                 });
 
             return FutureUtils.sequence(dataTypeFutures);
@@ -253,6 +270,59 @@ public final class DataTypeTreeBuilder {
 
         return BrowseHelper.browse(client, session, browseDescription, uint(0))
             .exceptionally(ex -> Collections.emptyList());
+    }
+
+    /**
+     * Read the DataTypeDefinition attribute for the DataType Node identified by {@code nodeId}.
+     *
+     * @param client     a {@link UaStackClient}.
+     * @param session    an {@link OpcUaSession}.
+     * @param dataTypeId the {@link NodeId} of the DataType node.
+     * @return the value of the {@link DataTypeDefinition} attribute for the Node identified by
+     * {@code dataTypeId}. May be {@code null}.
+     */
+    private static CompletableFuture<@Nullable DataTypeDefinition> readDataTypeDefinition(
+        UaStackClient client,
+        OpcUaSession session,
+        NodeId dataTypeId
+    ) {
+
+        var request = new ReadRequest(
+            client.newRequestHeader(
+                session.getAuthenticationToken(),
+                client.getConfig().getRequestTimeout()
+            ),
+            0.0,
+            TimestampsToReturn.Neither,
+            new ReadValueId[]{
+                new ReadValueId(
+                    dataTypeId,
+                    AttributeId.DataTypeDefinition.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                )
+            }
+        );
+
+        return client.sendRequest(request).thenApply(ReadResponse.class::cast).thenApply(response -> {
+            DataValue value = response.getResults()[0];
+
+            if (value.getStatusCode() != null && value.getStatusCode().isGood()) {
+                Object o = value.getValue().getValue();
+                if (o instanceof ExtensionObject) {
+                    Object decoded = ((ExtensionObject) o).decode(
+                        client.getStaticSerializationContext()
+                    );
+
+                    return (DataTypeDefinition) decoded;
+                } else {
+                    return null;
+                }
+            } else {
+                // OPC UA 1.03 and prior servers will return Bad_AttributeIdInvalid
+                return null;
+            }
+        });
     }
 
 }

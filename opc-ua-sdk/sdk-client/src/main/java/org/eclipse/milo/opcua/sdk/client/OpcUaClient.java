@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -31,8 +32,8 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -131,7 +132,6 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
@@ -242,7 +242,7 @@ public class OpcUaClient implements UaClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
+    private final List<ServiceFaultListener> faultListeners = new CopyOnWriteArrayList<>();
     private final ExecutionQueue faultNotificationQueue;
 
     private final AddressSpace addressSpace;
@@ -273,12 +273,12 @@ public class OpcUaClient implements UaClient {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_NamespaceArray,
+                        NodeIds.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE),
                     new ReadValueId(
-                        Identifiers.Server_ServerArray,
+                        NodeIds.Server_ServerArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)
@@ -411,7 +411,7 @@ public class OpcUaClient implements UaClient {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_NamespaceArray,
+                        NodeIds.Server_NamespaceArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)
@@ -472,7 +472,7 @@ public class OpcUaClient implements UaClient {
                 TimestampsToReturn.Neither,
                 new ReadValueId[]{
                     new ReadValueId(
-                        Identifiers.Server_ServerArray,
+                        NodeIds.Server_ServerArray,
                         AttributeId.Value.uid(),
                         null,
                         QualifiedName.NULL_VALUE)

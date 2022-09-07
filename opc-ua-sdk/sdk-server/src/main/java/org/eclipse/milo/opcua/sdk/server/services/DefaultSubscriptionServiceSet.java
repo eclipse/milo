@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
@@ -85,7 +85,7 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
             throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
-        List<TransferResult> results = Lists.newArrayList();
+        var results = new ArrayList<TransferResult>();
 
         for (UInteger subscriptionId : subscriptionIds) {
             Subscription subscription = server.getSubscriptions().get(subscriptionId);

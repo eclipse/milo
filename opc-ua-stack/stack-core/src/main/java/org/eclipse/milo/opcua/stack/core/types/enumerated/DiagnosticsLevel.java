@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
@@ -16,8 +6,14 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.11/#9.1.11.4">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.11/#9.1.11.4</a>
+ */
 public enum DiagnosticsLevel implements UaEnumeration {
     Basic(0),
 
@@ -40,8 +36,11 @@ public enum DiagnosticsLevel implements UaEnumeration {
         return value;
     }
 
-    @Nullable
-    public static DiagnosticsLevel from(int value) {
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("ns=0;i=19723");
+    }
+
+    public static @Nullable DiagnosticsLevel from(int value) {
         switch (value) {
             case 0:
                 return Basic;
@@ -58,11 +57,17 @@ public enum DiagnosticsLevel implements UaEnumeration {
         }
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=19723");
+    public static EnumDefinition definition() {
+        return new EnumDefinition(new EnumField[]{
+            new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Basic"),
+            new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Advanced"),
+            new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Info"),
+            new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Log"),
+            new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Debug")
+        });
     }
 
-    public static class Codec extends GenericDataTypeCodec<DiagnosticsLevel> {
+    public static final class Codec extends GenericDataTypeCodec<DiagnosticsLevel> {
         @Override
         public Class<DiagnosticsLevel> getType() {
             return DiagnosticsLevel.class;

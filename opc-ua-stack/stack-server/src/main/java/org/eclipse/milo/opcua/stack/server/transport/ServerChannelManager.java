@@ -13,9 +13,9 @@ package org.eclipse.milo.opcua.stack.server.transport;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.collect.ConcurrentHashMultiset;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -44,7 +44,7 @@ public class ServerChannelManager {
     private final AsyncSemaphore semaphore = new AsyncSemaphore(1);
 
     private final Multiset<InetSocketAddress> addresses = ConcurrentHashMultiset.create();
-    private final Map<InetSocketAddress, Channel> channels = Maps.newConcurrentMap();
+    private final Map<InetSocketAddress, Channel> channels = new ConcurrentHashMap<>();
 
     private final UaStackServer stackServer;
 

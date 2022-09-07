@@ -13,7 +13,6 @@ package org.eclipse.milo.examples.client;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -37,7 +36,7 @@ public class WriteExample implements ClientExample {
         // synchronous connect
         client.connect().get();
 
-        List<NodeId> nodeIds = ImmutableList.of(new NodeId(2, "HelloWorld/ScalarTypes/Int32"));
+        List<NodeId> nodeIds = List.of(new NodeId(2, "HelloWorld/ScalarTypes/Int32"));
 
         for (int i = 0; i < 10; i++) {
             Variant v = new Variant(i);
@@ -47,7 +46,7 @@ public class WriteExample implements ClientExample {
 
             // write asynchronously....
             CompletableFuture<List<StatusCode>> f =
-                client.writeValues(nodeIds, ImmutableList.of(dv));
+                client.writeValues(nodeIds, List.of(dv));
 
             // ...but block for the results so we write in order
             List<StatusCode> statusCodes = f.get();

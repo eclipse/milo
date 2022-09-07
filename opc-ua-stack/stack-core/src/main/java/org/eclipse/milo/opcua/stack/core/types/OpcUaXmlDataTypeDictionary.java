@@ -11,8 +11,8 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -28,9 +28,9 @@ public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDa
     public OpcUaXmlDataTypeDictionary(String namespaceUri) {
         this.namespaceUri = namespaceUri;
 
-        codecsByDescription = Maps.newConcurrentMap();
-        codecsByEncodingId = Maps.newConcurrentMap();
-        codecsByDataTypeId = Maps.newConcurrentMap();
+        codecsByDescription = new ConcurrentHashMap<>();
+        codecsByEncodingId = new ConcurrentHashMap<>();
+        codecsByDataTypeId = new ConcurrentHashMap<>();
     }
 
     public OpcUaXmlDataTypeDictionary(
@@ -42,13 +42,13 @@ public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDa
 
         this.namespaceUri = namespaceUri;
 
-        codecsByDescription = Maps.newConcurrentMap();
+        codecsByDescription = new ConcurrentHashMap<>();
         codecsByDescription.putAll(byDescription);
 
-        codecsByEncodingId = Maps.newConcurrentMap();
+        codecsByEncodingId = new ConcurrentHashMap<>();
         codecsByEncodingId.putAll(byEncodingId);
 
-        codecsByDataTypeId = Maps.newConcurrentMap();
+        codecsByDataTypeId = new ConcurrentHashMap<>();
         codecsByDataTypeId.putAll(byDataTypeId);
     }
 

@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -86,7 +86,7 @@ public class InstanceDeclarationHierarchy {
             Optional<InstanceDeclarationHierarchy> parentIdh = addressSpaceManager
                 .getManagedReferences(typeDefinitionId)
                 .stream()
-                .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
+                .filter(r -> r.isInverse() && NodeIds.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
                 .flatMap(r -> r.getTargetNodeId().toNodeId(namespaceTable))
                 .map(parentTypeId -> InstanceDeclarationHierarchy
@@ -101,7 +101,7 @@ public class InstanceDeclarationHierarchy {
             BrowsePath browsePath = BrowsePath.ROOT;
 
             nodeTable.addNode(browsePath, typeDefinitionId);
-            referenceTable.addReference(browsePath, Identifiers.HasTypeDefinition, typeDefinitionId.expanded());
+            referenceTable.addReference(browsePath, NodeIds.HasTypeDefinition, typeDefinitionId.expanded());
 
             addModeledNodes(typeDefinitionId, browsePath);
 
@@ -128,7 +128,7 @@ public class InstanceDeclarationHierarchy {
 
                         node.getReferences()
                             .stream()
-                            .filter(r -> r.subtypeOf(Identifiers.NonHierarchicalReferences))
+                            .filter(r -> r.subtypeOf(NodeIds.NonHierarchicalReferences))
                             .forEach(r -> referenceTable
                                 .addReference(browsePath, r.getReferenceTypeId(), r.getTargetNodeId()));
 
@@ -139,7 +139,7 @@ public class InstanceDeclarationHierarchy {
 
                         Optional<ExpandedNodeId> instanceDeclarationTypeDefinitionId = node.getReferences()
                             .stream()
-                            .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId()))
+                            .filter(r -> NodeIds.HasTypeDefinition.equals(r.getReferenceTypeId()))
                             .findFirst()
                             .map(Reference::getTargetNodeId);
 
@@ -164,10 +164,10 @@ public class InstanceDeclarationHierarchy {
         private static boolean hasModellingRule(UaNode potentialMemberNode) {
             return potentialMemberNode.getReferences()
                 .stream()
-                .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
+                .filter(r -> NodeIds.HasModellingRule.equals(r.getReferenceTypeId()))
                 .anyMatch(r ->
-                    Identifiers.ModellingRule_Mandatory.equalTo(r.getTargetNodeId()) ||
-                        Identifiers.ModellingRule_Optional.equalTo(r.getTargetNodeId())
+                    NodeIds.ModellingRule_Mandatory.equalTo(r.getTargetNodeId()) ||
+                        NodeIds.ModellingRule_Optional.equalTo(r.getTargetNodeId())
                 );
         }
 

@@ -1,17 +1,6 @@
-/*
- * Copyright (c) 2021 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +9,9 @@ import lombok.ToString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.OptionSetUInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
+/**
+ * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part3/8.55">https://reference.opcfoundation.org/v105/Core/docs/Part3/8.55</a>
+ */
 @EqualsAndHashCode(
     callSuper = true
 )
@@ -110,16 +102,6 @@ public class PermissionType extends OptionSetUInteger<PermissionType.Field> {
     }
 
     public static PermissionType of(PermissionType.Field... fields) {
-        long bits = 0L;
-
-        for (Field f : fields) {
-            bits |= (1L << f.bitIndex);
-        }
-
-        return new PermissionType(UInteger.valueOf(bits));
-    }
-
-    public static PermissionType of(Collection<PermissionType.Field> fields) {
         long bits = 0L;
 
         for (Field f : fields) {

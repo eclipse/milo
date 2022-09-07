@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -24,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class DefaultDataTypeManager implements DataTypeManager {
 
-    private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = Maps.newConcurrentMap();
-    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = Maps.newConcurrentMap();
+    private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = new ConcurrentHashMap<>();
+    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = new ConcurrentHashMap<>();
     private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
         Tables.synchronizedTable(HashBasedTable.create());
 
@@ -86,7 +86,7 @@ public class DefaultDataTypeManager implements DataTypeManager {
     public static DataTypeManager createAndInitialize(NamespaceTable namespaceTable) {
         DefaultDataTypeManager dataTypeManager = new DefaultDataTypeManager();
 
-        DataTypeInitializer.initialize(namespaceTable, dataTypeManager);
+        new DataTypeInitializer().initialize(namespaceTable, dataTypeManager);
 
         return dataTypeManager;
     }

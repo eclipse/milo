@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -31,8 +31,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -297,7 +297,7 @@ public class NodeFactory {
                 NodeId referenceTypeId = t.nodeId;
                 ReferenceTable.RefTarget target = t.target;
 
-                if (!Identifiers.HasModellingRule.equals(referenceTypeId)) {
+                if (!NodeIds.HasModellingRule.equals(referenceTypeId)) {
                     if (target.targetNodeId != null) {
                         node.addReference(new Reference(
                             node.getNodeId(),
@@ -376,7 +376,7 @@ public class NodeFactory {
 
         // Use a specialized instance if one is registered, otherwise fallback to UaObjectNode.
         ObjectTypeManager.ObjectNodeConstructor ctor = objectTypeManager
-            .getNodeFactory(typeDefinitionId)
+            .getNodeConstructor(typeDefinitionId)
             .orElse(UaObjectNode::new);
 
         return ctor.apply(
@@ -386,7 +386,10 @@ public class NodeFactory {
             typeDefinitionNode.getDisplayName(),
             typeDefinitionNode.getDescription(),
             typeDefinitionNode.getWriteMask(),
-            typeDefinitionNode.getUserWriteMask()
+            typeDefinitionNode.getUserWriteMask(),
+            typeDefinitionNode.getRolePermissions(),
+            typeDefinitionNode.getUserRolePermissions(),
+            typeDefinitionNode.getAccessRestrictions()
         );
     }
 
@@ -399,7 +402,7 @@ public class NodeFactory {
 
         // Use a specialized instance if one is registered, otherwise fallback to UaVariableNode.
         VariableTypeManager.VariableNodeConstructor ctor = variableTypeManager
-            .getNodeFactory(typeDefinitionId)
+            .getNodeConstructor(typeDefinitionId)
             .orElse(UaVariableNode::new);
 
         return ctor.apply(
@@ -409,22 +412,29 @@ public class NodeFactory {
             typeDefinitionNode.getDisplayName(),
             typeDefinitionNode.getDescription(),
             typeDefinitionNode.getWriteMask(),
-            typeDefinitionNode.getUserWriteMask()
+            typeDefinitionNode.getUserWriteMask(),
+            typeDefinitionNode.getRolePermissions(),
+            typeDefinitionNode.getUserRolePermissions(),
+            typeDefinitionNode.getAccessRestrictions(),
+            typeDefinitionNode.getValue(),
+            typeDefinitionNode.getDataType(),
+            typeDefinitionNode.getValueRank(),
+            typeDefinitionNode.getArrayDimensions()
         );
     }
 
     protected boolean isOptionalDeclaration(UaNode node) {
         return node.getReferences()
             .stream()
-            .filter(r -> Identifiers.HasModellingRule.equals(r.getReferenceTypeId()))
-            .anyMatch(r -> Identifiers.ModellingRule_Optional.equalTo(r.getTargetNodeId()));
+            .filter(r -> NodeIds.HasModellingRule.equals(r.getReferenceTypeId()))
+            .anyMatch(r -> NodeIds.ModellingRule_Optional.equalTo(r.getTargetNodeId()));
     }
 
     private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {
         return referenceTable
             .getReferences(browsePath)
             .stream()
-            .filter(t -> t.nodeId.equals(Identifiers.HasTypeDefinition))
+            .filter(t -> t.nodeId.equals(NodeIds.HasTypeDefinition))
             .map(t -> t.target.targetNodeId)
             .findFirst()
             .orElse(ExpandedNodeId.NULL_VALUE);

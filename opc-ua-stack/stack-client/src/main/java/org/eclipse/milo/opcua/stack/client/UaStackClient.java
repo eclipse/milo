@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.stack.client;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.http.OpcHttpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
@@ -51,7 +51,7 @@ public class UaStackClient {
 
     private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
-    private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
+    private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = new ConcurrentHashMap<>();
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
@@ -77,7 +77,10 @@ public class UaStackClient {
 
         this.config = config;
 
-        serverTable.add(config.getEndpoint().getServer().getApplicationUri());
+        if (config.getEndpoint() != null && config.getEndpoint().getServer() != null) {
+            // might be null if e.g. this is being used by DiscoveryClient
+            serverTable.add(config.getEndpoint().getServer().getApplicationUri());
+        }
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
 
@@ -167,6 +170,15 @@ public class UaStackClient {
     }
 
     /**
+     * Get the {@link UaTransport} used by this client.
+     *
+     * @return the {@link UaTransport} used by this client.
+     */
+    public UaTransport getTransport() {
+        return transport;
+    }
+
+    /**
      * Get the local copy of the {@link NamespaceTable}.
      * <p>
      * Until explicitly updated this contains only
@@ -183,7 +195,7 @@ public class UaStackClient {
      * <p>
      * Until explicitly updated this contains only the server application URI from the
      * {@link org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription} in the
-     * configured endpoint.
+     * configured endpoint, if present.
      *
      * @return the local copy of the {@link ServerTable}.
      */
