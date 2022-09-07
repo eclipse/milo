@@ -237,6 +237,8 @@ public class DataTypeTree {
      *     <li>NodeId of the DataType Node</li>
      *     <li>NodeId of the Binary Encoding Node</li>
      *     <li>NodeId of the XML Encoding Node</li>
+     *     <li>NodeId of the JSON Encoding Node</li>
+     *     <li>{@link DataTypeDefinition} attribute value</li>>
      * </ul>
      */
     public static class DataType {
@@ -290,8 +292,7 @@ public class DataTypeTree {
          *
          * @return the NodeId of the Binary Encoding Node for this DataType, if it exists.
          */
-        @Nullable
-        public NodeId getBinaryEncodingId() {
+        public @Nullable NodeId getBinaryEncodingId() {
             return binaryEncodingId;
         }
 
@@ -302,8 +303,7 @@ public class DataTypeTree {
          *
          * @return the NodeId of the XML Encoding Node for this DataType, if it exists.
          */
-        @Nullable
-        public NodeId getXmlEncodingId() {
+        public @Nullable NodeId getXmlEncodingId() {
             return xmlEncodingId;
         }
 
@@ -314,7 +314,7 @@ public class DataTypeTree {
          *
          * @return the {@link NodeId} of the JSON Encoding Node for this DataType, if it exists.
          */
-        public NodeId getJsonEncodingId() {
+        public @Nullable NodeId getJsonEncodingId() {
             return jsonEncodingId;
         }
 
@@ -325,7 +325,7 @@ public class DataTypeTree {
          *
          * @return the {@link DataTypeDefinition} of this DataType.
          */
-        public DataTypeDefinition getDataTypeDefinition() {
+        public @Nullable DataTypeDefinition getDataTypeDefinition() {
             return dataTypeDefinition;
         }
 
