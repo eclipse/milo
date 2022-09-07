@@ -14,19 +14,17 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
-
 public class DynamicStruct {
 
-    private final DataTypeTree.DataType dataType;
+    private final DataType dataType;
     private final LinkedHashMap<String, Object> members;
 
-    public DynamicStruct(DataTypeTree.DataType dataType, LinkedHashMap<String, Object> members) {
+    public DynamicStruct(DataType dataType, LinkedHashMap<String, Object> members) {
         this.dataType = dataType;
         this.members = members;
     }
 
-    public DataTypeTree.DataType getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 

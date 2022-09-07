@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.core.types;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -46,9 +45,9 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
     private final StructureDefinition structureDefinition;
 
-    private final DataTypeTree.DataType dataType;
+    private final DataType dataType;
 
-    public DynamicStructCodec(DataTypeTree.DataType dataType) {
+    public DynamicStructCodec(DataType dataType) {
         this.dataType = dataType;
 
         this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();

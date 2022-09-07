@@ -17,7 +17,8 @@ import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.methods.UaMethod;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.core.types.DataType;
+import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -72,7 +73,7 @@ public class MethodExample2 implements ClientExample {
             logger.info("{} arguments:", input ? "Input" : "Output");
             for (Argument argument : arguments) {
                 NodeId dataTypeId = argument.getDataType();
-                DataTypeTree.DataType dataType = dataTypeTree.getDataType(dataTypeId);
+                DataType dataType = dataTypeTree.getDataType(dataTypeId);
                 assert dataType != null;
                 String dataTypeName = dataType.getBrowseName().getName();
 

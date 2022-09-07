@@ -13,6 +13,8 @@ package org.eclipse.milo.opcua.sdk.core;
 import java.util.Objects;
 
 import org.eclipse.milo.opcua.sdk.client.DataTypeTreeBuilder;
+import org.eclipse.milo.opcua.sdk.core.types.DataType;
+import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
 import org.eclipse.milo.opcua.sdk.test.AbstractClientServerTest;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
@@ -86,7 +88,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
     }
 
     private void checkSubtypes(NodeId dataTypeId, Class<?> expectedBackingClass) {
-        Tree<DataTypeTree.DataType> nodeIdNode = dataTypeTree.getTreeNode(dataTypeId);
+        Tree<DataType> nodeIdNode = dataTypeTree.getTreeNode(dataTypeId);
         assertNotNull(nodeIdNode);
         nodeIdNode.traverse(dataType -> {
             Class<?> backingClass = dataTypeTree.getBackingClass(dataType.getNodeId());
@@ -162,7 +164,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
     @Test
     public void testGetEncodingIds() {
-        Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Structure);
+        Tree<DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Structure);
         assertNotNull(treeNode);
 
         treeNode.traverse(dataType -> {
@@ -179,7 +181,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
     @Test
     public void enumerationsHaveDataTypeDefinitions() {
-        Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Enumeration);
+        Tree<DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Enumeration);
         assertNotNull(treeNode);
 
         treeNode.traverse(dataType -> {
@@ -192,7 +194,7 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
 
     @Test
     public void structuresHaveDataTypeDefinitions() {
-        Tree<DataTypeTree.DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Structure);
+        Tree<DataType> treeNode = dataTypeTree.getTreeNode(NodeIds.Structure);
         assertNotNull(treeNode);
 
         treeNode.traverse(dataType -> {

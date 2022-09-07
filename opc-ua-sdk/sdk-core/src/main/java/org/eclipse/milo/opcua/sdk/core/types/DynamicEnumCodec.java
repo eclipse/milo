@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.core.types;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -25,10 +24,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 
 public class DynamicEnumCodec extends GenericDataTypeCodec<DynamicEnum> {
 
-    private final DataTypeTree.DataType dataType;
+    private final DataType dataType;
     private final Map<Long, EnumField> fields = new HashMap<>();
 
-    public DynamicEnumCodec(DataTypeTree.DataType dataType) {
+    public DynamicEnumCodec(DataType dataType) {
         this.dataType = dataType;
 
         EnumDefinition definition = (EnumDefinition) dataType.getDataTypeDefinition();

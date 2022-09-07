@@ -8,18 +8,15 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.core;
+package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UNumber;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
@@ -123,8 +120,7 @@ public class DataTypeTree {
      * @param dataTypeId the {@link NodeId} of a DataType Node.
      * @return the {@link DataType} info for the DataType identified by {@code dataTypeId}, if it exists.
      */
-    @Nullable
-    public DataType getDataType(NodeId dataTypeId) {
+    public @Nullable DataType getDataType(NodeId dataTypeId) {
         Tree<DataType> node = dataTypes.get(dataTypeId);
 
         return node != null ? node.getValue() : null;
@@ -136,8 +132,7 @@ public class DataTypeTree {
      * @param dataTypeId the {@link NodeId} of a DataType Node.
      * @return the {@link NodeId} of the Binary Encoding Node, or {@code null} if none exists.
      */
-    @Nullable
-    public NodeId getBinaryEncodingId(NodeId dataTypeId) {
+    public @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId) {
         DataType dataType = getDataType(dataTypeId);
 
         return dataType != null ? dataType.getBinaryEncodingId() : null;
@@ -149,8 +144,7 @@ public class DataTypeTree {
      * @param dataTypeId the {@link NodeId} of a DataType Node.
      * @return the {@link NodeId} of the XML Encoding Node, or {@code null} if none exists.
      */
-    @Nullable
-    public NodeId getXmlEncodingId(NodeId dataTypeId) {
+    public @Nullable NodeId getXmlEncodingId(NodeId dataTypeId) {
         DataType dataType = getDataType(dataTypeId);
 
         return dataType != null ? dataType.getXmlEncodingId() : null;
@@ -162,8 +156,7 @@ public class DataTypeTree {
      * @param dataTypeId the {@link NodeId} of the DataType Node.
      * @return the {@link NodeId} of the JSON Encoding Node for the DataType identified by {@code dataTypeId}.
      */
-    @Nullable
-    public NodeId getJsonEncodingId(NodeId dataTypeId) {
+    public @Nullable NodeId getJsonEncodingId(NodeId dataTypeId) {
         DataType dataType = getDataType(dataTypeId);
 
         return dataType != null ? dataType.getJsonEncodingId() : null;
@@ -177,8 +170,7 @@ public class DataTypeTree {
      * @param dataTypeId the {@link NodeId} of the DataType Node.
      * @return the {@link DataTypeDefinition} of the DataType identified by {@code dataTypeId}.
      */
-    @Nullable
-    public DataTypeDefinition getDataTypeDefinition(NodeId dataTypeId) {
+    public @Nullable DataTypeDefinition getDataTypeDefinition(NodeId dataTypeId) {
         DataType dataType = getDataType(dataTypeId);
 
         return dataType != null ? dataType.getDataTypeDefinition() : null;
@@ -225,147 +217,8 @@ public class DataTypeTree {
      * @param dataTypeId the {@link NodeId} of a DataType Node.
      * @return the underlying {@link Tree} node for the DataType identified by {@code dataTypeId}.
      */
-    @Nullable
-    public Tree<DataType> getTreeNode(NodeId dataTypeId) {
+    public @Nullable Tree<DataType> getTreeNode(NodeId dataTypeId) {
         return dataTypes.get(dataTypeId);
-    }
-
-    /**
-     * Data object that holds details of a DataType:
-     * <ul>
-     *     <li>Browse Name of the DataType Node</li>
-     *     <li>NodeId of the DataType Node</li>
-     *     <li>NodeId of the Binary Encoding Node</li>
-     *     <li>NodeId of the XML Encoding Node</li>
-     *     <li>NodeId of the JSON Encoding Node</li>
-     *     <li>{@link DataTypeDefinition} attribute value</li>>
-     * </ul>
-     */
-    public static class DataType {
-
-        private final QualifiedName browseName;
-        private final NodeId nodeId;
-        private final NodeId binaryEncodingId;
-        private final NodeId xmlEncodingId;
-        private final NodeId jsonEncodingId;
-        private final DataTypeDefinition dataTypeDefinition;
-
-        public DataType(
-            QualifiedName browseName,
-            NodeId nodeId,
-            NodeId binaryEncodingId,
-            NodeId xmlEncodingId,
-            NodeId jsonEncodingId,
-            DataTypeDefinition dataTypeDefinition
-        ) {
-
-            this.browseName = browseName;
-            this.nodeId = nodeId;
-            this.binaryEncodingId = binaryEncodingId;
-            this.xmlEncodingId = xmlEncodingId;
-            this.jsonEncodingId = jsonEncodingId;
-            this.dataTypeDefinition = dataTypeDefinition;
-        }
-
-        /**
-         * Get the Browse Name of this DataType.
-         *
-         * @return the Browse Name of this DataType.
-         */
-        public QualifiedName getBrowseName() {
-            return browseName;
-        }
-
-        /**
-         * Get the {@link NodeId} of this DataType.
-         *
-         * @return the {@link NodeId} of this DataType.
-         */
-        public NodeId getNodeId() {
-            return nodeId;
-        }
-
-        /**
-         * Get the {@link NodeId} of the Binary Encoding Node for this DataType, if it exists.
-         * <p>
-         * Only Structured DataTypes have encoding ids.
-         *
-         * @return the NodeId of the Binary Encoding Node for this DataType, if it exists.
-         */
-        public @Nullable NodeId getBinaryEncodingId() {
-            return binaryEncodingId;
-        }
-
-        /**
-         * Get the {@link NodeId} of the XML Encoding Node for this DataType, if it exists.
-         * <p>
-         * Only Structured DataTypes have encoding ids.
-         *
-         * @return the NodeId of the XML Encoding Node for this DataType, if it exists.
-         */
-        public @Nullable NodeId getXmlEncodingId() {
-            return xmlEncodingId;
-        }
-
-        /**
-         * Get the {@link NodeId} of the JSON Encoding Node for this DataType, if it exists.
-         * <p>
-         * Only Structured DataTypes have encoding ids.
-         *
-         * @return the {@link NodeId} of the JSON Encoding Node for this DataType, if it exists.
-         */
-        public @Nullable NodeId getJsonEncodingId() {
-            return jsonEncodingId;
-        }
-
-        /**
-         * Get the {@link DataTypeDefinition} of this DataType.
-         * <p>
-         * Only Structured and Enumerated DataTypes have a {@link DataTypeDefinition}.
-         *
-         * @return the {@link DataTypeDefinition} of this DataType.
-         */
-        public @Nullable DataTypeDefinition getDataTypeDefinition() {
-            return dataTypeDefinition;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            DataType dataType = (DataType) o;
-            return browseName.equals(dataType.browseName) &&
-                nodeId.equals(dataType.nodeId) &&
-                Objects.equals(binaryEncodingId, dataType.binaryEncodingId) &&
-                Objects.equals(xmlEncodingId, dataType.xmlEncodingId) &&
-                Objects.equals(jsonEncodingId, dataType.jsonEncodingId) &&
-                Objects.equals(dataTypeDefinition, dataType.dataTypeDefinition);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(
-                browseName,
-                nodeId,
-                binaryEncodingId,
-                xmlEncodingId,
-                jsonEncodingId,
-                dataTypeDefinition
-            );
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", DataType.class.getSimpleName() + "[", "]")
-                .add("browseName=" + browseName)
-                .add("nodeId=" + nodeId)
-                .add("binaryEncodingId=" + binaryEncodingId)
-                .add("xmlEncodingId=" + xmlEncodingId)
-                .add("jsonEncodingId=" + jsonEncodingId)
-                .add("dataTypeDefinition=" + dataTypeDefinition)
-                .toString();
-        }
-
     }
 
 }

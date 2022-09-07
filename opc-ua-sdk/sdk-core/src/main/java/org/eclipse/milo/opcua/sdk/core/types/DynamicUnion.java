@@ -13,16 +13,15 @@ package org.eclipse.milo.opcua.sdk.core.types;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicUnion extends DynamicStruct {
 
-    public DynamicUnion(DataTypeTree.DataType dataType) {
+    public DynamicUnion(DataType dataType) {
         this(dataType, new LinkedHashMap<>());
     }
 
-    public DynamicUnion(DataTypeTree.DataType dataType, LinkedHashMap<String, Object> members) {
+    public DynamicUnion(DataType dataType, LinkedHashMap<String, Object> members) {
         super(dataType, members);
     }
 
@@ -58,11 +57,11 @@ public class DynamicUnion extends DynamicStruct {
             .orElse("null");
     }
 
-    static DynamicUnion ofNull(DataTypeTree.DataType dataType) {
+    static DynamicUnion ofNull(DataType dataType) {
         return new DynamicUnion(dataType);
     }
 
-    static DynamicUnion of(DataTypeTree.DataType dataType, String fieldName, Object fieldValue) {
+    static DynamicUnion of(DataType dataType, String fieldName, Object fieldValue) {
         LinkedHashMap<String, Object> members = new LinkedHashMap<>();
         members.put(fieldName, fieldValue);
         return new DynamicUnion(dataType, members);

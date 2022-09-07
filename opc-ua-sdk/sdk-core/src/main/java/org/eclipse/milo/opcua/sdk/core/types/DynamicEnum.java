@@ -10,23 +10,22 @@
 
 package org.eclipse.milo.opcua.sdk.core.types;
 
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicEnum {
 
-    private final DataTypeTree.DataType dataType;
+    private final DataType dataType;
     private final String name;
     private final int value;
     private final LocalizedText displayName;
     private final LocalizedText description;
 
-    public DynamicEnum(DataTypeTree.DataType dataType, int value) {
+    public DynamicEnum(DataType dataType, int value) {
         this(dataType, null, value, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE);
     }
 
-    public DynamicEnum(DataTypeTree.DataType dataType, String name, int value, LocalizedText displayName, LocalizedText description) {
+    public DynamicEnum(DataType dataType, String name, int value, LocalizedText displayName, LocalizedText description) {
         this.dataType = dataType;
         this.name = name;
         this.value = value;
@@ -34,7 +33,7 @@ public class DynamicEnum {
         this.description = description;
     }
 
-    public DataTypeTree.DataType getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
