@@ -41,7 +41,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // DataTypeTree reads DataTypeDefinition attributes while traversing the type hierarchy
-        // and registers codecs with the client's dynamic DataTypeManager.
+        // and, by default, registers codecs with the client's dynamic DataTypeManager.
         client.addSessionInitializer(new DataTypeTreeSessionInitializer());
 
         client.connect().get();
