@@ -253,13 +253,13 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         Integer valueRank = field.getValueRank();
         if (valueRank == -1) {
             if (builtinDataType == null) {
-                encoder.writeStruct(fieldName, value, structureDefinition.getTypeId());
+                encoder.writeStruct(fieldName, value, dataTypeId);
             } else {
                 encodeBuiltinDataType(encoder, fieldName, builtinDataType, value);
             }
         } else if (valueRank == 1) {
             if (builtinDataType == null) {
-                encoder.writeStructArray(fieldName, (Object[]) value, structureDefinition.getTypeId());
+                encoder.writeStructArray(fieldName, (Object[]) value, dataTypeId);
             } else {
                 encodeBuiltinDataTypeArray(encoder, fieldName, builtinDataType, value);
             }
