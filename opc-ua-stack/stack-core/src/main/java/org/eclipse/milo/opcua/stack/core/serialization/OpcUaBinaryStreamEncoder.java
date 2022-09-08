@@ -457,7 +457,6 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
                     writeNodeId(value.getEncodingId());
                     buffer.writeByte(1); // Body is binary encoded
-
                     writeByteString(byteString);
 
                     break;
@@ -467,8 +466,16 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
                     writeNodeId(value.getEncodingId());
                     buffer.writeByte(2);
-
                     writeXmlElement(xmlElement);
+
+                    break;
+                }
+                case JsonString: {
+                    String jsonString = (String) body;
+
+                    writeNodeId(value.getEncodingId());
+                    buffer.writeByte(1);
+                    writeByteString(ByteString.of(jsonString.getBytes(StandardCharsets.UTF_8)));
 
                     break;
                 }
