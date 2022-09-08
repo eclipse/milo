@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.sdk.core.types.DynamicStructCodec;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -110,7 +111,17 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                             codec.asXmlCodec()
                         );
                     }
-                    // TODO register JSON codec
+                    if (dataType.getJsonEncodingId() != null) {
+                        stackClient.getDynamicDataTypeManager().registerCodec(
+                            dataType.getJsonEncodingId(),
+                            codec.asJsonCodec()
+                        );
+                        stackClient.getDynamicDataTypeManager().registerCodec(
+                            OpcUaDefaultJsonEncoding.ENCODING_NAME,
+                            dataType.getNodeId(),
+                            codec.asJsonCodec()
+                        );
+                    }
                 }
             });
         } else {

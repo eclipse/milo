@@ -108,8 +108,7 @@ public final class ExtensionObject {
         return decoded.getOrCompute(() -> encoding.decode(context, body, encodingId));
     }
 
-    @Nullable
-    public Object decodeOrNull(SerializationContext context) {
+    public @Nullable Object decodeOrNull(SerializationContext context) {
         try {
             return decode(context);
         } catch (UaSerializationException e) {
@@ -181,12 +180,7 @@ public final class ExtensionObject {
         NodeId encodingId
     ) throws UaSerializationException {
 
-        return encode(
-            context,
-            object,
-            encodingId,
-            OpcUaDefaultBinaryEncoding.getInstance()
-        );
+        return encode(context, object, encodingId, OpcUaDefaultBinaryEncoding.getInstance());
     }
 
     public static ExtensionObject encodeDefaultXml(
@@ -195,12 +189,16 @@ public final class ExtensionObject {
         NodeId encodingId
     ) throws UaSerializationException {
 
-        return encode(
-            context,
-            object,
-            encodingId,
-            OpcUaDefaultXmlEncoding.getInstance()
-        );
+        return encode(context, object, encodingId, OpcUaDefaultXmlEncoding.getInstance());
+    }
+
+    public static ExtensionObject encodeDefaultJson(
+        SerializationContext context,
+        Object object,
+        NodeId encodingId
+    ) throws UaSerializationException {
+
+        return encode(context, object, encodingId, OpcUaDefaultJsonEncoding.getInstance());
     }
 
     public static ExtensionObject encode(
