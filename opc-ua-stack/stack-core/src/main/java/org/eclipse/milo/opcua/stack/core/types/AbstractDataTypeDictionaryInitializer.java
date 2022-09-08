@@ -4,7 +4,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 
-public abstract class AbstractDataTypeInitializer {
+public abstract class AbstractDataTypeDictionaryInitializer {
 
     private static final String BINARY_DICTIONARY_URI = "http://opcfoundation.org/UA/";
 
@@ -44,7 +44,7 @@ public abstract class AbstractDataTypeInitializer {
             initializeEnums(namespaceTable, binaryDictionary, xmlDictionary);
             initializeStructs(namespaceTable, binaryDictionary, xmlDictionary);
         } catch (Exception e) {
-            throw new RuntimeException("DataType initialization failed", e);
+            throw new RuntimeException("DataTypeDictionary initialization failed", e);
         }
 
         dataTypeManager.registerTypeDictionary(binaryDictionary);
