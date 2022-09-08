@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -221,8 +222,7 @@ public final class DataTypeTreeBuilder {
                                     binaryEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
                                 } else if (r.getBrowseName().equals(OpcUaDefaultXmlEncoding.ENCODING_NAME)) {
                                     xmlEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
-                                } else if (r.getBrowseName().equals(new QualifiedName(0, "Default JSON"))) {
-                                    // TODO use OpcUaDefaultJsonEncoding.ENCODING_NAME
+                                } else if (r.getBrowseName().equals(OpcUaDefaultJsonEncoding.ENCODING_NAME)) {
                                     jsonEncodingId = r.getNodeId().toNodeId(namespaceTable).orElse(null);
                                 }
                             }
