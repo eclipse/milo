@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
@@ -71,6 +72,24 @@ public interface DataTypeManager {
      * @param codec        the {@link DataTypeCodec} to register.
      */
     void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec);
+
+    default void registerCodec(
+        GenericDataTypeCodec<?> codec,
+        NodeId dataTypeId,
+        @Nullable NodeId binaryEncodingId,
+        @Nullable NodeId xmlEncodingId,
+        @Nullable NodeId jsonEncodingId
+    ) {
+        if (binaryEncodingId != null) {
+            registerCodec(binaryEncodingId, codec.asBinaryCodec());
+            registerCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId, codec.asBinaryCodec());
+        }
+        if (xmlEncodingId != null) {
+            registerCodec(xmlEncodingId, codec.asXmlCodec());
+            registerCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId, codec.asXmlCodec());
+        }
+        // TODO maybe register JSON codecs
+    }
 
     /**
      * Register a {@link DataTypeDictionary} and all the {@link DataTypeCodec}s it contains.

@@ -87,6 +87,7 @@ public class DefaultDataTypeManager implements DataTypeManager {
         DefaultDataTypeManager dataTypeManager = new DefaultDataTypeManager();
 
         new DataTypeInitializer().initialize(namespaceTable, dataTypeManager);
+        new DataTypeDictionaryInitializer().initialize(namespaceTable, dataTypeManager);
 
         return dataTypeManager;
     }
