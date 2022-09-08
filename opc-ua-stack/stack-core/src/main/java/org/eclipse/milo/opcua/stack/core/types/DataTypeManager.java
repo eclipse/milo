@@ -81,15 +81,15 @@ public interface DataTypeManager {
         @Nullable NodeId jsonEncodingId
     ) {
 
-        if (binaryEncodingId != null) {
+        if (binaryEncodingId != null && binaryEncodingId.isNotNull()) {
             registerCodec(binaryEncodingId, codec.asBinaryCodec());
             registerCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId, codec.asBinaryCodec());
         }
-        if (xmlEncodingId != null) {
+        if (xmlEncodingId != null && xmlEncodingId.isNotNull()) {
             registerCodec(xmlEncodingId, codec.asXmlCodec());
             registerCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId, codec.asXmlCodec());
         }
-        if (jsonEncodingId != null) {
+        if (jsonEncodingId != null && jsonEncodingId.isNotNull()) {
             registerCodec(jsonEncodingId, codec.asJsonCodec());
             registerCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId, codec.asJsonCodec());
         }
