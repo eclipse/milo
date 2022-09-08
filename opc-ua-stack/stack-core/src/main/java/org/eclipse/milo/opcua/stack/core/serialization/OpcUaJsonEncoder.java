@@ -1014,7 +1014,6 @@ public class OpcUaJsonEncoder implements UaEncoder {
         }
 
         try {
-            // TODO not sure if this is the right implementation - should it use writeExtensionObject()?
             jsonWriter.beginObject();
             writeNodeId("TypeId", encodingId);
             writeStruct("Body", message, codec);
