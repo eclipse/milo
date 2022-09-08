@@ -16,7 +16,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-import org.eclipse.milo.opcua.sdk.core.DataTypeTree;
+import org.eclipse.milo.opcua.sdk.core.types.DataType;
+import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -118,9 +119,9 @@ public final class DataTypeTreeBuilder {
      * @return a {@link DataTypeTree}.
      */
     public static CompletableFuture<DataTypeTree> buildAsync(UaStackClient client, OpcUaSession session) {
-        Tree<DataTypeTree.DataType> root = new Tree<>(
+        Tree<DataType> root = new Tree<>(
             null,
-            new DataTypeTree.DataType(
+            new DataType(
                 QualifiedName.parse("0:BaseDataType"),
                 NodeIds.BaseDataType,
                 null,
@@ -167,7 +168,7 @@ public final class DataTypeTreeBuilder {
     }
 
     private static CompletableFuture<Unit> addChildren(
-        Tree<DataTypeTree.DataType> tree,
+        Tree<DataType> tree,
         UaStackClient client,
         OpcUaSession session,
         NamespaceTable namespaceTable
@@ -186,8 +187,8 @@ public final class DataTypeTreeBuilder {
             )
         );
 
-        CompletableFuture<List<DataTypeTree.DataType>> dataTypesFuture = subtypes.thenCompose(references -> {
-            Stream<CompletableFuture<DataTypeTree.DataType>> dataTypeFutures =
+        CompletableFuture<List<DataType>> dataTypesFuture = subtypes.thenCompose(references -> {
+            Stream<CompletableFuture<DataType>> dataTypeFutures =
                 references.stream().map(dataTypeReference -> {
                     NodeId dataTypeId = dataTypeReference.getNodeId()
                         .toNodeId(namespaceTable)
@@ -227,7 +228,7 @@ public final class DataTypeTreeBuilder {
                                 }
                             }
 
-                            return new DataTypeTree.DataType(
+                            return new DataType(
                                 dataTypeReference.getBrowseName(),
                                 dataTypeId,
                                 binaryEncodingId,
