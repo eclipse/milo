@@ -48,7 +48,7 @@ public class MethodExample2 implements ClientExample {
 
         logArguments(client, sqrtMethod);
 
-        Variant[] inputs = {new Variant(16.0)};
+        Variant[] inputs = {Variant.ofDouble(16.0)};
         Variant[] outputs = sqrtMethod.call(inputs);
 
         logger.info("Input values: " + Arrays.toString(inputs));

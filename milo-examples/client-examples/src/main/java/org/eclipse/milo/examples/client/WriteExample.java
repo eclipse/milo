@@ -39,7 +39,7 @@ public class WriteExample implements ClientExample {
         List<NodeId> nodeIds = List.of(new NodeId(2, "HelloWorld/ScalarTypes/Int32"));
 
         for (int i = 0; i < 10; i++) {
-            Variant v = new Variant(i);
+            Variant v = Variant.ofInt32(i);
 
             // don't write status or timestamps
             DataValue dv = new DataValue(v, null, null);

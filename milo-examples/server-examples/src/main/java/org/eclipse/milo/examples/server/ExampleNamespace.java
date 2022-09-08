@@ -79,30 +79,30 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
     private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
-        {"Boolean", NodeIds.Boolean, new Variant(false)},
-        {"Byte", NodeIds.Byte, new Variant(ubyte(0x00))},
-        {"SByte", NodeIds.SByte, new Variant((byte) 0x00)},
-        {"Integer", NodeIds.Integer, new Variant(32)},
-        {"Int16", NodeIds.Int16, new Variant((short) 16)},
-        {"Int32", NodeIds.Int32, new Variant(32)},
-        {"Int64", NodeIds.Int64, new Variant(64L)},
-        {"UInteger", NodeIds.UInteger, new Variant(uint(32))},
-        {"UInt16", NodeIds.UInt16, new Variant(ushort(16))},
-        {"UInt32", NodeIds.UInt32, new Variant(uint(32))},
-        {"UInt64", NodeIds.UInt64, new Variant(ulong(64L))},
-        {"Float", NodeIds.Float, new Variant(3.14f)},
-        {"Double", NodeIds.Double, new Variant(3.14d)},
-        {"String", NodeIds.String, new Variant("string value")},
-        {"DateTime", NodeIds.DateTime, new Variant(DateTime.now())},
-        {"Guid", NodeIds.Guid, new Variant(UUID.randomUUID())},
-        {"ByteString", NodeIds.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
-        {"XmlElement", NodeIds.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
-        {"LocalizedText", NodeIds.LocalizedText, new Variant(LocalizedText.english("localized text"))},
-        {"QualifiedName", NodeIds.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
-        {"NodeId", NodeIds.NodeId, new Variant(new NodeId(1234, "abcd"))},
-        {"Variant", NodeIds.BaseDataType, new Variant(32)},
-        {"Duration", NodeIds.Duration, new Variant(1.0)},
-        {"UtcTime", NodeIds.UtcTime, new Variant(DateTime.now())},
+        {"Boolean", NodeIds.Boolean, Variant.ofBoolean(false)},
+        {"Byte", NodeIds.Byte, Variant.ofByte(ubyte(0x00))},
+        {"SByte", NodeIds.SByte, Variant.ofSByte((byte) 0x00)},
+        {"Integer", NodeIds.Integer, Variant.ofInt32(32)},
+        {"Int16", NodeIds.Int16, Variant.ofInt16((short) 16)},
+        {"Int32", NodeIds.Int32, Variant.ofInt32(32)},
+        {"Int64", NodeIds.Int64, Variant.ofInt64(64L)},
+        {"UInteger", NodeIds.UInteger, Variant.ofUInt32(uint(32))},
+        {"UInt16", NodeIds.UInt16, Variant.ofUInt16(ushort(16))},
+        {"UInt32", NodeIds.UInt32, Variant.ofUInt32(uint(32))},
+        {"UInt64", NodeIds.UInt64, Variant.ofUInt64(ulong(64L))},
+        {"Float", NodeIds.Float, Variant.ofFloat(3.14f)},
+        {"Double", NodeIds.Double, Variant.ofDouble(3.14d)},
+        {"String", NodeIds.String, Variant.ofString("string value")},
+        {"DateTime", NodeIds.DateTime, Variant.ofDateTime(DateTime.now())},
+        {"Guid", NodeIds.Guid, Variant.ofGuid(UUID.randomUUID())},
+        {"ByteString", NodeIds.ByteString, Variant.ofByteString(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
+        {"XmlElement", NodeIds.XmlElement, Variant.ofXmlElement(new XmlElement("<a>hello</a>"))},
+        {"LocalizedText", NodeIds.LocalizedText, Variant.ofLocalizedText(LocalizedText.english("localized text"))},
+        {"QualifiedName", NodeIds.QualifiedName, Variant.ofQualifiedName(new QualifiedName(1234, "defg"))},
+        {"NodeId", NodeIds.NodeId, Variant.ofNodeId(new NodeId(1234, "abcd"))},
+        {"Variant", NodeIds.BaseDataType, Variant.ofInt32(32)},
+        {"Duration", NodeIds.Duration, Variant.ofDouble(1.0)},
+        {"UtcTime", NodeIds.UtcTime, Variant.ofDateTime(DateTime.now())},
     };
 
     private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
@@ -300,7 +300,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
             for (int i = 0; i < 5; i++) {
                 Array.set(array, i, value);
             }
-            Variant variant = new Variant(array);
+            Variant variant = Variant.of(array);
 
             UaVariableNode.build(getNodeContext(), builder -> {
                 builder.setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name));

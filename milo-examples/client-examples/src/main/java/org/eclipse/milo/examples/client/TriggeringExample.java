@@ -82,7 +82,7 @@ public class TriggeringExample implements ClientExample {
         // trigger reporting of both by writing to the static item and changing its value
         client.writeValue(
             new NodeId(2, "HelloWorld/ScalarTypes/Float"),
-            new DataValue(new Variant(1.0f))
+            new DataValue(Variant.ofFloat(1.0f))
         ).get();
 
         // let the example run for 5 seconds then terminate

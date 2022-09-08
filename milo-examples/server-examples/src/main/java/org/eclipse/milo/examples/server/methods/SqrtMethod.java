@@ -61,7 +61,7 @@ public class SqrtMethod extends AbstractMethodInvocationHandler {
         double x = (double) inputValues[0].getValue();
         double xSqrt = Math.sqrt(x);
 
-        return new Variant[]{new Variant(xSqrt)};
+        return new Variant[]{Variant.ofDouble(xSqrt)};
     }
 
 }

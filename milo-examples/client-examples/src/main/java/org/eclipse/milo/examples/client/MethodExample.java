@@ -56,7 +56,7 @@ public class MethodExample implements ClientExample {
         CallMethodRequest request = new CallMethodRequest(
             objectId,
             methodId,
-            new Variant[]{new Variant(input)}
+            new Variant[]{Variant.ofDouble(input)}
         );
 
         return client.call(request).thenCompose(result -> {
@@ -70,7 +70,7 @@ public class MethodExample implements ClientExample {
                 for (int i = 0; i < inputArgumentResults.length; i++) {
                     logger.error("inputArgumentResults[{}]={}", i, inputArgumentResults[i]);
                 }
-                
+
                 CompletableFuture<Double> f = new CompletableFuture<>();
                 f.completeExceptionally(new UaException(statusCode));
                 return f;
