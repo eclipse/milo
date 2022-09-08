@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -68,6 +69,11 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
     public String getEndpointUrl() {
         // Change this if UaCPPServer is running somewhere other than localhost.
         return "opc.tcp://localhost:48010";
+    }
+
+    @Override
+    public SecurityPolicy getSecurityPolicy() {
+        return SecurityPolicy.None;
     }
 
 }
