@@ -20,7 +20,6 @@ import java.util.UUID;
 
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -50,7 +49,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpcUaJsonDecoderTest {
@@ -76,13 +74,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertFalse(decoder.readBoolean("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":true}"));
-            decoder.jsonReader.beginObject();
-            decoder.readBoolean("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -102,13 +93,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals((byte) 0, decoder.readSByte("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readSByte("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -128,13 +112,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals((short) 0, decoder.readInt16("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readInt16("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -154,13 +131,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(0, decoder.readInt32("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readInt32("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -180,13 +150,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(0L, decoder.readInt64("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":\"0\"}"));
-            decoder.jsonReader.beginObject();
-            decoder.readInt64("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -203,13 +166,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(UByte.MIN, decoder.readByte("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readByte("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -226,13 +182,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(UShort.MIN, decoder.readUInt16("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readUInt16("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -249,13 +198,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(UInteger.MIN, decoder.readUInt32("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readUInt32("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -272,13 +214,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(ULong.MIN, decoder.readUInt64("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":\"0\"}"));
-            decoder.jsonReader.beginObject();
-            decoder.readUInt64("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -307,13 +242,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(0.0f, decoder.readFloat("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0.0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readFloat("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
@@ -342,13 +270,6 @@ class OpcUaJsonDecoderTest {
         decoder.jsonReader.beginObject();
         assertEquals(0.0, decoder.readDouble("foo"));
         decoder.jsonReader.endObject();
-
-        assertThrows(UaSerializationException.class, () -> {
-            decoder.reset(new StringReader("{\"foo\":0.0}"));
-            decoder.jsonReader.beginObject();
-            decoder.readDouble("bar");
-            decoder.jsonReader.endObject();
-        });
     }
 
     @Test
