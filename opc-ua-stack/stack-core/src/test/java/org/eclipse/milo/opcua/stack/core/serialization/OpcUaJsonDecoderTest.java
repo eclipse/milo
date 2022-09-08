@@ -18,6 +18,7 @@ import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
 
+import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -37,13 +38,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
-import org.junit.jupiter.api.Disabled;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -616,6 +622,9 @@ class OpcUaJsonDecoderTest {
         decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":2,\"Body\":\"<foo>bar</foo>\"}"));
         assertEquals(xmlElementXo, decoder.readExtensionObject(null));
 
+        decoder.reset(new StringReader("null"));
+        assertNull(decoder.readExtensionObject(null));
+
         decoder.reset(new StringReader("{\"foo\":{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":{\"foo\":\"bar\",\"baz\":42}}}"));
         decoder.jsonReader.beginObject();
         assertEquals(jsonStringXo, decoder.readExtensionObject("foo"));
@@ -756,9 +765,32 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    @Disabled
-    void readMessage() throws IOException {
-        // TODO
+    void readMessage() {
+        var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
+
+        var message = new ReadRequest(
+            new RequestHeader(
+                NodeId.NULL_VALUE,
+                DateTime.NULL_VALUE,
+                uint(0),
+                uint(0),
+                "foo",
+                uint(0),
+                null
+            ),
+            0.0,
+            TimestampsToReturn.Both,
+            new ReadValueId[]{
+                new ReadValueId(
+                    new NodeId(0, 1),
+                    uint(13),
+                    null,
+                    QualifiedName.NULL_VALUE)
+            }
+        );
+
+        decoder.reset(new StringReader("{\"TypeId\":{\"Id\":15257},\"Body\":{\"RequestHeader\":{\"AuthenticationToken\":{\"Id\":0},\"Timestamp\":\"1601-01-01T00:00:00Z\",\"RequestHandle\":0,\"ReturnDiagnostics\":0,\"AuditEntryId\":\"foo\",\"TimeoutHint\":0,\"AdditionalHeader\":null},\"MaxAge\":0.0,\"TimestampsToReturn\":2,\"NodesToRead\":[{\"NodeId\":{\"Id\":1},\"AttributeId\":13,\"IndexRange\":null,\"DataEncoding\":{\"Name\":null}}]}}"));
+        assertEquals(message, decoder.readMessage(null));
     }
 
     @Test
@@ -777,9 +809,19 @@ class OpcUaJsonDecoderTest {
     }
 
     @Test
-    @Disabled
     void readStruct() throws IOException {
-        // TODO
+        var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
+
+        var struct = new Argument(
+            "foo",
+            NodeIds.Int32,
+            -1,
+            null,
+            LocalizedText.english("foo desc")
+        );
+
+        decoder.reset(new StringReader("{\"Name\":\"foo\",\"DataType\":{\"Id\":6},\"ValueRank\":-1,\"Description\":{\"Locale\":\"en\",\"Text\":\"foo desc\"}}"));
+        assertEquals(struct, decoder.readStruct(null, Argument.TYPE_ID));
     }
 
     private static byte[] randomBytes(int length) {

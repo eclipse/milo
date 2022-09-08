@@ -80,6 +80,7 @@ public interface DataTypeManager {
         @Nullable NodeId xmlEncodingId,
         @Nullable NodeId jsonEncodingId
     ) {
+
         if (binaryEncodingId != null) {
             registerCodec(binaryEncodingId, codec.asBinaryCodec());
             registerCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId, codec.asBinaryCodec());
@@ -88,7 +89,10 @@ public interface DataTypeManager {
             registerCodec(xmlEncodingId, codec.asXmlCodec());
             registerCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId, codec.asXmlCodec());
         }
-        // TODO maybe register JSON codecs
+        if (jsonEncodingId != null) {
+            registerCodec(jsonEncodingId, codec.asJsonCodec());
+            registerCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId, codec.asJsonCodec());
+        }
     }
 
     /**

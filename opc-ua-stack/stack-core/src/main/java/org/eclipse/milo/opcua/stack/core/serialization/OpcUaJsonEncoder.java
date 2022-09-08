@@ -531,35 +531,39 @@ public class OpcUaJsonEncoder implements UaEncoder {
                 jsonWriter.name(field);
             }
 
-            if (reversible) {
-                jsonWriter.beginObject();
-                writeNodeId("TypeId", value.getEncodingId());
-                switch (value.getBodyType()) {
-                    case JsonString:
-                        // Encoding field omitted for JSON body
-                        jsonWriter.name("Body").jsonValue((String) value.getBody());
-                        break;
-                    case ByteString:
-                        jsonWriter.name("Encoding").value(1);
-                        writeByteString("Body", (ByteString) value.getBody());
-                        break;
-                    case XmlElement:
-                        jsonWriter.name("Encoding").value(2);
-                        writeXmlElement("Body", (XmlElement) value.getBody());
-                        break;
-                }
-                jsonWriter.endObject();
+            if (value == null || value.getBody() == null) {
+                jsonWriter.nullValue();
             } else {
-                switch (value.getBodyType()) {
-                    case JsonString:
-                        jsonWriter.jsonValue((String) value.getBody());
-                        break;
-                    case ByteString:
-                        writeByteString(null, (ByteString) value.getBody());
-                        break;
-                    case XmlElement:
-                        writeXmlElement(null, (XmlElement) value.getBody());
-                        break;
+                if (reversible) {
+                    jsonWriter.beginObject();
+                    writeNodeId("TypeId", value.getEncodingId());
+                    switch (value.getBodyType()) {
+                        case JsonString:
+                            // Encoding field omitted for JSON body
+                            jsonWriter.name("Body").jsonValue((String) value.getBody());
+                            break;
+                        case ByteString:
+                            jsonWriter.name("Encoding").value(1);
+                            writeByteString("Body", (ByteString) value.getBody());
+                            break;
+                        case XmlElement:
+                            jsonWriter.name("Encoding").value(2);
+                            writeXmlElement("Body", (XmlElement) value.getBody());
+                            break;
+                    }
+                    jsonWriter.endObject();
+                } else {
+                    switch (value.getBodyType()) {
+                        case JsonString:
+                            jsonWriter.jsonValue((String) value.getBody());
+                            break;
+                        case ByteString:
+                            writeByteString(null, (ByteString) value.getBody());
+                            break;
+                        case XmlElement:
+                            writeXmlElement(null, (XmlElement) value.getBody());
+                            break;
+                    }
                 }
             }
         } catch (IOException e) {

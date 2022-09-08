@@ -58,11 +58,17 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaJsonDecoder implements UaDecoder {
 
+    private String peekedNextName = null;
+
     JsonReader jsonReader;
     SerializationContext serializationContext;
 
     public OpcUaJsonDecoder(SerializationContext serializationContext) {
         this.serializationContext = serializationContext;
+    }
+
+    public OpcUaJsonDecoder(SerializationContext serializationContext, String s) {
+        this(serializationContext, new StringReader(s));
     }
 
     public OpcUaJsonDecoder(SerializationContext serializationContext, Reader reader) {
@@ -79,7 +85,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public Boolean readBoolean(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -105,7 +111,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public Byte readSByte(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -131,7 +137,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public Short readInt16(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -157,7 +163,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public Integer readInt32(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -187,7 +193,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -217,7 +223,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public UByte readByte(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -243,7 +249,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public UShort readUInt16(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -269,7 +275,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public UInteger readUInt32(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -299,7 +305,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -335,7 +341,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -384,7 +390,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -431,7 +437,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -442,6 +448,9 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             if (jsonReader.peek() == JsonToken.STRING) {
                 return jsonReader.nextString();
+            } else if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.nextNull();
+                return null;
             } else {
                 throw new UaSerializationException(
                     StatusCodes.Bad_DecodingError,
@@ -465,7 +474,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -504,7 +513,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public UUID readGuid(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -537,7 +546,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -566,7 +575,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public XmlElement readXmlElement(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -594,7 +603,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public NodeId readNodeId(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -611,7 +620,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 jsonReader.beginObject();
 
                 while (jsonReader.peek() == JsonToken.NAME) {
-                    String propertyName = jsonReader.nextName();
+                    String propertyName = nextName();
 
                     switch (propertyName) {
                         case "IdType": {
@@ -676,7 +685,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public ExpandedNodeId readExpandedNodeId(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -695,7 +704,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 jsonReader.beginObject();
 
                 while (jsonReader.peek() == JsonToken.NAME) {
-                    String propertyName = jsonReader.nextName();
+                    String propertyName = nextName();
 
                     switch (propertyName) {
                         case "IdType": {
@@ -792,7 +801,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -820,7 +829,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public QualifiedName readQualifiedName(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -835,12 +844,17 @@ public class OpcUaJsonDecoder implements UaDecoder {
             int namespaceIndex = 0;
 
             while (jsonReader.peek() == JsonToken.NAME) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
 
                 switch (nextName) {
-                    case "Name":
-                        name = jsonReader.nextString();
+                    case "Name": {
+                        if (jsonReader.peek() == JsonToken.NULL) {
+                            jsonReader.nextNull();
+                        } else {
+                            name = jsonReader.nextString();
+                        }
                         break;
+                    }
                     case "Uri":
                         namespaceIndex = jsonReader.nextInt();
                         break;
@@ -864,7 +878,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public LocalizedText readLocalizedText(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -879,7 +893,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             String text = null;
 
             while (jsonReader.peek() == JsonToken.NAME) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
 
                 switch (nextName) {
                     case "Locale":
@@ -908,13 +922,18 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public ExtensionObject readExtensionObject(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
                         String.format("readExtensionObject: %s != %s", field, nextName)
                     );
                 }
+            }
+
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.nextNull();
+                return null;
             }
 
             jsonReader.beginObject();
@@ -924,7 +943,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             Object body = null;
 
             while (jsonReader.peek() == JsonToken.NAME) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
 
                 switch (nextName) {
                     case "TypeId":
@@ -988,7 +1007,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public DataValue readDataValue(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -1003,7 +1022,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             b.setStatus(StatusCode.GOOD);
 
             while (jsonReader.peek() == JsonToken.NAME) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
 
                 switch (nextName) {
                     case "Value":
@@ -1044,7 +1063,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public Variant readVariant(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -1060,7 +1079,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             int[] dimensions = null;
 
             while (jsonReader.peek() == JsonToken.NAME) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
 
                 switch (nextName) {
                     case "Type":
@@ -1228,7 +1247,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException {
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
                     throw new UaSerializationException(
                         StatusCodes.Bad_DecodingError,
@@ -1248,7 +1267,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             DiagnosticInfo innerDiagnosticInfo = null;
 
             while (jsonReader.peek() == JsonToken.NAME) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
 
                 switch (nextName) {
                     case "SymbolicId":
@@ -1355,7 +1374,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             try {
                 if (field != null) {
-                    String nextName = jsonReader.nextName();
+                    String nextName = nextName();
                     if (!field.equals(nextName)) {
                         throw new UaSerializationException(
                             StatusCodes.Bad_DecodingError,
@@ -1527,6 +1546,14 @@ public class OpcUaJsonDecoder implements UaDecoder {
         }
 
         try {
+            if (field != null) {
+                String nextName = nextName();
+                if (!field.equals(nextName)) {
+                    this.peekedNextName = nextName;
+                    return null;
+                }
+            }
+
             var elements = new ArrayList<>();
 
             jsonReader.beginArray();
@@ -1535,7 +1562,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             }
             jsonReader.endArray();
 
-            Object array = Array.newInstance(codec.getType());
+            Object array = Array.newInstance(codec.getType(), elements.size());
             for (int i = 0; i < elements.size(); i++) {
                 Array.set(array, i, elements.get(i));
             }
@@ -1566,12 +1593,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
         try {
             if (field != null) {
-                String nextName = jsonReader.nextName();
+                String nextName = nextName();
                 if (!field.equals(nextName)) {
-                    throw new UaSerializationException(
-                        StatusCodes.Bad_DecodingError,
-                        String.format("readDataValue: %s != %s", field, nextName)
-                    );
+                    this.peekedNextName = nextName;
+                    return null;
                 }
             }
 
@@ -1592,6 +1617,20 @@ public class OpcUaJsonDecoder implements UaDecoder {
             return (T[]) array;
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    /**
+     * This ugly hack is so `readArray` can "push back" the next name it reads if it doesn't match
+     * the expected field name, because that probably means it was omitted due to being null.
+     */
+    private String nextName() throws IOException {
+        if (peekedNextName != null) {
+            String next = peekedNextName;
+            peekedNextName = null;
+            return next;
+        } else {
+            return jsonReader.nextName();
         }
     }
 

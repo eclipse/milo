@@ -42,7 +42,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -783,6 +782,10 @@ class OpcUaJsonEncoderTest {
         encoder.reset(writer = new StringWriter());
         encoder.writeExtensionObject(null, byteStringXo);
         assertEquals("\"AAECAw==\"", writer.toString());
+
+        encoder.reset(writer = new StringWriter());
+        encoder.writeExtensionObject(null, null);
+        assertEquals("null", writer.toString());
     }
 
     @Test
@@ -971,9 +974,7 @@ class OpcUaJsonEncoderTest {
     }
 
     @Test
-    @Disabled
     public void writeMessage() {
-        // TODO
         var writer = new StringWriter();
         var encoder = new OpcUaJsonEncoder(context, writer);
         encoder.serializationContext = new TestSerializationContext();
@@ -1001,7 +1002,7 @@ class OpcUaJsonEncoderTest {
 
         encoder.reset(writer = new StringWriter());
         encoder.writeMessage(null, message);
-        assertEquals("TODO", writer.toString());
+        assertEquals("{\"TypeId\":{\"Id\":15257},\"Body\":{\"RequestHeader\":{\"AuthenticationToken\":{\"Id\":0},\"Timestamp\":\"1601-01-01T00:00:00Z\",\"RequestHandle\":0,\"ReturnDiagnostics\":0,\"AuditEntryId\":\"foo\",\"TimeoutHint\":0,\"AdditionalHeader\":null},\"MaxAge\":0.0,\"TimestampsToReturn\":2,\"NodesToRead\":[{\"NodeId\":{\"Id\":1},\"AttributeId\":13,\"IndexRange\":null,\"DataEncoding\":{\"Name\":null}}]}}", writer.toString());
     }
 
     @Test
@@ -1023,9 +1024,7 @@ class OpcUaJsonEncoderTest {
     }
 
     @Test
-    @Disabled
     public void writeStruct() {
-        // TODO
         var writer = new StringWriter();
         var encoder = new OpcUaJsonEncoder(context, writer);
 
@@ -1038,7 +1037,7 @@ class OpcUaJsonEncoderTest {
         );
 
         encoder.writeStruct(null, struct, Argument.TYPE_ID);
-        assertEquals("TODO", writer.toString());
+        assertEquals("{\"Name\":\"foo\",\"DataType\":{\"Id\":6},\"ValueRank\":-1,\"Description\":{\"Locale\":\"en\",\"Text\":\"foo desc\"}}", writer.toString());
     }
 
     @Test
