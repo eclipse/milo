@@ -147,7 +147,11 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                         dataType.getNodeId(),
                         codec.asXmlCodec()
                     );
-                    // TODO register JSON codec
+                    stackClient.getDynamicDataTypeManager().registerCodec(
+                        OpcUaDefaultJsonEncoding.ENCODING_NAME,
+                        dataType.getNodeId(),
+                        codec.asJsonCodec()
+                    );
                 }
             });
         } else {
