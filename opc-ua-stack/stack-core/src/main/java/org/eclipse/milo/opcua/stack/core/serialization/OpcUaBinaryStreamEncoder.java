@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -457,7 +457,6 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
                     writeNodeId(value.getEncodingId());
                     buffer.writeByte(1); // Body is binary encoded
-
                     writeByteString(byteString);
 
                     break;
@@ -467,8 +466,16 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
                     writeNodeId(value.getEncodingId());
                     buffer.writeByte(2);
-
                     writeXmlElement(xmlElement);
+
+                    break;
+                }
+                case JsonString: {
+                    String jsonString = (String) body;
+
+                    writeNodeId(value.getEncodingId());
+                    buffer.writeByte(1);
+                    writeByteString(ByteString.of(jsonString.getBytes(StandardCharsets.UTF_8)));
 
                     break;
                 }
@@ -915,7 +922,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
         if (binaryCodec == null) {
             throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
+                StatusCodes.Bad_EncodingError,
                 "no codec registered: " + encodingId
             );
         }
@@ -953,13 +960,13 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     @Override
     public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        NodeId localDateTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "no codec registered: " + dataTypeId
             ));
 
-        writeStruct(field, value, localDateTypeId);
+        writeStruct(field, value, localDataTypeId);
     }
 
     @Override
@@ -1121,13 +1128,13 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         ExpandedNodeId dataTypeId
     ) throws UaSerializationException {
 
-        NodeId localDateTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "no codec registered: " + dataTypeId
             ));
 
-        writeStructArray(field, value, localDateTypeId);
+        writeStructArray(field, value, localDataTypeId);
     }
 
     @Override

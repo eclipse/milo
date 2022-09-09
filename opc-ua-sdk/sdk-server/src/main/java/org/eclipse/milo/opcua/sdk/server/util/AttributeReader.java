@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -162,7 +163,8 @@ public class AttributeReader {
         AttributeContext context,
         UaServerNode node,
         ExtensionObject xo,
-        QualifiedName encodingName) {
+        QualifiedName encodingName
+    ) {
 
         if (xo == null || xo.isNull()) {
             return xo;
@@ -178,6 +180,8 @@ public class AttributeReader {
             newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
         } else if (OpcUaDefaultXmlEncoding.ENCODING_NAME.equals(encodingName)) {
             newEncoding = OpcUaDefaultXmlEncoding.getInstance();
+        } else if (OpcUaDefaultJsonEncoding.ENCODING_NAME.equals(encodingName)) {
+            newEncoding = OpcUaDefaultJsonEncoding.getInstance();
         } else {
             // TODO look up registered alternate encodings
             newEncoding = OpcUaDefaultBinaryEncoding.getInstance();

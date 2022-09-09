@@ -171,10 +171,10 @@ public class DataTypeTreeTest extends AbstractClientServerTest {
             if (!Objects.equals(dataType.getBrowseName().getName(), "Structure")) {
                 assertNotNull(dataType.getBinaryEncodingId());
                 assertNotNull(dataType.getXmlEncodingId());
-                // TODO assertNotNull(dataType.getJsonEncodingId());
+                assertNotNull(dataType.getJsonEncodingId());
                 assertNotNull(dataTypeTree.getBinaryEncodingId(dataType.getNodeId()));
                 assertNotNull(dataTypeTree.getXmlEncodingId(dataType.getNodeId()));
-                // TODO assertNotNull(dataTypeTree.getJsonEncodingId(dataType.getNodeId()));
+                assertNotNull(dataTypeTree.getJsonEncodingId(dataType.getNodeId()));
             }
         });
     }
