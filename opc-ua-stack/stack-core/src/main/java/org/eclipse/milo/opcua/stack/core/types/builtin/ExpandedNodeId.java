@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,7 +19,6 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -546,7 +546,7 @@ public final class ExpandedNodeId {
             case Opaque:
                 ByteString bs = (ByteString) getIdentifier();
                 if (bs.isNull()) sb.append("b=");
-                else sb.append("b=").append(DatatypeConverter.printBase64Binary(bs.bytes()));
+                else sb.append("b=").append(Base64.getEncoder().encodeToString(bs.bytes()));
                 break;
 
             default:
@@ -608,7 +608,7 @@ public final class ExpandedNodeId {
                     break;
                 case "b=":
                     try {
-                        identifier = ByteString.of(DatatypeConverter.parseBase64Binary(id));
+                        identifier = ByteString.of(Base64.getDecoder().decode(id));
                     } catch (IllegalArgumentException e) {
                         throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid, e);
                     }

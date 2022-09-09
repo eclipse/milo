@@ -10,10 +10,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Base64;
 import java.util.Random;
 import java.util.UUID;
 
-import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -111,7 +111,7 @@ public class NodeIdTest {
         for (int i = 0; i < 100; i++) {
             byte[] bs = new byte[r.nextInt(64) + 1];
             r.nextBytes(bs);
-            String bss = DatatypeConverter.printBase64Binary(bs);
+            String bss = Base64.getEncoder().encodeToString(bs);
 
             {
                 NodeId nodeId = NodeId.parseOrNull("b=" + bss);
