@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
+import org.eclipse.milo.opcua.sdk.server.nodes.TestSerializationContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -84,6 +85,8 @@ public class NodeFactoryTest {
             );
 
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
+
+        Mockito.when(server.getSerializationContext()).thenReturn(new TestSerializationContext());
 
         UaNodeContext context = new UaNodeContext() {
             @Override

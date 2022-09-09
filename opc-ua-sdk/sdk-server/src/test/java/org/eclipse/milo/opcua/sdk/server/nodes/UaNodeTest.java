@@ -53,6 +53,7 @@ public class UaNodeTest {
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getObjectTypeManager()).thenReturn(objectTypeManager);
         Mockito.when(server.getVariableTypeManager()).thenReturn(variableTypeManager);
+        Mockito.when(server.getSerializationContext()).thenReturn(new TestSerializationContext());
 
         UaNodeManager nodeManager = new UaNodeManager();
         addressSpaceManager.register(nodeManager);

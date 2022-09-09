@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
+import org.eclipse.milo.opcua.sdk.server.nodes.TestSerializationContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -67,6 +68,7 @@ public class InstanceDeclarationHierarchyTest {
 
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
+        Mockito.when(server.getSerializationContext()).thenReturn(new TestSerializationContext());
 
         UaNodeContext context = new UaNodeContext() {
             @Override
