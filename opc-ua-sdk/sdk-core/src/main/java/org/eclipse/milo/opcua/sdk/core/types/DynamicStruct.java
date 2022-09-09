@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.stack.core.serialization.UaSerializableType;
@@ -57,6 +58,14 @@ public class DynamicStruct implements UaSerializableType {
                 }
             })
             .collect(Collectors.joining(", "));
+    }
+
+    public static DynamicStruct newInstance(DataType dataType) {
+        return new DynamicStruct(dataType, new LinkedHashMap<>());
+    }
+
+    public static Supplier<DynamicStruct> newInstanceFactory(DataType dataType) {
+        return () -> new DynamicStruct(dataType, new LinkedHashMap<>());
     }
 
 }

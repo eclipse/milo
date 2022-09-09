@@ -10,10 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.core.types;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -48,6 +50,8 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
     private final Map<StructureField, Object> fieldHints = new ConcurrentHashMap<>();
 
+    private final Map<NodeId, Function<Integer, DynamicEnum>> enumFactories = new ConcurrentHashMap<>();
+
     private final DataType dataType;
     private final StructureDefinition structureDefinition;
 
@@ -65,6 +69,9 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 hint = BuiltinDataType.fromNodeId(dataTypeId);
             } else if (dataTypeTree.isEnumType(dataTypeId)) {
                 hint = CodecType.ENUM;
+
+                DataType enumDataType = dataTypeTree.getDataType(dataTypeId);
+                enumFactories.put(dataTypeId, DynamicEnum.newInstanceFactory(enumDataType));
             } else if (dataTypeTree.isStructType(dataTypeId)) {
                 hint = CodecType.STRUCT;
             } else {
@@ -148,9 +155,12 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                         CodecType codecType = (CodecType) hint;
 
                         switch (codecType) {
-                            case ENUM:
-                                value = decoder.readEnum(fieldName, dataTypeId);
+                            case ENUM: {
+                                Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                                Integer enumValue = decoder.readEnum(fieldName);
+                                value = factory.apply(enumValue);
                                 break;
+                            }
                             case STRUCT:
                                 value = decoder.readStruct(fieldName, dataTypeId);
                                 break;
@@ -170,9 +180,12 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                         CodecType codecType = (CodecType) hint;
 
                         switch (codecType) {
-                            case ENUM:
-                                value = decoder.readEnumArray(fieldName, dataTypeId);
+                            case ENUM: {
+                                Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                                Integer[] enumValues = decoder.readEnumArray(fieldName);
+                                value = Arrays.stream(enumValues).map(factory).toArray(DynamicEnum[]::new);
                                 break;
+                            }
                             case STRUCT:
                                 value = decoder.readStructArray(fieldName, dataTypeId);
                                 break;
@@ -219,9 +232,12 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                     CodecType codecType = (CodecType) hint;
 
                     switch (codecType) {
-                        case ENUM:
-                            value = decoder.readEnum(fieldName, dataTypeId);
+                        case ENUM: {
+                            Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                            Integer enumValue = decoder.readEnum(fieldName);
+                            value = factory.apply(enumValue);
                             break;
+                        }
                         case STRUCT:
                             value = decoder.readStruct(fieldName, dataTypeId);
                             break;
@@ -241,9 +257,12 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                     CodecType codecType = (CodecType) hint;
 
                     switch (codecType) {
-                        case ENUM:
-                            value = decoder.readEnumArray(fieldName, dataTypeId);
+                        case ENUM: {
+                            Function<Integer, DynamicEnum> factory = enumFactories.get(dataTypeId);
+                            Integer[] enumValues = decoder.readEnumArray(fieldName);
+                            value = Arrays.stream(enumValues).map(factory).toArray(DynamicEnum[]::new);
                             break;
+                        }
                         case STRUCT:
                             value = decoder.readStructArray(fieldName, dataTypeId);
                             break;
@@ -350,7 +369,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         } else if (valueRank == 1) {
             Object hint = fieldHints.get(field);
             if (hint instanceof BuiltinDataType) {
-                encodeBuiltinDataType(encoder, fieldName, (BuiltinDataType) hint, value);
+                encodeBuiltinDataTypeArray(encoder, fieldName, (BuiltinDataType) hint, value);
             } else {
                 CodecType codecType = (CodecType) hint;
 

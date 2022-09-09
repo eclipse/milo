@@ -993,6 +993,30 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public Integer readEnum(String field) {
+        if (currentNode(field)) {
+            try {
+                String s = currentNode.getTextContent();
+                int lastIndex = s.lastIndexOf("_");
+
+                if (lastIndex != -1) {
+                    try {
+                        return Integer.parseInt(s.substring(lastIndex + 1));
+                    } catch (Exception e) {
+                        throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                    }
+                } else {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid enum value: " + s);
+                }
+            } finally {
+                currentNode = currentNode.getNextSibling();
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         if (currentNode(field)) {
             Node node = currentNode;

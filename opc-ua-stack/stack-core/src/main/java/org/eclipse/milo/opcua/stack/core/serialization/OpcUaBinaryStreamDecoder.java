@@ -699,6 +699,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public Integer readEnum(String field) {
+        return readInt32(field);
+    }
+
+    @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = context.getDataTypeManager()
             .getStructCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);

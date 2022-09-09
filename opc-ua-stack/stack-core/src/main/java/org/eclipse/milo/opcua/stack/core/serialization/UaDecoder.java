@@ -90,6 +90,8 @@ public interface UaDecoder {
 
     UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException;
 
+    Integer readEnum(String field);
+
     Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
@@ -155,6 +157,10 @@ public interface UaDecoder {
         String field,
         NodeId dataTypeId
     ) throws UaSerializationException;
+
+    default Integer[] readEnumArray(String field) throws UaSerializationException {
+        return null; // TODO
+    }
 
     Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
 

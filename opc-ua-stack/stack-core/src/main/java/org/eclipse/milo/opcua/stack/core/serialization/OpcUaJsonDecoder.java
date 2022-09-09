@@ -1313,6 +1313,11 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
+    public Integer readEnum(String field) {
+        return readInt32(field);
+    }
+
+    @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = context.getDataTypeManager()
             .getStructCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);

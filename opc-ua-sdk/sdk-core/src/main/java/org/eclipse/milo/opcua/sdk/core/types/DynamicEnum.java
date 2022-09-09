@@ -10,9 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.core.types;
 
+import java.util.function.Function;
+
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicEnum implements UaEnumeration {
@@ -24,7 +28,23 @@ public class DynamicEnum implements UaEnumeration {
     private final LocalizedText description;
 
     public DynamicEnum(DataType dataType, int value) {
-        this(dataType, null, value, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE);
+        this.dataType = dataType;
+
+        EnumDefinition enumDefinition = (EnumDefinition) dataType.getDataTypeDefinition();
+        assert enumDefinition != null;
+
+        for (EnumField field : enumDefinition.getFields()) {
+            if (field.getValue() == value) {
+                this.name = field.getName();
+                this.value = field.getValue().intValue();
+                this.displayName = field.getDisplayName();
+                this.description = field.getDescription();
+                return;
+            }
+        }
+
+        // if we reach this point the value doesn't match any of the fields
+        throw new IllegalArgumentException("value: " + value);
     }
 
     public DynamicEnum(DataType dataType, String name, int value, LocalizedText displayName, LocalizedText description) {
@@ -67,6 +87,14 @@ public class DynamicEnum implements UaEnumeration {
             "name='" + name + '\'' +
             ", value=" + value +
             '}';
+    }
+
+    public static DynamicEnum newInstance(DataType dataType, int value) {
+        return new DynamicEnum(dataType, value);
+    }
+
+    public static Function<Integer, DynamicEnum> newInstanceFactory(DataType dataType) {
+        return value -> new DynamicEnum(dataType, value);
     }
 
 }
