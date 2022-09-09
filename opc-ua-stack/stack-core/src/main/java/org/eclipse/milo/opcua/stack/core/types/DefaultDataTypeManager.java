@@ -25,17 +25,17 @@ import org.jetbrains.annotations.Nullable;
 public class DefaultDataTypeManager implements DataTypeManager {
 
     private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = new ConcurrentHashMap<>();
-    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = new ConcurrentHashMap<>();
-    private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
+    private final ConcurrentMap<NodeId, DataTypeCodec<?>> codecsByEncodingId = new ConcurrentHashMap<>();
+    private final Table<QualifiedName, NodeId, DataTypeCodec<?>> codecsByDataTypeId =
         Tables.synchronizedTable(HashBasedTable.create());
 
     @Override
-    public void registerCodec(NodeId encodingId, DataTypeCodec codec) {
+    public void registerCodec(NodeId encodingId, DataTypeCodec<?> codec) {
         codecsByEncodingId.put(encodingId, codec);
     }
 
     @Override
-    public void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
+    public void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec<?> codec) {
         codecsByDataTypeId.put(encodingName, dataTypeId, codec);
     }
 
@@ -51,29 +51,26 @@ public class DefaultDataTypeManager implements DataTypeManager {
         );
     }
 
-    @Nullable
+
     @Override
-    public DataTypeCodec getCodec(NodeId encodingId) {
+    public @Nullable DataTypeCodec<?> getCodec(NodeId encodingId) {
         return codecsByEncodingId.get(encodingId);
     }
 
-    @Nullable
     @Override
-    public DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId) {
+    public @Nullable DataTypeCodec<?> getCodec(QualifiedName encodingName, NodeId dataTypeId) {
         return codecsByDataTypeId.get(encodingName, dataTypeId);
     }
 
-    @Nullable
     @Override
-    public DataTypeCodec getCodec(String namespaceUri, String description) {
+    public @Nullable DataTypeCodec<?> getCodec(String namespaceUri, String description) {
         DataTypeDictionary<?> dataTypeDictionary = dictionaries.get(namespaceUri);
 
         return dataTypeDictionary != null ? dataTypeDictionary.getCodec(description) : null;
     }
 
-    @Nullable
     @Override
-    public DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri) {
+    public @Nullable DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri) {
         return dictionaries.get(namespaceUri);
     }
 

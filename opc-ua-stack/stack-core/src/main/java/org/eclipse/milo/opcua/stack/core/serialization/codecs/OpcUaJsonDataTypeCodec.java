@@ -14,14 +14,23 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public interface OpcUaJsonDataTypeCodec<T> extends
-    DataTypeCodec<T, OpcUaJsonDecoder, OpcUaJsonEncoder> {
-
-    @Override
-    T decode(SerializationContext context, OpcUaJsonDecoder reader) throws UaSerializationException;
+public interface OpcUaJsonDataTypeCodec<T> extends DataTypeCodec<T> {
 
     @Override
-    void encode(SerializationContext context, OpcUaJsonEncoder writer, T value) throws UaSerializationException;
+    default T decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
+        return decode(context, (OpcUaJsonDecoder) decoder);
+    }
+
+    @Override
+    default void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException {
+        encode(context, (OpcUaJsonEncoder) encoder, value);
+    }
+
+    T decode(SerializationContext context, OpcUaJsonDecoder decoder) throws UaSerializationException;
+
+    void encode(SerializationContext context, OpcUaJsonEncoder encoder, T value) throws UaSerializationException;
 
 }

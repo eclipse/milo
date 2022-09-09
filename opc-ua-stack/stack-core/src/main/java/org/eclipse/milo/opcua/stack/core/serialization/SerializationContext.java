@@ -12,12 +12,7 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 
 public interface SerializationContext {
@@ -49,92 +44,5 @@ public interface SerializationContext {
      * @return the {@link ServerTable}.
      */
     ServerTable getServerTable();
-
-    default Object decode(
-        String namespaceUri,
-        String description,
-        OpcUaBinaryStreamDecoder decoder
-    ) throws UaSerializationException {
-
-        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
-
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            //noinspection unchecked
-            return codec.decode(this, decoder);
-        } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                String.format(
-                    "no OpcBinaryDataTypeCodec registered for description=%s under namespaceUri=%s",
-                    description, namespaceUri)
-            );
-        }
-    }
-
-    default Object decode(
-        String namespaceUri,
-        String description,
-        OpcUaXmlStreamDecoder decoder
-    ) throws UaSerializationException {
-
-        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
-
-        if (codec instanceof OpcUaXmlDataTypeCodec) {
-            //noinspection unchecked
-            return codec.decode(this, decoder);
-        } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                String.format(
-                    "no OpcXmlDataTypeCodec registered for description=%s under namespaceUri=%s",
-                    description, namespaceUri)
-            );
-        }
-    }
-
-
-    default void encode(
-        String namespaceUri,
-        String description,
-        Object value,
-        OpcUaBinaryStreamEncoder encoder
-    ) throws UaSerializationException {
-
-        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
-
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            //noinspection unchecked
-            codec.encode(this, encoder, value);
-        } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_EncodingError,
-                String.format(
-                    "no OpcBinaryDataTypeCodec registered for description=%s under namespaceUri=%s",
-                    description, namespaceUri)
-            );
-        }
-    }
-
-    default void encode(
-        String namespaceUri,
-        String description,
-        Object value,
-        OpcUaXmlStreamEncoder encoder
-    ) throws UaSerializationException {
-
-        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
-
-        if (codec instanceof OpcUaXmlDataTypeCodec) {
-            //noinspection unchecked
-            codec.encode(this, encoder, value);
-        } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_EncodingError,
-                String.format(
-                    "no OpcXmlDataTypeCodec registered for description=%s under namespaceUri=%s",
-                    description, namespaceUri)
-            );
-        }
-    }
 
 }

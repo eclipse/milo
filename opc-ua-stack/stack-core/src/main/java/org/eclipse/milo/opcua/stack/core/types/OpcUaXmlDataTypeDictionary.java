@@ -84,6 +84,11 @@ public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDa
     }
 
     @Override
+    public void registerStructCodec(OpcUaXmlDataTypeCodec<?> codec, String description) {
+        codecsByDescription.put(description, codec);
+    }
+
+    @Override
     public void registerStructCodec(
         OpcUaXmlDataTypeCodec<?> codec,
         String description,

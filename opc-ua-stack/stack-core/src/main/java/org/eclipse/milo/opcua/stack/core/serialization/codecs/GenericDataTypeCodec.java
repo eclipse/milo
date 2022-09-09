@@ -18,10 +18,8 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDecoder, UaEncoder> {
+public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T> {
 
     /**
      * @return a derived instance of {@link OpcUaBinaryDataTypeCodec} that handles serialization of {@link T}.
@@ -112,13 +110,13 @@ public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDeco
         }
 
         @Override
-        public T decode(SerializationContext context, OpcUaJsonDecoder reader) throws UaSerializationException {
-            return codec.decode(context, reader);
+        public T decode(SerializationContext context, OpcUaJsonDecoder decoder) throws UaSerializationException {
+            return codec.decode(context, decoder);
         }
 
         @Override
-        public void encode(SerializationContext context, OpcUaJsonEncoder writer, T value) throws UaSerializationException {
-            codec.encode(context, writer, value);
+        public void encode(SerializationContext context, OpcUaJsonEncoder encoder, T value) throws UaSerializationException {
+            codec.encode(context, encoder, value);
         }
 
     }

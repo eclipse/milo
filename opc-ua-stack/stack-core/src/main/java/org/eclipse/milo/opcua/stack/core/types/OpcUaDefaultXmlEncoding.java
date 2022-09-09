@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
@@ -42,11 +41,6 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
     @Override
     public QualifiedName getName() {
         return ENCODING_NAME;
-    }
-
-    @Override
-    public ExtensionObject.BodyType getBodyType() {
-        return ExtensionObject.BodyType.XmlElement;
     }
 
     @Override

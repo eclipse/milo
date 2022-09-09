@@ -14,9 +14,20 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public interface OpcUaBinaryDataTypeCodec<T> extends
-    DataTypeCodec<T, OpcUaBinaryStreamDecoder, OpcUaBinaryStreamEncoder> {
+public interface OpcUaBinaryDataTypeCodec<T> extends DataTypeCodec<T> {
+
+    @Override
+    default T decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
+        return decode(context, (OpcUaBinaryStreamDecoder) decoder);
+    }
+
+    @Override
+    default void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException {
+        encode(context, (OpcUaBinaryStreamEncoder) encoder, value);
+    }
 
     /**
      * Decode a {@link T} using the provided {@link OpcUaBinaryStreamDecoder}.
@@ -25,7 +36,6 @@ public interface OpcUaBinaryDataTypeCodec<T> extends
      * @param reader  the {@link OpcUaBinaryStreamDecoder} to decode from.
      * @return a decoded {@link T}.
      */
-    @Override
     T decode(SerializationContext context, OpcUaBinaryStreamDecoder reader) throws UaSerializationException;
 
     /**
@@ -35,7 +45,6 @@ public interface OpcUaBinaryDataTypeCodec<T> extends
      * @param writer  the {@link OpcUaBinaryStreamEncoder} to encode to.
      * @param value   the {@link T} to encode.
      */
-    @Override
     void encode(SerializationContext context, OpcUaBinaryStreamEncoder writer, T value) throws UaSerializationException;
 
 }

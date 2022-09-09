@@ -1057,7 +1057,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+    public void writeStruct(String field, Object value, DataTypeCodec<?> codec) throws UaSerializationException {
         if (codec instanceof OpcUaJsonDataTypeCodec) {
             @SuppressWarnings("unchecked")
             OpcUaJsonDataTypeCodec<Object> jsonCodec = (OpcUaJsonDataTypeCodec<Object>) codec;

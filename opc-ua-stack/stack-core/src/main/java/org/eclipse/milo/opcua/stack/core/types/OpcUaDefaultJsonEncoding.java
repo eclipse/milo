@@ -18,7 +18,6 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaJsonDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -40,11 +39,6 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
     @Override
     public QualifiedName getName() {
         return ENCODING_NAME;
-    }
-
-    @Override
-    public ExtensionObject.BodyType getBodyType() {
-        return ExtensionObject.BodyType.JsonString;
     }
 
     @Override

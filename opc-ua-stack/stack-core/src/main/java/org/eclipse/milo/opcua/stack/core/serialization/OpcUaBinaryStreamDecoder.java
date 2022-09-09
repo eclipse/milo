@@ -717,16 +717,13 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
-    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            OpcUaBinaryDataTypeCodec binaryCodec = (OpcUaBinaryDataTypeCodec) codec;
+    public Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException {
+        if (codec instanceof OpcUaBinaryDataTypeCodec<?>) {
+            OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>) codec;
 
             return binaryCodec.decode(context, this);
         } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                new IllegalArgumentException("codec: " + codec)
-            );
+            return codec.decode(context, this);
         }
     }
 

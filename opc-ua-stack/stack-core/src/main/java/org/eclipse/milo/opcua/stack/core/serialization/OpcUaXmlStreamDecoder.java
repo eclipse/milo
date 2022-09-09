@@ -928,7 +928,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
                         Object o = m.invoke(null, value);
                         return enumType.cast(o);
                     } catch (ClassCastException | NoSuchMethodException |
-                        IllegalAccessException | InvocationTargetException e) {
+                             IllegalAccessException | InvocationTargetException e) {
 
                         throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
                     }
@@ -987,29 +987,26 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
-    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
-        if (codec instanceof OpcUaXmlDataTypeCodec) {
-            OpcUaXmlDataTypeCodec xmlCodec = (OpcUaXmlDataTypeCodec) codec;
+    public Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException {
+        if (currentNode(field)) {
+            Node node = currentNode;
 
-            if (currentNode(field)) {
-                Node node = currentNode;
+            try {
+                currentNode = node.getFirstChild();
 
-                try {
-                    currentNode = node.getFirstChild();
+                if (codec instanceof OpcUaXmlDataTypeCodec<?>) {
+                    OpcUaXmlDataTypeCodec<?> xmlCodec = (OpcUaXmlDataTypeCodec<?>) codec;
 
                     return xmlCodec.decode(context, this);
-                } finally {
-                    currentNode = node.getNextSibling();
+                } else {
+                    return codec.decode(context, this);
                 }
-            } else {
-                // TODO could be better if we passed Class<?> into method
-                return null;
+            } finally {
+                currentNode = node.getNextSibling();
             }
         } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                new IllegalArgumentException("codec: " + codec)
-            );
+            // TODO could be better if we passed Class<?> into method
+            return null;
         }
     }
 

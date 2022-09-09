@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
 
-public interface DataTypeDictionary<T extends DataTypeCodec> {
+public interface DataTypeDictionary<T extends DataTypeCodec<?>> {
 
     /**
      * @return the namespace URI this {@link DataTypeDictionary} belongs to.
@@ -46,6 +46,14 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      */
     void registerEnumCodec(T codec, String description, NodeId dataTypeId);
 
+    /**
+     * Register a {@link DataTypeCodec} that serializes a structure with this dictionary.
+     *
+     * @param codec       the codec to register.
+     * @param description the value of the DataTypeDescription Node that identifies {@code codec}
+     *                    in the dictionary.
+     */
+    void registerStructCodec(T codec, String description);
 
     /**
      * Register a {@link DataTypeCodec} that serializes a structure with this dictionary.
@@ -93,8 +101,7 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      * @param description the codec description.
      * @return the {@link DataTypeCodec} registered for {@code description}, or {@code null} if there isn't one.
      */
-    @Nullable
-    default T getCodecByDescription(String description) {
+    default @Nullable T getCodecByDescription(String description) {
         return getCodecsByDescription().get(description);
     }
 
@@ -102,8 +109,7 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      * @param nodeId the codec encoding {@link NodeId}.
      * @return the {@link DataTypeCodec} registered for {@code nodeId}, or {@code null} if there isn't one.
      */
-    @Nullable
-    default T getCodecByEncodingId(NodeId nodeId) {
+    default @Nullable T getCodecByEncodingId(NodeId nodeId) {
         return getCodecsByEncodingId().get(nodeId);
     }
 
@@ -111,8 +117,7 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      * @param dataTypeId the codec datatype {@link NodeId}.
      * @return the {@link DataTypeCodec} registered for {@code dataTypeId}, or {@code null} if there isn't one.
      */
-    @Nullable
-    default T getCodecByDataTypeId(NodeId dataTypeId) {
+    default @Nullable T getCodecByDataTypeId(NodeId dataTypeId) {
         return getCodecsByDataTypeId().get(dataTypeId);
     }
 

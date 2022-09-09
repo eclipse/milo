@@ -13,8 +13,9 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public interface DataTypeCodec<T, R extends UaDecoder, W> {
+public interface DataTypeCodec<T> {
 
     /**
      * @return the {@link Class} of the DataType this codec encodes.
@@ -22,21 +23,21 @@ public interface DataTypeCodec<T, R extends UaDecoder, W> {
     Class<T> getType();
 
     /**
-     * Decode a {@link T} using the provided reader {@link R}.
+     * Decode a {@link T} using the provided {@link UaDecoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param reader  the reader {@link R} to decode from.
+     * @param decoder the {@link UaDecoder} to decode from.
      * @return a decoded {@link T}.
      */
-    T decode(SerializationContext context, R reader) throws UaSerializationException;
+    T decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException;
 
     /**
-     * Encode a {@link T} using the provided writer {@link W}.
+     * Encode a {@link T} using the provided {@link UaEncoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param writer  the writer {@link W} to encode to.
+     * @param encoder the {@link UaEncoder} to encode to.
      * @param value   the {@link T} to encode.
      */
-    void encode(SerializationContext context, W writer, T value) throws UaSerializationException;
+    void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException;
 
 }

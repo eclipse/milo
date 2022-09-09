@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.jetbrains.annotations.Nullable;
 
 public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> {
 
@@ -63,12 +64,12 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     }
 
     @Override
-    public OpcUaBinaryDataTypeCodec<?> getCodec(String description) {
+    public @Nullable OpcUaBinaryDataTypeCodec<?> getCodec(String description) {
         return codecsByDescription.get(description);
     }
 
     @Override
-    public OpcUaBinaryDataTypeCodec<?> getCodec(NodeId dataTypeId) {
+    public @Nullable OpcUaBinaryDataTypeCodec<?> getCodec(NodeId dataTypeId) {
         return codecsByDataTypeId.get(dataTypeId);
     }
 
@@ -81,6 +82,11 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId dataTypeId) {
         codecsByDescription.put(description, codec);
         codecsByDataTypeId.put(dataTypeId, codec);
+    }
+
+    @Override
+    public void registerStructCodec(OpcUaBinaryDataTypeCodec<?> codec, String description) {
+        codecsByDescription.put(description, codec);
     }
 
     @Override

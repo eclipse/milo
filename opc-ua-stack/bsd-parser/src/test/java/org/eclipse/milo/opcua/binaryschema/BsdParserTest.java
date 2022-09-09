@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ServerTable;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
@@ -65,31 +64,6 @@ public abstract class BsdParserTest {
             return serverTable;
         }
 
-        @Override
-        public Object decode(
-            String namespaceUri,
-            String typeName,
-            OpcUaBinaryStreamDecoder decoder
-        ) throws UaSerializationException {
-
-            return codecTable.get(namespaceUri, typeName).decode(context, decoder);
-        }
-
-        @Override
-        public void encode(
-            String namespaceUri,
-            String typeName,
-            Object encodable,
-            OpcUaBinaryStreamEncoder encoder
-        ) throws UaSerializationException {
-
-            @SuppressWarnings("unchecked")
-            OpcUaBinaryDataTypeCodec<Object> codec =
-                (OpcUaBinaryDataTypeCodec<Object>) codecTable.get(namespaceUri, typeName);
-
-            codec.encode(context, encoder, encodable);
-        }
-
     };
 
     public BsdParserTest() {
@@ -103,6 +77,8 @@ public abstract class BsdParserTest {
         dictionary.getCodecsByDescription().forEach((d, c) ->
             codecTable.put(Namespaces.OPC_UA, d, c)
         );
+
+        context.getDataTypeManager().registerTypeDictionary(dictionary);
     }
 
     /**
@@ -121,15 +97,23 @@ public abstract class BsdParserTest {
                 "dictionaries/BsdParserTest.bsd.xml")
         );
 
-        dictionary.getStructCodecs().forEach(cd ->
-            codecTable.put(
-                dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec())
-        );
+        var d = new OpcUaBinaryDataTypeDictionary(dictionary.getNamespaceUri());
 
-        dictionary.getEnumCodecs().forEach(cd ->
+        dictionary.getStructCodecs().forEach(cd -> {
+            d.registerStructCodec(cd.getCodec(), cd.getDescription());
+
             codecTable.put(
-                dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec())
-        );
+                dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec());
+        });
+
+        dictionary.getEnumCodecs().forEach(cd -> {
+            d.registerEnumCodec(cd.getCodec(), cd.getDescription());
+
+            codecTable.put(
+                dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec());
+        });
+
+        context.getDataTypeManager().registerTypeDictionary(d);
     }
 
     @SuppressWarnings("unchecked")

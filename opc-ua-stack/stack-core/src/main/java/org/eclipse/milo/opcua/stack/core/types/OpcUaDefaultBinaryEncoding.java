@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -19,7 +20,6 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -46,11 +46,6 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public ExtensionObject.BodyType getBodyType() {
-        return ExtensionObject.BodyType.ByteString;
-    }
-
-    @Override
     public Object encode(
         SerializationContext context,
         Object decodedBody,
@@ -72,14 +67,12 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
             ByteBuf buffer = buffer();
 
             try {
-                OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(context).setBuffer(buffer);
+                OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(context);
+                encoder.setBuffer(buffer);
 
-                codec.encode(context, writer, decodedBody);
+                encoder.writeStruct(null, decodedBody, codec);
 
-                byte[] bs = new byte[buffer.readableBytes()];
-                buffer.readBytes(bs);
-
-                return ByteString.of(bs);
+                return ByteString.of(ByteBufUtil.getBytes(buffer));
             } finally {
                 buffer.release();
             }
@@ -112,9 +105,10 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
             ByteBuf buffer = Unpooled.wrappedBuffer(bs);
 
-            OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(context).setBuffer(buffer);
+            OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(context);
+            decoder.setBuffer(buffer);
 
-            return codec.decode(context, reader);
+            return decoder.readStruct(null, codec);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }

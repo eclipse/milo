@@ -61,18 +61,18 @@ public class OpcUaJsonDecoder implements UaDecoder {
     private String peekedNextName = null;
 
     JsonReader jsonReader;
-    SerializationContext serializationContext;
+    SerializationContext context;
 
-    public OpcUaJsonDecoder(SerializationContext serializationContext) {
-        this.serializationContext = serializationContext;
+    public OpcUaJsonDecoder(SerializationContext context) {
+        this.context = context;
     }
 
-    public OpcUaJsonDecoder(SerializationContext serializationContext, String s) {
-        this(serializationContext, new StringReader(s));
+    public OpcUaJsonDecoder(SerializationContext context, String s) {
+        this(context, new StringReader(s));
     }
 
-    public OpcUaJsonDecoder(SerializationContext serializationContext, Reader reader) {
-        this.serializationContext = serializationContext;
+    public OpcUaJsonDecoder(SerializationContext context, Reader reader) {
+        this.context = context;
 
         reset(reader);
     }
@@ -1265,7 +1265,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
         try {
             ExtensionObject xo = readExtensionObject(field);
 
-            return (UaMessage) xo.decode(serializationContext);
+            return (UaMessage) xo.decode(context);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
@@ -1290,37 +1290,11 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        @SuppressWarnings("unchecked")
-        OpcUaJsonDataTypeCodec<Object> codec =
-            (OpcUaJsonDataTypeCodec<Object>) serializationContext.getDataTypeManager()
-                .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec<?> codec = context.getDataTypeManager()
+            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
-        if (codec == null) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "readStruct: no codec registered: " + dataTypeId
-            );
-        }
-
-        return readStruct(field, codec);
-    }
-
-    @Override
-    public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
-            .orElseThrow(() -> new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "readStruct: no codec registered: " + dataTypeId
-            ));
-
-        return readStruct(field, localDataTypeId);
-    }
-
-    @Override
-    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
-        if (codec instanceof OpcUaJsonDataTypeCodec) {
-            @SuppressWarnings("unchecked")
-            OpcUaJsonDataTypeCodec<Object> jsonCodec = (OpcUaJsonDataTypeCodec<Object>) codec;
+        if (codec instanceof OpcUaJsonDataTypeCodec<?>) {
+            OpcUaJsonDataTypeCodec<?> jsonCodec = (OpcUaJsonDataTypeCodec<?>) codec;
 
             try {
                 if (field != null) {
@@ -1336,7 +1310,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 Object value;
 
                 jsonReader.beginObject();
-                value = jsonCodec.decode(serializationContext, this);
+                value = jsonCodec.decode(context, this);
                 jsonReader.endObject();
 
                 return value;
@@ -1346,8 +1320,49 @@ public class OpcUaJsonDecoder implements UaDecoder {
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                new IllegalArgumentException("readStruct: codec: " + codec)
+                "readStruct: no JSON codec registered: " + dataTypeId
             );
+        }
+    }
+
+    @Override
+    public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "readStruct: no codec registered: " + dataTypeId
+            ));
+
+        return readStruct(field, localDataTypeId);
+    }
+
+    @Override
+    public Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException {
+        try {
+            if (field != null) {
+                String nextName = nextName();
+                if (!field.equals(nextName)) {
+                    throw new UaSerializationException(
+                        StatusCodes.Bad_DecodingError,
+                        String.format("readStruct: %s != %s", field, nextName)
+                    );
+                }
+            }
+
+            Object value;
+
+            jsonReader.beginObject();
+            if (codec instanceof OpcUaJsonDataTypeCodec<?>) {
+                OpcUaJsonDataTypeCodec<?> jsonCodec = (OpcUaJsonDataTypeCodec<?>) codec;
+                value = jsonCodec.decode(context, this);
+            } else {
+                value = codec.decode(context, this);
+            }
+            jsonReader.endObject();
+
+            return value;
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
     }
 
@@ -1485,7 +1500,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         @SuppressWarnings("unchecked")
         OpcUaJsonDataTypeCodec<Object> codec =
-            (OpcUaJsonDataTypeCodec<Object>) serializationContext.getDataTypeManager()
+            (OpcUaJsonDataTypeCodec<Object>) context.getDataTypeManager()
                 .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec == null) {
@@ -1508,7 +1523,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             jsonReader.beginArray();
             while (jsonReader.peek() != JsonToken.END_ARRAY) {
-                elements.add(readStruct(null, codec));
+                elements.add(readStruct(null, dataTypeId));
             }
             jsonReader.endArray();
 
@@ -1525,7 +1540,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 "readStructArray: no codec registered: " + dataTypeId

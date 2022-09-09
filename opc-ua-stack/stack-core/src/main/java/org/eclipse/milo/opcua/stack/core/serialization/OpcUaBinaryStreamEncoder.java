@@ -970,8 +970,8 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+    public void writeStruct(String field, Object value, DataTypeCodec<?> codec) throws UaSerializationException {
+        if (codec instanceof OpcUaBinaryDataTypeCodec<?>) {
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> binaryCodec = (OpcUaBinaryDataTypeCodec<Object>) codec;
 

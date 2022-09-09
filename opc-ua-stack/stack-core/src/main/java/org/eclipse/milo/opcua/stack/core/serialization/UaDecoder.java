@@ -92,7 +92,7 @@ public interface UaDecoder {
 
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
-    Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException;
+    Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException;
 
     Boolean[] readBooleanArray(String field) throws UaSerializationException;
 

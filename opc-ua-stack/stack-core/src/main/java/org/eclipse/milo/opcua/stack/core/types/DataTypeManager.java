@@ -24,8 +24,7 @@ public interface DataTypeManager {
      * @param encodingId the encoding id.
      * @return the {@link DataTypeCodec} registered for {@code encodingId}.
      */
-    @Nullable
-    DataTypeCodec getCodec(NodeId encodingId);
+    @Nullable DataTypeCodec<?> getCodec(NodeId encodingId);
 
     /**
      * Get a registered {@link DataTypeCodec} by its encoding name and datatype id.
@@ -34,8 +33,7 @@ public interface DataTypeManager {
      * @param dataTypeId   the datatype id.
      * @return the {@link DataTypeCodec} registered for {@code encodingName} and {@code dataTypeId}.
      */
-    @Nullable
-    DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId);
+    @Nullable DataTypeCodec<?> getCodec(QualifiedName encodingName, NodeId dataTypeId);
 
     /**
      * Get a registered {@link DataTypeCodec} by its datatype dictionary namespace URI and description.
@@ -44,17 +42,7 @@ public interface DataTypeManager {
      * @param description  the datatype description in the dictionary.
      * @return the {@link DataTypeCodec} registered for {@code namespaceUri} and {@code description}.
      */
-    @Nullable
-    DataTypeCodec getCodec(String namespaceUri, String description);
-
-    /**
-     * Get a registered {@link DataTypeDictionary} by its namespace URI.
-     *
-     * @param namespaceUri the namespace URI the dictionary is registered under.
-     * @return the {@link DataTypeDictionary} registered under {@code namespaceUri}.
-     */
-    @Nullable
-    DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri);
+    @Nullable DataTypeCodec<?> getCodec(String namespaceUri, String description);
 
     /**
      * Register a {@link DataTypeCodec} by its encoding id.
@@ -62,7 +50,7 @@ public interface DataTypeManager {
      * @param encodingId the encoding id.
      * @param codec      the {@link DataTypeCodec} to register.
      */
-    void registerCodec(NodeId encodingId, DataTypeCodec codec);
+    void registerCodec(NodeId encodingId, DataTypeCodec<?> codec);
 
     /**
      * Register a {@link DataTypeCodec} by its encoding name and datatype id.
@@ -71,11 +59,11 @@ public interface DataTypeManager {
      * @param dataTypeId   the datatype id.
      * @param codec        the {@link DataTypeCodec} to register.
      */
-    void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec);
+    void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec<?> codec);
 
     default void registerCodec(
-        GenericDataTypeCodec<?> codec,
         NodeId dataTypeId,
+        GenericDataTypeCodec<?> codec,
         @Nullable NodeId binaryEncodingId,
         @Nullable NodeId xmlEncodingId,
         @Nullable NodeId jsonEncodingId
@@ -94,6 +82,26 @@ public interface DataTypeManager {
             registerCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId, codec.asJsonCodec());
         }
     }
+
+    default @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId) {
+        return null; // TODO
+    }
+
+    default @Nullable NodeId getXmlEncodingId(NodeId dataTypeId) {
+        return null; // TODO
+    }
+
+    default @Nullable NodeId getJsonEncodingId(NodeId dataTypeId) {
+        return null; // TODO
+    }
+
+    /**
+     * Get a registered {@link DataTypeDictionary} by its namespace URI.
+     *
+     * @param namespaceUri the namespace URI the dictionary is registered under.
+     * @return the {@link DataTypeDictionary} registered under {@code namespaceUri}.
+     */
+    @Nullable DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri);
 
     /**
      * Register a {@link DataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
