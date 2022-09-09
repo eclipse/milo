@@ -80,13 +80,13 @@ public class ElementOperand extends FilterOperand implements UaStructure {
         }
 
         @Override
-        public ElementOperand decode(SerializationContext context, UaDecoder decoder) {
+        public ElementOperand decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger index = decoder.readUInt32("Index");
             return new ElementOperand(index);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ElementOperand value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ElementOperand value) {
             encoder.writeUInt32("Index", value.getIndex());
         }
     }

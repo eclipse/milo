@@ -35,8 +35,9 @@ public enum TrustListMasks implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=12552");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable TrustListMasks from(int value) {
@@ -76,13 +77,17 @@ public enum TrustListMasks implements UaEnumeration {
         }
 
         @Override
-        public TrustListMasks decode(SerializationContext context, UaDecoder decoder) {
+        public TrustListMasks decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, TrustListMasks.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TrustListMasks value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, TrustListMasks value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=12552");
     }
 }

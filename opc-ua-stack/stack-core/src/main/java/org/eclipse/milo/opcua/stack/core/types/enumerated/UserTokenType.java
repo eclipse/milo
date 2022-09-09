@@ -34,8 +34,9 @@ public enum UserTokenType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=303");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable UserTokenType from(int value) {
@@ -69,13 +70,17 @@ public enum UserTokenType implements UaEnumeration {
         }
 
         @Override
-        public UserTokenType decode(SerializationContext context, UaDecoder decoder) {
+        public UserTokenType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, UserTokenType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, UserTokenType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, UserTokenType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=303");
     }
 }

@@ -99,7 +99,7 @@ public class NotificationMessage extends Structure implements UaStructure {
         }
 
         @Override
-        public NotificationMessage decode(SerializationContext context, UaDecoder decoder) {
+        public NotificationMessage decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
             DateTime publishTime = decoder.readDateTime("PublishTime");
             ExtensionObject[] notificationData = decoder.readExtensionObjectArray("NotificationData");
@@ -107,7 +107,8 @@ public class NotificationMessage extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NotificationMessage value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               NotificationMessage value) {
             encoder.writeUInt32("SequenceNumber", value.getSequenceNumber());
             encoder.writeDateTime("PublishTime", value.getPublishTime());
             encoder.writeExtensionObjectArray("NotificationData", value.getNotificationData());

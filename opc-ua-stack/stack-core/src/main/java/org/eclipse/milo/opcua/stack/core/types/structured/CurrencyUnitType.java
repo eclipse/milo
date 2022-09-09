@@ -105,7 +105,7 @@ public class CurrencyUnitType extends Structure implements UaStructure {
         }
 
         @Override
-        public CurrencyUnitType decode(SerializationContext context, UaDecoder decoder) {
+        public CurrencyUnitType decodeType(SerializationContext context, UaDecoder decoder) {
             Short numericCode = decoder.readInt16("NumericCode");
             Byte exponent = decoder.readSByte("Exponent");
             String alphabeticCode = decoder.readString("AlphabeticCode");
@@ -114,7 +114,8 @@ public class CurrencyUnitType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CurrencyUnitType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CurrencyUnitType value) {
             encoder.writeInt16("NumericCode", value.getNumericCode());
             encoder.writeSByte("Exponent", value.getExponent());
             encoder.writeString("AlphabeticCode", value.getAlphabeticCode());

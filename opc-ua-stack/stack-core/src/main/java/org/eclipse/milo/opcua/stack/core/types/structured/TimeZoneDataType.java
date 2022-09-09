@@ -88,14 +88,15 @@ public class TimeZoneDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public TimeZoneDataType decode(SerializationContext context, UaDecoder decoder) {
+        public TimeZoneDataType decodeType(SerializationContext context, UaDecoder decoder) {
             Short offset = decoder.readInt16("Offset");
             Boolean daylightSavingInOffset = decoder.readBoolean("DaylightSavingInOffset");
             return new TimeZoneDataType(offset, daylightSavingInOffset);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TimeZoneDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               TimeZoneDataType value) {
             encoder.writeInt16("Offset", value.getOffset());
             encoder.writeBoolean("DaylightSavingInOffset", value.getDaylightSavingInOffset());
         }

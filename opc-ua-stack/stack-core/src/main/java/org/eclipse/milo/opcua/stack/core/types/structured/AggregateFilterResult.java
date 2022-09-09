@@ -98,7 +98,7 @@ public class AggregateFilterResult extends MonitoringFilterResult implements UaS
         }
 
         @Override
-        public AggregateFilterResult decode(SerializationContext context, UaDecoder decoder) {
+        public AggregateFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime revisedStartTime = decoder.readDateTime("RevisedStartTime");
             Double revisedProcessingInterval = decoder.readDouble("RevisedProcessingInterval");
             AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.readStruct("RevisedAggregateConfiguration", AggregateConfiguration.TYPE_ID);
@@ -106,8 +106,8 @@ public class AggregateFilterResult extends MonitoringFilterResult implements UaS
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           AggregateFilterResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               AggregateFilterResult value) {
             encoder.writeDateTime("RevisedStartTime", value.getRevisedStartTime());
             encoder.writeDouble("RevisedProcessingInterval", value.getRevisedProcessingInterval());
             encoder.writeStruct("RevisedAggregateConfiguration", value.getRevisedAggregateConfiguration(), AggregateConfiguration.TYPE_ID);

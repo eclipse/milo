@@ -43,8 +43,9 @@ public enum BrowseResultMask implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=517");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable BrowseResultMask from(int value) {
@@ -96,13 +97,18 @@ public enum BrowseResultMask implements UaEnumeration {
         }
 
         @Override
-        public BrowseResultMask decode(SerializationContext context, UaDecoder decoder) {
+        public BrowseResultMask decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, BrowseResultMask.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseResultMask value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrowseResultMask value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=517");
     }
 }

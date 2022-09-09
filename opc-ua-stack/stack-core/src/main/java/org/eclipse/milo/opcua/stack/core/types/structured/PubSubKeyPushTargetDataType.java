@@ -148,7 +148,7 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
         }
 
         @Override
-        public PubSubKeyPushTargetDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PubSubKeyPushTargetDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String applicationUri = decoder.readString("ApplicationUri");
             String[] pushTargetFolder = decoder.readStringArray("PushTargetFolder");
             String endpointUrl = decoder.readString("EndpointUrl");
@@ -162,8 +162,8 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubKeyPushTargetDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PubSubKeyPushTargetDataType value) {
             encoder.writeString("ApplicationUri", value.getApplicationUri());
             encoder.writeStringArray("PushTargetFolder", value.getPushTargetFolder());
             encoder.writeString("EndpointUrl", value.getEndpointUrl());

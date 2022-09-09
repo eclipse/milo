@@ -36,8 +36,9 @@ public enum BrokerTransportQualityOfService implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=15008");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable BrokerTransportQualityOfService from(int value) {
@@ -74,14 +75,19 @@ public enum BrokerTransportQualityOfService implements UaEnumeration {
         }
 
         @Override
-        public BrokerTransportQualityOfService decode(SerializationContext context, UaDecoder decoder) {
+        public BrokerTransportQualityOfService decodeType(SerializationContext context,
+                                                          UaDecoder decoder) {
             return decoder.readEnum(null, BrokerTransportQualityOfService.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           BrokerTransportQualityOfService value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrokerTransportQualityOfService value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15008");
     }
 }

@@ -115,7 +115,8 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         }
 
         @Override
-        public UadpWriterGroupMessageDataType decode(SerializationContext context, UaDecoder decoder) {
+        public UadpWriterGroupMessageDataType decodeType(SerializationContext context,
+                                                         UaDecoder decoder) {
             UInteger groupVersion = decoder.readUInt32("GroupVersion");
             DataSetOrderingType dataSetOrdering = (DataSetOrderingType) decoder.readEnum("DataSetOrdering", DataSetOrderingType.class);
             UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
@@ -125,8 +126,8 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UadpWriterGroupMessageDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UadpWriterGroupMessageDataType value) {
             encoder.writeUInt32("GroupVersion", value.getGroupVersion());
             encoder.writeEnum("DataSetOrdering", value.getDataSetOrdering());
             encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());

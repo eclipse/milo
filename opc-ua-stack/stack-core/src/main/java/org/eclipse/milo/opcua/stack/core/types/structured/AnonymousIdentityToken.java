@@ -74,14 +74,14 @@ public class AnonymousIdentityToken extends UserIdentityToken implements UaStruc
         }
 
         @Override
-        public AnonymousIdentityToken decode(SerializationContext context, UaDecoder decoder) {
+        public AnonymousIdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
             return new AnonymousIdentityToken(policyId);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           AnonymousIdentityToken value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               AnonymousIdentityToken value) {
             encoder.writeString("PolicyId", value.getPolicyId());
         }
     }

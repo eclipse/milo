@@ -71,8 +71,9 @@ public enum NodeClass implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=257");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable NodeClass from(int value) {
@@ -121,13 +122,17 @@ public enum NodeClass implements UaEnumeration {
         }
 
         @Override
-        public NodeClass decode(SerializationContext context, UaDecoder decoder) {
+        public NodeClass decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, NodeClass.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NodeClass value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, NodeClass value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=257");
     }
 }

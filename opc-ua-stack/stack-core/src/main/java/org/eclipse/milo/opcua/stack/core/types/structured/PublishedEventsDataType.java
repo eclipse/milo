@@ -97,7 +97,7 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
         }
 
         @Override
-        public PublishedEventsDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PublishedEventsDataType decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId eventNotifier = decoder.readNodeId("EventNotifier");
             SimpleAttributeOperand[] selectedFields = (SimpleAttributeOperand[]) decoder.readStructArray("SelectedFields", SimpleAttributeOperand.TYPE_ID);
             ContentFilter filter = (ContentFilter) decoder.readStruct("Filter", ContentFilter.TYPE_ID);
@@ -105,8 +105,8 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedEventsDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PublishedEventsDataType value) {
             encoder.writeNodeId("EventNotifier", value.getEventNotifier());
             encoder.writeStructArray("SelectedFields", value.getSelectedFields(), SimpleAttributeOperand.TYPE_ID);
             encoder.writeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);

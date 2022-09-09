@@ -42,8 +42,9 @@ public enum ServerState implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=852");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable ServerState from(int value) {
@@ -89,13 +90,17 @@ public enum ServerState implements UaEnumeration {
         }
 
         @Override
-        public ServerState decode(SerializationContext context, UaDecoder decoder) {
+        public ServerState decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, ServerState.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ServerState value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ServerState value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=852");
     }
 }

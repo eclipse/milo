@@ -114,7 +114,7 @@ public class AggregateConfiguration extends Structure implements UaStructure {
         }
 
         @Override
-        public AggregateConfiguration decode(SerializationContext context, UaDecoder decoder) {
+        public AggregateConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
             Boolean useServerCapabilitiesDefaults = decoder.readBoolean("UseServerCapabilitiesDefaults");
             Boolean treatUncertainAsBad = decoder.readBoolean("TreatUncertainAsBad");
             UByte percentDataBad = decoder.readByte("PercentDataBad");
@@ -124,8 +124,8 @@ public class AggregateConfiguration extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           AggregateConfiguration value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               AggregateConfiguration value) {
             encoder.writeBoolean("UseServerCapabilitiesDefaults", value.getUseServerCapabilitiesDefaults());
             encoder.writeBoolean("TreatUncertainAsBad", value.getTreatUncertainAsBad());
             encoder.writeByte("PercentDataBad", value.getPercentDataBad());

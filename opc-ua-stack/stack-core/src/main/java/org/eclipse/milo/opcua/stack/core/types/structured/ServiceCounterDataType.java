@@ -88,15 +88,15 @@ public class ServiceCounterDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public ServiceCounterDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ServiceCounterDataType decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger totalCount = decoder.readUInt32("TotalCount");
             UInteger errorCount = decoder.readUInt32("ErrorCount");
             return new ServiceCounterDataType(totalCount, errorCount);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ServiceCounterDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ServiceCounterDataType value) {
             encoder.writeUInt32("TotalCount", value.getTotalCount());
             encoder.writeUInt32("ErrorCount", value.getErrorCount());
         }

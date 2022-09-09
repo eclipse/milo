@@ -92,7 +92,7 @@ public interface UaEncoder {
 
     void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
-    void writeStruct(String field, Object value, DataTypeCodec<?> codec) throws UaSerializationException;
+    void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException;
 
     void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException;
 

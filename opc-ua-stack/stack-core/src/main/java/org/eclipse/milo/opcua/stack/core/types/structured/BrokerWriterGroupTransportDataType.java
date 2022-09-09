@@ -106,8 +106,8 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
         }
 
         @Override
-        public BrokerWriterGroupTransportDataType decode(SerializationContext context,
-                                                         UaDecoder decoder) {
+        public BrokerWriterGroupTransportDataType decodeType(SerializationContext context,
+                                                             UaDecoder decoder) {
             String queueName = decoder.readString("QueueName");
             String resourceUri = decoder.readString("ResourceUri");
             String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
@@ -116,8 +116,8 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           BrokerWriterGroupTransportDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrokerWriterGroupTransportDataType value) {
             encoder.writeString("QueueName", value.getQueueName());
             encoder.writeString("ResourceUri", value.getResourceUri());
             encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());

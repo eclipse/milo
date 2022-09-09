@@ -99,7 +99,7 @@ public class ModificationInfo extends Structure implements UaStructure {
         }
 
         @Override
-        public ModificationInfo decode(SerializationContext context, UaDecoder decoder) {
+        public ModificationInfo decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime modificationTime = decoder.readDateTime("ModificationTime");
             HistoryUpdateType updateType = (HistoryUpdateType) decoder.readEnum("UpdateType", HistoryUpdateType.class);
             String userName = decoder.readString("UserName");
@@ -107,7 +107,8 @@ public class ModificationInfo extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ModificationInfo value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ModificationInfo value) {
             encoder.writeDateTime("ModificationTime", value.getModificationTime());
             encoder.writeEnum("UpdateType", value.getUpdateType());
             encoder.writeString("UserName", value.getUserName());

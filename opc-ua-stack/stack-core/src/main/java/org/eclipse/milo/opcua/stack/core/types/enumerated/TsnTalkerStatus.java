@@ -41,8 +41,9 @@ public enum TsnTalkerStatus implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=24222");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable TsnTalkerStatus from(int value) {
@@ -73,13 +74,17 @@ public enum TsnTalkerStatus implements UaEnumeration {
         }
 
         @Override
-        public TsnTalkerStatus decode(SerializationContext context, UaDecoder decoder) {
+        public TsnTalkerStatus decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, TsnTalkerStatus.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TsnTalkerStatus value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, TsnTalkerStatus value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24222");
     }
 }

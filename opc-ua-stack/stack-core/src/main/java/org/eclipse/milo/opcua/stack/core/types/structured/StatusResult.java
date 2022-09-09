@@ -90,14 +90,14 @@ public class StatusResult extends Structure implements UaStructure {
         }
 
         @Override
-        public StatusResult decode(SerializationContext context, UaDecoder decoder) {
+        public StatusResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             DiagnosticInfo diagnosticInfo = decoder.readDiagnosticInfo("DiagnosticInfo");
             return new StatusResult(statusCode, diagnosticInfo);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, StatusResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, StatusResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeDiagnosticInfo("DiagnosticInfo", value.getDiagnosticInfo());
         }

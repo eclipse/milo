@@ -140,7 +140,7 @@ public class PublishedVariableDataType extends Structure implements UaStructure 
         }
 
         @Override
-        public PublishedVariableDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PublishedVariableDataType decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId publishedVariable = decoder.readNodeId("PublishedVariable");
             UInteger attributeId = decoder.readUInt32("AttributeId");
             Double samplingIntervalHint = decoder.readDouble("SamplingIntervalHint");
@@ -153,8 +153,8 @@ public class PublishedVariableDataType extends Structure implements UaStructure 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedVariableDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PublishedVariableDataType value) {
             encoder.writeNodeId("PublishedVariable", value.getPublishedVariable());
             encoder.writeUInt32("AttributeId", value.getAttributeId());
             encoder.writeDouble("SamplingIntervalHint", value.getSamplingIntervalHint());

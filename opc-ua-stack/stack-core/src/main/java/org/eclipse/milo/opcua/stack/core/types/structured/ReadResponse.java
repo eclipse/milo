@@ -99,7 +99,7 @@ public class ReadResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public ReadResponse decode(SerializationContext context, UaDecoder decoder) {
+        public ReadResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             DataValue[] results = decoder.readDataValueArray("Results");
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,7 +107,7 @@ public class ReadResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReadResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ReadResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeDataValueArray("Results", value.getResults());
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

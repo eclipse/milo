@@ -88,14 +88,14 @@ public class BrowsePath extends Structure implements UaStructure {
         }
 
         @Override
-        public BrowsePath decode(SerializationContext context, UaDecoder decoder) {
+        public BrowsePath decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId startingNode = decoder.readNodeId("StartingNode");
             RelativePath relativePath = (RelativePath) decoder.readStruct("RelativePath", RelativePath.TYPE_ID);
             return new BrowsePath(startingNode, relativePath);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowsePath value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, BrowsePath value) {
             encoder.writeNodeId("StartingNode", value.getStartingNode());
             encoder.writeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
         }

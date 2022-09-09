@@ -125,7 +125,7 @@ public class ResponseHeader extends Structure implements UaStructure {
         }
 
         @Override
-        public ResponseHeader decode(SerializationContext context, UaDecoder decoder) {
+        public ResponseHeader decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime timestamp = decoder.readDateTime("Timestamp");
             UInteger requestHandle = decoder.readUInt32("RequestHandle");
             StatusCode serviceResult = decoder.readStatusCode("ServiceResult");
@@ -136,7 +136,7 @@ public class ResponseHeader extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ResponseHeader value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ResponseHeader value) {
             encoder.writeDateTime("Timestamp", value.getTimestamp());
             encoder.writeUInt32("RequestHandle", value.getRequestHandle());
             encoder.writeStatusCode("ServiceResult", value.getServiceResult());

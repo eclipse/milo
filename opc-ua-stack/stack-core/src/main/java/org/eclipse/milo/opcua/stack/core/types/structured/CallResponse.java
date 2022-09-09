@@ -98,7 +98,7 @@ public class CallResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public CallResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CallResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             CallMethodResult[] results = (CallMethodResult[]) decoder.readStructArray("Results", CallMethodResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -106,7 +106,7 @@ public class CallResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CallResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, CallResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), CallMethodResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

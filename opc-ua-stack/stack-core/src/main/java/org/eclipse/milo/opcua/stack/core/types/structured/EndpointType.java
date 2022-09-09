@@ -106,7 +106,7 @@ public class EndpointType extends Structure implements UaStructure {
         }
 
         @Override
-        public EndpointType decode(SerializationContext context, UaDecoder decoder) {
+        public EndpointType decodeType(SerializationContext context, UaDecoder decoder) {
             String endpointUrl = decoder.readString("EndpointUrl");
             MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");
@@ -115,7 +115,7 @@ public class EndpointType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EndpointType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EndpointType value) {
             encoder.writeString("EndpointUrl", value.getEndpointUrl());
             encoder.writeEnum("SecurityMode", value.getSecurityMode());
             encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());

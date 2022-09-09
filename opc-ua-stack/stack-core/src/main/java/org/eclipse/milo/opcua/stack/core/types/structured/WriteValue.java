@@ -105,7 +105,7 @@ public class WriteValue extends Structure implements UaStructure {
         }
 
         @Override
-        public WriteValue decode(SerializationContext context, UaDecoder decoder) {
+        public WriteValue decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String indexRange = decoder.readString("IndexRange");
@@ -114,7 +114,7 @@ public class WriteValue extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, WriteValue value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, WriteValue value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeUInt32("AttributeId", value.getAttributeId());
             encoder.writeString("IndexRange", value.getIndexRange());

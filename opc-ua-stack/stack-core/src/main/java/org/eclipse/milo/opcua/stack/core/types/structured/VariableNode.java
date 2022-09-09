@@ -164,7 +164,7 @@ public class VariableNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public VariableNode decode(SerializationContext context, UaDecoder decoder) {
+        public VariableNode decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = (NodeClass) decoder.readEnum("NodeClass", NodeClass.class);
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -189,7 +189,7 @@ public class VariableNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, VariableNode value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, VariableNode value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("NodeClass", value.getNodeClass());
             encoder.writeQualifiedName("BrowseName", value.getBrowseName());

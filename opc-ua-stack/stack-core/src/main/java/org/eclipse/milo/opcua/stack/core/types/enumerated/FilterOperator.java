@@ -62,8 +62,9 @@ public enum FilterOperator implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=576");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable FilterOperator from(int value) {
@@ -139,13 +140,17 @@ public enum FilterOperator implements UaEnumeration {
         }
 
         @Override
-        public FilterOperator decode(SerializationContext context, UaDecoder decoder) {
+        public FilterOperator decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, FilterOperator.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, FilterOperator value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, FilterOperator value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=576");
     }
 }

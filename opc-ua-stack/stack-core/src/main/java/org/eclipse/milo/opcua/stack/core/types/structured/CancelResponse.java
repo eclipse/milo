@@ -88,14 +88,14 @@ public class CancelResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public CancelResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CancelResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             UInteger cancelCount = decoder.readUInt32("CancelCount");
             return new CancelResponse(responseHeader, cancelCount);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CancelResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, CancelResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeUInt32("CancelCount", value.getCancelCount());
         }

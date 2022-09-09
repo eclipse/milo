@@ -88,14 +88,14 @@ public class RationalNumber extends Structure implements UaStructure {
         }
 
         @Override
-        public RationalNumber decode(SerializationContext context, UaDecoder decoder) {
+        public RationalNumber decodeType(SerializationContext context, UaDecoder decoder) {
             Integer numerator = decoder.readInt32("Numerator");
             UInteger denominator = decoder.readUInt32("Denominator");
             return new RationalNumber(numerator, denominator);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RationalNumber value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, RationalNumber value) {
             encoder.writeInt32("Numerator", value.getNumerator());
             encoder.writeUInt32("Denominator", value.getDenominator());
         }

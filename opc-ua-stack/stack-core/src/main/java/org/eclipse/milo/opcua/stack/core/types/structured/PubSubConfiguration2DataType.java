@@ -137,7 +137,8 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         }
 
         @Override
-        public PubSubConfiguration2DataType decode(SerializationContext context, UaDecoder decoder) {
+        public PubSubConfiguration2DataType decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.readStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
             PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.readStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
             Boolean enabled = decoder.readBoolean("Enabled");
@@ -152,8 +153,8 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConfiguration2DataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PubSubConfiguration2DataType value) {
             encoder.writeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
             encoder.writeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
             encoder.writeBoolean("Enabled", value.getEnabled());

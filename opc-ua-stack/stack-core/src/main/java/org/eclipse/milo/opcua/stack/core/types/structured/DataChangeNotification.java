@@ -90,15 +90,15 @@ public class DataChangeNotification extends NotificationData implements UaStruct
         }
 
         @Override
-        public DataChangeNotification decode(SerializationContext context, UaDecoder decoder) {
+        public DataChangeNotification decodeType(SerializationContext context, UaDecoder decoder) {
             MonitoredItemNotification[] monitoredItems = (MonitoredItemNotification[]) decoder.readStructArray("MonitoredItems", MonitoredItemNotification.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
             return new DataChangeNotification(monitoredItems, diagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DataChangeNotification value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataChangeNotification value) {
             encoder.writeStructArray("MonitoredItems", value.getMonitoredItems(), MonitoredItemNotification.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }

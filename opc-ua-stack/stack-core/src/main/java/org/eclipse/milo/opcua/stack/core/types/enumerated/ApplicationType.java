@@ -34,8 +34,9 @@ public enum ApplicationType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=307");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable ApplicationType from(int value) {
@@ -69,13 +70,17 @@ public enum ApplicationType implements UaEnumeration {
         }
 
         @Override
-        public ApplicationType decode(SerializationContext context, UaDecoder decoder) {
+        public ApplicationType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, ApplicationType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ApplicationType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ApplicationType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=307");
     }
 }

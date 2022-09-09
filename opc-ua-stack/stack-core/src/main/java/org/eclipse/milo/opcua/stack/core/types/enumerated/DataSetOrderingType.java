@@ -32,8 +32,9 @@ public enum DataSetOrderingType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=20408");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable DataSetOrderingType from(int value) {
@@ -64,13 +65,18 @@ public enum DataSetOrderingType implements UaEnumeration {
         }
 
         @Override
-        public DataSetOrderingType decode(SerializationContext context, UaDecoder decoder) {
+        public DataSetOrderingType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, DataSetOrderingType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DataSetOrderingType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataSetOrderingType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=20408");
     }
 }

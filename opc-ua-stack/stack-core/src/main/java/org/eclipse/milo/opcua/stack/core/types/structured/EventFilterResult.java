@@ -99,7 +99,7 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
         }
 
         @Override
-        public EventFilterResult decode(SerializationContext context, UaDecoder decoder) {
+        public EventFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode[] selectClauseResults = decoder.readStatusCodeArray("SelectClauseResults");
             DiagnosticInfo[] selectClauseDiagnosticInfos = decoder.readDiagnosticInfoArray("SelectClauseDiagnosticInfos");
             ContentFilterResult whereClauseResult = (ContentFilterResult) decoder.readStruct("WhereClauseResult", ContentFilterResult.TYPE_ID);
@@ -107,7 +107,8 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EventFilterResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               EventFilterResult value) {
             encoder.writeStatusCodeArray("SelectClauseResults", value.getSelectClauseResults());
             encoder.writeDiagnosticInfoArray("SelectClauseDiagnosticInfos", value.getSelectClauseDiagnosticInfos());
             encoder.writeStruct("WhereClauseResult", value.getWhereClauseResult(), ContentFilterResult.TYPE_ID);

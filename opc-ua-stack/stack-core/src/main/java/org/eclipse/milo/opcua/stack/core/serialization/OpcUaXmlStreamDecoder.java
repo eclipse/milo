@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -885,16 +886,20 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
             String typeName = node.getLocalName();
 
-            DataTypeCodec codec = context.getDataTypeManager().getCodec(
-                Namespaces.OPC_UA_XSD,
-                String.format("//xs:element[@name='%s']", typeName)
-            );
+            DataTypeCodec codec = null;
 
-            if (codec instanceof OpcUaXmlDataTypeCodec<?>) {
+            DataTypeDictionary<?> dictionary = context.getDataTypeManager()
+                .getDataTypeDictionary(Namespaces.OPC_UA_XSD);
+
+            if (dictionary != null) {
+                codec = dictionary.getCodec(String.format("//xs:element[@name='%s']", typeName));
+            }
+
+            if (codec instanceof OpcUaXmlDataTypeCodec) {
                 currentNode = node.getFirstChild();
 
                 try {
-                    return (UaMessage) ((OpcUaXmlDataTypeCodec<?>) codec).decode(context, this);
+                    return (UaMessage) ((OpcUaXmlDataTypeCodec) codec).decode(context, this);
                 } finally {
                     currentNode = node.getNextSibling();
                 }
@@ -953,22 +958,21 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         if (currentNode(field)) {
             Node node = currentNode;
 
-            OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
-                context.getDataTypeManager()
-                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager()
+                .getStructCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
-            if (codec == null) {
+            if (codec != null) {
+                try {
+                    currentNode = node.getFirstChild();
+                    return codec.decode(context, this);
+                } finally {
+                    currentNode = node.getNextSibling();
+                }
+            } else {
                 throw new UaSerializationException(
                     StatusCodes.Bad_DecodingError,
                     "no codec registered: " + dataTypeId
                 );
-            }
-
-            try {
-                currentNode = node.getFirstChild();
-                return codec.decode(context, this);
-            } finally {
-                currentNode = node.getNextSibling();
             }
         } else {
             // TODO could be better if we passed Class<?> into method
@@ -978,29 +982,24 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId.toNodeId(context.getNamespaceTable())
-            .map(id -> readStruct(field, id))
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
+                "namespace not registered: " + dataTypeId
             ));
+
+        return readStruct(field, localDataTypeId);
     }
 
     @Override
-    public Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException {
+    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
         if (currentNode(field)) {
             Node node = currentNode;
 
             try {
                 currentNode = node.getFirstChild();
 
-                if (codec instanceof OpcUaXmlDataTypeCodec<?>) {
-                    OpcUaXmlDataTypeCodec<?> xmlCodec = (OpcUaXmlDataTypeCodec<?>) codec;
-
-                    return xmlCodec.decode(context, this);
-                } else {
-                    return codec.decode(context, this);
-                }
+                return codec.decode(context, this);
             } finally {
                 currentNode = node.getNextSibling();
             }
@@ -1193,9 +1192,8 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         if (currentNode(field)) {
             Node node = currentNode;
 
-            OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
-                context.getDataTypeManager()
-                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager()
+                .getStructCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(

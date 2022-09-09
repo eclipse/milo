@@ -80,13 +80,13 @@ public class HistoryEvent extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryEvent decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryEvent decodeType(SerializationContext context, UaDecoder decoder) {
             HistoryEventFieldList[] events = (HistoryEventFieldList[]) decoder.readStructArray("Events", HistoryEventFieldList.TYPE_ID);
             return new HistoryEvent(events);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryEvent value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, HistoryEvent value) {
             encoder.writeStructArray("Events", value.getEvents(), HistoryEventFieldList.TYPE_ID);
         }
     }

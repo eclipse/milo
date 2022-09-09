@@ -107,7 +107,7 @@ public class HistoryReadValueId extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryReadValueId decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryReadValueId decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             String indexRange = decoder.readString("IndexRange");
             QualifiedName dataEncoding = decoder.readQualifiedName("DataEncoding");
@@ -116,7 +116,8 @@ public class HistoryReadValueId extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadValueId value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryReadValueId value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeString("IndexRange", value.getIndexRange());
             encoder.writeQualifiedName("DataEncoding", value.getDataEncoding());

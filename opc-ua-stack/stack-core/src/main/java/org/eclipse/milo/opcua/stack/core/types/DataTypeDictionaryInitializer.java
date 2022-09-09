@@ -48,414 +48,414 @@ import org.eclipse.milo.opcua.stack.core.types.structured.*;
 public class DataTypeDictionaryInitializer extends AbstractDataTypeDictionaryInitializer {
     @Override
     protected void initializeEnums(NamespaceTable namespaceTable,
-                                   DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-                                   DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) throws Exception {
+                                   DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
+                                   DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary) throws Exception {
         binaryDictionary.registerEnumCodec(
             new NamingRuleType.Codec().asBinaryCodec(),
             "NamingRuleType",
-            NamingRuleType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new NamingRuleType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "NamingRuleType"),
-            NamingRuleType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new OpenFileMode.Codec().asBinaryCodec(),
             "OpenFileMode",
-            OpenFileMode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new OpenFileMode.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "OpenFileMode"),
-            OpenFileMode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new IdentityCriteriaType.Codec().asBinaryCodec(),
             "IdentityCriteriaType",
-            IdentityCriteriaType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new IdentityCriteriaType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "IdentityCriteriaType"),
-            IdentityCriteriaType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new TrustListMasks.Codec().asBinaryCodec(),
             "TrustListMasks",
-            TrustListMasks.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new TrustListMasks.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "TrustListMasks"),
-            TrustListMasks.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new PubSubState.Codec().asBinaryCodec(),
             "PubSubState",
-            PubSubState.getTypeId().toNodeIdOrThrow(namespaceTable)
+            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new PubSubState.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "PubSubState"),
-            PubSubState.getTypeId().toNodeIdOrThrow(namespaceTable)
+            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new OverrideValueHandling.Codec().asBinaryCodec(),
             "OverrideValueHandling",
-            OverrideValueHandling.getTypeId().toNodeIdOrThrow(namespaceTable)
+            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new OverrideValueHandling.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "OverrideValueHandling"),
-            OverrideValueHandling.getTypeId().toNodeIdOrThrow(namespaceTable)
+            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new DataSetOrderingType.Codec().asBinaryCodec(),
             "DataSetOrderingType",
-            DataSetOrderingType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new DataSetOrderingType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "DataSetOrderingType"),
-            DataSetOrderingType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new BrokerTransportQualityOfService.Codec().asBinaryCodec(),
             "BrokerTransportQualityOfService",
-            BrokerTransportQualityOfService.getTypeId().toNodeIdOrThrow(namespaceTable)
+            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new BrokerTransportQualityOfService.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "BrokerTransportQualityOfService"),
-            BrokerTransportQualityOfService.getTypeId().toNodeIdOrThrow(namespaceTable)
+            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new DiagnosticsLevel.Codec().asBinaryCodec(),
             "DiagnosticsLevel",
-            DiagnosticsLevel.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new DiagnosticsLevel.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "DiagnosticsLevel"),
-            DiagnosticsLevel.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new PubSubDiagnosticsCounterClassification.Codec().asBinaryCodec(),
             "PubSubDiagnosticsCounterClassification",
-            PubSubDiagnosticsCounterClassification.getTypeId().toNodeIdOrThrow(namespaceTable)
+            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new PubSubDiagnosticsCounterClassification.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "PubSubDiagnosticsCounterClassification"),
-            PubSubDiagnosticsCounterClassification.getTypeId().toNodeIdOrThrow(namespaceTable)
+            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new Duplex.Codec().asBinaryCodec(),
             "Duplex",
-            Duplex.getTypeId().toNodeIdOrThrow(namespaceTable)
+            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new Duplex.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "Duplex"),
-            Duplex.getTypeId().toNodeIdOrThrow(namespaceTable)
+            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new InterfaceAdminStatus.Codec().asBinaryCodec(),
             "InterfaceAdminStatus",
-            InterfaceAdminStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new InterfaceAdminStatus.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "InterfaceAdminStatus"),
-            InterfaceAdminStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new InterfaceOperStatus.Codec().asBinaryCodec(),
             "InterfaceOperStatus",
-            InterfaceOperStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new InterfaceOperStatus.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "InterfaceOperStatus"),
-            InterfaceOperStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new NegotiationStatus.Codec().asBinaryCodec(),
             "NegotiationStatus",
-            NegotiationStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new NegotiationStatus.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "NegotiationStatus"),
-            NegotiationStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new TsnFailureCode.Codec().asBinaryCodec(),
             "TsnFailureCode",
-            TsnFailureCode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new TsnFailureCode.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "TsnFailureCode"),
-            TsnFailureCode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new TsnStreamState.Codec().asBinaryCodec(),
             "TsnStreamState",
-            TsnStreamState.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new TsnStreamState.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "TsnStreamState"),
-            TsnStreamState.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new TsnTalkerStatus.Codec().asBinaryCodec(),
             "TsnTalkerStatus",
-            TsnTalkerStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new TsnTalkerStatus.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "TsnTalkerStatus"),
-            TsnTalkerStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new TsnListenerStatus.Codec().asBinaryCodec(),
             "TsnListenerStatus",
-            TsnListenerStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new TsnListenerStatus.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "TsnListenerStatus"),
-            TsnListenerStatus.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new IdType.Codec().asBinaryCodec(),
             "IdType",
-            IdType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new IdType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "IdType"),
-            IdType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new NodeClass.Codec().asBinaryCodec(),
             "NodeClass",
-            NodeClass.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new NodeClass.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "NodeClass"),
-            NodeClass.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new StructureType.Codec().asBinaryCodec(),
             "StructureType",
-            StructureType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new StructureType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "StructureType"),
-            StructureType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new ApplicationType.Codec().asBinaryCodec(),
             "ApplicationType",
-            ApplicationType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new ApplicationType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "ApplicationType"),
-            ApplicationType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new MessageSecurityMode.Codec().asBinaryCodec(),
             "MessageSecurityMode",
-            MessageSecurityMode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new MessageSecurityMode.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "MessageSecurityMode"),
-            MessageSecurityMode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new UserTokenType.Codec().asBinaryCodec(),
             "UserTokenType",
-            UserTokenType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new UserTokenType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "UserTokenType"),
-            UserTokenType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new SecurityTokenRequestType.Codec().asBinaryCodec(),
             "SecurityTokenRequestType",
-            SecurityTokenRequestType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new SecurityTokenRequestType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "SecurityTokenRequestType"),
-            SecurityTokenRequestType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new NodeAttributesMask.Codec().asBinaryCodec(),
             "NodeAttributesMask",
-            NodeAttributesMask.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new NodeAttributesMask.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "NodeAttributesMask"),
-            NodeAttributesMask.getTypeId().toNodeIdOrThrow(namespaceTable)
+            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new FilterOperator.Codec().asBinaryCodec(),
             "FilterOperator",
-            FilterOperator.getTypeId().toNodeIdOrThrow(namespaceTable)
+            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new FilterOperator.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "FilterOperator"),
-            FilterOperator.getTypeId().toNodeIdOrThrow(namespaceTable)
+            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new HistoryUpdateType.Codec().asBinaryCodec(),
             "HistoryUpdateType",
-            HistoryUpdateType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new HistoryUpdateType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "HistoryUpdateType"),
-            HistoryUpdateType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new PerformUpdateType.Codec().asBinaryCodec(),
             "PerformUpdateType",
-            PerformUpdateType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new PerformUpdateType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "PerformUpdateType"),
-            PerformUpdateType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new RedundancySupport.Codec().asBinaryCodec(),
             "RedundancySupport",
-            RedundancySupport.getTypeId().toNodeIdOrThrow(namespaceTable)
+            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new RedundancySupport.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "RedundancySupport"),
-            RedundancySupport.getTypeId().toNodeIdOrThrow(namespaceTable)
+            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new ServerState.Codec().asBinaryCodec(),
             "ServerState",
-            ServerState.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new ServerState.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "ServerState"),
-            ServerState.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new AxisScaleEnumeration.Codec().asBinaryCodec(),
             "AxisScaleEnumeration",
-            AxisScaleEnumeration.getTypeId().toNodeIdOrThrow(namespaceTable)
+            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new AxisScaleEnumeration.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "AxisScaleEnumeration"),
-            AxisScaleEnumeration.getTypeId().toNodeIdOrThrow(namespaceTable)
+            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new ExceptionDeviationFormat.Codec().asBinaryCodec(),
             "ExceptionDeviationFormat",
-            ExceptionDeviationFormat.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new ExceptionDeviationFormat.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "ExceptionDeviationFormat"),
-            ExceptionDeviationFormat.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new BrowseDirection.Codec().asBinaryCodec(),
             "BrowseDirection",
-            BrowseDirection.getTypeId().toNodeIdOrThrow(namespaceTable)
+            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new BrowseDirection.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "BrowseDirection"),
-            BrowseDirection.getTypeId().toNodeIdOrThrow(namespaceTable)
+            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new BrowseResultMask.Codec().asBinaryCodec(),
             "BrowseResultMask",
-            BrowseResultMask.getTypeId().toNodeIdOrThrow(namespaceTable)
+            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new BrowseResultMask.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "BrowseResultMask"),
-            BrowseResultMask.getTypeId().toNodeIdOrThrow(namespaceTable)
+            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new TimestampsToReturn.Codec().asBinaryCodec(),
             "TimestampsToReturn",
-            TimestampsToReturn.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new TimestampsToReturn.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "TimestampsToReturn"),
-            TimestampsToReturn.getTypeId().toNodeIdOrThrow(namespaceTable)
+            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new MonitoringMode.Codec().asBinaryCodec(),
             "MonitoringMode",
-            MonitoringMode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new MonitoringMode.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "MonitoringMode"),
-            MonitoringMode.getTypeId().toNodeIdOrThrow(namespaceTable)
+            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new DataChangeTrigger.Codec().asBinaryCodec(),
             "DataChangeTrigger",
-            DataChangeTrigger.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new DataChangeTrigger.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "DataChangeTrigger"),
-            DataChangeTrigger.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new DeadbandType.Codec().asBinaryCodec(),
             "DeadbandType",
-            DeadbandType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new DeadbandType.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "DeadbandType"),
-            DeadbandType.getTypeId().toNodeIdOrThrow(namespaceTable)
+            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         binaryDictionary.registerEnumCodec(
             new ModelChangeStructureVerbMask.Codec().asBinaryCodec(),
             "ModelChangeStructureVerbMask",
-            ModelChangeStructureVerbMask.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
         xmlDictionary.registerEnumCodec(
             new ModelChangeStructureVerbMask.Codec().asXmlCodec(),
             String.format("//xs:element[@name='%s']", "ModelChangeStructureVerbMask"),
-            ModelChangeStructureVerbMask.getTypeId().toNodeIdOrThrow(namespaceTable)
+            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
         );
     }
 
     @Override
     protected void initializeStructs(NamespaceTable namespaceTable,
-                                     DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-                                     DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) throws Exception {
+                                     DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
+                                     DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary) throws Exception {
         binaryDictionary.registerStructCodec(
             new KeyValuePair.Codec().asBinaryCodec(),
             "KeyValuePair",

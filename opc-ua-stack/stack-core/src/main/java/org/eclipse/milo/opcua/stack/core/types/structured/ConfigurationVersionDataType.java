@@ -88,15 +88,16 @@ public class ConfigurationVersionDataType extends Structure implements UaStructu
         }
 
         @Override
-        public ConfigurationVersionDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ConfigurationVersionDataType decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             UInteger majorVersion = decoder.readUInt32("MajorVersion");
             UInteger minorVersion = decoder.readUInt32("MinorVersion");
             return new ConfigurationVersionDataType(majorVersion, minorVersion);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ConfigurationVersionDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ConfigurationVersionDataType value) {
             encoder.writeUInt32("MajorVersion", value.getMajorVersion());
             encoder.writeUInt32("MinorVersion", value.getMinorVersion());
         }

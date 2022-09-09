@@ -132,7 +132,7 @@ public class ReferenceDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public ReferenceDescription decode(SerializationContext context, UaDecoder decoder) {
+        public ReferenceDescription decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isForward = decoder.readBoolean("IsForward");
             ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
@@ -144,8 +144,8 @@ public class ReferenceDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ReferenceDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReferenceDescription value) {
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeBoolean("IsForward", value.getIsForward());
             encoder.writeExpandedNodeId("NodeId", value.getNodeId());

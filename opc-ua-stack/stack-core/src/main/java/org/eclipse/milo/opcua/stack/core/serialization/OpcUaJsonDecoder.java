@@ -31,7 +31,6 @@ import com.google.gson.stream.JsonToken;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaJsonDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -1290,12 +1289,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        DataTypeCodec<?> codec = context.getDataTypeManager()
-            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getStructCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
-        if (codec instanceof OpcUaJsonDataTypeCodec<?>) {
-            OpcUaJsonDataTypeCodec<?> jsonCodec = (OpcUaJsonDataTypeCodec<?>) codec;
-
+        if (codec != null) {
             try {
                 if (field != null) {
                     String nextName = nextName();
@@ -1310,7 +1307,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
                 Object value;
 
                 jsonReader.beginObject();
-                value = jsonCodec.decode(context, this);
+                value = codec.decode(context, this);
                 jsonReader.endObject();
 
                 return value;
@@ -1320,7 +1317,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "readStruct: no JSON codec registered: " + dataTypeId
+                "readStruct: no codec registered: " + dataTypeId
             );
         }
     }
@@ -1330,14 +1327,14 @@ public class OpcUaJsonDecoder implements UaDecoder {
         NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "readStruct: no codec registered: " + dataTypeId
+                "readStruct: namespace not registered: " + dataTypeId
             ));
 
         return readStruct(field, localDataTypeId);
     }
 
     @Override
-    public Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException {
+    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -1352,12 +1349,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
             Object value;
 
             jsonReader.beginObject();
-            if (codec instanceof OpcUaJsonDataTypeCodec<?>) {
-                OpcUaJsonDataTypeCodec<?> jsonCodec = (OpcUaJsonDataTypeCodec<?>) codec;
-                value = jsonCodec.decode(context, this);
-            } else {
-                value = codec.decode(context, this);
-            }
+            value = codec.decode(context, this);
             jsonReader.endObject();
 
             return value;
@@ -1498,10 +1490,8 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
     @Override
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
-        @SuppressWarnings("unchecked")
-        OpcUaJsonDataTypeCodec<Object> codec =
-            (OpcUaJsonDataTypeCodec<Object>) context.getDataTypeManager()
-                .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getStructCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(

@@ -97,7 +97,7 @@ public class NodeTypeDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public NodeTypeDescription decode(SerializationContext context, UaDecoder decoder) {
+        public NodeTypeDescription decodeType(SerializationContext context, UaDecoder decoder) {
             ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
             Boolean includeSubTypes = decoder.readBoolean("IncludeSubTypes");
             QueryDataDescription[] dataToReturn = (QueryDataDescription[]) decoder.readStructArray("DataToReturn", QueryDataDescription.TYPE_ID);
@@ -105,7 +105,8 @@ public class NodeTypeDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NodeTypeDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               NodeTypeDescription value) {
             encoder.writeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
             encoder.writeBoolean("IncludeSubTypes", value.getIncludeSubTypes());
             encoder.writeStructArray("DataToReturn", value.getDataToReturn(), QueryDataDescription.TYPE_ID);

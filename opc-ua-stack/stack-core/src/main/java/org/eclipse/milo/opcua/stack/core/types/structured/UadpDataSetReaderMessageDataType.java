@@ -151,8 +151,8 @@ public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         }
 
         @Override
-        public UadpDataSetReaderMessageDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
+        public UadpDataSetReaderMessageDataType decodeType(SerializationContext context,
+                                                           UaDecoder decoder) {
             UInteger groupVersion = decoder.readUInt32("GroupVersion");
             UShort networkMessageNumber = decoder.readUInt16("NetworkMessageNumber");
             UShort dataSetOffset = decoder.readUInt16("DataSetOffset");
@@ -166,8 +166,8 @@ public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UadpDataSetReaderMessageDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UadpDataSetReaderMessageDataType value) {
             encoder.writeUInt32("GroupVersion", value.getGroupVersion());
             encoder.writeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
             encoder.writeUInt16("DataSetOffset", value.getDataSetOffset());

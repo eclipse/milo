@@ -99,7 +99,7 @@ public class ParsingResult extends Structure implements UaStructure {
         }
 
         @Override
-        public ParsingResult decode(SerializationContext context, UaDecoder decoder) {
+        public ParsingResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             StatusCode[] dataStatusCodes = decoder.readStatusCodeArray("DataStatusCodes");
             DiagnosticInfo[] dataDiagnosticInfos = decoder.readDiagnosticInfoArray("DataDiagnosticInfos");
@@ -107,7 +107,7 @@ public class ParsingResult extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ParsingResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ParsingResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeStatusCodeArray("DataStatusCodes", value.getDataStatusCodes());
             encoder.writeDiagnosticInfoArray("DataDiagnosticInfos", value.getDataDiagnosticInfos());

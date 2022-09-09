@@ -102,7 +102,7 @@ public class NodeReference extends Structure implements UaStructure {
         }
 
         @Override
-        public NodeReference decode(SerializationContext context, UaDecoder decoder) {
+        public NodeReference decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isForward = decoder.readBoolean("IsForward");
@@ -111,7 +111,7 @@ public class NodeReference extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NodeReference value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, NodeReference value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeBoolean("IsForward", value.getIsForward());

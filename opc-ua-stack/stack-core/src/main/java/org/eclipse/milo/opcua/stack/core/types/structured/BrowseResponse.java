@@ -98,7 +98,7 @@ public class BrowseResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public BrowseResponse decode(SerializationContext context, UaDecoder decoder) {
+        public BrowseResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             BrowseResult[] results = (BrowseResult[]) decoder.readStructArray("Results", BrowseResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -106,7 +106,7 @@ public class BrowseResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, BrowseResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), BrowseResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

@@ -94,7 +94,7 @@ public class SimpleTypeDescription extends DataTypeDescription implements UaStru
         }
 
         @Override
-        public SimpleTypeDescription decode(SerializationContext context, UaDecoder decoder) {
+        public SimpleTypeDescription decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId dataTypeId = decoder.readNodeId("DataTypeId");
             QualifiedName name = decoder.readQualifiedName("Name");
             NodeId baseDataType = decoder.readNodeId("BaseDataType");
@@ -103,8 +103,8 @@ public class SimpleTypeDescription extends DataTypeDescription implements UaStru
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SimpleTypeDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SimpleTypeDescription value) {
             encoder.writeNodeId("DataTypeId", value.getDataTypeId());
             encoder.writeQualifiedName("Name", value.getName());
             encoder.writeNodeId("BaseDataType", value.getBaseDataType());

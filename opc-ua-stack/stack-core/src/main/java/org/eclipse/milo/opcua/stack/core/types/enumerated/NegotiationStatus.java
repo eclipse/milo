@@ -51,8 +51,9 @@ public enum NegotiationStatus implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=24216");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable NegotiationStatus from(int value) {
@@ -89,13 +90,18 @@ public enum NegotiationStatus implements UaEnumeration {
         }
 
         @Override
-        public NegotiationStatus decode(SerializationContext context, UaDecoder decoder) {
+        public NegotiationStatus decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, NegotiationStatus.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NegotiationStatus value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               NegotiationStatus value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24216");
     }
 }

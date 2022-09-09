@@ -114,7 +114,7 @@ public class UserTokenPolicy extends Structure implements UaStructure {
         }
 
         @Override
-        public UserTokenPolicy decode(SerializationContext context, UaDecoder decoder) {
+        public UserTokenPolicy decodeType(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
             UserTokenType tokenType = (UserTokenType) decoder.readEnum("TokenType", UserTokenType.class);
             String issuedTokenType = decoder.readString("IssuedTokenType");
@@ -124,7 +124,7 @@ public class UserTokenPolicy extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, UserTokenPolicy value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, UserTokenPolicy value) {
             encoder.writeString("PolicyId", value.getPolicyId());
             encoder.writeEnum("TokenType", value.getTokenType());
             encoder.writeString("IssuedTokenType", value.getIssuedTokenType());

@@ -144,7 +144,7 @@ public class EndpointConfiguration extends Structure implements UaStructure {
         }
 
         @Override
-        public EndpointConfiguration decode(SerializationContext context, UaDecoder decoder) {
+        public EndpointConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
             Integer operationTimeout = decoder.readInt32("OperationTimeout");
             Boolean useBinaryEncoding = decoder.readBoolean("UseBinaryEncoding");
             Integer maxStringLength = decoder.readInt32("MaxStringLength");
@@ -158,8 +158,8 @@ public class EndpointConfiguration extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           EndpointConfiguration value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               EndpointConfiguration value) {
             encoder.writeInt32("OperationTimeout", value.getOperationTimeout());
             encoder.writeBoolean("UseBinaryEncoding", value.getUseBinaryEncoding());
             encoder.writeInt32("MaxStringLength", value.getMaxStringLength());

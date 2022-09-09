@@ -89,16 +89,16 @@ public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         }
 
         @Override
-        public JsonDataSetReaderMessageDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
+        public JsonDataSetReaderMessageDataType decodeType(SerializationContext context,
+                                                           UaDecoder decoder) {
             JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
             JsonDataSetMessageContentMask dataSetMessageContentMask = new JsonDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
             return new JsonDataSetReaderMessageDataType(networkMessageContentMask, dataSetMessageContentMask);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           JsonDataSetReaderMessageDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               JsonDataSetReaderMessageDataType value) {
             encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
             encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
         }

@@ -88,15 +88,15 @@ public class SubscriptionAcknowledgement extends Structure implements UaStructur
         }
 
         @Override
-        public SubscriptionAcknowledgement decode(SerializationContext context, UaDecoder decoder) {
+        public SubscriptionAcknowledgement decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
             return new SubscriptionAcknowledgement(subscriptionId, sequenceNumber);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SubscriptionAcknowledgement value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SubscriptionAcknowledgement value) {
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeUInt32("SequenceNumber", value.getSequenceNumber());
         }

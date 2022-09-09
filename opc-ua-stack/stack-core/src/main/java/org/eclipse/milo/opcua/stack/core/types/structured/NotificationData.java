@@ -71,12 +71,13 @@ public class NotificationData extends Structure implements UaStructure {
         }
 
         @Override
-        public NotificationData decode(SerializationContext context, UaDecoder decoder) {
+        public NotificationData decodeType(SerializationContext context, UaDecoder decoder) {
             return new NotificationData();
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, NotificationData value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               NotificationData value) {
         }
     }
 }

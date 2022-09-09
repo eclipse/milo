@@ -88,14 +88,14 @@ public class WriteRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public WriteRequest decode(SerializationContext context, UaDecoder decoder) {
+        public WriteRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             WriteValue[] nodesToWrite = (WriteValue[]) decoder.readStructArray("NodesToWrite", WriteValue.TYPE_ID);
             return new WriteRequest(requestHeader, nodesToWrite);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, WriteRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, WriteRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStructArray("NodesToWrite", value.getNodesToWrite(), WriteValue.TYPE_ID);
         }

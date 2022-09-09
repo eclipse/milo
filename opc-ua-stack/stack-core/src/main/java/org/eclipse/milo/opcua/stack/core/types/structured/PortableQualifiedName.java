@@ -88,15 +88,15 @@ public class PortableQualifiedName extends Structure implements UaStructure {
         }
 
         @Override
-        public PortableQualifiedName decode(SerializationContext context, UaDecoder decoder) {
+        public PortableQualifiedName decodeType(SerializationContext context, UaDecoder decoder) {
             String namespaceUri = decoder.readString("NamespaceUri");
             String name = decoder.readString("Name");
             return new PortableQualifiedName(namespaceUri, name);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PortableQualifiedName value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PortableQualifiedName value) {
             encoder.writeString("NamespaceUri", value.getNamespaceUri());
             encoder.writeString("Name", value.getName());
         }

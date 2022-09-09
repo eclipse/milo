@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -49,7 +50,7 @@ import org.opcfoundation.opcua.binaryschema.FieldType;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
 import org.opcfoundation.opcua.binaryschema.SwitchOperand;
 
-public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryDataTypeCodec<StructureT> {
+public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryDataTypeCodec {
 
     private final Map<String, FieldType> fields = new HashMap<>();
     private final Map<String, FieldType> lengthFields = new HashMap<>();
@@ -166,10 +167,10 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
     public void encode(
         SerializationContext context,
         OpcUaBinaryStreamEncoder encoder,
-        StructureT structure
+        Object structure
     ) throws UaSerializationException {
 
-        LinkedHashMap<String, MemberT> members = new LinkedHashMap<>(getMembers(structure));
+        LinkedHashMap<String, MemberT> members = new LinkedHashMap<>(getMembers((StructureT) structure));
 
         PeekingIterator<FieldType> fieldIterator = Iterators
             .peekingIterator(structuredType.getField().iterator());
@@ -272,9 +273,14 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
         OpcUaBinaryStreamDecoder decoder
     ) throws UaSerializationException {
 
-        DataTypeCodec<?> codec = context.getDataTypeManager().getCodec(namespaceUri, description);
+        DataTypeCodec codec = null;
 
-        if (codec instanceof OpcUaBinaryDataTypeCodec<?>) {
+        DataTypeDictionary<?> dictionary = context.getDataTypeManager().getDataTypeDictionary(namespaceUri);
+        if (dictionary != null) {
+            codec = dictionary.getCodec(description);
+        }
+
+        if (codec != null) {
             return codec.decode(context, decoder);
         } else {
             throw new UaSerializationException(
@@ -294,13 +300,15 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
         OpcUaBinaryStreamEncoder encoder
     ) throws UaSerializationException {
 
-        DataTypeCodec<?> codec = context.getDataTypeManager().getCodec(namespaceUri, description);
+        DataTypeCodec codec = null;
 
-        if (codec instanceof OpcUaBinaryDataTypeCodec<?>) {
-            //noinspection unchecked
-            OpcUaBinaryDataTypeCodec<Object> binaryCodec = (OpcUaBinaryDataTypeCodec<Object>) codec;
+        DataTypeDictionary<?> dictionary = context.getDataTypeManager().getDataTypeDictionary(namespaceUri);
+        if (dictionary != null) {
+            codec = dictionary.getCodec(description);
+        }
 
-            binaryCodec.encode(context, encoder, value);
+        if (codec != null) {
+            codec.encode(context, encoder, value);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,

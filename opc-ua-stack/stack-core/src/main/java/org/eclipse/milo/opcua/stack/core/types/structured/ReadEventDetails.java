@@ -106,7 +106,7 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructure 
         }
 
         @Override
-        public ReadEventDetails decode(SerializationContext context, UaDecoder decoder) {
+        public ReadEventDetails decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime endTime = decoder.readDateTime("EndTime");
@@ -115,7 +115,8 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructure 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReadEventDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReadEventDetails value) {
             encoder.writeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
             encoder.writeDateTime("StartTime", value.getStartTime());
             encoder.writeDateTime("EndTime", value.getEndTime());

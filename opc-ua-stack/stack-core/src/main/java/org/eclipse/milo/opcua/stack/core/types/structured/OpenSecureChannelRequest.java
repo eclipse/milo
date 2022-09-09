@@ -125,7 +125,7 @@ public class OpenSecureChannelRequest extends Structure implements UaRequestMess
         }
 
         @Override
-        public OpenSecureChannelRequest decode(SerializationContext context, UaDecoder decoder) {
+        public OpenSecureChannelRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger clientProtocolVersion = decoder.readUInt32("ClientProtocolVersion");
             SecurityTokenRequestType requestType = (SecurityTokenRequestType) decoder.readEnum("RequestType", SecurityTokenRequestType.class);
@@ -136,8 +136,8 @@ public class OpenSecureChannelRequest extends Structure implements UaRequestMess
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           OpenSecureChannelRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               OpenSecureChannelRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("ClientProtocolVersion", value.getClientProtocolVersion());
             encoder.writeEnum("RequestType", value.getRequestType());

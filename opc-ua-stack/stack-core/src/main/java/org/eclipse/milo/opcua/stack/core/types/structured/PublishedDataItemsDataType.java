@@ -80,14 +80,14 @@ public class PublishedDataItemsDataType extends PublishedDataSetSourceDataType i
         }
 
         @Override
-        public PublishedDataItemsDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PublishedDataItemsDataType decodeType(SerializationContext context, UaDecoder decoder) {
             PublishedVariableDataType[] publishedData = (PublishedVariableDataType[]) decoder.readStructArray("PublishedData", PublishedVariableDataType.TYPE_ID);
             return new PublishedDataItemsDataType(publishedData);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedDataItemsDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PublishedDataItemsDataType value) {
             encoder.writeStructArray("PublishedData", value.getPublishedData(), PublishedVariableDataType.TYPE_ID);
         }
     }

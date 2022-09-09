@@ -88,14 +88,15 @@ public class DeleteNodesRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public DeleteNodesRequest decode(SerializationContext context, UaDecoder decoder) {
+        public DeleteNodesRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             DeleteNodesItem[] nodesToDelete = (DeleteNodesItem[]) decoder.readStructArray("NodesToDelete", DeleteNodesItem.TYPE_ID);
             return new DeleteNodesRequest(requestHeader, nodesToDelete);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DeleteNodesRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DeleteNodesRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStructArray("NodesToDelete", value.getNodesToDelete(), DeleteNodesItem.TYPE_ID);
         }

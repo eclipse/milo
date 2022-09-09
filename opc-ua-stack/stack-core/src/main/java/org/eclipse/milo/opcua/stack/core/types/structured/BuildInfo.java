@@ -122,7 +122,7 @@ public class BuildInfo extends Structure implements UaStructure {
         }
 
         @Override
-        public BuildInfo decode(SerializationContext context, UaDecoder decoder) {
+        public BuildInfo decodeType(SerializationContext context, UaDecoder decoder) {
             String productUri = decoder.readString("ProductUri");
             String manufacturerName = decoder.readString("ManufacturerName");
             String productName = decoder.readString("ProductName");
@@ -133,7 +133,7 @@ public class BuildInfo extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BuildInfo value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, BuildInfo value) {
             encoder.writeString("ProductUri", value.getProductUri());
             encoder.writeString("ManufacturerName", value.getManufacturerName());
             encoder.writeString("ProductName", value.getProductName());

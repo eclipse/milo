@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.jetbrains.annotations.Nullable;
 
-public interface DataTypeDictionary<T extends DataTypeCodec<?>> {
+public interface DataTypeDictionary<T extends DataTypeCodec> {
 
     /**
      * @return the namespace URI this {@link DataTypeDictionary} belongs to.

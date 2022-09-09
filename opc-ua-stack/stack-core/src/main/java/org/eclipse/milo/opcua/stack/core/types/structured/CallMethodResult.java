@@ -108,7 +108,7 @@ public class CallMethodResult extends Structure implements UaStructure {
         }
 
         @Override
-        public CallMethodResult decode(SerializationContext context, UaDecoder decoder) {
+        public CallMethodResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             StatusCode[] inputArgumentResults = decoder.readStatusCodeArray("InputArgumentResults");
             DiagnosticInfo[] inputArgumentDiagnosticInfos = decoder.readDiagnosticInfoArray("InputArgumentDiagnosticInfos");
@@ -117,7 +117,8 @@ public class CallMethodResult extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CallMethodResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CallMethodResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeStatusCodeArray("InputArgumentResults", value.getInputArgumentResults());
             encoder.writeDiagnosticInfoArray("InputArgumentDiagnosticInfos", value.getInputArgumentDiagnosticInfos());

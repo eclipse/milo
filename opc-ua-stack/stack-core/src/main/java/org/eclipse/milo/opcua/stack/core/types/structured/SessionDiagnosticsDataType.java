@@ -440,7 +440,7 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
         }
 
         @Override
-        public SessionDiagnosticsDataType decode(SerializationContext context, UaDecoder decoder) {
+        public SessionDiagnosticsDataType decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId sessionId = decoder.readNodeId("SessionId");
             String sessionName = decoder.readString("SessionName");
             ApplicationDescription clientDescription = (ApplicationDescription) decoder.readStruct("ClientDescription", ApplicationDescription.TYPE_ID);
@@ -488,8 +488,8 @@ public class SessionDiagnosticsDataType extends Structure implements UaStructure
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SessionDiagnosticsDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SessionDiagnosticsDataType value) {
             encoder.writeNodeId("SessionId", value.getSessionId());
             encoder.writeString("SessionName", value.getSessionName());
             encoder.writeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);

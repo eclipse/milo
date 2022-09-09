@@ -29,7 +29,7 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("Baz", "hello")
             .build();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Foo");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Foo");
 
         assertRoundTrip("Foo", foo, codec);
     }
@@ -44,7 +44,7 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("OptionalString", "hello")
             .build();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
     }
@@ -58,7 +58,7 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("OptionalInt32", 0)
             .build();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
     }
@@ -71,7 +71,7 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("Reserved1", 0)
             .build();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
     }
@@ -84,7 +84,7 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("StringArray", new String[]{"hello", "world"})
             .build();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ArrayContainer");
+        OpcUaBinaryDataTypeCodec codec = getCodec("ArrayContainer");
 
         assertRoundTrip("ArrayContainer", arrayContainer, codec);
     }
@@ -100,7 +100,7 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("rangeX", new Range(3.0, 4.0))
             .build();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ProfilePointStruct");
+        OpcUaBinaryDataTypeCodec codec = getCodec("ProfilePointStruct");
 
         assertRoundTripUsingToString("ProfilePointStruct", profilePoint, codec);
     }

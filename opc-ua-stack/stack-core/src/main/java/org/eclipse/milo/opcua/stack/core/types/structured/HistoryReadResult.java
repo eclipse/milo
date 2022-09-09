@@ -100,7 +100,7 @@ public class HistoryReadResult extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryReadResult decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryReadResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
             ExtensionObject historyData = decoder.readExtensionObject("HistoryData");
@@ -108,7 +108,8 @@ public class HistoryReadResult extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryReadResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
             encoder.writeExtensionObject("HistoryData", value.getHistoryData());

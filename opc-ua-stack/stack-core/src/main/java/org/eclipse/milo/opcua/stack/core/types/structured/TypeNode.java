@@ -88,7 +88,7 @@ public class TypeNode extends Node implements UaStructure {
         }
 
         @Override
-        public TypeNode decode(SerializationContext context, UaDecoder decoder) {
+        public TypeNode decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = (NodeClass) decoder.readEnum("NodeClass", NodeClass.class);
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -104,7 +104,7 @@ public class TypeNode extends Node implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TypeNode value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, TypeNode value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("NodeClass", value.getNodeClass());
             encoder.writeQualifiedName("BrowseName", value.getBrowseName());

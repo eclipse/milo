@@ -114,7 +114,7 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
         }
 
         @Override
-        public ReadRawModifiedDetails decode(SerializationContext context, UaDecoder decoder) {
+        public ReadRawModifiedDetails decodeType(SerializationContext context, UaDecoder decoder) {
             Boolean isReadModified = decoder.readBoolean("IsReadModified");
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime endTime = decoder.readDateTime("EndTime");
@@ -124,8 +124,8 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ReadRawModifiedDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReadRawModifiedDetails value) {
             encoder.writeBoolean("IsReadModified", value.getIsReadModified());
             encoder.writeDateTime("StartTime", value.getStartTime());
             encoder.writeDateTime("EndTime", value.getEndTime());

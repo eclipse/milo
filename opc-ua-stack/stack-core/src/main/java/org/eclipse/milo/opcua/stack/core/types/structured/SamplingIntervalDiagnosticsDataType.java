@@ -105,8 +105,8 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
         }
 
         @Override
-        public SamplingIntervalDiagnosticsDataType decode(SerializationContext context,
-                                                          UaDecoder decoder) {
+        public SamplingIntervalDiagnosticsDataType decodeType(SerializationContext context,
+                                                              UaDecoder decoder) {
             Double samplingInterval = decoder.readDouble("SamplingInterval");
             UInteger monitoredItemCount = decoder.readUInt32("MonitoredItemCount");
             UInteger maxMonitoredItemCount = decoder.readUInt32("MaxMonitoredItemCount");
@@ -115,8 +115,8 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SamplingIntervalDiagnosticsDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SamplingIntervalDiagnosticsDataType value) {
             encoder.writeDouble("SamplingInterval", value.getSamplingInterval());
             encoder.writeUInt32("MonitoredItemCount", value.getMonitoredItemCount());
             encoder.writeUInt32("MaxMonitoredItemCount", value.getMaxMonitoredItemCount());

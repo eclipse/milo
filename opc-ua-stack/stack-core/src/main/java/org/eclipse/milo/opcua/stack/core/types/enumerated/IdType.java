@@ -34,8 +34,9 @@ public enum IdType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=256");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable IdType from(int value) {
@@ -69,13 +70,17 @@ public enum IdType implements UaEnumeration {
         }
 
         @Override
-        public IdType decode(SerializationContext context, UaDecoder decoder) {
+        public IdType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, IdType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, IdType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, IdType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=256");
     }
 }

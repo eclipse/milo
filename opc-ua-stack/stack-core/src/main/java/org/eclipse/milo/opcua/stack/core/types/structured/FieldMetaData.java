@@ -157,7 +157,7 @@ public class FieldMetaData extends Structure implements UaStructure {
         }
 
         @Override
-        public FieldMetaData decode(SerializationContext context, UaDecoder decoder) {
+        public FieldMetaData decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             LocalizedText description = decoder.readLocalizedText("Description");
             DataSetFieldFlags fieldFlags = new DataSetFieldFlags(decoder.readUInt16("FieldFlags"));
@@ -172,7 +172,7 @@ public class FieldMetaData extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, FieldMetaData value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, FieldMetaData value) {
             encoder.writeString("Name", value.getName());
             encoder.writeLocalizedText("Description", value.getDescription());
             encoder.writeUInt16("FieldFlags", value.getFieldFlags().getValue());

@@ -105,7 +105,7 @@ public class EUInformation extends Structure implements UaStructure {
         }
 
         @Override
-        public EUInformation decode(SerializationContext context, UaDecoder decoder) {
+        public EUInformation decodeType(SerializationContext context, UaDecoder decoder) {
             String namespaceUri = decoder.readString("NamespaceUri");
             Integer unitId = decoder.readInt32("UnitId");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
@@ -114,7 +114,7 @@ public class EUInformation extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EUInformation value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EUInformation value) {
             encoder.writeString("NamespaceUri", value.getNamespaceUri());
             encoder.writeInt32("UnitId", value.getUnitId());
             encoder.writeLocalizedText("DisplayName", value.getDisplayName());

@@ -97,7 +97,7 @@ public class SetPublishingModeRequest extends Structure implements UaRequestMess
         }
 
         @Override
-        public SetPublishingModeRequest decode(SerializationContext context, UaDecoder decoder) {
+        public SetPublishingModeRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean publishingEnabled = decoder.readBoolean("PublishingEnabled");
             UInteger[] subscriptionIds = decoder.readUInt32Array("SubscriptionIds");
@@ -105,8 +105,8 @@ public class SetPublishingModeRequest extends Structure implements UaRequestMess
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetPublishingModeRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SetPublishingModeRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeBoolean("PublishingEnabled", value.getPublishingEnabled());
             encoder.writeUInt32Array("SubscriptionIds", value.getSubscriptionIds());

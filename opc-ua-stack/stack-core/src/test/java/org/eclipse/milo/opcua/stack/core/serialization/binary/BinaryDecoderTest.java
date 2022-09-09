@@ -13,7 +13,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.binary;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -37,17 +37,15 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
             LocalizedText.NULL_VALUE
         );
 
-        @SuppressWarnings("unchecked")
-        OpcUaBinaryDataTypeCodec<Argument> codec = (OpcUaBinaryDataTypeCodec<Argument>)
-            OpcUaDataTypeManager.getInstance().getCodec(
-                OpcUaDefaultBinaryEncoding.ENCODING_NAME,
-                Argument.TYPE_ID.toNodeId(new NamespaceTable()).get()
-            );
+        DataTypeCodec codec = OpcUaDataTypeManager.getInstance().getStructCodec(
+            OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+            Argument.TYPE_ID.toNodeId(new NamespaceTable()).get()
+        );
 
         assertNotNull(codec);
 
         codec.encode(new TestSerializationContext(), writer, argument);
-        Argument decoded = codec.decode(new TestSerializationContext(), reader);
+        Argument decoded = (Argument) codec.decode(new TestSerializationContext(), reader);
 
         assertEquals(decoded.getName(), argument.getName());
 

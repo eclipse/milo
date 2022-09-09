@@ -105,8 +105,8 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
         }
 
         @Override
-        public StandaloneSubscribedDataSetDataType decode(SerializationContext context,
-                                                          UaDecoder decoder) {
+        public StandaloneSubscribedDataSetDataType decodeType(SerializationContext context,
+                                                              UaDecoder decoder) {
             String name = decoder.readString("Name");
             String[] dataSetFolder = decoder.readStringArray("DataSetFolder");
             DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.readStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
@@ -115,8 +115,8 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           StandaloneSubscribedDataSetDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               StandaloneSubscribedDataSetDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeStringArray("DataSetFolder", value.getDataSetFolder());
             encoder.writeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);

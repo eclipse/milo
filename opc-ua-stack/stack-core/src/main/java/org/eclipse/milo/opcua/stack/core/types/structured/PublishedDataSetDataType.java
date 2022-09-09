@@ -114,7 +114,7 @@ public class PublishedDataSetDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public PublishedDataSetDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PublishedDataSetDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             String[] dataSetFolder = decoder.readStringArray("DataSetFolder");
             DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.readStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
@@ -124,8 +124,8 @@ public class PublishedDataSetDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PublishedDataSetDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PublishedDataSetDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeStringArray("DataSetFolder", value.getDataSetFolder());
             encoder.writeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);

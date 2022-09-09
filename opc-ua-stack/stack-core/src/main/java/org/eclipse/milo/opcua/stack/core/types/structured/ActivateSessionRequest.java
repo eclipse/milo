@@ -123,7 +123,7 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
         }
 
         @Override
-        public ActivateSessionRequest decode(SerializationContext context, UaDecoder decoder) {
+        public ActivateSessionRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             SignatureData clientSignature = (SignatureData) decoder.readStruct("ClientSignature", SignatureData.TYPE_ID);
             SignedSoftwareCertificate[] clientSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.readStructArray("ClientSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
@@ -134,8 +134,8 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ActivateSessionRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ActivateSessionRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStruct("ClientSignature", value.getClientSignature(), SignatureData.TYPE_ID);
             encoder.writeStructArray("ClientSoftwareCertificates", value.getClientSoftwareCertificates(), SignedSoftwareCertificate.TYPE_ID);

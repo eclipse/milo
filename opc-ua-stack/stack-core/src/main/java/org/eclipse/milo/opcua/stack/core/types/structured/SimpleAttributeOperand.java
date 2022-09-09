@@ -106,7 +106,7 @@ public class SimpleAttributeOperand extends FilterOperand implements UaStructure
         }
 
         @Override
-        public SimpleAttributeOperand decode(SerializationContext context, UaDecoder decoder) {
+        public SimpleAttributeOperand decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId typeDefinitionId = decoder.readNodeId("TypeDefinitionId");
             QualifiedName[] browsePath = decoder.readQualifiedNameArray("BrowsePath");
             UInteger attributeId = decoder.readUInt32("AttributeId");
@@ -115,8 +115,8 @@ public class SimpleAttributeOperand extends FilterOperand implements UaStructure
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SimpleAttributeOperand value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SimpleAttributeOperand value) {
             encoder.writeNodeId("TypeDefinitionId", value.getTypeDefinitionId());
             encoder.writeQualifiedNameArray("BrowsePath", value.getBrowsePath());
             encoder.writeUInt32("AttributeId", value.getAttributeId());

@@ -98,7 +98,8 @@ public class CreateMonitoredItemsResponse extends Structure implements UaRespons
         }
 
         @Override
-        public CreateMonitoredItemsResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CreateMonitoredItemsResponse decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             MonitoredItemCreateResult[] results = (MonitoredItemCreateResult[]) decoder.readStructArray("Results", MonitoredItemCreateResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -106,8 +107,8 @@ public class CreateMonitoredItemsResponse extends Structure implements UaRespons
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateMonitoredItemsResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CreateMonitoredItemsResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), MonitoredItemCreateResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

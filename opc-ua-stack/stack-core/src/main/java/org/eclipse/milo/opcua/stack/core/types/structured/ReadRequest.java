@@ -106,7 +106,7 @@ public class ReadRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public ReadRequest decode(SerializationContext context, UaDecoder decoder) {
+        public ReadRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Double maxAge = decoder.readDouble("MaxAge");
             TimestampsToReturn timestampsToReturn = (TimestampsToReturn) decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
@@ -115,7 +115,7 @@ public class ReadRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReadRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ReadRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeDouble("MaxAge", value.getMaxAge());
             encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());

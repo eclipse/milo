@@ -122,7 +122,7 @@ public class QueryFirstRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public QueryFirstRequest decode(SerializationContext context, UaDecoder decoder) {
+        public QueryFirstRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ViewDescription view = (ViewDescription) decoder.readStruct("View", ViewDescription.TYPE_ID);
             NodeTypeDescription[] nodeTypes = (NodeTypeDescription[]) decoder.readStructArray("NodeTypes", NodeTypeDescription.TYPE_ID);
@@ -133,7 +133,8 @@ public class QueryFirstRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, QueryFirstRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               QueryFirstRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStruct("View", value.getView(), ViewDescription.TYPE_ID);
             encoder.writeStructArray("NodeTypes", value.getNodeTypes(), NodeTypeDescription.TYPE_ID);

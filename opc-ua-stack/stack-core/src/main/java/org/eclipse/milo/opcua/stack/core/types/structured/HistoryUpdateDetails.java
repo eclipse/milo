@@ -80,14 +80,14 @@ public class HistoryUpdateDetails extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryUpdateDetails decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryUpdateDetails decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             return new HistoryUpdateDetails(nodeId);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           HistoryUpdateDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryUpdateDetails value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
         }
     }

@@ -90,14 +90,15 @@ public class ContentFilterResult extends Structure implements UaStructure {
         }
 
         @Override
-        public ContentFilterResult decode(SerializationContext context, UaDecoder decoder) {
+        public ContentFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
             ContentFilterElementResult[] elementResults = (ContentFilterElementResult[]) decoder.readStructArray("ElementResults", ContentFilterElementResult.TYPE_ID);
             DiagnosticInfo[] elementDiagnosticInfos = decoder.readDiagnosticInfoArray("ElementDiagnosticInfos");
             return new ContentFilterResult(elementResults, elementDiagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ContentFilterResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ContentFilterResult value) {
             encoder.writeStructArray("ElementResults", value.getElementResults(), ContentFilterElementResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("ElementDiagnosticInfos", value.getElementDiagnosticInfos());
         }

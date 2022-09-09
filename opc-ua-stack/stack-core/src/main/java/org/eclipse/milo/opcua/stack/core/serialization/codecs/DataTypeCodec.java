@@ -15,12 +15,12 @@ import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public interface DataTypeCodec<T> {
+public interface DataTypeCodec {
 
     /**
      * @return the {@link Class} of the DataType this codec encodes.
      */
-    Class<T> getType();
+    Class<?> getType();
 
     /**
      * Decode a {@link T} using the provided {@link UaDecoder}.
@@ -29,7 +29,7 @@ public interface DataTypeCodec<T> {
      * @param decoder the {@link UaDecoder} to decode from.
      * @return a decoded {@link T}.
      */
-    T decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException;
+    Object decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException;
 
     /**
      * Encode a {@link T} using the provided {@link UaEncoder}.
@@ -38,6 +38,6 @@ public interface DataTypeCodec<T> {
      * @param encoder the {@link UaEncoder} to encode to.
      * @param value   the {@link T} to encode.
      */
-    void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException;
+    void encode(SerializationContext context, UaEncoder encoder, Object value) throws UaSerializationException;
 
 }

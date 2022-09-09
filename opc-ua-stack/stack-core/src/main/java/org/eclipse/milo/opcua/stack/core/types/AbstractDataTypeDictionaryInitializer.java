@@ -15,16 +15,16 @@ public abstract class AbstractDataTypeDictionaryInitializer {
      */
     void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) {
         @SuppressWarnings("unchecked")
-        DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary =
-            (DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>>)
+        DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary =
+            (DataTypeDictionary<OpcUaBinaryDataTypeCodec>)
                 dataTypeManager.getDataTypeDictionary(BINARY_DICTIONARY_URI);
         if (binaryDictionary == null) {
             binaryDictionary = new OpcUaBinaryDataTypeDictionary(BINARY_DICTIONARY_URI);
         }
 
         @SuppressWarnings("unchecked")
-        DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary =
-            (DataTypeDictionary<OpcUaXmlDataTypeCodec<?>>)
+        DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary =
+            (DataTypeDictionary<OpcUaXmlDataTypeCodec>)
                 dataTypeManager.getDataTypeDictionary(XML_DICTIONARY_URI);
         if (xmlDictionary == null) {
             xmlDictionary = new OpcUaXmlDataTypeDictionary(XML_DICTIONARY_URI);
@@ -36,8 +36,8 @@ public abstract class AbstractDataTypeDictionaryInitializer {
     public void initialize(
         NamespaceTable namespaceTable,
         DataTypeManager dataTypeManager,
-        DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-        DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary
+        DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
+        DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary
     ) {
 
         try {
@@ -53,14 +53,14 @@ public abstract class AbstractDataTypeDictionaryInitializer {
 
     protected abstract void initializeEnums(
         NamespaceTable namespaceTable,
-        DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-        DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary
+        DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
+        DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary
     ) throws Exception;
 
     protected abstract void initializeStructs(
         NamespaceTable namespaceTable,
-        DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-        DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary
+        DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
+        DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary
     ) throws Exception;
 
 }

@@ -105,7 +105,7 @@ public class BrowseRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public BrowseRequest decode(SerializationContext context, UaDecoder decoder) {
+        public BrowseRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ViewDescription view = (ViewDescription) decoder.readStruct("View", ViewDescription.TYPE_ID);
             UInteger requestedMaxReferencesPerNode = decoder.readUInt32("RequestedMaxReferencesPerNode");
@@ -114,7 +114,7 @@ public class BrowseRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, BrowseRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStruct("View", value.getView(), ViewDescription.TYPE_ID);
             encoder.writeUInt32("RequestedMaxReferencesPerNode", value.getRequestedMaxReferencesPerNode());

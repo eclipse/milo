@@ -133,7 +133,7 @@ public class PublishResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public PublishResponse decode(SerializationContext context, UaDecoder decoder) {
+        public PublishResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UInteger[] availableSequenceNumbers = decoder.readUInt32Array("AvailableSequenceNumbers");
@@ -145,7 +145,7 @@ public class PublishResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, PublishResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, PublishResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());

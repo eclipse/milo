@@ -89,14 +89,15 @@ public class ReadAtTimeDetails extends HistoryReadDetails implements UaStructure
         }
 
         @Override
-        public ReadAtTimeDetails decode(SerializationContext context, UaDecoder decoder) {
+        public ReadAtTimeDetails decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime[] reqTimes = decoder.readDateTimeArray("ReqTimes");
             Boolean useSimpleBounds = decoder.readBoolean("UseSimpleBounds");
             return new ReadAtTimeDetails(reqTimes, useSimpleBounds);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReadAtTimeDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReadAtTimeDetails value) {
             encoder.writeDateTimeArray("ReqTimes", value.getReqTimes());
             encoder.writeBoolean("UseSimpleBounds", value.getUseSimpleBounds());
         }

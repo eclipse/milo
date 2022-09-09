@@ -29,8 +29,9 @@ public enum DeadbandType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=718");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable DeadbandType from(int value) {
@@ -61,13 +62,17 @@ public enum DeadbandType implements UaEnumeration {
         }
 
         @Override
-        public DeadbandType decode(SerializationContext context, UaDecoder decoder) {
+        public DeadbandType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, DeadbandType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DeadbandType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, DeadbandType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=718");
     }
 }

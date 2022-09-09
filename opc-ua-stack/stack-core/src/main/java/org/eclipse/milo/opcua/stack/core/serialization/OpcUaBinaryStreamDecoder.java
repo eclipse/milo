@@ -25,7 +25,6 @@ import io.netty.util.ByteProcessor;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -661,12 +660,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     public UaMessage readMessage(String field) throws UaSerializationException {
         NodeId encodingId = readNodeId();
 
-        OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-            context.getDataTypeManager()
-                .getCodec(encodingId);
+        DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
 
-        if (binaryCodec != null) {
-            return (UaMessage) binaryCodec.decode(context, this);
+        if (codec != null) {
+            return (UaMessage) codec.decode(context, this);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
@@ -692,12 +689,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-            context.getDataTypeManager()
-                .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getStructCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
-        if (binaryCodec != null) {
-            return binaryCodec.decode(context, this);
+        if (codec != null) {
+            return codec.decode(context, this);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
@@ -708,23 +704,18 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
-        return dataTypeId.toNodeId(context.getNamespaceTable())
-            .map(id -> readStruct(field, id))
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "no codec registered: " + dataTypeId
+                "namespace not registered: " + dataTypeId
             ));
+
+        return readStruct(field, localDataTypeId);
     }
 
     @Override
-    public Object readStruct(String field, DataTypeCodec<?> codec) throws UaSerializationException {
-        if (codec instanceof OpcUaBinaryDataTypeCodec<?>) {
-            OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>) codec;
-
-            return binaryCodec.decode(context, this);
-        } else {
-            return codec.decode(context, this);
-        }
+    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
+        return codec.decode(context, this);
     }
 
     @Override
@@ -1186,22 +1177,21 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         } else {
             checkArrayLength(length);
 
-            OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
-                context.getDataTypeManager()
-                    .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+            DataTypeCodec codec = context.getDataTypeManager()
+                .getStructCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
-            if (binaryCodec == null) {
+            if (codec == null) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_DecodingError,
                     "no codec registered: " + dataTypeId
                 );
             }
 
-            Class<?> clazz = binaryCodec.getType();
+            Class<?> clazz = codec.getType();
             Object array = Array.newInstance(clazz, length);
 
             for (int i = 0; i < length; i++) {
-                Object value = binaryCodec.decode(context, this);
+                Object value = codec.decode(context, this);
 
                 Array.set(array, i, value);
             }

@@ -72,7 +72,7 @@ public abstract class BsdParser {
      * @param enumeratedType the {@link EnumeratedType}.
      * @return an {@link OpcUaBinaryDataTypeCodec} for the provided {@link EnumeratedType}.
      */
-    protected abstract OpcUaBinaryDataTypeCodec<?> getEnumCodec(EnumeratedType enumeratedType);
+    protected abstract OpcUaBinaryDataTypeCodec getEnumCodec(EnumeratedType enumeratedType);
 
     /**
      * Create an {@link OpcUaBinaryDataTypeCodec} for the provided {@link StructuredType}.
@@ -80,6 +80,6 @@ public abstract class BsdParser {
      * @param structuredType the {@link StructuredType}.
      * @return an {@link OpcUaBinaryDataTypeCodec} for the provided {@link StructuredType}.
      */
-    protected abstract OpcUaBinaryDataTypeCodec<?> getStructCodec(StructuredType structuredType);
+    protected abstract OpcUaBinaryDataTypeCodec getStructCodec(StructuredType structuredType);
 
 }

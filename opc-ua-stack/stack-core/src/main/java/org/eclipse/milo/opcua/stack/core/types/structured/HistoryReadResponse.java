@@ -98,7 +98,7 @@ public class HistoryReadResponse extends Structure implements UaResponseMessage 
         }
 
         @Override
-        public HistoryReadResponse decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryReadResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             HistoryReadResult[] results = (HistoryReadResult[]) decoder.readStructArray("Results", HistoryReadResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -106,7 +106,8 @@ public class HistoryReadResponse extends Structure implements UaResponseMessage 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryReadResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), HistoryReadResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

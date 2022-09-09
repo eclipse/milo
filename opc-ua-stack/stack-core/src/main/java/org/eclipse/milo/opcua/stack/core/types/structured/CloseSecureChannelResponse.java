@@ -80,14 +80,14 @@ public class CloseSecureChannelResponse extends Structure implements UaResponseM
         }
 
         @Override
-        public CloseSecureChannelResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CloseSecureChannelResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             return new CloseSecureChannelResponse(responseHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CloseSecureChannelResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CloseSecureChannelResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }

@@ -98,7 +98,7 @@ public class HistoryUpdateResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public HistoryUpdateResponse decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryUpdateResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             HistoryUpdateResult[] results = (HistoryUpdateResult[]) decoder.readStructArray("Results", HistoryUpdateResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -106,8 +106,8 @@ public class HistoryUpdateResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           HistoryUpdateResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryUpdateResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), HistoryUpdateResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

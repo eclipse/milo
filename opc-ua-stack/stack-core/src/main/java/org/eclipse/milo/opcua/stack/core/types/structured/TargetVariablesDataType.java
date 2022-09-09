@@ -80,14 +80,14 @@ public class TargetVariablesDataType extends SubscribedDataSetDataType implement
         }
 
         @Override
-        public TargetVariablesDataType decode(SerializationContext context, UaDecoder decoder) {
+        public TargetVariablesDataType decodeType(SerializationContext context, UaDecoder decoder) {
             FieldTargetDataType[] targetVariables = (FieldTargetDataType[]) decoder.readStructArray("TargetVariables", FieldTargetDataType.TYPE_ID);
             return new TargetVariablesDataType(targetVariables);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           TargetVariablesDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               TargetVariablesDataType value) {
             encoder.writeStructArray("TargetVariables", value.getTargetVariables(), FieldTargetDataType.TYPE_ID);
         }
     }

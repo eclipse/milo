@@ -30,8 +30,9 @@ public enum SecurityTokenRequestType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=315");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable SecurityTokenRequestType from(int value) {
@@ -59,14 +60,18 @@ public enum SecurityTokenRequestType implements UaEnumeration {
         }
 
         @Override
-        public SecurityTokenRequestType decode(SerializationContext context, UaDecoder decoder) {
+        public SecurityTokenRequestType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, SecurityTokenRequestType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SecurityTokenRequestType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SecurityTokenRequestType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=315");
     }
 }

@@ -114,7 +114,7 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
         }
 
         @Override
-        public ReadProcessedDetails decode(SerializationContext context, UaDecoder decoder) {
+        public ReadProcessedDetails decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime endTime = decoder.readDateTime("EndTime");
             Double processingInterval = decoder.readDouble("ProcessingInterval");
@@ -124,8 +124,8 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ReadProcessedDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReadProcessedDetails value) {
             encoder.writeDateTime("StartTime", value.getStartTime());
             encoder.writeDateTime("EndTime", value.getEndTime());
             encoder.writeDouble("ProcessingInterval", value.getProcessingInterval());

@@ -106,8 +106,8 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public UadpDataSetWriterMessageDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
+        public UadpDataSetWriterMessageDataType decodeType(SerializationContext context,
+                                                           UaDecoder decoder) {
             UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
             UShort configuredSize = decoder.readUInt16("ConfiguredSize");
             UShort networkMessageNumber = decoder.readUInt16("NetworkMessageNumber");
@@ -116,8 +116,8 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UadpDataSetWriterMessageDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UadpDataSetWriterMessageDataType value) {
             encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
             encoder.writeUInt16("ConfiguredSize", value.getConfiguredSize());
             encoder.writeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());

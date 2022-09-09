@@ -106,7 +106,7 @@ public class AggregateFilter extends MonitoringFilter implements UaStructure {
         }
 
         @Override
-        public AggregateFilter decode(SerializationContext context, UaDecoder decoder) {
+        public AggregateFilter decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime startTime = decoder.readDateTime("StartTime");
             NodeId aggregateType = decoder.readNodeId("AggregateType");
             Double processingInterval = decoder.readDouble("ProcessingInterval");
@@ -115,7 +115,7 @@ public class AggregateFilter extends MonitoringFilter implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AggregateFilter value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, AggregateFilter value) {
             encoder.writeDateTime("StartTime", value.getStartTime());
             encoder.writeNodeId("AggregateType", value.getAggregateType());
             encoder.writeDouble("ProcessingInterval", value.getProcessingInterval());

@@ -71,12 +71,12 @@ public class FilterOperand extends Structure implements UaStructure {
         }
 
         @Override
-        public FilterOperand decode(SerializationContext context, UaDecoder decoder) {
+        public FilterOperand decodeType(SerializationContext context, UaDecoder decoder) {
             return new FilterOperand();
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, FilterOperand value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, FilterOperand value) {
         }
     }
 }

@@ -122,7 +122,7 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         }
 
         @Override
-        public DataSetMetaDataType decode(SerializationContext context, UaDecoder decoder) {
+        public DataSetMetaDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String[] namespaces = decoder.readStringArray("Namespaces");
             StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.readStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
             EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.readStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
@@ -136,7 +136,8 @@ public class DataSetMetaDataType extends DataTypeSchemaHeader implements UaStruc
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DataSetMetaDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataSetMetaDataType value) {
             encoder.writeStringArray("Namespaces", value.getNamespaces());
             encoder.writeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
             encoder.writeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);

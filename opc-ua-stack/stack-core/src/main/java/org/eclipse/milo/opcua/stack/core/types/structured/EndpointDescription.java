@@ -141,7 +141,7 @@ public class EndpointDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public EndpointDescription decode(SerializationContext context, UaDecoder decoder) {
+        public EndpointDescription decodeType(SerializationContext context, UaDecoder decoder) {
             String endpointUrl = decoder.readString("EndpointUrl");
             ApplicationDescription server = (ApplicationDescription) decoder.readStruct("Server", ApplicationDescription.TYPE_ID);
             ByteString serverCertificate = decoder.readByteString("ServerCertificate");
@@ -154,7 +154,8 @@ public class EndpointDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EndpointDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               EndpointDescription value) {
             encoder.writeString("EndpointUrl", value.getEndpointUrl());
             encoder.writeStruct("Server", value.getServer(), ApplicationDescription.TYPE_ID);
             encoder.writeByteString("ServerCertificate", value.getServerCertificate());

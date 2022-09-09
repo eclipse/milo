@@ -93,7 +93,7 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails implements 
         }
 
         @Override
-        public UpdateStructureDataDetails decode(SerializationContext context, UaDecoder decoder) {
+        public UpdateStructureDataDetails decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             PerformUpdateType performInsertReplace = (PerformUpdateType) decoder.readEnum("PerformInsertReplace", PerformUpdateType.class);
             DataValue[] updateValues = decoder.readDataValueArray("UpdateValues");
@@ -101,8 +101,8 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails implements 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UpdateStructureDataDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UpdateStructureDataDetails value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("PerformInsertReplace", value.getPerformInsertReplace());
             encoder.writeDataValueArray("UpdateValues", value.getUpdateValues());

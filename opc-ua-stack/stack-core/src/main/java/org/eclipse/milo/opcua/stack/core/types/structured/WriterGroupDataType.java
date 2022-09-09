@@ -160,7 +160,7 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         }
 
         @Override
-        public WriterGroupDataType decode(SerializationContext context, UaDecoder decoder) {
+        public WriterGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             Boolean enabled = decoder.readBoolean("Enabled");
             MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
@@ -181,7 +181,8 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, WriterGroupDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               WriterGroupDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeBoolean("Enabled", value.getEnabled());
             encoder.writeEnum("SecurityMode", value.getSecurityMode());

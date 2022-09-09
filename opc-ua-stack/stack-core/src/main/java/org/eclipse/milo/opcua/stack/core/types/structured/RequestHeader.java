@@ -132,7 +132,7 @@ public class RequestHeader extends Structure implements UaStructure {
         }
 
         @Override
-        public RequestHeader decode(SerializationContext context, UaDecoder decoder) {
+        public RequestHeader decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId authenticationToken = decoder.readNodeId("AuthenticationToken");
             DateTime timestamp = decoder.readDateTime("Timestamp");
             UInteger requestHandle = decoder.readUInt32("RequestHandle");
@@ -144,7 +144,7 @@ public class RequestHeader extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RequestHeader value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, RequestHeader value) {
             encoder.writeNodeId("AuthenticationToken", value.getAuthenticationToken());
             encoder.writeDateTime("Timestamp", value.getTimestamp());
             encoder.writeUInt32("RequestHandle", value.getRequestHandle());

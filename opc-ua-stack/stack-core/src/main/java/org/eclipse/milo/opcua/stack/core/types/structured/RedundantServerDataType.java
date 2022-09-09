@@ -98,7 +98,7 @@ public class RedundantServerDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public RedundantServerDataType decode(SerializationContext context, UaDecoder decoder) {
+        public RedundantServerDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String serverId = decoder.readString("ServerId");
             UByte serviceLevel = decoder.readByte("ServiceLevel");
             ServerState serverState = (ServerState) decoder.readEnum("ServerState", ServerState.class);
@@ -106,8 +106,8 @@ public class RedundantServerDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           RedundantServerDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RedundantServerDataType value) {
             encoder.writeString("ServerId", value.getServerId());
             encoder.writeByte("ServiceLevel", value.getServiceLevel());
             encoder.writeEnum("ServerState", value.getServerState());

@@ -333,7 +333,8 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
         }
 
         @Override
-        public SubscriptionDiagnosticsDataType decode(SerializationContext context, UaDecoder decoder) {
+        public SubscriptionDiagnosticsDataType decodeType(SerializationContext context,
+                                                          UaDecoder decoder) {
             NodeId sessionId = decoder.readNodeId("SessionId");
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UByte priority = decoder.readByte("Priority");
@@ -369,8 +370,8 @@ public class SubscriptionDiagnosticsDataType extends Structure implements UaStru
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SubscriptionDiagnosticsDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SubscriptionDiagnosticsDataType value) {
             encoder.writeNodeId("SessionId", value.getSessionId());
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeByte("Priority", value.getPriority());

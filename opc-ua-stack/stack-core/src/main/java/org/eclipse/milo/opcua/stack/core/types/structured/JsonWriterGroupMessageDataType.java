@@ -80,14 +80,15 @@ public class JsonWriterGroupMessageDataType extends WriterGroupMessageDataType i
         }
 
         @Override
-        public JsonWriterGroupMessageDataType decode(SerializationContext context, UaDecoder decoder) {
+        public JsonWriterGroupMessageDataType decodeType(SerializationContext context,
+                                                         UaDecoder decoder) {
             JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
             return new JsonWriterGroupMessageDataType(networkMessageContentMask);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           JsonWriterGroupMessageDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               JsonWriterGroupMessageDataType value) {
             encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
         }
     }

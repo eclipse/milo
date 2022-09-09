@@ -82,15 +82,15 @@ public class NetworkAddressUrlDataType extends NetworkAddressDataType implements
         }
 
         @Override
-        public NetworkAddressUrlDataType decode(SerializationContext context, UaDecoder decoder) {
+        public NetworkAddressUrlDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String networkInterface = decoder.readString("NetworkInterface");
             String url = decoder.readString("Url");
             return new NetworkAddressUrlDataType(networkInterface, url);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           NetworkAddressUrlDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               NetworkAddressUrlDataType value) {
             encoder.writeString("NetworkInterface", value.getNetworkInterface());
             encoder.writeString("Url", value.getUrl());
         }

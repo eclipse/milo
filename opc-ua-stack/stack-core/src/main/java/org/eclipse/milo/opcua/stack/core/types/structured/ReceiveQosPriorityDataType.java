@@ -80,14 +80,14 @@ public class ReceiveQosPriorityDataType extends ReceiveQosDataType implements Ua
         }
 
         @Override
-        public ReceiveQosPriorityDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ReceiveQosPriorityDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String priorityLabel = decoder.readString("PriorityLabel");
             return new ReceiveQosPriorityDataType(priorityLabel);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ReceiveQosPriorityDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReceiveQosPriorityDataType value) {
             encoder.writeString("PriorityLabel", value.getPriorityLabel());
         }
     }

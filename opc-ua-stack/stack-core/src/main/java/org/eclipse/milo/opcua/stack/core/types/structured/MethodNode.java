@@ -104,7 +104,7 @@ public class MethodNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public MethodNode decode(SerializationContext context, UaDecoder decoder) {
+        public MethodNode decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = (NodeClass) decoder.readEnum("NodeClass", NodeClass.class);
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -122,7 +122,7 @@ public class MethodNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, MethodNode value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, MethodNode value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("NodeClass", value.getNodeClass());
             encoder.writeQualifiedName("BrowseName", value.getBrowseName());

@@ -98,7 +98,7 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
         }
 
         @Override
-        public MonitoredItemCreateRequest decode(SerializationContext context, UaDecoder decoder) {
+        public MonitoredItemCreateRequest decodeType(SerializationContext context, UaDecoder decoder) {
             ReadValueId itemToMonitor = (ReadValueId) decoder.readStruct("ItemToMonitor", ReadValueId.TYPE_ID);
             MonitoringMode monitoringMode = (MonitoringMode) decoder.readEnum("MonitoringMode", MonitoringMode.class);
             MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
@@ -106,8 +106,8 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoredItemCreateRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               MonitoredItemCreateRequest value) {
             encoder.writeStruct("ItemToMonitor", value.getItemToMonitor(), ReadValueId.TYPE_ID);
             encoder.writeEnum("MonitoringMode", value.getMonitoringMode());
             encoder.writeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);

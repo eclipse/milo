@@ -33,8 +33,9 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=11941");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable ModelChangeStructureVerbMask from(int value) {
@@ -71,14 +72,19 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
         }
 
         @Override
-        public ModelChangeStructureVerbMask decode(SerializationContext context, UaDecoder decoder) {
+        public ModelChangeStructureVerbMask decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             return decoder.readEnum(null, ModelChangeStructureVerbMask.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ModelChangeStructureVerbMask value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ModelChangeStructureVerbMask value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=11941");
     }
 }

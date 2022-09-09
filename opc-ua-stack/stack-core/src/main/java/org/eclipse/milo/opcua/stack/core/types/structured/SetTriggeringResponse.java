@@ -116,7 +116,7 @@ public class SetTriggeringResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public SetTriggeringResponse decode(SerializationContext context, UaDecoder decoder) {
+        public SetTriggeringResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             StatusCode[] addResults = decoder.readStatusCodeArray("AddResults");
             DiagnosticInfo[] addDiagnosticInfos = decoder.readDiagnosticInfoArray("AddDiagnosticInfos");
@@ -126,8 +126,8 @@ public class SetTriggeringResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetTriggeringResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SetTriggeringResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStatusCodeArray("AddResults", value.getAddResults());
             encoder.writeDiagnosticInfoArray("AddDiagnosticInfos", value.getAddDiagnosticInfos());

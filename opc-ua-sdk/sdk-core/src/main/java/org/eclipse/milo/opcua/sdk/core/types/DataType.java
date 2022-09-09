@@ -16,6 +16,8 @@ import java.util.StringJoiner;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
+import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -117,6 +119,14 @@ public class DataType {
         return dataTypeDefinition;
     }
 
+    public boolean isEnum() {
+        return dataTypeDefinition instanceof EnumDefinition;
+    }
+
+    public boolean isStruct() {
+        return dataTypeDefinition instanceof StructureDefinition;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -153,5 +163,4 @@ public class DataType {
             .add("dataTypeDefinition=" + dataTypeDefinition)
             .toString();
     }
-
 }

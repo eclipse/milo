@@ -105,7 +105,7 @@ public class ViewNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public ViewNode decode(SerializationContext context, UaDecoder decoder) {
+        public ViewNode decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = (NodeClass) decoder.readEnum("NodeClass", NodeClass.class);
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -123,7 +123,7 @@ public class ViewNode extends InstanceNode implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ViewNode value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ViewNode value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("NodeClass", value.getNodeClass());
             encoder.writeQualifiedName("BrowseName", value.getBrowseName());

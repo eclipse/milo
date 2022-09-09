@@ -154,7 +154,7 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructure 
         }
 
         @Override
-        public ProgramDiagnosticDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ProgramDiagnosticDataType decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId createSessionId = decoder.readNodeId("CreateSessionId");
             String createClientName = decoder.readString("CreateClientName");
             DateTime invocationCreationTime = decoder.readDateTime("InvocationCreationTime");
@@ -169,8 +169,8 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructure 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ProgramDiagnosticDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ProgramDiagnosticDataType value) {
             encoder.writeNodeId("CreateSessionId", value.getCreateSessionId());
             encoder.writeString("CreateClientName", value.getCreateClientName());
             encoder.writeDateTime("InvocationCreationTime", value.getInvocationCreationTime());

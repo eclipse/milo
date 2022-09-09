@@ -113,7 +113,7 @@ public class DeleteReferencesItem extends Structure implements UaStructure {
         }
 
         @Override
-        public DeleteReferencesItem decode(SerializationContext context, UaDecoder decoder) {
+        public DeleteReferencesItem decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId sourceNodeId = decoder.readNodeId("SourceNodeId");
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isForward = decoder.readBoolean("IsForward");
@@ -123,8 +123,8 @@ public class DeleteReferencesItem extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DeleteReferencesItem value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DeleteReferencesItem value) {
             encoder.writeNodeId("SourceNodeId", value.getSourceNodeId());
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeBoolean("IsForward", value.getIsForward());

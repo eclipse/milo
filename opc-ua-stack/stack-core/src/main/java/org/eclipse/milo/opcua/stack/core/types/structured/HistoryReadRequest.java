@@ -116,7 +116,7 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public HistoryReadRequest decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryReadRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ExtensionObject historyReadDetails = decoder.readExtensionObject("HistoryReadDetails");
             TimestampsToReturn timestampsToReturn = (TimestampsToReturn) decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
@@ -126,7 +126,8 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryReadRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
             encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());

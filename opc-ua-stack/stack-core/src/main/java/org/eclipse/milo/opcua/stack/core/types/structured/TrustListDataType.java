@@ -111,7 +111,7 @@ public class TrustListDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public TrustListDataType decode(SerializationContext context, UaDecoder decoder) {
+        public TrustListDataType decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger specifiedLists = decoder.readUInt32("SpecifiedLists");
             ByteString[] trustedCertificates = decoder.readByteStringArray("TrustedCertificates");
             ByteString[] trustedCrls = decoder.readByteStringArray("TrustedCrls");
@@ -121,7 +121,8 @@ public class TrustListDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TrustListDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               TrustListDataType value) {
             encoder.writeUInt32("SpecifiedLists", value.getSpecifiedLists());
             encoder.writeByteStringArray("TrustedCertificates", value.getTrustedCertificates());
             encoder.writeByteStringArray("TrustedCrls", value.getTrustedCrls());

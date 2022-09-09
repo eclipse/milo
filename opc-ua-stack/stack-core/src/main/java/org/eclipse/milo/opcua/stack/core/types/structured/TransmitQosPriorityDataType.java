@@ -80,14 +80,14 @@ public class TransmitQosPriorityDataType extends TransmitQosDataType implements 
         }
 
         @Override
-        public TransmitQosPriorityDataType decode(SerializationContext context, UaDecoder decoder) {
+        public TransmitQosPriorityDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String priorityLabel = decoder.readString("PriorityLabel");
             return new TransmitQosPriorityDataType(priorityLabel);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           TransmitQosPriorityDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               TransmitQosPriorityDataType value) {
             encoder.writeString("PriorityLabel", value.getPriorityLabel());
         }
     }

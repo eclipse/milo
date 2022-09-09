@@ -98,7 +98,7 @@ public class QueryNextResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public QueryNextResponse decode(SerializationContext context, UaDecoder decoder) {
+        public QueryNextResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             QueryDataSet[] queryDataSets = (QueryDataSet[]) decoder.readStructArray("QueryDataSets", QueryDataSet.TYPE_ID);
             ByteString revisedContinuationPoint = decoder.readByteString("RevisedContinuationPoint");
@@ -106,7 +106,8 @@ public class QueryNextResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, QueryNextResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               QueryNextResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
             encoder.writeByteString("RevisedContinuationPoint", value.getRevisedContinuationPoint());

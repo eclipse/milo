@@ -113,7 +113,8 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         }
 
         @Override
-        public SessionlessInvokeRequestType decode(SerializationContext context, UaDecoder decoder) {
+        public SessionlessInvokeRequestType decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             UInteger urisVersion = decoder.readUInt32("UrisVersion");
             String[] namespaceUris = decoder.readStringArray("NamespaceUris");
             String[] serverUris = decoder.readStringArray("ServerUris");
@@ -123,8 +124,8 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SessionlessInvokeRequestType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SessionlessInvokeRequestType value) {
             encoder.writeUInt32("UrisVersion", value.getUrisVersion());
             encoder.writeStringArray("NamespaceUris", value.getNamespaceUris());
             encoder.writeStringArray("ServerUris", value.getServerUris());

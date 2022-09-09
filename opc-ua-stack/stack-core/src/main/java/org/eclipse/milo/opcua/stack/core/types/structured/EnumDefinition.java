@@ -80,13 +80,13 @@ public class EnumDefinition extends DataTypeDefinition implements UaStructure {
         }
 
         @Override
-        public EnumDefinition decode(SerializationContext context, UaDecoder decoder) {
+        public EnumDefinition decodeType(SerializationContext context, UaDecoder decoder) {
             EnumField[] fields = (EnumField[]) decoder.readStructArray("Fields", EnumField.TYPE_ID);
             return new EnumDefinition(fields);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EnumDefinition value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EnumDefinition value) {
             encoder.writeStructArray("Fields", value.getFields(), EnumField.TYPE_ID);
         }
     }

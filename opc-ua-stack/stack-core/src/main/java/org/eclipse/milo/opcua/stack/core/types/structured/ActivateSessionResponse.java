@@ -108,7 +108,7 @@ public class ActivateSessionResponse extends Structure implements UaResponseMess
         }
 
         @Override
-        public ActivateSessionResponse decode(SerializationContext context, UaDecoder decoder) {
+        public ActivateSessionResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             ByteString serverNonce = decoder.readByteString("ServerNonce");
             StatusCode[] results = decoder.readStatusCodeArray("Results");
@@ -117,8 +117,8 @@ public class ActivateSessionResponse extends Structure implements UaResponseMess
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ActivateSessionResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ActivateSessionResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeByteString("ServerNonce", value.getServerNonce());
             encoder.writeStatusCodeArray("Results", value.getResults());

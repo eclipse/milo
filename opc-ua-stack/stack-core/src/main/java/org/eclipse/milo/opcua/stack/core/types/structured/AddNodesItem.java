@@ -133,7 +133,7 @@ public class AddNodesItem extends Structure implements UaStructure {
         }
 
         @Override
-        public AddNodesItem decode(SerializationContext context, UaDecoder decoder) {
+        public AddNodesItem decodeType(SerializationContext context, UaDecoder decoder) {
             ExpandedNodeId parentNodeId = decoder.readExpandedNodeId("ParentNodeId");
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             ExpandedNodeId requestedNewNodeId = decoder.readExpandedNodeId("RequestedNewNodeId");
@@ -145,7 +145,7 @@ public class AddNodesItem extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AddNodesItem value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, AddNodesItem value) {
             encoder.writeExpandedNodeId("ParentNodeId", value.getParentNodeId());
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeExpandedNodeId("RequestedNewNodeId", value.getRequestedNewNodeId());

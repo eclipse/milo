@@ -106,7 +106,7 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
         }
 
         @Override
-        public SetMonitoringModeRequest decode(SerializationContext context, UaDecoder decoder) {
+        public SetMonitoringModeRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             MonitoringMode monitoringMode = (MonitoringMode) decoder.readEnum("MonitoringMode", MonitoringMode.class);
@@ -115,8 +115,8 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetMonitoringModeRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SetMonitoringModeRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeEnum("MonitoringMode", value.getMonitoringMode());

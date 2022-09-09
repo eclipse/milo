@@ -106,7 +106,7 @@ public class PriorityMappingEntryType extends Structure implements UaStructure {
         }
 
         @Override
-        public PriorityMappingEntryType decode(SerializationContext context, UaDecoder decoder) {
+        public PriorityMappingEntryType decodeType(SerializationContext context, UaDecoder decoder) {
             String mappingUri = decoder.readString("MappingUri");
             String priorityLabel = decoder.readString("PriorityLabel");
             UByte priorityValuePcp = decoder.readByte("PriorityValue_PCP");
@@ -115,8 +115,8 @@ public class PriorityMappingEntryType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PriorityMappingEntryType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PriorityMappingEntryType value) {
             encoder.writeString("MappingUri", value.getMappingUri());
             encoder.writeString("PriorityLabel", value.getPriorityLabel());
             encoder.writeByte("PriorityValue_PCP", value.getPriorityValuePcp());

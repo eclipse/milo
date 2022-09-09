@@ -83,14 +83,15 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
         }
 
         @Override
-        public DeleteAtTimeDetails decode(SerializationContext context, UaDecoder decoder) {
+        public DeleteAtTimeDetails decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             DateTime[] reqTimes = decoder.readDateTimeArray("ReqTimes");
             return new DeleteAtTimeDetails(nodeId, reqTimes);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DeleteAtTimeDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DeleteAtTimeDetails value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeDateTimeArray("ReqTimes", value.getReqTimes());
         }

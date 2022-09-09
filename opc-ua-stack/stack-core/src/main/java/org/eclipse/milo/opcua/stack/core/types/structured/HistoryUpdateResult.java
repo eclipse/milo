@@ -99,7 +99,7 @@ public class HistoryUpdateResult extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryUpdateResult decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryUpdateResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             StatusCode[] operationResults = decoder.readStatusCodeArray("OperationResults");
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,7 +107,8 @@ public class HistoryUpdateResult extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryUpdateResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryUpdateResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeStatusCodeArray("OperationResults", value.getOperationResults());
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

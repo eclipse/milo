@@ -80,13 +80,13 @@ public class ServiceFault extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public ServiceFault decode(SerializationContext context, UaDecoder decoder) {
+        public ServiceFault decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             return new ServiceFault(responseHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ServiceFault value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ServiceFault value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }

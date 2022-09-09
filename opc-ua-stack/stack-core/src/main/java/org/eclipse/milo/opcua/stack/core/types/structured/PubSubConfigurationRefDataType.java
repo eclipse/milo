@@ -106,7 +106,8 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         }
 
         @Override
-        public PubSubConfigurationRefDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PubSubConfigurationRefDataType decodeType(SerializationContext context,
+                                                         UaDecoder decoder) {
             PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.readUInt32("ConfigurationMask"));
             UShort elementIndex = decoder.readUInt16("ElementIndex");
             UShort connectionIndex = decoder.readUInt16("ConnectionIndex");
@@ -115,8 +116,8 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConfigurationRefDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PubSubConfigurationRefDataType value) {
             encoder.writeUInt32("ConfigurationMask", value.getConfigurationMask().getValue());
             encoder.writeUInt16("ElementIndex", value.getElementIndex());
             encoder.writeUInt16("ConnectionIndex", value.getConnectionIndex());

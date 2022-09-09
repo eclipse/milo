@@ -90,15 +90,15 @@ public class StatusChangeNotification extends NotificationData implements UaStru
         }
 
         @Override
-        public StatusChangeNotification decode(SerializationContext context, UaDecoder decoder) {
+        public StatusChangeNotification decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode status = decoder.readStatusCode("Status");
             DiagnosticInfo diagnosticInfo = decoder.readDiagnosticInfo("DiagnosticInfo");
             return new StatusChangeNotification(status, diagnosticInfo);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           StatusChangeNotification value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               StatusChangeNotification value) {
             encoder.writeStatusCode("Status", value.getStatus());
             encoder.writeDiagnosticInfo("DiagnosticInfo", value.getDiagnosticInfo());
         }

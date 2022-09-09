@@ -187,7 +187,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         return dictionary;
     }
 
-    public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId dataTypeId) {
+    public void registerEnumCodec(OpcUaBinaryDataTypeCodec codec, String description, NodeId dataTypeId) {
         dictionary.registerEnumCodec(codec, description, dataTypeId);
 
         // TODO figure out a way to not require re-registration every time...
@@ -203,7 +203,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
     }
 
     public void registerOptionSetCodec(
-        OpcUaBinaryDataTypeCodec<?> codec,
+        OpcUaBinaryDataTypeCodec codec,
         String description,
         NodeId dataTypeId,
         NodeId binaryEncodingId
@@ -213,7 +213,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
     }
 
     public void registerStructureCodec(
-        OpcUaBinaryDataTypeCodec<?> codec,
+        OpcUaBinaryDataTypeCodec codec,
         String description,
         NodeId dataTypeId,
         NodeId binaryEncodingId
@@ -223,7 +223,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
     }
 
     public void registerUnionCodec(
-        OpcUaBinaryDataTypeCodec<?> codec,
+        OpcUaBinaryDataTypeCodec codec,
         String description,
         NodeId dataTypeId,
         NodeId binaryEncodingId
@@ -233,7 +233,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
     }
 
     public void registerStructureCodec(
-        OpcUaBinaryDataTypeCodec<?> codec,
+        OpcUaBinaryDataTypeCodec codec,
         String description,
         NodeId dataTypeId,
         NodeId binaryEncodingId,

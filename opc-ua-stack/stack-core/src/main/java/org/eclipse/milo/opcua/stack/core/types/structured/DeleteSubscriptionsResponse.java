@@ -99,7 +99,7 @@ public class DeleteSubscriptionsResponse extends Structure implements UaResponse
         }
 
         @Override
-        public DeleteSubscriptionsResponse decode(SerializationContext context, UaDecoder decoder) {
+        public DeleteSubscriptionsResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             StatusCode[] results = decoder.readStatusCodeArray("Results");
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,8 +107,8 @@ public class DeleteSubscriptionsResponse extends Structure implements UaResponse
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DeleteSubscriptionsResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DeleteSubscriptionsResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStatusCodeArray("Results", value.getResults());
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

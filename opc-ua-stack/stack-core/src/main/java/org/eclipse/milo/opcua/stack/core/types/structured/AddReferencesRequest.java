@@ -88,15 +88,15 @@ public class AddReferencesRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public AddReferencesRequest decode(SerializationContext context, UaDecoder decoder) {
+        public AddReferencesRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             AddReferencesItem[] referencesToAdd = (AddReferencesItem[]) decoder.readStructArray("ReferencesToAdd", AddReferencesItem.TYPE_ID);
             return new AddReferencesRequest(requestHeader, referencesToAdd);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           AddReferencesRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               AddReferencesRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStructArray("ReferencesToAdd", value.getReferencesToAdd(), AddReferencesItem.TYPE_ID);
         }

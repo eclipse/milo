@@ -80,13 +80,13 @@ public class ContentFilter extends Structure implements UaStructure {
         }
 
         @Override
-        public ContentFilter decode(SerializationContext context, UaDecoder decoder) {
+        public ContentFilter decodeType(SerializationContext context, UaDecoder decoder) {
             ContentFilterElement[] elements = (ContentFilterElement[]) decoder.readStructArray("Elements", ContentFilterElement.TYPE_ID);
             return new ContentFilter(elements);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ContentFilter value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ContentFilter value) {
             encoder.writeStructArray("Elements", value.getElements(), ContentFilterElement.TYPE_ID);
         }
     }

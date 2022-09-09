@@ -91,7 +91,7 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
 
         @Override
-        public IssuedIdentityToken decode(SerializationContext context, UaDecoder decoder) {
+        public IssuedIdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
             ByteString tokenData = decoder.readByteString("TokenData");
             String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
@@ -99,7 +99,8 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, IssuedIdentityToken value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               IssuedIdentityToken value) {
             encoder.writeString("PolicyId", value.getPolicyId());
             encoder.writeByteString("TokenData", value.getTokenData());
             encoder.writeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());

@@ -80,14 +80,14 @@ public class CloseSecureChannelRequest extends Structure implements UaRequestMes
         }
 
         @Override
-        public CloseSecureChannelRequest decode(SerializationContext context, UaDecoder decoder) {
+        public CloseSecureChannelRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             return new CloseSecureChannelRequest(requestHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CloseSecureChannelRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CloseSecureChannelRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
         }
     }

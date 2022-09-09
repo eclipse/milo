@@ -36,8 +36,9 @@ public enum DiagnosticsLevel implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=19723");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable DiagnosticsLevel from(int value) {
@@ -74,13 +75,18 @@ public enum DiagnosticsLevel implements UaEnumeration {
         }
 
         @Override
-        public DiagnosticsLevel decode(SerializationContext context, UaDecoder decoder) {
+        public DiagnosticsLevel decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, DiagnosticsLevel.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DiagnosticsLevel value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DiagnosticsLevel value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=19723");
     }
 }

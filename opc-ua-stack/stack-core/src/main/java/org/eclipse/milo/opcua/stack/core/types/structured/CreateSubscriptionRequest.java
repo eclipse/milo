@@ -131,7 +131,7 @@ public class CreateSubscriptionRequest extends Structure implements UaRequestMes
         }
 
         @Override
-        public CreateSubscriptionRequest decode(SerializationContext context, UaDecoder decoder) {
+        public CreateSubscriptionRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Double requestedPublishingInterval = decoder.readDouble("RequestedPublishingInterval");
             UInteger requestedLifetimeCount = decoder.readUInt32("RequestedLifetimeCount");
@@ -143,8 +143,8 @@ public class CreateSubscriptionRequest extends Structure implements UaRequestMes
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateSubscriptionRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CreateSubscriptionRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeDouble("RequestedPublishingInterval", value.getRequestedPublishingInterval());
             encoder.writeUInt32("RequestedLifetimeCount", value.getRequestedLifetimeCount());

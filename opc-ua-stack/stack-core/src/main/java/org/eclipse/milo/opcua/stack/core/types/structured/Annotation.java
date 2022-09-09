@@ -97,7 +97,7 @@ public class Annotation extends Structure implements UaStructure {
         }
 
         @Override
-        public Annotation decode(SerializationContext context, UaDecoder decoder) {
+        public Annotation decodeType(SerializationContext context, UaDecoder decoder) {
             String message = decoder.readString("Message");
             String userName = decoder.readString("UserName");
             DateTime annotationTime = decoder.readDateTime("AnnotationTime");
@@ -105,7 +105,7 @@ public class Annotation extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, Annotation value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, Annotation value) {
             encoder.writeString("Message", value.getMessage());
             encoder.writeString("UserName", value.getUserName());
             encoder.writeDateTime("AnnotationTime", value.getAnnotationTime());

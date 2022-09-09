@@ -88,15 +88,15 @@ public class UnsignedRationalNumber extends Structure implements UaStructure {
         }
 
         @Override
-        public UnsignedRationalNumber decode(SerializationContext context, UaDecoder decoder) {
+        public UnsignedRationalNumber decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger numerator = decoder.readUInt32("Numerator");
             UInteger denominator = decoder.readUInt32("Denominator");
             return new UnsignedRationalNumber(numerator, denominator);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UnsignedRationalNumber value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UnsignedRationalNumber value) {
             encoder.writeUInt32("Numerator", value.getNumerator());
             encoder.writeUInt32("Denominator", value.getDenominator());
         }

@@ -106,7 +106,7 @@ public class CreateMonitoredItemsRequest extends Structure implements UaRequestM
         }
 
         @Override
-        public CreateMonitoredItemsRequest decode(SerializationContext context, UaDecoder decoder) {
+        public CreateMonitoredItemsRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             TimestampsToReturn timestampsToReturn = (TimestampsToReturn) decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
@@ -115,8 +115,8 @@ public class CreateMonitoredItemsRequest extends Structure implements UaRequestM
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateMonitoredItemsRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CreateMonitoredItemsRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());

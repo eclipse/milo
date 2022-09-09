@@ -66,8 +66,9 @@ public enum IdentityCriteriaType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=15632");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable IdentityCriteriaType from(int value) {
@@ -113,14 +114,18 @@ public enum IdentityCriteriaType implements UaEnumeration {
         }
 
         @Override
-        public IdentityCriteriaType decode(SerializationContext context, UaDecoder decoder) {
+        public IdentityCriteriaType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, IdentityCriteriaType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           IdentityCriteriaType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               IdentityCriteriaType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15632");
     }
 }

@@ -147,7 +147,7 @@ public class SecurityGroupDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public SecurityGroupDataType decode(SerializationContext context, UaDecoder decoder) {
+        public SecurityGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             String[] securityGroupFolder = decoder.readStringArray("SecurityGroupFolder");
             Double keyLifetime = decoder.readDouble("KeyLifetime");
@@ -161,8 +161,8 @@ public class SecurityGroupDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SecurityGroupDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SecurityGroupDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeStringArray("SecurityGroupFolder", value.getSecurityGroupFolder());
             encoder.writeDouble("KeyLifetime", value.getKeyLifetime());

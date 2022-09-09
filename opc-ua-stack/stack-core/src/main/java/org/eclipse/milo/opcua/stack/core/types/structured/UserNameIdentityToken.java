@@ -100,7 +100,7 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         }
 
         @Override
-        public UserNameIdentityToken decode(SerializationContext context, UaDecoder decoder) {
+        public UserNameIdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
             String userName = decoder.readString("UserName");
             ByteString password = decoder.readByteString("Password");
@@ -109,8 +109,8 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UserNameIdentityToken value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UserNameIdentityToken value) {
             encoder.writeString("PolicyId", value.getPolicyId());
             encoder.writeString("UserName", value.getUserName());
             encoder.writeByteString("Password", value.getPassword());

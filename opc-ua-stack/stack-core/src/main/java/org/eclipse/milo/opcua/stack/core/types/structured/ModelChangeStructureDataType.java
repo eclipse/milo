@@ -97,7 +97,8 @@ public class ModelChangeStructureDataType extends Structure implements UaStructu
         }
 
         @Override
-        public ModelChangeStructureDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ModelChangeStructureDataType decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             NodeId affected = decoder.readNodeId("Affected");
             NodeId affectedType = decoder.readNodeId("AffectedType");
             UByte verb = decoder.readByte("Verb");
@@ -105,8 +106,8 @@ public class ModelChangeStructureDataType extends Structure implements UaStructu
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ModelChangeStructureDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ModelChangeStructureDataType value) {
             encoder.writeNodeId("Affected", value.getAffected());
             encoder.writeNodeId("AffectedType", value.getAffectedType());
             encoder.writeByte("Verb", value.getVerb());

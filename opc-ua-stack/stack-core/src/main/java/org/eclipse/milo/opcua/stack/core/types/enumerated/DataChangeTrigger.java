@@ -32,8 +32,9 @@ public enum DataChangeTrigger implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=717");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable DataChangeTrigger from(int value) {
@@ -64,13 +65,18 @@ public enum DataChangeTrigger implements UaEnumeration {
         }
 
         @Override
-        public DataChangeTrigger decode(SerializationContext context, UaDecoder decoder) {
+        public DataChangeTrigger decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, DataChangeTrigger.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DataChangeTrigger value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataChangeTrigger value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=717");
     }
 }

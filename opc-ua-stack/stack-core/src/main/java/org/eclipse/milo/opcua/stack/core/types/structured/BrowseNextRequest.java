@@ -98,7 +98,7 @@ public class BrowseNextRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public BrowseNextRequest decode(SerializationContext context, UaDecoder decoder) {
+        public BrowseNextRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
             ByteString[] continuationPoints = decoder.readByteStringArray("ContinuationPoints");
@@ -106,7 +106,8 @@ public class BrowseNextRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseNextRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrowseNextRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
             encoder.writeByteStringArray("ContinuationPoints", value.getContinuationPoints());

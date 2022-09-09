@@ -80,13 +80,13 @@ public class RelativePath extends Structure implements UaStructure {
         }
 
         @Override
-        public RelativePath decode(SerializationContext context, UaDecoder decoder) {
+        public RelativePath decodeType(SerializationContext context, UaDecoder decoder) {
             RelativePathElement[] elements = (RelativePathElement[]) decoder.readStructArray("Elements", RelativePathElement.TYPE_ID);
             return new RelativePath(elements);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RelativePath value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, RelativePath value) {
             encoder.writeStructArray("Elements", value.getElements(), RelativePathElement.TYPE_ID);
         }
     }

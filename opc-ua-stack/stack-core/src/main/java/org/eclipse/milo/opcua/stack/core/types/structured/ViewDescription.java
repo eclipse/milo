@@ -97,7 +97,7 @@ public class ViewDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public ViewDescription decode(SerializationContext context, UaDecoder decoder) {
+        public ViewDescription decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId viewId = decoder.readNodeId("ViewId");
             DateTime timestamp = decoder.readDateTime("Timestamp");
             UInteger viewVersion = decoder.readUInt32("ViewVersion");
@@ -105,7 +105,7 @@ public class ViewDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ViewDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ViewDescription value) {
             encoder.writeNodeId("ViewId", value.getViewId());
             encoder.writeDateTime("Timestamp", value.getTimestamp());
             encoder.writeUInt32("ViewVersion", value.getViewVersion());

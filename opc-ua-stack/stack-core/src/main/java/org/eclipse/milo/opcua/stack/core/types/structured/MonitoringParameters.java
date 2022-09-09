@@ -114,7 +114,7 @@ public class MonitoringParameters extends Structure implements UaStructure {
         }
 
         @Override
-        public MonitoringParameters decode(SerializationContext context, UaDecoder decoder) {
+        public MonitoringParameters decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger clientHandle = decoder.readUInt32("ClientHandle");
             Double samplingInterval = decoder.readDouble("SamplingInterval");
             ExtensionObject filter = decoder.readExtensionObject("Filter");
@@ -124,8 +124,8 @@ public class MonitoringParameters extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoringParameters value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               MonitoringParameters value) {
             encoder.writeUInt32("ClientHandle", value.getClientHandle());
             encoder.writeDouble("SamplingInterval", value.getSamplingInterval());
             encoder.writeExtensionObject("Filter", value.getFilter());

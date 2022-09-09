@@ -68,13 +68,13 @@ public class MonitoringFilterResult extends Structure implements UaStructure {
         }
 
         @Override
-        public MonitoringFilterResult decode(SerializationContext context, UaDecoder decoder) {
+        public MonitoringFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
             return new MonitoringFilterResult();
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoringFilterResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               MonitoringFilterResult value) {
         }
     }
 }

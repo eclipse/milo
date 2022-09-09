@@ -106,7 +106,7 @@ public class ChannelSecurityToken extends Structure implements UaStructure {
         }
 
         @Override
-        public ChannelSecurityToken decode(SerializationContext context, UaDecoder decoder) {
+        public ChannelSecurityToken decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger channelId = decoder.readUInt32("ChannelId");
             UInteger tokenId = decoder.readUInt32("TokenId");
             DateTime createdAt = decoder.readDateTime("CreatedAt");
@@ -115,8 +115,8 @@ public class ChannelSecurityToken extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ChannelSecurityToken value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ChannelSecurityToken value) {
             encoder.writeUInt32("ChannelId", value.getChannelId());
             encoder.writeUInt32("TokenId", value.getTokenId());
             encoder.writeDateTime("CreatedAt", value.getCreatedAt());

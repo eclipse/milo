@@ -80,14 +80,14 @@ public class CloseSessionResponse extends Structure implements UaResponseMessage
         }
 
         @Override
-        public CloseSessionResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CloseSessionResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             return new CloseSessionResponse(responseHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CloseSessionResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CloseSessionResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }

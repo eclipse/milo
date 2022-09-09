@@ -98,8 +98,8 @@ public class TranslateBrowsePathsToNodeIdsResponse extends Structure implements 
         }
 
         @Override
-        public TranslateBrowsePathsToNodeIdsResponse decode(SerializationContext context,
-                                                            UaDecoder decoder) {
+        public TranslateBrowsePathsToNodeIdsResponse decodeType(SerializationContext context,
+                                                                UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             BrowsePathResult[] results = (BrowsePathResult[]) decoder.readStructArray("Results", BrowsePathResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,8 +107,8 @@ public class TranslateBrowsePathsToNodeIdsResponse extends Structure implements 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           TranslateBrowsePathsToNodeIdsResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               TranslateBrowsePathsToNodeIdsResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), BrowsePathResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

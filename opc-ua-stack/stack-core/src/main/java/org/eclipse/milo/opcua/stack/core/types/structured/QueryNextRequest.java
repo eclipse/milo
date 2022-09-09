@@ -98,7 +98,7 @@ public class QueryNextRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public QueryNextRequest decode(SerializationContext context, UaDecoder decoder) {
+        public QueryNextRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean releaseContinuationPoint = decoder.readBoolean("ReleaseContinuationPoint");
             ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
@@ -106,7 +106,8 @@ public class QueryNextRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, QueryNextRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               QueryNextRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeBoolean("ReleaseContinuationPoint", value.getReleaseContinuationPoint());
             encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());

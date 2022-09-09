@@ -156,8 +156,9 @@ public enum TsnFailureCode implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=24218");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable TsnFailureCode from(int value) {
@@ -257,13 +258,17 @@ public enum TsnFailureCode implements UaEnumeration {
         }
 
         @Override
-        public TsnFailureCode decode(SerializationContext context, UaDecoder decoder) {
+        public TsnFailureCode decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, TsnFailureCode.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TsnFailureCode value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, TsnFailureCode value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24218");
     }
 }

@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-public interface UaEnumeration extends UaSerializable {
+public interface UaEnumeration extends UaSerializableType {
 
     int getValue();
 

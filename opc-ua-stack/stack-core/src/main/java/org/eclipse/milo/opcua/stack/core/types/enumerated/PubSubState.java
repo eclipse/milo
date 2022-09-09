@@ -36,8 +36,9 @@ public enum PubSubState implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=14647");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable PubSubState from(int value) {
@@ -74,13 +75,17 @@ public enum PubSubState implements UaEnumeration {
         }
 
         @Override
-        public PubSubState decode(SerializationContext context, UaDecoder decoder) {
+        public PubSubState decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, PubSubState.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, PubSubState value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, PubSubState value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14647");
     }
 }

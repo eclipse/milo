@@ -88,14 +88,14 @@ public class PortableNodeId extends Structure implements UaStructure {
         }
 
         @Override
-        public PortableNodeId decode(SerializationContext context, UaDecoder decoder) {
+        public PortableNodeId decodeType(SerializationContext context, UaDecoder decoder) {
             String namespaceUri = decoder.readString("NamespaceUri");
             NodeId identifier = decoder.readNodeId("Identifier");
             return new PortableNodeId(namespaceUri, identifier);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, PortableNodeId value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, PortableNodeId value) {
             encoder.writeString("NamespaceUri", value.getNamespaceUri());
             encoder.writeNodeId("Identifier", value.getIdentifier());
         }

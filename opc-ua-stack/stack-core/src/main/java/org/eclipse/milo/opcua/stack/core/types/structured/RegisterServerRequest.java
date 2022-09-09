@@ -88,15 +88,15 @@ public class RegisterServerRequest extends Structure implements UaRequestMessage
         }
 
         @Override
-        public RegisterServerRequest decode(SerializationContext context, UaDecoder decoder) {
+        public RegisterServerRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             RegisteredServer server = (RegisteredServer) decoder.readStruct("Server", RegisteredServer.TYPE_ID);
             return new RegisterServerRequest(requestHeader, server);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           RegisterServerRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RegisterServerRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStruct("Server", value.getServer(), RegisteredServer.TYPE_ID);
         }

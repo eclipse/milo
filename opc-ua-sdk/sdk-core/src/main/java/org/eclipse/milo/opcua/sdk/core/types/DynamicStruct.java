@@ -14,7 +14,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
-public class DynamicStruct {
+import org.eclipse.milo.opcua.stack.core.serialization.UaSerializableType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+
+public class DynamicStruct implements UaSerializableType {
 
     private final DataType dataType;
     private final LinkedHashMap<String, Object> members;
@@ -30,6 +33,11 @@ public class DynamicStruct {
 
     public LinkedHashMap<String, Object> getMembers() {
         return members;
+    }
+
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return dataType.getNodeId().expanded();
     }
 
     @Override

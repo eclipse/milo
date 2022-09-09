@@ -99,7 +99,7 @@ public class BrowseResult extends Structure implements UaStructure {
         }
 
         @Override
-        public BrowseResult decode(SerializationContext context, UaDecoder decoder) {
+        public BrowseResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
             ReferenceDescription[] references = (ReferenceDescription[]) decoder.readStructArray("References", ReferenceDescription.TYPE_ID);
@@ -107,7 +107,7 @@ public class BrowseResult extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, BrowseResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
             encoder.writeStructArray("References", value.getReferences(), ReferenceDescription.TYPE_ID);

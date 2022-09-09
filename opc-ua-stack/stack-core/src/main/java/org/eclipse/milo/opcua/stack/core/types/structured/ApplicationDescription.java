@@ -131,7 +131,7 @@ public class ApplicationDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public ApplicationDescription decode(SerializationContext context, UaDecoder decoder) {
+        public ApplicationDescription decodeType(SerializationContext context, UaDecoder decoder) {
             String applicationUri = decoder.readString("ApplicationUri");
             String productUri = decoder.readString("ProductUri");
             LocalizedText applicationName = decoder.readLocalizedText("ApplicationName");
@@ -143,8 +143,8 @@ public class ApplicationDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ApplicationDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ApplicationDescription value) {
             encoder.writeString("ApplicationUri", value.getApplicationUri());
             encoder.writeString("ProductUri", value.getProductUri());
             encoder.writeLocalizedText("ApplicationName", value.getApplicationName());

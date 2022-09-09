@@ -34,8 +34,9 @@ public enum PerformUpdateType implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=11293");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable PerformUpdateType from(int value) {
@@ -69,13 +70,18 @@ public enum PerformUpdateType implements UaEnumeration {
         }
 
         @Override
-        public PerformUpdateType decode(SerializationContext context, UaDecoder decoder) {
+        public PerformUpdateType decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, PerformUpdateType.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, PerformUpdateType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PerformUpdateType value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=11293");
     }
 }

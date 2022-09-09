@@ -97,7 +97,7 @@ public class QueryDataSet extends Structure implements UaStructure {
         }
 
         @Override
-        public QueryDataSet decode(SerializationContext context, UaDecoder decoder) {
+        public QueryDataSet decodeType(SerializationContext context, UaDecoder decoder) {
             ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
             ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
             Variant[] values = decoder.readVariantArray("Values");
@@ -105,7 +105,7 @@ public class QueryDataSet extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, QueryDataSet value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, QueryDataSet value) {
             encoder.writeExpandedNodeId("NodeId", value.getNodeId());
             encoder.writeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
             encoder.writeVariantArray("Values", value.getValues());

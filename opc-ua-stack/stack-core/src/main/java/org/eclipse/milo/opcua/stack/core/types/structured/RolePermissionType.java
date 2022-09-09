@@ -88,14 +88,15 @@ public class RolePermissionType extends Structure implements UaStructure {
         }
 
         @Override
-        public RolePermissionType decode(SerializationContext context, UaDecoder decoder) {
+        public RolePermissionType decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId roleId = decoder.readNodeId("RoleId");
             PermissionType permissions = new PermissionType(decoder.readUInt32("Permissions"));
             return new RolePermissionType(roleId, permissions);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RolePermissionType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RolePermissionType value) {
             encoder.writeNodeId("RoleId", value.getRoleId());
             encoder.writeUInt32("Permissions", value.getPermissions().getValue());
         }

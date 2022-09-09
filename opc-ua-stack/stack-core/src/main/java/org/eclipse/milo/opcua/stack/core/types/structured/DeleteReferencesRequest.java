@@ -89,15 +89,15 @@ public class DeleteReferencesRequest extends Structure implements UaRequestMessa
         }
 
         @Override
-        public DeleteReferencesRequest decode(SerializationContext context, UaDecoder decoder) {
+        public DeleteReferencesRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             DeleteReferencesItem[] referencesToDelete = (DeleteReferencesItem[]) decoder.readStructArray("ReferencesToDelete", DeleteReferencesItem.TYPE_ID);
             return new DeleteReferencesRequest(requestHeader, referencesToDelete);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DeleteReferencesRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DeleteReferencesRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStructArray("ReferencesToDelete", value.getReferencesToDelete(), DeleteReferencesItem.TYPE_ID);
         }

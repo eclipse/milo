@@ -113,7 +113,7 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public SetTriggeringRequest decode(SerializationContext context, UaDecoder decoder) {
+        public SetTriggeringRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UInteger triggeringItemId = decoder.readUInt32("TriggeringItemId");
@@ -123,8 +123,8 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetTriggeringRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SetTriggeringRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeUInt32("TriggeringItemId", value.getTriggeringItemId());

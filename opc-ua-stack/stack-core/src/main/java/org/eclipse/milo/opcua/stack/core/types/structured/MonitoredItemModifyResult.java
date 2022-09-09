@@ -107,7 +107,7 @@ public class MonitoredItemModifyResult extends Structure implements UaStructure 
         }
 
         @Override
-        public MonitoredItemModifyResult decode(SerializationContext context, UaDecoder decoder) {
+        public MonitoredItemModifyResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             Double revisedSamplingInterval = decoder.readDouble("RevisedSamplingInterval");
             UInteger revisedQueueSize = decoder.readUInt32("RevisedQueueSize");
@@ -116,8 +116,8 @@ public class MonitoredItemModifyResult extends Structure implements UaStructure 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoredItemModifyResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               MonitoredItemModifyResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
             encoder.writeUInt32("RevisedQueueSize", value.getRevisedQueueSize());

@@ -47,7 +47,6 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -809,6 +808,12 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // Populate the OPC UA 1.04+ DataTypeDefinition attribute
         dataTypeNode.setDataTypeDefinition(definition);
 
+        // Register Codecs for each supported encoding with DataTypeManager
+        getNodeContext().getServer().getDataTypeManager().registerEnumType(
+            dataTypeId,
+            new CustomEnumType.Codec()
+        );
+
         // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
         // DataTypeDictionary from the server. We describe the type using StructureDefinition
         // or EnumDefinition and register it with the dictionary manager.
@@ -908,15 +913,12 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
-        getNodeContext().getServer().getDataTypeManager().registerCodec(
-            binaryEncodingId,
-            new CustomStructType.Codec().asBinaryCodec()
-        );
-
-        getNodeContext().getServer().getDataTypeManager().registerCodec(
-            OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+        getNodeContext().getServer().getDataTypeManager().registerStructType(
             dataTypeId,
-            new CustomStructType.Codec().asBinaryCodec()
+            new CustomStructType.Codec(),
+            binaryEncodingId,
+            null,
+            null
         );
 
         // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
@@ -995,6 +997,15 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         );
 
         dataTypeNode.setDataTypeDefinition(definition);
+
+        // Register Codecs for each supported encoding with DataTypeManager
+        getNodeContext().getServer().getDataTypeManager().registerStructType(
+            dataTypeId,
+            new CustomUnionType.Codec(),
+            binaryEncodingId,
+            null,
+            null
+        );
 
         dictionaryManager.registerUnionCodec(
             new CustomUnionType.Codec().asBinaryCodec(),

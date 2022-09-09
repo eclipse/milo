@@ -89,16 +89,16 @@ public class DatagramWriterGroupTransportDataType extends WriterGroupTransportDa
         }
 
         @Override
-        public DatagramWriterGroupTransportDataType decode(SerializationContext context,
-                                                           UaDecoder decoder) {
+        public DatagramWriterGroupTransportDataType decodeType(SerializationContext context,
+                                                               UaDecoder decoder) {
             UByte messageRepeatCount = decoder.readByte("MessageRepeatCount");
             Double messageRepeatDelay = decoder.readDouble("MessageRepeatDelay");
             return new DatagramWriterGroupTransportDataType(messageRepeatCount, messageRepeatDelay);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramWriterGroupTransportDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DatagramWriterGroupTransportDataType value) {
             encoder.writeByte("MessageRepeatCount", value.getMessageRepeatCount());
             encoder.writeDouble("MessageRepeatDelay", value.getMessageRepeatDelay());
         }

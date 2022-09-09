@@ -80,14 +80,14 @@ public class UnregisterNodesResponse extends Structure implements UaResponseMess
         }
 
         @Override
-        public UnregisterNodesResponse decode(SerializationContext context, UaDecoder decoder) {
+        public UnregisterNodesResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             return new UnregisterNodesResponse(responseHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UnregisterNodesResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UnregisterNodesResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }

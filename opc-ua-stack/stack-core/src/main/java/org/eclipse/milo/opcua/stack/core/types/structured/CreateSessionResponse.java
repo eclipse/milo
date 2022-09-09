@@ -157,7 +157,7 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public CreateSessionResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CreateSessionResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             NodeId sessionId = decoder.readNodeId("SessionId");
             NodeId authenticationToken = decoder.readNodeId("AuthenticationToken");
@@ -172,8 +172,8 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateSessionResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CreateSessionResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeNodeId("SessionId", value.getSessionId());
             encoder.writeNodeId("AuthenticationToken", value.getAuthenticationToken());

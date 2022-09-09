@@ -106,7 +106,7 @@ public class RelativePathElement extends Structure implements UaStructure {
         }
 
         @Override
-        public RelativePathElement decode(SerializationContext context, UaDecoder decoder) {
+        public RelativePathElement decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isInverse = decoder.readBoolean("IsInverse");
             Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
@@ -115,7 +115,8 @@ public class RelativePathElement extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RelativePathElement value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RelativePathElement value) {
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeBoolean("IsInverse", value.getIsInverse());
             encoder.writeBoolean("IncludeSubtypes", value.getIncludeSubtypes());

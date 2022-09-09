@@ -134,7 +134,7 @@ public class FieldTargetDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public FieldTargetDataType decode(SerializationContext context, UaDecoder decoder) {
+        public FieldTargetDataType decodeType(SerializationContext context, UaDecoder decoder) {
             UUID dataSetFieldId = decoder.readGuid("DataSetFieldId");
             String receiverIndexRange = decoder.readString("ReceiverIndexRange");
             NodeId targetNodeId = decoder.readNodeId("TargetNodeId");
@@ -146,7 +146,8 @@ public class FieldTargetDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, FieldTargetDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               FieldTargetDataType value) {
             encoder.writeGuid("DataSetFieldId", value.getDataSetFieldId());
             encoder.writeString("ReceiverIndexRange", value.getReceiverIndexRange());
             encoder.writeNodeId("TargetNodeId", value.getTargetNodeId());

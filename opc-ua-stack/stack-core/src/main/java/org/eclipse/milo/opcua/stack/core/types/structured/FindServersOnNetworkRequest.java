@@ -105,7 +105,7 @@ public class FindServersOnNetworkRequest extends Structure implements UaRequestM
         }
 
         @Override
-        public FindServersOnNetworkRequest decode(SerializationContext context, UaDecoder decoder) {
+        public FindServersOnNetworkRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger startingRecordId = decoder.readUInt32("StartingRecordId");
             UInteger maxRecordsToReturn = decoder.readUInt32("MaxRecordsToReturn");
@@ -114,8 +114,8 @@ public class FindServersOnNetworkRequest extends Structure implements UaRequestM
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           FindServersOnNetworkRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               FindServersOnNetworkRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("StartingRecordId", value.getStartingRecordId());
             encoder.writeUInt32("MaxRecordsToReturn", value.getMaxRecordsToReturn());

@@ -10,10 +10,12 @@
 
 package org.eclipse.milo.opcua.sdk.core.types;
 
+import org.eclipse.milo.opcua.stack.core.serialization.UaSerializableType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.jetbrains.annotations.Nullable;
 
-public class DynamicEnum {
+public class DynamicEnum implements UaSerializableType {
 
     private final DataType dataType;
     private final String name;
@@ -51,6 +53,11 @@ public class DynamicEnum {
 
     public LocalizedText getDescription() {
         return description;
+    }
+
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return dataType.getNodeId().expanded();
     }
 
     @Override

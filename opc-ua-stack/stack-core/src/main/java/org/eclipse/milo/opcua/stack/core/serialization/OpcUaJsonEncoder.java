@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaJsonDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -1005,9 +1004,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
                     "namespace not registered: " + xEncodingId.getNamespaceUri())
             );
 
-        @SuppressWarnings("unchecked")
-        OpcUaJsonDataTypeCodec<UaMessage> codec =
-            (OpcUaJsonDataTypeCodec<UaMessage>) serializationContext.getDataTypeManager().getCodec(encodingId);
+        DataTypeCodec codec = serializationContext.getDataTypeManager().getStructCodec(encodingId);
 
         if (codec == null) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, "no codec registered: " + encodingId);
@@ -1030,19 +1027,17 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
     @Override
     public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
-        @SuppressWarnings("unchecked")
-        OpcUaJsonDataTypeCodec<Object> codec =
-            (OpcUaJsonDataTypeCodec<Object>) serializationContext.getDataTypeManager()
-                .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+        DataTypeCodec codec = serializationContext.getDataTypeManager()
+            .getStructCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
-        if (codec == null) {
+        if (codec != null) {
+            writeStruct(field, value, codec);
+        } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "no codec registered: " + dataTypeId
             );
         }
-
-        writeStruct(field, value, codec);
     }
 
     @Override
@@ -1050,36 +1045,26 @@ public class OpcUaJsonEncoder implements UaEncoder {
         NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
-                "no codec registered: " + dataTypeId
+                "namespace not registered: " + dataTypeId
             ));
 
         writeStruct(field, value, localDataTypeId);
     }
 
     @Override
-    public void writeStruct(String field, Object value, DataTypeCodec<?> codec) throws UaSerializationException {
-        if (codec instanceof OpcUaJsonDataTypeCodec) {
-            @SuppressWarnings("unchecked")
-            OpcUaJsonDataTypeCodec<Object> jsonCodec = (OpcUaJsonDataTypeCodec<Object>) codec;
-
-            try {
-                if (field != null) {
-                    jsonWriter.name(field);
-                }
-
-                contextPush(EncodingContext.STRUCT);
-                jsonWriter.beginObject();
-                jsonCodec.encode(serializationContext, this, value);
-                jsonWriter.endObject();
-                contextPop();
-            } catch (IOException e) {
-                throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+        try {
+            if (field != null) {
+                jsonWriter.name(field);
             }
-        } else {
-            throw new UaSerializationException(
-                StatusCodes.Bad_EncodingError,
-                new IllegalArgumentException("codec: " + codec)
-            );
+
+            contextPush(EncodingContext.STRUCT);
+            jsonWriter.beginObject();
+            codec.encode(serializationContext, this, value);
+            jsonWriter.endObject();
+            contextPop();
+        } catch (IOException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
     }
 

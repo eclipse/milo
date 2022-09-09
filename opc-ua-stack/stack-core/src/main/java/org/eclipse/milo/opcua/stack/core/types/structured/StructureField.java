@@ -129,7 +129,7 @@ public class StructureField extends Structure implements UaStructure {
         }
 
         @Override
-        public StructureField decode(SerializationContext context, UaDecoder decoder) {
+        public StructureField decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             LocalizedText description = decoder.readLocalizedText("Description");
             NodeId dataType = decoder.readNodeId("DataType");
@@ -141,7 +141,7 @@ public class StructureField extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, StructureField value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, StructureField value) {
             encoder.writeString("Name", value.getName());
             encoder.writeLocalizedText("Description", value.getDescription());
             encoder.writeNodeId("DataType", value.getDataType());

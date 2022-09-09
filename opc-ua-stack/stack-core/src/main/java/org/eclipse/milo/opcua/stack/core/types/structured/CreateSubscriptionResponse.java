@@ -114,7 +114,7 @@ public class CreateSubscriptionResponse extends Structure implements UaResponseM
         }
 
         @Override
-        public CreateSubscriptionResponse decode(SerializationContext context, UaDecoder decoder) {
+        public CreateSubscriptionResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             Double revisedPublishingInterval = decoder.readDouble("RevisedPublishingInterval");
@@ -124,8 +124,8 @@ public class CreateSubscriptionResponse extends Structure implements UaResponseM
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateSubscriptionResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CreateSubscriptionResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());

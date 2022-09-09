@@ -71,12 +71,13 @@ public class HistoryReadDetails extends Structure implements UaStructure {
         }
 
         @Override
-        public HistoryReadDetails decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryReadDetails decodeType(SerializationContext context, UaDecoder decoder) {
             return new HistoryReadDetails();
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryReadDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryReadDetails value) {
         }
     }
 }

@@ -40,6 +40,8 @@ public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionI
             bsdParser
         );
 
+        // TODO this needs to separately register enum/struct codecs now, not just the dictionary
+
         return reader.readDataTypeDictionaries()
             .thenAccept(dictionaries ->
                 dictionaries.forEach(

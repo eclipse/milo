@@ -99,7 +99,7 @@ public class SetMonitoringModeResponse extends Structure implements UaResponseMe
         }
 
         @Override
-        public SetMonitoringModeResponse decode(SerializationContext context, UaDecoder decoder) {
+        public SetMonitoringModeResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             StatusCode[] results = decoder.readStatusCodeArray("Results");
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,8 +107,8 @@ public class SetMonitoringModeResponse extends Structure implements UaResponseMe
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetMonitoringModeResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SetMonitoringModeResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStatusCodeArray("Results", value.getResults());
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

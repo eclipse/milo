@@ -80,14 +80,14 @@ public class EventNotificationList extends NotificationData implements UaStructu
         }
 
         @Override
-        public EventNotificationList decode(SerializationContext context, UaDecoder decoder) {
+        public EventNotificationList decodeType(SerializationContext context, UaDecoder decoder) {
             EventFieldList[] events = (EventFieldList[]) decoder.readStructArray("Events", EventFieldList.TYPE_ID);
             return new EventNotificationList(events);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           EventNotificationList value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               EventNotificationList value) {
             encoder.writeStructArray("Events", value.getEvents(), EventFieldList.TYPE_ID);
         }
     }

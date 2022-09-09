@@ -217,7 +217,7 @@ public class DataSetReaderDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public DataSetReaderDataType decode(SerializationContext context, UaDecoder decoder) {
+        public DataSetReaderDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             Boolean enabled = decoder.readBoolean("Enabled");
             Variant publisherId = decoder.readVariant("PublisherId");
@@ -239,8 +239,8 @@ public class DataSetReaderDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DataSetReaderDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataSetReaderDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeBoolean("Enabled", value.getEnabled());
             encoder.writeVariant("PublisherId", value.getPublisherId());

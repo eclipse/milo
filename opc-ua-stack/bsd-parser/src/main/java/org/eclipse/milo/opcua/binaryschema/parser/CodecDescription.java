@@ -14,15 +14,15 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTyp
 
 public class CodecDescription {
 
-    private final OpcUaBinaryDataTypeCodec<?> codec;
+    private final OpcUaBinaryDataTypeCodec codec;
     private final String description;
 
-    public CodecDescription(OpcUaBinaryDataTypeCodec<?> codec, String description) {
+    public CodecDescription(OpcUaBinaryDataTypeCodec codec, String description) {
         this.codec = codec;
         this.description = description;
     }
 
-    public OpcUaBinaryDataTypeCodec<?> getCodec() {
+    public OpcUaBinaryDataTypeCodec getCodec() {
         return codec;
     }
 

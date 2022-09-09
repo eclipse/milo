@@ -88,15 +88,15 @@ public class DeleteSubscriptionsRequest extends Structure implements UaRequestMe
         }
 
         @Override
-        public DeleteSubscriptionsRequest decode(SerializationContext context, UaDecoder decoder) {
+        public DeleteSubscriptionsRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger[] subscriptionIds = decoder.readUInt32Array("SubscriptionIds");
             return new DeleteSubscriptionsRequest(requestHeader, subscriptionIds);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DeleteSubscriptionsRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DeleteSubscriptionsRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32Array("SubscriptionIds", value.getSubscriptionIds());
         }

@@ -149,8 +149,8 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         }
 
         @Override
-        public SessionSecurityDiagnosticsDataType decode(SerializationContext context,
-                                                         UaDecoder decoder) {
+        public SessionSecurityDiagnosticsDataType decodeType(SerializationContext context,
+                                                             UaDecoder decoder) {
             NodeId sessionId = decoder.readNodeId("SessionId");
             String clientUserIdOfSession = decoder.readString("ClientUserIdOfSession");
             String[] clientUserIdHistory = decoder.readStringArray("ClientUserIdHistory");
@@ -164,8 +164,8 @@ public class SessionSecurityDiagnosticsDataType extends Structure implements UaS
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SessionSecurityDiagnosticsDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SessionSecurityDiagnosticsDataType value) {
             encoder.writeNodeId("SessionId", value.getSessionId());
             encoder.writeString("ClientUserIdOfSession", value.getClientUserIdOfSession());
             encoder.writeStringArray("ClientUserIdHistory", value.getClientUserIdHistory());

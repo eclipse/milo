@@ -109,7 +109,7 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
         }
 
         @Override
-        public ReaderGroupDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ReaderGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             Boolean enabled = decoder.readBoolean("Enabled");
             MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
@@ -124,7 +124,8 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReaderGroupDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ReaderGroupDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeBoolean("Enabled", value.getEnabled());
             encoder.writeEnum("SecurityMode", value.getSecurityMode());

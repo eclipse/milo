@@ -97,7 +97,7 @@ public class CallMethodRequest extends Structure implements UaStructure {
         }
 
         @Override
-        public CallMethodRequest decode(SerializationContext context, UaDecoder decoder) {
+        public CallMethodRequest decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId objectId = decoder.readNodeId("ObjectId");
             NodeId methodId = decoder.readNodeId("MethodId");
             Variant[] inputArguments = decoder.readVariantArray("InputArguments");
@@ -105,7 +105,8 @@ public class CallMethodRequest extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CallMethodRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CallMethodRequest value) {
             encoder.writeNodeId("ObjectId", value.getObjectId());
             encoder.writeNodeId("MethodId", value.getMethodId());
             encoder.writeVariantArray("InputArguments", value.getInputArguments());

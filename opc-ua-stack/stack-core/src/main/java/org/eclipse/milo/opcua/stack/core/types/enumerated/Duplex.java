@@ -41,8 +41,9 @@ public enum Duplex implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=24210");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable Duplex from(int value) {
@@ -73,13 +74,17 @@ public enum Duplex implements UaEnumeration {
         }
 
         @Override
-        public Duplex decode(SerializationContext context, UaDecoder decoder) {
+        public Duplex decodeType(SerializationContext context, UaDecoder decoder) {
             return decoder.readEnum(null, Duplex.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, Duplex value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, Duplex value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=24210");
     }
 }

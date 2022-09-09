@@ -99,7 +99,7 @@ public class RegisterServer2Response extends Structure implements UaResponseMess
         }
 
         @Override
-        public RegisterServer2Response decode(SerializationContext context, UaDecoder decoder) {
+        public RegisterServer2Response decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             StatusCode[] configurationResults = decoder.readStatusCodeArray("ConfigurationResults");
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,8 +107,8 @@ public class RegisterServer2Response extends Structure implements UaResponseMess
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           RegisterServer2Response value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RegisterServer2Response value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStatusCodeArray("ConfigurationResults", value.getConfigurationResults());
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

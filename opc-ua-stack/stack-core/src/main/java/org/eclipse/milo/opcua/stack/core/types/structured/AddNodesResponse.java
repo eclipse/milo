@@ -98,7 +98,7 @@ public class AddNodesResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public AddNodesResponse decode(SerializationContext context, UaDecoder decoder) {
+        public AddNodesResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             AddNodesResult[] results = (AddNodesResult[]) decoder.readStructArray("Results", AddNodesResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -106,7 +106,8 @@ public class AddNodesResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AddNodesResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               AddNodesResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("Results", value.getResults(), AddNodesResult.TYPE_ID);
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

@@ -88,15 +88,15 @@ public class NetworkGroupDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public NetworkGroupDataType decode(SerializationContext context, UaDecoder decoder) {
+        public NetworkGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String serverUri = decoder.readString("ServerUri");
             EndpointUrlListDataType[] networkPaths = (EndpointUrlListDataType[]) decoder.readStructArray("NetworkPaths", EndpointUrlListDataType.TYPE_ID);
             return new NetworkGroupDataType(serverUri, networkPaths);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           NetworkGroupDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               NetworkGroupDataType value) {
             encoder.writeString("ServerUri", value.getServerUri());
             encoder.writeStructArray("NetworkPaths", value.getNetworkPaths(), EndpointUrlListDataType.TYPE_ID);
         }

@@ -105,7 +105,7 @@ public class ServerOnNetwork extends Structure implements UaStructure {
         }
 
         @Override
-        public ServerOnNetwork decode(SerializationContext context, UaDecoder decoder) {
+        public ServerOnNetwork decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger recordId = decoder.readUInt32("RecordId");
             String serverName = decoder.readString("ServerName");
             String discoveryUrl = decoder.readString("DiscoveryUrl");
@@ -114,7 +114,7 @@ public class ServerOnNetwork extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ServerOnNetwork value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ServerOnNetwork value) {
             encoder.writeUInt32("RecordId", value.getRecordId());
             encoder.writeString("ServerName", value.getServerName());
             encoder.writeString("DiscoveryUrl", value.getDiscoveryUrl());

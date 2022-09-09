@@ -148,7 +148,7 @@ public class CreateSessionRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public CreateSessionRequest decode(SerializationContext context, UaDecoder decoder) {
+        public CreateSessionRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ApplicationDescription clientDescription = (ApplicationDescription) decoder.readStruct("ClientDescription", ApplicationDescription.TYPE_ID);
             String serverUri = decoder.readString("ServerUri");
@@ -162,8 +162,8 @@ public class CreateSessionRequest extends Structure implements UaRequestMessage 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           CreateSessionRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               CreateSessionRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
             encoder.writeString("ServerUri", value.getServerUri());

@@ -88,14 +88,15 @@ public class BrowsePathTarget extends Structure implements UaStructure {
         }
 
         @Override
-        public BrowsePathTarget decode(SerializationContext context, UaDecoder decoder) {
+        public BrowsePathTarget decodeType(SerializationContext context, UaDecoder decoder) {
             ExpandedNodeId targetId = decoder.readExpandedNodeId("TargetId");
             UInteger remainingPathIndex = decoder.readUInt32("RemainingPathIndex");
             return new BrowsePathTarget(targetId, remainingPathIndex);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowsePathTarget value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrowsePathTarget value) {
             encoder.writeExpandedNodeId("TargetId", value.getTargetId());
             encoder.writeUInt32("RemainingPathIndex", value.getRemainingPathIndex());
         }

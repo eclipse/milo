@@ -11,7 +11,9 @@
 package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -43,14 +45,36 @@ import org.jetbrains.annotations.NotNull;
 
 public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
+    private final Map<StructureField, Object> fieldHints = new ConcurrentHashMap<>();
+
     private final StructureDefinition structureDefinition;
 
+    private final DataTypeTree dataTypeTree;
     private final DataType dataType;
 
-    public DynamicStructCodec(DataType dataType) {
+    public DynamicStructCodec(DataTypeTree dataTypeTree, DataType dataType) {
+        this.dataTypeTree = dataTypeTree;
         this.dataType = dataType;
 
         this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();
+
+        assert structureDefinition != null;
+
+        for (StructureField field : structureDefinition.getFields()) {
+            NodeId dataTypeId = field.getDataType();
+
+            Object hint;
+            if (BuiltinDataType.isBuiltin(dataTypeId)) {
+                hint = BuiltinDataType.fromNodeId(dataTypeId);
+            } else if (dataTypeTree.isEnumType(dataTypeId)) {
+                hint = CodecType.ENUM;
+            } else if (dataTypeTree.isStructType(dataTypeId)) {
+                hint = CodecType.STRUCT;
+            } else {
+                hint = dataTypeTree.getBuiltinType(dataTypeId);
+            }
+            fieldHints.put(field, hint);
+        }
     }
 
     @Override
@@ -59,12 +83,12 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     }
 
     @Override
-    public DynamicStruct decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
+    public DynamicStruct decodeType(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
         switch (structureDefinition.getStructureType()) {
             case Structure:
             case StructureWithOptionalFields:
             case StructureWithSubtypedValues:
-                return decodeStruct(decoder);
+                return decodeStruct(context, decoder);
             case Union:
             case UnionWithSubtypedValues:
                 return decodeUnion(decoder);
@@ -76,7 +100,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
 
     @Override
-    public void encode(
+    public void encodeType(
         SerializationContext context,
         UaEncoder encoder,
         DynamicStruct value
@@ -98,7 +122,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
         }
     }
 
-    private @NotNull DynamicStruct decodeStruct(UaDecoder decoder) {
+    private @NotNull DynamicStruct decodeStruct(SerializationContext context, UaDecoder decoder) {
         StructureField[] fields = structureDefinition.getFields();
 
         LinkedHashMap<String, Object> members = new LinkedHashMap<>();
@@ -114,25 +138,52 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
             if (!field.getIsOptional() || ((switchField >>> i) & 1) == 1) {
                 String fieldName = field.getName();
                 NodeId dataTypeId = field.getDataType();
-                BuiltinDataType builtinDataType = BuiltinDataType.fromNodeId(dataTypeId);
 
                 // Note: shall be scalar or fixed dimension
                 Integer valueRank = field.getValueRank();
                 if (valueRank == -1) {
                     Object value;
-                    if (builtinDataType == null) {
-                        value = decoder.readStruct(fieldName, dataTypeId);
+
+                    Object hint = fieldHints.get(field);
+                    if (hint instanceof BuiltinDataType) {
+                        value = decodeBuiltinDataType(decoder, fieldName, (BuiltinDataType) hint);
                     } else {
-                        value = decodeBuiltinDataType(decoder, fieldName, builtinDataType);
+                        CodecType codecType = (CodecType) hint;
+
+                        switch (codecType) {
+                            case ENUM:
+                                value = decoder.readEnum(fieldName, null); // TODO
+                                break;
+                            case STRUCT:
+                                value = decoder.readStruct(fieldName, dataTypeId);
+                                break;
+                            default:
+                                throw new RuntimeException("codecType: " + codecType);
+                        }
                     }
+
                     members.put(fieldName, value);
                 } else if (valueRank == 1) {
                     Object value;
-                    if (builtinDataType == null) {
-                        value = decoder.readStructArray(fieldName, dataTypeId);
+
+                    Object hint = fieldHints.get(field);
+                    if (hint instanceof BuiltinDataType) {
+                        value = decodeBuiltinDataTypeArray(decoder, fieldName, (BuiltinDataType) hint);
                     } else {
-                        value = decodeBuiltinDataTypeArray(decoder, fieldName, builtinDataType);
+                        CodecType codecType = (CodecType) hint;
+
+                        switch (codecType) {
+                            case ENUM:
+                                value = decoder.readEnumArray(fieldName, null); // TODO
+                                break;
+                            case STRUCT:
+                                value = decoder.readStructArray(fieldName, dataTypeId);
+                                break;
+                            default:
+                                throw new RuntimeException("codecType: " + codecType);
+                        }
                     }
+
                     members.put(fieldName, value);
                 } else if (valueRank > 1) {
                     // TODO special matrix encoding for multi-dimensional array structure fields
@@ -158,25 +209,52 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
             StructureField field = fields[switchField - 1];
             String fieldName = field.getName();
             NodeId dataTypeId = field.getDataType();
-            BuiltinDataType builtinDataType = BuiltinDataType.fromNodeId(dataTypeId);
 
             // Note: shall be scalar or fixed dimension
             Integer valueRank = field.getValueRank();
             if (valueRank == -1) {
                 Object value;
-                if (builtinDataType == null) {
-                    value = decoder.readStruct(fieldName, dataTypeId);
+
+                Object hint = fieldHints.get(field);
+                if (hint instanceof BuiltinDataType) {
+                    value = decodeBuiltinDataType(decoder, fieldName, (BuiltinDataType) hint);
                 } else {
-                    value = decodeBuiltinDataType(decoder, fieldName, builtinDataType);
+                    CodecType codecType = (CodecType) hint;
+
+                    switch (codecType) {
+                        case ENUM:
+                            value = decoder.readEnum(fieldName, null); // TODO
+                            break;
+                        case STRUCT:
+                            value = decoder.readStruct(fieldName, dataTypeId);
+                            break;
+                        default:
+                            throw new RuntimeException("codecType: " + codecType);
+                    }
                 }
+
                 return DynamicUnion.of(dataType, fieldName, value);
             } else if (valueRank == 1) {
                 Object value;
-                if (builtinDataType == null) {
-                    value = decoder.readStructArray(fieldName, dataTypeId);
+
+                Object hint = fieldHints.get(field);
+                if (hint instanceof BuiltinDataType) {
+                    value = decodeBuiltinDataTypeArray(decoder, fieldName, (BuiltinDataType) hint);
                 } else {
-                    value = decodeBuiltinDataTypeArray(decoder, fieldName, builtinDataType);
+                    CodecType codecType = (CodecType) hint;
+
+                    switch (codecType) {
+                        case ENUM:
+                            value = decoder.readEnumArray(fieldName, null); // TODO
+                            break;
+                        case STRUCT:
+                            value = decoder.readStructArray(fieldName, dataTypeId);
+                            break;
+                        default:
+                            throw new RuntimeException("codecType: " + codecType);
+                    }
                 }
+
                 return DynamicUnion.of(dataType, fieldName, value);
             } else if (valueRank > 1) {
                 // TODO special matrix encoding for multi-dimensional array structure fields
@@ -251,21 +329,44 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
     private void encodeFieldValue(UaEncoder encoder, StructureField field, Object value) {
         String fieldName = field.getName();
         NodeId dataTypeId = field.getDataType();
-        BuiltinDataType builtinDataType = BuiltinDataType.fromNodeId(dataTypeId);
 
         // Note: shall be scalar or fixed dimension
         Integer valueRank = field.getValueRank();
         if (valueRank == -1) {
-            if (builtinDataType == null) {
-                encoder.writeStruct(fieldName, value, dataTypeId);
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                encodeBuiltinDataType(encoder, fieldName, (BuiltinDataType) hint, value);
             } else {
-                encodeBuiltinDataType(encoder, fieldName, builtinDataType, value);
+                CodecType codecType = (CodecType) hint;
+
+                switch (codecType) {
+                    case ENUM:
+                        encoder.writeEnum(fieldName, null); // TODO
+                        break;
+                    case STRUCT:
+                        encoder.writeStruct(fieldName, value, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + codecType);
+                }
             }
         } else if (valueRank == 1) {
-            if (builtinDataType == null) {
-                encoder.writeStructArray(fieldName, (Object[]) value, dataTypeId);
+            Object hint = fieldHints.get(field);
+            if (hint instanceof BuiltinDataType) {
+                encodeBuiltinDataType(encoder, fieldName, (BuiltinDataType) hint, value);
             } else {
-                encodeBuiltinDataTypeArray(encoder, fieldName, builtinDataType, value);
+                CodecType codecType = (CodecType) hint;
+
+                switch (codecType) {
+                    case ENUM:
+                        encoder.writeEnumArray(fieldName, null); // TODO
+                        break;
+                    case STRUCT:
+                        encoder.writeStructArray(fieldName, (Object[]) value, dataTypeId);
+                        break;
+                    default:
+                        throw new RuntimeException("codecType: " + codecType);
+                }
             }
         } else if (valueRank > 1) {
             // TODO special matrix encoding for multi-dimensional array structure fields
@@ -579,5 +680,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
                 throw new RuntimeException("unhandled BuiltinDataType: " + builtinDataType);
         }
     }
+
+    private enum CodecType {ENUM, STRUCT}
 
 }

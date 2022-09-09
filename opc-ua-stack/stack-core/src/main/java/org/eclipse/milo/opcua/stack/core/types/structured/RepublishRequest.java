@@ -97,7 +97,7 @@ public class RepublishRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public RepublishRequest decode(SerializationContext context, UaDecoder decoder) {
+        public RepublishRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UInteger retransmitSequenceNumber = decoder.readUInt32("RetransmitSequenceNumber");
@@ -105,7 +105,8 @@ public class RepublishRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RepublishRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RepublishRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeUInt32("RetransmitSequenceNumber", value.getRetransmitSequenceNumber());

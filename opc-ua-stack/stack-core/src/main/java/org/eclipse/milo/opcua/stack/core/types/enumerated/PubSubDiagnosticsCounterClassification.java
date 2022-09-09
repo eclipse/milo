@@ -30,8 +30,9 @@ public enum PubSubDiagnosticsCounterClassification implements UaEnumeration {
         return value;
     }
 
-    public static ExpandedNodeId getTypeId() {
-        return ExpandedNodeId.parse("ns=0;i=19730");
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TypeInfo.TYPE_ID;
     }
 
     public static @Nullable PubSubDiagnosticsCounterClassification from(int value) {
@@ -59,15 +60,19 @@ public enum PubSubDiagnosticsCounterClassification implements UaEnumeration {
         }
 
         @Override
-        public PubSubDiagnosticsCounterClassification decode(SerializationContext context,
-                                                             UaDecoder decoder) {
+        public PubSubDiagnosticsCounterClassification decodeType(SerializationContext context,
+                                                                 UaDecoder decoder) {
             return decoder.readEnum(null, PubSubDiagnosticsCounterClassification.class);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubDiagnosticsCounterClassification value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PubSubDiagnosticsCounterClassification value) {
             encoder.writeEnum(null, value);
         }
+    }
+
+    public static final class TypeInfo {
+        public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=19730");
     }
 }

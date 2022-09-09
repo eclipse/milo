@@ -120,7 +120,7 @@ public class CustomStructType implements UaStructure {
         }
 
         @Override
-        public CustomStructType decode(
+        public CustomStructType decodeType(
             SerializationContext context,
             UaDecoder decoder
         ) throws UaSerializationException {
@@ -134,7 +134,7 @@ public class CustomStructType implements UaStructure {
         }
 
         @Override
-        public void encode(
+        public void encodeType(
             SerializationContext context,
             UaEncoder encoder, CustomStructType value
         ) throws UaSerializationException {

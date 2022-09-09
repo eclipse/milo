@@ -71,13 +71,13 @@ public class DiscoveryConfiguration extends Structure implements UaStructure {
         }
 
         @Override
-        public DiscoveryConfiguration decode(SerializationContext context, UaDecoder decoder) {
+        public DiscoveryConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
             return new DiscoveryConfiguration();
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DiscoveryConfiguration value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DiscoveryConfiguration value) {
         }
     }
 }

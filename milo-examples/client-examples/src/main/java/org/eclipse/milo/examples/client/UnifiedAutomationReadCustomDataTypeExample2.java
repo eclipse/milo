@@ -116,7 +116,7 @@ public class UnifiedAutomationReadCustomDataTypeExample2 implements ClientExampl
     @Override
     public String getEndpointUrl() {
         // Change this if UaCPPServer is running somewhere other than localhost.
-        return "opc.tcp://localhost:48010";
+        return "opc.tcp://10.211.55.3:48010";
     }
 
     @Override

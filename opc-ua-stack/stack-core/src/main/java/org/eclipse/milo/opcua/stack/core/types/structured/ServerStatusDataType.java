@@ -123,7 +123,7 @@ public class ServerStatusDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public ServerStatusDataType decode(SerializationContext context, UaDecoder decoder) {
+        public ServerStatusDataType decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime currentTime = decoder.readDateTime("CurrentTime");
             ServerState state = (ServerState) decoder.readEnum("State", ServerState.class);
@@ -134,8 +134,8 @@ public class ServerStatusDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ServerStatusDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ServerStatusDataType value) {
             encoder.writeDateTime("StartTime", value.getStartTime());
             encoder.writeDateTime("CurrentTime", value.getCurrentTime());
             encoder.writeEnum("State", value.getState());

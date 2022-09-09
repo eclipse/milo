@@ -100,7 +100,7 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
         }
 
         @Override
-        public UpdateEventDetails decode(SerializationContext context, UaDecoder decoder) {
+        public UpdateEventDetails decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             PerformUpdateType performInsertReplace = (PerformUpdateType) decoder.readEnum("PerformInsertReplace", PerformUpdateType.class);
             EventFilter filter = (EventFilter) decoder.readStruct("Filter", EventFilter.TYPE_ID);
@@ -109,7 +109,8 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, UpdateEventDetails value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UpdateEventDetails value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("PerformInsertReplace", value.getPerformInsertReplace());
             encoder.writeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);

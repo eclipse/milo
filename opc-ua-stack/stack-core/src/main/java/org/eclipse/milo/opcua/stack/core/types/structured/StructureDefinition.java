@@ -105,7 +105,7 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         }
 
         @Override
-        public StructureDefinition decode(SerializationContext context, UaDecoder decoder) {
+        public StructureDefinition decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId defaultEncodingId = decoder.readNodeId("DefaultEncodingId");
             NodeId baseDataType = decoder.readNodeId("BaseDataType");
             StructureType structureType = (StructureType) decoder.readEnum("StructureType", StructureType.class);
@@ -114,7 +114,8 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, StructureDefinition value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               StructureDefinition value) {
             encoder.writeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
             encoder.writeNodeId("BaseDataType", value.getBaseDataType());
             encoder.writeEnum("StructureType", value.getStructureType());

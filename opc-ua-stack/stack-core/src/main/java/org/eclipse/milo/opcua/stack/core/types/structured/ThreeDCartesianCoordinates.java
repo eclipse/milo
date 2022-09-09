@@ -96,7 +96,7 @@ public class ThreeDCartesianCoordinates extends CartesianCoordinates implements 
         }
 
         @Override
-        public ThreeDCartesianCoordinates decode(SerializationContext context, UaDecoder decoder) {
+        public ThreeDCartesianCoordinates decodeType(SerializationContext context, UaDecoder decoder) {
             Double x = decoder.readDouble("X");
             Double y = decoder.readDouble("Y");
             Double z = decoder.readDouble("Z");
@@ -104,8 +104,8 @@ public class ThreeDCartesianCoordinates extends CartesianCoordinates implements 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ThreeDCartesianCoordinates value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ThreeDCartesianCoordinates value) {
             encoder.writeDouble("X", value.getX());
             encoder.writeDouble("Y", value.getY());
             encoder.writeDouble("Z", value.getZ());

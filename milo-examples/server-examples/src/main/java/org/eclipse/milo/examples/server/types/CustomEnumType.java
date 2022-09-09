@@ -42,6 +42,11 @@ public enum CustomEnumType implements UaEnumeration {
         return value;
     }
 
+    @Override
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
+    }
+
     @Nullable
     public static CustomEnumType from(int value) {
         switch (value) {
@@ -63,12 +68,12 @@ public enum CustomEnumType implements UaEnumeration {
         }
 
         @Override
-        public CustomEnumType decode(SerializationContext context, UaDecoder decoder) {
+        public CustomEnumType decodeType(SerializationContext context, UaDecoder decoder) {
             return CustomEnumType.from(decoder.readInt32(null));
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CustomEnumType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, CustomEnumType value) {
             encoder.writeInt32(null, value.getValue());
         }
     }

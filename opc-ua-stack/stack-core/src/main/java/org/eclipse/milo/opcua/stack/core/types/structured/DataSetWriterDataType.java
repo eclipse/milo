@@ -148,7 +148,7 @@ public class DataSetWriterDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public DataSetWriterDataType decode(SerializationContext context, UaDecoder decoder) {
+        public DataSetWriterDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             Boolean enabled = decoder.readBoolean("Enabled");
             UShort dataSetWriterId = decoder.readUInt16("DataSetWriterId");
@@ -162,8 +162,8 @@ public class DataSetWriterDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DataSetWriterDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataSetWriterDataType value) {
             encoder.writeString("Name", value.getName());
             encoder.writeBoolean("Enabled", value.getEnabled());
             encoder.writeUInt16("DataSetWriterId", value.getDataSetWriterId());

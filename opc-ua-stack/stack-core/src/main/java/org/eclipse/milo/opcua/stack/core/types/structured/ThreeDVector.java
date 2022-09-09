@@ -96,7 +96,7 @@ public class ThreeDVector extends Vector implements UaStructure {
         }
 
         @Override
-        public ThreeDVector decode(SerializationContext context, UaDecoder decoder) {
+        public ThreeDVector decodeType(SerializationContext context, UaDecoder decoder) {
             Double x = decoder.readDouble("X");
             Double y = decoder.readDouble("Y");
             Double z = decoder.readDouble("Z");
@@ -104,7 +104,7 @@ public class ThreeDVector extends Vector implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ThreeDVector value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ThreeDVector value) {
             encoder.writeDouble("X", value.getX());
             encoder.writeDouble("Y", value.getY());
             encoder.writeDouble("Z", value.getZ());

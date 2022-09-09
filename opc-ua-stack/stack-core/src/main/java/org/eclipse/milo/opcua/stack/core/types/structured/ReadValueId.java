@@ -106,7 +106,7 @@ public class ReadValueId extends Structure implements UaStructure {
         }
 
         @Override
-        public ReadValueId decode(SerializationContext context, UaDecoder decoder) {
+        public ReadValueId decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String indexRange = decoder.readString("IndexRange");
@@ -115,7 +115,7 @@ public class ReadValueId extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReadValueId value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ReadValueId value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeUInt32("AttributeId", value.getAttributeId());
             encoder.writeString("IndexRange", value.getIndexRange());

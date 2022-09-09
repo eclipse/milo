@@ -107,7 +107,7 @@ public class CustomUnionType extends Union implements UaStructure {
         }
 
         @Override
-        public CustomUnionType decode(SerializationContext context, UaDecoder decoder) {
+        public CustomUnionType decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger switchValue = decoder.readUInt32("SwitchValue");
             switch (switchValue.intValue()) {
                 case 0:
@@ -129,7 +129,7 @@ public class CustomUnionType extends Union implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, CustomUnionType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, CustomUnionType value) {
             encoder.writeUInt32("SwitchValue", uint(value.type.ordinal()));
             switch (value.type) {
                 case Null:

@@ -122,7 +122,7 @@ public class BrowseDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public BrowseDescription decode(SerializationContext context, UaDecoder decoder) {
+        public BrowseDescription decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             BrowseDirection browseDirection = (BrowseDirection) decoder.readEnum("BrowseDirection", BrowseDirection.class);
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
@@ -133,7 +133,8 @@ public class BrowseDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowseDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrowseDescription value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeEnum("BrowseDirection", value.getBrowseDirection());
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());

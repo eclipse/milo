@@ -173,8 +173,8 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
         }
 
         @Override
-        public ServerDiagnosticsSummaryDataType decode(SerializationContext context,
-                                                       UaDecoder decoder) {
+        public ServerDiagnosticsSummaryDataType decodeType(SerializationContext context,
+                                                           UaDecoder decoder) {
             UInteger serverViewCount = decoder.readUInt32("ServerViewCount");
             UInteger currentSessionCount = decoder.readUInt32("CurrentSessionCount");
             UInteger cumulatedSessionCount = decoder.readUInt32("CumulatedSessionCount");
@@ -191,8 +191,8 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ServerDiagnosticsSummaryDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ServerDiagnosticsSummaryDataType value) {
             encoder.writeUInt32("ServerViewCount", value.getServerViewCount());
             encoder.writeUInt32("CurrentSessionCount", value.getCurrentSessionCount());
             encoder.writeUInt32("CumulatedSessionCount", value.getCumulatedSessionCount());

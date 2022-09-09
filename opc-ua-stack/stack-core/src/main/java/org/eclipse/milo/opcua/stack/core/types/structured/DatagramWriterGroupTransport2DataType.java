@@ -118,8 +118,8 @@ public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTr
         }
 
         @Override
-        public DatagramWriterGroupTransport2DataType decode(SerializationContext context,
-                                                            UaDecoder decoder) {
+        public DatagramWriterGroupTransport2DataType decodeType(SerializationContext context,
+                                                                UaDecoder decoder) {
             UByte messageRepeatCount = decoder.readByte("MessageRepeatCount");
             Double messageRepeatDelay = decoder.readDouble("MessageRepeatDelay");
             NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
@@ -131,8 +131,8 @@ public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTr
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramWriterGroupTransport2DataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DatagramWriterGroupTransport2DataType value) {
             encoder.writeByte("MessageRepeatCount", value.getMessageRepeatCount());
             encoder.writeDouble("MessageRepeatDelay", value.getMessageRepeatDelay());
             encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);

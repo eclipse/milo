@@ -108,8 +108,8 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         }
 
         @Override
-        public DatagramConnectionTransport2DataType decode(SerializationContext context,
-                                                           UaDecoder decoder) {
+        public DatagramConnectionTransport2DataType decodeType(SerializationContext context,
+                                                               UaDecoder decoder) {
             NetworkAddressDataType discoveryAddress = (NetworkAddressDataType) decoder.readStruct("DiscoveryAddress", NetworkAddressDataType.TYPE_ID);
             UInteger discoveryAnnounceRate = decoder.readUInt32("DiscoveryAnnounceRate");
             UInteger discoveryMaxMessageSize = decoder.readUInt32("DiscoveryMaxMessageSize");
@@ -119,8 +119,8 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramConnectionTransport2DataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DatagramConnectionTransport2DataType value) {
             encoder.writeStruct("DiscoveryAddress", value.getDiscoveryAddress(), NetworkAddressDataType.TYPE_ID);
             encoder.writeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
             encoder.writeUInt32("DiscoveryMaxMessageSize", value.getDiscoveryMaxMessageSize());

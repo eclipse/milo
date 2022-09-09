@@ -89,14 +89,14 @@ public class EventFieldList extends Structure implements UaStructure {
         }
 
         @Override
-        public EventFieldList decode(SerializationContext context, UaDecoder decoder) {
+        public EventFieldList decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger clientHandle = decoder.readUInt32("ClientHandle");
             Variant[] eventFields = decoder.readVariantArray("EventFields");
             return new EventFieldList(clientHandle, eventFields);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EventFieldList value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EventFieldList value) {
             encoder.writeUInt32("ClientHandle", value.getClientHandle());
             encoder.writeVariantArray("EventFields", value.getEventFields());
         }

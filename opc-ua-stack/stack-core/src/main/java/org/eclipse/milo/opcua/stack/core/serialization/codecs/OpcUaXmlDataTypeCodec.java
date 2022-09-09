@@ -17,15 +17,15 @@ import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public interface OpcUaXmlDataTypeCodec<T> extends DataTypeCodec<T> {
+public interface OpcUaXmlDataTypeCodec extends DataTypeCodec {
 
     @Override
-    default T decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
+    default Object decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
         return decode(context, (OpcUaXmlStreamDecoder) decoder);
     }
 
     @Override
-    default void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException {
+    default void encode(SerializationContext context, UaEncoder encoder, Object value) throws UaSerializationException {
         encode(context, (OpcUaXmlStreamEncoder) encoder, value);
     }
 
@@ -33,18 +33,18 @@ public interface OpcUaXmlDataTypeCodec<T> extends DataTypeCodec<T> {
      * Decode a {@link T} using the provided {@link OpcUaXmlStreamDecoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param reader  the {@link OpcUaXmlStreamDecoder} to decode from.
+     * @param decoder the {@link OpcUaXmlStreamDecoder} to decode from.
      * @return a decoded {@link T}.
      */
-    T decode(SerializationContext context, OpcUaXmlStreamDecoder reader) throws UaSerializationException;
+    Object decode(SerializationContext context, OpcUaXmlStreamDecoder decoder) throws UaSerializationException;
 
     /**
      * Encode a {@link T} using the provided {@link OpcUaXmlStreamEncoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param writer  the {@link OpcUaXmlStreamEncoder} to encode to.
+     * @param encoder the {@link OpcUaXmlStreamEncoder} to encode to.
      * @param value   the value {@link T} to encode.
      */
-    void encode(SerializationContext context, OpcUaXmlStreamEncoder writer, T value) throws UaSerializationException;
+    void encode(SerializationContext context, OpcUaXmlStreamEncoder encoder, Object value) throws UaSerializationException;
 
 }

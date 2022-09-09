@@ -131,7 +131,7 @@ public class ModifySubscriptionRequest extends Structure implements UaRequestMes
         }
 
         @Override
-        public ModifySubscriptionRequest decode(SerializationContext context, UaDecoder decoder) {
+        public ModifySubscriptionRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             Double requestedPublishingInterval = decoder.readDouble("RequestedPublishingInterval");
@@ -143,8 +143,8 @@ public class ModifySubscriptionRequest extends Structure implements UaRequestMes
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ModifySubscriptionRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ModifySubscriptionRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.writeDouble("RequestedPublishingInterval", value.getRequestedPublishingInterval());

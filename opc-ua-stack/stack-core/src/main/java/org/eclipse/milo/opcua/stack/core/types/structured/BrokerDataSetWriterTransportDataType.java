@@ -123,8 +123,8 @@ public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransport
         }
 
         @Override
-        public BrokerDataSetWriterTransportDataType decode(SerializationContext context,
-                                                           UaDecoder decoder) {
+        public BrokerDataSetWriterTransportDataType decodeType(SerializationContext context,
+                                                               UaDecoder decoder) {
             String queueName = decoder.readString("QueueName");
             String resourceUri = decoder.readString("ResourceUri");
             String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
@@ -135,8 +135,8 @@ public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransport
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           BrokerDataSetWriterTransportDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrokerDataSetWriterTransportDataType value) {
             encoder.writeString("QueueName", value.getQueueName());
             encoder.writeString("ResourceUri", value.getResourceUri());
             encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());

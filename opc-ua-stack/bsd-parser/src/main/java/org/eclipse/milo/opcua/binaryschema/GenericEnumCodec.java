@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.opcfoundation.opcua.binaryschema.EnumeratedType;
 
-public class GenericEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {
+public class GenericEnumCodec implements OpcUaBinaryDataTypeCodec {
 
     private final EnumeratedType enumeratedType;
 
@@ -34,10 +34,11 @@ public class GenericEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {
     public void encode(
         SerializationContext context,
         OpcUaBinaryStreamEncoder encoder,
-        Number value
+        Object value
     ) throws UaSerializationException {
 
-        encoder.writeInt32(value.intValue());
+        encoder.writeInt32(((Number) value).intValue());
+
     }
 
     @Override

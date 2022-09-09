@@ -89,16 +89,16 @@ public class TranslateBrowsePathsToNodeIdsRequest extends Structure implements U
         }
 
         @Override
-        public TranslateBrowsePathsToNodeIdsRequest decode(SerializationContext context,
-                                                           UaDecoder decoder) {
+        public TranslateBrowsePathsToNodeIdsRequest decodeType(SerializationContext context,
+                                                               UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             BrowsePath[] browsePaths = (BrowsePath[]) decoder.readStructArray("BrowsePaths", BrowsePath.TYPE_ID);
             return new TranslateBrowsePathsToNodeIdsRequest(requestHeader, browsePaths);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           TranslateBrowsePathsToNodeIdsRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               TranslateBrowsePathsToNodeIdsRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeStructArray("BrowsePaths", value.getBrowsePaths(), BrowsePath.TYPE_ID);
         }

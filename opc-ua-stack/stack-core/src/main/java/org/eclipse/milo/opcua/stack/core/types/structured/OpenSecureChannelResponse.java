@@ -106,7 +106,7 @@ public class OpenSecureChannelResponse extends Structure implements UaResponseMe
         }
 
         @Override
-        public OpenSecureChannelResponse decode(SerializationContext context, UaDecoder decoder) {
+        public OpenSecureChannelResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             UInteger serverProtocolVersion = decoder.readUInt32("ServerProtocolVersion");
             ChannelSecurityToken securityToken = (ChannelSecurityToken) decoder.readStruct("SecurityToken", ChannelSecurityToken.TYPE_ID);
@@ -115,8 +115,8 @@ public class OpenSecureChannelResponse extends Structure implements UaResponseMe
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           OpenSecureChannelResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               OpenSecureChannelResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeUInt32("ServerProtocolVersion", value.getServerProtocolVersion());
             encoder.writeStruct("SecurityToken", value.getSecurityToken(), ChannelSecurityToken.TYPE_ID);

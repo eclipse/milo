@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
@@ -51,10 +51,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
     ) {
 
         try {
-            @SuppressWarnings("unchecked")
-            OpcUaXmlDataTypeCodec<Object> codec =
-                (OpcUaXmlDataTypeCodec<Object>)
-                    context.getDataTypeManager().getCodec(encodingId);
+            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -82,10 +79,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
     ) {
 
         try {
-            @SuppressWarnings("unchecked")
-            OpcUaXmlDataTypeCodec<Object> codec =
-                (OpcUaXmlDataTypeCodec<Object>)
-                    context.getDataTypeManager().getCodec(encodingId);
+            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(

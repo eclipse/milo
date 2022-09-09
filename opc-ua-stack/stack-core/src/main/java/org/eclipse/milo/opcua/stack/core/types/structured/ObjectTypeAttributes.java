@@ -87,7 +87,7 @@ public class ObjectTypeAttributes extends NodeAttributes implements UaStructure 
         }
 
         @Override
-        public ObjectTypeAttributes decode(SerializationContext context, UaDecoder decoder) {
+        public ObjectTypeAttributes decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");
@@ -98,8 +98,8 @@ public class ObjectTypeAttributes extends NodeAttributes implements UaStructure 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ObjectTypeAttributes value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ObjectTypeAttributes value) {
             encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
             encoder.writeLocalizedText("DisplayName", value.getDisplayName());
             encoder.writeLocalizedText("Description", value.getDescription());

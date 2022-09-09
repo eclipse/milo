@@ -114,7 +114,7 @@ public class AxisInformation extends Structure implements UaStructure {
         }
 
         @Override
-        public AxisInformation decode(SerializationContext context, UaDecoder decoder) {
+        public AxisInformation decodeType(SerializationContext context, UaDecoder decoder) {
             EUInformation engineeringUnits = (EUInformation) decoder.readStruct("EngineeringUnits", EUInformation.TYPE_ID);
             Range euRange = (Range) decoder.readStruct("EURange", Range.TYPE_ID);
             LocalizedText title = decoder.readLocalizedText("Title");
@@ -124,7 +124,7 @@ public class AxisInformation extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AxisInformation value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, AxisInformation value) {
             encoder.writeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
             encoder.writeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
             encoder.writeLocalizedText("Title", value.getTitle());

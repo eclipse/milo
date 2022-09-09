@@ -84,7 +84,7 @@ public class EnumField extends EnumValueType implements UaStructure {
         }
 
         @Override
-        public EnumField decode(SerializationContext context, UaDecoder decoder) {
+        public EnumField decodeType(SerializationContext context, UaDecoder decoder) {
             Long value = decoder.readInt64("Value");
             LocalizedText displayName = decoder.readLocalizedText("DisplayName");
             LocalizedText description = decoder.readLocalizedText("Description");
@@ -93,7 +93,7 @@ public class EnumField extends EnumValueType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EnumField value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EnumField value) {
             encoder.writeInt64("Value", value.getValue());
             encoder.writeLocalizedText("DisplayName", value.getDisplayName());
             encoder.writeLocalizedText("Description", value.getDescription());

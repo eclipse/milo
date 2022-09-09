@@ -113,7 +113,7 @@ public class AttributeOperand extends FilterOperand implements UaStructure {
         }
 
         @Override
-        public AttributeOperand decode(SerializationContext context, UaDecoder decoder) {
+        public AttributeOperand decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             String alias = decoder.readString("Alias");
             RelativePath browsePath = (RelativePath) decoder.readStruct("BrowsePath", RelativePath.TYPE_ID);
@@ -123,7 +123,8 @@ public class AttributeOperand extends FilterOperand implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AttributeOperand value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               AttributeOperand value) {
             encoder.writeNodeId("NodeId", value.getNodeId());
             encoder.writeString("Alias", value.getAlias());
             encoder.writeStruct("BrowsePath", value.getBrowsePath(), RelativePath.TYPE_ID);

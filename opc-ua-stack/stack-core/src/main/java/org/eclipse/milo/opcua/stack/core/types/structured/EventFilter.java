@@ -88,14 +88,14 @@ public class EventFilter extends MonitoringFilter implements UaStructure {
         }
 
         @Override
-        public EventFilter decode(SerializationContext context, UaDecoder decoder) {
+        public EventFilter decodeType(SerializationContext context, UaDecoder decoder) {
             SimpleAttributeOperand[] selectClauses = (SimpleAttributeOperand[]) decoder.readStructArray("SelectClauses", SimpleAttributeOperand.TYPE_ID);
             ContentFilter whereClause = (ContentFilter) decoder.readStruct("WhereClause", ContentFilter.TYPE_ID);
             return new EventFilter(selectClauses, whereClause);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EventFilter value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EventFilter value) {
             encoder.writeStructArray("SelectClauses", value.getSelectClauses(), SimpleAttributeOperand.TYPE_ID);
             encoder.writeStruct("WhereClause", value.getWhereClause(), ContentFilter.TYPE_ID);
         }

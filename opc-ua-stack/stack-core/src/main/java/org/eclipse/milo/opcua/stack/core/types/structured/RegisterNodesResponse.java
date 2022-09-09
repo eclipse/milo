@@ -88,15 +88,15 @@ public class RegisterNodesResponse extends Structure implements UaResponseMessag
         }
 
         @Override
-        public RegisterNodesResponse decode(SerializationContext context, UaDecoder decoder) {
+        public RegisterNodesResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             NodeId[] registeredNodeIds = decoder.readNodeIdArray("RegisteredNodeIds");
             return new RegisterNodesResponse(responseHeader, registeredNodeIds);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           RegisterNodesResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RegisterNodesResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeNodeIdArray("RegisteredNodeIds", value.getRegisteredNodeIds());
         }

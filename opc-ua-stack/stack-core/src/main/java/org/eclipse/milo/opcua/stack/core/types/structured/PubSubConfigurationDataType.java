@@ -97,7 +97,7 @@ public class PubSubConfigurationDataType extends Structure implements UaStructur
         }
 
         @Override
-        public PubSubConfigurationDataType decode(SerializationContext context, UaDecoder decoder) {
+        public PubSubConfigurationDataType decodeType(SerializationContext context, UaDecoder decoder) {
             PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.readStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
             PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.readStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
             Boolean enabled = decoder.readBoolean("Enabled");
@@ -105,8 +105,8 @@ public class PubSubConfigurationDataType extends Structure implements UaStructur
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           PubSubConfigurationDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               PubSubConfigurationDataType value) {
             encoder.writeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
             encoder.writeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
             encoder.writeBoolean("Enabled", value.getEnabled());

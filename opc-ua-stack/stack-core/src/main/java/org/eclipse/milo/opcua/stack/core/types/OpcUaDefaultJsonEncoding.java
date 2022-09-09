@@ -17,7 +17,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaJsonEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaJsonDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -44,9 +44,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
     @Override
     public Object encode(SerializationContext context, Object decodedBody, NodeId encodingId) {
         try {
-            @SuppressWarnings("unchecked")
-            OpcUaJsonDataTypeCodec<Object> codec =
-                (OpcUaJsonDataTypeCodec<Object>) context.getDataTypeManager().getCodec(encodingId);
+            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -67,9 +65,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
     @Override
     public Object decode(SerializationContext context, Object encodedBody, NodeId encodingId) {
         try {
-            @SuppressWarnings("unchecked")
-            OpcUaJsonDataTypeCodec<Object> codec =
-                (OpcUaJsonDataTypeCodec<Object>) context.getDataTypeManager().getCodec(encodingId);
+            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(

@@ -88,15 +88,15 @@ public class DoubleComplexNumberType extends Structure implements UaStructure {
         }
 
         @Override
-        public DoubleComplexNumberType decode(SerializationContext context, UaDecoder decoder) {
+        public DoubleComplexNumberType decodeType(SerializationContext context, UaDecoder decoder) {
             Double real = decoder.readDouble("Real");
             Double imaginary = decoder.readDouble("Imaginary");
             return new DoubleComplexNumberType(real, imaginary);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DoubleComplexNumberType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DoubleComplexNumberType value) {
             encoder.writeDouble("Real", value.getReal());
             encoder.writeDouble("Imaginary", value.getImaginary());
         }

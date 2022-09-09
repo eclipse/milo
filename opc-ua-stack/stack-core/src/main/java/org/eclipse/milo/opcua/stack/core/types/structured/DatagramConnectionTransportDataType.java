@@ -80,15 +80,15 @@ public class DatagramConnectionTransportDataType extends ConnectionTransportData
         }
 
         @Override
-        public DatagramConnectionTransportDataType decode(SerializationContext context,
-                                                          UaDecoder decoder) {
+        public DatagramConnectionTransportDataType decodeType(SerializationContext context,
+                                                              UaDecoder decoder) {
             NetworkAddressDataType discoveryAddress = (NetworkAddressDataType) decoder.readStruct("DiscoveryAddress", NetworkAddressDataType.TYPE_ID);
             return new DatagramConnectionTransportDataType(discoveryAddress);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramConnectionTransportDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DatagramConnectionTransportDataType value) {
             encoder.writeStruct("DiscoveryAddress", value.getDiscoveryAddress(), NetworkAddressDataType.TYPE_ID);
         }
     }

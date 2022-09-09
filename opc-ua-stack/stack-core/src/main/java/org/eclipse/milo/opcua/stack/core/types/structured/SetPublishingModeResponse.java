@@ -99,7 +99,7 @@ public class SetPublishingModeResponse extends Structure implements UaResponseMe
         }
 
         @Override
-        public SetPublishingModeResponse decode(SerializationContext context, UaDecoder decoder) {
+        public SetPublishingModeResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             StatusCode[] results = decoder.readStatusCodeArray("Results");
             DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
@@ -107,8 +107,8 @@ public class SetPublishingModeResponse extends Structure implements UaResponseMe
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           SetPublishingModeResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               SetPublishingModeResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStatusCodeArray("Results", value.getResults());
             encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

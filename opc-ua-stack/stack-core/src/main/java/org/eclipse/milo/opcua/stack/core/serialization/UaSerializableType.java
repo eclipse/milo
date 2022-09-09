@@ -10,8 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+
 /**
- * Super-interface for non-builtin serializable types.
+ * Super-interface for all serializable types.
  */
-public interface UaSerializable {
+public interface UaSerializableType {
+
+    ExpandedNodeId getTypeId();
+    
 }

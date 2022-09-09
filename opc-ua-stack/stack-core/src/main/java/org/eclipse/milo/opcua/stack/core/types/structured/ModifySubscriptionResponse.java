@@ -105,7 +105,7 @@ public class ModifySubscriptionResponse extends Structure implements UaResponseM
         }
 
         @Override
-        public ModifySubscriptionResponse decode(SerializationContext context, UaDecoder decoder) {
+        public ModifySubscriptionResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             Double revisedPublishingInterval = decoder.readDouble("RevisedPublishingInterval");
             UInteger revisedLifetimeCount = decoder.readUInt32("RevisedLifetimeCount");
@@ -114,8 +114,8 @@ public class ModifySubscriptionResponse extends Structure implements UaResponseM
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           ModifySubscriptionResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ModifySubscriptionResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());
             encoder.writeUInt32("RevisedLifetimeCount", value.getRevisedLifetimeCount());

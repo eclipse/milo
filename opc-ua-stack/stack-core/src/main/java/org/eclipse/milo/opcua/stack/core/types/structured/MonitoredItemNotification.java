@@ -89,15 +89,15 @@ public class MonitoredItemNotification extends Structure implements UaStructure 
         }
 
         @Override
-        public MonitoredItemNotification decode(SerializationContext context, UaDecoder decoder) {
+        public MonitoredItemNotification decodeType(SerializationContext context, UaDecoder decoder) {
             UInteger clientHandle = decoder.readUInt32("ClientHandle");
             DataValue value = decoder.readDataValue("Value");
             return new MonitoredItemNotification(clientHandle, value);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           MonitoredItemNotification value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               MonitoredItemNotification value) {
             encoder.writeUInt32("ClientHandle", value.getClientHandle());
             encoder.writeDataValue("Value", value.getValue());
         }

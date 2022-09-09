@@ -19,9 +19,6 @@ import org.eclipse.milo.opcua.sdk.core.types.DynamicEnumCodec;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicStructCodec;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
@@ -80,48 +77,20 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
             .thenApply(v -> Unit.VALUE);
     }
 
-    private static void registerCodecs(UaStackClient stackClient, DataTypeTree tree) {
-        Tree<DataType> structureNode = tree.getTreeNode(NodeIds.Structure);
+    private static void registerCodecs(UaStackClient stackClient, DataTypeTree dataTypeTree) {
+        Tree<DataType> structureNode = dataTypeTree.getTreeNode(NodeIds.Structure);
         if (structureNode != null) {
             structureNode.traverse(dataType -> {
                 DataTypeDefinition definition = dataType.getDataTypeDefinition();
 
                 if (definition instanceof StructureDefinition) {
-                    var codec = new DynamicStructCodec(dataType);
-
-                    if (dataType.getBinaryEncodingId() != null) {
-                        stackClient.getDynamicDataTypeManager().registerCodec(
-                            dataType.getBinaryEncodingId(),
-                            codec.asBinaryCodec()
-                        );
-                        stackClient.getDynamicDataTypeManager().registerCodec(
-                            OpcUaDefaultBinaryEncoding.ENCODING_NAME,
-                            dataType.getNodeId(),
-                            codec.asBinaryCodec()
-                        );
-                    }
-                    if (dataType.getXmlEncodingId() != null) {
-                        stackClient.getDynamicDataTypeManager().registerCodec(
-                            dataType.getXmlEncodingId(),
-                            codec.asXmlCodec()
-                        );
-                        stackClient.getDynamicDataTypeManager().registerCodec(
-                            OpcUaDefaultXmlEncoding.ENCODING_NAME,
-                            dataType.getNodeId(),
-                            codec.asXmlCodec()
-                        );
-                    }
-                    if (dataType.getJsonEncodingId() != null) {
-                        stackClient.getDynamicDataTypeManager().registerCodec(
-                            dataType.getJsonEncodingId(),
-                            codec.asJsonCodec()
-                        );
-                        stackClient.getDynamicDataTypeManager().registerCodec(
-                            OpcUaDefaultJsonEncoding.ENCODING_NAME,
-                            dataType.getNodeId(),
-                            codec.asJsonCodec()
-                        );
-                    }
+                    stackClient.getDynamicDataTypeManager().registerStructType(
+                        dataType.getNodeId(),
+                        new DynamicStructCodec(dataTypeTree, dataType),
+                        dataType.getBinaryEncodingId(),
+                        dataType.getXmlEncodingId(),
+                        dataType.getJsonEncodingId()
+                    );
                 }
             });
         } else {
@@ -129,28 +98,15 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                 .warn("Tree for NodeIds.Structure not found; is the server DataType hierarchy sane?");
         }
 
-        Tree<DataType> enumerationNode = tree.getTreeNode(NodeIds.Enumeration);
+        Tree<DataType> enumerationNode = dataTypeTree.getTreeNode(NodeIds.Enumeration);
         if (enumerationNode != null) {
             enumerationNode.traverse(dataType -> {
                 DataTypeDefinition definition = dataType.getDataTypeDefinition();
 
                 if (definition instanceof EnumDefinition) {
-                    var codec = new DynamicEnumCodec(dataType);
-
-                    stackClient.getDynamicDataTypeManager().registerCodec(
-                        OpcUaDefaultBinaryEncoding.ENCODING_NAME,
+                    stackClient.getDynamicDataTypeManager().registerEnumType(
                         dataType.getNodeId(),
-                        codec.asBinaryCodec()
-                    );
-                    stackClient.getDynamicDataTypeManager().registerCodec(
-                        OpcUaDefaultXmlEncoding.ENCODING_NAME,
-                        dataType.getNodeId(),
-                        codec.asXmlCodec()
-                    );
-                    stackClient.getDynamicDataTypeManager().registerCodec(
-                        OpcUaDefaultJsonEncoding.ENCODING_NAME,
-                        dataType.getNodeId(),
-                        codec.asJsonCodec()
+                        new DynamicEnumCodec(dataType)
                     );
                 }
             });

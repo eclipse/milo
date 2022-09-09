@@ -89,14 +89,14 @@ public class ThreeDFrame extends Frame implements UaStructure {
         }
 
         @Override
-        public ThreeDFrame decode(SerializationContext context, UaDecoder decoder) {
+        public ThreeDFrame decodeType(SerializationContext context, UaDecoder decoder) {
             ThreeDCartesianCoordinates cartesianCoordinates = (ThreeDCartesianCoordinates) decoder.readStruct("CartesianCoordinates", ThreeDCartesianCoordinates.TYPE_ID);
             ThreeDOrientation orientation = (ThreeDOrientation) decoder.readStruct("Orientation", ThreeDOrientation.TYPE_ID);
             return new ThreeDFrame(cartesianCoordinates, orientation);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ThreeDFrame value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ThreeDFrame value) {
             encoder.writeStruct("CartesianCoordinates", value.getCartesianCoordinates(), ThreeDCartesianCoordinates.TYPE_ID);
             encoder.writeStruct("Orientation", value.getOrientation(), ThreeDOrientation.TYPE_ID);
         }

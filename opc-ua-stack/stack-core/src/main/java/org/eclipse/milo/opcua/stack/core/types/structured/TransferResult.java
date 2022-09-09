@@ -89,14 +89,14 @@ public class TransferResult extends Structure implements UaStructure {
         }
 
         @Override
-        public TransferResult decode(SerializationContext context, UaDecoder decoder) {
+        public TransferResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             UInteger[] availableSequenceNumbers = decoder.readUInt32Array("AvailableSequenceNumbers");
             return new TransferResult(statusCode, availableSequenceNumbers);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, TransferResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, TransferResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
         }

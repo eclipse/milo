@@ -98,7 +98,8 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
         }
 
         @Override
-        public FindServersOnNetworkResponse decode(SerializationContext context, UaDecoder decoder) {
+        public FindServersOnNetworkResponse decodeType(SerializationContext context,
+                                                       UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             DateTime lastCounterResetTime = decoder.readDateTime("LastCounterResetTime");
             ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.readStructArray("Servers", ServerOnNetwork.TYPE_ID);
@@ -106,8 +107,8 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           FindServersOnNetworkResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               FindServersOnNetworkResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeDateTime("LastCounterResetTime", value.getLastCounterResetTime());
             encoder.writeStructArray("Servers", value.getServers(), ServerOnNetwork.TYPE_ID);

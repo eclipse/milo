@@ -37,7 +37,7 @@ public abstract class BsdParserTest {
 
     private static final String BSD_PARSER_TEST_NAMESPACE_URI = "https://github.com/eclipse/milo";
 
-    private final Table<String, String, OpcUaBinaryDataTypeCodec<?>> codecTable = HashBasedTable.create();
+    private final Table<String, String, OpcUaBinaryDataTypeCodec> codecTable = HashBasedTable.create();
 
     private final SerializationContext context = new SerializationContext() {
 
@@ -116,17 +116,16 @@ public abstract class BsdParserTest {
         context.getDataTypeManager().registerTypeDictionary(d);
     }
 
-    @SuppressWarnings("unchecked")
-    protected OpcUaBinaryDataTypeCodec<Object> getCodec(String name) {
-        OpcUaBinaryDataTypeCodec<?> codec =
+    protected OpcUaBinaryDataTypeCodec getCodec(String name) {
+        OpcUaBinaryDataTypeCodec codec =
             codecTable.get(BSD_PARSER_TEST_NAMESPACE_URI, name);
 
         assertNotNull(codec);
 
-        return (OpcUaBinaryDataTypeCodec<Object>) codec;
+        return codec;
     }
 
-    protected void assertRoundTrip(String type, Object originalValue, OpcUaBinaryDataTypeCodec<Object> codec) {
+    protected void assertRoundTrip(String type, Object originalValue, OpcUaBinaryDataTypeCodec codec) {
         System.out.printf("--- assertRoundTrip Type: %s ---\n", type);
 
         System.out.println("originalValue:\t" + originalValue);
@@ -151,7 +150,7 @@ public abstract class BsdParserTest {
     protected void assertRoundTripUsingToString(
         String type,
         Object originalValue,
-        OpcUaBinaryDataTypeCodec<Object> codec
+        OpcUaBinaryDataTypeCodec codec
     ) {
 
         System.out.printf("--- assertRoundTrip Type: %s ---\n", type);

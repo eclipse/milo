@@ -96,7 +96,7 @@ public class QueryDataDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public QueryDataDescription decode(SerializationContext context, UaDecoder decoder) {
+        public QueryDataDescription decodeType(SerializationContext context, UaDecoder decoder) {
             RelativePath relativePath = (RelativePath) decoder.readStruct("RelativePath", RelativePath.TYPE_ID);
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String indexRange = decoder.readString("IndexRange");
@@ -104,8 +104,8 @@ public class QueryDataDescription extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           QueryDataDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               QueryDataDescription value) {
             encoder.writeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
             encoder.writeUInt32("AttributeId", value.getAttributeId());
             encoder.writeString("IndexRange", value.getIndexRange());

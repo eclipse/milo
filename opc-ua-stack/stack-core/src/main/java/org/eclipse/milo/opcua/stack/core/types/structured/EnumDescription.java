@@ -94,7 +94,7 @@ public class EnumDescription extends DataTypeDescription implements UaStructure 
         }
 
         @Override
-        public EnumDescription decode(SerializationContext context, UaDecoder decoder) {
+        public EnumDescription decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId dataTypeId = decoder.readNodeId("DataTypeId");
             QualifiedName name = decoder.readQualifiedName("Name");
             EnumDefinition enumDefinition = (EnumDefinition) decoder.readStruct("EnumDefinition", EnumDefinition.TYPE_ID);
@@ -103,7 +103,7 @@ public class EnumDescription extends DataTypeDescription implements UaStructure 
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, EnumDescription value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, EnumDescription value) {
             encoder.writeNodeId("DataTypeId", value.getDataTypeId());
             encoder.writeQualifiedName("Name", value.getName());
             encoder.writeStruct("EnumDefinition", value.getEnumDefinition(), EnumDefinition.TYPE_ID);

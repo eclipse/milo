@@ -89,14 +89,14 @@ public class AddNodesResult extends Structure implements UaStructure {
         }
 
         @Override
-        public AddNodesResult decode(SerializationContext context, UaDecoder decoder) {
+        public AddNodesResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             NodeId addedNodeId = decoder.readNodeId("AddedNodeId");
             return new AddNodesResult(statusCode, addedNodeId);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, AddNodesResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, AddNodesResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeNodeId("AddedNodeId", value.getAddedNodeId());
         }

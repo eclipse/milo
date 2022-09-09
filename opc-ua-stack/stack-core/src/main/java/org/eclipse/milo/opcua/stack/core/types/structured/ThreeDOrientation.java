@@ -96,7 +96,7 @@ public class ThreeDOrientation extends Orientation implements UaStructure {
         }
 
         @Override
-        public ThreeDOrientation decode(SerializationContext context, UaDecoder decoder) {
+        public ThreeDOrientation decodeType(SerializationContext context, UaDecoder decoder) {
             Double a = decoder.readDouble("A");
             Double b = decoder.readDouble("B");
             Double c = decoder.readDouble("C");
@@ -104,7 +104,8 @@ public class ThreeDOrientation extends Orientation implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ThreeDOrientation value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               ThreeDOrientation value) {
             encoder.writeDouble("A", value.getA());
             encoder.writeDouble("B", value.getB());
             encoder.writeDouble("C", value.getC());

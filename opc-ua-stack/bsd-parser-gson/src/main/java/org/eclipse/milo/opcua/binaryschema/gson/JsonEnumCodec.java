@@ -16,7 +16,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 
-public class JsonEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {
+public class JsonEnumCodec implements OpcUaBinaryDataTypeCodec {
 
     @Override
     public Class<Number> getType() {
@@ -27,10 +27,10 @@ public class JsonEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {
     public void encode(
         SerializationContext context,
         OpcUaBinaryStreamEncoder encoder,
-        Number value
+        Object value
     ) throws UaSerializationException {
 
-        encoder.writeInt32(value.intValue());
+        encoder.writeInt32(((Number) value).intValue());
     }
 
     @Override

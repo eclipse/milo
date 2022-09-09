@@ -89,14 +89,15 @@ public class BrowsePathResult extends Structure implements UaStructure {
         }
 
         @Override
-        public BrowsePathResult decode(SerializationContext context, UaDecoder decoder) {
+        public BrowsePathResult decodeType(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             BrowsePathTarget[] targets = (BrowsePathTarget[]) decoder.readStructArray("Targets", BrowsePathTarget.TYPE_ID);
             return new BrowsePathResult(statusCode, targets);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, BrowsePathResult value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               BrowsePathResult value) {
             encoder.writeStatusCode("StatusCode", value.getStatusCode());
             encoder.writeStructArray("Targets", value.getTargets(), BrowsePathTarget.TYPE_ID);
         }

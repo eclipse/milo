@@ -139,7 +139,7 @@ public class RegisteredServer extends Structure implements UaStructure {
         }
 
         @Override
-        public RegisteredServer decode(SerializationContext context, UaDecoder decoder) {
+        public RegisteredServer decodeType(SerializationContext context, UaDecoder decoder) {
             String serverUri = decoder.readString("ServerUri");
             String productUri = decoder.readString("ProductUri");
             LocalizedText[] serverNames = decoder.readLocalizedTextArray("ServerNames");
@@ -152,7 +152,8 @@ public class RegisteredServer extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, RegisteredServer value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               RegisteredServer value) {
             encoder.writeString("ServerUri", value.getServerUri());
             encoder.writeString("ProductUri", value.getProductUri());
             encoder.writeLocalizedTextArray("ServerNames", value.getServerNames());

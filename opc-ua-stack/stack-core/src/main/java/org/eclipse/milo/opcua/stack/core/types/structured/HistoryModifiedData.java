@@ -83,14 +83,15 @@ public class HistoryModifiedData extends HistoryData implements UaStructure {
         }
 
         @Override
-        public HistoryModifiedData decode(SerializationContext context, UaDecoder decoder) {
+        public HistoryModifiedData decodeType(SerializationContext context, UaDecoder decoder) {
             DataValue[] dataValues = decoder.readDataValueArray("DataValues");
             ModificationInfo[] modificationInfos = (ModificationInfo[]) decoder.readStructArray("ModificationInfos", ModificationInfo.TYPE_ID);
             return new HistoryModifiedData(dataValues, modificationInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, HistoryModifiedData value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               HistoryModifiedData value) {
             encoder.writeDataValueArray("DataValues", value.getDataValues());
             encoder.writeStructArray("ModificationInfos", value.getModificationInfos(), ModificationInfo.TYPE_ID);
         }

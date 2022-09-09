@@ -17,15 +17,15 @@ import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
-public interface OpcUaBinaryDataTypeCodec<T> extends DataTypeCodec<T> {
+public interface OpcUaBinaryDataTypeCodec extends DataTypeCodec {
 
     @Override
-    default T decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
+    default Object decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
         return decode(context, (OpcUaBinaryStreamDecoder) decoder);
     }
 
     @Override
-    default void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException {
+    default void encode(SerializationContext context, UaEncoder encoder, Object value) throws UaSerializationException {
         encode(context, (OpcUaBinaryStreamEncoder) encoder, value);
     }
 
@@ -33,18 +33,18 @@ public interface OpcUaBinaryDataTypeCodec<T> extends DataTypeCodec<T> {
      * Decode a {@link T} using the provided {@link OpcUaBinaryStreamDecoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param reader  the {@link OpcUaBinaryStreamDecoder} to decode from.
+     * @param decoder the {@link OpcUaBinaryStreamDecoder} to decode from.
      * @return a decoded {@link T}.
      */
-    T decode(SerializationContext context, OpcUaBinaryStreamDecoder reader) throws UaSerializationException;
+    Object decode(SerializationContext context, OpcUaBinaryStreamDecoder decoder) throws UaSerializationException;
 
     /**
      * Encode a {@link T} using the provided {@link OpcUaBinaryStreamEncoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param writer  the {@link OpcUaBinaryStreamEncoder} to encode to.
+     * @param encoder the {@link OpcUaBinaryStreamEncoder} to encode to.
      * @param value   the {@link T} to encode.
      */
-    void encode(SerializationContext context, OpcUaBinaryStreamEncoder writer, T value) throws UaSerializationException;
+    void encode(SerializationContext context, OpcUaBinaryStreamEncoder encoder, Object value) throws UaSerializationException;
 
 }

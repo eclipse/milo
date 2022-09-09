@@ -93,7 +93,7 @@ public class ReferenceNode extends Structure implements UaStructure {
         }
 
         @Override
-        public ReferenceNode decode(SerializationContext context, UaDecoder decoder) {
+        public ReferenceNode decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isInverse = decoder.readBoolean("IsInverse");
             ExpandedNodeId targetId = decoder.readExpandedNodeId("TargetId");
@@ -101,7 +101,7 @@ public class ReferenceNode extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, ReferenceNode value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, ReferenceNode value) {
             encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.writeBoolean("IsInverse", value.getIsInverse());
             encoder.writeExpandedNodeId("TargetId", value.getTargetId());

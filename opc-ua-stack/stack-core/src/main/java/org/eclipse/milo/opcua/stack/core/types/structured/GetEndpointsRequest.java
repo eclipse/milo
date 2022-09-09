@@ -105,7 +105,7 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public GetEndpointsRequest decode(SerializationContext context, UaDecoder decoder) {
+        public GetEndpointsRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             String endpointUrl = decoder.readString("EndpointUrl");
             String[] localeIds = decoder.readStringArray("LocaleIds");
@@ -114,7 +114,8 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, GetEndpointsRequest value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               GetEndpointsRequest value) {
             encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.writeString("EndpointUrl", value.getEndpointUrl());
             encoder.writeStringArray("LocaleIds", value.getLocaleIds());

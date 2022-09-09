@@ -124,7 +124,7 @@ public class QueryFirstResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public QueryFirstResponse decode(SerializationContext context, UaDecoder decoder) {
+        public QueryFirstResponse decodeType(SerializationContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             QueryDataSet[] queryDataSets = (QueryDataSet[]) decoder.readStructArray("QueryDataSets", QueryDataSet.TYPE_ID);
             ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
@@ -135,7 +135,8 @@ public class QueryFirstResponse extends Structure implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, QueryFirstResponse value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               QueryFirstResponse value) {
             encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.writeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
             encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());

@@ -97,7 +97,7 @@ public class DataChangeFilter extends MonitoringFilter implements UaStructure {
         }
 
         @Override
-        public DataChangeFilter decode(SerializationContext context, UaDecoder decoder) {
+        public DataChangeFilter decodeType(SerializationContext context, UaDecoder decoder) {
             DataChangeTrigger trigger = (DataChangeTrigger) decoder.readEnum("Trigger", DataChangeTrigger.class);
             UInteger deadbandType = decoder.readUInt32("DeadbandType");
             Double deadbandValue = decoder.readDouble("DeadbandValue");
@@ -105,7 +105,8 @@ public class DataChangeFilter extends MonitoringFilter implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, DataChangeFilter value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DataChangeFilter value) {
             encoder.writeEnum("Trigger", value.getTrigger());
             encoder.writeUInt32("DeadbandType", value.getDeadbandType());
             encoder.writeDouble("DeadbandValue", value.getDeadbandValue());

@@ -97,7 +97,7 @@ public class UserManagementDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public UserManagementDataType decode(SerializationContext context, UaDecoder decoder) {
+        public UserManagementDataType decodeType(SerializationContext context, UaDecoder decoder) {
             String userName = decoder.readString("UserName");
             UserConfigurationMask userConfiguration = new UserConfigurationMask(decoder.readUInt32("UserConfiguration"));
             String description = decoder.readString("Description");
@@ -105,8 +105,8 @@ public class UserManagementDataType extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           UserManagementDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               UserManagementDataType value) {
             encoder.writeString("UserName", value.getUserName());
             encoder.writeUInt32("UserConfiguration", value.getUserConfiguration().getValue());
             encoder.writeString("Description", value.getDescription());

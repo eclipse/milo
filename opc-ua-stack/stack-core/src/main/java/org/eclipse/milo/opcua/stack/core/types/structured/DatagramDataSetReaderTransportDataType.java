@@ -105,8 +105,8 @@ public class DatagramDataSetReaderTransportDataType extends DataSetReaderTranspo
         }
 
         @Override
-        public DatagramDataSetReaderTransportDataType decode(SerializationContext context,
-                                                             UaDecoder decoder) {
+        public DatagramDataSetReaderTransportDataType decodeType(SerializationContext context,
+                                                                 UaDecoder decoder) {
             NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
             String qosCategory = decoder.readString("QosCategory");
             ReceiveQosDataType[] datagramQos = (ReceiveQosDataType[]) decoder.readStructArray("DatagramQos", ReceiveQosDataType.TYPE_ID);
@@ -115,8 +115,8 @@ public class DatagramDataSetReaderTransportDataType extends DataSetReaderTranspo
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder,
-                           DatagramDataSetReaderTransportDataType value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder,
+                               DatagramDataSetReaderTransportDataType value) {
             encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
             encoder.writeString("QosCategory", value.getQosCategory());
             encoder.writeStructArray("DatagramQos", value.getDatagramQos(), ReceiveQosDataType.TYPE_ID);

@@ -32,7 +32,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         foo.add("Bar", new JsonPrimitive(0));
         foo.add("Baz", new JsonPrimitive("hello"));
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Foo");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Foo");
 
         assertRoundTrip("Foo", foo, codec);
     }
@@ -46,7 +46,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         optionals.add("OptionalInt32", new JsonPrimitive(0));
         optionals.add("OptionalString", new JsonPrimitive("hello"));
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
     }
@@ -59,7 +59,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         optionals.add("Reserved1", new JsonPrimitive(0));
         optionals.add("OptionalInt32", new JsonPrimitive(0));
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
     }
@@ -71,7 +71,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         optionals.add("OptionalStringSpecified", new JsonPrimitive(0));
         optionals.add("Reserved1", new JsonPrimitive(0));
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
     }
@@ -93,7 +93,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         stringArray.add("world");
         arrayContainer.add("StringArray", stringArray);
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ArrayContainer");
+        OpcUaBinaryDataTypeCodec codec = getCodec("ArrayContainer");
 
         assertRoundTrip("ArrayContainer", arrayContainer, codec);
     }
@@ -109,7 +109,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         bar.add("Int", new JsonPrimitive(1));
         bar.add("Str", new JsonPrimitive("goodbye"));
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Bar");
+        OpcUaBinaryDataTypeCodec codec = getCodec("Bar");
 
         assertRoundTrip("Bar", bar, codec);
     }
@@ -135,7 +135,7 @@ public class JsonBsdParserTest extends BsdParserTest {
         scanSettings.add("DataAvailable", new JsonPrimitive(false));
         scanSettings.add("LocationType", new JsonPrimitive(0));
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ScanSettings");
+        OpcUaBinaryDataTypeCodec codec = getCodec("ScanSettings");
 
         assertRoundTrip("ScanSettings", scanSettings, codec);
     }
@@ -153,7 +153,7 @@ public class JsonBsdParserTest extends BsdParserTest {
 
         JsonObject scanSettings = JsonParser.parseString(json).getAsJsonObject();
 
-        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ScanSettings");
+        OpcUaBinaryDataTypeCodec codec = getCodec("ScanSettings");
 
         assertRoundTrip("ScanSettings", scanSettings, codec);
     }

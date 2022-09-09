@@ -113,7 +113,7 @@ public class Argument extends Structure implements UaStructure {
         }
 
         @Override
-        public Argument decode(SerializationContext context, UaDecoder decoder) {
+        public Argument decodeType(SerializationContext context, UaDecoder decoder) {
             String name = decoder.readString("Name");
             NodeId dataType = decoder.readNodeId("DataType");
             Integer valueRank = decoder.readInt32("ValueRank");
@@ -123,7 +123,7 @@ public class Argument extends Structure implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UaEncoder encoder, Argument value) {
+        public void encodeType(SerializationContext context, UaEncoder encoder, Argument value) {
             encoder.writeString("Name", value.getName());
             encoder.writeNodeId("DataType", value.getDataType());
             encoder.writeInt32("ValueRank", value.getValueRank());
