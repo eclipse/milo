@@ -1288,6 +1288,31 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
+    public UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+
+        if (codec != null) {
+            try {
+                if (field != null) {
+                    String nextName = nextName();
+                    if (!field.equals(nextName)) {
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_DecodingError,
+                            String.format("readEnum: %s != %s", field, nextName)
+                        );
+                    }
+                }
+
+                return (UaEnumeration) codec.decode(context, this);
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } else {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
+        }
+    }
+
+    @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = context.getDataTypeManager()
             .getStructCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
@@ -1486,6 +1511,45 @@ public class OpcUaJsonDecoder implements UaDecoder {
     @Override
     public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(String field, Class<T> enumType) throws UaSerializationException {
         return readArray(field, s -> readEnum(s, enumType), enumType);
+    }
+
+    @Override
+    public UaEnumeration[] readEnumArray(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+
+        if (codec != null) {
+            try {
+                if (field != null) {
+                    String nextName = nextName();
+                    if (!field.equals(nextName)) {
+                        this.peekedNextName = nextName;
+                        return null;
+                    }
+                }
+
+                var elements = new ArrayList<>();
+
+                jsonReader.beginArray();
+                while (jsonReader.peek() != JsonToken.END_ARRAY) {
+                    elements.add(codec.decode(context, this));
+                }
+                jsonReader.endArray();
+
+                Object array = Array.newInstance(codec.getType(), elements.size());
+                for (int i = 0; i < elements.size(); i++) {
+                    Array.set(array, i, elements.get(i));
+                }
+
+                return (UaEnumeration[]) array;
+            } catch (IOException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "readStructArray: no codec registered: " + dataTypeId
+            );
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -47,15 +48,11 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
     private final Map<StructureField, Object> fieldHints = new ConcurrentHashMap<>();
 
+    private final DataType dataType;
     private final StructureDefinition structureDefinition;
 
-    private final DataTypeTree dataTypeTree;
-    private final DataType dataType;
-
     public DynamicStructCodec(DataTypeTree dataTypeTree, DataType dataType) {
-        this.dataTypeTree = dataTypeTree;
         this.dataType = dataType;
-
         this.structureDefinition = (StructureDefinition) dataType.getDataTypeDefinition();
 
         assert structureDefinition != null;
@@ -152,7 +149,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                         switch (codecType) {
                             case ENUM:
-                                value = decoder.readEnum(fieldName, null); // TODO
+                                value = decoder.readEnum(fieldName, dataTypeId);
                                 break;
                             case STRUCT:
                                 value = decoder.readStruct(fieldName, dataTypeId);
@@ -174,7 +171,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                         switch (codecType) {
                             case ENUM:
-                                value = decoder.readEnumArray(fieldName, null); // TODO
+                                value = decoder.readEnumArray(fieldName, dataTypeId);
                                 break;
                             case STRUCT:
                                 value = decoder.readStructArray(fieldName, dataTypeId);
@@ -223,7 +220,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                     switch (codecType) {
                         case ENUM:
-                            value = decoder.readEnum(fieldName, null); // TODO
+                            value = decoder.readEnum(fieldName, dataTypeId);
                             break;
                         case STRUCT:
                             value = decoder.readStruct(fieldName, dataTypeId);
@@ -245,7 +242,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                     switch (codecType) {
                         case ENUM:
-                            value = decoder.readEnumArray(fieldName, null); // TODO
+                            value = decoder.readEnumArray(fieldName, dataTypeId);
                             break;
                         case STRUCT:
                             value = decoder.readStructArray(fieldName, dataTypeId);
@@ -341,7 +338,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                 switch (codecType) {
                     case ENUM:
-                        encoder.writeEnum(fieldName, null); // TODO
+                        encoder.writeEnum(fieldName, (UaEnumeration) value);
                         break;
                     case STRUCT:
                         encoder.writeStruct(fieldName, value, dataTypeId);
@@ -359,7 +356,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                 switch (codecType) {
                     case ENUM:
-                        encoder.writeEnumArray(fieldName, null); // TODO
+                        encoder.writeEnumArray(fieldName, (UaEnumeration[]) value);
                         break;
                     case STRUCT:
                         encoder.writeStructArray(fieldName, (Object[]) value, dataTypeId);

@@ -34,6 +34,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.io.CharStreams;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -952,6 +954,43 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         }
     }
 
+    @Override
+    public UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+
+        if (codec != null) {
+            if (currentNode(field)) {
+                try {
+                    String s = currentNode.getTextContent();
+                    int lastIndex = s.lastIndexOf("_");
+
+                    if (lastIndex != -1) {
+                        try {
+                            int value = Integer.parseInt(s.substring(lastIndex + 1));
+
+                            // enum DataTypeCodecs expect to decode an Int value... not this XML string crap.
+                            OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(context);
+                            ByteBuf buffer = Unpooled.buffer();
+                            buffer.writeIntLE(value);
+
+                            return (UaEnumeration) codec.decode(context, decoder);
+                        } catch (Exception e) {
+                            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                        }
+                    } else {
+                        throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid enum value: " + s);
+                    }
+                } finally {
+                    currentNode = currentNode.getNextSibling();
+                }
+            } else {
+                // TODO instantiate an enum somehow? pass Class into readEnum?
+                return null;
+            }
+        } else {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
+        }
+    }
 
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
@@ -1185,6 +1224,47 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     ) throws UaSerializationException {
 
         return readArray(field, s -> readEnum(s, enumType), enumType);
+    }
+
+    @Override
+    public UaEnumeration[] readEnumArray(String field, NodeId dataTypeId) throws UaSerializationException {
+        if (currentNode(field)) {
+            Node node = currentNode;
+
+            DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+
+            if (codec != null) {
+                List<UaEnumeration> values = new ArrayList<>();
+                Node listNode = node.getFirstChild();
+                NodeList children = listNode.getChildNodes();
+
+                for (int i = 0; i < children.getLength(); i++) {
+                    currentNode = children.item(i);
+
+                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                        values.add(readEnum(currentNode.getLocalName(), dataTypeId));
+                    }
+                }
+
+                try {
+                    Object array = Array.newInstance(codec.getType(), values.size());
+                    for (int i = 0; i < values.size(); i++) {
+                        Array.set(array, i, values.get(i));
+                    }
+
+                    return (UaEnumeration[]) array;
+                } finally {
+                    currentNode = node.getNextSibling();
+                }
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + dataTypeId
+                );
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override

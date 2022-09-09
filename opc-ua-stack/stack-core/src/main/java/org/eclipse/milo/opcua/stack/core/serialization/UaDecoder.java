@@ -88,6 +88,8 @@ public interface UaDecoder {
 
     <T extends Enum<?> & UaEnumeration> T readEnum(String field, Class<T> enumType) throws UaSerializationException;
 
+    UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException;
+
     Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
@@ -147,6 +149,11 @@ public interface UaDecoder {
     <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
         String field,
         Class<T> enumType
+    ) throws UaSerializationException;
+
+    UaEnumeration[] readEnumArray(
+        String field,
+        NodeId dataTypeId
     ) throws UaSerializationException;
 
     Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;

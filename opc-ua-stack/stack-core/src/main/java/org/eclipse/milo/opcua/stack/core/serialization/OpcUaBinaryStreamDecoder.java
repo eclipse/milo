@@ -688,6 +688,17 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+
+        if (codec != null) {
+            return (UaEnumeration) codec.decode(context, this);
+        } else {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
+        }
+    }
+
+    @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = context.getDataTypeManager()
             .getStructCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
@@ -1165,6 +1176,36 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             }
 
             return (Object[]) array;
+        }
+    }
+
+    @Override
+    public UaEnumeration[] readEnumArray(String field, NodeId dataTypeId) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+
+            if (codec != null) {
+                Object array = Array.newInstance(codec.getType(), length);
+
+                for (int i = 0; i < length; i++) {
+                    Object value = codec.decode(context, this);
+
+                    Array.set(array, i, value);
+                }
+
+                return (UaEnumeration[]) array;
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + dataTypeId
+                );
+            }
         }
     }
 

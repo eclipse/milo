@@ -143,11 +143,11 @@ public class DefaultDataTypeManager implements DataTypeManager {
     public void registerBinaryTypeDictionary(OpcUaBinaryDataTypeDictionary dataTypeDictionary) {
         binaryDictionariesByNamespaceUri.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
 
-        dataTypeDictionary.getEnumCodecInfos().forEach(
-            info ->
-                registerEnumType(info.dataTypeId, info.codec)
-        );
-
+//        dataTypeDictionary.getEnumCodecInfos().forEach(
+//            info ->
+//                registerEnumType(info.dataTypeId, info.codec)
+//        );
+//
         dataTypeDictionary.getStructCodecInfos().forEach(
             info ->
                 registerStructType(info.dataTypeId, info.codec, info.encodingId, null, null)
@@ -163,11 +163,11 @@ public class DefaultDataTypeManager implements DataTypeManager {
     public void registerXmlTypeDictionary(OpcUaXmlDataTypeDictionary dataTypeDictionary) {
         xmlDictionariesByNamespaceUri.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
 
-        dataTypeDictionary.getEnumCodecInfos().forEach(
-            info ->
-                registerEnumType(info.dataTypeId, info.codec)
-        );
-
+//        dataTypeDictionary.getEnumCodecInfos().forEach(
+//            info ->
+//                registerEnumType(info.dataTypeId, info.codec)
+//        );
+//
         dataTypeDictionary.getStructCodecInfos().forEach(
             info ->
                 registerStructType(info.dataTypeId, info.codec, null, info.encodingId, null)

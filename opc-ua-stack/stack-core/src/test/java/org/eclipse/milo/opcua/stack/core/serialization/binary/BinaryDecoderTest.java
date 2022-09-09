@@ -61,13 +61,13 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
     }
 
     @Test
-    public void testEnumArray() {
+    public void testEnumArray() throws Exception {
         ApplicationType[] array = new ApplicationType[]{
             ApplicationType.Client,
             ApplicationType.ClientAndServer
         };
         writer.writeEnumArray(null, array);
-        ApplicationType[] decoded = (ApplicationType[]) reader.readEnumArray(null, ApplicationType.class);
+        ApplicationType[] decoded = (ApplicationType[]) reader.readEnumArray(null, ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(new NamespaceTable()));
 
         assertEquals(decoded, array);
     }
