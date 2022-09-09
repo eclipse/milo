@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -35,6 +34,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.io.CharStreams;
+import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;

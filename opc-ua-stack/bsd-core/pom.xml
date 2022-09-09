@@ -35,13 +35,13 @@
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
-            <version>1.2.2</version>
+            <version>2.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.6</version>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 
@@ -49,23 +49,41 @@
         <plugins>
             <!-- JAXB xjc plugin that invokes the xjc compiler to compile XML schema into Java classes.-->
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.14.0</version>
-
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <phase>generate-sources</phase>
+                        <id>xjc</id>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>xjc</goal>
                         </goals>
                     </execution>
                 </executions>
-
                 <configuration>
-                    <generatePackage>org.opcfoundation.opcua.binaryschema</generatePackage>
-                    <schemaDirectory>${basedir}/src/main/resources/</schemaDirectory>
-                    <generateDirectory>${basedir}/target/generated-sources/jaxb2</generateDirectory>
+                    <!-- The package in which the source files will be generated. -->
+                    <packageName>org.opcfoundation.opcua.binaryschema</packageName>
+
+                    <sources>
+                        <source>${basedir}/src/main/resources</source>
+                    </sources>
+
+                    <!-- The working directory to create the generated java source files. -->
+                    <outputDirectory>${basedir}/target/generated-sources/jaxb2</outputDirectory>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish.jaxb</groupId>
+                        <artifactId>jaxb-xjc</artifactId>
+                        <version>4.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>jakarta.xml.bind</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
+                        <version>4.0.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>

@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.xml.bind.JAXBException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -34,6 +33,7 @@ import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
+import jakarta.xml.bind.JAXBException;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.CodecDescription;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;

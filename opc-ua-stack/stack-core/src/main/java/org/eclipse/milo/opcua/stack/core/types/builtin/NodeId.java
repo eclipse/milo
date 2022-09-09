@@ -13,10 +13,10 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;

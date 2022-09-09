@@ -12,8 +12,8 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Random;
 import java.util.UUID;
-import javax.xml.bind.DatatypeConverter;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;

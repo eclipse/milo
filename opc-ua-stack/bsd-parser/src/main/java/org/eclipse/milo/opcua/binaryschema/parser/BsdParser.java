@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.binaryschema.parser;
 
 import java.io.InputStream;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.opcfoundation.opcua.binaryschema.EnumeratedType;
 import org.opcfoundation.opcua.binaryschema.ObjectFactory;
