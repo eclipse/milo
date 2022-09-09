@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -275,7 +275,9 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
         DataTypeCodec codec = null;
 
-        DataTypeDictionary<?> dictionary = context.getDataTypeManager().getDataTypeDictionary(namespaceUri);
+        OpcUaBinaryDataTypeDictionary dictionary =
+            context.getDataTypeManager().getBinaryDataTypeDictionary(namespaceUri);
+
         if (dictionary != null) {
             codec = dictionary.getCodec(description);
         }
@@ -302,7 +304,9 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
         DataTypeCodec codec = null;
 
-        DataTypeDictionary<?> dictionary = context.getDataTypeManager().getDataTypeDictionary(namespaceUri);
+        OpcUaBinaryDataTypeDictionary dictionary =
+            context.getDataTypeManager().getBinaryDataTypeDictionary(namespaceUri);
+
         if (dictionary != null) {
             codec = dictionary.getCodec(description);
         }

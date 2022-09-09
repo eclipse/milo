@@ -30,18 +30,33 @@ public interface DataTypeManager {
     @Nullable NodeId getJsonEncodingId(NodeId dataTypeId);
 
     /**
-     * Get a registered {@link DataTypeDictionary} by its namespace URI.
+     * Register a {@link OpcUaBinaryDataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
+     *
+     * @param dataTypeDictionary the {@link DataTypeDictionary} to register.
+     */
+    void registerBinaryTypeDictionary(OpcUaBinaryDataTypeDictionary dataTypeDictionary);
+
+    /**
+     * Get a registered {@link OpcUaBinaryDataTypeDictionary} by its namespace URI.
      *
      * @param namespaceUri the namespace URI the dictionary is registered under.
      * @return the {@link DataTypeDictionary} registered under {@code namespaceUri}.
      */
-    @Nullable DataTypeDictionary<?> getDataTypeDictionary(String namespaceUri);
+    @Nullable OpcUaBinaryDataTypeDictionary getBinaryDataTypeDictionary(String namespaceUri);
 
     /**
-     * Register a {@link DataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
+     * Register a {@link OpcUaXmlDataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
      *
-     * @param dataTypeDictionary the {@link DataTypeDictionary} to register.
+     * @param dataTypeDictionary the {@link OpcUaXmlDataTypeDictionary} to register.
      */
-    void registerTypeDictionary(DataTypeDictionary<?> dataTypeDictionary);
+    void registerXmlTypeDictionary(OpcUaXmlDataTypeDictionary dataTypeDictionary);
+
+    /**
+     * Get a registered {@link OpcUaXmlDataTypeDictionary} by its namespace URI.
+     *
+     * @param namespaceUri the namespace URI the dictionary is registered under.
+     * @return the {@link OpcUaXmlDataTypeDictionary} registered under {@code namespaceUri}.
+     */
+    @Nullable OpcUaXmlDataTypeDictionary getXmlDataTypeDictionary(String namespaceUri);
 
 }

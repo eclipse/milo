@@ -40,8 +40,8 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaXmlDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -886,20 +886,20 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
             String typeName = node.getLocalName();
 
-            DataTypeCodec codec = null;
+            OpcUaXmlDataTypeCodec codec = null;
 
-            DataTypeDictionary<?> dictionary = context.getDataTypeManager()
-                .getDataTypeDictionary(Namespaces.OPC_UA_XSD);
+            OpcUaXmlDataTypeDictionary dictionary = context.getDataTypeManager()
+                .getXmlDataTypeDictionary(Namespaces.OPC_UA_XSD);
 
             if (dictionary != null) {
                 codec = dictionary.getCodec(String.format("//xs:element[@name='%s']", typeName));
             }
 
-            if (codec instanceof OpcUaXmlDataTypeCodec) {
+            if (codec != null) {
                 currentNode = node.getFirstChild();
 
                 try {
-                    return (UaMessage) ((OpcUaXmlDataTypeCodec) codec).decode(context, this);
+                    return (UaMessage) codec.decode(context, this);
                 } finally {
                     currentNode = node.getNextSibling();
                 }

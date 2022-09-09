@@ -10,12 +10,11 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.jetbrains.annotations.Nullable;
 
 public interface DataTypeDictionary<T extends DataTypeCodec> {
 
@@ -82,43 +81,35 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      */
     T getCodec(NodeId dataTypeId);
 
-    /**
-     * @return a Map of all codecs registered with this dictionary, keyed by description.
-     */
-    Map<String, T> getCodecsByDescription();
+    List<EnumCodecInfo> getEnumCodecInfos();
 
-    /**
-     * @return a Map of all codecs registered with this dictionary, keyed by encoding id.
-     */
-    Map<NodeId, T> getCodecsByEncodingId();
+    List<StructCodecInfo> getStructCodecInfos();
 
-    /**
-     * @return a Map of all codecs registered with this dictionary, keyed by datatype id.
-     */
-    Map<NodeId, T> getCodecsByDataTypeId();
 
-    /**
-     * @param description the codec description.
-     * @return the {@link DataTypeCodec} registered for {@code description}, or {@code null} if there isn't one.
-     */
-    default @Nullable T getCodecByDescription(String description) {
-        return getCodecsByDescription().get(description);
+    class StructCodecInfo {
+        public final String description;
+        public final NodeId dataTypeId;
+        public final NodeId encodingId;
+        public final DataTypeCodec codec;
+
+        public StructCodecInfo(String description, NodeId dataTypeId, NodeId encodingId, DataTypeCodec codec) {
+            this.description = description;
+            this.dataTypeId = dataTypeId;
+            this.encodingId = encodingId;
+            this.codec = codec;
+        }
     }
 
-    /**
-     * @param nodeId the codec encoding {@link NodeId}.
-     * @return the {@link DataTypeCodec} registered for {@code nodeId}, or {@code null} if there isn't one.
-     */
-    default @Nullable T getCodecByEncodingId(NodeId nodeId) {
-        return getCodecsByEncodingId().get(nodeId);
-    }
+    class EnumCodecInfo {
+        public final String description;
+        public final NodeId dataTypeId;
+        public final DataTypeCodec codec;
 
-    /**
-     * @param dataTypeId the codec datatype {@link NodeId}.
-     * @return the {@link DataTypeCodec} registered for {@code dataTypeId}, or {@code null} if there isn't one.
-     */
-    default @Nullable T getCodecByDataTypeId(NodeId dataTypeId) {
-        return getCodecsByDataTypeId().get(dataTypeId);
+        public EnumCodecInfo(String description, NodeId dataTypeId, DataTypeCodec codec) {
+            this.description = description;
+            this.dataTypeId = dataTypeId;
+            this.codec = codec;
+        }
     }
 
 }

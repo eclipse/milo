@@ -14,18 +14,14 @@ public abstract class AbstractDataTypeDictionaryInitializer {
      * Package-private method to initialize the built-in OPC UA namespace binary and XML dictionaries.
      */
     void initialize(NamespaceTable namespaceTable, DataTypeManager dataTypeManager) {
-        @SuppressWarnings("unchecked")
-        DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary =
-            (DataTypeDictionary<OpcUaBinaryDataTypeCodec>)
-                dataTypeManager.getDataTypeDictionary(BINARY_DICTIONARY_URI);
+        OpcUaBinaryDataTypeDictionary binaryDictionary =
+            dataTypeManager.getBinaryDataTypeDictionary(BINARY_DICTIONARY_URI);
         if (binaryDictionary == null) {
             binaryDictionary = new OpcUaBinaryDataTypeDictionary(BINARY_DICTIONARY_URI);
         }
 
-        @SuppressWarnings("unchecked")
-        DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary =
-            (DataTypeDictionary<OpcUaXmlDataTypeCodec>)
-                dataTypeManager.getDataTypeDictionary(XML_DICTIONARY_URI);
+        OpcUaXmlDataTypeDictionary xmlDictionary =
+            dataTypeManager.getXmlDataTypeDictionary(XML_DICTIONARY_URI);
         if (xmlDictionary == null) {
             xmlDictionary = new OpcUaXmlDataTypeDictionary(XML_DICTIONARY_URI);
         }
@@ -36,8 +32,8 @@ public abstract class AbstractDataTypeDictionaryInitializer {
     public void initialize(
         NamespaceTable namespaceTable,
         DataTypeManager dataTypeManager,
-        DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
-        DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary
+        OpcUaBinaryDataTypeDictionary binaryDictionary,
+        OpcUaXmlDataTypeDictionary xmlDictionary
     ) {
 
         try {
@@ -47,8 +43,8 @@ public abstract class AbstractDataTypeDictionaryInitializer {
             throw new RuntimeException("DataTypeDictionary initialization failed", e);
         }
 
-        dataTypeManager.registerTypeDictionary(binaryDictionary);
-        dataTypeManager.registerTypeDictionary(xmlDictionary);
+        dataTypeManager.registerBinaryTypeDictionary(binaryDictionary);
+        dataTypeManager.registerXmlTypeDictionary(xmlDictionary);
     }
 
     protected abstract void initializeEnums(

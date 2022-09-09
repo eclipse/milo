@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
@@ -37,7 +38,9 @@ public abstract class BsdParserTest {
 
     private static final String BSD_PARSER_TEST_NAMESPACE_URI = "https://github.com/eclipse/milo";
 
-    private final Table<String, String, OpcUaBinaryDataTypeCodec> codecTable = HashBasedTable.create();
+    private final Table<String, String, DataTypeCodec> codecTable = HashBasedTable.create();
+
+    private final DataTypeManager dataTypeManager = OpcUaDataTypeManager.getInstance();
 
     private final SerializationContext context = new SerializationContext() {
 
@@ -46,7 +49,7 @@ public abstract class BsdParserTest {
 
         @Override
         public DataTypeManager getDataTypeManager() {
-            return OpcUaDataTypeManager.getInstance();
+            return dataTypeManager;
         }
 
         @Override
@@ -67,18 +70,22 @@ public abstract class BsdParserTest {
     };
 
     public BsdParserTest() {
-        OpcUaDataTypeManager dataTypeManager = OpcUaDataTypeManager.getInstance();
-
         OpcUaBinaryDataTypeDictionary dictionary =
-            (OpcUaBinaryDataTypeDictionary) dataTypeManager.getDataTypeDictionary(Namespaces.OPC_UA);
+            dataTypeManager.getBinaryDataTypeDictionary(Namespaces.OPC_UA);
 
         assert dictionary != null;
 
-        dictionary.getCodecsByDescription().forEach((d, c) ->
-            codecTable.put(Namespaces.OPC_UA, d, c)
+        dictionary.getEnumCodecInfos().forEach(
+            info ->
+                codecTable.put(Namespaces.OPC_UA, info.description, info.codec)
         );
 
-        context.getDataTypeManager().registerTypeDictionary(dictionary);
+        dictionary.getStructCodecInfos().forEach(
+            info ->
+                codecTable.put(Namespaces.OPC_UA, info.description, info.codec)
+        );
+
+        context.getDataTypeManager().registerBinaryTypeDictionary(dictionary);
     }
 
     /**
@@ -113,16 +120,16 @@ public abstract class BsdParserTest {
                 dictionary.getNamespaceUri(), cd.getDescription(), cd.getCodec());
         });
 
-        context.getDataTypeManager().registerTypeDictionary(d);
+        context.getDataTypeManager().registerBinaryTypeDictionary(d);
     }
 
     protected OpcUaBinaryDataTypeCodec getCodec(String name) {
-        OpcUaBinaryDataTypeCodec codec =
+        DataTypeCodec codec =
             codecTable.get(BSD_PARSER_TEST_NAMESPACE_URI, name);
 
         assertNotNull(codec);
 
-        return codec;
+        return (OpcUaBinaryDataTypeCodec) codec;
     }
 
     protected void assertRoundTrip(String type, Object originalValue, OpcUaBinaryDataTypeCodec codec) {

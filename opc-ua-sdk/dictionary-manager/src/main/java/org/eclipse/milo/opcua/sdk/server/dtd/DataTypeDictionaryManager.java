@@ -107,7 +107,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
 
     @Override
     public void startup() {
-        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
+        getNodeContext().getServer().getDataTypeManager().registerBinaryTypeDictionary(dictionary);
 
         // Add a DataTypeDictionary Node...
         dictionaryNode = new DataTypeDictionaryTypeNode(
@@ -191,7 +191,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         dictionary.registerEnumCodec(codec, description, dataTypeId);
 
         // TODO figure out a way to not require re-registration every time...
-        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
+        getNodeContext().getServer().getDataTypeManager().registerBinaryTypeDictionary(dictionary);
     }
 
     public void registerEnumDescription(EnumDescription description) {
@@ -243,7 +243,7 @@ public class DataTypeDictionaryManager implements Lifecycle {
         dictionary.registerStructCodec(codec, description, dataTypeId, binaryEncodingId);
 
         // TODO figure out a way to not require re-registration every time...
-        getNodeContext().getServer().getDataTypeManager().registerTypeDictionary(dictionary);
+        getNodeContext().getServer().getDataTypeManager().registerBinaryTypeDictionary(dictionary);
     }
 
     public void registerStructureDescription(StructureDescription description, NodeId binaryEncodingId) {

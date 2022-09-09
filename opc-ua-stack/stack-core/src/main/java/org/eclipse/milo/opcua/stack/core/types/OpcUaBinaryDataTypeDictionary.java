@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,31 +29,16 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     private final Map<NodeId, OpcUaBinaryDataTypeCodec> codecsByEncodingId;
     private final Map<NodeId, OpcUaBinaryDataTypeCodec> codecsByDataTypeId;
 
+    private final List<EnumCodecInfo> enumCodecInfos = Collections.synchronizedList(new ArrayList<>());
+    private final List<StructCodecInfo> structCodecInfos = Collections.synchronizedList(new ArrayList<>());
+
+
     public OpcUaBinaryDataTypeDictionary(String namespaceUri) {
         this.namespaceUri = namespaceUri;
 
         codecsByDescription = new ConcurrentHashMap<>();
         codecsByEncodingId = new ConcurrentHashMap<>();
         codecsByDataTypeId = new ConcurrentHashMap<>();
-    }
-
-    public OpcUaBinaryDataTypeDictionary(
-        String namespaceUri,
-        Map<String, OpcUaBinaryDataTypeCodec> byDescription,
-        Map<NodeId, OpcUaBinaryDataTypeCodec> byEncodingId,
-        Map<NodeId, OpcUaBinaryDataTypeCodec> byDataTypeId
-    ) {
-
-        this.namespaceUri = namespaceUri;
-
-        codecsByDescription = new ConcurrentHashMap<>();
-        codecsByDescription.putAll(byDescription);
-
-        codecsByEncodingId = new ConcurrentHashMap<>();
-        codecsByEncodingId.putAll(byEncodingId);
-
-        codecsByDataTypeId = new ConcurrentHashMap<>();
-        codecsByDataTypeId.putAll(byDataTypeId);
     }
 
     @Override
@@ -82,6 +70,8 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     public void registerEnumCodec(OpcUaBinaryDataTypeCodec codec, String description, NodeId dataTypeId) {
         codecsByDescription.put(description, codec);
         codecsByDataTypeId.put(dataTypeId, codec);
+
+        enumCodecInfos.add(new EnumCodecInfo(description, dataTypeId, codec));
     }
 
     @Override
@@ -100,21 +90,18 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
         codecsByDescription.put(description, codec);
         codecsByDataTypeId.put(dataTypeId, codec);
         codecsByEncodingId.put(encodingId, codec);
+
+        structCodecInfos.add(new StructCodecInfo(description, dataTypeId, encodingId, codec));
     }
 
     @Override
-    public Map<String, OpcUaBinaryDataTypeCodec> getCodecsByDescription() {
-        return codecsByDescription;
+    public List<EnumCodecInfo> getEnumCodecInfos() {
+        return enumCodecInfos;
     }
 
     @Override
-    public Map<NodeId, OpcUaBinaryDataTypeCodec> getCodecsByEncodingId() {
-        return codecsByEncodingId;
-    }
-
-    @Override
-    public Map<NodeId, OpcUaBinaryDataTypeCodec> getCodecsByDataTypeId() {
-        return codecsByDataTypeId;
+    public List<StructCodecInfo> getStructCodecInfos() {
+        return structCodecInfos;
     }
 
 }

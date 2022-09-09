@@ -16,6 +16,9 @@ import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +43,16 @@ public class DataTypeDictionarySessionInitializer implements SessionFsm.SessionI
             bsdParser
         );
 
-        // TODO this needs to separately register enum/struct codecs now, not just the dictionary
-
         return reader.readDataTypeDictionaries()
-            .thenAccept(dictionaries ->
-                dictionaries.forEach(
-                    client.getDynamicDataTypeManager()::registerTypeDictionary)
+            .thenAccept(dictionaries -> {
+                    DataTypeManager dataTypeManager = client.getDynamicDataTypeManager();
+
+                    for (DataTypeDictionary<?> dictionary : dictionaries) {
+                        if (dictionary instanceof OpcUaBinaryDataTypeDictionary) {
+                            dataTypeManager.registerBinaryTypeDictionary((OpcUaBinaryDataTypeDictionary) dictionary);
+                        }
+                    }
+                }
             )
             .thenApply(v -> Unit.VALUE)
             .exceptionally(ex -> {
