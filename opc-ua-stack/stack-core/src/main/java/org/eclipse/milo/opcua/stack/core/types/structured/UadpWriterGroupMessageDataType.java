@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType implements UaStructure {
+public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15645");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15715");
@@ -118,7 +118,7 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         public UadpWriterGroupMessageDataType decodeType(SerializationContext context,
                                                          UaDecoder decoder) {
             UInteger groupVersion = decoder.readUInt32("GroupVersion");
-            DataSetOrderingType dataSetOrdering = (DataSetOrderingType) decoder.readEnum("DataSetOrdering", DataSetOrderingType.class);
+            DataSetOrderingType dataSetOrdering = DataSetOrderingType.from(decoder.readEnum("DataSetOrdering"));
             UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
             Double samplingOffset = decoder.readDouble("SamplingOffset");
             Double[] publishingOffset = decoder.readDoubleArray("PublishingOffset");

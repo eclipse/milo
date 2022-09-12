@@ -1,17 +1,13 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum NodeAttributesMask implements UaEnumeration {
+public enum NodeAttributesMask implements UaEnumeratedType {
     None(0),
 
     AccessLevel(1),
@@ -213,24 +209,6 @@ public enum NodeAttributesMask implements UaEnumeration {
             new EnumField(26537060L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceType"),
             new EnumField(26501356L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "View")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<NodeAttributesMask> {
-        @Override
-        public Class<NodeAttributesMask> getType() {
-            return NodeAttributesMask.class;
-        }
-
-        @Override
-        public NodeAttributesMask decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, NodeAttributesMask.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               NodeAttributesMask value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

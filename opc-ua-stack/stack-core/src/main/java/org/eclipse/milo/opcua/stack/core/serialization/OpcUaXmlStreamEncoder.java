@@ -200,13 +200,13 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
+    public void writeMessage(String field, UaMessageType message) throws UaSerializationException {
 
     }
 
     @Override
-    public void writeEnum(String field, UaEnumeration value) {
-        writeString(field, String.format("%s_%s", value.toString(), value.getValue()));
+    public void writeEnum(String field, UaEnumeratedType value) {
+        writeString(field, String.format("%s_%s", value.getName(), value.getValue()));
     }
 
     @Override
@@ -356,7 +356,7 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException {
+    public void writeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
         writeArray(field, value, this::writeEnum);
     }
 

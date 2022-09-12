@@ -48,7 +48,7 @@ public abstract class BsdParser {
 
                 logger.debug("EnumeratedType: {}", typeDescription.getName());
 
-                return new CodecDescription(getEnumCodec(enumeratedType), enumeratedType.getName());
+                return new CodecDescription(createEnumCodec(enumeratedType), enumeratedType.getName());
             })
             .collect(toList());
 
@@ -59,7 +59,7 @@ public abstract class BsdParser {
 
                 logger.debug("StructuredType: {}", typeDescription.getName());
 
-                return new CodecDescription(getStructCodec(structuredType), structuredType.getName());
+                return new CodecDescription(createStructCodec(structuredType), structuredType.getName());
             })
             .collect(toList());
 
@@ -72,7 +72,7 @@ public abstract class BsdParser {
      * @param enumeratedType the {@link EnumeratedType}.
      * @return an {@link OpcUaBinaryDataTypeCodec} for the provided {@link EnumeratedType}.
      */
-    protected abstract OpcUaBinaryDataTypeCodec getEnumCodec(EnumeratedType enumeratedType);
+    protected abstract OpcUaBinaryDataTypeCodec createEnumCodec(EnumeratedType enumeratedType);
 
     /**
      * Create an {@link OpcUaBinaryDataTypeCodec} for the provided {@link StructuredType}.
@@ -80,6 +80,6 @@ public abstract class BsdParser {
      * @param structuredType the {@link StructuredType}.
      * @return an {@link OpcUaBinaryDataTypeCodec} for the provided {@link StructuredType}.
      */
-    protected abstract OpcUaBinaryDataTypeCodec getStructCodec(StructuredType structuredType);
+    protected abstract OpcUaBinaryDataTypeCodec createStructCodec(StructuredType structuredType);
 
 }

@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.5/#12.2.5.2">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.5/#12.2.5.2</a>
  */
-public enum NodeClass implements UaEnumeration {
+public enum NodeClass implements UaEnumeratedType {
     /**
      * No value is specified.
      */
@@ -113,23 +109,6 @@ public enum NodeClass implements UaEnumeration {
             new EnumField(64L, LocalizedText.NULL_VALUE, new LocalizedText("", "The Node is a DataType."), "DataType"),
             new EnumField(128L, LocalizedText.NULL_VALUE, new LocalizedText("", "The Node is a View."), "View")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<NodeClass> {
-        @Override
-        public Class<NodeClass> getType() {
-            return NodeClass.class;
-        }
-
-        @Override
-        public NodeClass decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, NodeClass.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, NodeClass value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

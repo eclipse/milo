@@ -9,7 +9,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class FieldTargetDataType extends Structure implements UaStructure {
+public class FieldTargetDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=14744");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=14848");
@@ -140,7 +140,7 @@ public class FieldTargetDataType extends Structure implements UaStructure {
             NodeId targetNodeId = decoder.readNodeId("TargetNodeId");
             UInteger attributeId = decoder.readUInt32("AttributeId");
             String writeIndexRange = decoder.readString("WriteIndexRange");
-            OverrideValueHandling overrideValueHandling = (OverrideValueHandling) decoder.readEnum("OverrideValueHandling", OverrideValueHandling.class);
+            OverrideValueHandling overrideValueHandling = OverrideValueHandling.from(decoder.readEnum("OverrideValueHandling"));
             Variant overrideValue = decoder.readVariant("OverrideValue");
             return new FieldTargetDataType(dataSetFieldId, receiverIndexRange, targetNodeId, attributeId, writeIndexRange, overrideValueHandling, overrideValue);
         }

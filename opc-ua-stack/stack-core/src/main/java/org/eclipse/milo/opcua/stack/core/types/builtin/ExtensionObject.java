@@ -15,7 +15,7 @@ import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
@@ -144,7 +144,7 @@ public final class ExtensionObject {
 
     public static ExtensionObject encode(
         SerializationContext context,
-        UaStructure struct
+        UaStructuredType struct
     ) throws UaSerializationException {
 
         NodeId encodingId = struct.getBinaryEncodingId()
@@ -162,7 +162,7 @@ public final class ExtensionObject {
 
     public static ExtensionObject[] encodeArray(
         SerializationContext context,
-        UaStructure[] structArray
+        UaStructuredType[] structArray
     ) throws UaSerializationException {
 
         ExtensionObject[] xos = new ExtensionObject[structArray.length];

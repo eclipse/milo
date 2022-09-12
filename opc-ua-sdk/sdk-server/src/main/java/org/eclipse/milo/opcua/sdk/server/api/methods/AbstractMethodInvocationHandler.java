@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -92,8 +92,8 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
                                     try {
                                         Object decoded = ((ExtensionObject) value).decode(serializationContext);
 
-                                        if (decoded instanceof UaStructure) {
-                                            return ((UaStructure) decoded).getTypeId()
+                                        if (decoded instanceof UaStructuredType) {
+                                            return ((UaStructuredType) decoded).getTypeId()
                                                 .toNodeId(node.getNodeContext().getNamespaceTable())
                                                 .map(argument.getDataType()::equals).orElse(false);
                                         }

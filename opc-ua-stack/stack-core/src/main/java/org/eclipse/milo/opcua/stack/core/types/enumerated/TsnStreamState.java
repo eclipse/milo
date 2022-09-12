@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.6">https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.6</a>
  */
-public enum TsnStreamState implements UaEnumeration {
+public enum TsnStreamState implements UaEnumeratedType {
     /**
      * The related TSN Stream is currently disabled.
      */
@@ -81,23 +77,6 @@ public enum TsnStreamState implements UaEnumeration {
             new EnumField(3L, LocalizedText.NULL_VALUE, new LocalizedText("", "The related TSN Stream object is configured and all other required preconditions (e.g. synchronization state) for sending / receiving data are valid."), "Operational"),
             new EnumField(4L, LocalizedText.NULL_VALUE, new LocalizedText("", "The related TSN Stream object is in an error state."), "Error")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<TsnStreamState> {
-        @Override
-        public Class<TsnStreamState> getType() {
-            return TsnStreamState.class;
-        }
-
-        @Override
-        public TsnStreamState decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, TsnStreamState.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, TsnStreamState value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

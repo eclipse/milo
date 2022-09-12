@@ -33,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
@@ -132,7 +132,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
             FullHttpResponse fullHttpResponse = (FullHttpResponse) httpResponse;
             ByteBuf content = fullHttpResponse.content();
 
-            UaResponseMessage responseMessage;
+            UaResponseMessageType responseMessage;
 
             switch (transportProfile) {
                 case HTTPS_UABINARY: {
@@ -144,7 +144,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                     OpcUaBinaryStreamDecoder decoder =
                         new OpcUaBinaryStreamDecoder(client.getStaticSerializationContext());
                     decoder.setBuffer(content);
-                    responseMessage = (UaResponseMessage) decoder.readMessage(null);
+                    responseMessage = (UaResponseMessageType) decoder.readMessage(null);
                     break;
                 }
 

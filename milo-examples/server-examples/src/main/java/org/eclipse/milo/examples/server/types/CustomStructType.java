@@ -17,14 +17,14 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class CustomStructType implements UaStructure {
+public class CustomStructType implements UaStructuredType {
 
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse(String.format(
         "nsu=%s;s=%s",
@@ -128,7 +128,7 @@ public class CustomStructType implements UaStructure {
             String foo = decoder.readString("Foo");
             UInteger bar = decoder.readUInt32("Bar");
             boolean baz = decoder.readBoolean("Baz");
-            CustomEnumType customEnumType = decoder.readEnum("CustomEnumType", CustomEnumType.class);
+            CustomEnumType customEnumType = CustomEnumType.from(decoder.readEnum("CustomEnumType"));
 
             return new CustomStructType(foo, bar, baz, customEnumType);
         }

@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part3/8.29">https://reference.opcfoundation.org/v104/Core/docs/Part3/8.29</a>
  */
-public enum NamingRuleType implements UaEnumeration {
+public enum NamingRuleType implements UaEnumeratedType {
     /**
      * The BrowseName must appear in all instances of the type.
      */
@@ -65,23 +61,6 @@ public enum NamingRuleType implements UaEnumeration {
             new EnumField(2L, LocalizedText.NULL_VALUE, new LocalizedText("", "The BrowseName may appear in an instance of the type."), "Optional"),
             new EnumField(3L, LocalizedText.NULL_VALUE, new LocalizedText("", "The modelling rule defines a constraint and the BrowseName is not used in an instance of the type."), "Constraint")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<NamingRuleType> {
-        @Override
-        public Class<NamingRuleType> getType() {
-            return NamingRuleType.class;
-        }
-
-        @Override
-        public NamingRuleType decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, NamingRuleType.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, NamingRuleType value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

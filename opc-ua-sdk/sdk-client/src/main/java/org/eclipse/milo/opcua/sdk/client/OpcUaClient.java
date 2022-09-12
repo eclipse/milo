@@ -41,8 +41,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -986,8 +986,8 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
-        CompletableFuture<UaResponseMessage> f = getStackClient().sendRequest(request);
+    public <T extends UaResponseMessageType> CompletableFuture<T> sendRequest(UaRequestMessageType request) {
+        CompletableFuture<UaResponseMessageType> f = getStackClient().sendRequest(request);
 
         if (faultListeners.size() > 0) {
             f.whenComplete(this::maybeHandleServiceFault);
@@ -997,7 +997,7 @@ public class OpcUaClient implements UaClient {
     }
 
 
-    private void maybeHandleServiceFault(UaResponseMessage response, Throwable ex) {
+    private void maybeHandleServiceFault(UaResponseMessageType response, Throwable ex) {
         if (faultListeners.isEmpty()) return;
 
         if (ex != null) {

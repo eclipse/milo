@@ -1,17 +1,13 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum OpenFileMode implements UaEnumeration {
+public enum OpenFileMode implements UaEnumeratedType {
     Read(1),
 
     Write(2),
@@ -58,23 +54,6 @@ public enum OpenFileMode implements UaEnumeration {
             new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "EraseExisting"),
             new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Append")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<OpenFileMode> {
-        @Override
-        public Class<OpenFileMode> getType() {
-            return OpenFileMode.class;
-        }
-
-        @Override
-        public OpenFileMode decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, OpenFileMode.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, OpenFileMode value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

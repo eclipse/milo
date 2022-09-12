@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class BrokerWriterGroupTransportDataType extends WriterGroupTransportDataType implements UaStructure {
+public class BrokerWriterGroupTransportDataType extends WriterGroupTransportDataType implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=15667");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=15727");
@@ -111,7 +111,7 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
             String queueName = decoder.readString("QueueName");
             String resourceUri = decoder.readString("ResourceUri");
             String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
-            BrokerTransportQualityOfService requestedDeliveryGuarantee = (BrokerTransportQualityOfService) decoder.readEnum("RequestedDeliveryGuarantee", BrokerTransportQualityOfService.class);
+            BrokerTransportQualityOfService requestedDeliveryGuarantee = BrokerTransportQualityOfService.from(decoder.readEnum("RequestedDeliveryGuarantee"));
             return new BrokerWriterGroupTransportDataType(queueName, resourceUri, authenticationProfileUri, requestedDeliveryGuarantee);
         }
 

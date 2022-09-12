@@ -26,8 +26,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
@@ -51,7 +51,7 @@ public class UaStackClient {
 
     private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
-    private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = new ConcurrentHashMap<>();
+    private final Map<UInteger, CompletableFuture<UaResponseMessageType>> pending = new ConcurrentHashMap<>();
 
     private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
@@ -297,22 +297,22 @@ public class UaStackClient {
     }
 
     /**
-     * Send a {@link UaRequestMessage} to the connected server.
+     * Send a {@link UaRequestMessageType} to the connected server.
      * <p>
      * The {@link RequestHeader} of {@code request} must have a unique request handle. Use the
-     * {@code newRequestHeader} helper functions to create headers for {@link UaRequestMessage}s.
+     * {@code newRequestHeader} helper functions to create headers for {@link UaRequestMessageType}s.
      *
-     * @param request the {@link UaRequestMessage} to send.
-     * @return a {@link CompletableFuture} containing the eventual {@link UaResponseMessage} from the server.
+     * @param request the {@link UaRequestMessageType} to send.
+     * @return a {@link CompletableFuture} containing the eventual {@link UaResponseMessageType} from the server.
      * @see #newRequestHeader()
      * @see #newRequestHeader(NodeId)
      * @see #newRequestHeader(NodeId, UInteger)
      */
-    public CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
+    public CompletableFuture<UaResponseMessageType> sendRequest(UaRequestMessageType request) {
         RequestHeader requestHeader = request.getRequestHeader();
         UInteger requestHandle = requestHeader.getRequestHandle();
 
-        final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
+        final CompletableFuture<UaResponseMessageType> future = new CompletableFuture<>();
         pending.put(requestHandle, future);
 
         transport.sendRequest(request).whenComplete((response, ex) -> {
@@ -331,15 +331,15 @@ public class UaStackClient {
      * 1. the transport future is completed on its serialization queue thread, which we want to get off of ASAP.
      * 2. the futures need to be completed serially, in the order received from the server.
      *
-     * @param request  the original {@link UaRequestMessage}.
-     * @param response the {@link UaResponseMessage}.
+     * @param request  the original {@link UaRequestMessageType}.
+     * @param response the {@link UaResponseMessageType}.
      * @param future   the {@link CompletableFuture} awaiting completion.
      */
     private void deliverResponse(
-        UaRequestMessage request,
-        @Nullable UaResponseMessage response,
+        UaRequestMessageType request,
+        @Nullable UaResponseMessageType response,
         @Nullable Throwable failure,
-        CompletableFuture<UaResponseMessage> future
+        CompletableFuture<UaResponseMessageType> future
     ) {
 
         deliveryQueue.submit(() -> {

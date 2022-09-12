@@ -809,21 +809,21 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
-        getNodeContext().getServer().getDataTypeManager().registerEnumType(
-            dataTypeId,
-            new CustomEnumType.Codec()
-        );
+//        getNodeContext().getServer().getDataTypeManager().registerEnumType(
+//            dataTypeId,
+//            new CustomEnumType.Codec()
+//        );
 
         // Prior to OPC UA 1.04, clients that needed to interpret custom types read the
         // DataTypeDictionary from the server. We describe the type using StructureDefinition
         // or EnumDefinition and register it with the dictionary manager.
         // The dictionary manager will add all the necessary nodes to the AddressSpace and
         // generate the required dictionary bsd.xml file.
-        dictionaryManager.registerEnumCodec(
-            new CustomEnumType.Codec().asBinaryCodec(),
-            "CustomEnumType",
-            dataTypeId
-        );
+//        dictionaryManager.registerEnumCodec(
+//            new CustomEnumType.Codec().asBinaryCodec(),
+//            "CustomEnumType",
+//            dataTypeId
+//        );
 
         EnumDescription description = new EnumDescription(
             dataTypeId,
@@ -913,7 +913,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
-        getNodeContext().getServer().getDataTypeManager().registerStructType(
+        getNodeContext().getServer().getDataTypeManager().registerType(
             dataTypeId,
             new CustomStructType.Codec(),
             binaryEncodingId,
@@ -999,7 +999,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         dataTypeNode.setDataTypeDefinition(definition);
 
         // Register Codecs for each supported encoding with DataTypeManager
-        getNodeContext().getServer().getDataTypeManager().registerStructType(
+        getNodeContext().getServer().getDataTypeManager().registerType(
             dataTypeId,
             new CustomUnionType.Codec(),
             binaryEncodingId,

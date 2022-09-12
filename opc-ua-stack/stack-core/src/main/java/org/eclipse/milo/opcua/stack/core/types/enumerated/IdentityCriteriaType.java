@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.4">https://reference.opcfoundation.org/v105/Core/docs/Part18/4.4.4</a>
  */
-public enum IdentityCriteriaType implements UaEnumeration {
+public enum IdentityCriteriaType implements UaEnumeratedType {
     /**
      * The rule specifies a UserName from a UserNameIdentityToken.
      */
@@ -105,24 +101,6 @@ public enum IdentityCriteriaType implements UaEnumeration {
             new EnumField(7L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies the combination of an application identity and an Anonymous UserIdentityToken."), "Application"),
             new EnumField(8L, LocalizedText.NULL_VALUE, new LocalizedText("", "The rule specifies the X509 subject name of a user or CA Certificate."), "X509Subject")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<IdentityCriteriaType> {
-        @Override
-        public Class<IdentityCriteriaType> getType() {
-            return IdentityCriteriaType.class;
-        }
-
-        @Override
-        public IdentityCriteriaType decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, IdentityCriteriaType.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               IdentityCriteriaType value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

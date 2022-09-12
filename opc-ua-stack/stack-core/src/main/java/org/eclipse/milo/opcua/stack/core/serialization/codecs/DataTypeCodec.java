@@ -23,20 +23,20 @@ public interface DataTypeCodec {
     Class<?> getType();
 
     /**
-     * Decode a {@link T} using the provided {@link UaDecoder}.
+     * Decode an Object using the provided {@link UaDecoder}.
      *
      * @param context the {@link SerializationContext}.
      * @param decoder the {@link UaDecoder} to decode from.
-     * @return a decoded {@link T}.
+     * @return a decoded Object.
      */
     Object decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException;
 
     /**
-     * Encode a {@link T} using the provided {@link UaEncoder}.
+     * Encode an Object using the provided {@link UaEncoder}.
      *
      * @param context the {@link SerializationContext}.
      * @param encoder the {@link UaEncoder} to encode to.
-     * @param value   the {@link T} to encode.
+     * @param value   the Object to encode.
      */
     void encode(SerializationContext context, UaEncoder encoder, Object value) throws UaSerializationException;
 

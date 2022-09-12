@@ -10,8 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-public interface UaEnumeration extends UaSerializableType {
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 
-    int getValue();
+/**
+ * Identifies an OPC UA DataType as a service request message.
+ */
+public interface UaRequestMessageType extends UaMessageType {
+
+    RequestHeader getRequestHeader();
 
 }

@@ -36,7 +36,7 @@ import org.eclipse.milo.opcua.sdk.server.diagnostics.SubscriptionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -452,7 +452,7 @@ public class Subscription {
         PeekingIterator<BaseMonitoredItem<?>> iterator,
         ServiceRequest service) {
 
-        var notifications = new ArrayList<UaStructure>();
+        var notifications = new ArrayList<UaStructuredType>();
 
         while (notifications.size() < maxNotificationsPerPublish && iterator.hasNext()) {
             BaseMonitoredItem<?> item = iterator.peek();
@@ -484,13 +484,13 @@ public class Subscription {
         }
     }
 
-    private boolean gather(BaseMonitoredItem<?> item, List<UaStructure> notifications, int maxNotifications) {
+    private boolean gather(BaseMonitoredItem<?> item, List<UaStructuredType> notifications, int maxNotifications) {
         int max = maxNotifications - notifications.size();
 
         return item.getNotifications(notifications, max);
     }
 
-    private void sendNotifications(ServiceRequest service, List<UaStructure> notifications) {
+    private void sendNotifications(ServiceRequest service, List<UaStructuredType> notifications) {
         var dataNotifications = new ArrayList<MonitoredItemNotification>();
         var eventNotifications = new ArrayList<EventFieldList>();
 

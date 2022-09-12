@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.10">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.3.10</a>
  */
-public enum MessageSecurityMode implements UaEnumeration {
+public enum MessageSecurityMode implements UaEnumeratedType {
     Invalid(0),
 
     None(1),
@@ -61,24 +57,6 @@ public enum MessageSecurityMode implements UaEnumeration {
             new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Sign"),
             new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "SignAndEncrypt")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<MessageSecurityMode> {
-        @Override
-        public Class<MessageSecurityMode> getType() {
-            return MessageSecurityMode.class;
-        }
-
-        @Override
-        public MessageSecurityMode decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, MessageSecurityMode.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               MessageSecurityMode value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

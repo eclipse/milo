@@ -18,12 +18,12 @@ import org.opcfoundation.opcua.binaryschema.StructuredType;
 public class GenericBsdParser extends BsdParser {
 
     @Override
-    protected OpcUaBinaryDataTypeCodec getEnumCodec(EnumeratedType enumeratedType) {
+    protected OpcUaBinaryDataTypeCodec createEnumCodec(EnumeratedType enumeratedType) {
         return new GenericEnumCodec(enumeratedType);
     }
 
     @Override
-    protected OpcUaBinaryDataTypeCodec getStructCodec(StructuredType structuredType) {
+    protected OpcUaBinaryDataTypeCodec createStructCodec(StructuredType structuredType) {
         return new GenericStructCodec(structuredType);
     }
 

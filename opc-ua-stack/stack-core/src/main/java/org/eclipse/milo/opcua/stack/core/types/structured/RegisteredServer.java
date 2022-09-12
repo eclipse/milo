@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class RegisteredServer extends Structure implements UaStructure {
+public class RegisteredServer extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=432");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=434");
@@ -143,7 +143,7 @@ public class RegisteredServer extends Structure implements UaStructure {
             String serverUri = decoder.readString("ServerUri");
             String productUri = decoder.readString("ProductUri");
             LocalizedText[] serverNames = decoder.readLocalizedTextArray("ServerNames");
-            ApplicationType serverType = (ApplicationType) decoder.readEnum("ServerType", ApplicationType.class);
+            ApplicationType serverType = ApplicationType.from(decoder.readEnum("ServerType"));
             String gatewayServerUri = decoder.readString("GatewayServerUri");
             String[] discoveryUrls = decoder.readStringArray("DiscoveryUrls");
             String semaphoreFilePath = decoder.readString("SemaphoreFilePath");

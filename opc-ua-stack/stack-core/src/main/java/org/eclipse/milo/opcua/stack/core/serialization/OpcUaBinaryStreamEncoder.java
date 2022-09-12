@@ -592,10 +592,10 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             boolean optionSet = false;
             Class<?> valueClass = getClass(value);
 
-            if (UaStructure.class.isAssignableFrom(valueClass)) {
+            if (UaStructuredType.class.isAssignableFrom(valueClass)) {
                 valueClass = ExtensionObject.class;
                 structure = true;
-            } else if (UaEnumeration.class.isAssignableFrom(valueClass)) {
+            } else if (UaEnumeratedType.class.isAssignableFrom(valueClass)) {
                 valueClass = Integer.class;
                 enumeration = true;
             } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
@@ -654,13 +654,13 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     private void writeValue(Object value, int typeId, boolean structure, boolean enumeration, boolean optionSet) {
         if (structure) {
-            UaStructure struct = (UaStructure) value;
+            UaStructuredType struct = (UaStructuredType) value;
 
             ExtensionObject extensionObject = ExtensionObject.encode(context, struct);
 
             writeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {
-            writeBuiltinType(typeId, ((UaEnumeration) value).getValue());
+            writeBuiltinType(typeId, ((UaEnumeratedType) value).getValue());
         } else if (optionSet) {
             writeBuiltinType(typeId, ((OptionSetUInteger<?>) value).getValue());
         } else {
@@ -903,7 +903,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
+    public void writeMessage(String field, UaMessageType message) throws UaSerializationException {
         ExpandedNodeId xBinaryEncodingId = message.getBinaryEncodingId();
 
         NodeId encodingId = xBinaryEncodingId.toNodeId(context.getNamespaceTable())
@@ -914,7 +914,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                         "namespace not registered: " + xBinaryEncodingId.getNamespaceUri())
             );
 
-        DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
         if (codec == null) {
             throw new UaSerializationException(
@@ -929,15 +929,15 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnum(String field, UaEnumeration value) {
-        writeInt32(value.getValue());
+    public void writeEnum(String field, UaEnumeratedType value) {
+        writeInt32(field, value.getValue());
     }
 
     @Override
     public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         try {
             DataTypeCodec codec = context.getDataTypeManager()
-                .getStructCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+                .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec != null) {
                 codec.encode(context, this, value);
@@ -1094,7 +1094,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException {
+    public void writeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
         writeArray(value, v -> writeEnum(field, v));
     }
 

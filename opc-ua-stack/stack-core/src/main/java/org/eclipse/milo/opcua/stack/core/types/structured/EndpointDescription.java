@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class EndpointDescription extends Structure implements UaStructure {
+public class EndpointDescription extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=312");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=314");
@@ -145,7 +145,7 @@ public class EndpointDescription extends Structure implements UaStructure {
             String endpointUrl = decoder.readString("EndpointUrl");
             ApplicationDescription server = (ApplicationDescription) decoder.readStruct("Server", ApplicationDescription.TYPE_ID);
             ByteString serverCertificate = decoder.readByteString("ServerCertificate");
-            MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");
             UserTokenPolicy[] userIdentityTokens = (UserTokenPolicy[]) decoder.readStructArray("UserIdentityTokens", UserTokenPolicy.TYPE_ID);
             String transportProfileUri = decoder.readString("TransportProfileUri");

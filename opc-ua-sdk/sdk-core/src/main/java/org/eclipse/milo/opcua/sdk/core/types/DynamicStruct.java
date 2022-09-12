@@ -15,10 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.eclipse.milo.opcua.stack.core.serialization.UaSerializableType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class DynamicStruct implements UaSerializableType {
+public class DynamicStruct implements UaDataType {
 
     private final DataType dataType;
     private final LinkedHashMap<String, Object> members;

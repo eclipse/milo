@@ -1,17 +1,13 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum ModelChangeStructureVerbMask implements UaEnumeration {
+public enum ModelChangeStructureVerbMask implements UaEnumeratedType {
     NodeAdded(1),
 
     NodeDeleted(2),
@@ -63,25 +59,6 @@ public enum ModelChangeStructureVerbMask implements UaEnumeration {
             new EnumField(8L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "ReferenceDeleted"),
             new EnumField(16L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "DataTypeChanged")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<ModelChangeStructureVerbMask> {
-        @Override
-        public Class<ModelChangeStructureVerbMask> getType() {
-            return ModelChangeStructureVerbMask.class;
-        }
-
-        @Override
-        public ModelChangeStructureVerbMask decodeType(SerializationContext context,
-                                                       UaDecoder decoder) {
-            return decoder.readEnum(null, ModelChangeStructureVerbMask.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               ModelChangeStructureVerbMask value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

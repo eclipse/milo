@@ -16,6 +16,7 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -1086,21 +1087,40 @@ public class SessionFsmFactory {
     private static CompletableFuture<Unit> initialize(
         FsmContext<State, Event> ctx,
         OpcUaClient client,
-        OpcUaSession session) {
+        OpcUaSession session
+    ) {
 
-        List<SessionFsm.SessionInitializer> initializers =
-            KEY_SESSION_INITIALIZERS.get(ctx).sessionInitializers;
+        LinkedList<SessionFsm.SessionInitializer> initializers =
+            new LinkedList<>(KEY_SESSION_INITIALIZERS.get(ctx).sessionInitializers);
 
         if (initializers.isEmpty()) {
             return completedFuture(Unit.VALUE);
         } else {
             UaStackClient stackClient = client.getStackClient();
 
-            CompletableFuture<?>[] futures = initializers.stream()
-                .map(i -> i.initialize(stackClient, session))
-                .toArray(CompletableFuture[]::new);
+            return runSequentially(stackClient, session, initializers);
+//            CompletableFuture<?>[] futures = initializers.stream()
+//                .map(i -> i.initialize(stackClient, session))
+//                .toArray(CompletableFuture[]::new);
+//
+//            return CompletableFuture.allOf(futures).thenApply(v -> Unit.VALUE);
+        }
+    }
 
-            return CompletableFuture.allOf(futures).thenApply(v -> Unit.VALUE);
+    private static CompletableFuture<Unit> runSequentially(
+        UaStackClient client,
+        OpcUaSession session,
+        LinkedList<SessionFsm.SessionInitializer> initializers
+    ) {
+
+        if (initializers.isEmpty()) {
+            return CompletableFuture.completedFuture(Unit.VALUE);
+        } else {
+            SessionFsm.SessionInitializer initializer = initializers.removeFirst();
+
+            return initializer.initialize(client, session)
+                .exceptionally(ex -> Unit.VALUE)
+                .thenCompose(u -> runSequentially(client, session, initializers));
         }
     }
 

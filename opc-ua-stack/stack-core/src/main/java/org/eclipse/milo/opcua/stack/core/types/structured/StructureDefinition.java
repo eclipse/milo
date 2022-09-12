@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class StructureDefinition extends DataTypeDefinition implements UaStructure {
+public class StructureDefinition extends DataTypeDefinition implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=99");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=122");
@@ -108,7 +108,7 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
         public StructureDefinition decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId defaultEncodingId = decoder.readNodeId("DefaultEncodingId");
             NodeId baseDataType = decoder.readNodeId("BaseDataType");
-            StructureType structureType = (StructureType) decoder.readEnum("StructureType", StructureType.class);
+            StructureType structureType = StructureType.from(decoder.readEnum("StructureType"));
             StructureField[] fields = (StructureField[]) decoder.readStructArray("Fields", StructureField.TYPE_ID);
             return new StructureDefinition(defaultEncodingId, baseDataType, structureType, fields);
         }

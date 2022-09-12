@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v104/Core/docs/Part11/6.6">https://reference.opcfoundation.org/v104/Core/docs/Part11/6.6</a>
  */
-public enum HistoryUpdateType implements UaEnumeration {
+public enum HistoryUpdateType implements UaEnumeratedType {
     Insert(1),
 
     Replace(2),
@@ -61,24 +57,6 @@ public enum HistoryUpdateType implements UaEnumeration {
             new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Update"),
             new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Delete")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<HistoryUpdateType> {
-        @Override
-        public Class<HistoryUpdateType> getType() {
-            return HistoryUpdateType.class;
-        }
-
-        @Override
-        public HistoryUpdateType decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, HistoryUpdateType.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               HistoryUpdateType value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

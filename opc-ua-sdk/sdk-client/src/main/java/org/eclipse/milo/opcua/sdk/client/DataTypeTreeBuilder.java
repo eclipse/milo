@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
@@ -143,7 +143,7 @@ public final class DataTypeTreeBuilder {
             client.getConfig().getRequestTimeout()
         );
 
-        CompletableFuture<UaResponseMessage> readFuture = client.sendRequest(
+        CompletableFuture<UaResponseMessageType> readFuture = client.sendRequest(
             new ReadRequest(
                 requestHeader,
                 0.0,
@@ -161,8 +161,10 @@ public final class DataTypeTreeBuilder {
             DataValue dataValue = response.getResults()[0];
             String[] namespaceUris = (String[]) dataValue.getValue().getValue();
             NamespaceTable namespaceTable = new NamespaceTable();
-            for (String namespaceUri : namespaceUris) {
-                namespaceTable.add(namespaceUri);
+            if (namespaceUris != null) {
+                for (String namespaceUri : namespaceUris) {
+                    namespaceTable.add(namespaceUri);
+                }
             }
             return namespaceTable;
         });

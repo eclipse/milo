@@ -1021,6 +1021,22 @@ class OpcUaJsonEncoderTest {
             encoder.jsonWriter.endObject();
             assertEquals(String.format("{\"foo\":%d}", applicationType.getValue()), writer.toString());
         }
+
+        encoder.reversible = false;
+
+        for (ApplicationType applicationType : ApplicationType.values()) {
+            String expected = String.format("\"%s_%s\"", applicationType.getName(), applicationType.getValue());
+
+            encoder.reset(writer = new StringWriter());
+            encoder.writeEnum(null, applicationType);
+            assertEquals(expected, writer.toString());
+
+            encoder.reset(writer = new StringWriter());
+            encoder.jsonWriter.beginObject();
+            encoder.writeEnum("foo", applicationType);
+            encoder.jsonWriter.endObject();
+            assertEquals(String.format("{\"foo\":%s}", expected), writer.toString());
+        }
     }
 
     @Test

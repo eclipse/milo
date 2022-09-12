@@ -30,8 +30,8 @@ import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -152,7 +152,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                     }
 
                     try {
-                        UaRequestMessage request = (UaRequestMessage) binaryDecoder
+                        UaRequestMessageType request = (UaRequestMessageType) binaryDecoder
                             .setBuffer(message)
                             .readMessage(null);
 
@@ -213,8 +213,8 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
     private void sendServiceResponse(
         ChannelHandlerContext ctx,
         long requestId,
-        UaRequestMessage request,
-        UaResponseMessage response) {
+        UaRequestMessageType request,
+        UaResponseMessageType response) {
 
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.pooledBuffer();

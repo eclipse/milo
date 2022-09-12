@@ -37,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -289,7 +289,7 @@ public class UaStackServer {
     }
 
     private void handleServiceRequest(String path, ServiceRequest serviceRequest) {
-        UaRequestMessage request = serviceRequest.getRequest();
+        UaRequestMessageType request = serviceRequest.getRequest();
 
         if (logger.isTraceEnabled()) {
             logger.trace(
@@ -447,7 +447,7 @@ public class UaStackServer {
         return securityRejectedRequestCount;
     }
 
-    public <T extends UaRequestMessage> void addServiceHandler(
+    public <T extends UaRequestMessageType> void addServiceHandler(
         String path,
         ExpandedNodeId dataTypeId,
         ServiceRequestHandler serviceHandler) {
@@ -457,7 +457,7 @@ public class UaStackServer {
         serviceHandlerTable.put(path, dataTypeId, serviceHandler);
     }
 
-    public <T extends UaRequestMessage> void removeServiceHandler(String path, ExpandedNodeId dataTypeId) {
+    public <T extends UaRequestMessageType> void removeServiceHandler(String path, ExpandedNodeId dataTypeId) {
         logger.debug("Removing ServiceHandler for {} at {}", dataTypeId, path);
 
         serviceHandlerTable.remove(path, dataTypeId);

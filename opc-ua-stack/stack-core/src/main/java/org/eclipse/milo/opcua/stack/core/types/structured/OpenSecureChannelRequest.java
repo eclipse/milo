@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class OpenSecureChannelRequest extends Structure implements UaRequestMessage {
+public class OpenSecureChannelRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=444");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=446");
@@ -128,8 +128,8 @@ public class OpenSecureChannelRequest extends Structure implements UaRequestMess
         public OpenSecureChannelRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger clientProtocolVersion = decoder.readUInt32("ClientProtocolVersion");
-            SecurityTokenRequestType requestType = (SecurityTokenRequestType) decoder.readEnum("RequestType", SecurityTokenRequestType.class);
-            MessageSecurityMode securityMode = (MessageSecurityMode) decoder.readEnum("SecurityMode", MessageSecurityMode.class);
+            SecurityTokenRequestType requestType = SecurityTokenRequestType.from(decoder.readEnum("RequestType"));
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
             ByteString clientNonce = decoder.readByteString("ClientNonce");
             UInteger requestedLifetime = decoder.readUInt32("RequestedLifetime");
             return new OpenSecureChannelRequest(requestHeader, clientProtocolVersion, requestType, securityMode, clientNonce, requestedLifetime);

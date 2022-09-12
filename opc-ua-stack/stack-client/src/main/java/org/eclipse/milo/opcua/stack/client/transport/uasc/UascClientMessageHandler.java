@@ -47,7 +47,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -503,7 +503,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 }
 
                 try {
-                    UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                    UaResponseMessageType response = (UaResponseMessageType) binaryDecoder
                         .setBuffer(message)
                         .readMessage(null);
 
@@ -649,7 +649,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 UaTransportRequest request = pending.remove(requestId);
 
                 try {
-                    UaResponseMessage response = (UaResponseMessage) binaryDecoder
+                    UaResponseMessageType response = (UaResponseMessageType) binaryDecoder
                         .setBuffer(message)
                         .readMessage(null);
 

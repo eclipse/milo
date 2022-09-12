@@ -29,8 +29,8 @@ import io.netty.util.concurrent.FutureListener;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class OpcHttpTransport extends AbstractTransport {
     }
 
     @Override
-    public synchronized CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
+    public synchronized CompletableFuture<UaResponseMessageType> sendRequest(UaRequestMessageType request) {
         LOGGER.trace("sendRequest({})", request.getClass().getSimpleName());
 
         return acquireChannel().thenCompose(ch ->

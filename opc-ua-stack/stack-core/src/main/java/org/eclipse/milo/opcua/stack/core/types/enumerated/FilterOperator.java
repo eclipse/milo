@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.3">https://reference.opcfoundation.org/v105/Core/docs/Part4/7.7.3</a>
  */
-public enum FilterOperator implements UaEnumeration {
+public enum FilterOperator implements UaEnumeratedType {
     Equals(0),
 
     IsNull(1),
@@ -131,23 +127,6 @@ public enum FilterOperator implements UaEnumeration {
             new EnumField(16L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BitwiseAnd"),
             new EnumField(17L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "BitwiseOr")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<FilterOperator> {
-        @Override
-        public Class<FilterOperator> getType() {
-            return FilterOperator.class;
-        }
-
-        @Override
-        public FilterOperator decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, FilterOperator.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, FilterOperator value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

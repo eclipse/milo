@@ -7,9 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface DataTypeManager {
 
-    void registerEnumType(NodeId dataTypeId, DataTypeCodec codec);
-
-    void registerStructType(
+    void registerType(
         NodeId dataTypeId,
         DataTypeCodec codec,
         @Nullable NodeId binaryEncodingId,
@@ -17,11 +15,9 @@ public interface DataTypeManager {
         @Nullable NodeId jsonEncodingId
     );
 
-    @Nullable DataTypeCodec getEnumCodec(NodeId dataTypeId);
+    @Nullable DataTypeCodec getCodec(NodeId encodingId);
 
-    @Nullable DataTypeCodec getStructCodec(NodeId encodingId);
-
-    @Nullable DataTypeCodec getStructCodec(QualifiedName encodingName, NodeId dataTypeId);
+    @Nullable DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId);
 
     @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId);
 

@@ -84,9 +84,9 @@ public interface UaEncoder {
 
     void writeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException;
 
-    void writeMessage(String field, UaMessage message) throws UaSerializationException;
+    void writeMessage(String field, UaMessageType message) throws UaSerializationException;
 
-    void writeEnum(String field, UaEnumeration value) throws UaSerializationException;
+    void writeEnum(String field, UaEnumeratedType value) throws UaSerializationException;
 
     void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException;
 
@@ -144,7 +144,7 @@ public interface UaEncoder {
 
     void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException;
 
-    void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException;
+    void writeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException;
 
     void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException;
 

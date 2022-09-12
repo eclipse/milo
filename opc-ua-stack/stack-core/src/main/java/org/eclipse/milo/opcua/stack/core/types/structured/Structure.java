@@ -3,7 +3,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 /**
@@ -12,7 +12,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 @EqualsAndHashCode
 @SuperBuilder
 @ToString
-public abstract class Structure implements UaStructure {
+public abstract class Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=22");
 
     public Structure() {

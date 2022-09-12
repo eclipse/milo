@@ -10,13 +10,13 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 
 /**
- * Super-interface for all serializable types.
+ * Identifies an OPC UA DataType as a service response message.
  */
-public interface UaSerializableType {
+public interface UaResponseMessageType extends UaMessageType {
 
-    ExpandedNodeId getTypeId();
-    
+    ResponseHeader getResponseHeader();
+
 }

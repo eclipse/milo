@@ -52,15 +52,9 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
         NodeId encodingId
     ) {
 
-        try {
-            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
-            if (codec == null) {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_EncodingError,
-                    "no codec registered for encodingId=" + encodingId);
-            }
-
+        if (codec != null) {
             ByteBuf buffer = buffer();
 
             try {
@@ -73,8 +67,10 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
             } finally {
                 buffer.release();
             }
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered for encodingId=" + encodingId);
         }
     }
 
@@ -85,15 +81,9 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
         NodeId encodingId
     ) {
 
-        try {
-            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
-            if (codec == null) {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_DecodingError,
-                    "no codec registered for encodingId=" + encodingId);
-            }
-
+        if (codec != null) {
             ByteString binaryBody = (ByteString) encodedBody;
             byte[] bs = binaryBody.bytesOrEmpty();
 
@@ -103,8 +93,10 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
             decoder.setBuffer(buffer);
 
             return decoder.readStruct(null, codec);
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered for encodingId=" + encodingId);
         }
     }
 

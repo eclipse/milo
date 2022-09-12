@@ -12,14 +12,14 @@ package org.eclipse.milo.opcua.sdk.core.types;
 
 import java.util.function.Function;
 
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public class DynamicEnum implements UaEnumeration {
+public class DynamicEnum implements UaEnumeratedType {
 
     private final DataType dataType;
     private final String name;

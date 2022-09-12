@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -357,7 +357,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                 switch (codecType) {
                     case ENUM:
-                        encoder.writeEnum(fieldName, (UaEnumeration) value);
+                        encoder.writeEnum(fieldName, (UaEnumeratedType) value);
                         break;
                     case STRUCT:
                         encoder.writeStruct(fieldName, value, dataTypeId);
@@ -375,7 +375,7 @@ public class DynamicStructCodec extends GenericDataTypeCodec<DynamicStruct> {
 
                 switch (codecType) {
                     case ENUM:
-                        encoder.writeEnumArray(fieldName, (UaEnumeration[]) value);
+                        encoder.writeEnumArray(fieldName, (UaEnumeratedType[]) value);
                         break;
                     case STRUCT:
                         encoder.writeStructArray(fieldName, (Object[]) value, dataTypeId);

@@ -1,17 +1,13 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumField;
 import org.jetbrains.annotations.Nullable;
 
-public enum DeadbandType implements UaEnumeration {
+public enum DeadbandType implements UaEnumeratedType {
     None(0),
 
     Absolute(1),
@@ -53,23 +49,6 @@ public enum DeadbandType implements UaEnumeration {
             new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Absolute"),
             new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Percent")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<DeadbandType> {
-        @Override
-        public Class<DeadbandType> getType() {
-            return DeadbandType.class;
-        }
-
-        @Override
-        public DeadbandType decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, DeadbandType.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, DeadbandType value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

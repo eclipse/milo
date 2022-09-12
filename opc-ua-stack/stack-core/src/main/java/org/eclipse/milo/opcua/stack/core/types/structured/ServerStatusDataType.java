@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class ServerStatusDataType extends Structure implements UaStructure {
+public class ServerStatusDataType extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=862");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=864");
@@ -126,7 +126,7 @@ public class ServerStatusDataType extends Structure implements UaStructure {
         public ServerStatusDataType decodeType(SerializationContext context, UaDecoder decoder) {
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime currentTime = decoder.readDateTime("CurrentTime");
-            ServerState state = (ServerState) decoder.readEnum("State", ServerState.class);
+            ServerState state = ServerState.from(decoder.readEnum("State"));
             BuildInfo buildInfo = (BuildInfo) decoder.readStruct("BuildInfo", BuildInfo.TYPE_ID);
             UInteger secondsTillShutdown = decoder.readUInt32("SecondsTillShutdown");
             LocalizedText shutdownReason = decoder.readLocalizedText("ShutdownReason");

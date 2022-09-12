@@ -17,11 +17,11 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDataType;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaSerializableType;
 
-public abstract class GenericDataTypeCodec<T extends UaSerializableType> implements DataTypeCodec {
+public abstract class GenericDataTypeCodec<T extends UaDataType> implements DataTypeCodec {
 
     public abstract Class<T> getType();
 

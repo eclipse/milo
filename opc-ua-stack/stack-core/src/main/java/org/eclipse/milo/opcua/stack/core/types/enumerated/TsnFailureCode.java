@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.5">https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.5</a>
  */
-public enum TsnFailureCode implements UaEnumeration {
+public enum TsnFailureCode implements UaEnumeratedType {
     /**
      * No failure
      */
@@ -249,23 +245,6 @@ public enum TsnFailureCode implements UaEnumeration {
             new EnumField(24L, LocalizedText.NULL_VALUE, new LocalizedText("", "Stream identification type not supported for stream transformation"), "StreamIdTypeNotSupported"),
             new EnumField(25L, LocalizedText.NULL_VALUE, new LocalizedText("", "Enhanced feature cannot be supported without a CNC"), "FeatureNotSupported")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<TsnFailureCode> {
-        @Override
-        public Class<TsnFailureCode> getType() {
-            return TsnFailureCode.class;
-        }
-
-        @Override
-        public TsnFailureCode decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, TsnFailureCode.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, TsnFailureCode value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

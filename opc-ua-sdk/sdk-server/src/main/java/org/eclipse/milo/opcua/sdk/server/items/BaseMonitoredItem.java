@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.util.RingBuffer;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -86,7 +86,7 @@ public abstract class BaseMonitoredItem<T> implements MonitoredItem {
         this.queueSize = qs;
     }
 
-    public synchronized boolean getNotifications(List<UaStructure> notifications, int max) {
+    public synchronized boolean getNotifications(List<UaStructuredType> notifications, int max) {
         int queueSize = queue.size();
         int count = Math.min(queueSize, max);
 
@@ -208,6 +208,6 @@ public abstract class BaseMonitoredItem<T> implements MonitoredItem {
 
     public abstract void installFilter(MonitoringFilter filter) throws UaException;
 
-    protected abstract UaStructure wrapQueueValue(T value);
+    protected abstract UaStructuredType wrapQueueValue(T value);
 
 }

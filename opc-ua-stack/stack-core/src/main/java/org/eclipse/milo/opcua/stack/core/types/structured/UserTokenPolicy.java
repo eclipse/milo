@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 )
 @SuperBuilder
 @ToString
-public class UserTokenPolicy extends Structure implements UaStructure {
+public class UserTokenPolicy extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=304");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=306");
@@ -116,7 +116,7 @@ public class UserTokenPolicy extends Structure implements UaStructure {
         @Override
         public UserTokenPolicy decodeType(SerializationContext context, UaDecoder decoder) {
             String policyId = decoder.readString("PolicyId");
-            UserTokenType tokenType = (UserTokenType) decoder.readEnum("TokenType", UserTokenType.class);
+            UserTokenType tokenType = UserTokenType.from(decoder.readEnum("TokenType"));
             String issuedTokenType = decoder.readString("IssuedTokenType");
             String issuerEndpointUrl = decoder.readString("IssuerEndpointUrl");
             String securityPolicyUri = decoder.readString("SecurityPolicyUri");

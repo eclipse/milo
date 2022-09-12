@@ -1,6 +1,10 @@
 package org.eclipse.milo.opcua.stack.core.types;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 
@@ -58,5 +62,24 @@ public abstract class AbstractDataTypeDictionaryInitializer {
         DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
         DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary
     ) throws Exception;
+
+    protected static class BinaryEnumCodec implements OpcUaBinaryDataTypeCodec {
+
+        @Override
+        public Class<?> getType() {
+            return Number.class;
+        }
+
+        @Override
+        public Object decode(SerializationContext context, OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+            return decoder.readInt32();
+        }
+
+        @Override
+        public void encode(SerializationContext context, OpcUaBinaryStreamEncoder encoder, Object value) throws UaSerializationException {
+            encoder.writeInt32((Integer) value);
+        }
+
+    }
 
 }

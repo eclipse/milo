@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.5/#12.2.5.1">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.2.5/#12.2.5.1</a>
  */
-public enum IdType implements UaEnumeration {
+public enum IdType implements UaEnumeratedType {
     Numeric(0),
 
     String(1),
@@ -61,23 +57,6 @@ public enum IdType implements UaEnumeration {
             new EnumField(2L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Guid"),
             new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Opaque")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<IdType> {
-        @Override
-        public Class<IdType> getType() {
-            return IdType.class;
-        }
-
-        @Override
-        public IdType decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, IdType.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, IdType value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

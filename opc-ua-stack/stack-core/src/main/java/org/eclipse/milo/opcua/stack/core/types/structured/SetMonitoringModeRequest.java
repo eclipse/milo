@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class SetMonitoringModeRequest extends Structure implements UaRequestMessage {
+public class SetMonitoringModeRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=767");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=769");
@@ -109,7 +109,7 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
         public SetMonitoringModeRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            MonitoringMode monitoringMode = (MonitoringMode) decoder.readEnum("MonitoringMode", MonitoringMode.class);
+            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readEnum("MonitoringMode"));
             UInteger[] monitoredItemIds = decoder.readUInt32Array("MonitoredItemIds");
             return new SetMonitoringModeRequest(requestHeader, subscriptionId, monitoringMode, monitoredItemIds);
         }

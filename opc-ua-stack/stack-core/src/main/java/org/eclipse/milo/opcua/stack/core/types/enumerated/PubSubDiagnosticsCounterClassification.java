@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.11/#9.1.11.6">https://reference.opcfoundation.org/v105/Core/docs/Part14/9.1.11/#9.1.11.6</a>
  */
-public enum PubSubDiagnosticsCounterClassification implements UaEnumeration {
+public enum PubSubDiagnosticsCounterClassification implements UaEnumeratedType {
     Information(0),
 
     Error(1);
@@ -51,25 +47,6 @@ public enum PubSubDiagnosticsCounterClassification implements UaEnumeration {
             new EnumField(0L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Information"),
             new EnumField(1L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Error")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<PubSubDiagnosticsCounterClassification> {
-        @Override
-        public Class<PubSubDiagnosticsCounterClassification> getType() {
-            return PubSubDiagnosticsCounterClassification.class;
-        }
-
-        @Override
-        public PubSubDiagnosticsCounterClassification decodeType(SerializationContext context,
-                                                                 UaDecoder decoder) {
-            return decoder.readEnum(null, PubSubDiagnosticsCounterClassification.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               PubSubDiagnosticsCounterClassification value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class BrowseDescription extends Structure implements UaStructure {
+public class BrowseDescription extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=514");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=516");
@@ -124,7 +124,7 @@ public class BrowseDescription extends Structure implements UaStructure {
         @Override
         public BrowseDescription decodeType(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
-            BrowseDirection browseDirection = (BrowseDirection) decoder.readEnum("BrowseDirection", BrowseDirection.class);
+            BrowseDirection browseDirection = BrowseDirection.from(decoder.readEnum("BrowseDirection"));
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
             UInteger nodeClassMask = decoder.readUInt32("NodeClassMask");

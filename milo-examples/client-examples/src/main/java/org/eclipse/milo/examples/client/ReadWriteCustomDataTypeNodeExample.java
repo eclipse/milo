@@ -105,7 +105,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         // Register codec with the client's DataTypeManager instance.
         // We need to register it by both its encodingId and its dataTypeId because it may be
         // looked up by either depending on the context.
-        client.getStaticDataTypeManager().registerStructType(
+        client.getStaticDataTypeManager().registerType(
             dataTypeId,
             new CustomStructType.Codec(),
             binaryEncodingId,

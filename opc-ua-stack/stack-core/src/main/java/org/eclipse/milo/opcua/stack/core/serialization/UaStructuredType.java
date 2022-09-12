@@ -15,7 +15,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 /**
  * Identifies an OPC UA structured type.
  */
-public interface UaStructure extends UaSerializableType {
+public interface UaStructuredType extends UaDataType {
 
     default ExpandedNodeId getBinaryEncodingId() {
         return ExpandedNodeId.NULL_VALUE;

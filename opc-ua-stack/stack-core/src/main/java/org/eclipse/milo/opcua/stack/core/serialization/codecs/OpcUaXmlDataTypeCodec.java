@@ -30,20 +30,20 @@ public interface OpcUaXmlDataTypeCodec extends DataTypeCodec {
     }
 
     /**
-     * Decode a {@link T} using the provided {@link OpcUaXmlStreamDecoder}.
+     * Decode an Object using the provided {@link OpcUaXmlStreamDecoder}.
      *
      * @param context the {@link SerializationContext}.
      * @param decoder the {@link OpcUaXmlStreamDecoder} to decode from.
-     * @return a decoded {@link T}.
+     * @return a decoded Object.
      */
     Object decode(SerializationContext context, OpcUaXmlStreamDecoder decoder) throws UaSerializationException;
 
     /**
-     * Encode a {@link T} using the provided {@link OpcUaXmlStreamEncoder}.
+     * Encode an Object using the provided {@link OpcUaXmlStreamEncoder}.
      *
      * @param context the {@link SerializationContext}.
      * @param encoder the {@link OpcUaXmlStreamEncoder} to encode to.
-     * @param value   the value {@link T} to encode.
+     * @param value   the Object to encode.
      */
     void encode(SerializationContext context, OpcUaXmlStreamEncoder encoder, Object value) throws UaSerializationException;
 

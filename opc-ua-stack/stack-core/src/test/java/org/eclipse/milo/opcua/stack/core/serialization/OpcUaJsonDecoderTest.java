@@ -720,12 +720,12 @@ class OpcUaJsonDecoderTest {
 
         for (ApplicationType applicationType : ApplicationType.values()) {
             decoder.reset(new StringReader(String.valueOf(applicationType.getValue())));
-            assertEquals(applicationType, decoder.readEnum(null, ApplicationType.class));
+            assertEquals(applicationType, ApplicationType.from(decoder.readEnum(null)));
         }
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(ApplicationType.Server, decoder.readEnum("foo", ApplicationType.class));
+        assertEquals(ApplicationType.Server, ApplicationType.from(decoder.readEnum("foo")));
         decoder.jsonReader.endObject();
     }
 

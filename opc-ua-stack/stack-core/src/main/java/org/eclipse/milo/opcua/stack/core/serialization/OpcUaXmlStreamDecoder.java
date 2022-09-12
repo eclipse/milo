@@ -16,8 +16,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,8 +32,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import com.google.common.io.CharStreams;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import jakarta.xml.bind.DatatypeConverter;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -882,7 +878,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
-    public UaMessage readMessage(String field) throws UaSerializationException {
+    public UaMessageType readMessage(String field) throws UaSerializationException {
         if (currentNode(field)) {
             Node node = currentNode;
 
@@ -890,6 +886,8 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
             OpcUaXmlDataTypeCodec codec = null;
 
+            // TODO this is totally flawed; what if we're not living in the past and there is no DataTypeDictionary?
+            //  Does DataTypeManager need a getCodec(String) that uses the name from StructureDefinition?
             OpcUaXmlDataTypeDictionary dictionary = context.getDataTypeManager()
                 .getXmlDataTypeDictionary(Namespaces.OPC_UA_XSD);
 
@@ -901,7 +899,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
                 currentNode = node.getFirstChild();
 
                 try {
-                    return (UaMessage) codec.decode(context, this);
+                    return (UaMessageType) codec.decode(context, this);
                 } finally {
                     currentNode = node.getNextSibling();
                 }
@@ -914,81 +912,6 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         } else {
             // TODO could be better if we passed Class<?> into method
             return null;
-        }
-    }
-
-    @Override
-    public <T extends Enum<?> & UaEnumeration> T readEnum(
-        String field,
-        Class<T> enumType
-    ) throws UaSerializationException {
-
-        if (currentNode(field)) {
-            try {
-                String s = currentNode.getTextContent();
-                int lastIndex = s.lastIndexOf("_");
-
-                if (lastIndex != -1) {
-                    try {
-                        int value = Integer.parseInt(s.substring(lastIndex + 1));
-                        Method m = enumType.getDeclaredMethod("from", int.class);
-                        Object o = m.invoke(null, value);
-                        return enumType.cast(o);
-                    } catch (ClassCastException | NoSuchMethodException |
-                             IllegalAccessException | InvocationTargetException e) {
-
-                        throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-                    }
-                } else {
-                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid enum value: " + s);
-                }
-            } finally {
-                currentNode = currentNode.getNextSibling();
-            }
-        } else {
-            try {
-                return enumType.getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-            }
-        }
-    }
-
-    @Override
-    public UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException {
-        DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
-
-        if (codec != null) {
-            if (currentNode(field)) {
-                try {
-                    String s = currentNode.getTextContent();
-                    int lastIndex = s.lastIndexOf("_");
-
-                    if (lastIndex != -1) {
-                        try {
-                            int value = Integer.parseInt(s.substring(lastIndex + 1));
-
-                            // enum DataTypeCodecs expect to decode an Int value... not this XML string crap.
-                            OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(context);
-                            ByteBuf buffer = Unpooled.buffer();
-                            buffer.writeIntLE(value);
-
-                            return (UaEnumeration) codec.decode(context, decoder);
-                        } catch (Exception e) {
-                            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-                        }
-                    } else {
-                        throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid enum value: " + s);
-                    }
-                } finally {
-                    currentNode = currentNode.getNextSibling();
-                }
-            } else {
-                // TODO instantiate an enum somehow? pass Class into readEnum?
-                return null;
-            }
-        } else {
-            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "no codec registered: " + dataTypeId);
         }
     }
 
@@ -1022,7 +945,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
             Node node = currentNode;
 
             DataTypeCodec codec = context.getDataTypeManager()
-                .getStructCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec != null) {
                 try {
@@ -1241,50 +1164,78 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         return readArray(field, this::readDiagnosticInfo, DiagnosticInfo.class);
     }
 
-    @Override
-    public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
-        String field,
-        Class<T> enumType
-    ) throws UaSerializationException {
+//    @Override
+//    public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
+//        String field,
+//        Class<T> enumType
+//    ) throws UaSerializationException {
+//
+//        return readArray(field, s -> readEnum(s, enumType), enumType);
+//    }
+//
+//    @Override
+//    public UaEnumeration[] readEnumArray(String field, NodeId dataTypeId) throws UaSerializationException {
+//        if (currentNode(field)) {
+//            Node node = currentNode;
+//
+//            DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+//
+//            if (codec != null) {
+//                List<UaEnumeration> values = new ArrayList<>();
+//                Node listNode = node.getFirstChild();
+//                NodeList children = listNode.getChildNodes();
+//
+//                for (int i = 0; i < children.getLength(); i++) {
+//                    currentNode = children.item(i);
+//
+//                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+//                        values.add(readEnum(currentNode.getLocalName(), dataTypeId));
+//                    }
+//                }
+//
+//                try {
+//                    Object array = Array.newInstance(codec.getType(), values.size());
+//                    for (int i = 0; i < values.size(); i++) {
+//                        Array.set(array, i, values.get(i));
+//                    }
+//
+//                    return (UaEnumeration[]) array;
+//                } finally {
+//                    currentNode = node.getNextSibling();
+//                }
+//            } else {
+//                throw new UaSerializationException(
+//                    StatusCodes.Bad_DecodingError,
+//                    "no codec registered: " + dataTypeId
+//                );
+//            }
+//        } else {
+//            return null;
+//        }
+//    }
 
-        return readArray(field, s -> readEnum(s, enumType), enumType);
-    }
 
     @Override
-    public UaEnumeration[] readEnumArray(String field, NodeId dataTypeId) throws UaSerializationException {
+    public Integer[] readEnumArray(String field) throws UaSerializationException {
         if (currentNode(field)) {
             Node node = currentNode;
 
-            DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
+            List<Integer> values = new ArrayList<>();
+            Node listNode = node.getFirstChild();
+            NodeList children = listNode.getChildNodes();
 
-            if (codec != null) {
-                List<UaEnumeration> values = new ArrayList<>();
-                Node listNode = node.getFirstChild();
-                NodeList children = listNode.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                currentNode = children.item(i);
 
-                for (int i = 0; i < children.getLength(); i++) {
-                    currentNode = children.item(i);
-
-                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                        values.add(readEnum(currentNode.getLocalName(), dataTypeId));
-                    }
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    values.add(readEnum(currentNode.getLocalName()));
                 }
+            }
 
-                try {
-                    Object array = Array.newInstance(codec.getType(), values.size());
-                    for (int i = 0; i < values.size(); i++) {
-                        Array.set(array, i, values.get(i));
-                    }
-
-                    return (UaEnumeration[]) array;
-                } finally {
-                    currentNode = node.getNextSibling();
-                }
-            } else {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_DecodingError,
-                    "no codec registered: " + dataTypeId
-                );
+            try {
+                return values.toArray(Integer[]::new);
+            } finally {
+                currentNode = node.getNextSibling();
             }
         } else {
             return null;
@@ -1297,7 +1248,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
             Node node = currentNode;
 
             DataTypeCodec codec = context.getDataTypeManager()
-                .getStructCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(

@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.4">https://reference.opcfoundation.org/v105/Core/docs/Part22/5.3.1/#5.3.1.4</a>
  */
-public enum NegotiationStatus implements UaEnumeration {
+public enum NegotiationStatus implements UaEnumeratedType {
     /**
      * The auto-negotiation protocol is running and negotiation is currently in-progress.
      */
@@ -81,24 +77,6 @@ public enum NegotiationStatus implements UaEnumeration {
             new EnumField(3L, LocalizedText.NULL_VALUE, new LocalizedText("", "The auto-negotiation status is not currently known, this could be because it is still negotiating or the protocol cannot run (e.g., if no medium is present)."), "Unknown"),
             new EnumField(4L, LocalizedText.NULL_VALUE, new LocalizedText("", "No auto-negotiation is executed. The auto-negotiation function is either not supported on this interface or has not been enabled."), "NoNegotiation")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<NegotiationStatus> {
-        @Override
-        public Class<NegotiationStatus> getType() {
-            return NegotiationStatus.class;
-        }
-
-        @Override
-        public NegotiationStatus decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, NegotiationStatus.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
-                               NegotiationStatus value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

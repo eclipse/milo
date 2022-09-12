@@ -50,24 +50,19 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
         NodeId encodingId
     ) {
 
-        try {
-            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
-            if (codec == null) {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_EncodingError,
-                    "no codec registered for encodingId=" + encodingId);
-            }
-
-            // We have to use writer.writeStruct() instead of codec.decode() because
+        if (codec != null) {
+            // We have to use encoder.writeStruct() instead of codec.encode() because
             // XML-encoded structs are wrapped in a container element with the struct name.
+            OpcUaXmlStreamEncoder encoder = new OpcUaXmlStreamEncoder(context);
+            encoder.writeStruct(null, struct, codec);
 
-            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder(context);
-            writer.writeStruct(null, struct, codec);
-
-            return new XmlElement(writer.getDocumentXml());
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+            return new XmlElement(encoder.getDocumentXml());
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered for encodingId=" + encodingId);
         }
     }
 
@@ -78,27 +73,26 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
         NodeId encodingId
     ) {
 
-        try {
-            DataTypeCodec codec = context.getDataTypeManager().getStructCodec(encodingId);
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
-            if (codec == null) {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_DecodingError,
-                    "no codec registered for encodingId=" + encodingId);
-            }
-
+        if (codec != null) {
             XmlElement xmlBody = (XmlElement) body;
             String xml = xmlBody.getFragmentOrEmpty();
 
-            OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder(context);
-            reader.setInput(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+            OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(context);
+            try {
+                decoder.setInput(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+            } catch (IOException | SAXException e) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            }
 
-            // We have to use reader.readStruct() instead of codec.encode() because
+            // We have to use decoder.readStruct() instead of codec.decode() because
             // XML-encoded structs are wrapped in a container element with the struct name.
-
-            return reader.readStruct(null, codec);
-        } catch (IOException | SAXException e) {
-            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+            return decoder.readStruct(null, codec);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered for encodingId=" + encodingId);
         }
     }
 

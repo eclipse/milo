@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 )
 @SuperBuilder
 @ToString
-public class HistoryReadRequest extends Structure implements UaRequestMessage {
+public class HistoryReadRequest extends Structure implements UaRequestMessageType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=662");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=664");
@@ -119,7 +119,7 @@ public class HistoryReadRequest extends Structure implements UaRequestMessage {
         public HistoryReadRequest decodeType(SerializationContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             ExtensionObject historyReadDetails = decoder.readExtensionObject("HistoryReadDetails");
-            TimestampsToReturn timestampsToReturn = (TimestampsToReturn) decoder.readEnum("TimestampsToReturn", TimestampsToReturn.class);
+            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readEnum("TimestampsToReturn"));
             Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
             HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.readStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
             return new HistoryReadRequest(requestHeader, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead);

@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class MonitoredItemCreateRequest extends Structure implements UaStructure {
+public class MonitoredItemCreateRequest extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=743");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=745");
@@ -100,7 +100,7 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
         @Override
         public MonitoredItemCreateRequest decodeType(SerializationContext context, UaDecoder decoder) {
             ReadValueId itemToMonitor = (ReadValueId) decoder.readStruct("ItemToMonitor", ReadValueId.TYPE_ID);
-            MonitoringMode monitoringMode = (MonitoringMode) decoder.readEnum("MonitoringMode", MonitoringMode.class);
+            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readEnum("MonitoringMode"));
             MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemCreateRequest(itemToMonitor, monitoringMode, requestedParameters);
         }

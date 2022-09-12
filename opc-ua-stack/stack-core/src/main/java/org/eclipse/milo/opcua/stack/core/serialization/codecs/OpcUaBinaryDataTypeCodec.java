@@ -30,20 +30,20 @@ public interface OpcUaBinaryDataTypeCodec extends DataTypeCodec {
     }
 
     /**
-     * Decode a {@link T} using the provided {@link OpcUaBinaryStreamDecoder}.
+     * Decode an Object using the provided {@link OpcUaBinaryStreamDecoder}.
      *
      * @param context the {@link SerializationContext}.
      * @param decoder the {@link OpcUaBinaryStreamDecoder} to decode from.
-     * @return a decoded {@link T}.
+     * @return a decoded Object.
      */
     Object decode(SerializationContext context, OpcUaBinaryStreamDecoder decoder) throws UaSerializationException;
 
     /**
-     * Encode a {@link T} using the provided {@link OpcUaBinaryStreamEncoder}.
+     * Encode an Object using the provided {@link OpcUaBinaryStreamEncoder}.
      *
      * @param context the {@link SerializationContext}.
      * @param encoder the {@link OpcUaBinaryStreamEncoder} to encode to.
-     * @param value   the {@link T} to encode.
+     * @param value   the Object to encode.
      */
     void encode(SerializationContext context, OpcUaBinaryStreamEncoder encoder, Object value) throws UaSerializationException;
 

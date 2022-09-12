@@ -15,12 +15,10 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.core.types.DataType;
 import org.eclipse.milo.opcua.sdk.core.types.DataTypeTree;
-import org.eclipse.milo.opcua.sdk.core.types.DynamicEnumCodec;
 import org.eclipse.milo.opcua.sdk.core.types.DynamicStructCodec;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.types.structured.DataTypeDefinition;
-import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
 import org.eclipse.milo.opcua.stack.core.types.structured.StructureDefinition;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -71,7 +69,7 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                 session.setAttribute(SESSION_ATTRIBUTE_KEY, tree);
 
                 if (registerCodecs) {
-                    registerCodecs(stackClient, tree);
+//                    registerCodecs(stackClient, tree);
                 }
             })
             .thenApply(v -> Unit.VALUE);
@@ -84,7 +82,7 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                 DataTypeDefinition definition = dataType.getDataTypeDefinition();
 
                 if (definition instanceof StructureDefinition) {
-                    stackClient.getDynamicDataTypeManager().registerStructType(
+                    stackClient.getDynamicDataTypeManager().registerType(
                         dataType.getNodeId(),
                         new DynamicStructCodec(dataTypeTree, dataType),
                         dataType.getBinaryEncodingId(),
@@ -98,22 +96,22 @@ public class DataTypeTreeSessionInitializer implements SessionFsm.SessionInitial
                 .warn("Tree for NodeIds.Structure not found; is the server DataType hierarchy sane?");
         }
 
-        Tree<DataType> enumerationNode = dataTypeTree.getTreeNode(NodeIds.Enumeration);
-        if (enumerationNode != null) {
-            enumerationNode.traverse(dataType -> {
-                DataTypeDefinition definition = dataType.getDataTypeDefinition();
-
-                if (definition instanceof EnumDefinition) {
-                    stackClient.getDynamicDataTypeManager().registerEnumType(
-                        dataType.getNodeId(),
-                        new DynamicEnumCodec(dataType)
-                    );
-                }
-            });
-        } else {
-            LoggerFactory.getLogger(DataTypeTreeSessionInitializer.class)
-                .warn("Tree for NodeIds.Enumeration not found; is the server DataType hierarchy sane?");
-        }
+//        Tree<DataType> enumerationNode = dataTypeTree.getTreeNode(NodeIds.Enumeration);
+//        if (enumerationNode != null) {
+//            enumerationNode.traverse(dataType -> {
+//                DataTypeDefinition definition = dataType.getDataTypeDefinition();
+//
+//                if (definition instanceof EnumDefinition) {
+//                    stackClient.getDynamicDataTypeManager().registerEnumType(
+//                        dataType.getNodeId(),
+//                        new DynamicEnumCodec(dataType)
+//                    );
+//                }
+//            });
+//        } else {
+//            LoggerFactory.getLogger(DataTypeTreeSessionInitializer.class)
+//                .warn("Tree for NodeIds.Enumeration not found; is the server DataType hierarchy sane?");
+//        }
     }
 
 }

@@ -32,8 +32,8 @@ import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -140,7 +140,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         decoder.setBuffer(httpRequest.content());
 
         try {
-            UaRequestMessage request = (UaRequestMessage) decoder.readMessage(null);
+            UaRequestMessageType request = (UaRequestMessageType) decoder.readMessage(null);
             UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
             InetSocketAddress remoteSocketAddress =
@@ -173,8 +173,8 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
     private void sendServiceResponse(
         ChannelHandlerContext ctx,
-        UaRequestMessage request,
-        UaResponseMessage response) {
+        UaRequestMessageType request,
+        UaResponseMessageType response) {
 
         ByteBuf contentBuffer = BufferUtil.pooledBuffer();
 

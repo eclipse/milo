@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
+import java.util.Arrays;
+
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
@@ -37,7 +39,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
             LocalizedText.NULL_VALUE
         );
 
-        DataTypeCodec codec = OpcUaDataTypeManager.getInstance().getStructCodec(
+        DataTypeCodec codec = OpcUaDataTypeManager.getInstance().getCodec(
             OpcUaDefaultBinaryEncoding.ENCODING_NAME,
             Argument.TYPE_ID.toNodeId(new NamespaceTable()).get()
         );
@@ -55,7 +57,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
     @Test
     public void testEnumScalar() {
         writer.writeEnum(null, ApplicationType.Client);
-        ApplicationType decoded = reader.readEnum(null, ApplicationType.class);
+        ApplicationType decoded = ApplicationType.from(reader.readEnum(null));
 
         assertEquals(decoded, ApplicationType.Client);
     }
@@ -67,7 +69,10 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
             ApplicationType.ClientAndServer
         };
         writer.writeEnumArray(null, array);
-        ApplicationType[] decoded = (ApplicationType[]) reader.readEnumArray(null, ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(new NamespaceTable()));
+        Integer[] decodedValues = reader.readEnumArray(null);
+        ApplicationType[] decoded = Arrays.stream(decodedValues)
+            .map(ApplicationType::from)
+            .toArray(ApplicationType[]::new);
 
         assertEquals(decoded, array);
     }

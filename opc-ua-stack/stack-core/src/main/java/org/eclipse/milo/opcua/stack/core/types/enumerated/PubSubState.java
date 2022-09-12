@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.1">https://reference.opcfoundation.org/v105/Core/docs/Part14/6.2.1</a>
  */
-public enum PubSubState implements UaEnumeration {
+public enum PubSubState implements UaEnumeratedType {
     Disabled(0),
 
     Paused(1),
@@ -66,23 +62,6 @@ public enum PubSubState implements UaEnumeration {
             new EnumField(3L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Error"),
             new EnumField(4L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "PreOperational")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<PubSubState> {
-        @Override
-        public Class<PubSubState> getType() {
-            return PubSubState.class;
-        }
-
-        @Override
-        public PubSubState decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, PubSubState.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, PubSubState value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

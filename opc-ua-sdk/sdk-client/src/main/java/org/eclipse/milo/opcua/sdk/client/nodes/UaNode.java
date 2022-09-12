@@ -33,8 +33,8 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.NodeIds;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -1356,13 +1356,13 @@ public abstract class UaNode implements Node {
     }
 
     /**
-     * An implementation of cast with special handling for {@link UaEnumeration} and
-     * {@link UaStructure} destination types.
+     * An implementation of cast with special handling for {@link UaEnumeratedType} and
+     * {@link UaStructuredType} destination types.
      * <p>
-     * If the destination type is a {@link UaEnumeration} and the from object is an Integer, an
+     * If the destination type is a {@link UaEnumeratedType} and the from object is an Integer, an
      * attempt is made to convert the Integer into the corresponding UaEnumeration type.
      * <p>
-     * If the destination type is a {@link UaStructure} and the from object is an
+     * If the destination type is a {@link UaStructuredType} and the from object is an
      * {@link ExtensionObject}, an attempt is made to decode the {@link ExtensionObject} into an
      * object cast to the type of {@code clazz}.
      *
@@ -1371,7 +1371,7 @@ public abstract class UaNode implements Node {
      * @return the object after casting, or null if {@code o} is null.
      */
     protected <T> T cast(Object o, Class<T> clazz) {
-        if (UaEnumeration.class.isAssignableFrom(clazz) && o instanceof Integer) {
+        if (UaEnumeratedType.class.isAssignableFrom(clazz) && o instanceof Integer) {
             try {
                 Object enumeration = clazz
                     .getMethod("from", new Class[]{Integer.class})

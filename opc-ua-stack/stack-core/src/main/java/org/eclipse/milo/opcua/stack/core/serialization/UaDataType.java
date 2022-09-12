@@ -10,10 +10,18 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-/**
- * Super-interface indicating this is one of the service request/response structures.
- */
-public interface UaMessage extends UaStructure {
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
+/**
+ * Super-interface for all OPC UA DataTypes.
+ */
+public interface UaDataType {
+
+    /**
+     * Get the {@link ExpandedNodeId} identifying this DataType.
+     *
+     * @return the {@link ExpandedNodeId} identifying this DataType.
+     */
+    ExpandedNodeId getTypeId();
 
 }

@@ -741,14 +741,14 @@ public class OpcUaJsonEncoder implements UaEncoder {
         Class<?> valueClass = getClass(value);
 
         int typeId;
-        if (UaStructure.class.isAssignableFrom(valueClass)) {
+        if (UaStructuredType.class.isAssignableFrom(valueClass)) {
             typeId = BuiltinDataType.ExtensionObject.getTypeId();
 
-            value = ExtensionObject.encode(serializationContext, (UaStructure) value);
-        } else if (UaEnumeration.class.isAssignableFrom(valueClass)) {
+            value = ExtensionObject.encode(serializationContext, (UaStructuredType) value);
+        } else if (UaEnumeratedType.class.isAssignableFrom(valueClass)) {
             typeId = BuiltinDataType.Int32.getTypeId();
 
-            value = ((UaEnumeration) value).getValue();
+            value = ((UaEnumeratedType) value).getValue();
         } else if (OptionSetUInteger.class.isAssignableFrom(valueClass)) {
             Object optionSetValue = ((OptionSetUInteger<?>) value).getValue();
             typeId = TypeUtil.getBuiltinTypeId(optionSetValue.getClass());
@@ -994,7 +994,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
+    public void writeMessage(String field, UaMessageType message) throws UaSerializationException {
         ExpandedNodeId xEncodingId = message.getJsonEncodingId();
 
         NodeId encodingId = xEncodingId.toNodeId(serializationContext.getNamespaceTable())
@@ -1004,7 +1004,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
                     "namespace not registered: " + xEncodingId.getNamespaceUri())
             );
 
-        DataTypeCodec codec = serializationContext.getDataTypeManager().getStructCodec(encodingId);
+        DataTypeCodec codec = serializationContext.getDataTypeManager().getCodec(encodingId);
 
         if (codec == null) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, "no codec registered: " + encodingId);
@@ -1021,14 +1021,22 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnum(String field, UaEnumeration value) throws UaSerializationException {
-        writeInt32(field, value.getValue());
+    public void writeEnum(String field, UaEnumeratedType value) throws UaSerializationException {
+        if (reversible) {
+            writeInt32(field, value.getValue());
+        } else {
+            if (value.getName() != null) {
+                writeString(field, value.getName() + "_" + value.getValue());
+            } else {
+                writeString(field, String.valueOf(value.getValue()));
+            }
+        }
     }
 
     @Override
     public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = serializationContext.getDataTypeManager()
-            .getStructCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
+            .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec != null) {
             writeStruct(field, value, codec);
@@ -1194,7 +1202,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnumArray(String field, UaEnumeration[] value) throws UaSerializationException {
+    public void writeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
         writeArray(field, value, this::writeEnum);
     }
 

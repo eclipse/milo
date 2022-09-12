@@ -53,8 +53,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         DataValue dataValue = client.readValue(
             0.0,
             TimestampsToReturn.Neither,
-//            NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder")
-            NodeId.parse("ns=2;s=Person1")
+            NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder")
         ).get();
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();

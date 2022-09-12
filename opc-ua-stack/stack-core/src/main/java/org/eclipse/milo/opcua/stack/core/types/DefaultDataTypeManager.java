@@ -43,23 +43,17 @@ public class DefaultDataTypeManager implements DataTypeManager {
     private final Map<String, OpcUaXmlDataTypeDictionary> xmlDictionariesByNamespaceUri = new ConcurrentHashMap<>();
 
     /**
-     * K = NodeId of DataType
-     * V = DataTypeCodec
-     */
-    private final Map<NodeId, DataTypeCodec> enumCodecsByTypeId = new ConcurrentHashMap<>();
-
-    /**
      * K = NodeId of DataType Encoding
      * V = DataTypeCodec
      */
-    private final Map<NodeId, DataTypeCodec> structCodecsByEncodingId = new ConcurrentHashMap<>();
+    private final Map<NodeId, DataTypeCodec> codecsByEncodingId = new ConcurrentHashMap<>();
 
     /**
      * R = QualifiedName of DataType Encoding
      * C = NodeId of DataType
      * V = DataTypeCodec
      */
-    private final Map<QualifiedName, Map<NodeId, DataTypeCodec>> structCodecsByEncodingName =
+    private final Map<QualifiedName, Map<NodeId, DataTypeCodec>> codecsByEncodingName =
         new ConcurrentHashMap<>();
 
     /**
@@ -67,16 +61,11 @@ public class DefaultDataTypeManager implements DataTypeManager {
      * C = NodeId of DataType
      * V = NodeId of DataType Encoding
      */
-    private final Map<QualifiedName, Map<NodeId, NodeId>> structEncodingIdsByEncodingName =
+    private final Map<QualifiedName, Map<NodeId, NodeId>> encodingIdsByEncodingName =
         new ConcurrentHashMap<>();
 
     @Override
-    public void registerEnumType(NodeId dataTypeId, DataTypeCodec codec) {
-        enumCodecsByTypeId.put(dataTypeId, codec);
-    }
-
-    @Override
-    public void registerStructType(
+    public void registerType(
         NodeId dataTypeId,
         DataTypeCodec codec,
         @Nullable NodeId binaryEncodingId,
@@ -87,54 +76,49 @@ public class DefaultDataTypeManager implements DataTypeManager {
         if (binaryEncodingId != null && binaryEncodingId.isNotNull()) {
             putCodecForEncoding(BINARY_ENCODING_NAME, dataTypeId, codec);
             putEncodingIdForEncoding(BINARY_ENCODING_NAME, dataTypeId, binaryEncodingId);
-            structCodecsByEncodingId.put(binaryEncodingId, codec);
+            codecsByEncodingId.put(binaryEncodingId, codec);
         }
         if (xmlEncodingId != null && xmlEncodingId.isNotNull()) {
             putCodecForEncoding(XML_ENCODING_NAME, dataTypeId, codec);
             putEncodingIdForEncoding(XML_ENCODING_NAME, dataTypeId, xmlEncodingId);
-            structCodecsByEncodingId.put(xmlEncodingId, codec);
+            codecsByEncodingId.put(xmlEncodingId, codec);
         }
         if (jsonEncodingId != null && jsonEncodingId.isNotNull()) {
             putCodecForEncoding(JSON_ENCODING_NAME, dataTypeId, codec);
             putEncodingIdForEncoding(JSON_ENCODING_NAME, dataTypeId, jsonEncodingId);
-            structCodecsByEncodingId.put(jsonEncodingId, codec);
+            codecsByEncodingId.put(jsonEncodingId, codec);
         }
     }
 
     @Override
-    public @Nullable DataTypeCodec getEnumCodec(NodeId dataTypeId) {
-        return enumCodecsByTypeId.get(dataTypeId);
+    public @Nullable DataTypeCodec getCodec(NodeId encodingId) {
+        return codecsByEncodingId.get(encodingId);
     }
 
     @Override
-    public @Nullable DataTypeCodec getStructCodec(NodeId encodingId) {
-        return structCodecsByEncodingId.get(encodingId);
-    }
-
-    @Override
-    public @Nullable DataTypeCodec getStructCodec(QualifiedName encodingName, NodeId dataTypeId) {
-        Map<NodeId, DataTypeCodec> byDataTypeId = structCodecsByEncodingName.get(encodingName);
+    public @Nullable DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId) {
+        Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.get(encodingName);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
     @Override
     public @Nullable NodeId getBinaryEncodingId(NodeId dataTypeId) {
-        Map<NodeId, NodeId> byDataTypeId = structEncodingIdsByEncodingName.get(BINARY_ENCODING_NAME);
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(BINARY_ENCODING_NAME);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
     @Override
     public @Nullable NodeId getXmlEncodingId(NodeId dataTypeId) {
-        Map<NodeId, NodeId> byDataTypeId = structEncodingIdsByEncodingName.get(XML_ENCODING_NAME);
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(XML_ENCODING_NAME);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
     @Override
     public @Nullable NodeId getJsonEncodingId(NodeId dataTypeId) {
-        Map<NodeId, NodeId> byDataTypeId = structEncodingIdsByEncodingName.get(JSON_ENCODING_NAME);
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.get(JSON_ENCODING_NAME);
 
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
@@ -147,10 +131,10 @@ public class DefaultDataTypeManager implements DataTypeManager {
 //            info ->
 //                registerEnumType(info.dataTypeId, info.codec)
 //        );
-//
+
         dataTypeDictionary.getStructCodecInfos().forEach(
             info ->
-                registerStructType(info.dataTypeId, info.codec, info.encodingId, null, null)
+                registerType(info.dataTypeId, info.codec, info.encodingId, null, null)
         );
     }
 
@@ -167,10 +151,10 @@ public class DefaultDataTypeManager implements DataTypeManager {
 //            info ->
 //                registerEnumType(info.dataTypeId, info.codec)
 //        );
-//
+
         dataTypeDictionary.getStructCodecInfos().forEach(
             info ->
-                registerStructType(info.dataTypeId, info.codec, null, info.encodingId, null)
+                registerType(info.dataTypeId, info.codec, null, info.encodingId, null)
         );
     }
 
@@ -180,7 +164,7 @@ public class DefaultDataTypeManager implements DataTypeManager {
     }
 
     private void putCodecForEncoding(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
-        Map<NodeId, DataTypeCodec> byDataTypeId = structCodecsByEncodingName.computeIfAbsent(
+        Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.computeIfAbsent(
             encodingName,
             k -> new ConcurrentHashMap<>()
         );
@@ -188,7 +172,7 @@ public class DefaultDataTypeManager implements DataTypeManager {
     }
 
     private void putEncodingIdForEncoding(QualifiedName encodingName, NodeId dataTypeId, NodeId encodingId) {
-        Map<NodeId, NodeId> byDataTypeId = structEncodingIdsByEncodingName.computeIfAbsent(
+        Map<NodeId, NodeId> byDataTypeId = encodingIdsByEncodingName.computeIfAbsent(
             encodingName,
             k -> new ConcurrentHashMap<>()
         );

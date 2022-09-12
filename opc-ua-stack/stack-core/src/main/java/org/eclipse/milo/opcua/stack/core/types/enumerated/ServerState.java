@@ -1,10 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumDefinition;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @see <a href="https://reference.opcfoundation.org/v105/Core/docs/Part5/12.6">https://reference.opcfoundation.org/v105/Core/docs/Part5/12.6</a>
  */
-public enum ServerState implements UaEnumeration {
+public enum ServerState implements UaEnumeratedType {
     Running(0),
 
     Failed(1),
@@ -81,23 +77,6 @@ public enum ServerState implements UaEnumeration {
             new EnumField(6L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "CommunicationFault"),
             new EnumField(7L, LocalizedText.NULL_VALUE, LocalizedText.NULL_VALUE, "Unknown")
         });
-    }
-
-    public static final class Codec extends GenericDataTypeCodec<ServerState> {
-        @Override
-        public Class<ServerState> getType() {
-            return ServerState.class;
-        }
-
-        @Override
-        public ServerState decodeType(SerializationContext context, UaDecoder decoder) {
-            return decoder.readEnum(null, ServerState.class);
-        }
-
-        @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, ServerState value) {
-            encoder.writeEnum(null, value);
-        }
     }
 
     public static final class TypeInfo {

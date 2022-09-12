@@ -3,46 +3,6 @@ package org.eclipse.milo.opcua.stack.core.types;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.BrokerTransportQualityOfService;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.DataSetOrderingType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.DiagnosticsLevel;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.Duplex;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.HistoryUpdateType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.IdentityCriteriaType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.InterfaceAdminStatus;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.InterfaceOperStatus;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.ModelChangeStructureVerbMask;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NegotiationStatus;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeAttributesMask;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.OpenFileMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.OverrideValueHandling;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.PubSubDiagnosticsCounterClassification;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.PubSubState;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TrustListMasks;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TsnFailureCode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TsnListenerStatus;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TsnStreamState;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TsnTalkerStatus;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
 
 public class DataTypeDictionaryInitializer extends AbstractDataTypeDictionaryInitializer {
@@ -50,406 +10,406 @@ public class DataTypeDictionaryInitializer extends AbstractDataTypeDictionaryIni
     protected void initializeEnums(NamespaceTable namespaceTable,
                                    DataTypeDictionary<OpcUaBinaryDataTypeCodec> binaryDictionary,
                                    DataTypeDictionary<OpcUaXmlDataTypeCodec> xmlDictionary) throws Exception {
-        binaryDictionary.registerEnumCodec(
-            new NamingRuleType.Codec().asBinaryCodec(),
-            "NamingRuleType",
-            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new NamingRuleType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "NamingRuleType"),
-            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new OpenFileMode.Codec().asBinaryCodec(),
-            "OpenFileMode",
-            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new OpenFileMode.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "OpenFileMode"),
-            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new IdentityCriteriaType.Codec().asBinaryCodec(),
-            "IdentityCriteriaType",
-            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new IdentityCriteriaType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "IdentityCriteriaType"),
-            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new TrustListMasks.Codec().asBinaryCodec(),
-            "TrustListMasks",
-            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new TrustListMasks.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "TrustListMasks"),
-            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new PubSubState.Codec().asBinaryCodec(),
-            "PubSubState",
-            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new PubSubState.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "PubSubState"),
-            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new OverrideValueHandling.Codec().asBinaryCodec(),
-            "OverrideValueHandling",
-            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new OverrideValueHandling.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "OverrideValueHandling"),
-            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new DataSetOrderingType.Codec().asBinaryCodec(),
-            "DataSetOrderingType",
-            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new DataSetOrderingType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "DataSetOrderingType"),
-            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new BrokerTransportQualityOfService.Codec().asBinaryCodec(),
-            "BrokerTransportQualityOfService",
-            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new BrokerTransportQualityOfService.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "BrokerTransportQualityOfService"),
-            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new DiagnosticsLevel.Codec().asBinaryCodec(),
-            "DiagnosticsLevel",
-            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new DiagnosticsLevel.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "DiagnosticsLevel"),
-            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new PubSubDiagnosticsCounterClassification.Codec().asBinaryCodec(),
-            "PubSubDiagnosticsCounterClassification",
-            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new PubSubDiagnosticsCounterClassification.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "PubSubDiagnosticsCounterClassification"),
-            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new Duplex.Codec().asBinaryCodec(),
-            "Duplex",
-            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new Duplex.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "Duplex"),
-            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new InterfaceAdminStatus.Codec().asBinaryCodec(),
-            "InterfaceAdminStatus",
-            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new InterfaceAdminStatus.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "InterfaceAdminStatus"),
-            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new InterfaceOperStatus.Codec().asBinaryCodec(),
-            "InterfaceOperStatus",
-            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new InterfaceOperStatus.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "InterfaceOperStatus"),
-            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new NegotiationStatus.Codec().asBinaryCodec(),
-            "NegotiationStatus",
-            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new NegotiationStatus.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "NegotiationStatus"),
-            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new TsnFailureCode.Codec().asBinaryCodec(),
-            "TsnFailureCode",
-            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new TsnFailureCode.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "TsnFailureCode"),
-            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new TsnStreamState.Codec().asBinaryCodec(),
-            "TsnStreamState",
-            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new TsnStreamState.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "TsnStreamState"),
-            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new TsnTalkerStatus.Codec().asBinaryCodec(),
-            "TsnTalkerStatus",
-            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new TsnTalkerStatus.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "TsnTalkerStatus"),
-            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new TsnListenerStatus.Codec().asBinaryCodec(),
-            "TsnListenerStatus",
-            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new TsnListenerStatus.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "TsnListenerStatus"),
-            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new IdType.Codec().asBinaryCodec(),
-            "IdType",
-            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new IdType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "IdType"),
-            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new NodeClass.Codec().asBinaryCodec(),
-            "NodeClass",
-            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new NodeClass.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "NodeClass"),
-            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new StructureType.Codec().asBinaryCodec(),
-            "StructureType",
-            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new StructureType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "StructureType"),
-            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new ApplicationType.Codec().asBinaryCodec(),
-            "ApplicationType",
-            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new ApplicationType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "ApplicationType"),
-            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new MessageSecurityMode.Codec().asBinaryCodec(),
-            "MessageSecurityMode",
-            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new MessageSecurityMode.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "MessageSecurityMode"),
-            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new UserTokenType.Codec().asBinaryCodec(),
-            "UserTokenType",
-            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new UserTokenType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "UserTokenType"),
-            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new SecurityTokenRequestType.Codec().asBinaryCodec(),
-            "SecurityTokenRequestType",
-            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new SecurityTokenRequestType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "SecurityTokenRequestType"),
-            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new NodeAttributesMask.Codec().asBinaryCodec(),
-            "NodeAttributesMask",
-            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new NodeAttributesMask.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "NodeAttributesMask"),
-            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new FilterOperator.Codec().asBinaryCodec(),
-            "FilterOperator",
-            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new FilterOperator.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "FilterOperator"),
-            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new HistoryUpdateType.Codec().asBinaryCodec(),
-            "HistoryUpdateType",
-            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new HistoryUpdateType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "HistoryUpdateType"),
-            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new PerformUpdateType.Codec().asBinaryCodec(),
-            "PerformUpdateType",
-            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new PerformUpdateType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "PerformUpdateType"),
-            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new RedundancySupport.Codec().asBinaryCodec(),
-            "RedundancySupport",
-            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new RedundancySupport.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "RedundancySupport"),
-            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new ServerState.Codec().asBinaryCodec(),
-            "ServerState",
-            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new ServerState.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "ServerState"),
-            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new AxisScaleEnumeration.Codec().asBinaryCodec(),
-            "AxisScaleEnumeration",
-            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new AxisScaleEnumeration.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "AxisScaleEnumeration"),
-            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new ExceptionDeviationFormat.Codec().asBinaryCodec(),
-            "ExceptionDeviationFormat",
-            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new ExceptionDeviationFormat.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "ExceptionDeviationFormat"),
-            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new BrowseDirection.Codec().asBinaryCodec(),
-            "BrowseDirection",
-            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new BrowseDirection.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "BrowseDirection"),
-            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new BrowseResultMask.Codec().asBinaryCodec(),
-            "BrowseResultMask",
-            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new BrowseResultMask.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "BrowseResultMask"),
-            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new TimestampsToReturn.Codec().asBinaryCodec(),
-            "TimestampsToReturn",
-            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new TimestampsToReturn.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "TimestampsToReturn"),
-            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new MonitoringMode.Codec().asBinaryCodec(),
-            "MonitoringMode",
-            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new MonitoringMode.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "MonitoringMode"),
-            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new DataChangeTrigger.Codec().asBinaryCodec(),
-            "DataChangeTrigger",
-            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new DataChangeTrigger.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "DataChangeTrigger"),
-            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new DeadbandType.Codec().asBinaryCodec(),
-            "DeadbandType",
-            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new DeadbandType.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "DeadbandType"),
-            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        binaryDictionary.registerEnumCodec(
-            new ModelChangeStructureVerbMask.Codec().asBinaryCodec(),
-            "ModelChangeStructureVerbMask",
-            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
-        xmlDictionary.registerEnumCodec(
-            new ModelChangeStructureVerbMask.Codec().asXmlCodec(),
-            String.format("//xs:element[@name='%s']", "ModelChangeStructureVerbMask"),
-            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
-        );
+//        binaryDictionary.registerEnumCodec(
+//            new NamingRuleType.Codec().asBinaryCodec(),
+//            "NamingRuleType",
+//            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new NamingRuleType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "NamingRuleType"),
+//            NamingRuleType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new OpenFileMode.Codec().asBinaryCodec(),
+//            "OpenFileMode",
+//            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new OpenFileMode.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "OpenFileMode"),
+//            OpenFileMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new IdentityCriteriaType.Codec().asBinaryCodec(),
+//            "IdentityCriteriaType",
+//            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new IdentityCriteriaType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "IdentityCriteriaType"),
+//            IdentityCriteriaType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new TrustListMasks.Codec().asBinaryCodec(),
+//            "TrustListMasks",
+//            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new TrustListMasks.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "TrustListMasks"),
+//            TrustListMasks.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new PubSubState.Codec().asBinaryCodec(),
+//            "PubSubState",
+//            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new PubSubState.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "PubSubState"),
+//            PubSubState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new OverrideValueHandling.Codec().asBinaryCodec(),
+//            "OverrideValueHandling",
+//            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new OverrideValueHandling.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "OverrideValueHandling"),
+//            OverrideValueHandling.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new DataSetOrderingType.Codec().asBinaryCodec(),
+//            "DataSetOrderingType",
+//            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new DataSetOrderingType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "DataSetOrderingType"),
+//            DataSetOrderingType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new BrokerTransportQualityOfService.Codec().asBinaryCodec(),
+//            "BrokerTransportQualityOfService",
+//            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new BrokerTransportQualityOfService.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "BrokerTransportQualityOfService"),
+//            BrokerTransportQualityOfService.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new DiagnosticsLevel.Codec().asBinaryCodec(),
+//            "DiagnosticsLevel",
+//            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new DiagnosticsLevel.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "DiagnosticsLevel"),
+//            DiagnosticsLevel.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new PubSubDiagnosticsCounterClassification.Codec().asBinaryCodec(),
+//            "PubSubDiagnosticsCounterClassification",
+//            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new PubSubDiagnosticsCounterClassification.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "PubSubDiagnosticsCounterClassification"),
+//            PubSubDiagnosticsCounterClassification.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new Duplex.Codec().asBinaryCodec(),
+//            "Duplex",
+//            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new Duplex.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "Duplex"),
+//            Duplex.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new InterfaceAdminStatus.Codec().asBinaryCodec(),
+//            "InterfaceAdminStatus",
+//            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new InterfaceAdminStatus.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "InterfaceAdminStatus"),
+//            InterfaceAdminStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new InterfaceOperStatus.Codec().asBinaryCodec(),
+//            "InterfaceOperStatus",
+//            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new InterfaceOperStatus.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "InterfaceOperStatus"),
+//            InterfaceOperStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new NegotiationStatus.Codec().asBinaryCodec(),
+//            "NegotiationStatus",
+//            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new NegotiationStatus.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "NegotiationStatus"),
+//            NegotiationStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new TsnFailureCode.Codec().asBinaryCodec(),
+//            "TsnFailureCode",
+//            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new TsnFailureCode.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "TsnFailureCode"),
+//            TsnFailureCode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new TsnStreamState.Codec().asBinaryCodec(),
+//            "TsnStreamState",
+//            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new TsnStreamState.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "TsnStreamState"),
+//            TsnStreamState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new TsnTalkerStatus.Codec().asBinaryCodec(),
+//            "TsnTalkerStatus",
+//            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new TsnTalkerStatus.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "TsnTalkerStatus"),
+//            TsnTalkerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new TsnListenerStatus.Codec().asBinaryCodec(),
+//            "TsnListenerStatus",
+//            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new TsnListenerStatus.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "TsnListenerStatus"),
+//            TsnListenerStatus.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new IdType.Codec().asBinaryCodec(),
+//            "IdType",
+//            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new IdType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "IdType"),
+//            IdType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new NodeClass.Codec().asBinaryCodec(),
+//            "NodeClass",
+//            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new NodeClass.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "NodeClass"),
+//            NodeClass.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new StructureType.Codec().asBinaryCodec(),
+//            "StructureType",
+//            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new StructureType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "StructureType"),
+//            StructureType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new ApplicationType.Codec().asBinaryCodec(),
+//            "ApplicationType",
+//            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new ApplicationType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "ApplicationType"),
+//            ApplicationType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new MessageSecurityMode.Codec().asBinaryCodec(),
+//            "MessageSecurityMode",
+//            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new MessageSecurityMode.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "MessageSecurityMode"),
+//            MessageSecurityMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new UserTokenType.Codec().asBinaryCodec(),
+//            "UserTokenType",
+//            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new UserTokenType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "UserTokenType"),
+//            UserTokenType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new SecurityTokenRequestType.Codec().asBinaryCodec(),
+//            "SecurityTokenRequestType",
+//            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new SecurityTokenRequestType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "SecurityTokenRequestType"),
+//            SecurityTokenRequestType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new NodeAttributesMask.Codec().asBinaryCodec(),
+//            "NodeAttributesMask",
+//            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new NodeAttributesMask.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "NodeAttributesMask"),
+//            NodeAttributesMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new FilterOperator.Codec().asBinaryCodec(),
+//            "FilterOperator",
+//            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new FilterOperator.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "FilterOperator"),
+//            FilterOperator.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new HistoryUpdateType.Codec().asBinaryCodec(),
+//            "HistoryUpdateType",
+//            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new HistoryUpdateType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "HistoryUpdateType"),
+//            HistoryUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new PerformUpdateType.Codec().asBinaryCodec(),
+//            "PerformUpdateType",
+//            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new PerformUpdateType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "PerformUpdateType"),
+//            PerformUpdateType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new RedundancySupport.Codec().asBinaryCodec(),
+//            "RedundancySupport",
+//            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new RedundancySupport.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "RedundancySupport"),
+//            RedundancySupport.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new ServerState.Codec().asBinaryCodec(),
+//            "ServerState",
+//            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new ServerState.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "ServerState"),
+//            ServerState.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new AxisScaleEnumeration.Codec().asBinaryCodec(),
+//            "AxisScaleEnumeration",
+//            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new AxisScaleEnumeration.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "AxisScaleEnumeration"),
+//            AxisScaleEnumeration.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new ExceptionDeviationFormat.Codec().asBinaryCodec(),
+//            "ExceptionDeviationFormat",
+//            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new ExceptionDeviationFormat.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "ExceptionDeviationFormat"),
+//            ExceptionDeviationFormat.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new BrowseDirection.Codec().asBinaryCodec(),
+//            "BrowseDirection",
+//            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new BrowseDirection.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "BrowseDirection"),
+//            BrowseDirection.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new BrowseResultMask.Codec().asBinaryCodec(),
+//            "BrowseResultMask",
+//            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new BrowseResultMask.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "BrowseResultMask"),
+//            BrowseResultMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new TimestampsToReturn.Codec().asBinaryCodec(),
+//            "TimestampsToReturn",
+//            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new TimestampsToReturn.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "TimestampsToReturn"),
+//            TimestampsToReturn.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new MonitoringMode.Codec().asBinaryCodec(),
+//            "MonitoringMode",
+//            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new MonitoringMode.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "MonitoringMode"),
+//            MonitoringMode.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new DataChangeTrigger.Codec().asBinaryCodec(),
+//            "DataChangeTrigger",
+//            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new DataChangeTrigger.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "DataChangeTrigger"),
+//            DataChangeTrigger.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new DeadbandType.Codec().asBinaryCodec(),
+//            "DeadbandType",
+//            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new DeadbandType.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "DeadbandType"),
+//            DeadbandType.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        binaryDictionary.registerEnumCodec(
+//            new ModelChangeStructureVerbMask.Codec().asBinaryCodec(),
+//            "ModelChangeStructureVerbMask",
+//            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
+//        xmlDictionary.registerEnumCodec(
+//            new ModelChangeStructureVerbMask.Codec().asXmlCodec(),
+//            String.format("//xs:element[@name='%s']", "ModelChangeStructureVerbMask"),
+//            ModelChangeStructureVerbMask.TypeInfo.TYPE_ID.toNodeIdOrThrow(namespaceTable)
+//        );
     }
 
     @Override

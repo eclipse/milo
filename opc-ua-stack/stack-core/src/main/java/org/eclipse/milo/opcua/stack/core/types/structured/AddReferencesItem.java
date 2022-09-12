@@ -7,7 +7,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.StructureType;
 )
 @SuperBuilder
 @ToString
-public class AddReferencesItem extends Structure implements UaStructure {
+public class AddReferencesItem extends Structure implements UaStructuredType {
     public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("ns=0;i=379");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("i=381");
@@ -128,7 +128,7 @@ public class AddReferencesItem extends Structure implements UaStructure {
             Boolean isForward = decoder.readBoolean("IsForward");
             String targetServerUri = decoder.readString("TargetServerUri");
             ExpandedNodeId targetNodeId = decoder.readExpandedNodeId("TargetNodeId");
-            NodeClass targetNodeClass = (NodeClass) decoder.readEnum("TargetNodeClass", NodeClass.class);
+            NodeClass targetNodeClass = NodeClass.from(decoder.readEnum("TargetNodeClass"));
             return new AddReferencesItem(sourceNodeId, referenceTypeId, isForward, targetServerUri, targetNodeId, targetNodeClass);
         }
 

@@ -84,11 +84,7 @@ public interface UaDecoder {
 
     DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException;
 
-    UaMessage readMessage(String field) throws UaSerializationException;
-
-    <T extends Enum<?> & UaEnumeration> T readEnum(String field, Class<T> enumType) throws UaSerializationException;
-
-    UaEnumeration readEnum(String field, NodeId dataTypeId) throws UaSerializationException;
+    UaMessageType readMessage(String field) throws UaSerializationException;
 
     Integer readEnum(String field);
 
@@ -148,19 +144,7 @@ public interface UaDecoder {
 
     DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException;
 
-    <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
-        String field,
-        Class<T> enumType
-    ) throws UaSerializationException;
-
-    UaEnumeration[] readEnumArray(
-        String field,
-        NodeId dataTypeId
-    ) throws UaSerializationException;
-
-    default Integer[] readEnumArray(String field) throws UaSerializationException {
-        return null; // TODO
-    }
+    Integer[] readEnumArray(String field) throws UaSerializationException;
 
     Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
 

@@ -12,32 +12,32 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessageType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 
 public class ServiceResponse {
 
-    private final UaRequestMessage request;
-    private final UaResponseMessage response;
+    private final UaRequestMessageType request;
+    private final UaResponseMessageType response;
     private final long requestId;
     private final boolean serviceFault;
 
-    public ServiceResponse(UaRequestMessage request, long requestId, UaResponseMessage response) {
+    public ServiceResponse(UaRequestMessageType request, long requestId, UaResponseMessageType response) {
         this.request = request;
         this.requestId = requestId;
         this.response = response;
         this.serviceFault = false;
     }
 
-    public ServiceResponse(UaRequestMessage request, long requestId, ServiceFault serviceFault) {
+    public ServiceResponse(UaRequestMessageType request, long requestId, ServiceFault serviceFault) {
         this.request = request;
         this.requestId = requestId;
         this.response = serviceFault;
         this.serviceFault = true;
     }
 
-    public UaRequestMessage getRequest() {
+    public UaRequestMessageType getRequest() {
         return request;
     }
 
@@ -45,7 +45,7 @@ public class ServiceResponse {
         return requestId;
     }
 
-    public UaResponseMessage getResponse() {
+    public UaResponseMessageType getResponse() {
         return response;
     }
 
