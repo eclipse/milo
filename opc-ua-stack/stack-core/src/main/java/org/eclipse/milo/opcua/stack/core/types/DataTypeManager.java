@@ -25,34 +25,12 @@ public interface DataTypeManager {
 
     @Nullable NodeId getJsonEncodingId(NodeId dataTypeId);
 
-    /**
-     * Register a {@link OpcUaBinaryDataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
-     *
-     * @param dataTypeDictionary the {@link DataTypeDictionary} to register.
-     */
-    void registerBinaryTypeDictionary(OpcUaBinaryDataTypeDictionary dataTypeDictionary);
+    default DataTypeDictionary2 getTypeDictionary(String namespaceUri) {
+        return null; // TODO
+    }
 
-    /**
-     * Get a registered {@link OpcUaBinaryDataTypeDictionary} by its namespace URI.
-     *
-     * @param namespaceUri the namespace URI the dictionary is registered under.
-     * @return the {@link DataTypeDictionary} registered under {@code namespaceUri}.
-     */
-    @Nullable OpcUaBinaryDataTypeDictionary getBinaryDataTypeDictionary(String namespaceUri);
-
-    /**
-     * Register a {@link OpcUaXmlDataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
-     *
-     * @param dataTypeDictionary the {@link OpcUaXmlDataTypeDictionary} to register.
-     */
-    void registerXmlTypeDictionary(OpcUaXmlDataTypeDictionary dataTypeDictionary);
-
-    /**
-     * Get a registered {@link OpcUaXmlDataTypeDictionary} by its namespace URI.
-     *
-     * @param namespaceUri the namespace URI the dictionary is registered under.
-     * @return the {@link OpcUaXmlDataTypeDictionary} registered under {@code namespaceUri}.
-     */
-    @Nullable OpcUaXmlDataTypeDictionary getXmlDataTypeDictionary(String namespaceUri);
+    default void registerTypeDictionary(DataTypeDictionary2 dictionary) {
+        // TODO
+    }
 
 }

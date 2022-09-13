@@ -12,10 +12,6 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDataType;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -49,70 +45,6 @@ public abstract class GenericDataTypeCodec<T extends UaDataType> implements Data
     public abstract T decodeType(SerializationContext context, UaDecoder decoder) throws UaSerializationException;
 
     public abstract void encodeType(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException;
-
-    /**
-     * @return a derived instance of {@link OpcUaBinaryDataTypeCodec} that handles serialization of {@link T}.
-     */
-    public final OpcUaBinaryDataTypeCodec asBinaryCodec() {
-        return new AsBinaryDataTypeCodec(this);
-    }
-
-    /**
-     * @return a derived instance of {@link OpcUaXmlDataTypeCodec} that handles serialization of {@link T}.
-     */
-    public final OpcUaXmlDataTypeCodec asXmlCodec() {
-        return new AsXmlDataTypeCodec(this);
-    }
-
-    private static class AsBinaryDataTypeCodec implements OpcUaBinaryDataTypeCodec {
-
-        private final GenericDataTypeCodec<?> codec;
-
-        public AsBinaryDataTypeCodec(GenericDataTypeCodec<?> codec) {
-            this.codec = codec;
-        }
-
-        @Override
-        public Class<?> getType() {
-            return codec.getType();
-        }
-
-        @Override
-        public Object decode(SerializationContext context, OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
-            return codec.decode(context, decoder);
-        }
-
-        @Override
-        public void encode(SerializationContext context, OpcUaBinaryStreamEncoder encoder, Object value) throws UaSerializationException {
-            codec.encode(context, encoder, value);
-        }
-
-    }
-
-    private static class AsXmlDataTypeCodec implements OpcUaXmlDataTypeCodec {
-
-        private final GenericDataTypeCodec<?> codec;
-
-        public AsXmlDataTypeCodec(GenericDataTypeCodec<?> codec) {
-            this.codec = codec;
-        }
-
-        @Override
-        public Class<?> getType() {
-            return codec.getType();
-        }
-
-        @Override
-        public Object decode(SerializationContext context, OpcUaXmlStreamDecoder decoder) throws UaSerializationException {
-            return codec.decode(context, decoder);
-        }
-
-        @Override
-        public void encode(SerializationContext context, OpcUaXmlStreamEncoder encoder, Object value) throws UaSerializationException {
-            codec.encode(context, encoder, value);
-        }
-
-    }
 
 }
 

@@ -30,19 +30,6 @@ public class DefaultDataTypeManager implements DataTypeManager {
         new QualifiedName(0, "Default JSON");
 
     /**
-     * K = String of DataTypeDictionary namespace URI
-     * V = DataTypeDictionary
-     */
-    private final Map<String, OpcUaBinaryDataTypeDictionary> binaryDictionariesByNamespaceUri =
-        new ConcurrentHashMap<>();
-
-    /**
-     * K = String of DataTypeDictionary namespace URI
-     * V = DataTypeDictionary
-     */
-    private final Map<String, OpcUaXmlDataTypeDictionary> xmlDictionariesByNamespaceUri = new ConcurrentHashMap<>();
-
-    /**
      * K = NodeId of DataType Encoding
      * V = DataTypeCodec
      */
@@ -123,45 +110,20 @@ public class DefaultDataTypeManager implements DataTypeManager {
         return byDataTypeId != null ? byDataTypeId.get(dataTypeId) : null;
     }
 
-    @Override
-    public void registerBinaryTypeDictionary(OpcUaBinaryDataTypeDictionary dataTypeDictionary) {
-        binaryDictionariesByNamespaceUri.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
-
+//    @Override
+//    public void registerBinaryTypeDictionary(OpcUaBinaryDataTypeDictionary dataTypeDictionary) {
+//        binaryDictionariesByNamespaceUri.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
+//
 //        dataTypeDictionary.getEnumCodecInfos().forEach(
 //            info ->
 //                registerEnumType(info.dataTypeId, info.codec)
 //        );
-
-        dataTypeDictionary.getStructCodecInfos().forEach(
-            info ->
-                registerType(info.dataTypeId, info.codec, info.encodingId, null, null)
-        );
-    }
-
-    @Override
-    public @Nullable OpcUaBinaryDataTypeDictionary getBinaryDataTypeDictionary(String namespaceUri) {
-        return binaryDictionariesByNamespaceUri.get(namespaceUri);
-    }
-
-    @Override
-    public void registerXmlTypeDictionary(OpcUaXmlDataTypeDictionary dataTypeDictionary) {
-        xmlDictionariesByNamespaceUri.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
-
-//        dataTypeDictionary.getEnumCodecInfos().forEach(
+//
+//        dataTypeDictionary.getStructCodecInfos().forEach(
 //            info ->
-//                registerEnumType(info.dataTypeId, info.codec)
+//                registerType(info.dataTypeId, info.codec, info.encodingId, null, null)
 //        );
-
-        dataTypeDictionary.getStructCodecInfos().forEach(
-            info ->
-                registerType(info.dataTypeId, info.codec, null, info.encodingId, null)
-        );
-    }
-
-    @Override
-    public @Nullable OpcUaXmlDataTypeDictionary getXmlDataTypeDictionary(String namespaceUri) {
-        return xmlDictionariesByNamespaceUri.get(namespaceUri);
-    }
+//    }
 
     private void putCodecForEncoding(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
         Map<NodeId, DataTypeCodec> byDataTypeId = codecsByEncodingName.computeIfAbsent(

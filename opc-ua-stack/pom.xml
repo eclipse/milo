@@ -31,10 +31,6 @@
     </properties>
 
     <modules>
-        <module>bsd-core</module>
-        <module>bsd-generator</module>
-        <module>bsd-parser</module>
-        <module>bsd-parser-gson</module>
         <module>guava-dependencies</module>
         <module>stack-client</module>
         <module>stack-core</module>

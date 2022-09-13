@@ -37,9 +37,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary2;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaXmlDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -884,12 +883,10 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
             String typeName = node.getLocalName();
 
-            OpcUaXmlDataTypeCodec codec = null;
+            DataTypeCodec codec = null;
 
-            // TODO this is totally flawed; what if we're not living in the past and there is no DataTypeDictionary?
-            //  Does DataTypeManager need a getCodec(String) that uses the name from StructureDefinition?
-            OpcUaXmlDataTypeDictionary dictionary = context.getDataTypeManager()
-                .getXmlDataTypeDictionary(Namespaces.OPC_UA_XSD);
+            DataTypeDictionary2 dictionary = context.getDataTypeManager()
+                .getTypeDictionary(Namespaces.OPC_UA_XSD);
 
             if (dictionary != null) {
                 codec = dictionary.getCodec(String.format("//xs:element[@name='%s']", typeName));

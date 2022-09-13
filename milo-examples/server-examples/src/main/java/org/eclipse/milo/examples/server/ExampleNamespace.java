@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.dtd.BinaryDataTypeCodec;
 import org.eclipse.milo.opcua.sdk.server.Lifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -927,7 +928,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         // The dictionary manager will add all the necessary nodes to the AddressSpace and
         // generate the required dictionary bsd.xml file.
         dictionaryManager.registerStructureCodec(
-            new CustomStructType.Codec().asBinaryCodec(),
+            BinaryDataTypeCodec.from(new CustomStructType.Codec()),
             "CustomStructType",
             dataTypeId,
             binaryEncodingId
@@ -1008,7 +1009,7 @@ public class ExampleNamespace extends ManagedNamespaceWithLifecycle {
         );
 
         dictionaryManager.registerUnionCodec(
-            new CustomUnionType.Codec().asBinaryCodec(),
+            BinaryDataTypeCodec.from(new CustomUnionType.Codec()),
             "CustomUnionType",
             dataTypeId,
             binaryEncodingId

@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
-            <artifactId>dictionary-reader</artifactId>
+            <artifactId>dtd-reader</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

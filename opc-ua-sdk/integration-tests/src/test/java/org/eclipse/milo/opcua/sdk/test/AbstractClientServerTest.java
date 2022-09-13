@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.sdk.test;
 
 import java.util.concurrent.ExecutionException;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer2;
+import org.eclipse.milo.opcua.sdk.core.dtd.generic.StructCodec;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -39,7 +39,7 @@ public abstract class AbstractClientServerTest {
         server.startup().get();
 
         client = TestClient.create(server);
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(new GenericBsdParser()));
+        client.addSessionInitializer(new DataTypeDictionarySessionInitializer2(StructCodec::new));
 
         client.connect().get();
     }
