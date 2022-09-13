@@ -12,9 +12,9 @@ package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer;
+import org.eclipse.milo.opcua.sdk.client.dtd.DataTypeDictionarySessionInitializer2;
+import org.eclipse.milo.opcua.sdk.client.dtd.StructCodec;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -46,14 +46,17 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         // Add a SessionInitializer that will read any DataTypeDictionary
         // nodes present in the server every time the session is activated
         // and dynamically generate codecs for custom structures.
-        client.addSessionInitializer(new DataTypeDictionarySessionInitializer(new GenericBsdParser()));
+        client.addSessionInitializer(new DataTypeDictionarySessionInitializer2(
+            (dataTypeId, structuredType, dataTypeTree) ->
+                new StructCodec(dataTypeId, structuredType, dataTypeTree))
+        );
 
         client.connect().get();
 
         DataValue dataValue = client.readValue(
             0.0,
             TimestampsToReturn.Neither,
-            NodeId.parse("ns=2;s=Demo.Static.Scalar.WorkOrder")
+            NodeId.parse("ns=2;s=Person1")
         ).get();
 
         ExtensionObject xo = (ExtensionObject) dataValue.getValue().getValue();
