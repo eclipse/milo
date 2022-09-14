@@ -1099,11 +1099,6 @@ public class SessionFsmFactory {
             UaStackClient stackClient = client.getStackClient();
 
             return runSequentially(stackClient, session, initializers);
-//            CompletableFuture<?>[] futures = initializers.stream()
-//                .map(i -> i.initialize(stackClient, session))
-//                .toArray(CompletableFuture[]::new);
-//
-//            return CompletableFuture.allOf(futures).thenApply(v -> Unit.VALUE);
         }
     }
 

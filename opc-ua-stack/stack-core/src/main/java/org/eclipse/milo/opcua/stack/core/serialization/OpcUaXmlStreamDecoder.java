@@ -1161,57 +1161,6 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         return readArray(field, this::readDiagnosticInfo, DiagnosticInfo.class);
     }
 
-//    @Override
-//    public <T extends Enum<?> & UaEnumeration> Object[] readEnumArray(
-//        String field,
-//        Class<T> enumType
-//    ) throws UaSerializationException {
-//
-//        return readArray(field, s -> readEnum(s, enumType), enumType);
-//    }
-//
-//    @Override
-//    public UaEnumeration[] readEnumArray(String field, NodeId dataTypeId) throws UaSerializationException {
-//        if (currentNode(field)) {
-//            Node node = currentNode;
-//
-//            DataTypeCodec codec = context.getDataTypeManager().getEnumCodec(dataTypeId);
-//
-//            if (codec != null) {
-//                List<UaEnumeration> values = new ArrayList<>();
-//                Node listNode = node.getFirstChild();
-//                NodeList children = listNode.getChildNodes();
-//
-//                for (int i = 0; i < children.getLength(); i++) {
-//                    currentNode = children.item(i);
-//
-//                    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-//                        values.add(readEnum(currentNode.getLocalName(), dataTypeId));
-//                    }
-//                }
-//
-//                try {
-//                    Object array = Array.newInstance(codec.getType(), values.size());
-//                    for (int i = 0; i < values.size(); i++) {
-//                        Array.set(array, i, values.get(i));
-//                    }
-//
-//                    return (UaEnumeration[]) array;
-//                } finally {
-//                    currentNode = node.getNextSibling();
-//                }
-//            } else {
-//                throw new UaSerializationException(
-//                    StatusCodes.Bad_DecodingError,
-//                    "no codec registered: " + dataTypeId
-//                );
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-
-
     @Override
     public Integer[] readEnumArray(String field) throws UaSerializationException {
         if (currentNode(field)) {
