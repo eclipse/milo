@@ -110,18 +110,18 @@ public class ContentFilterElementResult extends Structure implements UaStructure
 
         @Override
         public ContentFilterElementResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] operandStatusCodes = decoder.readStatusCodeArray("OperandStatusCodes");
-            DiagnosticInfo[] operandDiagnosticInfos = decoder.readDiagnosticInfoArray("OperandDiagnosticInfos");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            StatusCode[] operandStatusCodes = decoder.decodeStatusCodeArray("OperandStatusCodes");
+            DiagnosticInfo[] operandDiagnosticInfos = decoder.decodeDiagnosticInfoArray("OperandDiagnosticInfos");
             return new ContentFilterElementResult(statusCode, operandStatusCodes, operandDiagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ContentFilterElementResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeStatusCodeArray("OperandStatusCodes", value.getOperandStatusCodes());
-            encoder.writeDiagnosticInfoArray("OperandDiagnosticInfos", value.getOperandDiagnosticInfos());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeStatusCodeArray("OperandStatusCodes", value.getOperandStatusCodes());
+            encoder.encodeDiagnosticInfoArray("OperandDiagnosticInfos", value.getOperandDiagnosticInfos());
         }
     }
 }

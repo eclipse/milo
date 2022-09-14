@@ -116,19 +116,19 @@ public class ServerOnNetwork extends Structure implements UaStructuredType {
 
         @Override
         public ServerOnNetwork decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger recordId = decoder.readUInt32("RecordId");
-            String serverName = decoder.readString("ServerName");
-            String discoveryUrl = decoder.readString("DiscoveryUrl");
-            String[] serverCapabilities = decoder.readStringArray("ServerCapabilities");
+            UInteger recordId = decoder.decodeUInt32("RecordId");
+            String serverName = decoder.decodeString("ServerName");
+            String discoveryUrl = decoder.decodeString("DiscoveryUrl");
+            String[] serverCapabilities = decoder.decodeStringArray("ServerCapabilities");
             return new ServerOnNetwork(recordId, serverName, discoveryUrl, serverCapabilities);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ServerOnNetwork value) {
-            encoder.writeUInt32("RecordId", value.getRecordId());
-            encoder.writeString("ServerName", value.getServerName());
-            encoder.writeString("DiscoveryUrl", value.getDiscoveryUrl());
-            encoder.writeStringArray("ServerCapabilities", value.getServerCapabilities());
+            encoder.encodeUInt32("RecordId", value.getRecordId());
+            encoder.encodeString("ServerName", value.getServerName());
+            encoder.encodeString("DiscoveryUrl", value.getDiscoveryUrl());
+            encoder.encodeStringArray("ServerCapabilities", value.getServerCapabilities());
         }
     }
 }

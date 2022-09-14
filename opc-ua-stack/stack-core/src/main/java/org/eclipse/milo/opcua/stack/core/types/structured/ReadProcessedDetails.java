@@ -125,22 +125,22 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
 
         @Override
         public ReadProcessedDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime endTime = decoder.readDateTime("EndTime");
-            Double processingInterval = decoder.readDouble("ProcessingInterval");
-            NodeId[] aggregateType = decoder.readNodeIdArray("AggregateType");
-            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.readStruct("AggregateConfiguration", AggregateConfiguration.TYPE_ID);
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime endTime = decoder.decodeDateTime("EndTime");
+            Double processingInterval = decoder.decodeDouble("ProcessingInterval");
+            NodeId[] aggregateType = decoder.decodeNodeIdArray("AggregateType");
+            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.decodeStruct("AggregateConfiguration", AggregateConfiguration.TYPE_ID);
             return new ReadProcessedDetails(startTime, endTime, processingInterval, aggregateType, aggregateConfiguration);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReadProcessedDetails value) {
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("EndTime", value.getEndTime());
-            encoder.writeDouble("ProcessingInterval", value.getProcessingInterval());
-            encoder.writeNodeIdArray("AggregateType", value.getAggregateType());
-            encoder.writeStruct("AggregateConfiguration", value.getAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("EndTime", value.getEndTime());
+            encoder.encodeDouble("ProcessingInterval", value.getProcessingInterval());
+            encoder.encodeNodeIdArray("AggregateType", value.getAggregateType());
+            encoder.encodeStruct("AggregateConfiguration", value.getAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
         }
     }
 }

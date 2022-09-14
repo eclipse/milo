@@ -99,16 +99,16 @@ public class RepublishResponse extends Structure implements UaResponseMessageTyp
 
         @Override
         public RepublishResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            NotificationMessage notificationMessage = (NotificationMessage) decoder.readStruct("NotificationMessage", NotificationMessage.TYPE_ID);
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            NotificationMessage notificationMessage = (NotificationMessage) decoder.decodeStruct("NotificationMessage", NotificationMessage.TYPE_ID);
             return new RepublishResponse(responseHeader, notificationMessage);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RepublishResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStruct("NotificationMessage", value.getNotificationMessage(), NotificationMessage.TYPE_ID);
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStruct("NotificationMessage", value.getNotificationMessage(), NotificationMessage.TYPE_ID);
         }
     }
 }

@@ -108,17 +108,17 @@ public class Annotation extends Structure implements UaStructuredType {
 
         @Override
         public Annotation decodeType(SerializationContext context, UaDecoder decoder) {
-            String message = decoder.readString("Message");
-            String userName = decoder.readString("UserName");
-            DateTime annotationTime = decoder.readDateTime("AnnotationTime");
+            String message = decoder.decodeString("Message");
+            String userName = decoder.decodeString("UserName");
+            DateTime annotationTime = decoder.decodeDateTime("AnnotationTime");
             return new Annotation(message, userName, annotationTime);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, Annotation value) {
-            encoder.writeString("Message", value.getMessage());
-            encoder.writeString("UserName", value.getUserName());
-            encoder.writeDateTime("AnnotationTime", value.getAnnotationTime());
+            encoder.encodeString("Message", value.getMessage());
+            encoder.encodeString("UserName", value.getUserName());
+            encoder.encodeDateTime("AnnotationTime", value.getAnnotationTime());
         }
     }
 }

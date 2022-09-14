@@ -134,24 +134,24 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
 
         @Override
         public ActivateSessionRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            SignatureData clientSignature = (SignatureData) decoder.readStruct("ClientSignature", SignatureData.TYPE_ID);
-            SignedSoftwareCertificate[] clientSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.readStructArray("ClientSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
-            String[] localeIds = decoder.readStringArray("LocaleIds");
-            ExtensionObject userIdentityToken = decoder.readExtensionObject("UserIdentityToken");
-            SignatureData userTokenSignature = (SignatureData) decoder.readStruct("UserTokenSignature", SignatureData.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            SignatureData clientSignature = (SignatureData) decoder.decodeStruct("ClientSignature", SignatureData.TYPE_ID);
+            SignedSoftwareCertificate[] clientSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.decodeStructArray("ClientSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
+            String[] localeIds = decoder.decodeStringArray("LocaleIds");
+            ExtensionObject userIdentityToken = decoder.decodeExtensionObject("UserIdentityToken");
+            SignatureData userTokenSignature = (SignatureData) decoder.decodeStruct("UserTokenSignature", SignatureData.TYPE_ID);
             return new ActivateSessionRequest(requestHeader, clientSignature, clientSoftwareCertificates, localeIds, userIdentityToken, userTokenSignature);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ActivateSessionRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("ClientSignature", value.getClientSignature(), SignatureData.TYPE_ID);
-            encoder.writeStructArray("ClientSoftwareCertificates", value.getClientSoftwareCertificates(), SignedSoftwareCertificate.TYPE_ID);
-            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
-            encoder.writeExtensionObject("UserIdentityToken", value.getUserIdentityToken());
-            encoder.writeStruct("UserTokenSignature", value.getUserTokenSignature(), SignatureData.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("ClientSignature", value.getClientSignature(), SignatureData.TYPE_ID);
+            encoder.encodeStructArray("ClientSoftwareCertificates", value.getClientSoftwareCertificates(), SignedSoftwareCertificate.TYPE_ID);
+            encoder.encodeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.encodeExtensionObject("UserIdentityToken", value.getUserIdentityToken());
+            encoder.encodeStruct("UserTokenSignature", value.getUserTokenSignature(), SignatureData.TYPE_ID);
         }
     }
 }

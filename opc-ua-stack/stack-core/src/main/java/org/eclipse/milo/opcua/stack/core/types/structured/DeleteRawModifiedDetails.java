@@ -111,20 +111,20 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails implements Ua
 
         @Override
         public DeleteRawModifiedDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            Boolean isDeleteModified = decoder.readBoolean("IsDeleteModified");
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime endTime = decoder.readDateTime("EndTime");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            Boolean isDeleteModified = decoder.decodeBoolean("IsDeleteModified");
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime endTime = decoder.decodeDateTime("EndTime");
             return new DeleteRawModifiedDetails(nodeId, isDeleteModified, startTime, endTime);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DeleteRawModifiedDetails value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeBoolean("IsDeleteModified", value.getIsDeleteModified());
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("EndTime", value.getEndTime());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeBoolean("IsDeleteModified", value.getIsDeleteModified());
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("EndTime", value.getEndTime());
         }
     }
 }

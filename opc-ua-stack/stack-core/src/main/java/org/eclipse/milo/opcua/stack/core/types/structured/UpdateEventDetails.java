@@ -111,20 +111,20 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
 
         @Override
         public UpdateEventDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readEnum("PerformInsertReplace"));
-            EventFilter filter = (EventFilter) decoder.readStruct("Filter", EventFilter.TYPE_ID);
-            HistoryEventFieldList[] eventData = (HistoryEventFieldList[]) decoder.readStructArray("EventData", HistoryEventFieldList.TYPE_ID);
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.decodeEnum("PerformInsertReplace"));
+            EventFilter filter = (EventFilter) decoder.decodeStruct("Filter", EventFilter.TYPE_ID);
+            HistoryEventFieldList[] eventData = (HistoryEventFieldList[]) decoder.decodeStructArray("EventData", HistoryEventFieldList.TYPE_ID);
             return new UpdateEventDetails(nodeId, performInsertReplace, filter, eventData);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UpdateEventDetails value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeEnum("PerformInsertReplace", value.getPerformInsertReplace());
-            encoder.writeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);
-            encoder.writeStructArray("EventData", value.getEventData(), HistoryEventFieldList.TYPE_ID);
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeEnum("PerformInsertReplace", value.getPerformInsertReplace());
+            encoder.encodeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);
+            encoder.encodeStructArray("EventData", value.getEventData(), HistoryEventFieldList.TYPE_ID);
         }
     }
 }

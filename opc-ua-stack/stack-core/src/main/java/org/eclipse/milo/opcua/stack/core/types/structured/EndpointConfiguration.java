@@ -155,30 +155,30 @@ public class EndpointConfiguration extends Structure implements UaStructuredType
 
         @Override
         public EndpointConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
-            Integer operationTimeout = decoder.readInt32("OperationTimeout");
-            Boolean useBinaryEncoding = decoder.readBoolean("UseBinaryEncoding");
-            Integer maxStringLength = decoder.readInt32("MaxStringLength");
-            Integer maxByteStringLength = decoder.readInt32("MaxByteStringLength");
-            Integer maxArrayLength = decoder.readInt32("MaxArrayLength");
-            Integer maxMessageSize = decoder.readInt32("MaxMessageSize");
-            Integer maxBufferSize = decoder.readInt32("MaxBufferSize");
-            Integer channelLifetime = decoder.readInt32("ChannelLifetime");
-            Integer securityTokenLifetime = decoder.readInt32("SecurityTokenLifetime");
+            Integer operationTimeout = decoder.decodeInt32("OperationTimeout");
+            Boolean useBinaryEncoding = decoder.decodeBoolean("UseBinaryEncoding");
+            Integer maxStringLength = decoder.decodeInt32("MaxStringLength");
+            Integer maxByteStringLength = decoder.decodeInt32("MaxByteStringLength");
+            Integer maxArrayLength = decoder.decodeInt32("MaxArrayLength");
+            Integer maxMessageSize = decoder.decodeInt32("MaxMessageSize");
+            Integer maxBufferSize = decoder.decodeInt32("MaxBufferSize");
+            Integer channelLifetime = decoder.decodeInt32("ChannelLifetime");
+            Integer securityTokenLifetime = decoder.decodeInt32("SecurityTokenLifetime");
             return new EndpointConfiguration(operationTimeout, useBinaryEncoding, maxStringLength, maxByteStringLength, maxArrayLength, maxMessageSize, maxBufferSize, channelLifetime, securityTokenLifetime);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                EndpointConfiguration value) {
-            encoder.writeInt32("OperationTimeout", value.getOperationTimeout());
-            encoder.writeBoolean("UseBinaryEncoding", value.getUseBinaryEncoding());
-            encoder.writeInt32("MaxStringLength", value.getMaxStringLength());
-            encoder.writeInt32("MaxByteStringLength", value.getMaxByteStringLength());
-            encoder.writeInt32("MaxArrayLength", value.getMaxArrayLength());
-            encoder.writeInt32("MaxMessageSize", value.getMaxMessageSize());
-            encoder.writeInt32("MaxBufferSize", value.getMaxBufferSize());
-            encoder.writeInt32("ChannelLifetime", value.getChannelLifetime());
-            encoder.writeInt32("SecurityTokenLifetime", value.getSecurityTokenLifetime());
+            encoder.encodeInt32("OperationTimeout", value.getOperationTimeout());
+            encoder.encodeBoolean("UseBinaryEncoding", value.getUseBinaryEncoding());
+            encoder.encodeInt32("MaxStringLength", value.getMaxStringLength());
+            encoder.encodeInt32("MaxByteStringLength", value.getMaxByteStringLength());
+            encoder.encodeInt32("MaxArrayLength", value.getMaxArrayLength());
+            encoder.encodeInt32("MaxMessageSize", value.getMaxMessageSize());
+            encoder.encodeInt32("MaxBufferSize", value.getMaxBufferSize());
+            encoder.encodeInt32("ChannelLifetime", value.getChannelLifetime());
+            encoder.encodeInt32("SecurityTokenLifetime", value.getSecurityTokenLifetime());
         }
     }
 }

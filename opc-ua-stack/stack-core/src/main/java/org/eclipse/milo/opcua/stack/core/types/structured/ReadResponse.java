@@ -110,17 +110,17 @@ public class ReadResponse extends Structure implements UaResponseMessageType {
 
         @Override
         public ReadResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            DataValue[] results = decoder.readDataValueArray("Results");
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            DataValue[] results = decoder.decodeDataValueArray("Results");
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new ReadResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ReadResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeDataValueArray("Results", value.getResults());
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeDataValueArray("Results", value.getResults());
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
 }

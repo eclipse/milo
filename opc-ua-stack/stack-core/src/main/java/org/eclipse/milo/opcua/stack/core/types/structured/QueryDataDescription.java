@@ -107,18 +107,18 @@ public class QueryDataDescription extends Structure implements UaStructuredType 
 
         @Override
         public QueryDataDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            RelativePath relativePath = (RelativePath) decoder.readStruct("RelativePath", RelativePath.TYPE_ID);
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String indexRange = decoder.readString("IndexRange");
+            RelativePath relativePath = (RelativePath) decoder.decodeStruct("RelativePath", RelativePath.TYPE_ID);
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String indexRange = decoder.decodeString("IndexRange");
             return new QueryDataDescription(relativePath, attributeId, indexRange);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                QueryDataDescription value) {
-            encoder.writeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
+            encoder.encodeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
         }
     }
 }

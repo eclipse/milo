@@ -117,19 +117,19 @@ public class EndpointType extends Structure implements UaStructuredType {
 
         @Override
         public EndpointType decodeType(SerializationContext context, UaDecoder decoder) {
-            String endpointUrl = decoder.readString("EndpointUrl");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            String transportProfileUri = decoder.readString("TransportProfileUri");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            String transportProfileUri = decoder.decodeString("TransportProfileUri");
             return new EndpointType(endpointUrl, securityMode, securityPolicyUri, transportProfileUri);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EndpointType value) {
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeString("TransportProfileUri", value.getTransportProfileUri());
         }
     }
 }

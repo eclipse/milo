@@ -125,21 +125,21 @@ public class AxisInformation extends Structure implements UaStructuredType {
 
         @Override
         public AxisInformation decodeType(SerializationContext context, UaDecoder decoder) {
-            EUInformation engineeringUnits = (EUInformation) decoder.readStruct("EngineeringUnits", EUInformation.TYPE_ID);
-            Range euRange = (Range) decoder.readStruct("EURange", Range.TYPE_ID);
-            LocalizedText title = decoder.readLocalizedText("Title");
-            AxisScaleEnumeration axisScaleType = AxisScaleEnumeration.from(decoder.readEnum("AxisScaleType"));
-            Double[] axisSteps = decoder.readDoubleArray("AxisSteps");
+            EUInformation engineeringUnits = (EUInformation) decoder.decodeStruct("EngineeringUnits", EUInformation.TYPE_ID);
+            Range euRange = (Range) decoder.decodeStruct("EURange", Range.TYPE_ID);
+            LocalizedText title = decoder.decodeLocalizedText("Title");
+            AxisScaleEnumeration axisScaleType = AxisScaleEnumeration.from(decoder.decodeEnum("AxisScaleType"));
+            Double[] axisSteps = decoder.decodeDoubleArray("AxisSteps");
             return new AxisInformation(engineeringUnits, euRange, title, axisScaleType, axisSteps);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, AxisInformation value) {
-            encoder.writeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
-            encoder.writeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
-            encoder.writeLocalizedText("Title", value.getTitle());
-            encoder.writeEnum("AxisScaleType", value.getAxisScaleType());
-            encoder.writeDoubleArray("AxisSteps", value.getAxisSteps());
+            encoder.encodeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
+            encoder.encodeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
+            encoder.encodeLocalizedText("Title", value.getTitle());
+            encoder.encodeEnum("AxisScaleType", value.getAxisScaleType());
+            encoder.encodeDoubleArray("AxisSteps", value.getAxisSteps());
         }
     }
 }

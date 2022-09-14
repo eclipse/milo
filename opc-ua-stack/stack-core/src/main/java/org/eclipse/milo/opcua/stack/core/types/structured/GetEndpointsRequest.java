@@ -116,20 +116,20 @@ public class GetEndpointsRequest extends Structure implements UaRequestMessageTy
 
         @Override
         public GetEndpointsRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String[] localeIds = decoder.readStringArray("LocaleIds");
-            String[] profileUris = decoder.readStringArray("ProfileUris");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String[] localeIds = decoder.decodeStringArray("LocaleIds");
+            String[] profileUris = decoder.decodeStringArray("ProfileUris");
             return new GetEndpointsRequest(requestHeader, endpointUrl, localeIds, profileUris);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                GetEndpointsRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
-            encoder.writeStringArray("ProfileUris", value.getProfileUris());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.encodeStringArray("ProfileUris", value.getProfileUris());
         }
     }
 }

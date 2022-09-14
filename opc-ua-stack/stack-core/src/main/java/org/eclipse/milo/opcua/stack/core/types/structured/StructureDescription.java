@@ -96,18 +96,18 @@ public class StructureDescription extends DataTypeDescription implements UaStruc
 
         @Override
         public StructureDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId dataTypeId = decoder.readNodeId("DataTypeId");
-            QualifiedName name = decoder.readQualifiedName("Name");
-            StructureDefinition structureDefinition = (StructureDefinition) decoder.readStruct("StructureDefinition", StructureDefinition.TYPE_ID);
+            NodeId dataTypeId = decoder.decodeNodeId("DataTypeId");
+            QualifiedName name = decoder.decodeQualifiedName("Name");
+            StructureDefinition structureDefinition = (StructureDefinition) decoder.decodeStruct("StructureDefinition", StructureDefinition.TYPE_ID);
             return new StructureDescription(dataTypeId, name, structureDefinition);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                StructureDescription value) {
-            encoder.writeNodeId("DataTypeId", value.getDataTypeId());
-            encoder.writeQualifiedName("Name", value.getName());
-            encoder.writeStruct("StructureDefinition", value.getStructureDefinition(), StructureDefinition.TYPE_ID);
+            encoder.encodeNodeId("DataTypeId", value.getDataTypeId());
+            encoder.encodeQualifiedName("Name", value.getName());
+            encoder.encodeStruct("StructureDefinition", value.getStructureDefinition(), StructureDefinition.TYPE_ID);
         }
     }
 }

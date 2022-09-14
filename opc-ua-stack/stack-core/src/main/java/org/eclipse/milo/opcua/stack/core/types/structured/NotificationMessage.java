@@ -110,18 +110,18 @@ public class NotificationMessage extends Structure implements UaStructuredType {
 
         @Override
         public NotificationMessage decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
-            DateTime publishTime = decoder.readDateTime("PublishTime");
-            ExtensionObject[] notificationData = decoder.readExtensionObjectArray("NotificationData");
+            UInteger sequenceNumber = decoder.decodeUInt32("SequenceNumber");
+            DateTime publishTime = decoder.decodeDateTime("PublishTime");
+            ExtensionObject[] notificationData = decoder.decodeExtensionObjectArray("NotificationData");
             return new NotificationMessage(sequenceNumber, publishTime, notificationData);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                NotificationMessage value) {
-            encoder.writeUInt32("SequenceNumber", value.getSequenceNumber());
-            encoder.writeDateTime("PublishTime", value.getPublishTime());
-            encoder.writeExtensionObjectArray("NotificationData", value.getNotificationData());
+            encoder.encodeUInt32("SequenceNumber", value.getSequenceNumber());
+            encoder.encodeDateTime("PublishTime", value.getPublishTime());
+            encoder.encodeExtensionObjectArray("NotificationData", value.getNotificationData());
         }
     }
 }

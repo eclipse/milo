@@ -130,26 +130,26 @@ public class DatagramWriterGroupTransport2DataType extends DatagramWriterGroupTr
         @Override
         public DatagramWriterGroupTransport2DataType decodeType(SerializationContext context,
                                                                 UaDecoder decoder) {
-            UByte messageRepeatCount = decoder.readByte("MessageRepeatCount");
-            Double messageRepeatDelay = decoder.readDouble("MessageRepeatDelay");
-            NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
-            String qosCategory = decoder.readString("QosCategory");
-            TransmitQosDataType[] datagramQos = (TransmitQosDataType[]) decoder.readStructArray("DatagramQos", TransmitQosDataType.TYPE_ID);
-            UInteger discoveryAnnounceRate = decoder.readUInt32("DiscoveryAnnounceRate");
-            String topic = decoder.readString("Topic");
+            UByte messageRepeatCount = decoder.decodeByte("MessageRepeatCount");
+            Double messageRepeatDelay = decoder.decodeDouble("MessageRepeatDelay");
+            NetworkAddressDataType address = (NetworkAddressDataType) decoder.decodeStruct("Address", NetworkAddressDataType.TYPE_ID);
+            String qosCategory = decoder.decodeString("QosCategory");
+            TransmitQosDataType[] datagramQos = (TransmitQosDataType[]) decoder.decodeStructArray("DatagramQos", TransmitQosDataType.TYPE_ID);
+            UInteger discoveryAnnounceRate = decoder.decodeUInt32("DiscoveryAnnounceRate");
+            String topic = decoder.decodeString("Topic");
             return new DatagramWriterGroupTransport2DataType(messageRepeatCount, messageRepeatDelay, address, qosCategory, datagramQos, discoveryAnnounceRate, topic);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DatagramWriterGroupTransport2DataType value) {
-            encoder.writeByte("MessageRepeatCount", value.getMessageRepeatCount());
-            encoder.writeDouble("MessageRepeatDelay", value.getMessageRepeatDelay());
-            encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
-            encoder.writeString("QosCategory", value.getQosCategory());
-            encoder.writeStructArray("DatagramQos", value.getDatagramQos(), TransmitQosDataType.TYPE_ID);
-            encoder.writeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
-            encoder.writeString("Topic", value.getTopic());
+            encoder.encodeByte("MessageRepeatCount", value.getMessageRepeatCount());
+            encoder.encodeDouble("MessageRepeatDelay", value.getMessageRepeatDelay());
+            encoder.encodeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
+            encoder.encodeString("QosCategory", value.getQosCategory());
+            encoder.encodeStructArray("DatagramQos", value.getDatagramQos(), TransmitQosDataType.TYPE_ID);
+            encoder.encodeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
+            encoder.encodeString("Topic", value.getTopic());
         }
     }
 }

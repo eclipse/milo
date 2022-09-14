@@ -110,18 +110,18 @@ public class CreateMonitoredItemsResponse extends Structure implements UaRespons
         @Override
         public CreateMonitoredItemsResponse decodeType(SerializationContext context,
                                                        UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            MonitoredItemCreateResult[] results = (MonitoredItemCreateResult[]) decoder.readStructArray("Results", MonitoredItemCreateResult.TYPE_ID);
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            MonitoredItemCreateResult[] results = (MonitoredItemCreateResult[]) decoder.decodeStructArray("Results", MonitoredItemCreateResult.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new CreateMonitoredItemsResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CreateMonitoredItemsResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("Results", value.getResults(), MonitoredItemCreateResult.TYPE_ID);
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("Results", value.getResults(), MonitoredItemCreateResult.TYPE_ID);
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
 }

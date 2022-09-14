@@ -118,20 +118,20 @@ public class BrokerWriterGroupTransportDataType extends WriterGroupTransportData
         @Override
         public BrokerWriterGroupTransportDataType decodeType(SerializationContext context,
                                                              UaDecoder decoder) {
-            String queueName = decoder.readString("QueueName");
-            String resourceUri = decoder.readString("ResourceUri");
-            String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
-            BrokerTransportQualityOfService requestedDeliveryGuarantee = BrokerTransportQualityOfService.from(decoder.readEnum("RequestedDeliveryGuarantee"));
+            String queueName = decoder.decodeString("QueueName");
+            String resourceUri = decoder.decodeString("ResourceUri");
+            String authenticationProfileUri = decoder.decodeString("AuthenticationProfileUri");
+            BrokerTransportQualityOfService requestedDeliveryGuarantee = BrokerTransportQualityOfService.from(decoder.decodeEnum("RequestedDeliveryGuarantee"));
             return new BrokerWriterGroupTransportDataType(queueName, resourceUri, authenticationProfileUri, requestedDeliveryGuarantee);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                BrokerWriterGroupTransportDataType value) {
-            encoder.writeString("QueueName", value.getQueueName());
-            encoder.writeString("ResourceUri", value.getResourceUri());
-            encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
-            encoder.writeEnum("RequestedDeliveryGuarantee", value.getRequestedDeliveryGuarantee());
+            encoder.encodeString("QueueName", value.getQueueName());
+            encoder.encodeString("ResourceUri", value.getResourceUri());
+            encoder.encodeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
+            encoder.encodeEnum("RequestedDeliveryGuarantee", value.getRequestedDeliveryGuarantee());
         }
     }
 }

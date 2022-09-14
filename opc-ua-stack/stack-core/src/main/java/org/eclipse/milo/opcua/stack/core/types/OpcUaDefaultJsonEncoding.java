@@ -48,7 +48,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
         if (codec != null) {
             var stringWriter = new StringWriter();
             var encoder = new OpcUaJsonEncoder(context, stringWriter);
-            encoder.writeStruct(null, decodedBody, codec);
+            encoder.encodeStruct(null, decodedBody, codec);
 
             return stringWriter.toString();
         } else {
@@ -65,7 +65,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
         if (codec != null) {
             var decoder = new OpcUaJsonDecoder(context, (String) encodedBody);
 
-            return decoder.readStruct(null, codec);
+            return decoder.decodeStruct(null, codec);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,

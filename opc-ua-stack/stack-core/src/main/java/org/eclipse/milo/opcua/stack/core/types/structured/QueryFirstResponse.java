@@ -135,24 +135,24 @@ public class QueryFirstResponse extends Structure implements UaResponseMessageTy
 
         @Override
         public QueryFirstResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            QueryDataSet[] queryDataSets = (QueryDataSet[]) decoder.readStructArray("QueryDataSets", QueryDataSet.TYPE_ID);
-            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
-            ParsingResult[] parsingResults = (ParsingResult[]) decoder.readStructArray("ParsingResults", ParsingResult.TYPE_ID);
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
-            ContentFilterResult filterResult = (ContentFilterResult) decoder.readStruct("FilterResult", ContentFilterResult.TYPE_ID);
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            QueryDataSet[] queryDataSets = (QueryDataSet[]) decoder.decodeStructArray("QueryDataSets", QueryDataSet.TYPE_ID);
+            ByteString continuationPoint = decoder.decodeByteString("ContinuationPoint");
+            ParsingResult[] parsingResults = (ParsingResult[]) decoder.decodeStructArray("ParsingResults", ParsingResult.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
+            ContentFilterResult filterResult = (ContentFilterResult) decoder.decodeStruct("FilterResult", ContentFilterResult.TYPE_ID);
             return new QueryFirstResponse(responseHeader, queryDataSets, continuationPoint, parsingResults, diagnosticInfos, filterResult);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                QueryFirstResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
-            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
-            encoder.writeStructArray("ParsingResults", value.getParsingResults(), ParsingResult.TYPE_ID);
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
-            encoder.writeStruct("FilterResult", value.getFilterResult(), ContentFilterResult.TYPE_ID);
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
+            encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
+            encoder.encodeStructArray("ParsingResults", value.getParsingResults(), ParsingResult.TYPE_ID);
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStruct("FilterResult", value.getFilterResult(), ContentFilterResult.TYPE_ID);
         }
     }
 }

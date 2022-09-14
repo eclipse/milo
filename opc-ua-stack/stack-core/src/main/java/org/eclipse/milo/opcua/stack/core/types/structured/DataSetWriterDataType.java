@@ -159,30 +159,30 @@ public class DataSetWriterDataType extends Structure implements UaStructuredType
 
         @Override
         public DataSetWriterDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            UShort dataSetWriterId = decoder.readUInt16("DataSetWriterId");
-            DataSetFieldContentMask dataSetFieldContentMask = new DataSetFieldContentMask(decoder.readUInt32("DataSetFieldContentMask"));
-            UInteger keyFrameCount = decoder.readUInt32("KeyFrameCount");
-            String dataSetName = decoder.readString("DataSetName");
-            KeyValuePair[] dataSetWriterProperties = (KeyValuePair[]) decoder.readStructArray("DataSetWriterProperties", KeyValuePair.TYPE_ID);
-            DataSetWriterTransportDataType transportSettings = (DataSetWriterTransportDataType) decoder.readStruct("TransportSettings", DataSetWriterTransportDataType.TYPE_ID);
-            DataSetWriterMessageDataType messageSettings = (DataSetWriterMessageDataType) decoder.readStruct("MessageSettings", DataSetWriterMessageDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            UShort dataSetWriterId = decoder.decodeUInt16("DataSetWriterId");
+            DataSetFieldContentMask dataSetFieldContentMask = new DataSetFieldContentMask(decoder.decodeUInt32("DataSetFieldContentMask"));
+            UInteger keyFrameCount = decoder.decodeUInt32("KeyFrameCount");
+            String dataSetName = decoder.decodeString("DataSetName");
+            KeyValuePair[] dataSetWriterProperties = (KeyValuePair[]) decoder.decodeStructArray("DataSetWriterProperties", KeyValuePair.TYPE_ID);
+            DataSetWriterTransportDataType transportSettings = (DataSetWriterTransportDataType) decoder.decodeStruct("TransportSettings", DataSetWriterTransportDataType.TYPE_ID);
+            DataSetWriterMessageDataType messageSettings = (DataSetWriterMessageDataType) decoder.decodeStruct("MessageSettings", DataSetWriterMessageDataType.TYPE_ID);
             return new DataSetWriterDataType(name, enabled, dataSetWriterId, dataSetFieldContentMask, keyFrameCount, dataSetName, dataSetWriterProperties, transportSettings, messageSettings);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DataSetWriterDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeUInt16("DataSetWriterId", value.getDataSetWriterId());
-            encoder.writeUInt32("DataSetFieldContentMask", value.getDataSetFieldContentMask().getValue());
-            encoder.writeUInt32("KeyFrameCount", value.getKeyFrameCount());
-            encoder.writeString("DataSetName", value.getDataSetName());
-            encoder.writeStructArray("DataSetWriterProperties", value.getDataSetWriterProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), DataSetWriterTransportDataType.TYPE_ID);
-            encoder.writeStruct("MessageSettings", value.getMessageSettings(), DataSetWriterMessageDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeUInt16("DataSetWriterId", value.getDataSetWriterId());
+            encoder.encodeUInt32("DataSetFieldContentMask", value.getDataSetFieldContentMask().getValue());
+            encoder.encodeUInt32("KeyFrameCount", value.getKeyFrameCount());
+            encoder.encodeString("DataSetName", value.getDataSetName());
+            encoder.encodeStructArray("DataSetWriterProperties", value.getDataSetWriterProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), DataSetWriterTransportDataType.TYPE_ID);
+            encoder.encodeStruct("MessageSettings", value.getMessageSettings(), DataSetWriterMessageDataType.TYPE_ID);
         }
     }
 }

@@ -122,22 +122,22 @@ public class TrustListDataType extends Structure implements UaStructuredType {
 
         @Override
         public TrustListDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger specifiedLists = decoder.readUInt32("SpecifiedLists");
-            ByteString[] trustedCertificates = decoder.readByteStringArray("TrustedCertificates");
-            ByteString[] trustedCrls = decoder.readByteStringArray("TrustedCrls");
-            ByteString[] issuerCertificates = decoder.readByteStringArray("IssuerCertificates");
-            ByteString[] issuerCrls = decoder.readByteStringArray("IssuerCrls");
+            UInteger specifiedLists = decoder.decodeUInt32("SpecifiedLists");
+            ByteString[] trustedCertificates = decoder.decodeByteStringArray("TrustedCertificates");
+            ByteString[] trustedCrls = decoder.decodeByteStringArray("TrustedCrls");
+            ByteString[] issuerCertificates = decoder.decodeByteStringArray("IssuerCertificates");
+            ByteString[] issuerCrls = decoder.decodeByteStringArray("IssuerCrls");
             return new TrustListDataType(specifiedLists, trustedCertificates, trustedCrls, issuerCertificates, issuerCrls);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                TrustListDataType value) {
-            encoder.writeUInt32("SpecifiedLists", value.getSpecifiedLists());
-            encoder.writeByteStringArray("TrustedCertificates", value.getTrustedCertificates());
-            encoder.writeByteStringArray("TrustedCrls", value.getTrustedCrls());
-            encoder.writeByteStringArray("IssuerCertificates", value.getIssuerCertificates());
-            encoder.writeByteStringArray("IssuerCrls", value.getIssuerCrls());
+            encoder.encodeUInt32("SpecifiedLists", value.getSpecifiedLists());
+            encoder.encodeByteStringArray("TrustedCertificates", value.getTrustedCertificates());
+            encoder.encodeByteStringArray("TrustedCrls", value.getTrustedCrls());
+            encoder.encodeByteStringArray("IssuerCertificates", value.getIssuerCertificates());
+            encoder.encodeByteStringArray("IssuerCrls", value.getIssuerCrls());
         }
     }
 }

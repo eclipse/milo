@@ -168,32 +168,32 @@ public class CreateSessionResponse extends Structure implements UaResponseMessag
 
         @Override
         public CreateSessionResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            NodeId sessionId = decoder.readNodeId("SessionId");
-            NodeId authenticationToken = decoder.readNodeId("AuthenticationToken");
-            Double revisedSessionTimeout = decoder.readDouble("RevisedSessionTimeout");
-            ByteString serverNonce = decoder.readByteString("ServerNonce");
-            ByteString serverCertificate = decoder.readByteString("ServerCertificate");
-            EndpointDescription[] serverEndpoints = (EndpointDescription[]) decoder.readStructArray("ServerEndpoints", EndpointDescription.TYPE_ID);
-            SignedSoftwareCertificate[] serverSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.readStructArray("ServerSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
-            SignatureData serverSignature = (SignatureData) decoder.readStruct("ServerSignature", SignatureData.TYPE_ID);
-            UInteger maxRequestMessageSize = decoder.readUInt32("MaxRequestMessageSize");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            NodeId sessionId = decoder.decodeNodeId("SessionId");
+            NodeId authenticationToken = decoder.decodeNodeId("AuthenticationToken");
+            Double revisedSessionTimeout = decoder.decodeDouble("RevisedSessionTimeout");
+            ByteString serverNonce = decoder.decodeByteString("ServerNonce");
+            ByteString serverCertificate = decoder.decodeByteString("ServerCertificate");
+            EndpointDescription[] serverEndpoints = (EndpointDescription[]) decoder.decodeStructArray("ServerEndpoints", EndpointDescription.TYPE_ID);
+            SignedSoftwareCertificate[] serverSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.decodeStructArray("ServerSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
+            SignatureData serverSignature = (SignatureData) decoder.decodeStruct("ServerSignature", SignatureData.TYPE_ID);
+            UInteger maxRequestMessageSize = decoder.decodeUInt32("MaxRequestMessageSize");
             return new CreateSessionResponse(responseHeader, sessionId, authenticationToken, revisedSessionTimeout, serverNonce, serverCertificate, serverEndpoints, serverSoftwareCertificates, serverSignature, maxRequestMessageSize);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CreateSessionResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeNodeId("SessionId", value.getSessionId());
-            encoder.writeNodeId("AuthenticationToken", value.getAuthenticationToken());
-            encoder.writeDouble("RevisedSessionTimeout", value.getRevisedSessionTimeout());
-            encoder.writeByteString("ServerNonce", value.getServerNonce());
-            encoder.writeByteString("ServerCertificate", value.getServerCertificate());
-            encoder.writeStructArray("ServerEndpoints", value.getServerEndpoints(), EndpointDescription.TYPE_ID);
-            encoder.writeStructArray("ServerSoftwareCertificates", value.getServerSoftwareCertificates(), SignedSoftwareCertificate.TYPE_ID);
-            encoder.writeStruct("ServerSignature", value.getServerSignature(), SignatureData.TYPE_ID);
-            encoder.writeUInt32("MaxRequestMessageSize", value.getMaxRequestMessageSize());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeNodeId("SessionId", value.getSessionId());
+            encoder.encodeNodeId("AuthenticationToken", value.getAuthenticationToken());
+            encoder.encodeDouble("RevisedSessionTimeout", value.getRevisedSessionTimeout());
+            encoder.encodeByteString("ServerNonce", value.getServerNonce());
+            encoder.encodeByteString("ServerCertificate", value.getServerCertificate());
+            encoder.encodeStructArray("ServerEndpoints", value.getServerEndpoints(), EndpointDescription.TYPE_ID);
+            encoder.encodeStructArray("ServerSoftwareCertificates", value.getServerSoftwareCertificates(), SignedSoftwareCertificate.TYPE_ID);
+            encoder.encodeStruct("ServerSignature", value.getServerSignature(), SignatureData.TYPE_ID);
+            encoder.encodeUInt32("MaxRequestMessageSize", value.getMaxRequestMessageSize());
         }
     }
 }

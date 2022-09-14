@@ -116,20 +116,20 @@ public class StructureDefinition extends DataTypeDefinition implements UaStructu
 
         @Override
         public StructureDefinition decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId defaultEncodingId = decoder.readNodeId("DefaultEncodingId");
-            NodeId baseDataType = decoder.readNodeId("BaseDataType");
-            StructureType structureType = StructureType.from(decoder.readEnum("StructureType"));
-            StructureField[] fields = (StructureField[]) decoder.readStructArray("Fields", StructureField.TYPE_ID);
+            NodeId defaultEncodingId = decoder.decodeNodeId("DefaultEncodingId");
+            NodeId baseDataType = decoder.decodeNodeId("BaseDataType");
+            StructureType structureType = StructureType.from(decoder.decodeEnum("StructureType"));
+            StructureField[] fields = (StructureField[]) decoder.decodeStructArray("Fields", StructureField.TYPE_ID);
             return new StructureDefinition(defaultEncodingId, baseDataType, structureType, fields);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                StructureDefinition value) {
-            encoder.writeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
-            encoder.writeNodeId("BaseDataType", value.getBaseDataType());
-            encoder.writeEnum("StructureType", value.getStructureType());
-            encoder.writeStructArray("Fields", value.getFields(), StructureField.TYPE_ID);
+            encoder.encodeNodeId("DefaultEncodingId", value.getDefaultEncodingId());
+            encoder.encodeNodeId("BaseDataType", value.getBaseDataType());
+            encoder.encodeEnum("StructureType", value.getStructureType());
+            encoder.encodeStructArray("Fields", value.getFields(), StructureField.TYPE_ID);
         }
     }
 }

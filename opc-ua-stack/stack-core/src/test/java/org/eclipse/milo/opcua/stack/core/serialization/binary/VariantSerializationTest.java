@@ -104,7 +104,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         buffer.writeByte(BuiltinDataType.Int16.getTypeId() | (1 << 7));
         buffer.writeIntLE(-1);
 
-        OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(new TestSerializationContext());
+        OpcUaBinaryDecoder reader = new OpcUaBinaryDecoder(new TestSerializationContext());
         reader.setBuffer(buffer);
 
         Variant v = reader.readVariant();

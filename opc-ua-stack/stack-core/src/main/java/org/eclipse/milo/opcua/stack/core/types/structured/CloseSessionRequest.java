@@ -99,16 +99,16 @@ public class CloseSessionRequest extends Structure implements UaRequestMessageTy
 
         @Override
         public CloseSessionRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            Boolean deleteSubscriptions = decoder.readBoolean("DeleteSubscriptions");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            Boolean deleteSubscriptions = decoder.decodeBoolean("DeleteSubscriptions");
             return new CloseSessionRequest(requestHeader, deleteSubscriptions);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CloseSessionRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeBoolean("DeleteSubscriptions", value.getDeleteSubscriptions());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeBoolean("DeleteSubscriptions", value.getDeleteSubscriptions());
         }
     }
 }

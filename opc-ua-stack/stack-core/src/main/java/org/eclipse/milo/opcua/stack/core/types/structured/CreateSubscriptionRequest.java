@@ -142,26 +142,26 @@ public class CreateSubscriptionRequest extends Structure implements UaRequestMes
 
         @Override
         public CreateSubscriptionRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            Double requestedPublishingInterval = decoder.readDouble("RequestedPublishingInterval");
-            UInteger requestedLifetimeCount = decoder.readUInt32("RequestedLifetimeCount");
-            UInteger requestedMaxKeepAliveCount = decoder.readUInt32("RequestedMaxKeepAliveCount");
-            UInteger maxNotificationsPerPublish = decoder.readUInt32("MaxNotificationsPerPublish");
-            Boolean publishingEnabled = decoder.readBoolean("PublishingEnabled");
-            UByte priority = decoder.readByte("Priority");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            Double requestedPublishingInterval = decoder.decodeDouble("RequestedPublishingInterval");
+            UInteger requestedLifetimeCount = decoder.decodeUInt32("RequestedLifetimeCount");
+            UInteger requestedMaxKeepAliveCount = decoder.decodeUInt32("RequestedMaxKeepAliveCount");
+            UInteger maxNotificationsPerPublish = decoder.decodeUInt32("MaxNotificationsPerPublish");
+            Boolean publishingEnabled = decoder.decodeBoolean("PublishingEnabled");
+            UByte priority = decoder.decodeByte("Priority");
             return new CreateSubscriptionRequest(requestHeader, requestedPublishingInterval, requestedLifetimeCount, requestedMaxKeepAliveCount, maxNotificationsPerPublish, publishingEnabled, priority);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CreateSubscriptionRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeDouble("RequestedPublishingInterval", value.getRequestedPublishingInterval());
-            encoder.writeUInt32("RequestedLifetimeCount", value.getRequestedLifetimeCount());
-            encoder.writeUInt32("RequestedMaxKeepAliveCount", value.getRequestedMaxKeepAliveCount());
-            encoder.writeUInt32("MaxNotificationsPerPublish", value.getMaxNotificationsPerPublish());
-            encoder.writeBoolean("PublishingEnabled", value.getPublishingEnabled());
-            encoder.writeByte("Priority", value.getPriority());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeDouble("RequestedPublishingInterval", value.getRequestedPublishingInterval());
+            encoder.encodeUInt32("RequestedLifetimeCount", value.getRequestedLifetimeCount());
+            encoder.encodeUInt32("RequestedMaxKeepAliveCount", value.getRequestedMaxKeepAliveCount());
+            encoder.encodeUInt32("MaxNotificationsPerPublish", value.getMaxNotificationsPerPublish());
+            encoder.encodeBoolean("PublishingEnabled", value.getPublishingEnabled());
+            encoder.encodeByte("Priority", value.getPriority());
         }
     }
 }

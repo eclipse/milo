@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertThrows;
 
-public class OpcUaBinaryStreamDecoderTest {
+public class OpcUaBinaryDecoderTest {
 
     @Test
     public void testReadDiagnosticInfoStackOverflow() {
@@ -31,7 +31,7 @@ public class OpcUaBinaryStreamDecoderTest {
 
         assertThrows(UaSerializationException.class,
             () ->
-                new OpcUaBinaryStreamDecoder(new TestSerializationContext())
+                new OpcUaBinaryDecoder(new TestSerializationContext())
                     .setBuffer(buffer)
                     .readDiagnosticInfo()
         );
@@ -54,7 +54,7 @@ public class OpcUaBinaryStreamDecoderTest {
 
         assertThrows(UaSerializationException.class,
             () ->
-                new OpcUaBinaryStreamDecoder(new TestSerializationContext())
+                new OpcUaBinaryDecoder(new TestSerializationContext())
                     .setBuffer(buffer)
                     .readVariant()
         );
@@ -74,7 +74,7 @@ public class OpcUaBinaryStreamDecoderTest {
 
         assertThrows(UaSerializationException.class,
             () ->
-                new OpcUaBinaryStreamDecoder(new TestSerializationContext())
+                new OpcUaBinaryDecoder(new TestSerializationContext())
                     .setBuffer(buffer)
                     .readVariant()
         );

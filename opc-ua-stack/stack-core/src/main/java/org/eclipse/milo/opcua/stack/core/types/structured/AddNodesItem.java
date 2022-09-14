@@ -144,25 +144,25 @@ public class AddNodesItem extends Structure implements UaStructuredType {
 
         @Override
         public AddNodesItem decodeType(SerializationContext context, UaDecoder decoder) {
-            ExpandedNodeId parentNodeId = decoder.readExpandedNodeId("ParentNodeId");
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            ExpandedNodeId requestedNewNodeId = decoder.readExpandedNodeId("RequestedNewNodeId");
-            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
-            NodeClass nodeClass = NodeClass.from(decoder.readEnum("NodeClass"));
-            ExtensionObject nodeAttributes = decoder.readExtensionObject("NodeAttributes");
-            ExpandedNodeId typeDefinition = decoder.readExpandedNodeId("TypeDefinition");
+            ExpandedNodeId parentNodeId = decoder.decodeExpandedNodeId("ParentNodeId");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            ExpandedNodeId requestedNewNodeId = decoder.decodeExpandedNodeId("RequestedNewNodeId");
+            QualifiedName browseName = decoder.decodeQualifiedName("BrowseName");
+            NodeClass nodeClass = NodeClass.from(decoder.decodeEnum("NodeClass"));
+            ExtensionObject nodeAttributes = decoder.decodeExtensionObject("NodeAttributes");
+            ExpandedNodeId typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
             return new AddNodesItem(parentNodeId, referenceTypeId, requestedNewNodeId, browseName, nodeClass, nodeAttributes, typeDefinition);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, AddNodesItem value) {
-            encoder.writeExpandedNodeId("ParentNodeId", value.getParentNodeId());
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeExpandedNodeId("RequestedNewNodeId", value.getRequestedNewNodeId());
-            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
-            encoder.writeEnum("NodeClass", value.getNodeClass());
-            encoder.writeExtensionObject("NodeAttributes", value.getNodeAttributes());
-            encoder.writeExpandedNodeId("TypeDefinition", value.getTypeDefinition());
+            encoder.encodeExpandedNodeId("ParentNodeId", value.getParentNodeId());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeExpandedNodeId("RequestedNewNodeId", value.getRequestedNewNodeId());
+            encoder.encodeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.encodeEnum("NodeClass", value.getNodeClass());
+            encoder.encodeExtensionObject("NodeAttributes", value.getNodeAttributes());
+            encoder.encodeExpandedNodeId("TypeDefinition", value.getTypeDefinition());
         }
     }
 }

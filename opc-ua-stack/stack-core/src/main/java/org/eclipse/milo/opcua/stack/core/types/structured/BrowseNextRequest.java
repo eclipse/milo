@@ -109,18 +109,18 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
 
         @Override
         public BrowseNextRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
-            ByteString[] continuationPoints = decoder.readByteStringArray("ContinuationPoints");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            Boolean releaseContinuationPoints = decoder.decodeBoolean("ReleaseContinuationPoints");
+            ByteString[] continuationPoints = decoder.decodeByteStringArray("ContinuationPoints");
             return new BrowseNextRequest(requestHeader, releaseContinuationPoints, continuationPoints);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                BrowseNextRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
-            encoder.writeByteStringArray("ContinuationPoints", value.getContinuationPoints());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
+            encoder.encodeByteStringArray("ContinuationPoints", value.getContinuationPoints());
         }
     }
 }

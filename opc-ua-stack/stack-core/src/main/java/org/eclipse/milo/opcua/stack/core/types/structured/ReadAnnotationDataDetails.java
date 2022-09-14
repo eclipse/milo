@@ -92,14 +92,14 @@ public class ReadAnnotationDataDetails extends HistoryReadDetails implements UaS
 
         @Override
         public ReadAnnotationDataDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime[] reqTimes = decoder.readDateTimeArray("ReqTimes");
+            DateTime[] reqTimes = decoder.decodeDateTimeArray("ReqTimes");
             return new ReadAnnotationDataDetails(reqTimes);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReadAnnotationDataDetails value) {
-            encoder.writeDateTimeArray("ReqTimes", value.getReqTimes());
+            encoder.encodeDateTimeArray("ReqTimes", value.getReqTimes());
         }
     }
 }

@@ -140,25 +140,25 @@ public class StructureField extends Structure implements UaStructuredType {
 
         @Override
         public StructureField decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            NodeId dataType = decoder.readNodeId("DataType");
-            Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
-            UInteger maxStringLength = decoder.readUInt32("MaxStringLength");
-            Boolean isOptional = decoder.readBoolean("IsOptional");
+            String name = decoder.decodeString("Name");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            NodeId dataType = decoder.decodeNodeId("DataType");
+            Integer valueRank = decoder.decodeInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.decodeUInt32Array("ArrayDimensions");
+            UInteger maxStringLength = decoder.decodeUInt32("MaxStringLength");
+            Boolean isOptional = decoder.decodeBoolean("IsOptional");
             return new StructureField(name, description, dataType, valueRank, arrayDimensions, maxStringLength, isOptional);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, StructureField value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeNodeId("DataType", value.getDataType());
-            encoder.writeInt32("ValueRank", value.getValueRank());
-            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
-            encoder.writeUInt32("MaxStringLength", value.getMaxStringLength());
-            encoder.writeBoolean("IsOptional", value.getIsOptional());
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeNodeId("DataType", value.getDataType());
+            encoder.encodeInt32("ValueRank", value.getValueRank());
+            encoder.encodeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.encodeUInt32("MaxStringLength", value.getMaxStringLength());
+            encoder.encodeBoolean("IsOptional", value.getIsOptional());
         }
     }
 }

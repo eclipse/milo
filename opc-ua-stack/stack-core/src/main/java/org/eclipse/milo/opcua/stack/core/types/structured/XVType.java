@@ -99,15 +99,15 @@ public class XVType extends Structure implements UaStructuredType {
 
         @Override
         public XVType decodeType(SerializationContext context, UaDecoder decoder) {
-            Double x = decoder.readDouble("X");
-            Float value = decoder.readFloat("Value");
+            Double x = decoder.decodeDouble("X");
+            Float value = decoder.decodeFloat("Value");
             return new XVType(x, value);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, XVType value) {
-            encoder.writeDouble("X", value.getX());
-            encoder.writeFloat("Value", value.getValue());
+            encoder.encodeDouble("X", value.getX());
+            encoder.encodeFloat("Value", value.getValue());
         }
     }
 }

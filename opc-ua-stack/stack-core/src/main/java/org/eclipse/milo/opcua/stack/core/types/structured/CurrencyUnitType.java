@@ -116,20 +116,20 @@ public class CurrencyUnitType extends Structure implements UaStructuredType {
 
         @Override
         public CurrencyUnitType decodeType(SerializationContext context, UaDecoder decoder) {
-            Short numericCode = decoder.readInt16("NumericCode");
-            Byte exponent = decoder.readSByte("Exponent");
-            String alphabeticCode = decoder.readString("AlphabeticCode");
-            LocalizedText currency = decoder.readLocalizedText("Currency");
+            Short numericCode = decoder.decodeInt16("NumericCode");
+            Byte exponent = decoder.decodeSByte("Exponent");
+            String alphabeticCode = decoder.decodeString("AlphabeticCode");
+            LocalizedText currency = decoder.decodeLocalizedText("Currency");
             return new CurrencyUnitType(numericCode, exponent, alphabeticCode, currency);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CurrencyUnitType value) {
-            encoder.writeInt16("NumericCode", value.getNumericCode());
-            encoder.writeSByte("Exponent", value.getExponent());
-            encoder.writeString("AlphabeticCode", value.getAlphabeticCode());
-            encoder.writeLocalizedText("Currency", value.getCurrency());
+            encoder.encodeInt16("NumericCode", value.getNumericCode());
+            encoder.encodeSByte("Exponent", value.getExponent());
+            encoder.encodeString("AlphabeticCode", value.getAlphabeticCode());
+            encoder.encodeLocalizedText("Currency", value.getCurrency());
         }
     }
 }

@@ -94,16 +94,16 @@ public class DeleteEventDetails extends HistoryUpdateDetails implements UaStruct
 
         @Override
         public DeleteEventDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            ByteString[] eventIds = decoder.readByteStringArray("EventIds");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            ByteString[] eventIds = decoder.decodeByteStringArray("EventIds");
             return new DeleteEventDetails(nodeId, eventIds);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DeleteEventDetails value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeByteStringArray("EventIds", value.getEventIds());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeByteStringArray("EventIds", value.getEventIds());
         }
     }
 }

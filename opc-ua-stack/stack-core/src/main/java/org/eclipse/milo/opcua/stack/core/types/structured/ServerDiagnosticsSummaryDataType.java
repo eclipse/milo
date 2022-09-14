@@ -185,36 +185,36 @@ public class ServerDiagnosticsSummaryDataType extends Structure implements UaStr
         @Override
         public ServerDiagnosticsSummaryDataType decodeType(SerializationContext context,
                                                            UaDecoder decoder) {
-            UInteger serverViewCount = decoder.readUInt32("ServerViewCount");
-            UInteger currentSessionCount = decoder.readUInt32("CurrentSessionCount");
-            UInteger cumulatedSessionCount = decoder.readUInt32("CumulatedSessionCount");
-            UInteger securityRejectedSessionCount = decoder.readUInt32("SecurityRejectedSessionCount");
-            UInteger rejectedSessionCount = decoder.readUInt32("RejectedSessionCount");
-            UInteger sessionTimeoutCount = decoder.readUInt32("SessionTimeoutCount");
-            UInteger sessionAbortCount = decoder.readUInt32("SessionAbortCount");
-            UInteger currentSubscriptionCount = decoder.readUInt32("CurrentSubscriptionCount");
-            UInteger cumulatedSubscriptionCount = decoder.readUInt32("CumulatedSubscriptionCount");
-            UInteger publishingIntervalCount = decoder.readUInt32("PublishingIntervalCount");
-            UInteger securityRejectedRequestsCount = decoder.readUInt32("SecurityRejectedRequestsCount");
-            UInteger rejectedRequestsCount = decoder.readUInt32("RejectedRequestsCount");
+            UInteger serverViewCount = decoder.decodeUInt32("ServerViewCount");
+            UInteger currentSessionCount = decoder.decodeUInt32("CurrentSessionCount");
+            UInteger cumulatedSessionCount = decoder.decodeUInt32("CumulatedSessionCount");
+            UInteger securityRejectedSessionCount = decoder.decodeUInt32("SecurityRejectedSessionCount");
+            UInteger rejectedSessionCount = decoder.decodeUInt32("RejectedSessionCount");
+            UInteger sessionTimeoutCount = decoder.decodeUInt32("SessionTimeoutCount");
+            UInteger sessionAbortCount = decoder.decodeUInt32("SessionAbortCount");
+            UInteger currentSubscriptionCount = decoder.decodeUInt32("CurrentSubscriptionCount");
+            UInteger cumulatedSubscriptionCount = decoder.decodeUInt32("CumulatedSubscriptionCount");
+            UInteger publishingIntervalCount = decoder.decodeUInt32("PublishingIntervalCount");
+            UInteger securityRejectedRequestsCount = decoder.decodeUInt32("SecurityRejectedRequestsCount");
+            UInteger rejectedRequestsCount = decoder.decodeUInt32("RejectedRequestsCount");
             return new ServerDiagnosticsSummaryDataType(serverViewCount, currentSessionCount, cumulatedSessionCount, securityRejectedSessionCount, rejectedSessionCount, sessionTimeoutCount, sessionAbortCount, currentSubscriptionCount, cumulatedSubscriptionCount, publishingIntervalCount, securityRejectedRequestsCount, rejectedRequestsCount);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ServerDiagnosticsSummaryDataType value) {
-            encoder.writeUInt32("ServerViewCount", value.getServerViewCount());
-            encoder.writeUInt32("CurrentSessionCount", value.getCurrentSessionCount());
-            encoder.writeUInt32("CumulatedSessionCount", value.getCumulatedSessionCount());
-            encoder.writeUInt32("SecurityRejectedSessionCount", value.getSecurityRejectedSessionCount());
-            encoder.writeUInt32("RejectedSessionCount", value.getRejectedSessionCount());
-            encoder.writeUInt32("SessionTimeoutCount", value.getSessionTimeoutCount());
-            encoder.writeUInt32("SessionAbortCount", value.getSessionAbortCount());
-            encoder.writeUInt32("CurrentSubscriptionCount", value.getCurrentSubscriptionCount());
-            encoder.writeUInt32("CumulatedSubscriptionCount", value.getCumulatedSubscriptionCount());
-            encoder.writeUInt32("PublishingIntervalCount", value.getPublishingIntervalCount());
-            encoder.writeUInt32("SecurityRejectedRequestsCount", value.getSecurityRejectedRequestsCount());
-            encoder.writeUInt32("RejectedRequestsCount", value.getRejectedRequestsCount());
+            encoder.encodeUInt32("ServerViewCount", value.getServerViewCount());
+            encoder.encodeUInt32("CurrentSessionCount", value.getCurrentSessionCount());
+            encoder.encodeUInt32("CumulatedSessionCount", value.getCumulatedSessionCount());
+            encoder.encodeUInt32("SecurityRejectedSessionCount", value.getSecurityRejectedSessionCount());
+            encoder.encodeUInt32("RejectedSessionCount", value.getRejectedSessionCount());
+            encoder.encodeUInt32("SessionTimeoutCount", value.getSessionTimeoutCount());
+            encoder.encodeUInt32("SessionAbortCount", value.getSessionAbortCount());
+            encoder.encodeUInt32("CurrentSubscriptionCount", value.getCurrentSubscriptionCount());
+            encoder.encodeUInt32("CumulatedSubscriptionCount", value.getCumulatedSubscriptionCount());
+            encoder.encodeUInt32("PublishingIntervalCount", value.getPublishingIntervalCount());
+            encoder.encodeUInt32("SecurityRejectedRequestsCount", value.getSecurityRejectedRequestsCount());
+            encoder.encodeUInt32("RejectedRequestsCount", value.getRejectedRequestsCount());
         }
     }
 }

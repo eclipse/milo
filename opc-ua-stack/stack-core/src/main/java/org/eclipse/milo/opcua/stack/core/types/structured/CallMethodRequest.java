@@ -108,18 +108,18 @@ public class CallMethodRequest extends Structure implements UaStructuredType {
 
         @Override
         public CallMethodRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId objectId = decoder.readNodeId("ObjectId");
-            NodeId methodId = decoder.readNodeId("MethodId");
-            Variant[] inputArguments = decoder.readVariantArray("InputArguments");
+            NodeId objectId = decoder.decodeNodeId("ObjectId");
+            NodeId methodId = decoder.decodeNodeId("MethodId");
+            Variant[] inputArguments = decoder.decodeVariantArray("InputArguments");
             return new CallMethodRequest(objectId, methodId, inputArguments);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CallMethodRequest value) {
-            encoder.writeNodeId("ObjectId", value.getObjectId());
-            encoder.writeNodeId("MethodId", value.getMethodId());
-            encoder.writeVariantArray("InputArguments", value.getInputArguments());
+            encoder.encodeNodeId("ObjectId", value.getObjectId());
+            encoder.encodeNodeId("MethodId", value.getMethodId());
+            encoder.encodeVariantArray("InputArguments", value.getInputArguments());
         }
     }
 }

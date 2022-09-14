@@ -116,20 +116,20 @@ public class ModifySubscriptionResponse extends Structure implements UaResponseM
 
         @Override
         public ModifySubscriptionResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            Double revisedPublishingInterval = decoder.readDouble("RevisedPublishingInterval");
-            UInteger revisedLifetimeCount = decoder.readUInt32("RevisedLifetimeCount");
-            UInteger revisedMaxKeepAliveCount = decoder.readUInt32("RevisedMaxKeepAliveCount");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            Double revisedPublishingInterval = decoder.decodeDouble("RevisedPublishingInterval");
+            UInteger revisedLifetimeCount = decoder.decodeUInt32("RevisedLifetimeCount");
+            UInteger revisedMaxKeepAliveCount = decoder.decodeUInt32("RevisedMaxKeepAliveCount");
             return new ModifySubscriptionResponse(responseHeader, revisedPublishingInterval, revisedLifetimeCount, revisedMaxKeepAliveCount);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ModifySubscriptionResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());
-            encoder.writeUInt32("RevisedLifetimeCount", value.getRevisedLifetimeCount());
-            encoder.writeUInt32("RevisedMaxKeepAliveCount", value.getRevisedMaxKeepAliveCount());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());
+            encoder.encodeUInt32("RevisedLifetimeCount", value.getRevisedLifetimeCount());
+            encoder.encodeUInt32("RevisedMaxKeepAliveCount", value.getRevisedMaxKeepAliveCount());
         }
     }
 }

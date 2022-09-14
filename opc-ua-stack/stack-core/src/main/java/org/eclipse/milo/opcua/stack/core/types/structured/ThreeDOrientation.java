@@ -107,18 +107,18 @@ public class ThreeDOrientation extends Orientation implements UaStructuredType {
 
         @Override
         public ThreeDOrientation decodeType(SerializationContext context, UaDecoder decoder) {
-            Double a = decoder.readDouble("A");
-            Double b = decoder.readDouble("B");
-            Double c = decoder.readDouble("C");
+            Double a = decoder.decodeDouble("A");
+            Double b = decoder.decodeDouble("B");
+            Double c = decoder.decodeDouble("C");
             return new ThreeDOrientation(a, b, c);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ThreeDOrientation value) {
-            encoder.writeDouble("A", value.getA());
-            encoder.writeDouble("B", value.getB());
-            encoder.writeDouble("C", value.getC());
+            encoder.encodeDouble("A", value.getA());
+            encoder.encodeDouble("B", value.getB());
+            encoder.encodeDouble("C", value.getC());
         }
     }
 }

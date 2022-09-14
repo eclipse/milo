@@ -100,16 +100,16 @@ public class BrokerConnectionTransportDataType extends ConnectionTransportDataTy
         @Override
         public BrokerConnectionTransportDataType decodeType(SerializationContext context,
                                                             UaDecoder decoder) {
-            String resourceUri = decoder.readString("ResourceUri");
-            String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
+            String resourceUri = decoder.decodeString("ResourceUri");
+            String authenticationProfileUri = decoder.decodeString("AuthenticationProfileUri");
             return new BrokerConnectionTransportDataType(resourceUri, authenticationProfileUri);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                BrokerConnectionTransportDataType value) {
-            encoder.writeString("ResourceUri", value.getResourceUri());
-            encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
+            encoder.encodeString("ResourceUri", value.getResourceUri());
+            encoder.encodeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
         }
     }
 }

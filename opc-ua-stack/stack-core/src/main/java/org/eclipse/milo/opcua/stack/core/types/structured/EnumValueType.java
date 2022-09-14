@@ -107,17 +107,17 @@ public class EnumValueType extends Structure implements UaStructuredType {
 
         @Override
         public EnumValueType decodeType(SerializationContext context, UaDecoder decoder) {
-            Long value = decoder.readInt64("Value");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
+            Long value = decoder.decodeInt64("Value");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
             return new EnumValueType(value, displayName, description);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EnumValueType value) {
-            encoder.writeInt64("Value", value.getValue());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.encodeInt64("Value", value.getValue());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
         }
     }
 }

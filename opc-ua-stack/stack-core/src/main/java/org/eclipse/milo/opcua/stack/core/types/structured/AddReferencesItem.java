@@ -133,24 +133,24 @@ public class AddReferencesItem extends Structure implements UaStructuredType {
 
         @Override
         public AddReferencesItem decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId sourceNodeId = decoder.readNodeId("SourceNodeId");
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isForward = decoder.readBoolean("IsForward");
-            String targetServerUri = decoder.readString("TargetServerUri");
-            ExpandedNodeId targetNodeId = decoder.readExpandedNodeId("TargetNodeId");
-            NodeClass targetNodeClass = NodeClass.from(decoder.readEnum("TargetNodeClass"));
+            NodeId sourceNodeId = decoder.decodeNodeId("SourceNodeId");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isForward = decoder.decodeBoolean("IsForward");
+            String targetServerUri = decoder.decodeString("TargetServerUri");
+            ExpandedNodeId targetNodeId = decoder.decodeExpandedNodeId("TargetNodeId");
+            NodeClass targetNodeClass = NodeClass.from(decoder.decodeEnum("TargetNodeClass"));
             return new AddReferencesItem(sourceNodeId, referenceTypeId, isForward, targetServerUri, targetNodeId, targetNodeClass);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AddReferencesItem value) {
-            encoder.writeNodeId("SourceNodeId", value.getSourceNodeId());
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsForward", value.getIsForward());
-            encoder.writeString("TargetServerUri", value.getTargetServerUri());
-            encoder.writeExpandedNodeId("TargetNodeId", value.getTargetNodeId());
-            encoder.writeEnum("TargetNodeClass", value.getTargetNodeClass());
+            encoder.encodeNodeId("SourceNodeId", value.getSourceNodeId());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsForward", value.getIsForward());
+            encoder.encodeString("TargetServerUri", value.getTargetServerUri());
+            encoder.encodeExpandedNodeId("TargetNodeId", value.getTargetNodeId());
+            encoder.encodeEnum("TargetNodeClass", value.getTargetNodeClass());
         }
     }
 }

@@ -107,26 +107,26 @@ public class MethodAttributes extends NodeAttributes implements UaStructuredType
 
         @Override
         public MethodAttributes decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            UInteger writeMask = decoder.readUInt32("WriteMask");
-            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            Boolean executable = decoder.readBoolean("Executable");
-            Boolean userExecutable = decoder.readBoolean("UserExecutable");
+            UInteger specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            UInteger writeMask = decoder.decodeUInt32("WriteMask");
+            UInteger userWriteMask = decoder.decodeUInt32("UserWriteMask");
+            Boolean executable = decoder.decodeBoolean("Executable");
+            Boolean userExecutable = decoder.decodeBoolean("UserExecutable");
             return new MethodAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, executable, userExecutable);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MethodAttributes value) {
-            encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeUInt32("WriteMask", value.getWriteMask());
-            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
-            encoder.writeBoolean("Executable", value.getExecutable());
-            encoder.writeBoolean("UserExecutable", value.getUserExecutable());
+            encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeUInt32("WriteMask", value.getWriteMask());
+            encoder.encodeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.encodeBoolean("Executable", value.getExecutable());
+            encoder.encodeBoolean("UserExecutable", value.getUserExecutable());
         }
     }
 }

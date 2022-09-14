@@ -94,16 +94,16 @@ public class X509IdentityToken extends UserIdentityToken implements UaStructured
 
         @Override
         public X509IdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            ByteString certificateData = decoder.readByteString("CertificateData");
+            String policyId = decoder.decodeString("PolicyId");
+            ByteString certificateData = decoder.decodeByteString("CertificateData");
             return new X509IdentityToken(policyId, certificateData);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                X509IdentityToken value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeByteString("CertificateData", value.getCertificateData());
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeByteString("CertificateData", value.getCertificateData());
         }
     }
 }

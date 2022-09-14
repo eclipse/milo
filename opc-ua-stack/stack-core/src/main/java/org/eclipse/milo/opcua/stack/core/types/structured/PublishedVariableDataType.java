@@ -151,28 +151,28 @@ public class PublishedVariableDataType extends Structure implements UaStructured
 
         @Override
         public PublishedVariableDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId publishedVariable = decoder.readNodeId("PublishedVariable");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            Double samplingIntervalHint = decoder.readDouble("SamplingIntervalHint");
-            UInteger deadbandType = decoder.readUInt32("DeadbandType");
-            Double deadbandValue = decoder.readDouble("DeadbandValue");
-            String indexRange = decoder.readString("IndexRange");
-            Variant substituteValue = decoder.readVariant("SubstituteValue");
-            QualifiedName[] metaDataProperties = decoder.readQualifiedNameArray("MetaDataProperties");
+            NodeId publishedVariable = decoder.decodeNodeId("PublishedVariable");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            Double samplingIntervalHint = decoder.decodeDouble("SamplingIntervalHint");
+            UInteger deadbandType = decoder.decodeUInt32("DeadbandType");
+            Double deadbandValue = decoder.decodeDouble("DeadbandValue");
+            String indexRange = decoder.decodeString("IndexRange");
+            Variant substituteValue = decoder.decodeVariant("SubstituteValue");
+            QualifiedName[] metaDataProperties = decoder.decodeQualifiedNameArray("MetaDataProperties");
             return new PublishedVariableDataType(publishedVariable, attributeId, samplingIntervalHint, deadbandType, deadbandValue, indexRange, substituteValue, metaDataProperties);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PublishedVariableDataType value) {
-            encoder.writeNodeId("PublishedVariable", value.getPublishedVariable());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeDouble("SamplingIntervalHint", value.getSamplingIntervalHint());
-            encoder.writeUInt32("DeadbandType", value.getDeadbandType());
-            encoder.writeDouble("DeadbandValue", value.getDeadbandValue());
-            encoder.writeString("IndexRange", value.getIndexRange());
-            encoder.writeVariant("SubstituteValue", value.getSubstituteValue());
-            encoder.writeQualifiedNameArray("MetaDataProperties", value.getMetaDataProperties());
+            encoder.encodeNodeId("PublishedVariable", value.getPublishedVariable());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeDouble("SamplingIntervalHint", value.getSamplingIntervalHint());
+            encoder.encodeUInt32("DeadbandType", value.getDeadbandType());
+            encoder.encodeDouble("DeadbandValue", value.getDeadbandValue());
+            encoder.encodeString("IndexRange", value.getIndexRange());
+            encoder.encodeVariant("SubstituteValue", value.getSubstituteValue());
+            encoder.encodeQualifiedNameArray("MetaDataProperties", value.getMetaDataProperties());
         }
     }
 }

@@ -99,15 +99,15 @@ public class RationalNumber extends Structure implements UaStructuredType {
 
         @Override
         public RationalNumber decodeType(SerializationContext context, UaDecoder decoder) {
-            Integer numerator = decoder.readInt32("Numerator");
-            UInteger denominator = decoder.readUInt32("Denominator");
+            Integer numerator = decoder.decodeInt32("Numerator");
+            UInteger denominator = decoder.decodeUInt32("Denominator");
             return new RationalNumber(numerator, denominator);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, RationalNumber value) {
-            encoder.writeInt32("Numerator", value.getNumerator());
-            encoder.writeUInt32("Denominator", value.getDenominator());
+            encoder.encodeInt32("Numerator", value.getNumerator());
+            encoder.encodeUInt32("Denominator", value.getDenominator());
         }
     }
 }

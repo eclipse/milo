@@ -18,8 +18,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcUaXmlStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcUaXmlDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcUaXmlEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
@@ -55,8 +55,8 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
         if (codec != null) {
             // We have to use encoder.writeStruct() instead of codec.encode() because
             // XML-encoded structs are wrapped in a container element with the struct name.
-            OpcUaXmlStreamEncoder encoder = new OpcUaXmlStreamEncoder(context);
-            encoder.writeStruct(null, struct, codec);
+            OpcUaXmlEncoder encoder = new OpcUaXmlEncoder(context);
+            encoder.encodeStruct(null, struct, codec);
 
             return new XmlElement(encoder.getDocumentXml());
         } else {
@@ -79,7 +79,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
             XmlElement xmlBody = (XmlElement) body;
             String xml = xmlBody.getFragmentOrEmpty();
 
-            OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(context);
+            OpcUaXmlDecoder decoder = new OpcUaXmlDecoder(context);
             try {
                 decoder.setInput(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
             } catch (IOException | SAXException e) {
@@ -88,7 +88,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
 
             // We have to use decoder.readStruct() instead of codec.decode() because
             // XML-encoded structs are wrapped in a container element with the struct name.
-            return decoder.readStruct(null, codec);
+            return decoder.decodeStruct(null, codec);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,

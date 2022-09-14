@@ -135,24 +135,24 @@ public class BrokerDataSetWriterTransportDataType extends DataSetWriterTransport
         @Override
         public BrokerDataSetWriterTransportDataType decodeType(SerializationContext context,
                                                                UaDecoder decoder) {
-            String queueName = decoder.readString("QueueName");
-            String resourceUri = decoder.readString("ResourceUri");
-            String authenticationProfileUri = decoder.readString("AuthenticationProfileUri");
-            BrokerTransportQualityOfService requestedDeliveryGuarantee = BrokerTransportQualityOfService.from(decoder.readEnum("RequestedDeliveryGuarantee"));
-            String metaDataQueueName = decoder.readString("MetaDataQueueName");
-            Double metaDataUpdateTime = decoder.readDouble("MetaDataUpdateTime");
+            String queueName = decoder.decodeString("QueueName");
+            String resourceUri = decoder.decodeString("ResourceUri");
+            String authenticationProfileUri = decoder.decodeString("AuthenticationProfileUri");
+            BrokerTransportQualityOfService requestedDeliveryGuarantee = BrokerTransportQualityOfService.from(decoder.decodeEnum("RequestedDeliveryGuarantee"));
+            String metaDataQueueName = decoder.decodeString("MetaDataQueueName");
+            Double metaDataUpdateTime = decoder.decodeDouble("MetaDataUpdateTime");
             return new BrokerDataSetWriterTransportDataType(queueName, resourceUri, authenticationProfileUri, requestedDeliveryGuarantee, metaDataQueueName, metaDataUpdateTime);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                BrokerDataSetWriterTransportDataType value) {
-            encoder.writeString("QueueName", value.getQueueName());
-            encoder.writeString("ResourceUri", value.getResourceUri());
-            encoder.writeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
-            encoder.writeEnum("RequestedDeliveryGuarantee", value.getRequestedDeliveryGuarantee());
-            encoder.writeString("MetaDataQueueName", value.getMetaDataQueueName());
-            encoder.writeDouble("MetaDataUpdateTime", value.getMetaDataUpdateTime());
+            encoder.encodeString("QueueName", value.getQueueName());
+            encoder.encodeString("ResourceUri", value.getResourceUri());
+            encoder.encodeString("AuthenticationProfileUri", value.getAuthenticationProfileUri());
+            encoder.encodeEnum("RequestedDeliveryGuarantee", value.getRequestedDeliveryGuarantee());
+            encoder.encodeString("MetaDataQueueName", value.getMetaDataQueueName());
+            encoder.encodeDouble("MetaDataUpdateTime", value.getMetaDataUpdateTime());
         }
     }
 }

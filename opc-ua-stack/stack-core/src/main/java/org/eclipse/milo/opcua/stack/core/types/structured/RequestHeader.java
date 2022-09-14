@@ -143,25 +143,25 @@ public class RequestHeader extends Structure implements UaStructuredType {
 
         @Override
         public RequestHeader decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId authenticationToken = decoder.readNodeId("AuthenticationToken");
-            DateTime timestamp = decoder.readDateTime("Timestamp");
-            UInteger requestHandle = decoder.readUInt32("RequestHandle");
-            UInteger returnDiagnostics = decoder.readUInt32("ReturnDiagnostics");
-            String auditEntryId = decoder.readString("AuditEntryId");
-            UInteger timeoutHint = decoder.readUInt32("TimeoutHint");
-            ExtensionObject additionalHeader = decoder.readExtensionObject("AdditionalHeader");
+            NodeId authenticationToken = decoder.decodeNodeId("AuthenticationToken");
+            DateTime timestamp = decoder.decodeDateTime("Timestamp");
+            UInteger requestHandle = decoder.decodeUInt32("RequestHandle");
+            UInteger returnDiagnostics = decoder.decodeUInt32("ReturnDiagnostics");
+            String auditEntryId = decoder.decodeString("AuditEntryId");
+            UInteger timeoutHint = decoder.decodeUInt32("TimeoutHint");
+            ExtensionObject additionalHeader = decoder.decodeExtensionObject("AdditionalHeader");
             return new RequestHeader(authenticationToken, timestamp, requestHandle, returnDiagnostics, auditEntryId, timeoutHint, additionalHeader);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, RequestHeader value) {
-            encoder.writeNodeId("AuthenticationToken", value.getAuthenticationToken());
-            encoder.writeDateTime("Timestamp", value.getTimestamp());
-            encoder.writeUInt32("RequestHandle", value.getRequestHandle());
-            encoder.writeUInt32("ReturnDiagnostics", value.getReturnDiagnostics());
-            encoder.writeString("AuditEntryId", value.getAuditEntryId());
-            encoder.writeUInt32("TimeoutHint", value.getTimeoutHint());
-            encoder.writeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
+            encoder.encodeNodeId("AuthenticationToken", value.getAuthenticationToken());
+            encoder.encodeDateTime("Timestamp", value.getTimestamp());
+            encoder.encodeUInt32("RequestHandle", value.getRequestHandle());
+            encoder.encodeUInt32("ReturnDiagnostics", value.getReturnDiagnostics());
+            encoder.encodeString("AuditEntryId", value.getAuditEntryId());
+            encoder.encodeUInt32("TimeoutHint", value.getTimeoutHint());
+            encoder.encodeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
         }
     }
 }

@@ -120,22 +120,22 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         @Override
         public DatagramConnectionTransport2DataType decodeType(SerializationContext context,
                                                                UaDecoder decoder) {
-            NetworkAddressDataType discoveryAddress = (NetworkAddressDataType) decoder.readStruct("DiscoveryAddress", NetworkAddressDataType.TYPE_ID);
-            UInteger discoveryAnnounceRate = decoder.readUInt32("DiscoveryAnnounceRate");
-            UInteger discoveryMaxMessageSize = decoder.readUInt32("DiscoveryMaxMessageSize");
-            String qosCategory = decoder.readString("QosCategory");
-            QosDataType[] datagramQos = (QosDataType[]) decoder.readStructArray("DatagramQos", QosDataType.TYPE_ID);
+            NetworkAddressDataType discoveryAddress = (NetworkAddressDataType) decoder.decodeStruct("DiscoveryAddress", NetworkAddressDataType.TYPE_ID);
+            UInteger discoveryAnnounceRate = decoder.decodeUInt32("DiscoveryAnnounceRate");
+            UInteger discoveryMaxMessageSize = decoder.decodeUInt32("DiscoveryMaxMessageSize");
+            String qosCategory = decoder.decodeString("QosCategory");
+            QosDataType[] datagramQos = (QosDataType[]) decoder.decodeStructArray("DatagramQos", QosDataType.TYPE_ID);
             return new DatagramConnectionTransport2DataType(discoveryAddress, discoveryAnnounceRate, discoveryMaxMessageSize, qosCategory, datagramQos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DatagramConnectionTransport2DataType value) {
-            encoder.writeStruct("DiscoveryAddress", value.getDiscoveryAddress(), NetworkAddressDataType.TYPE_ID);
-            encoder.writeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
-            encoder.writeUInt32("DiscoveryMaxMessageSize", value.getDiscoveryMaxMessageSize());
-            encoder.writeString("QosCategory", value.getQosCategory());
-            encoder.writeStructArray("DatagramQos", value.getDatagramQos(), QosDataType.TYPE_ID);
+            encoder.encodeStruct("DiscoveryAddress", value.getDiscoveryAddress(), NetworkAddressDataType.TYPE_ID);
+            encoder.encodeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());
+            encoder.encodeUInt32("DiscoveryMaxMessageSize", value.getDiscoveryMaxMessageSize());
+            encoder.encodeString("QosCategory", value.getQosCategory());
+            encoder.encodeStructArray("DatagramQos", value.getDatagramQos(), QosDataType.TYPE_ID);
         }
     }
 }

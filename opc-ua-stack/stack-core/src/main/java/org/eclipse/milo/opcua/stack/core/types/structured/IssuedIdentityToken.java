@@ -102,18 +102,18 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
 
         @Override
         public IssuedIdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            ByteString tokenData = decoder.readByteString("TokenData");
-            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
+            String policyId = decoder.decodeString("PolicyId");
+            ByteString tokenData = decoder.decodeByteString("TokenData");
+            String encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
             return new IssuedIdentityToken(policyId, tokenData, encryptionAlgorithm);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                IssuedIdentityToken value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeByteString("TokenData", value.getTokenData());
-            encoder.writeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeByteString("TokenData", value.getTokenData());
+            encoder.encodeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
         }
     }
 }

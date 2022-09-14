@@ -91,13 +91,13 @@ public class EnumDefinition extends DataTypeDefinition implements UaStructuredTy
 
         @Override
         public EnumDefinition decodeType(SerializationContext context, UaDecoder decoder) {
-            EnumField[] fields = (EnumField[]) decoder.readStructArray("Fields", EnumField.TYPE_ID);
+            EnumField[] fields = (EnumField[]) decoder.decodeStructArray("Fields", EnumField.TYPE_ID);
             return new EnumDefinition(fields);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EnumDefinition value) {
-            encoder.writeStructArray("Fields", value.getFields(), EnumField.TYPE_ID);
+            encoder.encodeStructArray("Fields", value.getFields(), EnumField.TYPE_ID);
         }
     }
 }

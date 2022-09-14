@@ -109,18 +109,18 @@ public class AddNodesResponse extends Structure implements UaResponseMessageType
 
         @Override
         public AddNodesResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            AddNodesResult[] results = (AddNodesResult[]) decoder.readStructArray("Results", AddNodesResult.TYPE_ID);
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            AddNodesResult[] results = (AddNodesResult[]) decoder.decodeStructArray("Results", AddNodesResult.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new AddNodesResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AddNodesResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("Results", value.getResults(), AddNodesResult.TYPE_ID);
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("Results", value.getResults(), AddNodesResult.TYPE_ID);
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
 }

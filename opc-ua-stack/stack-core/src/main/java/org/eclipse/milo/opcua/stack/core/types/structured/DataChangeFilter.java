@@ -108,18 +108,18 @@ public class DataChangeFilter extends MonitoringFilter implements UaStructuredTy
 
         @Override
         public DataChangeFilter decodeType(SerializationContext context, UaDecoder decoder) {
-            DataChangeTrigger trigger = DataChangeTrigger.from(decoder.readEnum("Trigger"));
-            UInteger deadbandType = decoder.readUInt32("DeadbandType");
-            Double deadbandValue = decoder.readDouble("DeadbandValue");
+            DataChangeTrigger trigger = DataChangeTrigger.from(decoder.decodeEnum("Trigger"));
+            UInteger deadbandType = decoder.decodeUInt32("DeadbandType");
+            Double deadbandValue = decoder.decodeDouble("DeadbandValue");
             return new DataChangeFilter(trigger, deadbandType, deadbandValue);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DataChangeFilter value) {
-            encoder.writeEnum("Trigger", value.getTrigger());
-            encoder.writeUInt32("DeadbandType", value.getDeadbandType());
-            encoder.writeDouble("DeadbandValue", value.getDeadbandValue());
+            encoder.encodeEnum("Trigger", value.getTrigger());
+            encoder.encodeUInt32("DeadbandType", value.getDeadbandType());
+            encoder.encodeDouble("DeadbandValue", value.getDeadbandValue());
         }
     }
 }

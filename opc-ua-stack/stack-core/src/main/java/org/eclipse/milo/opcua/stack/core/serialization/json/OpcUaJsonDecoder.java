@@ -82,7 +82,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Boolean readBoolean(String field) throws UaSerializationException {
+    public Boolean decodeBoolean(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -106,7 +106,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Byte readSByte(String field) throws UaSerializationException {
+    public Byte decodeSByte(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -130,7 +130,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Short readInt16(String field) throws UaSerializationException {
+    public Short decodeInt16(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -154,7 +154,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Integer readInt32(String field) throws UaSerializationException {
+    public Integer decodeInt32(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -178,7 +178,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Long readInt64(String field) throws UaSerializationException {
+    public Long decodeInt64(String field) throws UaSerializationException {
         // Int64 and UInt64 values shall be formatted as a decimal number
         // encoded as a JSON string (See the XML encoding of 64-bit values
         // described in 5.3.1.3).
@@ -210,7 +210,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public UByte readByte(String field) throws UaSerializationException {
+    public UByte decodeByte(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -234,7 +234,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public UShort readUInt16(String field) throws UaSerializationException {
+    public UShort decodeUInt16(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -258,7 +258,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public UInteger readUInt32(String field) throws UaSerializationException {
+    public UInteger decodeUInt32(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -282,7 +282,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public ULong readUInt64(String field) throws UaSerializationException {
+    public ULong decodeUInt64(String field) throws UaSerializationException {
         // Int64 and UInt64 values shall be formatted as a decimal number
         // encoded as a JSON string (See the XML encoding of 64-bit values
         // described in 5.3.1.3).
@@ -314,7 +314,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Float readFloat(String field) throws UaSerializationException {
+    public Float decodeFloat(String field) throws UaSerializationException {
         // Normal Float and Double values shall be encoded as a JSON number.
         // Special floating-point numbers such as positive infinity (INF),
         // negative infinity (-INF) and not-a-number (NaN) shall be
@@ -361,7 +361,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Double readDouble(String field) throws UaSerializationException {
+    public Double decodeDouble(String field) throws UaSerializationException {
         // Normal Float and Double values shall be encoded as a JSON number.
         // Special floating-point numbers such as positive infinity (INF),
         // negative infinity (-INF) and not-a-number (NaN) shall be
@@ -408,7 +408,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public String readString(String field) throws UaSerializationException {
+    public String decodeString(String field) throws UaSerializationException {
         // String values shall be encoded as JSON strings.
         // Any characters which are not allowed in JSON strings are escaped
         // using the rules defined in RFC 7159.
@@ -439,7 +439,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public DateTime readDateTime(String field) throws UaSerializationException {
+    public DateTime decodeDateTime(String field) throws UaSerializationException {
         // DateTime values shall be formatted as specified by ISO 8601:2004
         // and encoded as a JSON string.
         // DateTime values which exceed the minimum or maximum values supported
@@ -484,7 +484,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public UUID readGuid(String field) throws UaSerializationException {
+    public UUID decodeGuid(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -510,7 +510,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public ByteString readByteString(String field) throws UaSerializationException {
+    public ByteString decodeByteString(String field) throws UaSerializationException {
         // ByteString values shall be formatted as a Base64 text and encoded as
         // a JSON string.
         // Any characters which are not allowed in JSON strings are escaped
@@ -542,7 +542,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public XmlElement readXmlElement(String field) throws UaSerializationException {
+    public XmlElement decodeXmlElement(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -568,7 +568,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public NodeId readNodeId(String field) throws UaSerializationException {
+    public NodeId decodeNodeId(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -648,7 +648,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public ExpandedNodeId readExpandedNodeId(String field) throws UaSerializationException {
+    public ExpandedNodeId decodeExpandedNodeId(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -759,7 +759,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public StatusCode readStatusCode(String field) throws UaSerializationException {
+    public StatusCode decodeStatusCode(String field) throws UaSerializationException {
         // StatusCode values shall be encoded as a JSON number for the
         // reversible encoding.
 
@@ -788,7 +788,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public QualifiedName readQualifiedName(String field) throws UaSerializationException {
+    public QualifiedName decodeQualifiedName(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -835,7 +835,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public LocalizedText readLocalizedText(String field) throws UaSerializationException {
+    public LocalizedText decodeLocalizedText(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -877,7 +877,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public ExtensionObject readExtensionObject(String field) throws UaSerializationException {
+    public ExtensionObject decodeExtensionObject(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -903,7 +903,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
                 switch (nextName) {
                     case "TypeId":
-                        encodingId = readNodeId(null);
+                        encodingId = decodeNodeId(null);
                         break;
                     case "Encoding":
                         encoding = jsonReader.nextInt();
@@ -914,10 +914,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
                                 body = JsonParser.parseReader(jsonReader);
                                 break;
                             case 1:
-                                body = readByteString(null);
+                                body = decodeByteString(null);
                                 break;
                             case 2:
-                                body = readXmlElement(null);
+                                body = decodeXmlElement(null);
                                 break;
                         }
                         break;
@@ -960,7 +960,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public DataValue readDataValue(String field) throws UaSerializationException {
+    public DataValue decodeDataValue(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -980,27 +980,27 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
                 switch (nextName) {
                     case "Value":
-                        b.setValue(readVariant(null));
+                        b.setValue(decodeVariant(null));
                         break;
 
                     case "Status":
-                        b.setStatus(readStatusCode(null));
+                        b.setStatus(decodeStatusCode(null));
                         break;
 
                     case "SourceTimestamp":
-                        b.setSourceTime(readDateTime(null));
+                        b.setSourceTime(decodeDateTime(null));
                         break;
 
                     case "SourcePicoseconds":
-                        b.setSourcePicoseconds(readUInt16(null));
+                        b.setSourcePicoseconds(decodeUInt16(null));
                         break;
 
                     case "ServerTimestamp":
-                        b.setServerTime(readDateTime(null));
+                        b.setServerTime(decodeDateTime(null));
                         break;
 
                     case "ServerPicoseconds":
-                        b.setServerPicoseconds(readUInt16(null));
+                        b.setServerPicoseconds(decodeUInt16(null));
                         break;
                 }
             }
@@ -1014,7 +1014,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Variant readVariant(String field) throws UaSerializationException {
+    public Variant decodeVariant(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -1137,55 +1137,55 @@ public class OpcUaJsonDecoder implements UaDecoder {
     private Object readBuiltinTypeValue(String field, int typeId) throws UaSerializationException {
         switch (typeId) {
             case 1:
-                return readBoolean(field);
+                return decodeBoolean(field);
             case 2:
-                return readSByte(field);
+                return decodeSByte(field);
             case 3:
-                return readByte(field);
+                return decodeByte(field);
             case 4:
-                return readInt16(field);
+                return decodeInt16(field);
             case 5:
-                return readUInt16(field);
+                return decodeUInt16(field);
             case 6:
-                return readInt32(field);
+                return decodeInt32(field);
             case 7:
-                return readUInt32(field);
+                return decodeUInt32(field);
             case 8:
-                return readInt64(field);
+                return decodeInt64(field);
             case 9:
-                return readUInt64(field);
+                return decodeUInt64(field);
             case 10:
-                return readFloat(field);
+                return decodeFloat(field);
             case 11:
-                return readDouble(field);
+                return decodeDouble(field);
             case 12:
-                return readString(field);
+                return decodeString(field);
             case 13:
-                return readDateTime(field);
+                return decodeDateTime(field);
             case 14:
-                return readGuid(field);
+                return decodeGuid(field);
             case 15:
-                return readByteString(field);
+                return decodeByteString(field);
             case 16:
-                return readXmlElement(field);
+                return decodeXmlElement(field);
             case 17:
-                return readNodeId(field);
+                return decodeNodeId(field);
             case 18:
-                return readExpandedNodeId(field);
+                return decodeExpandedNodeId(field);
             case 19:
-                return readStatusCode(field);
+                return decodeStatusCode(field);
             case 20:
-                return readQualifiedName(field);
+                return decodeQualifiedName(field);
             case 21:
-                return readLocalizedText(field);
+                return decodeLocalizedText(field);
             case 22:
-                return readExtensionObject(field);
+                return decodeExtensionObject(field);
             case 23:
-                return readDataValue(field);
+                return decodeDataValue(field);
             case 24:
-                return readVariant(field);
+                return decodeVariant(field);
             case 25:
-                return readDiagnosticInfo(field);
+                return decodeDiagnosticInfo(field);
 
             default:
                 throw new UaSerializationException(
@@ -1196,7 +1196,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException {
+    public DiagnosticInfo decodeDiagnosticInfo(String field) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -1236,10 +1236,10 @@ public class OpcUaJsonDecoder implements UaDecoder {
                         additionalInfo = jsonReader.nextString();
                         break;
                     case "InnerStatusCode":
-                        innerStatusCode = readStatusCode(null);
+                        innerStatusCode = decodeStatusCode(null);
                         break;
                     case "InnerDiagnosticInfo":
-                        innerDiagnosticInfo = readDiagnosticInfo(null);
+                        innerDiagnosticInfo = decodeDiagnosticInfo(null);
                         break;
                 }
             }
@@ -1261,9 +1261,9 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public UaMessageType readMessage(String field) throws UaSerializationException {
+    public UaMessageType decodeMessage(String field) throws UaSerializationException {
         try {
-            ExtensionObject xo = readExtensionObject(field);
+            ExtensionObject xo = decodeExtensionObject(field);
 
             return (UaMessageType) xo.decode(context);
         } catch (ClassCastException e) {
@@ -1272,12 +1272,12 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Integer readEnum(String field) {
-        return readInt32(field);
+    public Integer decodeEnum(String field) {
+        return decodeInt32(field);
     }
 
     @Override
-    public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
+    public Object decodeStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = context.getDataTypeManager()
             .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
@@ -1312,18 +1312,18 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public Object decodeStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
         NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 "readStruct: namespace not registered: " + dataTypeId
             ));
 
-        return readStruct(field, localDataTypeId);
+        return decodeStruct(field, localDataTypeId);
     }
 
     @Override
-    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
+    public Object decodeStruct(String field, DataTypeCodec codec) throws UaSerializationException {
         try {
             if (field != null) {
                 String nextName = nextName();
@@ -1348,137 +1348,137 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Boolean[] readBooleanArray(String field) throws UaSerializationException {
-        return readArray(field, this::readBoolean, Boolean.class);
+    public Boolean[] decodeBooleanArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeBoolean, Boolean.class);
     }
 
     @Override
-    public Byte[] readSByteArray(String field) throws UaSerializationException {
-        return readArray(field, this::readSByte, Byte.class);
+    public Byte[] decodeSByteArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeSByte, Byte.class);
     }
 
     @Override
-    public Short[] readInt16Array(String field) throws UaSerializationException {
-        return readArray(field, this::readInt16, Short.class);
+    public Short[] decodeInt16Array(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeInt16, Short.class);
     }
 
     @Override
-    public Integer[] readInt32Array(String field) throws UaSerializationException {
-        return readArray(field, this::readInt32, Integer.class);
+    public Integer[] decodeInt32Array(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeInt32, Integer.class);
     }
 
     @Override
-    public Long[] readInt64Array(String field) throws UaSerializationException {
-        return readArray(field, this::readInt64, Long.class);
+    public Long[] decodeInt64Array(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeInt64, Long.class);
     }
 
     @Override
-    public UByte[] readByteArray(String field) throws UaSerializationException {
-        return readArray(field, this::readByte, UByte.class);
+    public UByte[] decodeByteArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeByte, UByte.class);
     }
 
     @Override
-    public UShort[] readUInt16Array(String field) throws UaSerializationException {
-        return readArray(field, this::readUInt16, UShort.class);
+    public UShort[] decodeUInt16Array(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeUInt16, UShort.class);
     }
 
     @Override
-    public UInteger[] readUInt32Array(String field) throws UaSerializationException {
-        return readArray(field, this::readUInt32, UInteger.class);
+    public UInteger[] decodeUInt32Array(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeUInt32, UInteger.class);
     }
 
     @Override
-    public ULong[] readUInt64Array(String field) throws UaSerializationException {
-        return readArray(field, this::readUInt64, ULong.class);
+    public ULong[] decodeUInt64Array(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeUInt64, ULong.class);
     }
 
     @Override
-    public Float[] readFloatArray(String field) throws UaSerializationException {
-        return readArray(field, this::readFloat, Float.class);
+    public Float[] decodeFloatArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeFloat, Float.class);
     }
 
     @Override
-    public Double[] readDoubleArray(String field) throws UaSerializationException {
-        return readArray(field, this::readDouble, Double.class);
+    public Double[] decodeDoubleArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeDouble, Double.class);
     }
 
     @Override
-    public String[] readStringArray(String field) throws UaSerializationException {
-        return readArray(field, this::readString, String.class);
+    public String[] decodeStringArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeString, String.class);
     }
 
     @Override
-    public DateTime[] readDateTimeArray(String field) throws UaSerializationException {
-        return readArray(field, this::readDateTime, DateTime.class);
+    public DateTime[] decodeDateTimeArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeDateTime, DateTime.class);
     }
 
     @Override
-    public UUID[] readGuidArray(String field) throws UaSerializationException {
-        return readArray(field, this::readGuid, UUID.class);
+    public UUID[] decodeGuidArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeGuid, UUID.class);
     }
 
     @Override
-    public ByteString[] readByteStringArray(String field) throws UaSerializationException {
-        return readArray(field, this::readByteString, ByteString.class);
+    public ByteString[] decodeByteStringArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeByteString, ByteString.class);
     }
 
     @Override
-    public XmlElement[] readXmlElementArray(String field) throws UaSerializationException {
-        return readArray(field, this::readXmlElement, XmlElement.class);
+    public XmlElement[] decodeXmlElementArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeXmlElement, XmlElement.class);
     }
 
     @Override
-    public NodeId[] readNodeIdArray(String field) throws UaSerializationException {
-        return readArray(field, this::readNodeId, NodeId.class);
+    public NodeId[] decodeNodeIdArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeNodeId, NodeId.class);
     }
 
     @Override
-    public ExpandedNodeId[] readExpandedNodeIdArray(String field) throws UaSerializationException {
-        return readArray(field, this::readExpandedNodeId, ExpandedNodeId.class);
+    public ExpandedNodeId[] decodeExpandedNodeIdArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeExpandedNodeId, ExpandedNodeId.class);
     }
 
     @Override
-    public StatusCode[] readStatusCodeArray(String field) throws UaSerializationException {
-        return readArray(field, this::readStatusCode, StatusCode.class);
+    public StatusCode[] decodeStatusCodeArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeStatusCode, StatusCode.class);
     }
 
     @Override
-    public QualifiedName[] readQualifiedNameArray(String field) throws UaSerializationException {
-        return readArray(field, this::readQualifiedName, QualifiedName.class);
+    public QualifiedName[] decodeQualifiedNameArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeQualifiedName, QualifiedName.class);
     }
 
     @Override
-    public LocalizedText[] readLocalizedTextArray(String field) throws UaSerializationException {
-        return readArray(field, this::readLocalizedText, LocalizedText.class);
+    public LocalizedText[] decodeLocalizedTextArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeLocalizedText, LocalizedText.class);
     }
 
     @Override
-    public ExtensionObject[] readExtensionObjectArray(String field) throws UaSerializationException {
-        return readArray(field, this::readExtensionObject, ExtensionObject.class);
+    public ExtensionObject[] decodeExtensionObjectArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeExtensionObject, ExtensionObject.class);
     }
 
     @Override
-    public DataValue[] readDataValueArray(String field) throws UaSerializationException {
-        return readArray(field, this::readDataValue, DataValue.class);
+    public DataValue[] decodeDataValueArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeDataValue, DataValue.class);
     }
 
     @Override
-    public Variant[] readVariantArray(String field) throws UaSerializationException {
-        return readArray(field, this::readVariant, Variant.class);
+    public Variant[] decodeVariantArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeVariant, Variant.class);
     }
 
     @Override
-    public DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException {
-        return readArray(field, this::readDiagnosticInfo, DiagnosticInfo.class);
+    public DiagnosticInfo[] decodeDiagnosticInfoArray(String field) throws UaSerializationException {
+        return decodeArray(field, this::decodeDiagnosticInfo, DiagnosticInfo.class);
     }
 
     @Override
-    public Integer[] readEnumArray(String field) throws UaSerializationException {
-        return readInt32Array(field);
+    public Integer[] decodeEnumArray(String field) throws UaSerializationException {
+        return decodeInt32Array(field);
     }
 
     @Override
-    public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
+    public Object[] decodeStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = context.getDataTypeManager()
             .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
@@ -1502,7 +1502,7 @@ public class OpcUaJsonDecoder implements UaDecoder {
 
             jsonReader.beginArray();
             while (jsonReader.peek() != JsonToken.END_ARRAY) {
-                elements.add(readStruct(null, dataTypeId));
+                elements.add(decodeStruct(null, dataTypeId));
             }
             jsonReader.endArray();
 
@@ -1518,18 +1518,18 @@ public class OpcUaJsonDecoder implements UaDecoder {
     }
 
     @Override
-    public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public Object[] decodeStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
         NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 "readStructArray: no codec registered: " + dataTypeId
             ));
 
-        return readStructArray(field, localDataTypeId);
+        return decodeStructArray(field, localDataTypeId);
     }
 
     @Override
-    public <T> T[] readArray(
+    public <T> T[] decodeArray(
         String field,
         Function<String, T> decoder,
         Class<T> clazz

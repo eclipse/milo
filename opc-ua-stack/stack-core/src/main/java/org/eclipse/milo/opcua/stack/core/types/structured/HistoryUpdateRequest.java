@@ -100,16 +100,16 @@ public class HistoryUpdateRequest extends Structure implements UaRequestMessageT
 
         @Override
         public HistoryUpdateRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ExtensionObject[] historyUpdateDetails = decoder.readExtensionObjectArray("HistoryUpdateDetails");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ExtensionObject[] historyUpdateDetails = decoder.decodeExtensionObjectArray("HistoryUpdateDetails");
             return new HistoryUpdateRequest(requestHeader, historyUpdateDetails);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryUpdateRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeExtensionObjectArray("HistoryUpdateDetails", value.getHistoryUpdateDetails());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeExtensionObjectArray("HistoryUpdateDetails", value.getHistoryUpdateDetails());
         }
     }
 }

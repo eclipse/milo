@@ -109,18 +109,18 @@ public class RegisterServer2Request extends Structure implements UaRequestMessag
 
         @Override
         public RegisterServer2Request decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            RegisteredServer server = (RegisteredServer) decoder.readStruct("Server", RegisteredServer.TYPE_ID);
-            ExtensionObject[] discoveryConfiguration = decoder.readExtensionObjectArray("DiscoveryConfiguration");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            RegisteredServer server = (RegisteredServer) decoder.decodeStruct("Server", RegisteredServer.TYPE_ID);
+            ExtensionObject[] discoveryConfiguration = decoder.decodeExtensionObjectArray("DiscoveryConfiguration");
             return new RegisterServer2Request(requestHeader, server, discoveryConfiguration);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RegisterServer2Request value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("Server", value.getServer(), RegisteredServer.TYPE_ID);
-            encoder.writeExtensionObjectArray("DiscoveryConfiguration", value.getDiscoveryConfiguration());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("Server", value.getServer(), RegisteredServer.TYPE_ID);
+            encoder.encodeExtensionObjectArray("DiscoveryConfiguration", value.getDiscoveryConfiguration());
         }
     }
 }

@@ -108,18 +108,18 @@ public class RepublishRequest extends Structure implements UaRequestMessageType 
 
         @Override
         public RepublishRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            UInteger retransmitSequenceNumber = decoder.readUInt32("RetransmitSequenceNumber");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            UInteger retransmitSequenceNumber = decoder.decodeUInt32("RetransmitSequenceNumber");
             return new RepublishRequest(requestHeader, subscriptionId, retransmitSequenceNumber);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RepublishRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeUInt32("RetransmitSequenceNumber", value.getRetransmitSequenceNumber());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeUInt32("RetransmitSequenceNumber", value.getRetransmitSequenceNumber());
         }
     }
 }

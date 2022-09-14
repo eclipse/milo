@@ -117,19 +117,19 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
 
         @Override
         public ReadRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            Double maxAge = decoder.readDouble("MaxAge");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readEnum("TimestampsToReturn"));
-            ReadValueId[] nodesToRead = (ReadValueId[]) decoder.readStructArray("NodesToRead", ReadValueId.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            Double maxAge = decoder.decodeDouble("MaxAge");
+            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.decodeEnum("TimestampsToReturn"));
+            ReadValueId[] nodesToRead = (ReadValueId[]) decoder.decodeStructArray("NodesToRead", ReadValueId.TYPE_ID);
             return new ReadRequest(requestHeader, maxAge, timestampsToReturn, nodesToRead);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ReadRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeDouble("MaxAge", value.getMaxAge());
-            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
-            encoder.writeStructArray("NodesToRead", value.getNodesToRead(), ReadValueId.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeDouble("MaxAge", value.getMaxAge());
+            encoder.encodeEnum("TimestampsToReturn", value.getTimestampsToReturn());
+            encoder.encodeStructArray("NodesToRead", value.getNodesToRead(), ReadValueId.TYPE_ID);
         }
     }
 }

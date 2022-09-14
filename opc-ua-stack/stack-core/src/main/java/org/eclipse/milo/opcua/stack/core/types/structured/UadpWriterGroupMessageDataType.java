@@ -127,22 +127,22 @@ public class UadpWriterGroupMessageDataType extends WriterGroupMessageDataType i
         @Override
         public UadpWriterGroupMessageDataType decodeType(SerializationContext context,
                                                          UaDecoder decoder) {
-            UInteger groupVersion = decoder.readUInt32("GroupVersion");
-            DataSetOrderingType dataSetOrdering = DataSetOrderingType.from(decoder.readEnum("DataSetOrdering"));
-            UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
-            Double samplingOffset = decoder.readDouble("SamplingOffset");
-            Double[] publishingOffset = decoder.readDoubleArray("PublishingOffset");
+            UInteger groupVersion = decoder.decodeUInt32("GroupVersion");
+            DataSetOrderingType dataSetOrdering = DataSetOrderingType.from(decoder.decodeEnum("DataSetOrdering"));
+            UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));
+            Double samplingOffset = decoder.decodeDouble("SamplingOffset");
+            Double[] publishingOffset = decoder.decodeDoubleArray("PublishingOffset");
             return new UadpWriterGroupMessageDataType(groupVersion, dataSetOrdering, networkMessageContentMask, samplingOffset, publishingOffset);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UadpWriterGroupMessageDataType value) {
-            encoder.writeUInt32("GroupVersion", value.getGroupVersion());
-            encoder.writeEnum("DataSetOrdering", value.getDataSetOrdering());
-            encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
-            encoder.writeDouble("SamplingOffset", value.getSamplingOffset());
-            encoder.writeDoubleArray("PublishingOffset", value.getPublishingOffset());
+            encoder.encodeUInt32("GroupVersion", value.getGroupVersion());
+            encoder.encodeEnum("DataSetOrdering", value.getDataSetOrdering());
+            encoder.encodeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
+            encoder.encodeDouble("SamplingOffset", value.getSamplingOffset());
+            encoder.encodeDoubleArray("PublishingOffset", value.getPublishingOffset());
         }
     }
 }

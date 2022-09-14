@@ -117,20 +117,20 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructured
 
         @Override
         public ReadEventDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime endTime = decoder.readDateTime("EndTime");
-            EventFilter filter = (EventFilter) decoder.readStruct("Filter", EventFilter.TYPE_ID);
+            UInteger numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime endTime = decoder.decodeDateTime("EndTime");
+            EventFilter filter = (EventFilter) decoder.decodeStruct("Filter", EventFilter.TYPE_ID);
             return new ReadEventDetails(numValuesPerNode, startTime, endTime, filter);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReadEventDetails value) {
-            encoder.writeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("EndTime", value.getEndTime());
-            encoder.writeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);
+            encoder.encodeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("EndTime", value.getEndTime());
+            encoder.encodeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);
         }
     }
 }

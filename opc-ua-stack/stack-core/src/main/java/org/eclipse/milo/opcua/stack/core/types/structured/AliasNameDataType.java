@@ -100,16 +100,16 @@ public class AliasNameDataType extends Structure implements UaStructuredType {
 
         @Override
         public AliasNameDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            QualifiedName aliasName = decoder.readQualifiedName("AliasName");
-            ExpandedNodeId[] referencedNodes = decoder.readExpandedNodeIdArray("ReferencedNodes");
+            QualifiedName aliasName = decoder.decodeQualifiedName("AliasName");
+            ExpandedNodeId[] referencedNodes = decoder.decodeExpandedNodeIdArray("ReferencedNodes");
             return new AliasNameDataType(aliasName, referencedNodes);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AliasNameDataType value) {
-            encoder.writeQualifiedName("AliasName", value.getAliasName());
-            encoder.writeExpandedNodeIdArray("ReferencedNodes", value.getReferencedNodes());
+            encoder.encodeQualifiedName("AliasName", value.getAliasName());
+            encoder.encodeExpandedNodeIdArray("ReferencedNodes", value.getReferencedNodes());
         }
     }
 }

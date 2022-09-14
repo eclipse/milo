@@ -99,15 +99,15 @@ public class EventFilter extends MonitoringFilter implements UaStructuredType {
 
         @Override
         public EventFilter decodeType(SerializationContext context, UaDecoder decoder) {
-            SimpleAttributeOperand[] selectClauses = (SimpleAttributeOperand[]) decoder.readStructArray("SelectClauses", SimpleAttributeOperand.TYPE_ID);
-            ContentFilter whereClause = (ContentFilter) decoder.readStruct("WhereClause", ContentFilter.TYPE_ID);
+            SimpleAttributeOperand[] selectClauses = (SimpleAttributeOperand[]) decoder.decodeStructArray("SelectClauses", SimpleAttributeOperand.TYPE_ID);
+            ContentFilter whereClause = (ContentFilter) decoder.decodeStruct("WhereClause", ContentFilter.TYPE_ID);
             return new EventFilter(selectClauses, whereClause);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EventFilter value) {
-            encoder.writeStructArray("SelectClauses", value.getSelectClauses(), SimpleAttributeOperand.TYPE_ID);
-            encoder.writeStruct("WhereClause", value.getWhereClause(), ContentFilter.TYPE_ID);
+            encoder.encodeStructArray("SelectClauses", value.getSelectClauses(), SimpleAttributeOperand.TYPE_ID);
+            encoder.encodeStruct("WhereClause", value.getWhereClause(), ContentFilter.TYPE_ID);
         }
     }
 }

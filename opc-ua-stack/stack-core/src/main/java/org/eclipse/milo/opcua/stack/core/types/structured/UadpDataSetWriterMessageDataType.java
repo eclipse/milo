@@ -118,20 +118,20 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         @Override
         public UadpDataSetWriterMessageDataType decodeType(SerializationContext context,
                                                            UaDecoder decoder) {
-            UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
-            UShort configuredSize = decoder.readUInt16("ConfiguredSize");
-            UShort networkMessageNumber = decoder.readUInt16("NetworkMessageNumber");
-            UShort dataSetOffset = decoder.readUInt16("DataSetOffset");
+            UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
+            UShort configuredSize = decoder.decodeUInt16("ConfiguredSize");
+            UShort networkMessageNumber = decoder.decodeUInt16("NetworkMessageNumber");
+            UShort dataSetOffset = decoder.decodeUInt16("DataSetOffset");
             return new UadpDataSetWriterMessageDataType(dataSetMessageContentMask, configuredSize, networkMessageNumber, dataSetOffset);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UadpDataSetWriterMessageDataType value) {
-            encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
-            encoder.writeUInt16("ConfiguredSize", value.getConfiguredSize());
-            encoder.writeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
-            encoder.writeUInt16("DataSetOffset", value.getDataSetOffset());
+            encoder.encodeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
+            encoder.encodeUInt16("ConfiguredSize", value.getConfiguredSize());
+            encoder.encodeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
+            encoder.encodeUInt16("DataSetOffset", value.getDataSetOffset());
         }
     }
 }

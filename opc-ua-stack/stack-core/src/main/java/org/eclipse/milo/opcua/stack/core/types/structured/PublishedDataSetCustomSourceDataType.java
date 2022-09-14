@@ -92,14 +92,14 @@ public class PublishedDataSetCustomSourceDataType extends PublishedDataSetSource
         @Override
         public PublishedDataSetCustomSourceDataType decodeType(SerializationContext context,
                                                                UaDecoder decoder) {
-            Boolean cyclicDataSet = decoder.readBoolean("CyclicDataSet");
+            Boolean cyclicDataSet = decoder.decodeBoolean("CyclicDataSet");
             return new PublishedDataSetCustomSourceDataType(cyclicDataSet);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PublishedDataSetCustomSourceDataType value) {
-            encoder.writeBoolean("CyclicDataSet", value.getCyclicDataSet());
+            encoder.encodeBoolean("CyclicDataSet", value.getCyclicDataSet());
         }
     }
 }

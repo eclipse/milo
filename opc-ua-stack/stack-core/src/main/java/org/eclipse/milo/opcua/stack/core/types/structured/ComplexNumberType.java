@@ -99,16 +99,16 @@ public class ComplexNumberType extends Structure implements UaStructuredType {
 
         @Override
         public ComplexNumberType decodeType(SerializationContext context, UaDecoder decoder) {
-            Float real = decoder.readFloat("Real");
-            Float imaginary = decoder.readFloat("Imaginary");
+            Float real = decoder.decodeFloat("Real");
+            Float imaginary = decoder.decodeFloat("Imaginary");
             return new ComplexNumberType(real, imaginary);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ComplexNumberType value) {
-            encoder.writeFloat("Real", value.getReal());
-            encoder.writeFloat("Imaginary", value.getImaginary());
+            encoder.encodeFloat("Real", value.getReal());
+            encoder.encodeFloat("Imaginary", value.getImaginary());
         }
     }
 }

@@ -100,16 +100,16 @@ public class MonitoredItemModifyRequest extends Structure implements UaStructure
 
         @Override
         public MonitoredItemModifyRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger monitoredItemId = decoder.readUInt32("MonitoredItemId");
-            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
+            UInteger monitoredItemId = decoder.decodeUInt32("MonitoredItemId");
+            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.decodeStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemModifyRequest(monitoredItemId, requestedParameters);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MonitoredItemModifyRequest value) {
-            encoder.writeUInt32("MonitoredItemId", value.getMonitoredItemId());
-            encoder.writeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);
+            encoder.encodeUInt32("MonitoredItemId", value.getMonitoredItemId());
+            encoder.encodeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);
         }
     }
 }

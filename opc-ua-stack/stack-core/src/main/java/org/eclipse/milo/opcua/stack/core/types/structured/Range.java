@@ -99,15 +99,15 @@ public class Range extends Structure implements UaStructuredType {
 
         @Override
         public Range decodeType(SerializationContext context, UaDecoder decoder) {
-            Double low = decoder.readDouble("Low");
-            Double high = decoder.readDouble("High");
+            Double low = decoder.decodeDouble("Low");
+            Double high = decoder.decodeDouble("High");
             return new Range(low, high);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, Range value) {
-            encoder.writeDouble("Low", value.getLow());
-            encoder.writeDouble("High", value.getHigh());
+            encoder.encodeDouble("Low", value.getLow());
+            encoder.encodeDouble("High", value.getHigh());
         }
     }
 }

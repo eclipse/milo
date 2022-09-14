@@ -133,24 +133,24 @@ public class BrowseDescription extends Structure implements UaStructuredType {
 
         @Override
         public BrowseDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            BrowseDirection browseDirection = BrowseDirection.from(decoder.readEnum("BrowseDirection"));
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
-            UInteger nodeClassMask = decoder.readUInt32("NodeClassMask");
-            UInteger resultMask = decoder.readUInt32("ResultMask");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            BrowseDirection browseDirection = BrowseDirection.from(decoder.decodeEnum("BrowseDirection"));
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
+            UInteger nodeClassMask = decoder.decodeUInt32("NodeClassMask");
+            UInteger resultMask = decoder.decodeUInt32("ResultMask");
             return new BrowseDescription(nodeId, browseDirection, referenceTypeId, includeSubtypes, nodeClassMask, resultMask);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                BrowseDescription value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeEnum("BrowseDirection", value.getBrowseDirection());
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
-            encoder.writeUInt32("NodeClassMask", value.getNodeClassMask());
-            encoder.writeUInt32("ResultMask", value.getResultMask());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeEnum("BrowseDirection", value.getBrowseDirection());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
+            encoder.encodeUInt32("NodeClassMask", value.getNodeClassMask());
+            encoder.encodeUInt32("ResultMask", value.getResultMask());
         }
     }
 }

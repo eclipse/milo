@@ -116,20 +116,20 @@ public class FindServersOnNetworkRequest extends Structure implements UaRequestM
 
         @Override
         public FindServersOnNetworkRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger startingRecordId = decoder.readUInt32("StartingRecordId");
-            UInteger maxRecordsToReturn = decoder.readUInt32("MaxRecordsToReturn");
-            String[] serverCapabilityFilter = decoder.readStringArray("ServerCapabilityFilter");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger startingRecordId = decoder.decodeUInt32("StartingRecordId");
+            UInteger maxRecordsToReturn = decoder.decodeUInt32("MaxRecordsToReturn");
+            String[] serverCapabilityFilter = decoder.decodeStringArray("ServerCapabilityFilter");
             return new FindServersOnNetworkRequest(requestHeader, startingRecordId, maxRecordsToReturn, serverCapabilityFilter);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                FindServersOnNetworkRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("StartingRecordId", value.getStartingRecordId());
-            encoder.writeUInt32("MaxRecordsToReturn", value.getMaxRecordsToReturn());
-            encoder.writeStringArray("ServerCapabilityFilter", value.getServerCapabilityFilter());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("StartingRecordId", value.getStartingRecordId());
+            encoder.encodeUInt32("MaxRecordsToReturn", value.getMaxRecordsToReturn());
+            encoder.encodeStringArray("ServerCapabilityFilter", value.getServerCapabilityFilter());
         }
     }
 }

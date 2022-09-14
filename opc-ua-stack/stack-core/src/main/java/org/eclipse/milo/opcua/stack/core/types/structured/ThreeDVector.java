@@ -107,17 +107,17 @@ public class ThreeDVector extends Vector implements UaStructuredType {
 
         @Override
         public ThreeDVector decodeType(SerializationContext context, UaDecoder decoder) {
-            Double x = decoder.readDouble("X");
-            Double y = decoder.readDouble("Y");
-            Double z = decoder.readDouble("Z");
+            Double x = decoder.decodeDouble("X");
+            Double y = decoder.decodeDouble("Y");
+            Double z = decoder.decodeDouble("Z");
             return new ThreeDVector(x, y, z);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ThreeDVector value) {
-            encoder.writeDouble("X", value.getX());
-            encoder.writeDouble("Y", value.getY());
-            encoder.writeDouble("Z", value.getZ());
+            encoder.encodeDouble("X", value.getX());
+            encoder.encodeDouble("Y", value.getY());
+            encoder.encodeDouble("Z", value.getZ());
         }
     }
 }

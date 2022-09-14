@@ -116,19 +116,19 @@ public class WriteValue extends Structure implements UaStructuredType {
 
         @Override
         public WriteValue decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String indexRange = decoder.readString("IndexRange");
-            DataValue value = decoder.readDataValue("Value");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String indexRange = decoder.decodeString("IndexRange");
+            DataValue value = decoder.decodeDataValue("Value");
             return new WriteValue(nodeId, attributeId, indexRange, value);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, WriteValue value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
-            encoder.writeDataValue("Value", value.getValue());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
+            encoder.encodeDataValue("Value", value.getValue());
         }
     }
 }

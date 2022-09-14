@@ -142,26 +142,26 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
 
         @Override
         public ApplicationDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            String applicationUri = decoder.readString("ApplicationUri");
-            String productUri = decoder.readString("ProductUri");
-            LocalizedText applicationName = decoder.readLocalizedText("ApplicationName");
-            ApplicationType applicationType = ApplicationType.from(decoder.readEnum("ApplicationType"));
-            String gatewayServerUri = decoder.readString("GatewayServerUri");
-            String discoveryProfileUri = decoder.readString("DiscoveryProfileUri");
-            String[] discoveryUrls = decoder.readStringArray("DiscoveryUrls");
+            String applicationUri = decoder.decodeString("ApplicationUri");
+            String productUri = decoder.decodeString("ProductUri");
+            LocalizedText applicationName = decoder.decodeLocalizedText("ApplicationName");
+            ApplicationType applicationType = ApplicationType.from(decoder.decodeEnum("ApplicationType"));
+            String gatewayServerUri = decoder.decodeString("GatewayServerUri");
+            String discoveryProfileUri = decoder.decodeString("DiscoveryProfileUri");
+            String[] discoveryUrls = decoder.decodeStringArray("DiscoveryUrls");
             return new ApplicationDescription(applicationUri, productUri, applicationName, applicationType, gatewayServerUri, discoveryProfileUri, discoveryUrls);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ApplicationDescription value) {
-            encoder.writeString("ApplicationUri", value.getApplicationUri());
-            encoder.writeString("ProductUri", value.getProductUri());
-            encoder.writeLocalizedText("ApplicationName", value.getApplicationName());
-            encoder.writeEnum("ApplicationType", value.getApplicationType());
-            encoder.writeString("GatewayServerUri", value.getGatewayServerUri());
-            encoder.writeString("DiscoveryProfileUri", value.getDiscoveryProfileUri());
-            encoder.writeStringArray("DiscoveryUrls", value.getDiscoveryUrls());
+            encoder.encodeString("ApplicationUri", value.getApplicationUri());
+            encoder.encodeString("ProductUri", value.getProductUri());
+            encoder.encodeLocalizedText("ApplicationName", value.getApplicationName());
+            encoder.encodeEnum("ApplicationType", value.getApplicationType());
+            encoder.encodeString("GatewayServerUri", value.getGatewayServerUri());
+            encoder.encodeString("DiscoveryProfileUri", value.getDiscoveryProfileUri());
+            encoder.encodeStringArray("DiscoveryUrls", value.getDiscoveryUrls());
         }
     }
 }

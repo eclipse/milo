@@ -111,20 +111,20 @@ public class UserNameIdentityToken extends UserIdentityToken implements UaStruct
 
         @Override
         public UserNameIdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            String userName = decoder.readString("UserName");
-            ByteString password = decoder.readByteString("Password");
-            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
+            String policyId = decoder.decodeString("PolicyId");
+            String userName = decoder.decodeString("UserName");
+            ByteString password = decoder.decodeByteString("Password");
+            String encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
             return new UserNameIdentityToken(policyId, userName, password, encryptionAlgorithm);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UserNameIdentityToken value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeString("UserName", value.getUserName());
-            encoder.writeByteString("Password", value.getPassword());
-            encoder.writeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeString("UserName", value.getUserName());
+            encoder.encodeByteString("Password", value.getPassword());
+            encoder.encodeString("EncryptionAlgorithm", value.getEncryptionAlgorithm());
         }
     }
 }

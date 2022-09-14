@@ -109,18 +109,18 @@ public class HistoryReadResponse extends Structure implements UaResponseMessageT
 
         @Override
         public HistoryReadResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            HistoryReadResult[] results = (HistoryReadResult[]) decoder.readStructArray("Results", HistoryReadResult.TYPE_ID);
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            HistoryReadResult[] results = (HistoryReadResult[]) decoder.decodeStructArray("Results", HistoryReadResult.TYPE_ID);
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new HistoryReadResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryReadResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("Results", value.getResults(), HistoryReadResult.TYPE_ID);
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("Results", value.getResults(), HistoryReadResult.TYPE_ID);
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
 }

@@ -97,15 +97,15 @@ public class DecimalDataType extends Structure implements UaStructuredType {
 
         @Override
         public DecimalDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            Short scale = decoder.readInt16("Scale");
-            ByteString value = decoder.readByteString("Value");
+            Short scale = decoder.decodeInt16("Scale");
+            ByteString value = decoder.decodeByteString("Value");
             return new DecimalDataType(scale, value);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, DecimalDataType value) {
-            encoder.writeInt16("Scale", value.getScale());
-            encoder.writeByteString("Value", value.getValue());
+            encoder.encodeInt16("Scale", value.getScale());
+            encoder.encodeByteString("Value", value.getValue());
         }
     }
 }

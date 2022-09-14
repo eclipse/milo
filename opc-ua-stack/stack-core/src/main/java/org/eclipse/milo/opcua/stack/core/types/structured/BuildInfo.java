@@ -133,23 +133,23 @@ public class BuildInfo extends Structure implements UaStructuredType {
 
         @Override
         public BuildInfo decodeType(SerializationContext context, UaDecoder decoder) {
-            String productUri = decoder.readString("ProductUri");
-            String manufacturerName = decoder.readString("ManufacturerName");
-            String productName = decoder.readString("ProductName");
-            String softwareVersion = decoder.readString("SoftwareVersion");
-            String buildNumber = decoder.readString("BuildNumber");
-            DateTime buildDate = decoder.readDateTime("BuildDate");
+            String productUri = decoder.decodeString("ProductUri");
+            String manufacturerName = decoder.decodeString("ManufacturerName");
+            String productName = decoder.decodeString("ProductName");
+            String softwareVersion = decoder.decodeString("SoftwareVersion");
+            String buildNumber = decoder.decodeString("BuildNumber");
+            DateTime buildDate = decoder.decodeDateTime("BuildDate");
             return new BuildInfo(productUri, manufacturerName, productName, softwareVersion, buildNumber, buildDate);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, BuildInfo value) {
-            encoder.writeString("ProductUri", value.getProductUri());
-            encoder.writeString("ManufacturerName", value.getManufacturerName());
-            encoder.writeString("ProductName", value.getProductName());
-            encoder.writeString("SoftwareVersion", value.getSoftwareVersion());
-            encoder.writeString("BuildNumber", value.getBuildNumber());
-            encoder.writeDateTime("BuildDate", value.getBuildDate());
+            encoder.encodeString("ProductUri", value.getProductUri());
+            encoder.encodeString("ManufacturerName", value.getManufacturerName());
+            encoder.encodeString("ProductName", value.getProductName());
+            encoder.encodeString("SoftwareVersion", value.getSoftwareVersion());
+            encoder.encodeString("BuildNumber", value.getBuildNumber());
+            encoder.encodeDateTime("BuildDate", value.getBuildDate());
         }
     }
 }

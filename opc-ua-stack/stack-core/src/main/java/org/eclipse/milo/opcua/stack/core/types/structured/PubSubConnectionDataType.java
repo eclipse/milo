@@ -159,30 +159,30 @@ public class PubSubConnectionDataType extends Structure implements UaStructuredT
 
         @Override
         public PubSubConnectionDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            Variant publisherId = decoder.readVariant("PublisherId");
-            String transportProfileUri = decoder.readString("TransportProfileUri");
-            NetworkAddressDataType address = (NetworkAddressDataType) decoder.readStruct("Address", NetworkAddressDataType.TYPE_ID);
-            KeyValuePair[] connectionProperties = (KeyValuePair[]) decoder.readStructArray("ConnectionProperties", KeyValuePair.TYPE_ID);
-            ConnectionTransportDataType transportSettings = (ConnectionTransportDataType) decoder.readStruct("TransportSettings", ConnectionTransportDataType.TYPE_ID);
-            WriterGroupDataType[] writerGroups = (WriterGroupDataType[]) decoder.readStructArray("WriterGroups", WriterGroupDataType.TYPE_ID);
-            ReaderGroupDataType[] readerGroups = (ReaderGroupDataType[]) decoder.readStructArray("ReaderGroups", ReaderGroupDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            Variant publisherId = decoder.decodeVariant("PublisherId");
+            String transportProfileUri = decoder.decodeString("TransportProfileUri");
+            NetworkAddressDataType address = (NetworkAddressDataType) decoder.decodeStruct("Address", NetworkAddressDataType.TYPE_ID);
+            KeyValuePair[] connectionProperties = (KeyValuePair[]) decoder.decodeStructArray("ConnectionProperties", KeyValuePair.TYPE_ID);
+            ConnectionTransportDataType transportSettings = (ConnectionTransportDataType) decoder.decodeStruct("TransportSettings", ConnectionTransportDataType.TYPE_ID);
+            WriterGroupDataType[] writerGroups = (WriterGroupDataType[]) decoder.decodeStructArray("WriterGroups", WriterGroupDataType.TYPE_ID);
+            ReaderGroupDataType[] readerGroups = (ReaderGroupDataType[]) decoder.decodeStructArray("ReaderGroups", ReaderGroupDataType.TYPE_ID);
             return new PubSubConnectionDataType(name, enabled, publisherId, transportProfileUri, address, connectionProperties, transportSettings, writerGroups, readerGroups);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PubSubConnectionDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeVariant("PublisherId", value.getPublisherId());
-            encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
-            encoder.writeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
-            encoder.writeStructArray("ConnectionProperties", value.getConnectionProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), ConnectionTransportDataType.TYPE_ID);
-            encoder.writeStructArray("WriterGroups", value.getWriterGroups(), WriterGroupDataType.TYPE_ID);
-            encoder.writeStructArray("ReaderGroups", value.getReaderGroups(), ReaderGroupDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeVariant("PublisherId", value.getPublisherId());
+            encoder.encodeString("TransportProfileUri", value.getTransportProfileUri());
+            encoder.encodeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
+            encoder.encodeStructArray("ConnectionProperties", value.getConnectionProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), ConnectionTransportDataType.TYPE_ID);
+            encoder.encodeStructArray("WriterGroups", value.getWriterGroups(), WriterGroupDataType.TYPE_ID);
+            encoder.encodeStructArray("ReaderGroups", value.getReaderGroups(), ReaderGroupDataType.TYPE_ID);
         }
     }
 }

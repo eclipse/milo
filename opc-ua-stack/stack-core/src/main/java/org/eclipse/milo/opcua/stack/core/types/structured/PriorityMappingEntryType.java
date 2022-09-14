@@ -117,20 +117,20 @@ public class PriorityMappingEntryType extends Structure implements UaStructuredT
 
         @Override
         public PriorityMappingEntryType decodeType(SerializationContext context, UaDecoder decoder) {
-            String mappingUri = decoder.readString("MappingUri");
-            String priorityLabel = decoder.readString("PriorityLabel");
-            UByte priorityValuePcp = decoder.readByte("PriorityValue_PCP");
-            UInteger priorityValueDscp = decoder.readUInt32("PriorityValue_DSCP");
+            String mappingUri = decoder.decodeString("MappingUri");
+            String priorityLabel = decoder.decodeString("PriorityLabel");
+            UByte priorityValuePcp = decoder.decodeByte("PriorityValue_PCP");
+            UInteger priorityValueDscp = decoder.decodeUInt32("PriorityValue_DSCP");
             return new PriorityMappingEntryType(mappingUri, priorityLabel, priorityValuePcp, priorityValueDscp);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PriorityMappingEntryType value) {
-            encoder.writeString("MappingUri", value.getMappingUri());
-            encoder.writeString("PriorityLabel", value.getPriorityLabel());
-            encoder.writeByte("PriorityValue_PCP", value.getPriorityValuePcp());
-            encoder.writeUInt32("PriorityValue_DSCP", value.getPriorityValueDscp());
+            encoder.encodeString("MappingUri", value.getMappingUri());
+            encoder.encodeString("PriorityLabel", value.getPriorityLabel());
+            encoder.encodeByte("PriorityValue_PCP", value.getPriorityValuePcp());
+            encoder.encodeUInt32("PriorityValue_DSCP", value.getPriorityValueDscp());
         }
     }
 }

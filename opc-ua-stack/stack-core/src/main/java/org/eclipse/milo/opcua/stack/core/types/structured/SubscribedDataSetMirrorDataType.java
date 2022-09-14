@@ -101,16 +101,16 @@ public class SubscribedDataSetMirrorDataType extends SubscribedDataSetDataType i
         @Override
         public SubscribedDataSetMirrorDataType decodeType(SerializationContext context,
                                                           UaDecoder decoder) {
-            String parentNodeName = decoder.readString("ParentNodeName");
-            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            String parentNodeName = decoder.decodeString("ParentNodeName");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.decodeStructArray("RolePermissions", RolePermissionType.TYPE_ID);
             return new SubscribedDataSetMirrorDataType(parentNodeName, rolePermissions);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SubscribedDataSetMirrorDataType value) {
-            encoder.writeString("ParentNodeName", value.getParentNodeName());
-            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeString("ParentNodeName", value.getParentNodeName());
+            encoder.encodeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
         }
     }
 }

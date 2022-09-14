@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotNull;
 
-public class OpcUaXmlStreamDecoderTest {
+public class OpcUaXmlDecoderTest {
     @Test
     public void testReadVariantValue() throws Exception {
         String xml =
@@ -30,7 +30,7 @@ public class OpcUaXmlStreamDecoderTest {
                 "        </ExtensionObject>\n" +
                 "      </ListOfExtensionObject>\n";
 
-        OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(new TestSerializationContext())
+        OpcUaXmlDecoder decoder = new OpcUaXmlDecoder(new TestSerializationContext())
             .setInput(new StringReader(xml));
 
         assertNotNull(decoder.readVariantValue());

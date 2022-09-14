@@ -163,30 +163,30 @@ public class UadpDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         @Override
         public UadpDataSetReaderMessageDataType decodeType(SerializationContext context,
                                                            UaDecoder decoder) {
-            UInteger groupVersion = decoder.readUInt32("GroupVersion");
-            UShort networkMessageNumber = decoder.readUInt16("NetworkMessageNumber");
-            UShort dataSetOffset = decoder.readUInt16("DataSetOffset");
-            UUID dataSetClassId = decoder.readGuid("DataSetClassId");
-            UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
-            UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
-            Double publishingInterval = decoder.readDouble("PublishingInterval");
-            Double receiveOffset = decoder.readDouble("ReceiveOffset");
-            Double processingOffset = decoder.readDouble("ProcessingOffset");
+            UInteger groupVersion = decoder.decodeUInt32("GroupVersion");
+            UShort networkMessageNumber = decoder.decodeUInt16("NetworkMessageNumber");
+            UShort dataSetOffset = decoder.decodeUInt16("DataSetOffset");
+            UUID dataSetClassId = decoder.decodeGuid("DataSetClassId");
+            UadpNetworkMessageContentMask networkMessageContentMask = new UadpNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));
+            UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
+            Double publishingInterval = decoder.decodeDouble("PublishingInterval");
+            Double receiveOffset = decoder.decodeDouble("ReceiveOffset");
+            Double processingOffset = decoder.decodeDouble("ProcessingOffset");
             return new UadpDataSetReaderMessageDataType(groupVersion, networkMessageNumber, dataSetOffset, dataSetClassId, networkMessageContentMask, dataSetMessageContentMask, publishingInterval, receiveOffset, processingOffset);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UadpDataSetReaderMessageDataType value) {
-            encoder.writeUInt32("GroupVersion", value.getGroupVersion());
-            encoder.writeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
-            encoder.writeUInt16("DataSetOffset", value.getDataSetOffset());
-            encoder.writeGuid("DataSetClassId", value.getDataSetClassId());
-            encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
-            encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
-            encoder.writeDouble("PublishingInterval", value.getPublishingInterval());
-            encoder.writeDouble("ReceiveOffset", value.getReceiveOffset());
-            encoder.writeDouble("ProcessingOffset", value.getProcessingOffset());
+            encoder.encodeUInt32("GroupVersion", value.getGroupVersion());
+            encoder.encodeUInt16("NetworkMessageNumber", value.getNetworkMessageNumber());
+            encoder.encodeUInt16("DataSetOffset", value.getDataSetOffset());
+            encoder.encodeGuid("DataSetClassId", value.getDataSetClassId());
+            encoder.encodeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
+            encoder.encodeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
+            encoder.encodeDouble("PublishingInterval", value.getPublishingInterval());
+            encoder.encodeDouble("ReceiveOffset", value.getReceiveOffset());
+            encoder.encodeDouble("ProcessingOffset", value.getProcessingOffset());
         }
     }
 }

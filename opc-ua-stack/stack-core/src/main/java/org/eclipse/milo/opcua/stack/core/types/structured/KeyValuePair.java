@@ -101,15 +101,15 @@ public class KeyValuePair extends Structure implements UaStructuredType {
 
         @Override
         public KeyValuePair decodeType(SerializationContext context, UaDecoder decoder) {
-            QualifiedName key = decoder.readQualifiedName("Key");
-            Variant value = decoder.readVariant("Value");
+            QualifiedName key = decoder.decodeQualifiedName("Key");
+            Variant value = decoder.decodeVariant("Value");
             return new KeyValuePair(key, value);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, KeyValuePair value) {
-            encoder.writeQualifiedName("Key", value.getKey());
-            encoder.writeVariant("Value", value.getValue());
+            encoder.encodeQualifiedName("Key", value.getKey());
+            encoder.encodeVariant("Value", value.getValue());
         }
     }
 }

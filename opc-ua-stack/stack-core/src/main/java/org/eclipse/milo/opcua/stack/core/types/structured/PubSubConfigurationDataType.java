@@ -108,18 +108,18 @@ public class PubSubConfigurationDataType extends Structure implements UaStructur
 
         @Override
         public PubSubConfigurationDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.readStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
-            PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.readStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
-            Boolean enabled = decoder.readBoolean("Enabled");
+            PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.decodeStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
+            PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.decodeStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
+            Boolean enabled = decoder.decodeBoolean("Enabled");
             return new PubSubConfigurationDataType(publishedDataSets, connections, enabled);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PubSubConfigurationDataType value) {
-            encoder.writeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
-            encoder.writeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
-            encoder.writeBoolean("Enabled", value.getEnabled());
+            encoder.encodeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
+            encoder.encodeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
+            encoder.encodeBoolean("Enabled", value.getEnabled());
         }
     }
 }

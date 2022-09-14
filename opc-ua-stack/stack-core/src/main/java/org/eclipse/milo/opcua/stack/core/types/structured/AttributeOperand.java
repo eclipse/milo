@@ -124,22 +124,22 @@ public class AttributeOperand extends FilterOperand implements UaStructuredType 
 
         @Override
         public AttributeOperand decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            String alias = decoder.readString("Alias");
-            RelativePath browsePath = (RelativePath) decoder.readStruct("BrowsePath", RelativePath.TYPE_ID);
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String indexRange = decoder.readString("IndexRange");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            String alias = decoder.decodeString("Alias");
+            RelativePath browsePath = (RelativePath) decoder.decodeStruct("BrowsePath", RelativePath.TYPE_ID);
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String indexRange = decoder.decodeString("IndexRange");
             return new AttributeOperand(nodeId, alias, browsePath, attributeId, indexRange);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AttributeOperand value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeString("Alias", value.getAlias());
-            encoder.writeStruct("BrowsePath", value.getBrowsePath(), RelativePath.TYPE_ID);
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeString("Alias", value.getAlias());
+            encoder.encodeStruct("BrowsePath", value.getBrowsePath(), RelativePath.TYPE_ID);
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
         }
     }
 }

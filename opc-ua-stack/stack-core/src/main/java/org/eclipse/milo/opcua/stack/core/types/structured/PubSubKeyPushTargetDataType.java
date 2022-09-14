@@ -159,30 +159,30 @@ public class PubSubKeyPushTargetDataType extends Structure implements UaStructur
 
         @Override
         public PubSubKeyPushTargetDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String applicationUri = decoder.readString("ApplicationUri");
-            String[] pushTargetFolder = decoder.readStringArray("PushTargetFolder");
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            UserTokenPolicy userTokenType = (UserTokenPolicy) decoder.readStruct("UserTokenType", UserTokenPolicy.TYPE_ID);
-            UShort requestedKeyCount = decoder.readUInt16("RequestedKeyCount");
-            Double retryInterval = decoder.readDouble("RetryInterval");
-            KeyValuePair[] pushTargetProperties = (KeyValuePair[]) decoder.readStructArray("PushTargetProperties", KeyValuePair.TYPE_ID);
-            String[] securityGroups = decoder.readStringArray("SecurityGroups");
+            String applicationUri = decoder.decodeString("ApplicationUri");
+            String[] pushTargetFolder = decoder.decodeStringArray("PushTargetFolder");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            UserTokenPolicy userTokenType = (UserTokenPolicy) decoder.decodeStruct("UserTokenType", UserTokenPolicy.TYPE_ID);
+            UShort requestedKeyCount = decoder.decodeUInt16("RequestedKeyCount");
+            Double retryInterval = decoder.decodeDouble("RetryInterval");
+            KeyValuePair[] pushTargetProperties = (KeyValuePair[]) decoder.decodeStructArray("PushTargetProperties", KeyValuePair.TYPE_ID);
+            String[] securityGroups = decoder.decodeStringArray("SecurityGroups");
             return new PubSubKeyPushTargetDataType(applicationUri, pushTargetFolder, endpointUrl, securityPolicyUri, userTokenType, requestedKeyCount, retryInterval, pushTargetProperties, securityGroups);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PubSubKeyPushTargetDataType value) {
-            encoder.writeString("ApplicationUri", value.getApplicationUri());
-            encoder.writeStringArray("PushTargetFolder", value.getPushTargetFolder());
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeStruct("UserTokenType", value.getUserTokenType(), UserTokenPolicy.TYPE_ID);
-            encoder.writeUInt16("RequestedKeyCount", value.getRequestedKeyCount());
-            encoder.writeDouble("RetryInterval", value.getRetryInterval());
-            encoder.writeStructArray("PushTargetProperties", value.getPushTargetProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStringArray("SecurityGroups", value.getSecurityGroups());
+            encoder.encodeString("ApplicationUri", value.getApplicationUri());
+            encoder.encodeStringArray("PushTargetFolder", value.getPushTargetFolder());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeStruct("UserTokenType", value.getUserTokenType(), UserTokenPolicy.TYPE_ID);
+            encoder.encodeUInt16("RequestedKeyCount", value.getRequestedKeyCount());
+            encoder.encodeDouble("RetryInterval", value.getRetryInterval());
+            encoder.encodeStructArray("PushTargetProperties", value.getPushTargetProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStringArray("SecurityGroups", value.getSecurityGroups());
         }
     }
 }

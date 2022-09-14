@@ -108,17 +108,17 @@ public class QueryDataSet extends Structure implements UaStructuredType {
 
         @Override
         public QueryDataSet decodeType(SerializationContext context, UaDecoder decoder) {
-            ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
-            ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
-            Variant[] values = decoder.readVariantArray("Values");
+            ExpandedNodeId nodeId = decoder.decodeExpandedNodeId("NodeId");
+            ExpandedNodeId typeDefinitionNode = decoder.decodeExpandedNodeId("TypeDefinitionNode");
+            Variant[] values = decoder.decodeVariantArray("Values");
             return new QueryDataSet(nodeId, typeDefinitionNode, values);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, QueryDataSet value) {
-            encoder.writeExpandedNodeId("NodeId", value.getNodeId());
-            encoder.writeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
-            encoder.writeVariantArray("Values", value.getValues());
+            encoder.encodeExpandedNodeId("NodeId", value.getNodeId());
+            encoder.encodeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
+            encoder.encodeVariantArray("Values", value.getValues());
         }
     }
 }

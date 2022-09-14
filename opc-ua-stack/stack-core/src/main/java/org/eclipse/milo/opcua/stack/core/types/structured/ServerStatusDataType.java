@@ -134,24 +134,24 @@ public class ServerStatusDataType extends Structure implements UaStructuredType 
 
         @Override
         public ServerStatusDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime currentTime = decoder.readDateTime("CurrentTime");
-            ServerState state = ServerState.from(decoder.readEnum("State"));
-            BuildInfo buildInfo = (BuildInfo) decoder.readStruct("BuildInfo", BuildInfo.TYPE_ID);
-            UInteger secondsTillShutdown = decoder.readUInt32("SecondsTillShutdown");
-            LocalizedText shutdownReason = decoder.readLocalizedText("ShutdownReason");
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime currentTime = decoder.decodeDateTime("CurrentTime");
+            ServerState state = ServerState.from(decoder.decodeEnum("State"));
+            BuildInfo buildInfo = (BuildInfo) decoder.decodeStruct("BuildInfo", BuildInfo.TYPE_ID);
+            UInteger secondsTillShutdown = decoder.decodeUInt32("SecondsTillShutdown");
+            LocalizedText shutdownReason = decoder.decodeLocalizedText("ShutdownReason");
             return new ServerStatusDataType(startTime, currentTime, state, buildInfo, secondsTillShutdown, shutdownReason);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ServerStatusDataType value) {
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("CurrentTime", value.getCurrentTime());
-            encoder.writeEnum("State", value.getState());
-            encoder.writeStruct("BuildInfo", value.getBuildInfo(), BuildInfo.TYPE_ID);
-            encoder.writeUInt32("SecondsTillShutdown", value.getSecondsTillShutdown());
-            encoder.writeLocalizedText("ShutdownReason", value.getShutdownReason());
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("CurrentTime", value.getCurrentTime());
+            encoder.encodeEnum("State", value.getState());
+            encoder.encodeStruct("BuildInfo", value.getBuildInfo(), BuildInfo.TYPE_ID);
+            encoder.encodeUInt32("SecondsTillShutdown", value.getSecondsTillShutdown());
+            encoder.encodeLocalizedText("ShutdownReason", value.getShutdownReason());
         }
     }
 }

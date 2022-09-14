@@ -99,16 +99,16 @@ public class DeleteNodesRequest extends Structure implements UaRequestMessageTyp
 
         @Override
         public DeleteNodesRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            DeleteNodesItem[] nodesToDelete = (DeleteNodesItem[]) decoder.readStructArray("NodesToDelete", DeleteNodesItem.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            DeleteNodesItem[] nodesToDelete = (DeleteNodesItem[]) decoder.decodeStructArray("NodesToDelete", DeleteNodesItem.TYPE_ID);
             return new DeleteNodesRequest(requestHeader, nodesToDelete);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DeleteNodesRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStructArray("NodesToDelete", value.getNodesToDelete(), DeleteNodesItem.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStructArray("NodesToDelete", value.getNodesToDelete(), DeleteNodesItem.TYPE_ID);
         }
     }
 }

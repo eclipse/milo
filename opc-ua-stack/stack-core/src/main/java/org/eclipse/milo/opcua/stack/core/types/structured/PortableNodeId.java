@@ -99,15 +99,15 @@ public class PortableNodeId extends Structure implements UaStructuredType {
 
         @Override
         public PortableNodeId decodeType(SerializationContext context, UaDecoder decoder) {
-            String namespaceUri = decoder.readString("NamespaceUri");
-            NodeId identifier = decoder.readNodeId("Identifier");
+            String namespaceUri = decoder.decodeString("NamespaceUri");
+            NodeId identifier = decoder.decodeNodeId("Identifier");
             return new PortableNodeId(namespaceUri, identifier);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, PortableNodeId value) {
-            encoder.writeString("NamespaceUri", value.getNamespaceUri());
-            encoder.writeNodeId("Identifier", value.getIdentifier());
+            encoder.encodeString("NamespaceUri", value.getNamespaceUri());
+            encoder.encodeNodeId("Identifier", value.getIdentifier());
         }
     }
 }

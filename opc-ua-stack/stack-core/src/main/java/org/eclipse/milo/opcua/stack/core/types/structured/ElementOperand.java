@@ -91,13 +91,13 @@ public class ElementOperand extends FilterOperand implements UaStructuredType {
 
         @Override
         public ElementOperand decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger index = decoder.readUInt32("Index");
+            UInteger index = decoder.decodeUInt32("Index");
             return new ElementOperand(index);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ElementOperand value) {
-            encoder.writeUInt32("Index", value.getIndex());
+            encoder.encodeUInt32("Index", value.getIndex());
         }
     }
 }

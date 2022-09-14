@@ -100,16 +100,16 @@ public class EphemeralKeyType extends Structure implements UaStructuredType {
 
         @Override
         public EphemeralKeyType decodeType(SerializationContext context, UaDecoder decoder) {
-            ByteString publicKey = decoder.readByteString("PublicKey");
-            ByteString signature = decoder.readByteString("Signature");
+            ByteString publicKey = decoder.decodeByteString("PublicKey");
+            ByteString signature = decoder.decodeByteString("Signature");
             return new EphemeralKeyType(publicKey, signature);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                EphemeralKeyType value) {
-            encoder.writeByteString("PublicKey", value.getPublicKey());
-            encoder.writeByteString("Signature", value.getSignature());
+            encoder.encodeByteString("PublicKey", value.getPublicKey());
+            encoder.encodeByteString("Signature", value.getSignature());
         }
     }
 }

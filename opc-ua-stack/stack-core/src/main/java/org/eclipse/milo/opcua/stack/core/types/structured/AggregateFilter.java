@@ -117,19 +117,19 @@ public class AggregateFilter extends MonitoringFilter implements UaStructuredTyp
 
         @Override
         public AggregateFilter decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime startTime = decoder.readDateTime("StartTime");
-            NodeId aggregateType = decoder.readNodeId("AggregateType");
-            Double processingInterval = decoder.readDouble("ProcessingInterval");
-            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.readStruct("AggregateConfiguration", AggregateConfiguration.TYPE_ID);
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            NodeId aggregateType = decoder.decodeNodeId("AggregateType");
+            Double processingInterval = decoder.decodeDouble("ProcessingInterval");
+            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.decodeStruct("AggregateConfiguration", AggregateConfiguration.TYPE_ID);
             return new AggregateFilter(startTime, aggregateType, processingInterval, aggregateConfiguration);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, AggregateFilter value) {
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeNodeId("AggregateType", value.getAggregateType());
-            encoder.writeDouble("ProcessingInterval", value.getProcessingInterval());
-            encoder.writeStruct("AggregateConfiguration", value.getAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeNodeId("AggregateType", value.getAggregateType());
+            encoder.encodeDouble("ProcessingInterval", value.getProcessingInterval());
+            encoder.encodeStruct("AggregateConfiguration", value.getAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
         }
     }
 }

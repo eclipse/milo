@@ -31,8 +31,8 @@ import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -78,10 +78,10 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
         switch (transportProfile) {
             case HTTPS_UABINARY: {
-                OpcUaBinaryStreamEncoder encoder =
-                    new OpcUaBinaryStreamEncoder(client.getStaticSerializationContext());
+                OpcUaBinaryEncoder encoder =
+                    new OpcUaBinaryEncoder(client.getStaticSerializationContext());
                 encoder.setBuffer(content);
-                encoder.writeMessage(null, transportRequest.getRequest());
+                encoder.encodeMessage(null, transportRequest.getRequest());
                 break;
             }
 
@@ -141,10 +141,10 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                             "unexpected content-type: " + contentType);
                     }
 
-                    OpcUaBinaryStreamDecoder decoder =
-                        new OpcUaBinaryStreamDecoder(client.getStaticSerializationContext());
+                    OpcUaBinaryDecoder decoder =
+                        new OpcUaBinaryDecoder(client.getStaticSerializationContext());
                     decoder.setBuffer(content);
-                    responseMessage = (UaResponseMessageType) decoder.readMessage(null);
+                    responseMessage = (UaResponseMessageType) decoder.decodeMessage(null);
                     break;
                 }
 

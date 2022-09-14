@@ -109,18 +109,18 @@ public class AggregateFilterResult extends MonitoringFilterResult implements UaS
 
         @Override
         public AggregateFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime revisedStartTime = decoder.readDateTime("RevisedStartTime");
-            Double revisedProcessingInterval = decoder.readDouble("RevisedProcessingInterval");
-            AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.readStruct("RevisedAggregateConfiguration", AggregateConfiguration.TYPE_ID);
+            DateTime revisedStartTime = decoder.decodeDateTime("RevisedStartTime");
+            Double revisedProcessingInterval = decoder.decodeDouble("RevisedProcessingInterval");
+            AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.decodeStruct("RevisedAggregateConfiguration", AggregateConfiguration.TYPE_ID);
             return new AggregateFilterResult(revisedStartTime, revisedProcessingInterval, revisedAggregateConfiguration);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AggregateFilterResult value) {
-            encoder.writeDateTime("RevisedStartTime", value.getRevisedStartTime());
-            encoder.writeDouble("RevisedProcessingInterval", value.getRevisedProcessingInterval());
-            encoder.writeStruct("RevisedAggregateConfiguration", value.getRevisedAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
+            encoder.encodeDateTime("RevisedStartTime", value.getRevisedStartTime());
+            encoder.encodeDouble("RevisedProcessingInterval", value.getRevisedProcessingInterval());
+            encoder.encodeStruct("RevisedAggregateConfiguration", value.getRevisedAggregateConfiguration(), AggregateConfiguration.TYPE_ID);
         }
     }
 }

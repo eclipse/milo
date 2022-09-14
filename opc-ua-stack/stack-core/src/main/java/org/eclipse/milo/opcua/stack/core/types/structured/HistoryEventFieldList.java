@@ -89,14 +89,14 @@ public class HistoryEventFieldList extends Structure implements UaStructuredType
 
         @Override
         public HistoryEventFieldList decodeType(SerializationContext context, UaDecoder decoder) {
-            Variant[] eventFields = decoder.readVariantArray("EventFields");
+            Variant[] eventFields = decoder.decodeVariantArray("EventFields");
             return new HistoryEventFieldList(eventFields);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryEventFieldList value) {
-            encoder.writeVariantArray("EventFields", value.getEventFields());
+            encoder.encodeVariantArray("EventFields", value.getEventFields());
         }
     }
 }

@@ -136,23 +136,23 @@ public class ResponseHeader extends Structure implements UaStructuredType {
 
         @Override
         public ResponseHeader decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime timestamp = decoder.readDateTime("Timestamp");
-            UInteger requestHandle = decoder.readUInt32("RequestHandle");
-            StatusCode serviceResult = decoder.readStatusCode("ServiceResult");
-            DiagnosticInfo serviceDiagnostics = decoder.readDiagnosticInfo("ServiceDiagnostics");
-            String[] stringTable = decoder.readStringArray("StringTable");
-            ExtensionObject additionalHeader = decoder.readExtensionObject("AdditionalHeader");
+            DateTime timestamp = decoder.decodeDateTime("Timestamp");
+            UInteger requestHandle = decoder.decodeUInt32("RequestHandle");
+            StatusCode serviceResult = decoder.decodeStatusCode("ServiceResult");
+            DiagnosticInfo serviceDiagnostics = decoder.decodeDiagnosticInfo("ServiceDiagnostics");
+            String[] stringTable = decoder.decodeStringArray("StringTable");
+            ExtensionObject additionalHeader = decoder.decodeExtensionObject("AdditionalHeader");
             return new ResponseHeader(timestamp, requestHandle, serviceResult, serviceDiagnostics, stringTable, additionalHeader);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ResponseHeader value) {
-            encoder.writeDateTime("Timestamp", value.getTimestamp());
-            encoder.writeUInt32("RequestHandle", value.getRequestHandle());
-            encoder.writeStatusCode("ServiceResult", value.getServiceResult());
-            encoder.writeDiagnosticInfo("ServiceDiagnostics", value.getServiceDiagnostics());
-            encoder.writeStringArray("StringTable", value.getStringTable());
-            encoder.writeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
+            encoder.encodeDateTime("Timestamp", value.getTimestamp());
+            encoder.encodeUInt32("RequestHandle", value.getRequestHandle());
+            encoder.encodeStatusCode("ServiceResult", value.getServiceResult());
+            encoder.encodeDiagnosticInfo("ServiceDiagnostics", value.getServiceDiagnostics());
+            encoder.encodeStringArray("StringTable", value.getStringTable());
+            encoder.encodeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
         }
     }
 }

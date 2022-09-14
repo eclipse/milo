@@ -132,32 +132,32 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
 
         @Override
         public VariableTypeAttributes decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            UInteger writeMask = decoder.readUInt32("WriteMask");
-            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            Variant value = decoder.readVariant("Value");
-            NodeId dataType = decoder.readNodeId("DataType");
-            Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
-            Boolean isAbstract = decoder.readBoolean("IsAbstract");
+            UInteger specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            UInteger writeMask = decoder.decodeUInt32("WriteMask");
+            UInteger userWriteMask = decoder.decodeUInt32("UserWriteMask");
+            Variant value = decoder.decodeVariant("Value");
+            NodeId dataType = decoder.decodeNodeId("DataType");
+            Integer valueRank = decoder.decodeInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.decodeUInt32Array("ArrayDimensions");
+            Boolean isAbstract = decoder.decodeBoolean("IsAbstract");
             return new VariableTypeAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, isAbstract);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                VariableTypeAttributes value) {
-            encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeUInt32("WriteMask", value.getWriteMask());
-            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
-            encoder.writeVariant("Value", value.getValue());
-            encoder.writeNodeId("DataType", value.getDataType());
-            encoder.writeInt32("ValueRank", value.getValueRank());
-            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
-            encoder.writeBoolean("IsAbstract", value.getIsAbstract());
+            encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeUInt32("WriteMask", value.getWriteMask());
+            encoder.encodeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.encodeVariant("Value", value.getValue());
+            encoder.encodeNodeId("DataType", value.getDataType());
+            encoder.encodeInt32("ValueRank", value.getValueRank());
+            encoder.encodeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.encodeBoolean("IsAbstract", value.getIsAbstract());
         }
     }
 }

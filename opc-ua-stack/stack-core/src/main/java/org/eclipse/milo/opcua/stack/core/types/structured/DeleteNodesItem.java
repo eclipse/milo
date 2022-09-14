@@ -99,15 +99,15 @@ public class DeleteNodesItem extends Structure implements UaStructuredType {
 
         @Override
         public DeleteNodesItem decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            Boolean deleteTargetReferences = decoder.readBoolean("DeleteTargetReferences");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            Boolean deleteTargetReferences = decoder.decodeBoolean("DeleteTargetReferences");
             return new DeleteNodesItem(nodeId, deleteTargetReferences);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, DeleteNodesItem value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeBoolean("DeleteTargetReferences", value.getDeleteTargetReferences());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeBoolean("DeleteTargetReferences", value.getDeleteTargetReferences());
         }
     }
 }

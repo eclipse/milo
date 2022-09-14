@@ -171,44 +171,44 @@ public class WriterGroupDataType extends PubSubGroupDataType implements UaStruct
 
         @Override
         public WriterGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
-            String securityGroupId = decoder.readString("SecurityGroupId");
-            EndpointDescription[] securityKeyServices = (EndpointDescription[]) decoder.readStructArray("SecurityKeyServices", EndpointDescription.TYPE_ID);
-            UInteger maxNetworkMessageSize = decoder.readUInt32("MaxNetworkMessageSize");
-            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.readStructArray("GroupProperties", KeyValuePair.TYPE_ID);
-            UShort writerGroupId = decoder.readUInt16("WriterGroupId");
-            Double publishingInterval = decoder.readDouble("PublishingInterval");
-            Double keepAliveTime = decoder.readDouble("KeepAliveTime");
-            UByte priority = decoder.readByte("Priority");
-            String[] localeIds = decoder.readStringArray("LocaleIds");
-            String headerLayoutUri = decoder.readString("HeaderLayoutUri");
-            WriterGroupTransportDataType transportSettings = (WriterGroupTransportDataType) decoder.readStruct("TransportSettings", WriterGroupTransportDataType.TYPE_ID);
-            WriterGroupMessageDataType messageSettings = (WriterGroupMessageDataType) decoder.readStruct("MessageSettings", WriterGroupMessageDataType.TYPE_ID);
-            DataSetWriterDataType[] dataSetWriters = (DataSetWriterDataType[]) decoder.readStructArray("DataSetWriters", DataSetWriterDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityGroupId = decoder.decodeString("SecurityGroupId");
+            EndpointDescription[] securityKeyServices = (EndpointDescription[]) decoder.decodeStructArray("SecurityKeyServices", EndpointDescription.TYPE_ID);
+            UInteger maxNetworkMessageSize = decoder.decodeUInt32("MaxNetworkMessageSize");
+            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.decodeStructArray("GroupProperties", KeyValuePair.TYPE_ID);
+            UShort writerGroupId = decoder.decodeUInt16("WriterGroupId");
+            Double publishingInterval = decoder.decodeDouble("PublishingInterval");
+            Double keepAliveTime = decoder.decodeDouble("KeepAliveTime");
+            UByte priority = decoder.decodeByte("Priority");
+            String[] localeIds = decoder.decodeStringArray("LocaleIds");
+            String headerLayoutUri = decoder.decodeString("HeaderLayoutUri");
+            WriterGroupTransportDataType transportSettings = (WriterGroupTransportDataType) decoder.decodeStruct("TransportSettings", WriterGroupTransportDataType.TYPE_ID);
+            WriterGroupMessageDataType messageSettings = (WriterGroupMessageDataType) decoder.decodeStruct("MessageSettings", WriterGroupMessageDataType.TYPE_ID);
+            DataSetWriterDataType[] dataSetWriters = (DataSetWriterDataType[]) decoder.decodeStructArray("DataSetWriters", DataSetWriterDataType.TYPE_ID);
             return new WriterGroupDataType(name, enabled, securityMode, securityGroupId, securityKeyServices, maxNetworkMessageSize, groupProperties, writerGroupId, publishingInterval, keepAliveTime, priority, localeIds, headerLayoutUri, transportSettings, messageSettings, dataSetWriters);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                WriterGroupDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityGroupId", value.getSecurityGroupId());
-            encoder.writeStructArray("SecurityKeyServices", value.getSecurityKeyServices(), EndpointDescription.TYPE_ID);
-            encoder.writeUInt32("MaxNetworkMessageSize", value.getMaxNetworkMessageSize());
-            encoder.writeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeUInt16("WriterGroupId", value.getWriterGroupId());
-            encoder.writeDouble("PublishingInterval", value.getPublishingInterval());
-            encoder.writeDouble("KeepAliveTime", value.getKeepAliveTime());
-            encoder.writeByte("Priority", value.getPriority());
-            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
-            encoder.writeString("HeaderLayoutUri", value.getHeaderLayoutUri());
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), WriterGroupTransportDataType.TYPE_ID);
-            encoder.writeStruct("MessageSettings", value.getMessageSettings(), WriterGroupMessageDataType.TYPE_ID);
-            encoder.writeStructArray("DataSetWriters", value.getDataSetWriters(), DataSetWriterDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityGroupId", value.getSecurityGroupId());
+            encoder.encodeStructArray("SecurityKeyServices", value.getSecurityKeyServices(), EndpointDescription.TYPE_ID);
+            encoder.encodeUInt32("MaxNetworkMessageSize", value.getMaxNetworkMessageSize());
+            encoder.encodeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeUInt16("WriterGroupId", value.getWriterGroupId());
+            encoder.encodeDouble("PublishingInterval", value.getPublishingInterval());
+            encoder.encodeDouble("KeepAliveTime", value.getKeepAliveTime());
+            encoder.encodeByte("Priority", value.getPriority());
+            encoder.encodeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.encodeString("HeaderLayoutUri", value.getHeaderLayoutUri());
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), WriterGroupTransportDataType.TYPE_ID);
+            encoder.encodeStruct("MessageSettings", value.getMessageSettings(), WriterGroupMessageDataType.TYPE_ID);
+            encoder.encodeStructArray("DataSetWriters", value.getDataSetWriters(), DataSetWriterDataType.TYPE_ID);
         }
     }
 }

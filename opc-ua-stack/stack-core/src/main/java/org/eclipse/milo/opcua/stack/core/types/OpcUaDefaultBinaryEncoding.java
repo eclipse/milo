@@ -17,8 +17,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -58,10 +58,10 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
             ByteBuf buffer = buffer();
 
             try {
-                OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(context);
+                OpcUaBinaryEncoder encoder = new OpcUaBinaryEncoder(context);
                 encoder.setBuffer(buffer);
 
-                encoder.writeStruct(null, decodedBody, codec);
+                encoder.encodeStruct(null, decodedBody, codec);
 
                 return ByteString.of(ByteBufUtil.getBytes(buffer));
             } finally {
@@ -89,10 +89,10 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
             ByteBuf buffer = Unpooled.wrappedBuffer(bs);
 
-            OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(context);
+            OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(context);
             decoder.setBuffer(buffer);
 
-            return decoder.readStruct(null, codec);
+            return decoder.decodeStruct(null, codec);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,

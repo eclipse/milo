@@ -124,22 +124,22 @@ public class SetTriggeringRequest extends Structure implements UaRequestMessageT
 
         @Override
         public SetTriggeringRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            UInteger triggeringItemId = decoder.readUInt32("TriggeringItemId");
-            UInteger[] linksToAdd = decoder.readUInt32Array("LinksToAdd");
-            UInteger[] linksToRemove = decoder.readUInt32Array("LinksToRemove");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            UInteger triggeringItemId = decoder.decodeUInt32("TriggeringItemId");
+            UInteger[] linksToAdd = decoder.decodeUInt32Array("LinksToAdd");
+            UInteger[] linksToRemove = decoder.decodeUInt32Array("LinksToRemove");
             return new SetTriggeringRequest(requestHeader, subscriptionId, triggeringItemId, linksToAdd, linksToRemove);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SetTriggeringRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeUInt32("TriggeringItemId", value.getTriggeringItemId());
-            encoder.writeUInt32Array("LinksToAdd", value.getLinksToAdd());
-            encoder.writeUInt32Array("LinksToRemove", value.getLinksToRemove());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeUInt32("TriggeringItemId", value.getTriggeringItemId());
+            encoder.encodeUInt32Array("LinksToAdd", value.getLinksToAdd());
+            encoder.encodeUInt32Array("LinksToRemove", value.getLinksToRemove());
         }
     }
 }

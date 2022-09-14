@@ -95,19 +95,19 @@ public class EnumField extends EnumValueType implements UaStructuredType {
 
         @Override
         public EnumField decodeType(SerializationContext context, UaDecoder decoder) {
-            Long value = decoder.readInt64("Value");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            String name = decoder.readString("Name");
+            Long value = decoder.decodeInt64("Value");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            String name = decoder.decodeString("Name");
             return new EnumField(value, displayName, description, name);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EnumField value) {
-            encoder.writeInt64("Value", value.getValue());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeString("Name", value.getName());
+            encoder.encodeInt64("Value", value.getValue());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeString("Name", value.getName());
         }
     }
 }

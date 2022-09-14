@@ -24,8 +24,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -76,7 +76,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
     @Override
     public StructureT decode(
         SerializationContext context,
-        OpcUaBinaryStreamDecoder decoder
+        OpcUaBinaryDecoder decoder
     ) throws UaSerializationException {
 
         LinkedHashMap<String, MemberT> members = new LinkedHashMap<>();
@@ -99,7 +99,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                     Namespaces.OPC_UA_BSD.equals(typeNamespace);
 
             if (fieldIsScalar(field)) {
-                Function<OpcUaBinaryStreamDecoder, Object> reader;
+                Function<OpcUaBinaryDecoder, Object> reader;
                 if (typeNamespaceIsUa && (reader = getReader(typeName)) != null) {
                     Object value = reader.apply(decoder);
 
@@ -134,7 +134,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                     if (length >= 0) {
                         values = new Object[length];
 
-                        Function<OpcUaBinaryStreamDecoder, Object> reader;
+                        Function<OpcUaBinaryDecoder, Object> reader;
                         if (typeNamespaceIsUa && (reader = getReader(typeName)) != null) {
                             for (int i = 0; i < length; i++) {
                                 Object value = reader.apply(decoder);
@@ -165,7 +165,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
     @Override
     public void encode(
         SerializationContext context,
-        OpcUaBinaryStreamEncoder encoder,
+        OpcUaBinaryEncoder encoder,
         Object structure
     ) throws UaSerializationException {
 
@@ -195,7 +195,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
 
     private void encodeField(
         SerializationContext context,
-        OpcUaBinaryStreamEncoder encoder,
+        OpcUaBinaryEncoder encoder,
         LinkedHashMap<String, MemberT> members,
         FieldType field
     ) {
@@ -212,7 +212,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
         if (fieldIsScalar(field)) {
             Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
 
-            BiConsumer<OpcUaBinaryStreamEncoder, Object> writer;
+            BiConsumer<OpcUaBinaryEncoder, Object> writer;
             if (typeNamespaceIsUa && (writer = getWriter(typeName)) != null) {
                 writer.accept(encoder, scalarValue);
             } else {
@@ -252,7 +252,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                 }
 
                 if (valueArray != null) {
-                    BiConsumer<OpcUaBinaryStreamEncoder, Object> writer;
+                    BiConsumer<OpcUaBinaryEncoder, Object> writer;
                     if (typeNamespaceIsUa && (writer = getWriter(typeName)) != null) {
                         for (Object value : valueArray) {
                             writer.accept(encoder, value);
@@ -272,7 +272,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
         String fieldName,
         String namespaceUri,
         String description,
-        OpcUaBinaryStreamDecoder decoder
+        OpcUaBinaryDecoder decoder
     ) throws UaSerializationException {
 
         DataTypeDictionary dictionary =
@@ -296,7 +296,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                     );
                 }
             } else if (typeDescription instanceof EnumeratedType) {
-                return decoder.readEnum(fieldName);
+                return decoder.decodeEnum(fieldName);
             } else {
                 throw new UaSerializationException(
                     StatusCodes.Bad_DecodingError,
@@ -318,7 +318,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
         String namespaceUri,
         String description,
         Object value,
-        OpcUaBinaryStreamEncoder encoder
+        OpcUaBinaryEncoder encoder
     ) throws UaSerializationException {
 
         DataTypeDictionary dictionary =
@@ -342,7 +342,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
                     );
                 }
             } else if (typeDescription instanceof EnumeratedType) {
-                encoder.writeEnum(fieldName, new UaEnumeratedType() {
+                encoder.encodeEnum(fieldName, new UaEnumeratedType() {
                     @Override
                     public ExpandedNodeId getTypeId() {
                         return ExpandedNodeId.NULL_VALUE;
@@ -467,78 +467,78 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
         return field.getLengthField() == null && field.getLength() == null;
     }
 
-    private static Function<OpcUaBinaryStreamDecoder, Object> getReader(String typeName) {
+    private static Function<OpcUaBinaryDecoder, Object> getReader(String typeName) {
         switch (typeName) {
             //@formatter:off
             case "Boolean":
-                return OpcUaBinaryStreamDecoder::readBoolean;
+                return OpcUaBinaryDecoder::readBoolean;
             case "SByte":
-                return OpcUaBinaryStreamDecoder::readSByte;
+                return OpcUaBinaryDecoder::readSByte;
             case "Int16":
-                return OpcUaBinaryStreamDecoder::readInt16;
+                return OpcUaBinaryDecoder::readInt16;
             case "Int32":
-                return OpcUaBinaryStreamDecoder::readInt32;
+                return OpcUaBinaryDecoder::readInt32;
             case "Int64":
-                return OpcUaBinaryStreamDecoder::readInt64;
+                return OpcUaBinaryDecoder::readInt64;
             case "Byte":
-                return OpcUaBinaryStreamDecoder::readByte;
+                return OpcUaBinaryDecoder::readByte;
             case "UInt16":
-                return OpcUaBinaryStreamDecoder::readUInt16;
+                return OpcUaBinaryDecoder::readUInt16;
             case "UInt32":
-                return OpcUaBinaryStreamDecoder::readUInt32;
+                return OpcUaBinaryDecoder::readUInt32;
             case "UInt64":
-                return OpcUaBinaryStreamDecoder::readUInt64;
+                return OpcUaBinaryDecoder::readUInt64;
             case "Float":
-                return OpcUaBinaryStreamDecoder::readFloat;
+                return OpcUaBinaryDecoder::readFloat;
             case "Double":
-                return OpcUaBinaryStreamDecoder::readDouble;
+                return OpcUaBinaryDecoder::readDouble;
             case "String":
-                return OpcUaBinaryStreamDecoder::readString;
+                return OpcUaBinaryDecoder::readString;
             case "DateTime":
-                return OpcUaBinaryStreamDecoder::readDateTime;
+                return OpcUaBinaryDecoder::readDateTime;
             case "Guid":
-                return OpcUaBinaryStreamDecoder::readGuid;
+                return OpcUaBinaryDecoder::readGuid;
             case "ByteString":
-                return OpcUaBinaryStreamDecoder::readByteString;
+                return OpcUaBinaryDecoder::readByteString;
             case "XmlElement":
-                return OpcUaBinaryStreamDecoder::readXmlElement;
+                return OpcUaBinaryDecoder::readXmlElement;
             case "NodeId":
-                return OpcUaBinaryStreamDecoder::readNodeId;
+                return OpcUaBinaryDecoder::readNodeId;
             case "ExpandedNodeId":
-                return OpcUaBinaryStreamDecoder::readExpandedNodeId;
+                return OpcUaBinaryDecoder::readExpandedNodeId;
             case "StatusCode":
-                return OpcUaBinaryStreamDecoder::readStatusCode;
+                return OpcUaBinaryDecoder::readStatusCode;
             case "QualifiedName":
-                return OpcUaBinaryStreamDecoder::readQualifiedName;
+                return OpcUaBinaryDecoder::readQualifiedName;
             case "LocalizedText":
-                return OpcUaBinaryStreamDecoder::readLocalizedText;
+                return OpcUaBinaryDecoder::readLocalizedText;
             case "ExtensionObject":
-                return OpcUaBinaryStreamDecoder::readExtensionObject;
+                return OpcUaBinaryDecoder::readExtensionObject;
             case "DataValue":
-                return OpcUaBinaryStreamDecoder::readDataValue;
+                return OpcUaBinaryDecoder::readDataValue;
             case "Variant":
-                return OpcUaBinaryStreamDecoder::readVariant;
+                return OpcUaBinaryDecoder::readVariant;
             case "DiagnosticInfo":
-                return OpcUaBinaryStreamDecoder::readDiagnosticInfo;
+                return OpcUaBinaryDecoder::readDiagnosticInfo;
 
             case "Bit":
-                return OpcUaBinaryStreamDecoder::readBit;
+                return OpcUaBinaryDecoder::readBit;
             case "Char":
-                return OpcUaBinaryStreamDecoder::readCharacter;
+                return OpcUaBinaryDecoder::readCharacter;
             case "CharArray":
-                return OpcUaBinaryStreamDecoder::readUtf8CharArray;
+                return OpcUaBinaryDecoder::readUtf8CharArray;
             case "WideChar":
-                return OpcUaBinaryStreamDecoder::readWideChar;
+                return OpcUaBinaryDecoder::readWideChar;
             case "WideCharArray":   // fall through
             case "WideString":
-                return OpcUaBinaryStreamDecoder::readUtf16CharArray;
+                return OpcUaBinaryDecoder::readUtf16CharArray;
             default:
                 return null;
             //@formatter:on
         }
     }
 
-    private static BiConsumer<OpcUaBinaryStreamEncoder, Object> getWriter(String typeName) {
+    private static BiConsumer<OpcUaBinaryEncoder, Object> getWriter(String typeName) {
         switch (typeName) {
             //@formatter:off
             case "Boolean":

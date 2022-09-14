@@ -99,16 +99,16 @@ public class MdnsDiscoveryConfiguration extends DiscoveryConfiguration implement
 
         @Override
         public MdnsDiscoveryConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
-            String mdnsServerName = decoder.readString("MdnsServerName");
-            String[] serverCapabilities = decoder.readStringArray("ServerCapabilities");
+            String mdnsServerName = decoder.decodeString("MdnsServerName");
+            String[] serverCapabilities = decoder.decodeStringArray("ServerCapabilities");
             return new MdnsDiscoveryConfiguration(mdnsServerName, serverCapabilities);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MdnsDiscoveryConfiguration value) {
-            encoder.writeString("MdnsServerName", value.getMdnsServerName());
-            encoder.writeStringArray("ServerCapabilities", value.getServerCapabilities());
+            encoder.encodeString("MdnsServerName", value.getMdnsServerName());
+            encoder.encodeStringArray("ServerCapabilities", value.getServerCapabilities());
         }
     }
 }

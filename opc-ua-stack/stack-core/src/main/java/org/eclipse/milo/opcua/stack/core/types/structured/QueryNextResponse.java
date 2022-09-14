@@ -109,18 +109,18 @@ public class QueryNextResponse extends Structure implements UaResponseMessageTyp
 
         @Override
         public QueryNextResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            QueryDataSet[] queryDataSets = (QueryDataSet[]) decoder.readStructArray("QueryDataSets", QueryDataSet.TYPE_ID);
-            ByteString revisedContinuationPoint = decoder.readByteString("RevisedContinuationPoint");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            QueryDataSet[] queryDataSets = (QueryDataSet[]) decoder.decodeStructArray("QueryDataSets", QueryDataSet.TYPE_ID);
+            ByteString revisedContinuationPoint = decoder.decodeByteString("RevisedContinuationPoint");
             return new QueryNextResponse(responseHeader, queryDataSets, revisedContinuationPoint);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                QueryNextResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
-            encoder.writeByteString("RevisedContinuationPoint", value.getRevisedContinuationPoint());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("QueryDataSets", value.getQueryDataSets(), QueryDataSet.TYPE_ID);
+            encoder.encodeByteString("RevisedContinuationPoint", value.getRevisedContinuationPoint());
         }
     }
 }

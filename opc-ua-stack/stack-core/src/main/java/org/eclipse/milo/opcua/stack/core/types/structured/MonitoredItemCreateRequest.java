@@ -109,18 +109,18 @@ public class MonitoredItemCreateRequest extends Structure implements UaStructure
 
         @Override
         public MonitoredItemCreateRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            ReadValueId itemToMonitor = (ReadValueId) decoder.readStruct("ItemToMonitor", ReadValueId.TYPE_ID);
-            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readEnum("MonitoringMode"));
-            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
+            ReadValueId itemToMonitor = (ReadValueId) decoder.decodeStruct("ItemToMonitor", ReadValueId.TYPE_ID);
+            MonitoringMode monitoringMode = MonitoringMode.from(decoder.decodeEnum("MonitoringMode"));
+            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.decodeStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemCreateRequest(itemToMonitor, monitoringMode, requestedParameters);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MonitoredItemCreateRequest value) {
-            encoder.writeStruct("ItemToMonitor", value.getItemToMonitor(), ReadValueId.TYPE_ID);
-            encoder.writeEnum("MonitoringMode", value.getMonitoringMode());
-            encoder.writeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);
+            encoder.encodeStruct("ItemToMonitor", value.getItemToMonitor(), ReadValueId.TYPE_ID);
+            encoder.encodeEnum("MonitoringMode", value.getMonitoringMode());
+            encoder.encodeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);
         }
     }
 }

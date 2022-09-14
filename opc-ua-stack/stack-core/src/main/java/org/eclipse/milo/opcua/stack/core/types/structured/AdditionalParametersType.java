@@ -91,14 +91,14 @@ public class AdditionalParametersType extends Structure implements UaStructuredT
 
         @Override
         public AdditionalParametersType decodeType(SerializationContext context, UaDecoder decoder) {
-            KeyValuePair[] parameters = (KeyValuePair[]) decoder.readStructArray("Parameters", KeyValuePair.TYPE_ID);
+            KeyValuePair[] parameters = (KeyValuePair[]) decoder.decodeStructArray("Parameters", KeyValuePair.TYPE_ID);
             return new AdditionalParametersType(parameters);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AdditionalParametersType value) {
-            encoder.writeStructArray("Parameters", value.getParameters(), KeyValuePair.TYPE_ID);
+            encoder.encodeStructArray("Parameters", value.getParameters(), KeyValuePair.TYPE_ID);
         }
     }
 }

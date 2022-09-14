@@ -116,19 +116,19 @@ public class EUInformation extends Structure implements UaStructuredType {
 
         @Override
         public EUInformation decodeType(SerializationContext context, UaDecoder decoder) {
-            String namespaceUri = decoder.readString("NamespaceUri");
-            Integer unitId = decoder.readInt32("UnitId");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
+            String namespaceUri = decoder.decodeString("NamespaceUri");
+            Integer unitId = decoder.decodeInt32("UnitId");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
             return new EUInformation(namespaceUri, unitId, displayName, description);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EUInformation value) {
-            encoder.writeString("NamespaceUri", value.getNamespaceUri());
-            encoder.writeInt32("UnitId", value.getUnitId());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.encodeString("NamespaceUri", value.getNamespaceUri());
+            encoder.encodeInt32("UnitId", value.getUnitId());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
         }
     }
 }

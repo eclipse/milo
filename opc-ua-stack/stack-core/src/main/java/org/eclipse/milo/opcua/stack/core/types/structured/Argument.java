@@ -124,21 +124,21 @@ public class Argument extends Structure implements UaStructuredType {
 
         @Override
         public Argument decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            NodeId dataType = decoder.readNodeId("DataType");
-            Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
-            LocalizedText description = decoder.readLocalizedText("Description");
+            String name = decoder.decodeString("Name");
+            NodeId dataType = decoder.decodeNodeId("DataType");
+            Integer valueRank = decoder.decodeInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.decodeUInt32Array("ArrayDimensions");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
             return new Argument(name, dataType, valueRank, arrayDimensions, description);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, Argument value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeNodeId("DataType", value.getDataType());
-            encoder.writeInt32("ValueRank", value.getValueRank());
-            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
-            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeNodeId("DataType", value.getDataType());
+            encoder.encodeInt32("ValueRank", value.getValueRank());
+            encoder.encodeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.encodeLocalizedText("Description", value.getDescription());
         }
     }
 }

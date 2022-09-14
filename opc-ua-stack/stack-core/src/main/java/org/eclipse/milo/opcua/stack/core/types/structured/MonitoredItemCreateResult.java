@@ -126,22 +126,22 @@ public class MonitoredItemCreateResult extends Structure implements UaStructured
 
         @Override
         public MonitoredItemCreateResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            UInteger monitoredItemId = decoder.readUInt32("MonitoredItemId");
-            Double revisedSamplingInterval = decoder.readDouble("RevisedSamplingInterval");
-            UInteger revisedQueueSize = decoder.readUInt32("RevisedQueueSize");
-            ExtensionObject filterResult = decoder.readExtensionObject("FilterResult");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            UInteger monitoredItemId = decoder.decodeUInt32("MonitoredItemId");
+            Double revisedSamplingInterval = decoder.decodeDouble("RevisedSamplingInterval");
+            UInteger revisedQueueSize = decoder.decodeUInt32("RevisedQueueSize");
+            ExtensionObject filterResult = decoder.decodeExtensionObject("FilterResult");
             return new MonitoredItemCreateResult(statusCode, monitoredItemId, revisedSamplingInterval, revisedQueueSize, filterResult);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MonitoredItemCreateResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeUInt32("MonitoredItemId", value.getMonitoredItemId());
-            encoder.writeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
-            encoder.writeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
-            encoder.writeExtensionObject("FilterResult", value.getFilterResult());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeUInt32("MonitoredItemId", value.getMonitoredItemId());
+            encoder.encodeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
+            encoder.encodeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
+            encoder.encodeExtensionObject("FilterResult", value.getFilterResult());
         }
     }
 }

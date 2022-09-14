@@ -228,46 +228,46 @@ public class DataSetReaderDataType extends Structure implements UaStructuredType
 
         @Override
         public DataSetReaderDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            Variant publisherId = decoder.readVariant("PublisherId");
-            UShort writerGroupId = decoder.readUInt16("WriterGroupId");
-            UShort dataSetWriterId = decoder.readUInt16("DataSetWriterId");
-            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.readStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
-            DataSetFieldContentMask dataSetFieldContentMask = new DataSetFieldContentMask(decoder.readUInt32("DataSetFieldContentMask"));
-            Double messageReceiveTimeout = decoder.readDouble("MessageReceiveTimeout");
-            UInteger keyFrameCount = decoder.readUInt32("KeyFrameCount");
-            String headerLayoutUri = decoder.readString("HeaderLayoutUri");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
-            String securityGroupId = decoder.readString("SecurityGroupId");
-            EndpointDescription[] securityKeyServices = (EndpointDescription[]) decoder.readStructArray("SecurityKeyServices", EndpointDescription.TYPE_ID);
-            KeyValuePair[] dataSetReaderProperties = (KeyValuePair[]) decoder.readStructArray("DataSetReaderProperties", KeyValuePair.TYPE_ID);
-            DataSetReaderTransportDataType transportSettings = (DataSetReaderTransportDataType) decoder.readStruct("TransportSettings", DataSetReaderTransportDataType.TYPE_ID);
-            DataSetReaderMessageDataType messageSettings = (DataSetReaderMessageDataType) decoder.readStruct("MessageSettings", DataSetReaderMessageDataType.TYPE_ID);
-            SubscribedDataSetDataType subscribedDataSet = (SubscribedDataSetDataType) decoder.readStruct("SubscribedDataSet", SubscribedDataSetDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            Variant publisherId = decoder.decodeVariant("PublisherId");
+            UShort writerGroupId = decoder.decodeUInt16("WriterGroupId");
+            UShort dataSetWriterId = decoder.decodeUInt16("DataSetWriterId");
+            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.decodeStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
+            DataSetFieldContentMask dataSetFieldContentMask = new DataSetFieldContentMask(decoder.decodeUInt32("DataSetFieldContentMask"));
+            Double messageReceiveTimeout = decoder.decodeDouble("MessageReceiveTimeout");
+            UInteger keyFrameCount = decoder.decodeUInt32("KeyFrameCount");
+            String headerLayoutUri = decoder.decodeString("HeaderLayoutUri");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityGroupId = decoder.decodeString("SecurityGroupId");
+            EndpointDescription[] securityKeyServices = (EndpointDescription[]) decoder.decodeStructArray("SecurityKeyServices", EndpointDescription.TYPE_ID);
+            KeyValuePair[] dataSetReaderProperties = (KeyValuePair[]) decoder.decodeStructArray("DataSetReaderProperties", KeyValuePair.TYPE_ID);
+            DataSetReaderTransportDataType transportSettings = (DataSetReaderTransportDataType) decoder.decodeStruct("TransportSettings", DataSetReaderTransportDataType.TYPE_ID);
+            DataSetReaderMessageDataType messageSettings = (DataSetReaderMessageDataType) decoder.decodeStruct("MessageSettings", DataSetReaderMessageDataType.TYPE_ID);
+            SubscribedDataSetDataType subscribedDataSet = (SubscribedDataSetDataType) decoder.decodeStruct("SubscribedDataSet", SubscribedDataSetDataType.TYPE_ID);
             return new DataSetReaderDataType(name, enabled, publisherId, writerGroupId, dataSetWriterId, dataSetMetaData, dataSetFieldContentMask, messageReceiveTimeout, keyFrameCount, headerLayoutUri, securityMode, securityGroupId, securityKeyServices, dataSetReaderProperties, transportSettings, messageSettings, subscribedDataSet);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DataSetReaderDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeVariant("PublisherId", value.getPublisherId());
-            encoder.writeUInt16("WriterGroupId", value.getWriterGroupId());
-            encoder.writeUInt16("DataSetWriterId", value.getDataSetWriterId());
-            encoder.writeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
-            encoder.writeUInt32("DataSetFieldContentMask", value.getDataSetFieldContentMask().getValue());
-            encoder.writeDouble("MessageReceiveTimeout", value.getMessageReceiveTimeout());
-            encoder.writeUInt32("KeyFrameCount", value.getKeyFrameCount());
-            encoder.writeString("HeaderLayoutUri", value.getHeaderLayoutUri());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityGroupId", value.getSecurityGroupId());
-            encoder.writeStructArray("SecurityKeyServices", value.getSecurityKeyServices(), EndpointDescription.TYPE_ID);
-            encoder.writeStructArray("DataSetReaderProperties", value.getDataSetReaderProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), DataSetReaderTransportDataType.TYPE_ID);
-            encoder.writeStruct("MessageSettings", value.getMessageSettings(), DataSetReaderMessageDataType.TYPE_ID);
-            encoder.writeStruct("SubscribedDataSet", value.getSubscribedDataSet(), SubscribedDataSetDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeVariant("PublisherId", value.getPublisherId());
+            encoder.encodeUInt16("WriterGroupId", value.getWriterGroupId());
+            encoder.encodeUInt16("DataSetWriterId", value.getDataSetWriterId());
+            encoder.encodeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
+            encoder.encodeUInt32("DataSetFieldContentMask", value.getDataSetFieldContentMask().getValue());
+            encoder.encodeDouble("MessageReceiveTimeout", value.getMessageReceiveTimeout());
+            encoder.encodeUInt32("KeyFrameCount", value.getKeyFrameCount());
+            encoder.encodeString("HeaderLayoutUri", value.getHeaderLayoutUri());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityGroupId", value.getSecurityGroupId());
+            encoder.encodeStructArray("SecurityKeyServices", value.getSecurityKeyServices(), EndpointDescription.TYPE_ID);
+            encoder.encodeStructArray("DataSetReaderProperties", value.getDataSetReaderProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), DataSetReaderTransportDataType.TYPE_ID);
+            encoder.encodeStruct("MessageSettings", value.getMessageSettings(), DataSetReaderMessageDataType.TYPE_ID);
+            encoder.encodeStruct("SubscribedDataSet", value.getSubscribedDataSet(), SubscribedDataSetDataType.TYPE_ID);
         }
     }
 }

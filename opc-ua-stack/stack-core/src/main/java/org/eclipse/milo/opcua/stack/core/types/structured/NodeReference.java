@@ -113,19 +113,19 @@ public class NodeReference extends Structure implements UaStructuredType {
 
         @Override
         public NodeReference decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isForward = decoder.readBoolean("IsForward");
-            NodeId[] referencedNodeIds = decoder.readNodeIdArray("ReferencedNodeIds");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isForward = decoder.decodeBoolean("IsForward");
+            NodeId[] referencedNodeIds = decoder.decodeNodeIdArray("ReferencedNodeIds");
             return new NodeReference(nodeId, referenceTypeId, isForward, referencedNodeIds);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, NodeReference value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsForward", value.getIsForward());
-            encoder.writeNodeIdArray("ReferencedNodeIds", value.getReferencedNodeIds());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsForward", value.getIsForward());
+            encoder.encodeNodeIdArray("ReferencedNodeIds", value.getReferencedNodeIds());
         }
     }
 }

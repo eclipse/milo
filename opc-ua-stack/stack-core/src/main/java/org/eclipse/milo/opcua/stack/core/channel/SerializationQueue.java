@@ -13,14 +13,14 @@ package org.eclipse.milo.opcua.stack.core.channel;
 import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {
 
-    private final OpcUaBinaryStreamEncoder binaryEncoder;
-    private final OpcUaBinaryStreamDecoder binaryDecoder;
+    private final OpcUaBinaryEncoder binaryEncoder;
+    private final OpcUaBinaryDecoder binaryDecoder;
 
     private final ChunkEncoder chunkEncoder;
     private final ChunkDecoder chunkDecoder;
@@ -41,8 +41,8 @@ public class SerializationQueue {
         chunkEncoder = new ChunkEncoder(parameters);
         chunkDecoder = new ChunkDecoder(parameters, context.getEncodingLimits());
 
-        binaryEncoder = new OpcUaBinaryStreamEncoder(context);
-        binaryDecoder = new OpcUaBinaryStreamDecoder(context);
+        binaryEncoder = new OpcUaBinaryEncoder(context);
+        binaryDecoder = new OpcUaBinaryDecoder(context);
 
         encodingQueue = new ExecutionQueue(executor);
         decodingQueue = new ExecutionQueue(executor);
@@ -67,12 +67,12 @@ public class SerializationQueue {
 
     @FunctionalInterface
     public interface Decoder {
-        void decode(OpcUaBinaryStreamDecoder binaryDecoder, ChunkDecoder chunkDecoder);
+        void decode(OpcUaBinaryDecoder binaryDecoder, ChunkDecoder chunkDecoder);
     }
 
     @FunctionalInterface
     public interface Encoder {
-        void encode(OpcUaBinaryStreamEncoder binaryEncoder, ChunkEncoder chunkEncoder);
+        void encode(OpcUaBinaryEncoder binaryEncoder, ChunkEncoder chunkEncoder);
     }
 
 }

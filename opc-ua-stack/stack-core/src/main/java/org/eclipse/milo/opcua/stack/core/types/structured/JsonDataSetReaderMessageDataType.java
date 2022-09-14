@@ -101,16 +101,16 @@ public class JsonDataSetReaderMessageDataType extends DataSetReaderMessageDataTy
         @Override
         public JsonDataSetReaderMessageDataType decodeType(SerializationContext context,
                                                            UaDecoder decoder) {
-            JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.readUInt32("NetworkMessageContentMask"));
-            JsonDataSetMessageContentMask dataSetMessageContentMask = new JsonDataSetMessageContentMask(decoder.readUInt32("DataSetMessageContentMask"));
+            JsonNetworkMessageContentMask networkMessageContentMask = new JsonNetworkMessageContentMask(decoder.decodeUInt32("NetworkMessageContentMask"));
+            JsonDataSetMessageContentMask dataSetMessageContentMask = new JsonDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
             return new JsonDataSetReaderMessageDataType(networkMessageContentMask, dataSetMessageContentMask);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                JsonDataSetReaderMessageDataType value) {
-            encoder.writeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
-            encoder.writeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
+            encoder.encodeUInt32("NetworkMessageContentMask", value.getNetworkMessageContentMask().getValue());
+            encoder.encodeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
         }
     }
 }

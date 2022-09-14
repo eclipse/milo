@@ -125,10 +125,10 @@ public class CustomStructType implements UaStructuredType {
             UaDecoder decoder
         ) throws UaSerializationException {
 
-            String foo = decoder.readString("Foo");
-            UInteger bar = decoder.readUInt32("Bar");
-            boolean baz = decoder.readBoolean("Baz");
-            CustomEnumType customEnumType = CustomEnumType.from(decoder.readEnum("CustomEnumType"));
+            String foo = decoder.decodeString("Foo");
+            UInteger bar = decoder.decodeUInt32("Bar");
+            boolean baz = decoder.decodeBoolean("Baz");
+            CustomEnumType customEnumType = CustomEnumType.from(decoder.decodeEnum("CustomEnumType"));
 
             return new CustomStructType(foo, bar, baz, customEnumType);
         }
@@ -139,10 +139,10 @@ public class CustomStructType implements UaStructuredType {
             UaEncoder encoder, CustomStructType value
         ) throws UaSerializationException {
 
-            encoder.writeString("Foo", value.foo);
-            encoder.writeUInt32("Bar", value.bar);
-            encoder.writeBoolean("Baz", value.baz);
-            encoder.writeEnum("CustomEnumType", value.customEnumType);
+            encoder.encodeString("Foo", value.foo);
+            encoder.encodeUInt32("Bar", value.bar);
+            encoder.encodeBoolean("Baz", value.baz);
+            encoder.encodeEnum("CustomEnumType", value.customEnumType);
         }
     }
 

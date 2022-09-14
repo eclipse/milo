@@ -144,25 +144,25 @@ public class PublishResponse extends Structure implements UaResponseMessageType 
 
         @Override
         public PublishResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            UInteger[] availableSequenceNumbers = decoder.readUInt32Array("AvailableSequenceNumbers");
-            Boolean moreNotifications = decoder.readBoolean("MoreNotifications");
-            NotificationMessage notificationMessage = (NotificationMessage) decoder.readStruct("NotificationMessage", NotificationMessage.TYPE_ID);
-            StatusCode[] results = decoder.readStatusCodeArray("Results");
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            UInteger[] availableSequenceNumbers = decoder.decodeUInt32Array("AvailableSequenceNumbers");
+            Boolean moreNotifications = decoder.decodeBoolean("MoreNotifications");
+            NotificationMessage notificationMessage = (NotificationMessage) decoder.decodeStruct("NotificationMessage", NotificationMessage.TYPE_ID);
+            StatusCode[] results = decoder.decodeStatusCodeArray("Results");
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new PublishResponse(responseHeader, subscriptionId, availableSequenceNumbers, moreNotifications, notificationMessage, results, diagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, PublishResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
-            encoder.writeBoolean("MoreNotifications", value.getMoreNotifications());
-            encoder.writeStruct("NotificationMessage", value.getNotificationMessage(), NotificationMessage.TYPE_ID);
-            encoder.writeStatusCodeArray("Results", value.getResults());
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
+            encoder.encodeBoolean("MoreNotifications", value.getMoreNotifications());
+            encoder.encodeStruct("NotificationMessage", value.getNotificationMessage(), NotificationMessage.TYPE_ID);
+            encoder.encodeStatusCodeArray("Results", value.getResults());
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
 }

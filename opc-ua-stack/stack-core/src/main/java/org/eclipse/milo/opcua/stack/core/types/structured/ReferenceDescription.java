@@ -143,26 +143,26 @@ public class ReferenceDescription extends Structure implements UaStructuredType 
 
         @Override
         public ReferenceDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isForward = decoder.readBoolean("IsForward");
-            ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
-            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            NodeClass nodeClass = NodeClass.from(decoder.readEnum("NodeClass"));
-            ExpandedNodeId typeDefinition = decoder.readExpandedNodeId("TypeDefinition");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isForward = decoder.decodeBoolean("IsForward");
+            ExpandedNodeId nodeId = decoder.decodeExpandedNodeId("NodeId");
+            QualifiedName browseName = decoder.decodeQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            NodeClass nodeClass = NodeClass.from(decoder.decodeEnum("NodeClass"));
+            ExpandedNodeId typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
             return new ReferenceDescription(referenceTypeId, isForward, nodeId, browseName, displayName, nodeClass, typeDefinition);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReferenceDescription value) {
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsForward", value.getIsForward());
-            encoder.writeExpandedNodeId("NodeId", value.getNodeId());
-            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeEnum("NodeClass", value.getNodeClass());
-            encoder.writeExpandedNodeId("TypeDefinition", value.getTypeDefinition());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsForward", value.getIsForward());
+            encoder.encodeExpandedNodeId("NodeId", value.getNodeId());
+            encoder.encodeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeEnum("NodeClass", value.getNodeClass());
+            encoder.encodeExpandedNodeId("TypeDefinition", value.getTypeDefinition());
         }
     }
 }

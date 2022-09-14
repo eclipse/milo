@@ -56,8 +56,8 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
 
     @Test
     public void testEnumScalar() {
-        writer.writeEnum(null, ApplicationType.Client);
-        ApplicationType decoded = ApplicationType.from(reader.readEnum(null));
+        writer.encodeEnum(null, ApplicationType.Client);
+        ApplicationType decoded = ApplicationType.from(reader.decodeEnum(null));
 
         assertEquals(decoded, ApplicationType.Client);
     }
@@ -68,8 +68,8 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
             ApplicationType.Client,
             ApplicationType.ClientAndServer
         };
-        writer.writeEnumArray(null, array);
-        Integer[] decodedValues = reader.readEnumArray(null);
+        writer.encodeEnumArray(null, array);
+        Integer[] decodedValues = reader.decodeEnumArray(null);
         ApplicationType[] decoded = Arrays.stream(decodedValues)
             .map(ApplicationType::from)
             .toArray(ApplicationType[]::new);

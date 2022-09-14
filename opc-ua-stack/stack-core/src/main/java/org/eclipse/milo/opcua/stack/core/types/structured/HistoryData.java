@@ -92,13 +92,13 @@ public class HistoryData extends Structure implements UaStructuredType {
 
         @Override
         public HistoryData decodeType(SerializationContext context, UaDecoder decoder) {
-            DataValue[] dataValues = decoder.readDataValueArray("DataValues");
+            DataValue[] dataValues = decoder.decodeDataValueArray("DataValues");
             return new HistoryData(dataValues);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, HistoryData value) {
-            encoder.writeDataValueArray("DataValues", value.getDataValues());
+            encoder.encodeDataValueArray("DataValues", value.getDataValues());
         }
     }
 }

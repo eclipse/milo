@@ -125,22 +125,22 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
 
         @Override
         public ReadRawModifiedDetails decodeType(SerializationContext context, UaDecoder decoder) {
-            Boolean isReadModified = decoder.readBoolean("IsReadModified");
-            DateTime startTime = decoder.readDateTime("StartTime");
-            DateTime endTime = decoder.readDateTime("EndTime");
-            UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
-            Boolean returnBounds = decoder.readBoolean("ReturnBounds");
+            Boolean isReadModified = decoder.decodeBoolean("IsReadModified");
+            DateTime startTime = decoder.decodeDateTime("StartTime");
+            DateTime endTime = decoder.decodeDateTime("EndTime");
+            UInteger numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
+            Boolean returnBounds = decoder.decodeBoolean("ReturnBounds");
             return new ReadRawModifiedDetails(isReadModified, startTime, endTime, numValuesPerNode, returnBounds);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReadRawModifiedDetails value) {
-            encoder.writeBoolean("IsReadModified", value.getIsReadModified());
-            encoder.writeDateTime("StartTime", value.getStartTime());
-            encoder.writeDateTime("EndTime", value.getEndTime());
-            encoder.writeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
-            encoder.writeBoolean("ReturnBounds", value.getReturnBounds());
+            encoder.encodeBoolean("IsReadModified", value.getIsReadModified());
+            encoder.encodeDateTime("StartTime", value.getStartTime());
+            encoder.encodeDateTime("EndTime", value.getEndTime());
+            encoder.encodeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
+            encoder.encodeBoolean("ReturnBounds", value.getReturnBounds());
         }
     }
 }

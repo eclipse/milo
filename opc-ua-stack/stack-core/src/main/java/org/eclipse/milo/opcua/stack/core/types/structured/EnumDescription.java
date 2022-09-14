@@ -105,19 +105,19 @@ public class EnumDescription extends DataTypeDescription implements UaStructured
 
         @Override
         public EnumDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId dataTypeId = decoder.readNodeId("DataTypeId");
-            QualifiedName name = decoder.readQualifiedName("Name");
-            EnumDefinition enumDefinition = (EnumDefinition) decoder.readStruct("EnumDefinition", EnumDefinition.TYPE_ID);
-            UByte builtInType = decoder.readByte("BuiltInType");
+            NodeId dataTypeId = decoder.decodeNodeId("DataTypeId");
+            QualifiedName name = decoder.decodeQualifiedName("Name");
+            EnumDefinition enumDefinition = (EnumDefinition) decoder.decodeStruct("EnumDefinition", EnumDefinition.TYPE_ID);
+            UByte builtInType = decoder.decodeByte("BuiltInType");
             return new EnumDescription(dataTypeId, name, enumDefinition, builtInType);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, EnumDescription value) {
-            encoder.writeNodeId("DataTypeId", value.getDataTypeId());
-            encoder.writeQualifiedName("Name", value.getName());
-            encoder.writeStruct("EnumDefinition", value.getEnumDefinition(), EnumDefinition.TYPE_ID);
-            encoder.writeByte("BuiltInType", value.getBuiltInType());
+            encoder.encodeNodeId("DataTypeId", value.getDataTypeId());
+            encoder.encodeQualifiedName("Name", value.getName());
+            encoder.encodeStruct("EnumDefinition", value.getEnumDefinition(), EnumDefinition.TYPE_ID);
+            encoder.encodeByte("BuiltInType", value.getBuiltInType());
         }
     }
 }

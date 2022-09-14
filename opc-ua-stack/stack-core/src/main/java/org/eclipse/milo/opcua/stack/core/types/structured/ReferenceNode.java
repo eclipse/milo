@@ -104,17 +104,17 @@ public class ReferenceNode extends Structure implements UaStructuredType {
 
         @Override
         public ReferenceNode decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isInverse = decoder.readBoolean("IsInverse");
-            ExpandedNodeId targetId = decoder.readExpandedNodeId("TargetId");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isInverse = decoder.decodeBoolean("IsInverse");
+            ExpandedNodeId targetId = decoder.decodeExpandedNodeId("TargetId");
             return new ReferenceNode(referenceTypeId, isInverse, targetId);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ReferenceNode value) {
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsInverse", value.getIsInverse());
-            encoder.writeExpandedNodeId("TargetId", value.getTargetId());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsInverse", value.getIsInverse());
+            encoder.encodeExpandedNodeId("TargetId", value.getTargetId());
         }
     }
 }

@@ -100,15 +100,15 @@ public class SignatureData extends Structure implements UaStructuredType {
 
         @Override
         public SignatureData decodeType(SerializationContext context, UaDecoder decoder) {
-            String algorithm = decoder.readString("Algorithm");
-            ByteString signature = decoder.readByteString("Signature");
+            String algorithm = decoder.decodeString("Algorithm");
+            ByteString signature = decoder.decodeByteString("Signature");
             return new SignatureData(algorithm, signature);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, SignatureData value) {
-            encoder.writeString("Algorithm", value.getAlgorithm());
-            encoder.writeByteString("Signature", value.getSignature());
+            encoder.encodeString("Algorithm", value.getAlgorithm());
+            encoder.encodeByteString("Signature", value.getSignature());
         }
     }
 }

@@ -99,15 +99,15 @@ public class CallRequest extends Structure implements UaRequestMessageType {
 
         @Override
         public CallRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            CallMethodRequest[] methodsToCall = (CallMethodRequest[]) decoder.readStructArray("MethodsToCall", CallMethodRequest.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            CallMethodRequest[] methodsToCall = (CallMethodRequest[]) decoder.decodeStructArray("MethodsToCall", CallMethodRequest.TYPE_ID);
             return new CallRequest(requestHeader, methodsToCall);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, CallRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStructArray("MethodsToCall", value.getMethodsToCall(), CallMethodRequest.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStructArray("MethodsToCall", value.getMethodsToCall(), CallMethodRequest.TYPE_ID);
         }
     }
 }

@@ -99,16 +99,16 @@ public class FindServersResponse extends Structure implements UaResponseMessageT
 
         @Override
         public FindServersResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            ApplicationDescription[] servers = (ApplicationDescription[]) decoder.readStructArray("Servers", ApplicationDescription.TYPE_ID);
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            ApplicationDescription[] servers = (ApplicationDescription[]) decoder.decodeStructArray("Servers", ApplicationDescription.TYPE_ID);
             return new FindServersResponse(responseHeader, servers);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                FindServersResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("Servers", value.getServers(), ApplicationDescription.TYPE_ID);
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("Servers", value.getServers(), ApplicationDescription.TYPE_ID);
         }
     }
 }

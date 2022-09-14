@@ -69,12 +69,12 @@ public enum CustomEnumType implements UaEnumeratedType {
 
         @Override
         public CustomEnumType decodeType(SerializationContext context, UaDecoder decoder) {
-            return CustomEnumType.from(decoder.readInt32(null));
+            return CustomEnumType.from(decoder.decodeInt32(null));
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, CustomEnumType value) {
-            encoder.writeInt32(null, value.getValue());
+            encoder.encodeInt32(null, value.getValue());
         }
     }
 

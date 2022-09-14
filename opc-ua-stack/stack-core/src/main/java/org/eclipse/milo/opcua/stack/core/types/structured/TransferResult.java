@@ -100,15 +100,15 @@ public class TransferResult extends Structure implements UaStructuredType {
 
         @Override
         public TransferResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            UInteger[] availableSequenceNumbers = decoder.readUInt32Array("AvailableSequenceNumbers");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            UInteger[] availableSequenceNumbers = decoder.decodeUInt32Array("AvailableSequenceNumbers");
             return new TransferResult(statusCode, availableSequenceNumbers);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, TransferResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
         }
     }
 }

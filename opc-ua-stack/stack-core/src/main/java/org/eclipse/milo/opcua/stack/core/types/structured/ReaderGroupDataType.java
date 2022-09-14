@@ -120,32 +120,32 @@ public class ReaderGroupDataType extends PubSubGroupDataType implements UaStruct
 
         @Override
         public ReaderGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            Boolean enabled = decoder.readBoolean("Enabled");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
-            String securityGroupId = decoder.readString("SecurityGroupId");
-            EndpointDescription[] securityKeyServices = (EndpointDescription[]) decoder.readStructArray("SecurityKeyServices", EndpointDescription.TYPE_ID);
-            UInteger maxNetworkMessageSize = decoder.readUInt32("MaxNetworkMessageSize");
-            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.readStructArray("GroupProperties", KeyValuePair.TYPE_ID);
-            ReaderGroupTransportDataType transportSettings = (ReaderGroupTransportDataType) decoder.readStruct("TransportSettings", ReaderGroupTransportDataType.TYPE_ID);
-            ReaderGroupMessageDataType messageSettings = (ReaderGroupMessageDataType) decoder.readStruct("MessageSettings", ReaderGroupMessageDataType.TYPE_ID);
-            DataSetReaderDataType[] dataSetReaders = (DataSetReaderDataType[]) decoder.readStructArray("DataSetReaders", DataSetReaderDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityGroupId = decoder.decodeString("SecurityGroupId");
+            EndpointDescription[] securityKeyServices = (EndpointDescription[]) decoder.decodeStructArray("SecurityKeyServices", EndpointDescription.TYPE_ID);
+            UInteger maxNetworkMessageSize = decoder.decodeUInt32("MaxNetworkMessageSize");
+            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.decodeStructArray("GroupProperties", KeyValuePair.TYPE_ID);
+            ReaderGroupTransportDataType transportSettings = (ReaderGroupTransportDataType) decoder.decodeStruct("TransportSettings", ReaderGroupTransportDataType.TYPE_ID);
+            ReaderGroupMessageDataType messageSettings = (ReaderGroupMessageDataType) decoder.decodeStruct("MessageSettings", ReaderGroupMessageDataType.TYPE_ID);
+            DataSetReaderDataType[] dataSetReaders = (DataSetReaderDataType[]) decoder.decodeStructArray("DataSetReaders", DataSetReaderDataType.TYPE_ID);
             return new ReaderGroupDataType(name, enabled, securityMode, securityGroupId, securityKeyServices, maxNetworkMessageSize, groupProperties, transportSettings, messageSettings, dataSetReaders);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReaderGroupDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityGroupId", value.getSecurityGroupId());
-            encoder.writeStructArray("SecurityKeyServices", value.getSecurityKeyServices(), EndpointDescription.TYPE_ID);
-            encoder.writeUInt32("MaxNetworkMessageSize", value.getMaxNetworkMessageSize());
-            encoder.writeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("TransportSettings", value.getTransportSettings(), ReaderGroupTransportDataType.TYPE_ID);
-            encoder.writeStruct("MessageSettings", value.getMessageSettings(), ReaderGroupMessageDataType.TYPE_ID);
-            encoder.writeStructArray("DataSetReaders", value.getDataSetReaders(), DataSetReaderDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityGroupId", value.getSecurityGroupId());
+            encoder.encodeStructArray("SecurityKeyServices", value.getSecurityKeyServices(), EndpointDescription.TYPE_ID);
+            encoder.encodeUInt32("MaxNetworkMessageSize", value.getMaxNetworkMessageSize());
+            encoder.encodeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("TransportSettings", value.getTransportSettings(), ReaderGroupTransportDataType.TYPE_ID);
+            encoder.encodeStruct("MessageSettings", value.getMessageSettings(), ReaderGroupMessageDataType.TYPE_ID);
+            encoder.encodeStructArray("DataSetReaders", value.getDataSetReaders(), DataSetReaderDataType.TYPE_ID);
         }
     }
 }

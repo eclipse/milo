@@ -110,18 +110,18 @@ public class FindServersOnNetworkResponse extends Structure implements UaRespons
         @Override
         public FindServersOnNetworkResponse decodeType(SerializationContext context,
                                                        UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            DateTime lastCounterResetTime = decoder.readDateTime("LastCounterResetTime");
-            ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.readStructArray("Servers", ServerOnNetwork.TYPE_ID);
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            DateTime lastCounterResetTime = decoder.decodeDateTime("LastCounterResetTime");
+            ServerOnNetwork[] servers = (ServerOnNetwork[]) decoder.decodeStructArray("Servers", ServerOnNetwork.TYPE_ID);
             return new FindServersOnNetworkResponse(responseHeader, lastCounterResetTime, servers);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                FindServersOnNetworkResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeDateTime("LastCounterResetTime", value.getLastCounterResetTime());
-            encoder.writeStructArray("Servers", value.getServers(), ServerOnNetwork.TYPE_ID);
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeDateTime("LastCounterResetTime", value.getLastCounterResetTime());
+            encoder.encodeStructArray("Servers", value.getServers(), ServerOnNetwork.TYPE_ID);
         }
     }
 }

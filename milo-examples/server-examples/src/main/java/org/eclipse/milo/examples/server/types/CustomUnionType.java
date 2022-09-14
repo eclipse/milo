@@ -108,16 +108,16 @@ public class CustomUnionType extends Union implements UaStructuredType {
 
         @Override
         public CustomUnionType decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger switchValue = decoder.readUInt32("SwitchValue");
+            UInteger switchValue = decoder.decodeUInt32("SwitchValue");
             switch (switchValue.intValue()) {
                 case 0:
                     return CustomUnionType.ofNull();
                 case 1: {
-                    UInteger foo = decoder.readUInt32("foo");
+                    UInteger foo = decoder.decodeUInt32("foo");
                     return CustomUnionType.ofFoo(foo);
                 }
                 case 2: {
-                    String bar = decoder.readString("bar");
+                    String bar = decoder.decodeString("bar");
                     return CustomUnionType.ofBar(bar);
                 }
                 default:
@@ -130,16 +130,16 @@ public class CustomUnionType extends Union implements UaStructuredType {
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, CustomUnionType value) {
-            encoder.writeUInt32("SwitchValue", uint(value.type.ordinal()));
+            encoder.encodeUInt32("SwitchValue", uint(value.type.ordinal()));
             switch (value.type) {
                 case Null:
                     break;
                 case Foo: {
-                    encoder.writeUInt32("foo", value.asFoo());
+                    encoder.encodeUInt32("foo", value.asFoo());
                     break;
                 }
                 case Bar: {
-                    encoder.writeString("bar", value.asBar());
+                    encoder.encodeString("bar", value.asBar());
                     break;
                 }
                 default:

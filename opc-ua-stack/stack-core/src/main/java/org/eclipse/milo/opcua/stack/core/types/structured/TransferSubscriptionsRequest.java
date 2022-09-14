@@ -109,18 +109,18 @@ public class TransferSubscriptionsRequest extends Structure implements UaRequest
         @Override
         public TransferSubscriptionsRequest decodeType(SerializationContext context,
                                                        UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger[] subscriptionIds = decoder.readUInt32Array("SubscriptionIds");
-            Boolean sendInitialValues = decoder.readBoolean("SendInitialValues");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger[] subscriptionIds = decoder.decodeUInt32Array("SubscriptionIds");
+            Boolean sendInitialValues = decoder.decodeBoolean("SendInitialValues");
             return new TransferSubscriptionsRequest(requestHeader, subscriptionIds, sendInitialValues);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                TransferSubscriptionsRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32Array("SubscriptionIds", value.getSubscriptionIds());
-            encoder.writeBoolean("SendInitialValues", value.getSendInitialValues());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32Array("SubscriptionIds", value.getSubscriptionIds());
+            encoder.encodeBoolean("SendInitialValues", value.getSendInitialValues());
         }
     }
 }

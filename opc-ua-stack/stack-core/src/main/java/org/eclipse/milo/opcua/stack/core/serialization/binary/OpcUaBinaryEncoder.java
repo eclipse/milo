@@ -50,7 +50,7 @@ import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
-public class OpcUaBinaryStreamEncoder implements UaEncoder {
+public class OpcUaBinaryEncoder implements UaEncoder {
 
     private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
     private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
@@ -62,11 +62,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     private final SerializationContext context;
 
-    public OpcUaBinaryStreamEncoder(SerializationContext context) {
+    public OpcUaBinaryEncoder(SerializationContext context) {
         this.context = context;
     }
 
-    public OpcUaBinaryStreamEncoder setBuffer(ByteBuf buffer) {
+    public OpcUaBinaryEncoder setBuffer(ByteBuf buffer) {
         this.buffer = buffer;
         return this;
     }
@@ -676,7 +676,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     private void writeBuiltinType(int typeId, Object value) throws UaSerializationException {
         switch (typeId) {
             case 1:
-                writeBoolean(null, (Boolean) value);
+                encodeBoolean(null, (Boolean) value);
                 break;
             case 2:
                 writeSByte((Byte) value);
@@ -783,132 +783,132 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeBoolean(String field, Boolean value) throws UaSerializationException {
+    public void encodeBoolean(String field, Boolean value) throws UaSerializationException {
         writeBoolean(value);
     }
 
     @Override
-    public void writeSByte(String field, Byte value) throws UaSerializationException {
+    public void encodeSByte(String field, Byte value) throws UaSerializationException {
         writeSByte(value);
     }
 
     @Override
-    public void writeInt16(String field, Short value) throws UaSerializationException {
+    public void encodeInt16(String field, Short value) throws UaSerializationException {
         writeInt16(value);
     }
 
     @Override
-    public void writeInt32(String field, Integer value) throws UaSerializationException {
+    public void encodeInt32(String field, Integer value) throws UaSerializationException {
         writeInt32(value);
     }
 
     @Override
-    public void writeInt64(String field, Long value) throws UaSerializationException {
+    public void encodeInt64(String field, Long value) throws UaSerializationException {
         writeInt64(value);
     }
 
     @Override
-    public void writeByte(String field, UByte value) throws UaSerializationException {
+    public void encodeByte(String field, UByte value) throws UaSerializationException {
         writeByte(value);
     }
 
     @Override
-    public void writeUInt16(String field, UShort value) throws UaSerializationException {
+    public void encodeUInt16(String field, UShort value) throws UaSerializationException {
         writeUInt16(value);
     }
 
     @Override
-    public void writeUInt32(String field, UInteger value) throws UaSerializationException {
+    public void encodeUInt32(String field, UInteger value) throws UaSerializationException {
         writeUInt32(value);
     }
 
     @Override
-    public void writeUInt64(String field, ULong value) throws UaSerializationException {
+    public void encodeUInt64(String field, ULong value) throws UaSerializationException {
         writeUInt64(value);
     }
 
     @Override
-    public void writeFloat(String field, Float value) throws UaSerializationException {
+    public void encodeFloat(String field, Float value) throws UaSerializationException {
         writeFloat(value);
     }
 
     @Override
-    public void writeDouble(String field, Double value) throws UaSerializationException {
+    public void encodeDouble(String field, Double value) throws UaSerializationException {
         writeDouble(value);
     }
 
     @Override
-    public void writeString(String field, String value) throws UaSerializationException {
+    public void encodeString(String field, String value) throws UaSerializationException {
         writeString(value);
     }
 
     @Override
-    public void writeDateTime(String field, DateTime value) throws UaSerializationException {
+    public void encodeDateTime(String field, DateTime value) throws UaSerializationException {
         writeDateTime(value);
     }
 
     @Override
-    public void writeGuid(String field, UUID value) throws UaSerializationException {
+    public void encodeGuid(String field, UUID value) throws UaSerializationException {
         writeGuid(value);
     }
 
     @Override
-    public void writeByteString(String field, ByteString value) throws UaSerializationException {
+    public void encodeByteString(String field, ByteString value) throws UaSerializationException {
         writeByteString(value);
     }
 
     @Override
-    public void writeXmlElement(String field, XmlElement value) throws UaSerializationException {
+    public void encodeXmlElement(String field, XmlElement value) throws UaSerializationException {
         writeXmlElement(value);
     }
 
     @Override
-    public void writeNodeId(String field, NodeId value) throws UaSerializationException {
+    public void encodeNodeId(String field, NodeId value) throws UaSerializationException {
         writeNodeId(value);
     }
 
     @Override
-    public void writeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
+    public void encodeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
         writeExpandedNodeId(value);
     }
 
     @Override
-    public void writeStatusCode(String field, StatusCode value) throws UaSerializationException {
+    public void encodeStatusCode(String field, StatusCode value) throws UaSerializationException {
         writeStatusCode(value);
     }
 
     @Override
-    public void writeQualifiedName(String field, QualifiedName value) throws UaSerializationException {
+    public void encodeQualifiedName(String field, QualifiedName value) throws UaSerializationException {
         writeQualifiedName(value);
     }
 
     @Override
-    public void writeLocalizedText(String field, LocalizedText value) throws UaSerializationException {
+    public void encodeLocalizedText(String field, LocalizedText value) throws UaSerializationException {
         writeLocalizedText(value);
     }
 
     @Override
-    public void writeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
+    public void encodeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
         writeExtensionObject(value);
     }
 
     @Override
-    public void writeDataValue(String field, DataValue value) throws UaSerializationException {
+    public void encodeDataValue(String field, DataValue value) throws UaSerializationException {
         writeDataValue(value);
     }
 
     @Override
-    public void writeVariant(String field, Variant value) throws UaSerializationException {
+    public void encodeVariant(String field, Variant value) throws UaSerializationException {
         writeVariant(value);
     }
 
     @Override
-    public void writeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
+    public void encodeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
         writeDiagnosticInfo(value);
     }
 
     @Override
-    public void writeMessage(String field, UaMessageType message) throws UaSerializationException {
+    public void encodeMessage(String field, UaMessageType message) throws UaSerializationException {
         ExpandedNodeId xBinaryEncodingId = message.getBinaryEncodingId();
 
         NodeId encodingId = xBinaryEncodingId.toNodeId(context.getNamespaceTable())
@@ -934,12 +934,12 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnum(String field, UaEnumeratedType value) {
-        writeInt32(field, value.getValue());
+    public void encodeEnum(String field, UaEnumeratedType value) {
+        encodeInt32(field, value.getValue());
     }
 
     @Override
-    public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
+    public void encodeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         try {
             DataTypeCodec codec = context.getDataTypeManager()
                 .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
@@ -958,160 +958,160 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public void encodeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
         NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "namespace not not registered: " + dataTypeId
             ));
 
-        writeStruct(field, value, localDataTypeId);
+        encodeStruct(field, value, localDataTypeId);
     }
 
     @Override
-    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+    public void encodeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
         codec.encode(context, this, value);
     }
 
     @Override
-    public void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeBoolean);
+    public void encodeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeBoolean);
     }
 
     @Override
-    public void writeSByteArray(String field, Byte[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeSByte);
+    public void encodeSByteArray(String field, Byte[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeSByte);
     }
 
     @Override
-    public void writeInt16Array(String field, Short[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeInt16);
+    public void encodeInt16Array(String field, Short[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeInt16);
     }
 
     @Override
-    public void writeInt32Array(String field, Integer[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeInt32);
+    public void encodeInt32Array(String field, Integer[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeInt32);
     }
 
     @Override
-    public void writeInt64Array(String field, Long[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeInt64);
+    public void encodeInt64Array(String field, Long[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeInt64);
     }
 
     @Override
-    public void writeByteArray(String field, UByte[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeByte);
+    public void encodeByteArray(String field, UByte[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeByte);
     }
 
     @Override
-    public void writeUInt16Array(String field, UShort[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeUInt16);
+    public void encodeUInt16Array(String field, UShort[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeUInt16);
     }
 
     @Override
-    public void writeUInt32Array(String field, UInteger[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeUInt32);
+    public void encodeUInt32Array(String field, UInteger[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeUInt32);
     }
 
     @Override
-    public void writeUInt64Array(String field, ULong[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeUInt64);
+    public void encodeUInt64Array(String field, ULong[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeUInt64);
     }
 
     @Override
-    public void writeFloatArray(String field, Float[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeFloat);
+    public void encodeFloatArray(String field, Float[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeFloat);
     }
 
     @Override
-    public void writeDoubleArray(String field, Double[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDouble);
+    public void encodeDoubleArray(String field, Double[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDouble);
     }
 
     @Override
-    public void writeStringArray(String field, String[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeString);
+    public void encodeStringArray(String field, String[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeString);
     }
 
     @Override
-    public void writeDateTimeArray(String field, DateTime[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDateTime);
+    public void encodeDateTimeArray(String field, DateTime[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDateTime);
     }
 
     @Override
-    public void writeGuidArray(String field, UUID[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeGuid);
+    public void encodeGuidArray(String field, UUID[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeGuid);
     }
 
     @Override
-    public void writeByteStringArray(String field, ByteString[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeByteString);
+    public void encodeByteStringArray(String field, ByteString[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeByteString);
     }
 
     @Override
-    public void writeXmlElementArray(String field, XmlElement[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeXmlElement);
+    public void encodeXmlElementArray(String field, XmlElement[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeXmlElement);
     }
 
     @Override
-    public void writeNodeIdArray(String field, NodeId[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeNodeId);
+    public void encodeNodeIdArray(String field, NodeId[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeNodeId);
     }
 
     @Override
-    public void writeExpandedNodeIdArray(String field, ExpandedNodeId[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeExpandedNodeId);
+    public void encodeExpandedNodeIdArray(String field, ExpandedNodeId[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeExpandedNodeId);
     }
 
     @Override
-    public void writeStatusCodeArray(String field, StatusCode[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeStatusCode);
+    public void encodeStatusCodeArray(String field, StatusCode[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeStatusCode);
     }
 
     @Override
-    public void writeQualifiedNameArray(String field, QualifiedName[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeQualifiedName);
+    public void encodeQualifiedNameArray(String field, QualifiedName[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeQualifiedName);
     }
 
     @Override
-    public void writeLocalizedTextArray(String field, LocalizedText[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeLocalizedText);
+    public void encodeLocalizedTextArray(String field, LocalizedText[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeLocalizedText);
     }
 
     @Override
-    public void writeExtensionObjectArray(String field, ExtensionObject[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeExtensionObject);
+    public void encodeExtensionObjectArray(String field, ExtensionObject[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeExtensionObject);
     }
 
     @Override
-    public void writeDataValueArray(String field, DataValue[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDataValue);
+    public void encodeDataValueArray(String field, DataValue[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDataValue);
     }
 
     @Override
-    public void writeVariantArray(String field, Variant[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeVariant);
+    public void encodeVariantArray(String field, Variant[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeVariant);
     }
 
     @Override
-    public void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDiagnosticInfo);
+    public void encodeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDiagnosticInfo);
     }
 
     @Override
-    public void writeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
-        writeArray(value, v -> writeEnum(field, v));
+    public void encodeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
+        writeArray(value, v -> encodeEnum(field, v));
     }
 
     @Override
-    public void writeStructArray(
+    public void encodeStructArray(
         String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
 
-        writeArray(values, o -> writeStruct(field, o, dataTypeId));
+        writeArray(values, o -> encodeStruct(field, o, dataTypeId));
     }
 
     @Override
-    public void writeStructArray(
+    public void encodeStructArray(
         String field,
         Object[] value,
         ExpandedNodeId dataTypeId
@@ -1123,11 +1123,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 "no codec registered: " + dataTypeId
             ));
 
-        writeStructArray(field, value, localDataTypeId);
+        encodeStructArray(field, value, localDataTypeId);
     }
 
     @Override
-    public <T> void writeArray(
+    public <T> void encodeArray(
         String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
 
         if (values == null) {

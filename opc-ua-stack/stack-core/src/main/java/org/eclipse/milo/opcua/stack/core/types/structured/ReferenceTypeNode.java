@@ -124,40 +124,40 @@ public class ReferenceTypeNode extends TypeNode implements UaStructuredType {
 
         @Override
         public ReferenceTypeNode decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            NodeClass nodeClass = NodeClass.from(decoder.readEnum("NodeClass"));
-            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            UInteger writeMask = decoder.readUInt32("WriteMask");
-            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
-            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.readStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
-            UShort accessRestrictions = decoder.readUInt16("AccessRestrictions");
-            ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
-            Boolean isAbstract = decoder.readBoolean("IsAbstract");
-            Boolean symmetric = decoder.readBoolean("Symmetric");
-            LocalizedText inverseName = decoder.readLocalizedText("InverseName");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.decodeEnum("NodeClass"));
+            QualifiedName browseName = decoder.decodeQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            UInteger writeMask = decoder.decodeUInt32("WriteMask");
+            UInteger userWriteMask = decoder.decodeUInt32("UserWriteMask");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.decodeStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            RolePermissionType[] userRolePermissions = (RolePermissionType[]) decoder.decodeStructArray("UserRolePermissions", RolePermissionType.TYPE_ID);
+            UShort accessRestrictions = decoder.decodeUInt16("AccessRestrictions");
+            ReferenceNode[] references = (ReferenceNode[]) decoder.decodeStructArray("References", ReferenceNode.TYPE_ID);
+            Boolean isAbstract = decoder.decodeBoolean("IsAbstract");
+            Boolean symmetric = decoder.decodeBoolean("Symmetric");
+            LocalizedText inverseName = decoder.decodeLocalizedText("InverseName");
             return new ReferenceTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, rolePermissions, userRolePermissions, accessRestrictions, references, isAbstract, symmetric, inverseName);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReferenceTypeNode value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeEnum("NodeClass", value.getNodeClass());
-            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeUInt32("WriteMask", value.getWriteMask());
-            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
-            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
-            encoder.writeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
-            encoder.writeUInt16("AccessRestrictions", value.getAccessRestrictions());
-            encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
-            encoder.writeBoolean("IsAbstract", value.getIsAbstract());
-            encoder.writeBoolean("Symmetric", value.getSymmetric());
-            encoder.writeLocalizedText("InverseName", value.getInverseName());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeEnum("NodeClass", value.getNodeClass());
+            encoder.encodeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeUInt32("WriteMask", value.getWriteMask());
+            encoder.encodeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.encodeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeStructArray("UserRolePermissions", value.getUserRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeUInt16("AccessRestrictions", value.getAccessRestrictions());
+            encoder.encodeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
+            encoder.encodeBoolean("IsAbstract", value.getIsAbstract());
+            encoder.encodeBoolean("Symmetric", value.getSymmetric());
+            encoder.encodeLocalizedText("InverseName", value.getInverseName());
         }
     }
 }

@@ -158,30 +158,30 @@ public class SecurityGroupDataType extends Structure implements UaStructuredType
 
         @Override
         public SecurityGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            String[] securityGroupFolder = decoder.readStringArray("SecurityGroupFolder");
-            Double keyLifetime = decoder.readDouble("KeyLifetime");
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            UInteger maxFutureKeyCount = decoder.readUInt32("MaxFutureKeyCount");
-            UInteger maxPastKeyCount = decoder.readUInt32("MaxPastKeyCount");
-            String securityGroupId = decoder.readString("SecurityGroupId");
-            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.readStructArray("RolePermissions", RolePermissionType.TYPE_ID);
-            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.readStructArray("GroupProperties", KeyValuePair.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            String[] securityGroupFolder = decoder.decodeStringArray("SecurityGroupFolder");
+            Double keyLifetime = decoder.decodeDouble("KeyLifetime");
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            UInteger maxFutureKeyCount = decoder.decodeUInt32("MaxFutureKeyCount");
+            UInteger maxPastKeyCount = decoder.decodeUInt32("MaxPastKeyCount");
+            String securityGroupId = decoder.decodeString("SecurityGroupId");
+            RolePermissionType[] rolePermissions = (RolePermissionType[]) decoder.decodeStructArray("RolePermissions", RolePermissionType.TYPE_ID);
+            KeyValuePair[] groupProperties = (KeyValuePair[]) decoder.decodeStructArray("GroupProperties", KeyValuePair.TYPE_ID);
             return new SecurityGroupDataType(name, securityGroupFolder, keyLifetime, securityPolicyUri, maxFutureKeyCount, maxPastKeyCount, securityGroupId, rolePermissions, groupProperties);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SecurityGroupDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeStringArray("SecurityGroupFolder", value.getSecurityGroupFolder());
-            encoder.writeDouble("KeyLifetime", value.getKeyLifetime());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeUInt32("MaxFutureKeyCount", value.getMaxFutureKeyCount());
-            encoder.writeUInt32("MaxPastKeyCount", value.getMaxPastKeyCount());
-            encoder.writeString("SecurityGroupId", value.getSecurityGroupId());
-            encoder.writeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
-            encoder.writeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeStringArray("SecurityGroupFolder", value.getSecurityGroupFolder());
+            encoder.encodeDouble("KeyLifetime", value.getKeyLifetime());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeUInt32("MaxFutureKeyCount", value.getMaxFutureKeyCount());
+            encoder.encodeUInt32("MaxPastKeyCount", value.getMaxPastKeyCount());
+            encoder.encodeString("SecurityGroupId", value.getSecurityGroupId());
+            encoder.encodeStructArray("RolePermissions", value.getRolePermissions(), RolePermissionType.TYPE_ID);
+            encoder.encodeStructArray("GroupProperties", value.getGroupProperties(), KeyValuePair.TYPE_ID);
         }
     }
 }

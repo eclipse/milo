@@ -110,18 +110,18 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
 
         @Override
         public EventFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode[] selectClauseResults = decoder.readStatusCodeArray("SelectClauseResults");
-            DiagnosticInfo[] selectClauseDiagnosticInfos = decoder.readDiagnosticInfoArray("SelectClauseDiagnosticInfos");
-            ContentFilterResult whereClauseResult = (ContentFilterResult) decoder.readStruct("WhereClauseResult", ContentFilterResult.TYPE_ID);
+            StatusCode[] selectClauseResults = decoder.decodeStatusCodeArray("SelectClauseResults");
+            DiagnosticInfo[] selectClauseDiagnosticInfos = decoder.decodeDiagnosticInfoArray("SelectClauseDiagnosticInfos");
+            ContentFilterResult whereClauseResult = (ContentFilterResult) decoder.decodeStruct("WhereClauseResult", ContentFilterResult.TYPE_ID);
             return new EventFilterResult(selectClauseResults, selectClauseDiagnosticInfos, whereClauseResult);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                EventFilterResult value) {
-            encoder.writeStatusCodeArray("SelectClauseResults", value.getSelectClauseResults());
-            encoder.writeDiagnosticInfoArray("SelectClauseDiagnosticInfos", value.getSelectClauseDiagnosticInfos());
-            encoder.writeStruct("WhereClauseResult", value.getWhereClauseResult(), ContentFilterResult.TYPE_ID);
+            encoder.encodeStatusCodeArray("SelectClauseResults", value.getSelectClauseResults());
+            encoder.encodeDiagnosticInfoArray("SelectClauseDiagnosticInfos", value.getSelectClauseDiagnosticInfos());
+            encoder.encodeStruct("WhereClauseResult", value.getWhereClauseResult(), ContentFilterResult.TYPE_ID);
         }
     }
 }

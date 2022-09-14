@@ -91,14 +91,14 @@ public class EndpointUrlListDataType extends Structure implements UaStructuredTy
 
         @Override
         public EndpointUrlListDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String[] endpointUrlList = decoder.readStringArray("EndpointUrlList");
+            String[] endpointUrlList = decoder.decodeStringArray("EndpointUrlList");
             return new EndpointUrlListDataType(endpointUrlList);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                EndpointUrlListDataType value) {
-            encoder.writeStringArray("EndpointUrlList", value.getEndpointUrlList());
+            encoder.encodeStringArray("EndpointUrlList", value.getEndpointUrlList());
         }
     }
 }

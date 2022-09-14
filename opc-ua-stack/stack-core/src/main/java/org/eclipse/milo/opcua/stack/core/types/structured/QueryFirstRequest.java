@@ -133,24 +133,24 @@ public class QueryFirstRequest extends Structure implements UaRequestMessageType
 
         @Override
         public QueryFirstRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ViewDescription view = (ViewDescription) decoder.readStruct("View", ViewDescription.TYPE_ID);
-            NodeTypeDescription[] nodeTypes = (NodeTypeDescription[]) decoder.readStructArray("NodeTypes", NodeTypeDescription.TYPE_ID);
-            ContentFilter filter = (ContentFilter) decoder.readStruct("Filter", ContentFilter.TYPE_ID);
-            UInteger maxDataSetsToReturn = decoder.readUInt32("MaxDataSetsToReturn");
-            UInteger maxReferencesToReturn = decoder.readUInt32("MaxReferencesToReturn");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ViewDescription view = (ViewDescription) decoder.decodeStruct("View", ViewDescription.TYPE_ID);
+            NodeTypeDescription[] nodeTypes = (NodeTypeDescription[]) decoder.decodeStructArray("NodeTypes", NodeTypeDescription.TYPE_ID);
+            ContentFilter filter = (ContentFilter) decoder.decodeStruct("Filter", ContentFilter.TYPE_ID);
+            UInteger maxDataSetsToReturn = decoder.decodeUInt32("MaxDataSetsToReturn");
+            UInteger maxReferencesToReturn = decoder.decodeUInt32("MaxReferencesToReturn");
             return new QueryFirstRequest(requestHeader, view, nodeTypes, filter, maxDataSetsToReturn, maxReferencesToReturn);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                QueryFirstRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("View", value.getView(), ViewDescription.TYPE_ID);
-            encoder.writeStructArray("NodeTypes", value.getNodeTypes(), NodeTypeDescription.TYPE_ID);
-            encoder.writeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);
-            encoder.writeUInt32("MaxDataSetsToReturn", value.getMaxDataSetsToReturn());
-            encoder.writeUInt32("MaxReferencesToReturn", value.getMaxReferencesToReturn());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("View", value.getView(), ViewDescription.TYPE_ID);
+            encoder.encodeStructArray("NodeTypes", value.getNodeTypes(), NodeTypeDescription.TYPE_ID);
+            encoder.encodeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);
+            encoder.encodeUInt32("MaxDataSetsToReturn", value.getMaxDataSetsToReturn());
+            encoder.encodeUInt32("MaxReferencesToReturn", value.getMaxReferencesToReturn());
         }
     }
 }

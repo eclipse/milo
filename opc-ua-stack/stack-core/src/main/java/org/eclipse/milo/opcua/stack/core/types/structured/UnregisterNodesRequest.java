@@ -99,16 +99,16 @@ public class UnregisterNodesRequest extends Structure implements UaRequestMessag
 
         @Override
         public UnregisterNodesRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            NodeId[] nodesToUnregister = decoder.readNodeIdArray("NodesToUnregister");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            NodeId[] nodesToUnregister = decoder.decodeNodeIdArray("NodesToUnregister");
             return new UnregisterNodesRequest(requestHeader, nodesToUnregister);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UnregisterNodesRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeNodeIdArray("NodesToUnregister", value.getNodesToUnregister());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeNodeIdArray("NodesToUnregister", value.getNodesToUnregister());
         }
     }
 }

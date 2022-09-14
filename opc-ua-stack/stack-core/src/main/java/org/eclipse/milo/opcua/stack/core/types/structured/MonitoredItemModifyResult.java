@@ -118,20 +118,20 @@ public class MonitoredItemModifyResult extends Structure implements UaStructured
 
         @Override
         public MonitoredItemModifyResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            Double revisedSamplingInterval = decoder.readDouble("RevisedSamplingInterval");
-            UInteger revisedQueueSize = decoder.readUInt32("RevisedQueueSize");
-            ExtensionObject filterResult = decoder.readExtensionObject("FilterResult");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            Double revisedSamplingInterval = decoder.decodeDouble("RevisedSamplingInterval");
+            UInteger revisedQueueSize = decoder.decodeUInt32("RevisedQueueSize");
+            ExtensionObject filterResult = decoder.decodeExtensionObject("FilterResult");
             return new MonitoredItemModifyResult(statusCode, revisedSamplingInterval, revisedQueueSize, filterResult);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MonitoredItemModifyResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
-            encoder.writeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
-            encoder.writeExtensionObject("FilterResult", value.getFilterResult());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());
+            encoder.encodeUInt32("RevisedQueueSize", value.getRevisedQueueSize());
+            encoder.encodeExtensionObject("FilterResult", value.getFilterResult());
         }
     }
 }

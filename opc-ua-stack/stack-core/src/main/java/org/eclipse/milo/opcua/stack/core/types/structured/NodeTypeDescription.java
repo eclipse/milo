@@ -108,18 +108,18 @@ public class NodeTypeDescription extends Structure implements UaStructuredType {
 
         @Override
         public NodeTypeDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
-            Boolean includeSubTypes = decoder.readBoolean("IncludeSubTypes");
-            QueryDataDescription[] dataToReturn = (QueryDataDescription[]) decoder.readStructArray("DataToReturn", QueryDataDescription.TYPE_ID);
+            ExpandedNodeId typeDefinitionNode = decoder.decodeExpandedNodeId("TypeDefinitionNode");
+            Boolean includeSubTypes = decoder.decodeBoolean("IncludeSubTypes");
+            QueryDataDescription[] dataToReturn = (QueryDataDescription[]) decoder.decodeStructArray("DataToReturn", QueryDataDescription.TYPE_ID);
             return new NodeTypeDescription(typeDefinitionNode, includeSubTypes, dataToReturn);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                NodeTypeDescription value) {
-            encoder.writeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
-            encoder.writeBoolean("IncludeSubTypes", value.getIncludeSubTypes());
-            encoder.writeStructArray("DataToReturn", value.getDataToReturn(), QueryDataDescription.TYPE_ID);
+            encoder.encodeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
+            encoder.encodeBoolean("IncludeSubTypes", value.getIncludeSubTypes());
+            encoder.encodeStructArray("DataToReturn", value.getDataToReturn(), QueryDataDescription.TYPE_ID);
         }
     }
 }

@@ -110,18 +110,18 @@ public class ModificationInfo extends Structure implements UaStructuredType {
 
         @Override
         public ModificationInfo decodeType(SerializationContext context, UaDecoder decoder) {
-            DateTime modificationTime = decoder.readDateTime("ModificationTime");
-            HistoryUpdateType updateType = HistoryUpdateType.from(decoder.readEnum("UpdateType"));
-            String userName = decoder.readString("UserName");
+            DateTime modificationTime = decoder.decodeDateTime("ModificationTime");
+            HistoryUpdateType updateType = HistoryUpdateType.from(decoder.decodeEnum("UpdateType"));
+            String userName = decoder.decodeString("UserName");
             return new ModificationInfo(modificationTime, updateType, userName);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ModificationInfo value) {
-            encoder.writeDateTime("ModificationTime", value.getModificationTime());
-            encoder.writeEnum("UpdateType", value.getUpdateType());
-            encoder.writeString("UserName", value.getUserName());
+            encoder.encodeDateTime("ModificationTime", value.getModificationTime());
+            encoder.encodeEnum("UpdateType", value.getUpdateType());
+            encoder.encodeString("UserName", value.getUserName());
         }
     }
 }

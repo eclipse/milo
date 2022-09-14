@@ -110,18 +110,18 @@ public class HistoryUpdateResult extends Structure implements UaStructuredType {
 
         @Override
         public HistoryUpdateResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] operationResults = decoder.readStatusCodeArray("OperationResults");
-            DiagnosticInfo[] diagnosticInfos = decoder.readDiagnosticInfoArray("DiagnosticInfos");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            StatusCode[] operationResults = decoder.decodeStatusCodeArray("OperationResults");
+            DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new HistoryUpdateResult(statusCode, operationResults, diagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryUpdateResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeStatusCodeArray("OperationResults", value.getOperationResults());
-            encoder.writeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeStatusCodeArray("OperationResults", value.getOperationResults());
+            encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());
         }
     }
 }

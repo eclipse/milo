@@ -125,22 +125,22 @@ public class MonitoringParameters extends Structure implements UaStructuredType 
 
         @Override
         public MonitoringParameters decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger clientHandle = decoder.readUInt32("ClientHandle");
-            Double samplingInterval = decoder.readDouble("SamplingInterval");
-            ExtensionObject filter = decoder.readExtensionObject("Filter");
-            UInteger queueSize = decoder.readUInt32("QueueSize");
-            Boolean discardOldest = decoder.readBoolean("DiscardOldest");
+            UInteger clientHandle = decoder.decodeUInt32("ClientHandle");
+            Double samplingInterval = decoder.decodeDouble("SamplingInterval");
+            ExtensionObject filter = decoder.decodeExtensionObject("Filter");
+            UInteger queueSize = decoder.decodeUInt32("QueueSize");
+            Boolean discardOldest = decoder.decodeBoolean("DiscardOldest");
             return new MonitoringParameters(clientHandle, samplingInterval, filter, queueSize, discardOldest);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                MonitoringParameters value) {
-            encoder.writeUInt32("ClientHandle", value.getClientHandle());
-            encoder.writeDouble("SamplingInterval", value.getSamplingInterval());
-            encoder.writeExtensionObject("Filter", value.getFilter());
-            encoder.writeUInt32("QueueSize", value.getQueueSize());
-            encoder.writeBoolean("DiscardOldest", value.getDiscardOldest());
+            encoder.encodeUInt32("ClientHandle", value.getClientHandle());
+            encoder.encodeDouble("SamplingInterval", value.getSamplingInterval());
+            encoder.encodeExtensionObject("Filter", value.getFilter());
+            encoder.encodeUInt32("QueueSize", value.getQueueSize());
+            encoder.encodeBoolean("DiscardOldest", value.getDiscardOldest());
         }
     }
 }

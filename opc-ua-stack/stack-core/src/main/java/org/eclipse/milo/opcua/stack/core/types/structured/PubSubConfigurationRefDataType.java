@@ -118,20 +118,20 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         @Override
         public PubSubConfigurationRefDataType decodeType(SerializationContext context,
                                                          UaDecoder decoder) {
-            PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.readUInt32("ConfigurationMask"));
-            UShort elementIndex = decoder.readUInt16("ElementIndex");
-            UShort connectionIndex = decoder.readUInt16("ConnectionIndex");
-            UShort groupIndex = decoder.readUInt16("GroupIndex");
+            PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.decodeUInt32("ConfigurationMask"));
+            UShort elementIndex = decoder.decodeUInt16("ElementIndex");
+            UShort connectionIndex = decoder.decodeUInt16("ConnectionIndex");
+            UShort groupIndex = decoder.decodeUInt16("GroupIndex");
             return new PubSubConfigurationRefDataType(configurationMask, elementIndex, connectionIndex, groupIndex);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PubSubConfigurationRefDataType value) {
-            encoder.writeUInt32("ConfigurationMask", value.getConfigurationMask().getValue());
-            encoder.writeUInt16("ElementIndex", value.getElementIndex());
-            encoder.writeUInt16("ConnectionIndex", value.getConnectionIndex());
-            encoder.writeUInt16("GroupIndex", value.getGroupIndex());
+            encoder.encodeUInt32("ConfigurationMask", value.getConfigurationMask().getValue());
+            encoder.encodeUInt16("ElementIndex", value.getElementIndex());
+            encoder.encodeUInt16("ConnectionIndex", value.getConnectionIndex());
+            encoder.encodeUInt16("GroupIndex", value.getGroupIndex());
         }
     }
 }

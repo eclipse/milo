@@ -100,15 +100,15 @@ public class PublishRequest extends Structure implements UaRequestMessageType {
 
         @Override
         public PublishRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            SubscriptionAcknowledgement[] subscriptionAcknowledgements = (SubscriptionAcknowledgement[]) decoder.readStructArray("SubscriptionAcknowledgements", SubscriptionAcknowledgement.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            SubscriptionAcknowledgement[] subscriptionAcknowledgements = (SubscriptionAcknowledgement[]) decoder.decodeStructArray("SubscriptionAcknowledgements", SubscriptionAcknowledgement.TYPE_ID);
             return new PublishRequest(requestHeader, subscriptionAcknowledgements);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, PublishRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStructArray("SubscriptionAcknowledgements", value.getSubscriptionAcknowledgements(), SubscriptionAcknowledgement.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStructArray("SubscriptionAcknowledgements", value.getSubscriptionAcknowledgements(), SubscriptionAcknowledgement.TYPE_ID);
         }
     }
 }

@@ -92,14 +92,14 @@ public class StandaloneSubscribedDataSetRefDataType extends SubscribedDataSetDat
         @Override
         public StandaloneSubscribedDataSetRefDataType decodeType(SerializationContext context,
                                                                  UaDecoder decoder) {
-            String dataSetName = decoder.readString("DataSetName");
+            String dataSetName = decoder.decodeString("DataSetName");
             return new StandaloneSubscribedDataSetRefDataType(dataSetName);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                StandaloneSubscribedDataSetRefDataType value) {
-            encoder.writeString("DataSetName", value.getDataSetName());
+            encoder.encodeString("DataSetName", value.getDataSetName());
         }
     }
 }

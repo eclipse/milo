@@ -100,16 +100,16 @@ public class GenericAttributeValue extends Structure implements UaStructuredType
 
         @Override
         public GenericAttributeValue decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            Variant value = decoder.readVariant("Value");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            Variant value = decoder.decodeVariant("Value");
             return new GenericAttributeValue(attributeId, value);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                GenericAttributeValue value) {
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeVariant("Value", value.getValue());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeVariant("Value", value.getValue());
         }
     }
 }

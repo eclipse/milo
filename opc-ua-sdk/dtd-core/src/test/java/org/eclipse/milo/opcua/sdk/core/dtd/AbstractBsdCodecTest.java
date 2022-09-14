@@ -19,8 +19,8 @@ import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -112,12 +112,12 @@ public abstract class AbstractBsdCodecTest {
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer), originalValue);
+        codec.encode(context, new OpcUaBinaryEncoder(context).setBuffer(buffer), originalValue);
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
-        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
+        Object decodedValue = codec.decode(context, new OpcUaBinaryDecoder(context).setBuffer(buffer));
         assertEquals(originalValue, decodedValue);
         System.out.println("decodedValue:\t" + decodedValue);
     }
@@ -139,12 +139,12 @@ public abstract class AbstractBsdCodecTest {
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer), originalValue);
+        codec.encode(context, new OpcUaBinaryEncoder(context).setBuffer(buffer), originalValue);
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
-        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
+        Object decodedValue = codec.decode(context, new OpcUaBinaryDecoder(context).setBuffer(buffer));
         assertEquals(decodedValue.toString(), originalValue.toString());
         System.out.println("decodedValue:\t" + decodedValue);
     }

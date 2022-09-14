@@ -115,28 +115,28 @@ public class ReferenceTypeAttributes extends NodeAttributes implements UaStructu
 
         @Override
         public ReferenceTypeAttributes decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
-            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            UInteger writeMask = decoder.readUInt32("WriteMask");
-            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            Boolean isAbstract = decoder.readBoolean("IsAbstract");
-            Boolean symmetric = decoder.readBoolean("Symmetric");
-            LocalizedText inverseName = decoder.readLocalizedText("InverseName");
+            UInteger specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            UInteger writeMask = decoder.decodeUInt32("WriteMask");
+            UInteger userWriteMask = decoder.decodeUInt32("UserWriteMask");
+            Boolean isAbstract = decoder.decodeBoolean("IsAbstract");
+            Boolean symmetric = decoder.decodeBoolean("Symmetric");
+            LocalizedText inverseName = decoder.decodeLocalizedText("InverseName");
             return new ReferenceTypeAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, isAbstract, symmetric, inverseName);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ReferenceTypeAttributes value) {
-            encoder.writeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
-            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeUInt32("WriteMask", value.getWriteMask());
-            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
-            encoder.writeBoolean("IsAbstract", value.getIsAbstract());
-            encoder.writeBoolean("Symmetric", value.getSymmetric());
-            encoder.writeLocalizedText("InverseName", value.getInverseName());
+            encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
+            encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeUInt32("WriteMask", value.getWriteMask());
+            encoder.encodeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.encodeBoolean("IsAbstract", value.getIsAbstract());
+            encoder.encodeBoolean("Symmetric", value.getSymmetric());
+            encoder.encodeLocalizedText("InverseName", value.getInverseName());
         }
     }
 }

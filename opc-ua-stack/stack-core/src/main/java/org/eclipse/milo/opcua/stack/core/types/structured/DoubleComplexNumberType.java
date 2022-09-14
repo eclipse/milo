@@ -99,16 +99,16 @@ public class DoubleComplexNumberType extends Structure implements UaStructuredTy
 
         @Override
         public DoubleComplexNumberType decodeType(SerializationContext context, UaDecoder decoder) {
-            Double real = decoder.readDouble("Real");
-            Double imaginary = decoder.readDouble("Imaginary");
+            Double real = decoder.decodeDouble("Real");
+            Double imaginary = decoder.decodeDouble("Imaginary");
             return new DoubleComplexNumberType(real, imaginary);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DoubleComplexNumberType value) {
-            encoder.writeDouble("Real", value.getReal());
-            encoder.writeDouble("Imaginary", value.getImaginary());
+            encoder.encodeDouble("Real", value.getReal());
+            encoder.encodeDouble("Imaginary", value.getImaginary());
         }
     }
 }

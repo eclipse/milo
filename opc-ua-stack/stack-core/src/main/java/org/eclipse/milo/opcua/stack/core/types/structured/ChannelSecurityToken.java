@@ -117,20 +117,20 @@ public class ChannelSecurityToken extends Structure implements UaStructuredType 
 
         @Override
         public ChannelSecurityToken decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger channelId = decoder.readUInt32("ChannelId");
-            UInteger tokenId = decoder.readUInt32("TokenId");
-            DateTime createdAt = decoder.readDateTime("CreatedAt");
-            UInteger revisedLifetime = decoder.readUInt32("RevisedLifetime");
+            UInteger channelId = decoder.decodeUInt32("ChannelId");
+            UInteger tokenId = decoder.decodeUInt32("TokenId");
+            DateTime createdAt = decoder.decodeDateTime("CreatedAt");
+            UInteger revisedLifetime = decoder.decodeUInt32("RevisedLifetime");
             return new ChannelSecurityToken(channelId, tokenId, createdAt, revisedLifetime);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ChannelSecurityToken value) {
-            encoder.writeUInt32("ChannelId", value.getChannelId());
-            encoder.writeUInt32("TokenId", value.getTokenId());
-            encoder.writeDateTime("CreatedAt", value.getCreatedAt());
-            encoder.writeUInt32("RevisedLifetime", value.getRevisedLifetime());
+            encoder.encodeUInt32("ChannelId", value.getChannelId());
+            encoder.encodeUInt32("TokenId", value.getTokenId());
+            encoder.encodeDateTime("CreatedAt", value.getCreatedAt());
+            encoder.encodeUInt32("RevisedLifetime", value.getRevisedLifetime());
         }
     }
 }

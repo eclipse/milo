@@ -117,20 +117,20 @@ public class RelativePathElement extends Structure implements UaStructuredType {
 
         @Override
         public RelativePathElement decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isInverse = decoder.readBoolean("IsInverse");
-            Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
-            QualifiedName targetName = decoder.readQualifiedName("TargetName");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isInverse = decoder.decodeBoolean("IsInverse");
+            Boolean includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
+            QualifiedName targetName = decoder.decodeQualifiedName("TargetName");
             return new RelativePathElement(referenceTypeId, isInverse, includeSubtypes, targetName);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RelativePathElement value) {
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsInverse", value.getIsInverse());
-            encoder.writeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
-            encoder.writeQualifiedName("TargetName", value.getTargetName());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsInverse", value.getIsInverse());
+            encoder.encodeBoolean("IncludeSubtypes", value.getIncludeSubtypes());
+            encoder.encodeQualifiedName("TargetName", value.getTargetName());
         }
     }
 }

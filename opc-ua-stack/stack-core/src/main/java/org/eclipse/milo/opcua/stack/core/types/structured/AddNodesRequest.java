@@ -99,15 +99,15 @@ public class AddNodesRequest extends Structure implements UaRequestMessageType {
 
         @Override
         public AddNodesRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            AddNodesItem[] nodesToAdd = (AddNodesItem[]) decoder.readStructArray("NodesToAdd", AddNodesItem.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            AddNodesItem[] nodesToAdd = (AddNodesItem[]) decoder.decodeStructArray("NodesToAdd", AddNodesItem.TYPE_ID);
             return new AddNodesRequest(requestHeader, nodesToAdd);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, AddNodesRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStructArray("NodesToAdd", value.getNodesToAdd(), AddNodesItem.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStructArray("NodesToAdd", value.getNodesToAdd(), AddNodesItem.TYPE_ID);
         }
     }
 }

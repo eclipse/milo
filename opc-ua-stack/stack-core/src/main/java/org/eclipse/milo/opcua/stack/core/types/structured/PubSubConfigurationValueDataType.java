@@ -110,18 +110,18 @@ public class PubSubConfigurationValueDataType extends Structure implements UaStr
         @Override
         public PubSubConfigurationValueDataType decodeType(SerializationContext context,
                                                            UaDecoder decoder) {
-            PubSubConfigurationRefDataType configurationElement = (PubSubConfigurationRefDataType) decoder.readStruct("ConfigurationElement", PubSubConfigurationRefDataType.TYPE_ID);
-            String name = decoder.readString("Name");
-            Variant identifier = decoder.readVariant("Identifier");
+            PubSubConfigurationRefDataType configurationElement = (PubSubConfigurationRefDataType) decoder.decodeStruct("ConfigurationElement", PubSubConfigurationRefDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            Variant identifier = decoder.decodeVariant("Identifier");
             return new PubSubConfigurationValueDataType(configurationElement, name, identifier);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PubSubConfigurationValueDataType value) {
-            encoder.writeStruct("ConfigurationElement", value.getConfigurationElement(), PubSubConfigurationRefDataType.TYPE_ID);
-            encoder.writeString("Name", value.getName());
-            encoder.writeVariant("Identifier", value.getIdentifier());
+            encoder.encodeStruct("ConfigurationElement", value.getConfigurationElement(), PubSubConfigurationRefDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeVariant("Identifier", value.getIdentifier());
         }
     }
 }

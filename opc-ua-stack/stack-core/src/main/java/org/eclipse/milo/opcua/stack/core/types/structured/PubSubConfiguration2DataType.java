@@ -149,32 +149,32 @@ public class PubSubConfiguration2DataType extends PubSubConfigurationDataType im
         @Override
         public PubSubConfiguration2DataType decodeType(SerializationContext context,
                                                        UaDecoder decoder) {
-            PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.readStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
-            PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.readStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
-            Boolean enabled = decoder.readBoolean("Enabled");
-            StandaloneSubscribedDataSetDataType[] subscribedDataSets = (StandaloneSubscribedDataSetDataType[]) decoder.readStructArray("SubscribedDataSets", StandaloneSubscribedDataSetDataType.TYPE_ID);
-            DataSetMetaDataType[] dataSetClasses = (DataSetMetaDataType[]) decoder.readStructArray("DataSetClasses", DataSetMetaDataType.TYPE_ID);
-            EndpointDescription[] defaultSecurityKeyServices = (EndpointDescription[]) decoder.readStructArray("DefaultSecurityKeyServices", EndpointDescription.TYPE_ID);
-            SecurityGroupDataType[] securityGroups = (SecurityGroupDataType[]) decoder.readStructArray("SecurityGroups", SecurityGroupDataType.TYPE_ID);
-            PubSubKeyPushTargetDataType[] pubSubKeyPushTargets = (PubSubKeyPushTargetDataType[]) decoder.readStructArray("PubSubKeyPushTargets", PubSubKeyPushTargetDataType.TYPE_ID);
-            UInteger configurationVersion = decoder.readUInt32("ConfigurationVersion");
-            KeyValuePair[] configurationProperties = (KeyValuePair[]) decoder.readStructArray("ConfigurationProperties", KeyValuePair.TYPE_ID);
+            PublishedDataSetDataType[] publishedDataSets = (PublishedDataSetDataType[]) decoder.decodeStructArray("PublishedDataSets", PublishedDataSetDataType.TYPE_ID);
+            PubSubConnectionDataType[] connections = (PubSubConnectionDataType[]) decoder.decodeStructArray("Connections", PubSubConnectionDataType.TYPE_ID);
+            Boolean enabled = decoder.decodeBoolean("Enabled");
+            StandaloneSubscribedDataSetDataType[] subscribedDataSets = (StandaloneSubscribedDataSetDataType[]) decoder.decodeStructArray("SubscribedDataSets", StandaloneSubscribedDataSetDataType.TYPE_ID);
+            DataSetMetaDataType[] dataSetClasses = (DataSetMetaDataType[]) decoder.decodeStructArray("DataSetClasses", DataSetMetaDataType.TYPE_ID);
+            EndpointDescription[] defaultSecurityKeyServices = (EndpointDescription[]) decoder.decodeStructArray("DefaultSecurityKeyServices", EndpointDescription.TYPE_ID);
+            SecurityGroupDataType[] securityGroups = (SecurityGroupDataType[]) decoder.decodeStructArray("SecurityGroups", SecurityGroupDataType.TYPE_ID);
+            PubSubKeyPushTargetDataType[] pubSubKeyPushTargets = (PubSubKeyPushTargetDataType[]) decoder.decodeStructArray("PubSubKeyPushTargets", PubSubKeyPushTargetDataType.TYPE_ID);
+            UInteger configurationVersion = decoder.decodeUInt32("ConfigurationVersion");
+            KeyValuePair[] configurationProperties = (KeyValuePair[]) decoder.decodeStructArray("ConfigurationProperties", KeyValuePair.TYPE_ID);
             return new PubSubConfiguration2DataType(publishedDataSets, connections, enabled, subscribedDataSets, dataSetClasses, defaultSecurityKeyServices, securityGroups, pubSubKeyPushTargets, configurationVersion, configurationProperties);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PubSubConfiguration2DataType value) {
-            encoder.writeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
-            encoder.writeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
-            encoder.writeBoolean("Enabled", value.getEnabled());
-            encoder.writeStructArray("SubscribedDataSets", value.getSubscribedDataSets(), StandaloneSubscribedDataSetDataType.TYPE_ID);
-            encoder.writeStructArray("DataSetClasses", value.getDataSetClasses(), DataSetMetaDataType.TYPE_ID);
-            encoder.writeStructArray("DefaultSecurityKeyServices", value.getDefaultSecurityKeyServices(), EndpointDescription.TYPE_ID);
-            encoder.writeStructArray("SecurityGroups", value.getSecurityGroups(), SecurityGroupDataType.TYPE_ID);
-            encoder.writeStructArray("PubSubKeyPushTargets", value.getPubSubKeyPushTargets(), PubSubKeyPushTargetDataType.TYPE_ID);
-            encoder.writeUInt32("ConfigurationVersion", value.getConfigurationVersion());
-            encoder.writeStructArray("ConfigurationProperties", value.getConfigurationProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeStructArray("PublishedDataSets", value.getPublishedDataSets(), PublishedDataSetDataType.TYPE_ID);
+            encoder.encodeStructArray("Connections", value.getConnections(), PubSubConnectionDataType.TYPE_ID);
+            encoder.encodeBoolean("Enabled", value.getEnabled());
+            encoder.encodeStructArray("SubscribedDataSets", value.getSubscribedDataSets(), StandaloneSubscribedDataSetDataType.TYPE_ID);
+            encoder.encodeStructArray("DataSetClasses", value.getDataSetClasses(), DataSetMetaDataType.TYPE_ID);
+            encoder.encodeStructArray("DefaultSecurityKeyServices", value.getDefaultSecurityKeyServices(), EndpointDescription.TYPE_ID);
+            encoder.encodeStructArray("SecurityGroups", value.getSecurityGroups(), SecurityGroupDataType.TYPE_ID);
+            encoder.encodeStructArray("PubSubKeyPushTargets", value.getPubSubKeyPushTargets(), PubSubKeyPushTargetDataType.TYPE_ID);
+            encoder.encodeUInt32("ConfigurationVersion", value.getConfigurationVersion());
+            encoder.encodeStructArray("ConfigurationProperties", value.getConfigurationProperties(), KeyValuePair.TYPE_ID);
         }
     }
 }

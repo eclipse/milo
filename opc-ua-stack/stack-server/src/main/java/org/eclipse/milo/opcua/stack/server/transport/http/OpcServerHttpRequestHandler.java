@@ -30,8 +30,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
@@ -136,11 +136,11 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
         keyPair.ifPresent(secureChannel::setKeyPair);
 
-        OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(stackServer.getSerializationContext());
+        OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(stackServer.getSerializationContext());
         decoder.setBuffer(httpRequest.content());
 
         try {
-            UaRequestMessageType request = (UaRequestMessageType) decoder.readMessage(null);
+            UaRequestMessageType request = (UaRequestMessageType) decoder.decodeMessage(null);
             UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
             InetSocketAddress remoteSocketAddress =
@@ -179,9 +179,9 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         ByteBuf contentBuffer = BufferUtil.pooledBuffer();
 
         // TODO switch on transport profile for binary vs xml encoding
-        OpcUaBinaryStreamEncoder binaryEncoder = new OpcUaBinaryStreamEncoder(stackServer.getSerializationContext());
+        OpcUaBinaryEncoder binaryEncoder = new OpcUaBinaryEncoder(stackServer.getSerializationContext());
         binaryEncoder.setBuffer(contentBuffer);
-        binaryEncoder.writeMessage(null, response);
+        binaryEncoder.encodeMessage(null, response);
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(
             HttpVersion.HTTP_1_1,
@@ -219,9 +219,9 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         ByteBuf contentBuffer = BufferUtil.pooledBuffer();
 
         // TODO switch on transport profile for binary vs xml encoding
-        OpcUaBinaryStreamEncoder binaryEncoder = new OpcUaBinaryStreamEncoder(stackServer.getSerializationContext());
+        OpcUaBinaryEncoder binaryEncoder = new OpcUaBinaryEncoder(stackServer.getSerializationContext());
         binaryEncoder.setBuffer(contentBuffer);
-        binaryEncoder.writeMessage(null, serviceFault);
+        binaryEncoder.encodeMessage(null, serviceFault);
 
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(
             HttpVersion.HTTP_1_1,

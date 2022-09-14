@@ -220,7 +220,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, request);
+                binaryEncoder.encodeMessage(null, request);
 
                 checkMessageSize(messageBuffer);
 
@@ -289,7 +289,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, request);
+                binaryEncoder.encodeMessage(null, request);
 
                 checkMessageSize(messageBuffer);
 
@@ -331,7 +331,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, request.getRequest());
+                binaryEncoder.encodeMessage(null, request.getRequest());
 
                 checkMessageSize(messageBuffer);
 
@@ -505,7 +505,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 try {
                     UaResponseMessageType response = (UaResponseMessageType) binaryDecoder
                         .setBuffer(message)
-                        .readMessage(null);
+                        .decodeMessage(null);
 
                     StatusCode serviceResult = response.getResponseHeader().getServiceResult();
 
@@ -651,7 +651,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                 try {
                     UaResponseMessageType response = (UaResponseMessageType) binaryDecoder
                         .setBuffer(message)
-                        .readMessage(null);
+                        .decodeMessage(null);
 
                     if (request != null) {
                         request.getFuture().complete(response);

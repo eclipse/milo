@@ -99,16 +99,16 @@ public class UnsignedRationalNumber extends Structure implements UaStructuredTyp
 
         @Override
         public UnsignedRationalNumber decodeType(SerializationContext context, UaDecoder decoder) {
-            UInteger numerator = decoder.readUInt32("Numerator");
-            UInteger denominator = decoder.readUInt32("Denominator");
+            UInteger numerator = decoder.decodeUInt32("Numerator");
+            UInteger denominator = decoder.decodeUInt32("Denominator");
             return new UnsignedRationalNumber(numerator, denominator);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UnsignedRationalNumber value) {
-            encoder.writeUInt32("Numerator", value.getNumerator());
-            encoder.writeUInt32("Denominator", value.getDenominator());
+            encoder.encodeUInt32("Numerator", value.getNumerator());
+            encoder.encodeUInt32("Denominator", value.getDenominator());
         }
     }
 }

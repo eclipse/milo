@@ -109,18 +109,18 @@ public class QueryNextRequest extends Structure implements UaRequestMessageType 
 
         @Override
         public QueryNextRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            Boolean releaseContinuationPoint = decoder.readBoolean("ReleaseContinuationPoint");
-            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            Boolean releaseContinuationPoint = decoder.decodeBoolean("ReleaseContinuationPoint");
+            ByteString continuationPoint = decoder.decodeByteString("ContinuationPoint");
             return new QueryNextRequest(requestHeader, releaseContinuationPoint, continuationPoint);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                QueryNextRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeBoolean("ReleaseContinuationPoint", value.getReleaseContinuationPoint());
-            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeBoolean("ReleaseContinuationPoint", value.getReleaseContinuationPoint());
+            encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
         }
     }
 }

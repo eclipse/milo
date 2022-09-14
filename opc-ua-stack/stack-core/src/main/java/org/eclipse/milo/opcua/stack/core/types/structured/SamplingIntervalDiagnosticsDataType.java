@@ -117,20 +117,20 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
         @Override
         public SamplingIntervalDiagnosticsDataType decodeType(SerializationContext context,
                                                               UaDecoder decoder) {
-            Double samplingInterval = decoder.readDouble("SamplingInterval");
-            UInteger monitoredItemCount = decoder.readUInt32("MonitoredItemCount");
-            UInteger maxMonitoredItemCount = decoder.readUInt32("MaxMonitoredItemCount");
-            UInteger disabledMonitoredItemCount = decoder.readUInt32("DisabledMonitoredItemCount");
+            Double samplingInterval = decoder.decodeDouble("SamplingInterval");
+            UInteger monitoredItemCount = decoder.decodeUInt32("MonitoredItemCount");
+            UInteger maxMonitoredItemCount = decoder.decodeUInt32("MaxMonitoredItemCount");
+            UInteger disabledMonitoredItemCount = decoder.decodeUInt32("DisabledMonitoredItemCount");
             return new SamplingIntervalDiagnosticsDataType(samplingInterval, monitoredItemCount, maxMonitoredItemCount, disabledMonitoredItemCount);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SamplingIntervalDiagnosticsDataType value) {
-            encoder.writeDouble("SamplingInterval", value.getSamplingInterval());
-            encoder.writeUInt32("MonitoredItemCount", value.getMonitoredItemCount());
-            encoder.writeUInt32("MaxMonitoredItemCount", value.getMaxMonitoredItemCount());
-            encoder.writeUInt32("DisabledMonitoredItemCount", value.getDisabledMonitoredItemCount());
+            encoder.encodeDouble("SamplingInterval", value.getSamplingInterval());
+            encoder.encodeUInt32("MonitoredItemCount", value.getMonitoredItemCount());
+            encoder.encodeUInt32("MaxMonitoredItemCount", value.getMaxMonitoredItemCount());
+            encoder.encodeUInt32("DisabledMonitoredItemCount", value.getDisabledMonitoredItemCount());
         }
     }
 }

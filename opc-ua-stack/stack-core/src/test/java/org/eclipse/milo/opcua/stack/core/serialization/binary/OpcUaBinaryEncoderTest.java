@@ -21,15 +21,15 @@ import org.testng.annotations.Test;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.testng.Assert.assertEquals;
 
-public class OpcUaBinaryStreamEncoderTest {
+public class OpcUaBinaryEncoderTest {
 
     ByteBuf buffer;
-    OpcUaBinaryStreamEncoder writer;
+    OpcUaBinaryEncoder writer;
 
     @BeforeTest
     public void initializeTest() {
         buffer = Unpooled.buffer();
-        writer = new OpcUaBinaryStreamEncoder(new TestSerializationContext()).setBuffer(buffer);
+        writer = new OpcUaBinaryEncoder(new TestSerializationContext()).setBuffer(buffer);
     }
 
     @Test

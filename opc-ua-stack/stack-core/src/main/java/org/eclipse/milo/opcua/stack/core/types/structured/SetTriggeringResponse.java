@@ -127,22 +127,22 @@ public class SetTriggeringResponse extends Structure implements UaResponseMessag
 
         @Override
         public SetTriggeringResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            StatusCode[] addResults = decoder.readStatusCodeArray("AddResults");
-            DiagnosticInfo[] addDiagnosticInfos = decoder.readDiagnosticInfoArray("AddDiagnosticInfos");
-            StatusCode[] removeResults = decoder.readStatusCodeArray("RemoveResults");
-            DiagnosticInfo[] removeDiagnosticInfos = decoder.readDiagnosticInfoArray("RemoveDiagnosticInfos");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            StatusCode[] addResults = decoder.decodeStatusCodeArray("AddResults");
+            DiagnosticInfo[] addDiagnosticInfos = decoder.decodeDiagnosticInfoArray("AddDiagnosticInfos");
+            StatusCode[] removeResults = decoder.decodeStatusCodeArray("RemoveResults");
+            DiagnosticInfo[] removeDiagnosticInfos = decoder.decodeDiagnosticInfoArray("RemoveDiagnosticInfos");
             return new SetTriggeringResponse(responseHeader, addResults, addDiagnosticInfos, removeResults, removeDiagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SetTriggeringResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStatusCodeArray("AddResults", value.getAddResults());
-            encoder.writeDiagnosticInfoArray("AddDiagnosticInfos", value.getAddDiagnosticInfos());
-            encoder.writeStatusCodeArray("RemoveResults", value.getRemoveResults());
-            encoder.writeDiagnosticInfoArray("RemoveDiagnosticInfos", value.getRemoveDiagnosticInfos());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStatusCodeArray("AddResults", value.getAddResults());
+            encoder.encodeDiagnosticInfoArray("AddDiagnosticInfos", value.getAddDiagnosticInfos());
+            encoder.encodeStatusCodeArray("RemoveResults", value.getRemoveResults());
+            encoder.encodeDiagnosticInfoArray("RemoveDiagnosticInfos", value.getRemoveDiagnosticInfos());
         }
     }
 }

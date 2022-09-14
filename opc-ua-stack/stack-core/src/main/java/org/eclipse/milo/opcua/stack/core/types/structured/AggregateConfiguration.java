@@ -125,22 +125,22 @@ public class AggregateConfiguration extends Structure implements UaStructuredTyp
 
         @Override
         public AggregateConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
-            Boolean useServerCapabilitiesDefaults = decoder.readBoolean("UseServerCapabilitiesDefaults");
-            Boolean treatUncertainAsBad = decoder.readBoolean("TreatUncertainAsBad");
-            UByte percentDataBad = decoder.readByte("PercentDataBad");
-            UByte percentDataGood = decoder.readByte("PercentDataGood");
-            Boolean useSlopedExtrapolation = decoder.readBoolean("UseSlopedExtrapolation");
+            Boolean useServerCapabilitiesDefaults = decoder.decodeBoolean("UseServerCapabilitiesDefaults");
+            Boolean treatUncertainAsBad = decoder.decodeBoolean("TreatUncertainAsBad");
+            UByte percentDataBad = decoder.decodeByte("PercentDataBad");
+            UByte percentDataGood = decoder.decodeByte("PercentDataGood");
+            Boolean useSlopedExtrapolation = decoder.decodeBoolean("UseSlopedExtrapolation");
             return new AggregateConfiguration(useServerCapabilitiesDefaults, treatUncertainAsBad, percentDataBad, percentDataGood, useSlopedExtrapolation);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                AggregateConfiguration value) {
-            encoder.writeBoolean("UseServerCapabilitiesDefaults", value.getUseServerCapabilitiesDefaults());
-            encoder.writeBoolean("TreatUncertainAsBad", value.getTreatUncertainAsBad());
-            encoder.writeByte("PercentDataBad", value.getPercentDataBad());
-            encoder.writeByte("PercentDataGood", value.getPercentDataGood());
-            encoder.writeBoolean("UseSlopedExtrapolation", value.getUseSlopedExtrapolation());
+            encoder.encodeBoolean("UseServerCapabilitiesDefaults", value.getUseServerCapabilitiesDefaults());
+            encoder.encodeBoolean("TreatUncertainAsBad", value.getTreatUncertainAsBad());
+            encoder.encodeByte("PercentDataBad", value.getPercentDataBad());
+            encoder.encodeByte("PercentDataGood", value.getPercentDataGood());
+            encoder.encodeBoolean("UseSlopedExtrapolation", value.getUseSlopedExtrapolation());
         }
     }
 }

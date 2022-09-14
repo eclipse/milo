@@ -44,7 +44,7 @@ public class DynamicEnumCodec extends GenericDataTypeCodec<DynamicEnum> {
 
     @Override
     public DynamicEnum decodeType(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
-        int value = decoder.readInt32(null);
+        int value = decoder.decodeInt32(null);
 
         EnumField field = fields.get((long) value);
 
@@ -62,7 +62,7 @@ public class DynamicEnumCodec extends GenericDataTypeCodec<DynamicEnum> {
         DynamicEnum value
     ) throws UaSerializationException {
 
-        encoder.writeInt32(null, value.getValue());
+        encoder.encodeInt32(null, value.getValue());
     }
 
 }

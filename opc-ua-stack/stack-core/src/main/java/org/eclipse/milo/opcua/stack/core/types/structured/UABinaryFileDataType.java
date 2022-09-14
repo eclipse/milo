@@ -115,26 +115,26 @@ public class UABinaryFileDataType extends DataTypeSchemaHeader implements UaStru
 
         @Override
         public UABinaryFileDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String[] namespaces = decoder.readStringArray("Namespaces");
-            StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.readStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
-            EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.readStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
-            SimpleTypeDescription[] simpleDataTypes = (SimpleTypeDescription[]) decoder.readStructArray("SimpleDataTypes", SimpleTypeDescription.TYPE_ID);
-            String schemaLocation = decoder.readString("SchemaLocation");
-            KeyValuePair[] fileHeader = (KeyValuePair[]) decoder.readStructArray("FileHeader", KeyValuePair.TYPE_ID);
-            Variant body = decoder.readVariant("Body");
+            String[] namespaces = decoder.decodeStringArray("Namespaces");
+            StructureDescription[] structureDataTypes = (StructureDescription[]) decoder.decodeStructArray("StructureDataTypes", StructureDescription.TYPE_ID);
+            EnumDescription[] enumDataTypes = (EnumDescription[]) decoder.decodeStructArray("EnumDataTypes", EnumDescription.TYPE_ID);
+            SimpleTypeDescription[] simpleDataTypes = (SimpleTypeDescription[]) decoder.decodeStructArray("SimpleDataTypes", SimpleTypeDescription.TYPE_ID);
+            String schemaLocation = decoder.decodeString("SchemaLocation");
+            KeyValuePair[] fileHeader = (KeyValuePair[]) decoder.decodeStructArray("FileHeader", KeyValuePair.TYPE_ID);
+            Variant body = decoder.decodeVariant("Body");
             return new UABinaryFileDataType(namespaces, structureDataTypes, enumDataTypes, simpleDataTypes, schemaLocation, fileHeader, body);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                UABinaryFileDataType value) {
-            encoder.writeStringArray("Namespaces", value.getNamespaces());
-            encoder.writeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
-            encoder.writeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);
-            encoder.writeStructArray("SimpleDataTypes", value.getSimpleDataTypes(), SimpleTypeDescription.TYPE_ID);
-            encoder.writeString("SchemaLocation", value.getSchemaLocation());
-            encoder.writeStructArray("FileHeader", value.getFileHeader(), KeyValuePair.TYPE_ID);
-            encoder.writeVariant("Body", value.getBody());
+            encoder.encodeStringArray("Namespaces", value.getNamespaces());
+            encoder.encodeStructArray("StructureDataTypes", value.getStructureDataTypes(), StructureDescription.TYPE_ID);
+            encoder.encodeStructArray("EnumDataTypes", value.getEnumDataTypes(), EnumDescription.TYPE_ID);
+            encoder.encodeStructArray("SimpleDataTypes", value.getSimpleDataTypes(), SimpleTypeDescription.TYPE_ID);
+            encoder.encodeString("SchemaLocation", value.getSchemaLocation());
+            encoder.encodeStructArray("FileHeader", value.getFileHeader(), KeyValuePair.TYPE_ID);
+            encoder.encodeVariant("Body", value.getBody());
         }
     }
 }

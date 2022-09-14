@@ -116,19 +116,19 @@ public class BrowseRequest extends Structure implements UaRequestMessageType {
 
         @Override
         public BrowseRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ViewDescription view = (ViewDescription) decoder.readStruct("View", ViewDescription.TYPE_ID);
-            UInteger requestedMaxReferencesPerNode = decoder.readUInt32("RequestedMaxReferencesPerNode");
-            BrowseDescription[] nodesToBrowse = (BrowseDescription[]) decoder.readStructArray("NodesToBrowse", BrowseDescription.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ViewDescription view = (ViewDescription) decoder.decodeStruct("View", ViewDescription.TYPE_ID);
+            UInteger requestedMaxReferencesPerNode = decoder.decodeUInt32("RequestedMaxReferencesPerNode");
+            BrowseDescription[] nodesToBrowse = (BrowseDescription[]) decoder.decodeStructArray("NodesToBrowse", BrowseDescription.TYPE_ID);
             return new BrowseRequest(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, BrowseRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("View", value.getView(), ViewDescription.TYPE_ID);
-            encoder.writeUInt32("RequestedMaxReferencesPerNode", value.getRequestedMaxReferencesPerNode());
-            encoder.writeStructArray("NodesToBrowse", value.getNodesToBrowse(), BrowseDescription.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("View", value.getView(), ViewDescription.TYPE_ID);
+            encoder.encodeUInt32("RequestedMaxReferencesPerNode", value.getRequestedMaxReferencesPerNode());
+            encoder.encodeStructArray("NodesToBrowse", value.getNodesToBrowse(), BrowseDescription.TYPE_ID);
         }
     }
 }

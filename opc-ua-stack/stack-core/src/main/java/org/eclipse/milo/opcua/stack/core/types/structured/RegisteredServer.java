@@ -150,28 +150,28 @@ public class RegisteredServer extends Structure implements UaStructuredType {
 
         @Override
         public RegisteredServer decodeType(SerializationContext context, UaDecoder decoder) {
-            String serverUri = decoder.readString("ServerUri");
-            String productUri = decoder.readString("ProductUri");
-            LocalizedText[] serverNames = decoder.readLocalizedTextArray("ServerNames");
-            ApplicationType serverType = ApplicationType.from(decoder.readEnum("ServerType"));
-            String gatewayServerUri = decoder.readString("GatewayServerUri");
-            String[] discoveryUrls = decoder.readStringArray("DiscoveryUrls");
-            String semaphoreFilePath = decoder.readString("SemaphoreFilePath");
-            Boolean isOnline = decoder.readBoolean("IsOnline");
+            String serverUri = decoder.decodeString("ServerUri");
+            String productUri = decoder.decodeString("ProductUri");
+            LocalizedText[] serverNames = decoder.decodeLocalizedTextArray("ServerNames");
+            ApplicationType serverType = ApplicationType.from(decoder.decodeEnum("ServerType"));
+            String gatewayServerUri = decoder.decodeString("GatewayServerUri");
+            String[] discoveryUrls = decoder.decodeStringArray("DiscoveryUrls");
+            String semaphoreFilePath = decoder.decodeString("SemaphoreFilePath");
+            Boolean isOnline = decoder.decodeBoolean("IsOnline");
             return new RegisteredServer(serverUri, productUri, serverNames, serverType, gatewayServerUri, discoveryUrls, semaphoreFilePath, isOnline);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RegisteredServer value) {
-            encoder.writeString("ServerUri", value.getServerUri());
-            encoder.writeString("ProductUri", value.getProductUri());
-            encoder.writeLocalizedTextArray("ServerNames", value.getServerNames());
-            encoder.writeEnum("ServerType", value.getServerType());
-            encoder.writeString("GatewayServerUri", value.getGatewayServerUri());
-            encoder.writeStringArray("DiscoveryUrls", value.getDiscoveryUrls());
-            encoder.writeString("SemaphoreFilePath", value.getSemaphoreFilePath());
-            encoder.writeBoolean("IsOnline", value.getIsOnline());
+            encoder.encodeString("ServerUri", value.getServerUri());
+            encoder.encodeString("ProductUri", value.getProductUri());
+            encoder.encodeLocalizedTextArray("ServerNames", value.getServerNames());
+            encoder.encodeEnum("ServerType", value.getServerType());
+            encoder.encodeString("GatewayServerUri", value.getGatewayServerUri());
+            encoder.encodeStringArray("DiscoveryUrls", value.getDiscoveryUrls());
+            encoder.encodeString("SemaphoreFilePath", value.getSemaphoreFilePath());
+            encoder.encodeBoolean("IsOnline", value.getIsOnline());
         }
     }
 }

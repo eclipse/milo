@@ -110,7 +110,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeBoolean(String field, Boolean value) throws UaSerializationException {
+    public void encodeBoolean(String field, Boolean value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value) {
@@ -125,7 +125,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeSByte(String field, Byte value) throws UaSerializationException {
+    public void encodeSByte(String field, Byte value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value != 0) {
@@ -140,7 +140,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeInt16(String field, Short value) throws UaSerializationException {
+    public void encodeInt16(String field, Short value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value != 0) {
@@ -155,7 +155,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeInt32(String field, Integer value) throws UaSerializationException {
+    public void encodeInt32(String field, Integer value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value != 0) {
@@ -170,7 +170,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeInt64(String field, Long value) throws UaSerializationException {
+    public void encodeInt64(String field, Long value) throws UaSerializationException {
         // Int64 and UInt64 values shall be formatted as a decimal number
         // encoded as a JSON string.
 
@@ -188,7 +188,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeByte(String field, UByte value) throws UaSerializationException {
+    public void encodeByte(String field, UByte value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value.intValue() != 0) {
@@ -203,7 +203,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeUInt16(String field, UShort value) throws UaSerializationException {
+    public void encodeUInt16(String field, UShort value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value.intValue() != 0) {
@@ -218,7 +218,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeUInt32(String field, UInteger value) throws UaSerializationException {
+    public void encodeUInt32(String field, UInteger value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value.longValue() != 0L) {
@@ -233,7 +233,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeUInt64(String field, ULong value) throws UaSerializationException {
+    public void encodeUInt64(String field, ULong value) throws UaSerializationException {
         // Int64 and UInt64 values shall be formatted as a decimal number
         // encoded as a JSON string (See the XML encoding of 64-bit values
         // described in 5.3.1.3).
@@ -252,7 +252,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeFloat(String field, Float value) throws UaSerializationException {
+    public void encodeFloat(String field, Float value) throws UaSerializationException {
         // Normal Float and Double values shall be encoded as a JSON number.
         // Special floating-point numbers such as positive infinity (INF),
         // negative infinity (-INF) and not-a-number (NaN) shall be
@@ -281,7 +281,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeDouble(String field, Double value) throws UaSerializationException {
+    public void encodeDouble(String field, Double value) throws UaSerializationException {
         // Normal Float and Double values shall be encoded as a JSON number.
         // Special floating-point numbers such as positive infinity (INF),
         // negative infinity (-INF) and not-a-number (NaN) shall be
@@ -310,7 +310,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeString(String field, String value) throws UaSerializationException {
+    public void encodeString(String field, String value) throws UaSerializationException {
         // String values shall be encoded as JSON strings.
         // Any characters which are not allowed in JSON strings are escaped
         // using the rules defined in RFC 7159.
@@ -329,7 +329,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeDateTime(String field, DateTime value) throws UaSerializationException {
+    public void encodeDateTime(String field, DateTime value) throws UaSerializationException {
         // DateTime values shall be formatted as specified by ISO 8601:2004
         // and encoded as a JSON string.
         // DateTime values which exceed the minimum or maximum values supported
@@ -359,7 +359,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeGuid(String field, UUID value) throws UaSerializationException {
+    public void encodeGuid(String field, UUID value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN ||
@@ -376,7 +376,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeByteString(String field, ByteString value) throws UaSerializationException {
+    public void encodeByteString(String field, ByteString value) throws UaSerializationException {
         // ByteString values shall be formatted as a Base64 text and encoded as
         // a JSON string.
         // Any characters which are not allowed in JSON strings are escaped
@@ -396,7 +396,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeXmlElement(String field, XmlElement value) throws UaSerializationException {
+    public void encodeXmlElement(String field, XmlElement value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
@@ -411,7 +411,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeNodeId(String field, NodeId value) throws UaSerializationException {
+    public void encodeNodeId(String field, NodeId value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
@@ -428,7 +428,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
+    public void encodeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
@@ -503,7 +503,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStatusCode(String field, StatusCode value) throws UaSerializationException {
+    public void encodeStatusCode(String field, StatusCode value) throws UaSerializationException {
         // StatusCode values shall be encoded as a JSON number for the
         // reversible encoding.
         //
@@ -556,7 +556,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeQualifiedName(String field, QualifiedName value) throws UaSerializationException {
+    public void encodeQualifiedName(String field, QualifiedName value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
@@ -587,7 +587,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeLocalizedText(String field, LocalizedText value) throws UaSerializationException {
+    public void encodeLocalizedText(String field, LocalizedText value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || (value != null && value.isNotNull())) {
@@ -614,7 +614,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
+    public void encodeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value != null) {
@@ -627,7 +627,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
                 } else {
                     if (reversible) {
                         jsonWriter.beginObject();
-                        writeNodeId("TypeId", value.getEncodingId());
+                        encodeNodeId("TypeId", value.getEncodingId());
                         switch (value.getBodyType()) {
                             case JsonString:
                                 // Encoding field omitted for JSON body
@@ -635,11 +635,11 @@ public class OpcUaJsonEncoder implements UaEncoder {
                                 break;
                             case ByteString:
                                 jsonWriter.name("Encoding").value(1);
-                                writeByteString("Body", (ByteString) value.getBody());
+                                encodeByteString("Body", (ByteString) value.getBody());
                                 break;
                             case XmlElement:
                                 jsonWriter.name("Encoding").value(2);
-                                writeXmlElement("Body", (XmlElement) value.getBody());
+                                encodeXmlElement("Body", (XmlElement) value.getBody());
                                 break;
                         }
                         jsonWriter.endObject();
@@ -650,12 +650,12 @@ public class OpcUaJsonEncoder implements UaEncoder {
                                 break;
                             case ByteString:
                                 contextPush(EncodingContext.BUILTIN);
-                                writeByteString(null, (ByteString) value.getBody());
+                                encodeByteString(null, (ByteString) value.getBody());
                                 contextPop();
                                 break;
                             case XmlElement:
                                 contextPush(EncodingContext.BUILTIN);
-                                writeXmlElement(null, (XmlElement) value.getBody());
+                                encodeXmlElement(null, (XmlElement) value.getBody());
                                 contextPop();
                                 break;
                         }
@@ -668,7 +668,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeDataValue(String field, DataValue value) throws UaSerializationException {
+    public void encodeDataValue(String field, DataValue value) throws UaSerializationException {
         try {
             if (allFieldsAreOmitted(value)) {
                 return;
@@ -683,27 +683,27 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
             Variant v = value.getValue();
             if (v != null && v.isNotNull()) {
-                writeVariant("Value", v);
+                encodeVariant("Value", v);
             }
             StatusCode s = value.getStatusCode();
             if (s != null && s.getValue() != 0L) {
-                writeStatusCode("Status", s);
+                encodeStatusCode("Status", s);
             }
             DateTime sourceTime = value.getSourceTime();
             if (sourceTime != null && sourceTime.isNotNull()) {
-                writeDateTime("SourceTimestamp", sourceTime);
+                encodeDateTime("SourceTimestamp", sourceTime);
             }
             UShort sourcePicoseconds = value.getSourcePicoseconds();
             if (sourcePicoseconds != null && sourcePicoseconds.intValue() > 0) {
-                writeUInt16("SourcePicoseconds", sourcePicoseconds);
+                encodeUInt16("SourcePicoseconds", sourcePicoseconds);
             }
             DateTime serverTime = value.getServerTime();
             if (serverTime != null && serverTime.isNotNull()) {
-                writeDateTime("ServerTimestamp", serverTime);
+                encodeDateTime("ServerTimestamp", serverTime);
             }
             UShort serverPicoseconds = value.getServerPicoseconds();
             if (serverPicoseconds != null && serverPicoseconds.intValue() > 0) {
-                writeUInt16("ServerPicoseconds", serverPicoseconds);
+                encodeUInt16("ServerPicoseconds", serverPicoseconds);
             }
 
             jsonWriter.endObject();
@@ -726,7 +726,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeVariant(String field, Variant value) throws UaSerializationException {
+    public void encodeVariant(String field, Variant value) throws UaSerializationException {
         if (value.isNull()) {
             return;
         }
@@ -877,79 +877,79 @@ public class OpcUaJsonEncoder implements UaEncoder {
         contextPush(EncodingContext.BUILTIN);
         switch (typeId) {
             case 1:
-                writeBoolean(field, (Boolean) value);
+                encodeBoolean(field, (Boolean) value);
                 break;
             case 2:
-                writeSByte(field, (Byte) value);
+                encodeSByte(field, (Byte) value);
                 break;
             case 3:
-                writeByte(field, (UByte) value);
+                encodeByte(field, (UByte) value);
                 break;
             case 4:
-                writeInt16(field, (Short) value);
+                encodeInt16(field, (Short) value);
                 break;
             case 5:
-                writeUInt16(field, (UShort) value);
+                encodeUInt16(field, (UShort) value);
                 break;
             case 6:
-                writeInt32(field, (Integer) value);
+                encodeInt32(field, (Integer) value);
                 break;
             case 7:
-                writeUInt32(field, (UInteger) value);
+                encodeUInt32(field, (UInteger) value);
                 break;
             case 8:
-                writeInt64(field, (Long) value);
+                encodeInt64(field, (Long) value);
                 break;
             case 9:
-                writeUInt64(field, (ULong) value);
+                encodeUInt64(field, (ULong) value);
                 break;
             case 10:
-                writeFloat(field, (Float) value);
+                encodeFloat(field, (Float) value);
                 break;
             case 11:
-                writeDouble(field, (Double) value);
+                encodeDouble(field, (Double) value);
                 break;
             case 12:
-                writeString(field, (String) value);
+                encodeString(field, (String) value);
                 break;
             case 13:
-                writeDateTime(field, (DateTime) value);
+                encodeDateTime(field, (DateTime) value);
                 break;
             case 14:
-                writeGuid(field, (UUID) value);
+                encodeGuid(field, (UUID) value);
                 break;
             case 15:
-                writeByteString(field, (ByteString) value);
+                encodeByteString(field, (ByteString) value);
                 break;
             case 16:
-                writeXmlElement(field, (XmlElement) value);
+                encodeXmlElement(field, (XmlElement) value);
                 break;
             case 17:
-                writeNodeId(field, (NodeId) value);
+                encodeNodeId(field, (NodeId) value);
                 break;
             case 18:
-                writeExpandedNodeId(field, (ExpandedNodeId) value);
+                encodeExpandedNodeId(field, (ExpandedNodeId) value);
                 break;
             case 19:
-                writeStatusCode(field, (StatusCode) value);
+                encodeStatusCode(field, (StatusCode) value);
                 break;
             case 20:
-                writeQualifiedName(field, (QualifiedName) value);
+                encodeQualifiedName(field, (QualifiedName) value);
                 break;
             case 21:
-                writeLocalizedText(field, (LocalizedText) value);
+                encodeLocalizedText(field, (LocalizedText) value);
                 break;
             case 22:
-                writeExtensionObject(field, (ExtensionObject) value);
+                encodeExtensionObject(field, (ExtensionObject) value);
                 break;
             case 23:
-                writeDataValue(field, (DataValue) value);
+                encodeDataValue(field, (DataValue) value);
                 break;
             case 24:
-                writeVariant(field, (Variant) value);
+                encodeVariant(field, (Variant) value);
                 break;
             case 25:
-                writeDiagnosticInfo(field, (DiagnosticInfo) value);
+                encodeDiagnosticInfo(field, (DiagnosticInfo) value);
                 break;
             default:
                 throw new UaSerializationException(
@@ -969,7 +969,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
+    public void encodeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
         try {
             EncodingContext context = contextPeek();
             if (!reversible || context == EncodingContext.BUILTIN || value != null) {
@@ -979,16 +979,16 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
                 contextPush(EncodingContext.BUILTIN);
                 jsonWriter.beginObject();
-                writeInt32("SymbolicId", value.getSymbolicId());
-                writeInt32("NamespaceUri", value.getNamespaceUri());
-                writeInt32("Locale", value.getLocale());
-                writeInt32("LocalizedText", value.getLocalizedText());
-                writeString("AdditionalInfo", value.getAdditionalInfo());
+                encodeInt32("SymbolicId", value.getSymbolicId());
+                encodeInt32("NamespaceUri", value.getNamespaceUri());
+                encodeInt32("Locale", value.getLocale());
+                encodeInt32("LocalizedText", value.getLocalizedText());
+                encodeString("AdditionalInfo", value.getAdditionalInfo());
                 if (value.getInnerStatusCode() != null) {
-                    writeStatusCode("InnerStatusCode", value.getInnerStatusCode());
+                    encodeStatusCode("InnerStatusCode", value.getInnerStatusCode());
                 }
                 if (value.getInnerDiagnosticInfo() != null) {
-                    writeDiagnosticInfo("InnerDiagnosticInfo", value.getInnerDiagnosticInfo());
+                    encodeDiagnosticInfo("InnerDiagnosticInfo", value.getInnerDiagnosticInfo());
                 }
                 jsonWriter.endObject();
                 contextPop();
@@ -999,7 +999,7 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeMessage(String field, UaMessageType message) throws UaSerializationException {
+    public void encodeMessage(String field, UaMessageType message) throws UaSerializationException {
         ExpandedNodeId xEncodingId = message.getJsonEncodingId();
 
         NodeId encodingId = xEncodingId.toNodeId(serializationContext.getNamespaceTable())
@@ -1017,8 +1017,8 @@ public class OpcUaJsonEncoder implements UaEncoder {
 
         try {
             jsonWriter.beginObject();
-            writeNodeId("TypeId", encodingId);
-            writeStruct("Body", message, codec);
+            encodeNodeId("TypeId", encodingId);
+            encodeStruct("Body", message, codec);
             jsonWriter.endObject();
         } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
@@ -1026,25 +1026,25 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeEnum(String field, UaEnumeratedType value) throws UaSerializationException {
+    public void encodeEnum(String field, UaEnumeratedType value) throws UaSerializationException {
         if (reversible) {
-            writeInt32(field, value.getValue());
+            encodeInt32(field, value.getValue());
         } else {
             if (value.getName() != null) {
-                writeString(field, value.getName() + "_" + value.getValue());
+                encodeString(field, value.getName() + "_" + value.getValue());
             } else {
-                writeString(field, String.valueOf(value.getValue()));
+                encodeString(field, String.valueOf(value.getValue()));
             }
         }
     }
 
     @Override
-    public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
+    public void encodeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         DataTypeCodec codec = serializationContext.getDataTypeManager()
             .getCodec(OpcUaDefaultJsonEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec != null) {
-            writeStruct(field, value, codec);
+            encodeStruct(field, value, codec);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
@@ -1054,18 +1054,18 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public void encodeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
         NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "namespace not registered: " + dataTypeId
             ));
 
-        writeStruct(field, value, localDataTypeId);
+        encodeStruct(field, value, localDataTypeId);
     }
 
     @Override
-    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+    public void encodeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
         try {
             if (field != null) {
                 jsonWriter.name(field);
@@ -1082,153 +1082,153 @@ public class OpcUaJsonEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeBoolean);
+    public void encodeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeBoolean);
     }
 
     @Override
-    public void writeSByteArray(String field, Byte[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeSByte);
+    public void encodeSByteArray(String field, Byte[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeSByte);
     }
 
     @Override
-    public void writeInt16Array(String field, Short[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeInt16);
+    public void encodeInt16Array(String field, Short[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeInt16);
     }
 
     @Override
-    public void writeInt32Array(String field, Integer[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeInt32);
+    public void encodeInt32Array(String field, Integer[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeInt32);
     }
 
     @Override
-    public void writeInt64Array(String field, Long[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeInt64);
+    public void encodeInt64Array(String field, Long[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeInt64);
     }
 
     @Override
-    public void writeByteArray(String field, UByte[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeByte);
+    public void encodeByteArray(String field, UByte[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeByte);
     }
 
     @Override
-    public void writeUInt16Array(String field, UShort[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeUInt16);
+    public void encodeUInt16Array(String field, UShort[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeUInt16);
     }
 
     @Override
-    public void writeUInt32Array(String field, UInteger[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeUInt32);
+    public void encodeUInt32Array(String field, UInteger[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeUInt32);
     }
 
     @Override
-    public void writeUInt64Array(String field, ULong[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeUInt64);
+    public void encodeUInt64Array(String field, ULong[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeUInt64);
     }
 
     @Override
-    public void writeFloatArray(String field, Float[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeFloat);
+    public void encodeFloatArray(String field, Float[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeFloat);
     }
 
     @Override
-    public void writeDoubleArray(String field, Double[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDouble);
+    public void encodeDoubleArray(String field, Double[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDouble);
     }
 
     @Override
-    public void writeStringArray(String field, String[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeString);
+    public void encodeStringArray(String field, String[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeString);
     }
 
     @Override
-    public void writeDateTimeArray(String field, DateTime[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDateTime);
+    public void encodeDateTimeArray(String field, DateTime[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDateTime);
     }
 
     @Override
-    public void writeGuidArray(String field, UUID[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeGuid);
+    public void encodeGuidArray(String field, UUID[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeGuid);
     }
 
     @Override
-    public void writeByteStringArray(String field, ByteString[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeByteString);
+    public void encodeByteStringArray(String field, ByteString[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeByteString);
     }
 
     @Override
-    public void writeXmlElementArray(String field, XmlElement[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeXmlElement);
+    public void encodeXmlElementArray(String field, XmlElement[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeXmlElement);
     }
 
     @Override
-    public void writeNodeIdArray(String field, NodeId[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeNodeId);
+    public void encodeNodeIdArray(String field, NodeId[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeNodeId);
     }
 
     @Override
-    public void writeExpandedNodeIdArray(String field, ExpandedNodeId[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeExpandedNodeId);
+    public void encodeExpandedNodeIdArray(String field, ExpandedNodeId[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeExpandedNodeId);
     }
 
     @Override
-    public void writeStatusCodeArray(String field, StatusCode[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeStatusCode);
+    public void encodeStatusCodeArray(String field, StatusCode[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeStatusCode);
     }
 
     @Override
-    public void writeQualifiedNameArray(String field, QualifiedName[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeQualifiedName);
+    public void encodeQualifiedNameArray(String field, QualifiedName[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeQualifiedName);
     }
 
     @Override
-    public void writeLocalizedTextArray(String field, LocalizedText[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeLocalizedText);
+    public void encodeLocalizedTextArray(String field, LocalizedText[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeLocalizedText);
     }
 
     @Override
-    public void writeExtensionObjectArray(String field, ExtensionObject[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeExtensionObject);
+    public void encodeExtensionObjectArray(String field, ExtensionObject[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeExtensionObject);
     }
 
     @Override
-    public void writeDataValueArray(String field, DataValue[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDataValue);
+    public void encodeDataValueArray(String field, DataValue[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDataValue);
     }
 
     @Override
-    public void writeVariantArray(String field, Variant[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeVariant);
+    public void encodeVariantArray(String field, Variant[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeVariant);
     }
 
     @Override
-    public void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeDiagnosticInfo);
+    public void encodeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeDiagnosticInfo);
     }
 
     @Override
-    public void writeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
-        writeArray(field, value, this::writeEnum);
+    public void encodeEnumArray(String field, UaEnumeratedType[] value) throws UaSerializationException {
+        encodeArray(field, value, this::encodeEnum);
     }
 
     @Override
-    public void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException {
-        writeArray(field, value, (f, v) -> writeStruct(null, v, dataTypeId));
+    public void encodeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException {
+        encodeArray(field, value, (f, v) -> encodeStruct(null, v, dataTypeId));
     }
 
     @Override
-    public void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public void encodeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException {
         NodeId localDataTypeId = dataTypeId.toNodeId(serializationContext.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 "no codec registered: " + dataTypeId
             ));
 
-        writeStructArray(field, value, localDataTypeId);
+        encodeStructArray(field, value, localDataTypeId);
     }
 
     @Override
-    public <T> void writeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
+    public <T> void encodeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
         if (values == null) {
             return;
         }

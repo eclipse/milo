@@ -108,18 +108,18 @@ public class PublishedEventsDataType extends PublishedDataSetSourceDataType impl
 
         @Override
         public PublishedEventsDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId eventNotifier = decoder.readNodeId("EventNotifier");
-            SimpleAttributeOperand[] selectedFields = (SimpleAttributeOperand[]) decoder.readStructArray("SelectedFields", SimpleAttributeOperand.TYPE_ID);
-            ContentFilter filter = (ContentFilter) decoder.readStruct("Filter", ContentFilter.TYPE_ID);
+            NodeId eventNotifier = decoder.decodeNodeId("EventNotifier");
+            SimpleAttributeOperand[] selectedFields = (SimpleAttributeOperand[]) decoder.decodeStructArray("SelectedFields", SimpleAttributeOperand.TYPE_ID);
+            ContentFilter filter = (ContentFilter) decoder.decodeStruct("Filter", ContentFilter.TYPE_ID);
             return new PublishedEventsDataType(eventNotifier, selectedFields, filter);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PublishedEventsDataType value) {
-            encoder.writeNodeId("EventNotifier", value.getEventNotifier());
-            encoder.writeStructArray("SelectedFields", value.getSelectedFields(), SimpleAttributeOperand.TYPE_ID);
-            encoder.writeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);
+            encoder.encodeNodeId("EventNotifier", value.getEventNotifier());
+            encoder.encodeStructArray("SelectedFields", value.getSelectedFields(), SimpleAttributeOperand.TYPE_ID);
+            encoder.encodeStruct("Filter", value.getFilter(), ContentFilter.TYPE_ID);
         }
     }
 }

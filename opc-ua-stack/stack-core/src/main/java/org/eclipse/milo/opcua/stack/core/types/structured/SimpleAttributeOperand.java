@@ -117,20 +117,20 @@ public class SimpleAttributeOperand extends FilterOperand implements UaStructure
 
         @Override
         public SimpleAttributeOperand decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId typeDefinitionId = decoder.readNodeId("TypeDefinitionId");
-            QualifiedName[] browsePath = decoder.readQualifiedNameArray("BrowsePath");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String indexRange = decoder.readString("IndexRange");
+            NodeId typeDefinitionId = decoder.decodeNodeId("TypeDefinitionId");
+            QualifiedName[] browsePath = decoder.decodeQualifiedNameArray("BrowsePath");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String indexRange = decoder.decodeString("IndexRange");
             return new SimpleAttributeOperand(typeDefinitionId, browsePath, attributeId, indexRange);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SimpleAttributeOperand value) {
-            encoder.writeNodeId("TypeDefinitionId", value.getTypeDefinitionId());
-            encoder.writeQualifiedNameArray("BrowsePath", value.getBrowsePath());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
+            encoder.encodeNodeId("TypeDefinitionId", value.getTypeDefinitionId());
+            encoder.encodeQualifiedNameArray("BrowsePath", value.getBrowsePath());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
         }
     }
 }

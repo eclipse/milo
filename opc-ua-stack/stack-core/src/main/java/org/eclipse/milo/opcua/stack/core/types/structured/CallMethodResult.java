@@ -119,20 +119,20 @@ public class CallMethodResult extends Structure implements UaStructuredType {
 
         @Override
         public CallMethodResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] inputArgumentResults = decoder.readStatusCodeArray("InputArgumentResults");
-            DiagnosticInfo[] inputArgumentDiagnosticInfos = decoder.readDiagnosticInfoArray("InputArgumentDiagnosticInfos");
-            Variant[] outputArguments = decoder.readVariantArray("OutputArguments");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            StatusCode[] inputArgumentResults = decoder.decodeStatusCodeArray("InputArgumentResults");
+            DiagnosticInfo[] inputArgumentDiagnosticInfos = decoder.decodeDiagnosticInfoArray("InputArgumentDiagnosticInfos");
+            Variant[] outputArguments = decoder.decodeVariantArray("OutputArguments");
             return new CallMethodResult(statusCode, inputArgumentResults, inputArgumentDiagnosticInfos, outputArguments);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CallMethodResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeStatusCodeArray("InputArgumentResults", value.getInputArgumentResults());
-            encoder.writeDiagnosticInfoArray("InputArgumentDiagnosticInfos", value.getInputArgumentDiagnosticInfos());
-            encoder.writeVariantArray("OutputArguments", value.getOutputArguments());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeStatusCodeArray("InputArgumentResults", value.getInputArgumentResults());
+            encoder.encodeDiagnosticInfoArray("InputArgumentDiagnosticInfos", value.getInputArgumentDiagnosticInfos());
+            encoder.encodeVariantArray("OutputArguments", value.getOutputArguments());
         }
     }
 }

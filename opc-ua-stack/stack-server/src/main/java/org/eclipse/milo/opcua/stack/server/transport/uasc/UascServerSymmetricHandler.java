@@ -154,7 +154,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                     try {
                         UaRequestMessageType request = (UaRequestMessageType) binaryDecoder
                             .setBuffer(message)
-                            .readMessage(null);
+                            .decodeMessage(null);
 
                         String endpointUrl = ctx.channel()
                             .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
@@ -221,7 +221,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, response);
+                binaryEncoder.encodeMessage(null, response);
 
                 checkMessageSize(messageBuffer);
 
@@ -284,7 +284,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, serviceFault);
+                binaryEncoder.encodeMessage(null, serviceFault);
 
                 checkMessageSize(messageBuffer);
 

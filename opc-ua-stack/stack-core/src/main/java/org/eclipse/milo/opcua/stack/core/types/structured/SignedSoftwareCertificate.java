@@ -100,16 +100,16 @@ public class SignedSoftwareCertificate extends Structure implements UaStructured
 
         @Override
         public SignedSoftwareCertificate decodeType(SerializationContext context, UaDecoder decoder) {
-            ByteString certificateData = decoder.readByteString("CertificateData");
-            ByteString signature = decoder.readByteString("Signature");
+            ByteString certificateData = decoder.decodeByteString("CertificateData");
+            ByteString signature = decoder.decodeByteString("Signature");
             return new SignedSoftwareCertificate(certificateData, signature);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SignedSoftwareCertificate value) {
-            encoder.writeByteString("CertificateData", value.getCertificateData());
-            encoder.writeByteString("Signature", value.getSignature());
+            encoder.encodeByteString("CertificateData", value.getCertificateData());
+            encoder.encodeByteString("Signature", value.getSignature());
         }
     }
 }

@@ -152,28 +152,28 @@ public class EndpointDescription extends Structure implements UaStructuredType {
 
         @Override
         public EndpointDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            String endpointUrl = decoder.readString("EndpointUrl");
-            ApplicationDescription server = (ApplicationDescription) decoder.readStruct("Server", ApplicationDescription.TYPE_ID);
-            ByteString serverCertificate = decoder.readByteString("ServerCertificate");
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
-            UserTokenPolicy[] userIdentityTokens = (UserTokenPolicy[]) decoder.readStructArray("UserIdentityTokens", UserTokenPolicy.TYPE_ID);
-            String transportProfileUri = decoder.readString("TransportProfileUri");
-            UByte securityLevel = decoder.readByte("SecurityLevel");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            ApplicationDescription server = (ApplicationDescription) decoder.decodeStruct("Server", ApplicationDescription.TYPE_ID);
+            ByteString serverCertificate = decoder.decodeByteString("ServerCertificate");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+            UserTokenPolicy[] userIdentityTokens = (UserTokenPolicy[]) decoder.decodeStructArray("UserIdentityTokens", UserTokenPolicy.TYPE_ID);
+            String transportProfileUri = decoder.decodeString("TransportProfileUri");
+            UByte securityLevel = decoder.decodeByte("SecurityLevel");
             return new EndpointDescription(endpointUrl, server, serverCertificate, securityMode, securityPolicyUri, userIdentityTokens, transportProfileUri, securityLevel);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                EndpointDescription value) {
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeStruct("Server", value.getServer(), ApplicationDescription.TYPE_ID);
-            encoder.writeByteString("ServerCertificate", value.getServerCertificate());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
-            encoder.writeStructArray("UserIdentityTokens", value.getUserIdentityTokens(), UserTokenPolicy.TYPE_ID);
-            encoder.writeString("TransportProfileUri", value.getTransportProfileUri());
-            encoder.writeByte("SecurityLevel", value.getSecurityLevel());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeStruct("Server", value.getServer(), ApplicationDescription.TYPE_ID);
+            encoder.encodeByteString("ServerCertificate", value.getServerCertificate());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeStructArray("UserIdentityTokens", value.getUserIdentityTokens(), UserTokenPolicy.TYPE_ID);
+            encoder.encodeString("TransportProfileUri", value.getTransportProfileUri());
+            encoder.encodeByte("SecurityLevel", value.getSecurityLevel());
         }
     }
 }

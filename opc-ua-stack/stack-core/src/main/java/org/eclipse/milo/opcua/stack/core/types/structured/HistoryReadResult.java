@@ -111,18 +111,18 @@ public class HistoryReadResult extends Structure implements UaStructuredType {
 
         @Override
         public HistoryReadResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
-            ExtensionObject historyData = decoder.readExtensionObject("HistoryData");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            ByteString continuationPoint = decoder.decodeByteString("ContinuationPoint");
+            ExtensionObject historyData = decoder.decodeExtensionObject("HistoryData");
             return new HistoryReadResult(statusCode, continuationPoint, historyData);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryReadResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
-            encoder.writeExtensionObject("HistoryData", value.getHistoryData());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
+            encoder.encodeExtensionObject("HistoryData", value.getHistoryData());
         }
     }
 }

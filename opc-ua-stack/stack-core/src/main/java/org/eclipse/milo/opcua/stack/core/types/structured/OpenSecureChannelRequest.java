@@ -136,24 +136,24 @@ public class OpenSecureChannelRequest extends Structure implements UaRequestMess
 
         @Override
         public OpenSecureChannelRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger clientProtocolVersion = decoder.readUInt32("ClientProtocolVersion");
-            SecurityTokenRequestType requestType = SecurityTokenRequestType.from(decoder.readEnum("RequestType"));
-            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readEnum("SecurityMode"));
-            ByteString clientNonce = decoder.readByteString("ClientNonce");
-            UInteger requestedLifetime = decoder.readUInt32("RequestedLifetime");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger clientProtocolVersion = decoder.decodeUInt32("ClientProtocolVersion");
+            SecurityTokenRequestType requestType = SecurityTokenRequestType.from(decoder.decodeEnum("RequestType"));
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.decodeEnum("SecurityMode"));
+            ByteString clientNonce = decoder.decodeByteString("ClientNonce");
+            UInteger requestedLifetime = decoder.decodeUInt32("RequestedLifetime");
             return new OpenSecureChannelRequest(requestHeader, clientProtocolVersion, requestType, securityMode, clientNonce, requestedLifetime);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                OpenSecureChannelRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("ClientProtocolVersion", value.getClientProtocolVersion());
-            encoder.writeEnum("RequestType", value.getRequestType());
-            encoder.writeEnum("SecurityMode", value.getSecurityMode());
-            encoder.writeByteString("ClientNonce", value.getClientNonce());
-            encoder.writeUInt32("RequestedLifetime", value.getRequestedLifetime());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("ClientProtocolVersion", value.getClientProtocolVersion());
+            encoder.encodeEnum("RequestType", value.getRequestType());
+            encoder.encodeEnum("SecurityMode", value.getSecurityMode());
+            encoder.encodeByteString("ClientNonce", value.getClientNonce());
+            encoder.encodeUInt32("RequestedLifetime", value.getRequestedLifetime());
         }
     }
 }

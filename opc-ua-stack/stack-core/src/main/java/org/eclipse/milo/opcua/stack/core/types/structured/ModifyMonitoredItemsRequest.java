@@ -117,20 +117,20 @@ public class ModifyMonitoredItemsRequest extends Structure implements UaRequestM
 
         @Override
         public ModifyMonitoredItemsRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readEnum("TimestampsToReturn"));
-            MonitoredItemModifyRequest[] itemsToModify = (MonitoredItemModifyRequest[]) decoder.readStructArray("ItemsToModify", MonitoredItemModifyRequest.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.decodeEnum("TimestampsToReturn"));
+            MonitoredItemModifyRequest[] itemsToModify = (MonitoredItemModifyRequest[]) decoder.decodeStructArray("ItemsToModify", MonitoredItemModifyRequest.TYPE_ID);
             return new ModifyMonitoredItemsRequest(requestHeader, subscriptionId, timestampsToReturn, itemsToModify);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                ModifyMonitoredItemsRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
-            encoder.writeStructArray("ItemsToModify", value.getItemsToModify(), MonitoredItemModifyRequest.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeEnum("TimestampsToReturn", value.getTimestampsToReturn());
+            encoder.encodeStructArray("ItemsToModify", value.getItemsToModify(), MonitoredItemModifyRequest.TYPE_ID);
         }
     }
 }

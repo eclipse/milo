@@ -99,15 +99,15 @@ public class CancelRequest extends Structure implements UaRequestMessageType {
 
         @Override
         public CancelRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger requestHandle = decoder.readUInt32("RequestHandle");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger requestHandle = decoder.decodeUInt32("RequestHandle");
             return new CancelRequest(requestHeader, requestHandle);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, CancelRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("RequestHandle", value.getRequestHandle());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("RequestHandle", value.getRequestHandle());
         }
     }
 }

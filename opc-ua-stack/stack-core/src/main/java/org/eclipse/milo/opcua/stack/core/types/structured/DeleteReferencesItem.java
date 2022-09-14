@@ -124,22 +124,22 @@ public class DeleteReferencesItem extends Structure implements UaStructuredType 
 
         @Override
         public DeleteReferencesItem decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId sourceNodeId = decoder.readNodeId("SourceNodeId");
-            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
-            Boolean isForward = decoder.readBoolean("IsForward");
-            ExpandedNodeId targetNodeId = decoder.readExpandedNodeId("TargetNodeId");
-            Boolean deleteBidirectional = decoder.readBoolean("DeleteBidirectional");
+            NodeId sourceNodeId = decoder.decodeNodeId("SourceNodeId");
+            NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+            Boolean isForward = decoder.decodeBoolean("IsForward");
+            ExpandedNodeId targetNodeId = decoder.decodeExpandedNodeId("TargetNodeId");
+            Boolean deleteBidirectional = decoder.decodeBoolean("DeleteBidirectional");
             return new DeleteReferencesItem(sourceNodeId, referenceTypeId, isForward, targetNodeId, deleteBidirectional);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                DeleteReferencesItem value) {
-            encoder.writeNodeId("SourceNodeId", value.getSourceNodeId());
-            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
-            encoder.writeBoolean("IsForward", value.getIsForward());
-            encoder.writeExpandedNodeId("TargetNodeId", value.getTargetNodeId());
-            encoder.writeBoolean("DeleteBidirectional", value.getDeleteBidirectional());
+            encoder.encodeNodeId("SourceNodeId", value.getSourceNodeId());
+            encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.encodeBoolean("IsForward", value.getIsForward());
+            encoder.encodeExpandedNodeId("TargetNodeId", value.getTargetNodeId());
+            encoder.encodeBoolean("DeleteBidirectional", value.getDeleteBidirectional());
         }
     }
 }

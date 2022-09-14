@@ -25,8 +25,8 @@ import static org.testng.Assert.assertEquals;
 
 public class DataValueSerializationTest {
 
-    private final OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(new TestSerializationContext());
-    private final OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(new TestSerializationContext());
+    private final OpcUaBinaryEncoder encoder = new OpcUaBinaryEncoder(new TestSerializationContext());
+    private final OpcUaBinaryDecoder decoder = new OpcUaBinaryDecoder(new TestSerializationContext());
 
     @Test(dataProvider = "getValues")
     public void testDataValueRoundTrip(DataValue value) {

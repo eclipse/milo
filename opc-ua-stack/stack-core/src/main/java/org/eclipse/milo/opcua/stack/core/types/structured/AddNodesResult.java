@@ -100,15 +100,15 @@ public class AddNodesResult extends Structure implements UaStructuredType {
 
         @Override
         public AddNodesResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            NodeId addedNodeId = decoder.readNodeId("AddedNodeId");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            NodeId addedNodeId = decoder.decodeNodeId("AddedNodeId");
             return new AddNodesResult(statusCode, addedNodeId);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, AddNodesResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeNodeId("AddedNodeId", value.getAddedNodeId());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeNodeId("AddedNodeId", value.getAddedNodeId());
         }
     }
 }

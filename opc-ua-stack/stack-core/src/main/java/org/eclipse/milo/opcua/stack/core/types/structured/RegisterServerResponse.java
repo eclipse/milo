@@ -91,14 +91,14 @@ public class RegisterServerResponse extends Structure implements UaResponseMessa
 
         @Override
         public RegisterServerResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             return new RegisterServerResponse(responseHeader);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RegisterServerResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
         }
     }
 }

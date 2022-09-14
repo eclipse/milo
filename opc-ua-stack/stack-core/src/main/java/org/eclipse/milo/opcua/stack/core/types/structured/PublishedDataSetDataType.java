@@ -125,22 +125,22 @@ public class PublishedDataSetDataType extends Structure implements UaStructuredT
 
         @Override
         public PublishedDataSetDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            String[] dataSetFolder = decoder.readStringArray("DataSetFolder");
-            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.readStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
-            KeyValuePair[] extensionFields = (KeyValuePair[]) decoder.readStructArray("ExtensionFields", KeyValuePair.TYPE_ID);
-            PublishedDataSetSourceDataType dataSetSource = (PublishedDataSetSourceDataType) decoder.readStruct("DataSetSource", PublishedDataSetSourceDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            String[] dataSetFolder = decoder.decodeStringArray("DataSetFolder");
+            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.decodeStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
+            KeyValuePair[] extensionFields = (KeyValuePair[]) decoder.decodeStructArray("ExtensionFields", KeyValuePair.TYPE_ID);
+            PublishedDataSetSourceDataType dataSetSource = (PublishedDataSetSourceDataType) decoder.decodeStruct("DataSetSource", PublishedDataSetSourceDataType.TYPE_ID);
             return new PublishedDataSetDataType(name, dataSetFolder, dataSetMetaData, extensionFields, dataSetSource);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                PublishedDataSetDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeStringArray("DataSetFolder", value.getDataSetFolder());
-            encoder.writeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
-            encoder.writeStructArray("ExtensionFields", value.getExtensionFields(), KeyValuePair.TYPE_ID);
-            encoder.writeStruct("DataSetSource", value.getDataSetSource(), PublishedDataSetSourceDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeStringArray("DataSetFolder", value.getDataSetFolder());
+            encoder.encodeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
+            encoder.encodeStructArray("ExtensionFields", value.getExtensionFields(), KeyValuePair.TYPE_ID);
+            encoder.encodeStruct("DataSetSource", value.getDataSetSource(), PublishedDataSetSourceDataType.TYPE_ID);
         }
     }
 }

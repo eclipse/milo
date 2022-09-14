@@ -117,20 +117,20 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
 
         @Override
         public SetMonitoringModeRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readEnum("MonitoringMode"));
-            UInteger[] monitoredItemIds = decoder.readUInt32Array("MonitoredItemIds");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            MonitoringMode monitoringMode = MonitoringMode.from(decoder.decodeEnum("MonitoringMode"));
+            UInteger[] monitoredItemIds = decoder.decodeUInt32Array("MonitoredItemIds");
             return new SetMonitoringModeRequest(requestHeader, subscriptionId, monitoringMode, monitoredItemIds);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SetMonitoringModeRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeEnum("MonitoringMode", value.getMonitoringMode());
-            encoder.writeUInt32Array("MonitoredItemIds", value.getMonitoredItemIds());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeEnum("MonitoringMode", value.getMonitoringMode());
+            encoder.encodeUInt32Array("MonitoredItemIds", value.getMonitoredItemIds());
         }
     }
 }

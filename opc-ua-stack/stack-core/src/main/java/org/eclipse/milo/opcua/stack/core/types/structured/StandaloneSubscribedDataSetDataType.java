@@ -117,20 +117,20 @@ public class StandaloneSubscribedDataSetDataType extends SubscribedDataSetDataTy
         @Override
         public StandaloneSubscribedDataSetDataType decodeType(SerializationContext context,
                                                               UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            String[] dataSetFolder = decoder.readStringArray("DataSetFolder");
-            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.readStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
-            SubscribedDataSetDataType subscribedDataSet = (SubscribedDataSetDataType) decoder.readStruct("SubscribedDataSet", SubscribedDataSetDataType.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            String[] dataSetFolder = decoder.decodeStringArray("DataSetFolder");
+            DataSetMetaDataType dataSetMetaData = (DataSetMetaDataType) decoder.decodeStruct("DataSetMetaData", DataSetMetaDataType.TYPE_ID);
+            SubscribedDataSetDataType subscribedDataSet = (SubscribedDataSetDataType) decoder.decodeStruct("SubscribedDataSet", SubscribedDataSetDataType.TYPE_ID);
             return new StandaloneSubscribedDataSetDataType(name, dataSetFolder, dataSetMetaData, subscribedDataSet);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                StandaloneSubscribedDataSetDataType value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeStringArray("DataSetFolder", value.getDataSetFolder());
-            encoder.writeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
-            encoder.writeStruct("SubscribedDataSet", value.getSubscribedDataSet(), SubscribedDataSetDataType.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeStringArray("DataSetFolder", value.getDataSetFolder());
+            encoder.encodeStruct("DataSetMetaData", value.getDataSetMetaData(), DataSetMetaDataType.TYPE_ID);
+            encoder.encodeStruct("SubscribedDataSet", value.getSubscribedDataSet(), SubscribedDataSetDataType.TYPE_ID);
         }
     }
 }

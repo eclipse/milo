@@ -91,13 +91,13 @@ public class HistoryEvent extends Structure implements UaStructuredType {
 
         @Override
         public HistoryEvent decodeType(SerializationContext context, UaDecoder decoder) {
-            HistoryEventFieldList[] events = (HistoryEventFieldList[]) decoder.readStructArray("Events", HistoryEventFieldList.TYPE_ID);
+            HistoryEventFieldList[] events = (HistoryEventFieldList[]) decoder.decodeStructArray("Events", HistoryEventFieldList.TYPE_ID);
             return new HistoryEvent(events);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, HistoryEvent value) {
-            encoder.writeStructArray("Events", value.getEvents(), HistoryEventFieldList.TYPE_ID);
+            encoder.encodeStructArray("Events", value.getEvents(), HistoryEventFieldList.TYPE_ID);
         }
     }
 }

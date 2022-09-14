@@ -118,20 +118,20 @@ public class HistoryReadValueId extends Structure implements UaStructuredType {
 
         @Override
         public HistoryReadValueId decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            String indexRange = decoder.readString("IndexRange");
-            QualifiedName dataEncoding = decoder.readQualifiedName("DataEncoding");
-            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            String indexRange = decoder.decodeString("IndexRange");
+            QualifiedName dataEncoding = decoder.decodeQualifiedName("DataEncoding");
+            ByteString continuationPoint = decoder.decodeByteString("ContinuationPoint");
             return new HistoryReadValueId(nodeId, indexRange, dataEncoding, continuationPoint);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryReadValueId value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
-            encoder.writeQualifiedName("DataEncoding", value.getDataEncoding());
-            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
+            encoder.encodeQualifiedName("DataEncoding", value.getDataEncoding());
+            encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
         }
     }
 }

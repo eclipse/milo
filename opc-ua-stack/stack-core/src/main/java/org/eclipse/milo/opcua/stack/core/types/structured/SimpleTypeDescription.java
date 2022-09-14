@@ -105,20 +105,20 @@ public class SimpleTypeDescription extends DataTypeDescription implements UaStru
 
         @Override
         public SimpleTypeDescription decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId dataTypeId = decoder.readNodeId("DataTypeId");
-            QualifiedName name = decoder.readQualifiedName("Name");
-            NodeId baseDataType = decoder.readNodeId("BaseDataType");
-            UByte builtInType = decoder.readByte("BuiltInType");
+            NodeId dataTypeId = decoder.decodeNodeId("DataTypeId");
+            QualifiedName name = decoder.decodeQualifiedName("Name");
+            NodeId baseDataType = decoder.decodeNodeId("BaseDataType");
+            UByte builtInType = decoder.decodeByte("BuiltInType");
             return new SimpleTypeDescription(dataTypeId, name, baseDataType, builtInType);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SimpleTypeDescription value) {
-            encoder.writeNodeId("DataTypeId", value.getDataTypeId());
-            encoder.writeQualifiedName("Name", value.getName());
-            encoder.writeNodeId("BaseDataType", value.getBaseDataType());
-            encoder.writeByte("BuiltInType", value.getBuiltInType());
+            encoder.encodeNodeId("DataTypeId", value.getDataTypeId());
+            encoder.encodeQualifiedName("Name", value.getName());
+            encoder.encodeNodeId("BaseDataType", value.getBaseDataType());
+            encoder.encodeByte("BuiltInType", value.getBuiltInType());
         }
     }
 }

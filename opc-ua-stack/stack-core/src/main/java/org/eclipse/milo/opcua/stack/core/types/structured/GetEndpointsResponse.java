@@ -99,16 +99,16 @@ public class GetEndpointsResponse extends Structure implements UaResponseMessage
 
         @Override
         public GetEndpointsResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            EndpointDescription[] endpoints = (EndpointDescription[]) decoder.readStructArray("Endpoints", EndpointDescription.TYPE_ID);
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            EndpointDescription[] endpoints = (EndpointDescription[]) decoder.decodeStructArray("Endpoints", EndpointDescription.TYPE_ID);
             return new GetEndpointsResponse(responseHeader, endpoints);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                GetEndpointsResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeStructArray("Endpoints", value.getEndpoints(), EndpointDescription.TYPE_ID);
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeStructArray("Endpoints", value.getEndpoints(), EndpointDescription.TYPE_ID);
         }
     }
 }

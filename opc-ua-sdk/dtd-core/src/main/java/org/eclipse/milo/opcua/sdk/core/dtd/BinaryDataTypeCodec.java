@@ -15,38 +15,38 @@ import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
 
 public interface BinaryDataTypeCodec extends DataTypeCodec {
 
     @Override
     default Object decode(SerializationContext context, UaDecoder decoder) throws UaSerializationException {
-        return decode(context, (OpcUaBinaryStreamDecoder) decoder);
+        return decode(context, (OpcUaBinaryDecoder) decoder);
     }
 
     @Override
     default void encode(SerializationContext context, UaEncoder encoder, Object value) throws UaSerializationException {
-        encode(context, (OpcUaBinaryStreamEncoder) encoder, value);
+        encode(context, (OpcUaBinaryEncoder) encoder, value);
     }
 
     /**
-     * Decode an Object using the provided {@link OpcUaBinaryStreamDecoder}.
+     * Decode an Object using the provided {@link OpcUaBinaryDecoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param decoder the {@link OpcUaBinaryStreamDecoder} to decode from.
+     * @param decoder the {@link OpcUaBinaryDecoder} to decode from.
      * @return a decoded Object.
      */
-    Object decode(SerializationContext context, OpcUaBinaryStreamDecoder decoder) throws UaSerializationException;
+    Object decode(SerializationContext context, OpcUaBinaryDecoder decoder) throws UaSerializationException;
 
     /**
-     * Encode an Object using the provided {@link OpcUaBinaryStreamEncoder}.
+     * Encode an Object using the provided {@link OpcUaBinaryEncoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param encoder the {@link OpcUaBinaryStreamEncoder} to encode to.
+     * @param encoder the {@link OpcUaBinaryEncoder} to encode to.
      * @param value   the Object to encode.
      */
-    void encode(SerializationContext context, OpcUaBinaryStreamEncoder encoder, Object value) throws UaSerializationException;
+    void encode(SerializationContext context, OpcUaBinaryEncoder encoder, Object value) throws UaSerializationException;
 
     static BinaryDataTypeCodec from(DataTypeCodec codec) {
         return new BinaryDataTypeCodecImpl(codec);
@@ -66,12 +66,12 @@ public interface BinaryDataTypeCodec extends DataTypeCodec {
         }
 
         @Override
-        public Object decode(SerializationContext context, OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+        public Object decode(SerializationContext context, OpcUaBinaryDecoder decoder) throws UaSerializationException {
             return codec.decode(context, decoder);
         }
 
         @Override
-        public void encode(SerializationContext context, OpcUaBinaryStreamEncoder encoder, Object value) throws UaSerializationException {
+        public void encode(SerializationContext context, OpcUaBinaryEncoder encoder, Object value) throws UaSerializationException {
             codec.encode(context, encoder, value);
         }
 

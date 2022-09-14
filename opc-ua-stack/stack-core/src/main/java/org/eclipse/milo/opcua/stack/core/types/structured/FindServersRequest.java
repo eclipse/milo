@@ -116,20 +116,20 @@ public class FindServersRequest extends Structure implements UaRequestMessageTyp
 
         @Override
         public FindServersRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String[] localeIds = decoder.readStringArray("LocaleIds");
-            String[] serverUris = decoder.readStringArray("ServerUris");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String[] localeIds = decoder.decodeStringArray("LocaleIds");
+            String[] serverUris = decoder.decodeStringArray("ServerUris");
             return new FindServersRequest(requestHeader, endpointUrl, localeIds, serverUris);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                FindServersRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
-            encoder.writeStringArray("ServerUris", value.getServerUris());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.encodeStringArray("ServerUris", value.getServerUris());
         }
     }
 }

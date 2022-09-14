@@ -145,26 +145,26 @@ public class FieldTargetDataType extends Structure implements UaStructuredType {
 
         @Override
         public FieldTargetDataType decodeType(SerializationContext context, UaDecoder decoder) {
-            UUID dataSetFieldId = decoder.readGuid("DataSetFieldId");
-            String receiverIndexRange = decoder.readString("ReceiverIndexRange");
-            NodeId targetNodeId = decoder.readNodeId("TargetNodeId");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String writeIndexRange = decoder.readString("WriteIndexRange");
-            OverrideValueHandling overrideValueHandling = OverrideValueHandling.from(decoder.readEnum("OverrideValueHandling"));
-            Variant overrideValue = decoder.readVariant("OverrideValue");
+            UUID dataSetFieldId = decoder.decodeGuid("DataSetFieldId");
+            String receiverIndexRange = decoder.decodeString("ReceiverIndexRange");
+            NodeId targetNodeId = decoder.decodeNodeId("TargetNodeId");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String writeIndexRange = decoder.decodeString("WriteIndexRange");
+            OverrideValueHandling overrideValueHandling = OverrideValueHandling.from(decoder.decodeEnum("OverrideValueHandling"));
+            Variant overrideValue = decoder.decodeVariant("OverrideValue");
             return new FieldTargetDataType(dataSetFieldId, receiverIndexRange, targetNodeId, attributeId, writeIndexRange, overrideValueHandling, overrideValue);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                FieldTargetDataType value) {
-            encoder.writeGuid("DataSetFieldId", value.getDataSetFieldId());
-            encoder.writeString("ReceiverIndexRange", value.getReceiverIndexRange());
-            encoder.writeNodeId("TargetNodeId", value.getTargetNodeId());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("WriteIndexRange", value.getWriteIndexRange());
-            encoder.writeEnum("OverrideValueHandling", value.getOverrideValueHandling());
-            encoder.writeVariant("OverrideValue", value.getOverrideValue());
+            encoder.encodeGuid("DataSetFieldId", value.getDataSetFieldId());
+            encoder.encodeString("ReceiverIndexRange", value.getReceiverIndexRange());
+            encoder.encodeNodeId("TargetNodeId", value.getTargetNodeId());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("WriteIndexRange", value.getWriteIndexRange());
+            encoder.encodeEnum("OverrideValueHandling", value.getOverrideValueHandling());
+            encoder.encodeVariant("OverrideValue", value.getOverrideValue());
         }
     }
 }

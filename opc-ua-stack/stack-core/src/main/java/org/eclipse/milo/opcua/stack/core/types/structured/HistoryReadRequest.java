@@ -127,22 +127,22 @@ public class HistoryReadRequest extends Structure implements UaRequestMessageTyp
 
         @Override
         public HistoryReadRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ExtensionObject historyReadDetails = decoder.readExtensionObject("HistoryReadDetails");
-            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readEnum("TimestampsToReturn"));
-            Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
-            HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.readStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ExtensionObject historyReadDetails = decoder.decodeExtensionObject("HistoryReadDetails");
+            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.decodeEnum("TimestampsToReturn"));
+            Boolean releaseContinuationPoints = decoder.decodeBoolean("ReleaseContinuationPoints");
+            HistoryReadValueId[] nodesToRead = (HistoryReadValueId[]) decoder.decodeStructArray("NodesToRead", HistoryReadValueId.TYPE_ID);
             return new HistoryReadRequest(requestHeader, historyReadDetails, timestampsToReturn, releaseContinuationPoints, nodesToRead);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                HistoryReadRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
-            encoder.writeEnum("TimestampsToReturn", value.getTimestampsToReturn());
-            encoder.writeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
-            encoder.writeStructArray("NodesToRead", value.getNodesToRead(), HistoryReadValueId.TYPE_ID);
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeExtensionObject("HistoryReadDetails", value.getHistoryReadDetails());
+            encoder.encodeEnum("TimestampsToReturn", value.getTimestampsToReturn());
+            encoder.encodeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());
+            encoder.encodeStructArray("NodesToRead", value.getNodesToRead(), HistoryReadValueId.TYPE_ID);
         }
     }
 }

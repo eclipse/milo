@@ -125,22 +125,22 @@ public class CreateSubscriptionResponse extends Structure implements UaResponseM
 
         @Override
         public CreateSubscriptionResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
-            Double revisedPublishingInterval = decoder.readDouble("RevisedPublishingInterval");
-            UInteger revisedLifetimeCount = decoder.readUInt32("RevisedLifetimeCount");
-            UInteger revisedMaxKeepAliveCount = decoder.readUInt32("RevisedMaxKeepAliveCount");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
+            Double revisedPublishingInterval = decoder.decodeDouble("RevisedPublishingInterval");
+            UInteger revisedLifetimeCount = decoder.decodeUInt32("RevisedLifetimeCount");
+            UInteger revisedMaxKeepAliveCount = decoder.decodeUInt32("RevisedMaxKeepAliveCount");
             return new CreateSubscriptionResponse(responseHeader, subscriptionId, revisedPublishingInterval, revisedLifetimeCount, revisedMaxKeepAliveCount);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CreateSubscriptionResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
-            encoder.writeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());
-            encoder.writeUInt32("RevisedLifetimeCount", value.getRevisedLifetimeCount());
-            encoder.writeUInt32("RevisedMaxKeepAliveCount", value.getRevisedMaxKeepAliveCount());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.encodeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());
+            encoder.encodeUInt32("RevisedLifetimeCount", value.getRevisedLifetimeCount());
+            encoder.encodeUInt32("RevisedMaxKeepAliveCount", value.getRevisedMaxKeepAliveCount());
         }
     }
 }

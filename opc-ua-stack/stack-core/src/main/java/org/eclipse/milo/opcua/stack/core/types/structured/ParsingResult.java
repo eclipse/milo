@@ -110,17 +110,17 @@ public class ParsingResult extends Structure implements UaStructuredType {
 
         @Override
         public ParsingResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            StatusCode[] dataStatusCodes = decoder.readStatusCodeArray("DataStatusCodes");
-            DiagnosticInfo[] dataDiagnosticInfos = decoder.readDiagnosticInfoArray("DataDiagnosticInfos");
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            StatusCode[] dataStatusCodes = decoder.decodeStatusCodeArray("DataStatusCodes");
+            DiagnosticInfo[] dataDiagnosticInfos = decoder.decodeDiagnosticInfoArray("DataDiagnosticInfos");
             return new ParsingResult(statusCode, dataStatusCodes, dataDiagnosticInfos);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ParsingResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeStatusCodeArray("DataStatusCodes", value.getDataStatusCodes());
-            encoder.writeDiagnosticInfoArray("DataDiagnosticInfos", value.getDataDiagnosticInfos());
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeStatusCodeArray("DataStatusCodes", value.getDataStatusCodes());
+            encoder.encodeDiagnosticInfoArray("DataDiagnosticInfos", value.getDataDiagnosticInfos());
         }
     }
 }

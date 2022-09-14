@@ -62,19 +62,19 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("true"));
-        assertTrue(decoder.readBoolean(null));
+        assertTrue(decoder.decodeBoolean(null));
 
         decoder.reset(new StringReader("false"));
-        assertFalse(decoder.readBoolean(null));
+        assertFalse(decoder.decodeBoolean(null));
 
         decoder.reset(new StringReader("{\"foo\":true}"));
         decoder.jsonReader.beginObject();
-        assertTrue(decoder.readBoolean("foo"));
+        assertTrue(decoder.decodeBoolean("foo"));
         decoder.jsonReader.endObject();
 
         decoder.reset(new StringReader("{\"foo\":false}"));
         decoder.jsonReader.beginObject();
-        assertFalse(decoder.readBoolean("foo"));
+        assertFalse(decoder.decodeBoolean("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -83,17 +83,17 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("0"));
-        assertEquals((byte) 0, decoder.readSByte(null));
+        assertEquals((byte) 0, decoder.decodeSByte(null));
 
         decoder.reset(new StringReader(String.valueOf(Byte.MIN_VALUE)));
-        assertEquals(Byte.MIN_VALUE, decoder.readSByte(null));
+        assertEquals(Byte.MIN_VALUE, decoder.decodeSByte(null));
 
         decoder.reset(new StringReader(String.valueOf(Byte.MAX_VALUE)));
-        assertEquals(Byte.MAX_VALUE, decoder.readSByte(null));
+        assertEquals(Byte.MAX_VALUE, decoder.decodeSByte(null));
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals((byte) 0, decoder.readSByte("foo"));
+        assertEquals((byte) 0, decoder.decodeSByte("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -102,17 +102,17 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("0"));
-        assertEquals((short) 0, decoder.readInt16(null));
+        assertEquals((short) 0, decoder.decodeInt16(null));
 
         decoder.reset(new StringReader(String.valueOf(Short.MIN_VALUE)));
-        assertEquals(Short.MIN_VALUE, decoder.readInt16(null));
+        assertEquals(Short.MIN_VALUE, decoder.decodeInt16(null));
 
         decoder.reset(new StringReader(String.valueOf(Short.MAX_VALUE)));
-        assertEquals(Short.MAX_VALUE, decoder.readInt16(null));
+        assertEquals(Short.MAX_VALUE, decoder.decodeInt16(null));
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals((short) 0, decoder.readInt16("foo"));
+        assertEquals((short) 0, decoder.decodeInt16("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -121,17 +121,17 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("0"));
-        assertEquals(0, decoder.readInt32(null));
+        assertEquals(0, decoder.decodeInt32(null));
 
         decoder.reset(new StringReader(String.valueOf(Integer.MIN_VALUE)));
-        assertEquals(Integer.MIN_VALUE, decoder.readInt32(null));
+        assertEquals(Integer.MIN_VALUE, decoder.decodeInt32(null));
 
         decoder.reset(new StringReader(String.valueOf(Integer.MAX_VALUE)));
-        assertEquals(Integer.MAX_VALUE, decoder.readInt32(null));
+        assertEquals(Integer.MAX_VALUE, decoder.decodeInt32(null));
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(0, decoder.readInt32("foo"));
+        assertEquals(0, decoder.decodeInt32("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -140,17 +140,17 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("\"0\""));
-        assertEquals(0L, decoder.readInt64(null));
+        assertEquals(0L, decoder.decodeInt64(null));
 
         decoder.reset(new StringReader(String.format("\"%s\"", Long.MIN_VALUE)));
-        assertEquals(Long.MIN_VALUE, decoder.readInt64(null));
+        assertEquals(Long.MIN_VALUE, decoder.decodeInt64(null));
 
         decoder.reset(new StringReader(String.format("\"%s\"", Long.MAX_VALUE)));
-        assertEquals(Long.MAX_VALUE, decoder.readInt64(null));
+        assertEquals(Long.MAX_VALUE, decoder.decodeInt64(null));
 
         decoder.reset(new StringReader("{\"foo\":\"0\"}"));
         decoder.jsonReader.beginObject();
-        assertEquals(0L, decoder.readInt64("foo"));
+        assertEquals(0L, decoder.decodeInt64("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -159,14 +159,14 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader(String.valueOf(UByte.MIN)));
-        assertEquals(UByte.MIN, decoder.readByte(null));
+        assertEquals(UByte.MIN, decoder.decodeByte(null));
 
         decoder.reset(new StringReader(String.valueOf(UByte.MAX)));
-        assertEquals(UByte.MAX, decoder.readByte(null));
+        assertEquals(UByte.MAX, decoder.decodeByte(null));
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(UByte.MIN, decoder.readByte("foo"));
+        assertEquals(UByte.MIN, decoder.decodeByte("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -175,14 +175,14 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader(String.valueOf(UShort.MIN)));
-        assertEquals(UShort.MIN, decoder.readUInt16(null));
+        assertEquals(UShort.MIN, decoder.decodeUInt16(null));
 
         decoder.reset(new StringReader(String.valueOf(UShort.MAX)));
-        assertEquals(UShort.MAX, decoder.readUInt16(null));
+        assertEquals(UShort.MAX, decoder.decodeUInt16(null));
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(UShort.MIN, decoder.readUInt16("foo"));
+        assertEquals(UShort.MIN, decoder.decodeUInt16("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -191,14 +191,14 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader(String.valueOf(UInteger.MIN)));
-        assertEquals(UInteger.MIN, decoder.readUInt32(null));
+        assertEquals(UInteger.MIN, decoder.decodeUInt32(null));
 
         decoder.reset(new StringReader(String.valueOf(UInteger.MAX)));
-        assertEquals(UInteger.MAX, decoder.readUInt32(null));
+        assertEquals(UInteger.MAX, decoder.decodeUInt32(null));
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(UInteger.MIN, decoder.readUInt32("foo"));
+        assertEquals(UInteger.MIN, decoder.decodeUInt32("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -207,14 +207,14 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader(String.format("\"%s\"", ULong.MIN)));
-        assertEquals(ULong.MIN, decoder.readUInt64(null));
+        assertEquals(ULong.MIN, decoder.decodeUInt64(null));
 
         decoder.reset(new StringReader(String.format("\"%s\"", ULong.MAX)));
-        assertEquals(ULong.MAX, decoder.readUInt64(null));
+        assertEquals(ULong.MAX, decoder.decodeUInt64(null));
 
         decoder.reset(new StringReader("{\"foo\":\"0\"}"));
         decoder.jsonReader.beginObject();
-        assertEquals(ULong.MIN, decoder.readUInt64("foo"));
+        assertEquals(ULong.MIN, decoder.decodeUInt64("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -223,26 +223,26 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("0.0"));
-        assertEquals(0.0f, decoder.readFloat(null));
+        assertEquals(0.0f, decoder.decodeFloat(null));
 
         decoder.reset(new StringReader(String.valueOf(Float.MIN_VALUE)));
-        assertEquals(Float.MIN_VALUE, decoder.readFloat(null));
+        assertEquals(Float.MIN_VALUE, decoder.decodeFloat(null));
 
         decoder.reset(new StringReader(String.valueOf(Float.MAX_VALUE)));
-        assertEquals(Float.MAX_VALUE, decoder.readFloat(null));
+        assertEquals(Float.MAX_VALUE, decoder.decodeFloat(null));
 
         decoder.reset(new StringReader("\"Infinity\""));
-        assertEquals(Float.POSITIVE_INFINITY, decoder.readFloat(null));
+        assertEquals(Float.POSITIVE_INFINITY, decoder.decodeFloat(null));
 
         decoder.reset(new StringReader("\"-Infinity\""));
-        assertEquals(Float.NEGATIVE_INFINITY, decoder.readFloat(null));
+        assertEquals(Float.NEGATIVE_INFINITY, decoder.decodeFloat(null));
 
         decoder.reset(new StringReader("\"NaN\""));
-        assertEquals(Float.NaN, decoder.readFloat(null));
+        assertEquals(Float.NaN, decoder.decodeFloat(null));
 
         decoder.reset(new StringReader("{\"foo\":0.0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(0.0f, decoder.readFloat("foo"));
+        assertEquals(0.0f, decoder.decodeFloat("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -251,26 +251,26 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("0.0"));
-        assertEquals(0.0, decoder.readDouble(null));
+        assertEquals(0.0, decoder.decodeDouble(null));
 
         decoder.reset(new StringReader(String.valueOf(Double.MIN_VALUE)));
-        assertEquals(Double.MIN_VALUE, decoder.readDouble(null));
+        assertEquals(Double.MIN_VALUE, decoder.decodeDouble(null));
 
         decoder.reset(new StringReader(String.valueOf(Double.MAX_VALUE)));
-        assertEquals(Double.MAX_VALUE, decoder.readDouble(null));
+        assertEquals(Double.MAX_VALUE, decoder.decodeDouble(null));
 
         decoder.reset(new StringReader("\"Infinity\""));
-        assertEquals(Double.POSITIVE_INFINITY, decoder.readDouble(null));
+        assertEquals(Double.POSITIVE_INFINITY, decoder.decodeDouble(null));
 
         decoder.reset(new StringReader("\"-Infinity\""));
-        assertEquals(Double.NEGATIVE_INFINITY, decoder.readDouble(null));
+        assertEquals(Double.NEGATIVE_INFINITY, decoder.decodeDouble(null));
 
         decoder.reset(new StringReader("\"NaN\""));
-        assertEquals(Double.NaN, decoder.readDouble(null));
+        assertEquals(Double.NaN, decoder.decodeDouble(null));
 
         decoder.reset(new StringReader("{\"foo\":0.0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(0.0, decoder.readDouble("foo"));
+        assertEquals(0.0, decoder.decodeDouble("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -279,14 +279,14 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("\"\""));
-        assertEquals("", decoder.readString(null));
+        assertEquals("", decoder.decodeString(null));
 
         decoder.reset(new StringReader("\"foo\""));
-        assertEquals("foo", decoder.readString(null));
+        assertEquals("foo", decoder.decodeString(null));
 
         decoder.reset(new StringReader("{\"foo\":\"bar\"}"));
         decoder.jsonReader.beginObject();
-        assertEquals("bar", decoder.readString("foo"));
+        assertEquals("bar", decoder.decodeString("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -295,27 +295,27 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader(String.format("\"%s\"", DateTime.MIN_ISO_8601_STRING)));
-        assertEquals(DateTime.MIN_DATE_TIME, decoder.readDateTime(null));
+        assertEquals(DateTime.MIN_DATE_TIME, decoder.decodeDateTime(null));
 
         decoder.reset(new StringReader(String.format("\"%s\"", DateTime.MAX_ISO_8601_STRING)));
-        assertEquals(DateTime.MAX_DATE_TIME, decoder.readDateTime(null));
+        assertEquals(DateTime.MAX_DATE_TIME, decoder.decodeDateTime(null));
 
         Instant minus1 = DateTime.MIN_ISO_8601_INSTANT.minus(1, ChronoUnit.SECONDS);
         decoder.reset(new StringReader(String.format("\"%s\"", minus1)));
-        assertEquals(DateTime.MIN_DATE_TIME, decoder.readDateTime(null));
+        assertEquals(DateTime.MIN_DATE_TIME, decoder.decodeDateTime(null));
 
         Instant plus1 = DateTime.MAX_ISO_8601_INSTANT.plus(1, ChronoUnit.SECONDS);
         decoder.reset(new StringReader(String.format("\"%s\"", plus1)));
-        assertEquals(DateTime.MAX_DATE_TIME, decoder.readDateTime(null));
+        assertEquals(DateTime.MAX_DATE_TIME, decoder.decodeDateTime(null));
 
         DateTime now = DateTime.nowNanos();
         String isoNow = now.toIso8601String();
         decoder.reset(new StringReader(String.format("\"%s\"", isoNow)));
-        assertEquals(now, decoder.readDateTime(null));
+        assertEquals(now, decoder.decodeDateTime(null));
 
         decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", isoNow)));
         decoder.jsonReader.beginObject();
-        assertEquals(now, decoder.readDateTime("foo"));
+        assertEquals(now, decoder.decodeDateTime("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -326,14 +326,14 @@ class OpcUaJsonDecoderTest {
         UUID uuid = UUID.randomUUID();
 
         decoder.reset(new StringReader(String.format("\"%s\"", uuid.toString().toLowerCase())));
-        assertEquals(uuid, decoder.readGuid(null));
+        assertEquals(uuid, decoder.decodeGuid(null));
 
         decoder.reset(new StringReader(String.format("\"%s\"", uuid.toString().toUpperCase())));
-        assertEquals(uuid, decoder.readGuid(null));
+        assertEquals(uuid, decoder.decodeGuid(null));
 
         decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", uuid)));
         decoder.jsonReader.beginObject();
-        assertEquals(uuid, decoder.readGuid("foo"));
+        assertEquals(uuid, decoder.decodeGuid("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -343,15 +343,15 @@ class OpcUaJsonDecoderTest {
 
         byte[] emptyBytes = new byte[0];
         decoder.reset(new StringReader(String.format("\"%s\"", Base64.getEncoder().encodeToString(emptyBytes))));
-        assertEquals(ByteString.of(emptyBytes), decoder.readByteString(null));
+        assertEquals(ByteString.of(emptyBytes), decoder.decodeByteString(null));
 
         byte[] randomBytes = randomBytes(16);
         decoder.reset(new StringReader(String.format("\"%s\"", Base64.getEncoder().encodeToString(randomBytes))));
-        assertEquals(ByteString.of(randomBytes), decoder.readByteString(null));
+        assertEquals(ByteString.of(randomBytes), decoder.decodeByteString(null));
 
         decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", Base64.getEncoder().encodeToString(randomBytes))));
         decoder.jsonReader.beginObject();
-        assertEquals(ByteString.of(randomBytes), decoder.readByteString("foo"));
+        assertEquals(ByteString.of(randomBytes), decoder.decodeByteString("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -361,15 +361,15 @@ class OpcUaJsonDecoderTest {
 
         var emptyElement = new XmlElement("");
         decoder.reset(new StringReader("\"\""));
-        assertEquals(emptyElement, decoder.readXmlElement(null));
+        assertEquals(emptyElement, decoder.decodeXmlElement(null));
 
         var element = new XmlElement("<foo>bar</foo>");
         decoder.reset(new StringReader(String.format("\"%s\"", element.getFragment())));
-        assertEquals(element, decoder.readXmlElement(null));
+        assertEquals(element, decoder.decodeXmlElement(null));
 
         decoder.reset(new StringReader(String.format("{\"foo\":\"%s\"}", element.getFragment())));
         decoder.jsonReader.beginObject();
-        assertEquals(element, decoder.readXmlElement("foo"));
+        assertEquals(element, decoder.decodeXmlElement("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -380,49 +380,49 @@ class OpcUaJsonDecoderTest {
         // IdType == UInt32, Namespace = 0
         var nodeId = new NodeId(0, 0);
         decoder.reset(new StringReader("{\"Id\":0}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == UInt32, Namespace != 0
         nodeId = new NodeId(1, 0);
         decoder.reset(new StringReader("{\"Id\":0,\"Namespace\":1}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == String, Namespace = 0
         nodeId = new NodeId(0, "foo");
         decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\"}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == String, Namespace != 0
         nodeId = new NodeId(1, "foo");
         decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\",\"Namespace\":1}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == Guid, Namespace = 0
         UUID uuid = UUID.randomUUID();
         nodeId = new NodeId(0, uuid);
         decoder.reset(new StringReader("{\"IdType\":2,\"Id\":\"" + uuid.toString().toUpperCase() + "\"}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == Guid, Namespace != 0
         nodeId = new NodeId(1, uuid);
         decoder.reset(new StringReader("{\"IdType\":2,\"Id\":\"" + uuid.toString().toUpperCase() + "\",\"Namespace\":1}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == ByteString, Namespace = 0
         ByteString bs = ByteString.of(randomBytes(16));
         nodeId = new NodeId(0, bs);
         decoder.reset(new StringReader("{\"IdType\":3,\"Id\":\"" + Base64.getEncoder().encodeToString(bs.bytesOrEmpty()) + "\"}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         // IdType == ByteString, Namespace != 0
         nodeId = new NodeId(1, bs);
         decoder.reset(new StringReader("{\"IdType\":3,\"Id\":\"" + Base64.getEncoder().encodeToString(bs.bytesOrEmpty()) + "\",\"Namespace\":1}"));
-        assertEquals(nodeId, decoder.readNodeId(null));
+        assertEquals(nodeId, decoder.decodeNodeId(null));
 
         nodeId = new NodeId(0, 0);
         decoder.reset(new StringReader("{\"foo\":{\"Id\":0}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(nodeId, decoder.readNodeId("foo"));
+        assertEquals(nodeId, decoder.decodeNodeId("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -433,16 +433,16 @@ class OpcUaJsonDecoderTest {
         // namespace URI specified
         var xni = new ExpandedNodeId(ushort(0), "http://opcfoundation.org/UA/", "foo");
         decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\",\"Namespace\":\"http://opcfoundation.org/UA/\"}"));
-        assertEquals(xni, decoder.readExpandedNodeId(null));
+        assertEquals(xni, decoder.decodeExpandedNodeId(null));
 
         // remote server index
         xni = new ExpandedNodeId(ushort(0), null, "foo", uint(1));
         decoder.reset(new StringReader("{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":1}"));
-        assertEquals(xni, decoder.readExpandedNodeId(null));
+        assertEquals(xni, decoder.decodeExpandedNodeId(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"IdType\":1,\"Id\":\"foo\",\"ServerUri\":1}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(xni, decoder.readExpandedNodeId("foo"));
+        assertEquals(xni, decoder.decodeExpandedNodeId("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -451,13 +451,13 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("0"));
-        assertEquals(StatusCode.GOOD, decoder.readStatusCode(null));
+        assertEquals(StatusCode.GOOD, decoder.decodeStatusCode(null));
 
         decoder.reset(new StringReader(String.valueOf(StatusCode.UNCERTAIN.getValue())));
-        assertEquals(StatusCode.UNCERTAIN, decoder.readStatusCode(null));
+        assertEquals(StatusCode.UNCERTAIN, decoder.decodeStatusCode(null));
 
         decoder.reset(new StringReader(String.valueOf(StatusCode.BAD.getValue())));
-        assertEquals(StatusCode.BAD, decoder.readStatusCode(null));
+        assertEquals(StatusCode.BAD, decoder.decodeStatusCode(null));
 
         StatusCode[] statusCodes = new StatusCode[]{
             new StatusCode(StatusCodes.Good_Overload),
@@ -467,12 +467,12 @@ class OpcUaJsonDecoderTest {
 
         for (StatusCode statusCode : statusCodes) {
             decoder.reset(new StringReader(String.valueOf(statusCode.getValue())));
-            assertEquals(statusCode, decoder.readStatusCode(null));
+            assertEquals(statusCode, decoder.decodeStatusCode(null));
         }
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(StatusCode.GOOD, decoder.readStatusCode("foo"));
+        assertEquals(StatusCode.GOOD, decoder.decodeStatusCode("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -481,20 +481,20 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("{}"));
-        assertEquals(new QualifiedName(0, null), decoder.readQualifiedName(null));
+        assertEquals(new QualifiedName(0, null), decoder.decodeQualifiedName(null));
 
         decoder.reset(new StringReader("{\"Uri\":1}"));
-        assertEquals(new QualifiedName(1, null), decoder.readQualifiedName(null));
+        assertEquals(new QualifiedName(1, null), decoder.decodeQualifiedName(null));
 
         decoder.reset(new StringReader("{\"Name\":\"foo\"}"));
-        assertEquals(new QualifiedName(0, "foo"), decoder.readQualifiedName(null));
+        assertEquals(new QualifiedName(0, "foo"), decoder.decodeQualifiedName(null));
 
         decoder.reset(new StringReader("{\"Name\":\"foo\",\"Uri\":1}"));
-        assertEquals(new QualifiedName(1, "foo"), decoder.readQualifiedName(null));
+        assertEquals(new QualifiedName(1, "foo"), decoder.decodeQualifiedName(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"Name\":\"foo\"}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(new QualifiedName(0, "foo"), decoder.readQualifiedName("foo"));
+        assertEquals(new QualifiedName(0, "foo"), decoder.decodeQualifiedName("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -503,17 +503,17 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("{\"Locale\":\"en\",\"Text\":\"foo\"}"));
-        assertEquals(LocalizedText.english("foo"), decoder.readLocalizedText(null));
+        assertEquals(LocalizedText.english("foo"), decoder.decodeLocalizedText(null));
 
         decoder.reset(new StringReader("{\"Locale\":\"en\"}"));
-        assertEquals(new LocalizedText("en", null), decoder.readLocalizedText(null));
+        assertEquals(new LocalizedText("en", null), decoder.decodeLocalizedText(null));
 
         decoder.reset(new StringReader("{\"Text\":\"foo\"}"));
-        assertEquals(new LocalizedText(null, "foo"), decoder.readLocalizedText(null));
+        assertEquals(new LocalizedText(null, "foo"), decoder.decodeLocalizedText(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"Locale\":\"en\",\"Text\":\"foo\"}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(LocalizedText.english("foo"), decoder.readLocalizedText("foo"));
+        assertEquals(LocalizedText.english("foo"), decoder.decodeLocalizedText("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -537,20 +537,20 @@ class OpcUaJsonDecoderTest {
         );
 
         decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":{\"foo\":\"bar\",\"baz\":42}}"));
-        assertEquals(jsonStringXo, decoder.readExtensionObject(null));
+        assertEquals(jsonStringXo, decoder.decodeExtensionObject(null));
 
         decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":1,\"Body\":\"AAECAw==\"}"));
-        assertEquals(byteStringXo, decoder.readExtensionObject(null));
+        assertEquals(byteStringXo, decoder.decodeExtensionObject(null));
 
         decoder.reset(new StringReader("{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Encoding\":2,\"Body\":\"<foo>bar</foo>\"}"));
-        assertEquals(xmlElementXo, decoder.readExtensionObject(null));
+        assertEquals(xmlElementXo, decoder.decodeExtensionObject(null));
 
         decoder.reset(new StringReader("null"));
-        assertNull(decoder.readExtensionObject(null));
+        assertNull(decoder.decodeExtensionObject(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"TypeId\":{\"Id\":42,\"Namespace\":2},\"Body\":{\"foo\":\"bar\",\"baz\":42}}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(jsonStringXo, decoder.readExtensionObject("foo"));
+        assertEquals(jsonStringXo, decoder.decodeExtensionObject("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -571,39 +571,39 @@ class OpcUaJsonDecoderTest {
         );
 
         decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
-        assertEquals(allFieldsValue, decoder.readDataValue(null));
+        assertEquals(allFieldsValue, decoder.decodeDataValue(null));
 
         // omit "Value"
         decoder.reset(new StringReader(String.format("{\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
-        assertEquals(allFieldsValue.copy(b -> b.setValue(Variant.NULL_VALUE)), decoder.readDataValue(null));
+        assertEquals(allFieldsValue.copy(b -> b.setValue(Variant.NULL_VALUE)), decoder.decodeDataValue(null));
 
         // omit "Status"
         decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
-        assertEquals(allFieldsValue.copy(b -> b.setStatus(StatusCode.GOOD)), decoder.readDataValue(null));
+        assertEquals(allFieldsValue.copy(b -> b.setStatus(StatusCode.GOOD)), decoder.decodeDataValue(null));
 
         // omit "SourceTimestamp"
         decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow)));
-        assertEquals(allFieldsValue.copy(b -> b.setSourceTime(null)), decoder.readDataValue(null));
+        assertEquals(allFieldsValue.copy(b -> b.setSourceTime(null)), decoder.decodeDataValue(null));
 
         // omit "SourcePicoseconds"
         decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}", isoNow, isoNow)));
-        assertEquals(allFieldsValue.copy(b -> b.setSourcePicoseconds(null)), decoder.readDataValue(null));
+        assertEquals(allFieldsValue.copy(b -> b.setSourcePicoseconds(null)), decoder.decodeDataValue(null));
 
         // omit "ServerTimestamp"
         decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerPicoseconds\":200}", isoNow)));
-        assertEquals(allFieldsValue.copy(b -> b.setServerTime(null)), decoder.readDataValue(null));
+        assertEquals(allFieldsValue.copy(b -> b.setServerTime(null)), decoder.decodeDataValue(null));
 
         // omit "ServerPicoseconds"
         decoder.reset(new StringReader(String.format("{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\"}", isoNow, isoNow)));
-        assertEquals(allFieldsValue.copy(b -> b.setServerPicoseconds(null)), decoder.readDataValue(null));
+        assertEquals(allFieldsValue.copy(b -> b.setServerPicoseconds(null)), decoder.decodeDataValue(null));
 
         // omit all fields
         decoder.reset(new StringReader("{}"));
-        assertEquals(new DataValue(Variant.NULL_VALUE, StatusCode.GOOD, null), decoder.readDataValue(null));
+        assertEquals(new DataValue(Variant.NULL_VALUE, StatusCode.GOOD, null), decoder.decodeDataValue(null));
 
         decoder.reset(new StringReader(String.format("{\"foo\":{\"Value\":{\"Type\":12,\"Body\":\"foo\"},\"Status\":3080192,\"SourceTimestamp\":\"%s\",\"SourcePicoseconds\":100,\"ServerTimestamp\":\"%s\",\"ServerPicoseconds\":200}}", isoNow, isoNow)));
         decoder.jsonReader.beginObject();
-        assertEquals(allFieldsValue, decoder.readDataValue("foo"));
+        assertEquals(allFieldsValue, decoder.decodeDataValue("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -612,13 +612,13 @@ class OpcUaJsonDecoderTest {
         var decoder = new OpcUaJsonDecoder(context, new StringReader(""));
 
         decoder.reset(new StringReader("{\"Type\":1,\"Body\":true}"));
-        assertEquals(new Variant(true), decoder.readVariant(null));
+        assertEquals(new Variant(true), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"Type\":20,\"Body\":{\"Name\":\"foo\",\"Uri\":1}}"));
-        assertEquals(new Variant(new QualifiedName(1, "foo")), decoder.readVariant(null));
+        assertEquals(new Variant(new QualifiedName(1, "foo")), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"Type\":24,\"Body\":[{\"Type\":12,\"Body\":\"foo\"},{\"Type\":12,\"Body\":\"bar\"}]}"));
-        assertEquals(new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}), decoder.readVariant(null));
+        assertEquals(new Variant(new Variant[]{new Variant("foo"), new Variant("bar")}), decoder.decodeVariant(null));
 
         int[] value1d = {0, 1, 2, 3};
         int[][] value2d = {
@@ -637,17 +637,17 @@ class OpcUaJsonDecoderTest {
         };
 
         decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,1,2,3]}"));
-        assertEquals(new Variant(value1d), decoder.readVariant(null));
+        assertEquals(new Variant(value1d), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,2,3,1,3,4],\"Dimensions\":[2,3]}"));
-        assertEquals(new Variant(value2d), decoder.readVariant(null));
+        assertEquals(new Variant(value2d), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"Type\":6,\"Body\":[0,1,2,3,4,5,6,7],\"Dimensions\":[2,2,2]}"));
-        assertEquals(new Variant(value3d), decoder.readVariant(null));
+        assertEquals(new Variant(value3d), decoder.decodeVariant(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"Type\":1,\"Body\":true}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(new Variant(true), decoder.readVariant("foo"));
+        assertEquals(new Variant(true), decoder.decodeVariant("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -676,14 +676,14 @@ class OpcUaJsonDecoderTest {
         );
 
         decoder.reset(new StringReader("{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}"));
-        assertEquals(diagnosticInfo, decoder.readDiagnosticInfo(null));
+        assertEquals(diagnosticInfo, decoder.decodeDiagnosticInfo(null));
 
         decoder.reset(new StringReader("{\"SymbolicId\":5,\"NamespaceUri\":4,\"Locale\":6,\"LocalizedText\":7,\"AdditionalInfo\":\"bar\",\"InnerStatusCode\":0,\"InnerDiagnosticInfo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}"));
-        assertEquals(nestedDiagnosticInfo, decoder.readDiagnosticInfo(null));
+        assertEquals(nestedDiagnosticInfo, decoder.decodeDiagnosticInfo(null));
 
         decoder.reset(new StringReader("{\"foo\":{\"SymbolicId\":1,\"NamespaceUri\":0,\"Locale\":2,\"LocalizedText\":3,\"AdditionalInfo\":\"foo\"}}"));
         decoder.jsonReader.beginObject();
-        assertEquals(diagnosticInfo, decoder.readDiagnosticInfo("foo"));
+        assertEquals(diagnosticInfo, decoder.decodeDiagnosticInfo("foo"));
         decoder.jsonReader.endObject();
     }
 
@@ -713,7 +713,7 @@ class OpcUaJsonDecoderTest {
         );
 
         decoder.reset(new StringReader("{\"TypeId\":{\"Id\":15257},\"Body\":{\"RequestHeader\":{\"AuthenticationToken\":{\"Id\":0},\"Timestamp\":\"1601-01-01T00:00:00Z\",\"RequestHandle\":0,\"ReturnDiagnostics\":0,\"AuditEntryId\":\"foo\",\"TimeoutHint\":0,\"AdditionalHeader\":null},\"MaxAge\":0.0,\"TimestampsToReturn\":2,\"NodesToRead\":[{\"NodeId\":{\"Id\":1},\"AttributeId\":13,\"IndexRange\":null,\"DataEncoding\":{\"Name\":null}}]}}"));
-        assertEquals(message, decoder.readMessage(null));
+        assertEquals(message, decoder.decodeMessage(null));
     }
 
     @Test
@@ -722,12 +722,12 @@ class OpcUaJsonDecoderTest {
 
         for (ApplicationType applicationType : ApplicationType.values()) {
             decoder.reset(new StringReader(String.valueOf(applicationType.getValue())));
-            assertEquals(applicationType, ApplicationType.from(decoder.readEnum(null)));
+            assertEquals(applicationType, ApplicationType.from(decoder.decodeEnum(null)));
         }
 
         decoder.reset(new StringReader("{\"foo\":0}"));
         decoder.jsonReader.beginObject();
-        assertEquals(ApplicationType.Server, ApplicationType.from(decoder.readEnum("foo")));
+        assertEquals(ApplicationType.Server, ApplicationType.from(decoder.decodeEnum("foo")));
         decoder.jsonReader.endObject();
     }
 
@@ -744,7 +744,7 @@ class OpcUaJsonDecoderTest {
         );
 
         decoder.reset(new StringReader("{\"Name\":\"foo\",\"DataType\":{\"Id\":6},\"ValueRank\":-1,\"Description\":{\"Locale\":\"en\",\"Text\":\"foo desc\"}}"));
-        assertEquals(struct, decoder.readStruct(null, Argument.TYPE_ID));
+        assertEquals(struct, decoder.decodeStruct(null, Argument.TYPE_ID));
     }
 
     private static byte[] randomBytes(int length) {

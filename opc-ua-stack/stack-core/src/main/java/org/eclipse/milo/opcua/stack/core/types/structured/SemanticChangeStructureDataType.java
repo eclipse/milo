@@ -100,16 +100,16 @@ public class SemanticChangeStructureDataType extends Structure implements UaStru
         @Override
         public SemanticChangeStructureDataType decodeType(SerializationContext context,
                                                           UaDecoder decoder) {
-            NodeId affected = decoder.readNodeId("Affected");
-            NodeId affectedType = decoder.readNodeId("AffectedType");
+            NodeId affected = decoder.decodeNodeId("Affected");
+            NodeId affectedType = decoder.decodeNodeId("AffectedType");
             return new SemanticChangeStructureDataType(affected, affectedType);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SemanticChangeStructureDataType value) {
-            encoder.writeNodeId("Affected", value.getAffected());
-            encoder.writeNodeId("AffectedType", value.getAffectedType());
+            encoder.encodeNodeId("Affected", value.getAffected());
+            encoder.encodeNodeId("AffectedType", value.getAffectedType());
         }
     }
 }

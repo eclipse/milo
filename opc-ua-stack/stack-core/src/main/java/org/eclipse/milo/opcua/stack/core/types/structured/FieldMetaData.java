@@ -168,31 +168,31 @@ public class FieldMetaData extends Structure implements UaStructuredType {
 
         @Override
         public FieldMetaData decodeType(SerializationContext context, UaDecoder decoder) {
-            String name = decoder.readString("Name");
-            LocalizedText description = decoder.readLocalizedText("Description");
-            DataSetFieldFlags fieldFlags = new DataSetFieldFlags(decoder.readUInt16("FieldFlags"));
-            UByte builtInType = decoder.readByte("BuiltInType");
-            NodeId dataType = decoder.readNodeId("DataType");
-            Integer valueRank = decoder.readInt32("ValueRank");
-            UInteger[] arrayDimensions = decoder.readUInt32Array("ArrayDimensions");
-            UInteger maxStringLength = decoder.readUInt32("MaxStringLength");
-            UUID dataSetFieldId = decoder.readGuid("DataSetFieldId");
-            KeyValuePair[] properties = (KeyValuePair[]) decoder.readStructArray("Properties", KeyValuePair.TYPE_ID);
+            String name = decoder.decodeString("Name");
+            LocalizedText description = decoder.decodeLocalizedText("Description");
+            DataSetFieldFlags fieldFlags = new DataSetFieldFlags(decoder.decodeUInt16("FieldFlags"));
+            UByte builtInType = decoder.decodeByte("BuiltInType");
+            NodeId dataType = decoder.decodeNodeId("DataType");
+            Integer valueRank = decoder.decodeInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.decodeUInt32Array("ArrayDimensions");
+            UInteger maxStringLength = decoder.decodeUInt32("MaxStringLength");
+            UUID dataSetFieldId = decoder.decodeGuid("DataSetFieldId");
+            KeyValuePair[] properties = (KeyValuePair[]) decoder.decodeStructArray("Properties", KeyValuePair.TYPE_ID);
             return new FieldMetaData(name, description, fieldFlags, builtInType, dataType, valueRank, arrayDimensions, maxStringLength, dataSetFieldId, properties);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, FieldMetaData value) {
-            encoder.writeString("Name", value.getName());
-            encoder.writeLocalizedText("Description", value.getDescription());
-            encoder.writeUInt16("FieldFlags", value.getFieldFlags().getValue());
-            encoder.writeByte("BuiltInType", value.getBuiltInType());
-            encoder.writeNodeId("DataType", value.getDataType());
-            encoder.writeInt32("ValueRank", value.getValueRank());
-            encoder.writeUInt32Array("ArrayDimensions", value.getArrayDimensions());
-            encoder.writeUInt32("MaxStringLength", value.getMaxStringLength());
-            encoder.writeGuid("DataSetFieldId", value.getDataSetFieldId());
-            encoder.writeStructArray("Properties", value.getProperties(), KeyValuePair.TYPE_ID);
+            encoder.encodeString("Name", value.getName());
+            encoder.encodeLocalizedText("Description", value.getDescription());
+            encoder.encodeUInt16("FieldFlags", value.getFieldFlags().getValue());
+            encoder.encodeByte("BuiltInType", value.getBuiltInType());
+            encoder.encodeNodeId("DataType", value.getDataType());
+            encoder.encodeInt32("ValueRank", value.getValueRank());
+            encoder.encodeUInt32Array("ArrayDimensions", value.getArrayDimensions());
+            encoder.encodeUInt32("MaxStringLength", value.getMaxStringLength());
+            encoder.encodeGuid("DataSetFieldId", value.getDataSetFieldId());
+            encoder.encodeStructArray("Properties", value.getProperties(), KeyValuePair.TYPE_ID);
         }
     }
 }

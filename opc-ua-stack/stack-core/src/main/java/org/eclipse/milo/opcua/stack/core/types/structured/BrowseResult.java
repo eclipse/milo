@@ -110,17 +110,17 @@ public class BrowseResult extends Structure implements UaStructuredType {
 
         @Override
         public BrowseResult decodeType(SerializationContext context, UaDecoder decoder) {
-            StatusCode statusCode = decoder.readStatusCode("StatusCode");
-            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
-            ReferenceDescription[] references = (ReferenceDescription[]) decoder.readStructArray("References", ReferenceDescription.TYPE_ID);
+            StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
+            ByteString continuationPoint = decoder.decodeByteString("ContinuationPoint");
+            ReferenceDescription[] references = (ReferenceDescription[]) decoder.decodeStructArray("References", ReferenceDescription.TYPE_ID);
             return new BrowseResult(statusCode, continuationPoint, references);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, BrowseResult value) {
-            encoder.writeStatusCode("StatusCode", value.getStatusCode());
-            encoder.writeByteString("ContinuationPoint", value.getContinuationPoint());
-            encoder.writeStructArray("References", value.getReferences(), ReferenceDescription.TYPE_ID);
+            encoder.encodeStatusCode("StatusCode", value.getStatusCode());
+            encoder.encodeByteString("ContinuationPoint", value.getContinuationPoint());
+            encoder.encodeStructArray("References", value.getReferences(), ReferenceDescription.TYPE_ID);
         }
     }
 }

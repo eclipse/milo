@@ -100,15 +100,15 @@ public class ThreeDFrame extends Frame implements UaStructuredType {
 
         @Override
         public ThreeDFrame decodeType(SerializationContext context, UaDecoder decoder) {
-            ThreeDCartesianCoordinates cartesianCoordinates = (ThreeDCartesianCoordinates) decoder.readStruct("CartesianCoordinates", ThreeDCartesianCoordinates.TYPE_ID);
-            ThreeDOrientation orientation = (ThreeDOrientation) decoder.readStruct("Orientation", ThreeDOrientation.TYPE_ID);
+            ThreeDCartesianCoordinates cartesianCoordinates = (ThreeDCartesianCoordinates) decoder.decodeStruct("CartesianCoordinates", ThreeDCartesianCoordinates.TYPE_ID);
+            ThreeDOrientation orientation = (ThreeDOrientation) decoder.decodeStruct("Orientation", ThreeDOrientation.TYPE_ID);
             return new ThreeDFrame(cartesianCoordinates, orientation);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ThreeDFrame value) {
-            encoder.writeStruct("CartesianCoordinates", value.getCartesianCoordinates(), ThreeDCartesianCoordinates.TYPE_ID);
-            encoder.writeStruct("Orientation", value.getOrientation(), ThreeDOrientation.TYPE_ID);
+            encoder.encodeStruct("CartesianCoordinates", value.getCartesianCoordinates(), ThreeDCartesianCoordinates.TYPE_ID);
+            encoder.encodeStruct("Orientation", value.getOrientation(), ThreeDOrientation.TYPE_ID);
         }
     }
 }

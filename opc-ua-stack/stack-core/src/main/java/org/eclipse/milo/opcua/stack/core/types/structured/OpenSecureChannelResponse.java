@@ -117,20 +117,20 @@ public class OpenSecureChannelResponse extends Structure implements UaResponseMe
 
         @Override
         public OpenSecureChannelResponse decodeType(SerializationContext context, UaDecoder decoder) {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
-            UInteger serverProtocolVersion = decoder.readUInt32("ServerProtocolVersion");
-            ChannelSecurityToken securityToken = (ChannelSecurityToken) decoder.readStruct("SecurityToken", ChannelSecurityToken.TYPE_ID);
-            ByteString serverNonce = decoder.readByteString("ServerNonce");
+            ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
+            UInteger serverProtocolVersion = decoder.decodeUInt32("ServerProtocolVersion");
+            ChannelSecurityToken securityToken = (ChannelSecurityToken) decoder.decodeStruct("SecurityToken", ChannelSecurityToken.TYPE_ID);
+            ByteString serverNonce = decoder.decodeByteString("ServerNonce");
             return new OpenSecureChannelResponse(responseHeader, serverProtocolVersion, securityToken, serverNonce);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                OpenSecureChannelResponse value) {
-            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
-            encoder.writeUInt32("ServerProtocolVersion", value.getServerProtocolVersion());
-            encoder.writeStruct("SecurityToken", value.getSecurityToken(), ChannelSecurityToken.TYPE_ID);
-            encoder.writeByteString("ServerNonce", value.getServerNonce());
+            encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.encodeUInt32("ServerProtocolVersion", value.getServerProtocolVersion());
+            encoder.encodeStruct("SecurityToken", value.getSecurityToken(), ChannelSecurityToken.TYPE_ID);
+            encoder.encodeByteString("ServerNonce", value.getServerNonce());
         }
     }
 }

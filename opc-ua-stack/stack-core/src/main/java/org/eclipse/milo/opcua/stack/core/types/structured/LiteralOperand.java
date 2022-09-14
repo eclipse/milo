@@ -92,13 +92,13 @@ public class LiteralOperand extends FilterOperand implements UaStructuredType {
 
         @Override
         public LiteralOperand decodeType(SerializationContext context, UaDecoder decoder) {
-            Variant value = decoder.readVariant("Value");
+            Variant value = decoder.decodeVariant("Value");
             return new LiteralOperand(value);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, LiteralOperand value) {
-            encoder.writeVariant("Value", value.getValue());
+            encoder.encodeVariant("Value", value.getValue());
         }
     }
 }

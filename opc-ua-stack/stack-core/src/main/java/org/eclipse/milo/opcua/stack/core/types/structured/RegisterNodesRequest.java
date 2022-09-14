@@ -99,16 +99,16 @@ public class RegisterNodesRequest extends Structure implements UaRequestMessageT
 
         @Override
         public RegisterNodesRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            NodeId[] nodesToRegister = decoder.readNodeIdArray("NodesToRegister");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            NodeId[] nodesToRegister = decoder.decodeNodeIdArray("NodesToRegister");
             return new RegisterNodesRequest(requestHeader, nodesToRegister);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                RegisterNodesRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeNodeIdArray("NodesToRegister", value.getNodesToRegister());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeNodeIdArray("NodesToRegister", value.getNodesToRegister());
         }
     }
 }

@@ -117,19 +117,19 @@ public class ReadValueId extends Structure implements UaStructuredType {
 
         @Override
         public ReadValueId decodeType(SerializationContext context, UaDecoder decoder) {
-            NodeId nodeId = decoder.readNodeId("NodeId");
-            UInteger attributeId = decoder.readUInt32("AttributeId");
-            String indexRange = decoder.readString("IndexRange");
-            QualifiedName dataEncoding = decoder.readQualifiedName("DataEncoding");
+            NodeId nodeId = decoder.decodeNodeId("NodeId");
+            UInteger attributeId = decoder.decodeUInt32("AttributeId");
+            String indexRange = decoder.decodeString("IndexRange");
+            QualifiedName dataEncoding = decoder.decodeQualifiedName("DataEncoding");
             return new ReadValueId(nodeId, attributeId, indexRange, dataEncoding);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, ReadValueId value) {
-            encoder.writeNodeId("NodeId", value.getNodeId());
-            encoder.writeUInt32("AttributeId", value.getAttributeId());
-            encoder.writeString("IndexRange", value.getIndexRange());
-            encoder.writeQualifiedName("DataEncoding", value.getDataEncoding());
+            encoder.encodeNodeId("NodeId", value.getNodeId());
+            encoder.encodeUInt32("AttributeId", value.getAttributeId());
+            encoder.encodeString("IndexRange", value.getIndexRange());
+            encoder.encodeQualifiedName("DataEncoding", value.getDataEncoding());
         }
     }
 }

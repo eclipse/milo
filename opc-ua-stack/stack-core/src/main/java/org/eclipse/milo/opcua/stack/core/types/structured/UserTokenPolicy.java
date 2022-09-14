@@ -125,21 +125,21 @@ public class UserTokenPolicy extends Structure implements UaStructuredType {
 
         @Override
         public UserTokenPolicy decodeType(SerializationContext context, UaDecoder decoder) {
-            String policyId = decoder.readString("PolicyId");
-            UserTokenType tokenType = UserTokenType.from(decoder.readEnum("TokenType"));
-            String issuedTokenType = decoder.readString("IssuedTokenType");
-            String issuerEndpointUrl = decoder.readString("IssuerEndpointUrl");
-            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
+            String policyId = decoder.decodeString("PolicyId");
+            UserTokenType tokenType = UserTokenType.from(decoder.decodeEnum("TokenType"));
+            String issuedTokenType = decoder.decodeString("IssuedTokenType");
+            String issuerEndpointUrl = decoder.decodeString("IssuerEndpointUrl");
+            String securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
             return new UserTokenPolicy(policyId, tokenType, issuedTokenType, issuerEndpointUrl, securityPolicyUri);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder, UserTokenPolicy value) {
-            encoder.writeString("PolicyId", value.getPolicyId());
-            encoder.writeEnum("TokenType", value.getTokenType());
-            encoder.writeString("IssuedTokenType", value.getIssuedTokenType());
-            encoder.writeString("IssuerEndpointUrl", value.getIssuerEndpointUrl());
-            encoder.writeString("SecurityPolicyUri", value.getSecurityPolicyUri());
+            encoder.encodeString("PolicyId", value.getPolicyId());
+            encoder.encodeEnum("TokenType", value.getTokenType());
+            encoder.encodeString("IssuedTokenType", value.getIssuedTokenType());
+            encoder.encodeString("IssuerEndpointUrl", value.getIssuerEndpointUrl());
+            encoder.encodeString("SecurityPolicyUri", value.getSecurityPolicyUri());
         }
     }
 }

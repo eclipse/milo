@@ -125,22 +125,22 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         @Override
         public SessionlessInvokeRequestType decodeType(SerializationContext context,
                                                        UaDecoder decoder) {
-            UInteger urisVersion = decoder.readUInt32("UrisVersion");
-            String[] namespaceUris = decoder.readStringArray("NamespaceUris");
-            String[] serverUris = decoder.readStringArray("ServerUris");
-            String[] localeIds = decoder.readStringArray("LocaleIds");
-            UInteger serviceId = decoder.readUInt32("ServiceId");
+            UInteger urisVersion = decoder.decodeUInt32("UrisVersion");
+            String[] namespaceUris = decoder.decodeStringArray("NamespaceUris");
+            String[] serverUris = decoder.decodeStringArray("ServerUris");
+            String[] localeIds = decoder.decodeStringArray("LocaleIds");
+            UInteger serviceId = decoder.decodeUInt32("ServiceId");
             return new SessionlessInvokeRequestType(urisVersion, namespaceUris, serverUris, localeIds, serviceId);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SessionlessInvokeRequestType value) {
-            encoder.writeUInt32("UrisVersion", value.getUrisVersion());
-            encoder.writeStringArray("NamespaceUris", value.getNamespaceUris());
-            encoder.writeStringArray("ServerUris", value.getServerUris());
-            encoder.writeStringArray("LocaleIds", value.getLocaleIds());
-            encoder.writeUInt32("ServiceId", value.getServiceId());
+            encoder.encodeUInt32("UrisVersion", value.getUrisVersion());
+            encoder.encodeStringArray("NamespaceUris", value.getNamespaceUris());
+            encoder.encodeStringArray("ServerUris", value.getServerUris());
+            encoder.encodeStringArray("LocaleIds", value.getLocaleIds());
+            encoder.encodeUInt32("ServiceId", value.getServiceId());
         }
     }
 }

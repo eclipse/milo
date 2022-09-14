@@ -18,15 +18,15 @@ import org.testng.annotations.BeforeMethod;
 public abstract class BinarySerializationFixture {
 
     ByteBuf buffer;
-    OpcUaBinaryStreamEncoder writer;
-    OpcUaBinaryStreamDecoder reader;
+    OpcUaBinaryEncoder writer;
+    OpcUaBinaryDecoder reader;
 
     @BeforeMethod
     public void setUp() {
         buffer = Unpooled.buffer();
 
-        writer = new OpcUaBinaryStreamEncoder(new TestSerializationContext()).setBuffer(buffer);
-        reader = new OpcUaBinaryStreamDecoder(new TestSerializationContext()).setBuffer(buffer);
+        writer = new OpcUaBinaryEncoder(new TestSerializationContext()).setBuffer(buffer);
+        reader = new OpcUaBinaryDecoder(new TestSerializationContext()).setBuffer(buffer);
     }
 
 }

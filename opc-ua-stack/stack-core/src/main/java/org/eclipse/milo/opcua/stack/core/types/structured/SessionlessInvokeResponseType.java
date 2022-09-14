@@ -109,18 +109,18 @@ public class SessionlessInvokeResponseType extends Structure implements UaStruct
         @Override
         public SessionlessInvokeResponseType decodeType(SerializationContext context,
                                                         UaDecoder decoder) {
-            String[] namespaceUris = decoder.readStringArray("NamespaceUris");
-            String[] serverUris = decoder.readStringArray("ServerUris");
-            UInteger serviceId = decoder.readUInt32("ServiceId");
+            String[] namespaceUris = decoder.decodeStringArray("NamespaceUris");
+            String[] serverUris = decoder.decodeStringArray("ServerUris");
+            UInteger serviceId = decoder.decodeUInt32("ServiceId");
             return new SessionlessInvokeResponseType(namespaceUris, serverUris, serviceId);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                SessionlessInvokeResponseType value) {
-            encoder.writeStringArray("NamespaceUris", value.getNamespaceUris());
-            encoder.writeStringArray("ServerUris", value.getServerUris());
-            encoder.writeUInt32("ServiceId", value.getServiceId());
+            encoder.encodeStringArray("NamespaceUris", value.getNamespaceUris());
+            encoder.encodeStringArray("ServerUris", value.getServerUris());
+            encoder.encodeUInt32("ServiceId", value.getServiceId());
         }
     }
 }

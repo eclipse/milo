@@ -159,30 +159,30 @@ public class CreateSessionRequest extends Structure implements UaRequestMessageT
 
         @Override
         public CreateSessionRequest decodeType(SerializationContext context, UaDecoder decoder) {
-            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
-            ApplicationDescription clientDescription = (ApplicationDescription) decoder.readStruct("ClientDescription", ApplicationDescription.TYPE_ID);
-            String serverUri = decoder.readString("ServerUri");
-            String endpointUrl = decoder.readString("EndpointUrl");
-            String sessionName = decoder.readString("SessionName");
-            ByteString clientNonce = decoder.readByteString("ClientNonce");
-            ByteString clientCertificate = decoder.readByteString("ClientCertificate");
-            Double requestedSessionTimeout = decoder.readDouble("RequestedSessionTimeout");
-            UInteger maxResponseMessageSize = decoder.readUInt32("MaxResponseMessageSize");
+            RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
+            ApplicationDescription clientDescription = (ApplicationDescription) decoder.decodeStruct("ClientDescription", ApplicationDescription.TYPE_ID);
+            String serverUri = decoder.decodeString("ServerUri");
+            String endpointUrl = decoder.decodeString("EndpointUrl");
+            String sessionName = decoder.decodeString("SessionName");
+            ByteString clientNonce = decoder.decodeByteString("ClientNonce");
+            ByteString clientCertificate = decoder.decodeByteString("ClientCertificate");
+            Double requestedSessionTimeout = decoder.decodeDouble("RequestedSessionTimeout");
+            UInteger maxResponseMessageSize = decoder.decodeUInt32("MaxResponseMessageSize");
             return new CreateSessionRequest(requestHeader, clientDescription, serverUri, endpointUrl, sessionName, clientNonce, clientCertificate, requestedSessionTimeout, maxResponseMessageSize);
         }
 
         @Override
         public void encodeType(SerializationContext context, UaEncoder encoder,
                                CreateSessionRequest value) {
-            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
-            encoder.writeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
-            encoder.writeString("ServerUri", value.getServerUri());
-            encoder.writeString("EndpointUrl", value.getEndpointUrl());
-            encoder.writeString("SessionName", value.getSessionName());
-            encoder.writeByteString("ClientNonce", value.getClientNonce());
-            encoder.writeByteString("ClientCertificate", value.getClientCertificate());
-            encoder.writeDouble("RequestedSessionTimeout", value.getRequestedSessionTimeout());
-            encoder.writeUInt32("MaxResponseMessageSize", value.getMaxResponseMessageSize());
+            encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.encodeStruct("ClientDescription", value.getClientDescription(), ApplicationDescription.TYPE_ID);
+            encoder.encodeString("ServerUri", value.getServerUri());
+            encoder.encodeString("EndpointUrl", value.getEndpointUrl());
+            encoder.encodeString("SessionName", value.getSessionName());
+            encoder.encodeByteString("ClientNonce", value.getClientNonce());
+            encoder.encodeByteString("ClientCertificate", value.getClientCertificate());
+            encoder.encodeDouble("RequestedSessionTimeout", value.getRequestedSessionTimeout());
+            encoder.encodeUInt32("MaxResponseMessageSize", value.getMaxResponseMessageSize());
         }
     }
 }
