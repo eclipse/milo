@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -149,7 +149,7 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         }
 
         @Override
-        public RegisteredServer decodeType(SerializationContext context, UaDecoder decoder) {
+        public RegisteredServer decodeType(EncodingContext context, UaDecoder decoder) {
             String serverUri = decoder.decodeString("ServerUri");
             String productUri = decoder.decodeString("ProductUri");
             LocalizedText[] serverNames = decoder.decodeLocalizedTextArray("ServerNames");
@@ -162,7 +162,7 @@ public class RegisteredServer extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                RegisteredServer value) {
             encoder.encodeString("ServerUri", value.getServerUri());
             encoder.encodeString("ProductUri", value.getProductUri());

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -99,14 +99,14 @@ public class DeleteReferencesRequest extends Structure implements UaRequestMessa
         }
 
         @Override
-        public DeleteReferencesRequest decodeType(SerializationContext context, UaDecoder decoder) {
+        public DeleteReferencesRequest decodeType(EncodingContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
             DeleteReferencesItem[] referencesToDelete = (DeleteReferencesItem[]) decoder.decodeStructArray("ReferencesToDelete", DeleteReferencesItem.TYPE_ID);
             return new DeleteReferencesRequest(requestHeader, referencesToDelete);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                DeleteReferencesRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStructArray("ReferencesToDelete", value.getReferencesToDelete(), DeleteReferencesItem.TYPE_ID);

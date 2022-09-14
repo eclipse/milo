@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -90,13 +90,13 @@ public class AdditionalParametersType extends Structure implements UaStructuredT
         }
 
         @Override
-        public AdditionalParametersType decodeType(SerializationContext context, UaDecoder decoder) {
+        public AdditionalParametersType decodeType(EncodingContext context, UaDecoder decoder) {
             KeyValuePair[] parameters = (KeyValuePair[]) decoder.decodeStructArray("Parameters", KeyValuePair.TYPE_ID);
             return new AdditionalParametersType(parameters);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                AdditionalParametersType value) {
             encoder.encodeStructArray("Parameters", value.getParameters(), KeyValuePair.TYPE_ID);
         }

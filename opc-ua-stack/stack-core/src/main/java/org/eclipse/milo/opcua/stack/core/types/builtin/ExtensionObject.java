@@ -14,7 +14,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultJsonEncoding;
@@ -91,7 +91,7 @@ public final class ExtensionObject {
         }
     }
 
-    public Object decode(SerializationContext context) throws UaSerializationException {
+    public Object decode(EncodingContext context) throws UaSerializationException {
         switch (bodyType) {
             case ByteString:
                 return decode(context, OpcUaDefaultBinaryEncoding.getInstance());
@@ -104,11 +104,11 @@ public final class ExtensionObject {
         }
     }
 
-    public Object decode(SerializationContext context, DataTypeEncoding encoding) throws UaSerializationException {
+    public Object decode(EncodingContext context, DataTypeEncoding encoding) throws UaSerializationException {
         return decoded.getOrCompute(() -> encoding.decode(context, body, encodingId));
     }
 
-    public @Nullable Object decodeOrNull(SerializationContext context) {
+    public @Nullable Object decodeOrNull(EncodingContext context) {
         try {
             return decode(context);
         } catch (UaSerializationException e) {
@@ -117,7 +117,7 @@ public final class ExtensionObject {
     }
 
     public ExtensionObject transcode(
-        SerializationContext context,
+        EncodingContext context,
         NodeId newEncodingId,
         DataTypeEncoding newEncoding
     ) {
@@ -143,7 +143,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         UaStructuredType struct
     ) throws UaSerializationException {
 
@@ -161,7 +161,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject[] encodeArray(
-        SerializationContext context,
+        EncodingContext context,
         UaStructuredType[] structArray
     ) throws UaSerializationException {
 
@@ -175,7 +175,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encodeDefaultBinary(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId
     ) throws UaSerializationException {
@@ -184,7 +184,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encodeDefaultXml(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId
     ) throws UaSerializationException {
@@ -193,7 +193,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encodeDefaultJson(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId
     ) throws UaSerializationException {
@@ -202,7 +202,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         ExpandedNodeId xEncodingId,
         DataTypeEncoding encoding
@@ -223,7 +223,7 @@ public final class ExtensionObject {
     }
 
     public static ExtensionObject encode(
-        SerializationContext context,
+        EncodingContext context,
         Object object,
         NodeId encodingId,
         DataTypeEncoding encoding

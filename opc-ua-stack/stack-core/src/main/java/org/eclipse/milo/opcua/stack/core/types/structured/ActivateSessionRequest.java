@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -133,7 +133,7 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
         }
 
         @Override
-        public ActivateSessionRequest decodeType(SerializationContext context, UaDecoder decoder) {
+        public ActivateSessionRequest decodeType(EncodingContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
             SignatureData clientSignature = (SignatureData) decoder.decodeStruct("ClientSignature", SignatureData.TYPE_ID);
             SignedSoftwareCertificate[] clientSoftwareCertificates = (SignedSoftwareCertificate[]) decoder.decodeStructArray("ClientSoftwareCertificates", SignedSoftwareCertificate.TYPE_ID);
@@ -144,7 +144,7 @@ public class ActivateSessionRequest extends Structure implements UaRequestMessag
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ActivateSessionRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStruct("ClientSignature", value.getClientSignature(), SignatureData.TYPE_ID);

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -141,7 +141,7 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
         }
 
         @Override
-        public ApplicationDescription decodeType(SerializationContext context, UaDecoder decoder) {
+        public ApplicationDescription decodeType(EncodingContext context, UaDecoder decoder) {
             String applicationUri = decoder.decodeString("ApplicationUri");
             String productUri = decoder.decodeString("ProductUri");
             LocalizedText applicationName = decoder.decodeLocalizedText("ApplicationName");
@@ -153,7 +153,7 @@ public class ApplicationDescription extends Structure implements UaStructuredTyp
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ApplicationDescription value) {
             encoder.encodeString("ApplicationUri", value.getApplicationUri());
             encoder.encodeString("ProductUri", value.getProductUri());

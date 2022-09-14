@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -107,7 +107,7 @@ public class Annotation extends Structure implements UaStructuredType {
         }
 
         @Override
-        public Annotation decodeType(SerializationContext context, UaDecoder decoder) {
+        public Annotation decodeType(EncodingContext context, UaDecoder decoder) {
             String message = decoder.decodeString("Message");
             String userName = decoder.decodeString("UserName");
             DateTime annotationTime = decoder.decodeDateTime("AnnotationTime");
@@ -115,7 +115,7 @@ public class Annotation extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, Annotation value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, Annotation value) {
             encoder.encodeString("Message", value.getMessage());
             encoder.encodeString("UserName", value.getUserName());
             encoder.encodeDateTime("AnnotationTime", value.getAnnotationTime());

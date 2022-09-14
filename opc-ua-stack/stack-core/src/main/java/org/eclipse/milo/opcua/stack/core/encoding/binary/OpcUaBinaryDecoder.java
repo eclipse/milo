@@ -1,0 +1,1229 @@
+/*
+ * Copyright (c) 2022 the Eclipse Milo Authors
+ *
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+package org.eclipse.milo.opcua.stack.core.encoding.binary;
+
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.util.ByteProcessor;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.types.UaMessageType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
+import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.jetbrains.annotations.Nullable;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
+
+public class OpcUaBinaryDecoder implements UaDecoder {
+
+    private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
+    private static final Charset CHARSET_UTF16 = StandardCharsets.UTF_16;
+
+    private ByteBuf buffer;
+
+    private int currentByte = 0;
+    private int bitsRemaining = 0;
+
+    private final AtomicInteger depth = new AtomicInteger(0);
+
+    private final EncodingContext context;
+
+    public OpcUaBinaryDecoder(EncodingContext context) {
+        this.context = context;
+    }
+
+    public OpcUaBinaryDecoder setBuffer(ByteBuf buffer) {
+        this.buffer = buffer;
+        return this;
+    }
+
+    public <T> T[] readArray(Supplier<T> read, Class<T> clazz) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            @SuppressWarnings("unchecked")
+            T[] array = (T[]) Array.newInstance(clazz, length);
+
+            for (int i = 0; i < length; i++) {
+                array[i] = read.get();
+            }
+
+            return array;
+        }
+    }
+
+    public int readBit() throws UaSerializationException {
+        if (bitsRemaining == 0) {
+            currentByte = buffer.readUnsignedByte();
+            bitsRemaining = 8;
+        }
+
+        int bit = currentByte & 1;
+        currentByte >>= 1;
+        bitsRemaining--;
+        return bit;
+    }
+
+    public Character readCharacter() throws UaSerializationException {
+        return (char) (buffer.readUnsignedByte());
+    }
+
+    public Character readWideChar() throws UaSerializationException {
+        return buffer.readChar();
+    }
+
+    public String readUtf8NullTerminatedString() throws UaSerializationException {
+        return readNullTerminatedString(CHARSET_UTF8);
+    }
+
+    public String readUtf8CharArray() throws UaSerializationException {
+        return readLengthPrefixedString(CHARSET_UTF8);
+    }
+
+    public String readUtf16NullTerminatedString() throws UaSerializationException {
+        return readNullTerminatedString(CHARSET_UTF16);
+    }
+
+    public String readUtf16CharArray() throws UaSerializationException {
+        return readLengthPrefixedString(CHARSET_UTF16);
+    }
+
+    public Boolean readBoolean() throws UaSerializationException {
+        return buffer.readBoolean();
+    }
+
+    public Byte readSByte() throws UaSerializationException {
+        return buffer.readByte();
+    }
+
+    public UByte readByte() throws UaSerializationException {
+        return ubyte(buffer.readUnsignedByte());
+    }
+
+    public Short readInt16() throws UaSerializationException {
+        return buffer.readShortLE();
+    }
+
+    public UShort readUInt16() throws UaSerializationException {
+        return ushort(buffer.readUnsignedShortLE());
+    }
+
+    public Integer readInt32() throws UaSerializationException {
+        return buffer.readIntLE();
+    }
+
+    public UInteger readUInt32() throws UaSerializationException {
+        return uint(buffer.readUnsignedIntLE());
+    }
+
+    public Long readInt64() throws UaSerializationException {
+        return buffer.readLongLE();
+    }
+
+    public ULong readUInt64() throws UaSerializationException {
+        return ulong(buffer.readLongLE());
+    }
+
+    public Float readFloat() throws UaSerializationException {
+        return buffer.readFloatLE();
+    }
+
+    public Double readDouble() throws UaSerializationException {
+        return buffer.readDoubleLE();
+    }
+
+    public DateTime readDateTime() throws UaSerializationException {
+        return new DateTime(buffer.readLongLE());
+    }
+
+    public ByteString readByteString() throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return ByteString.NULL_VALUE;
+        } else {
+            checkArrayLength(length);
+
+            byte[] bs = new byte[length];
+            buffer.readBytes(bs);
+            return new ByteString(bs);
+        }
+    }
+
+    public UUID readGuid() throws UaSerializationException {
+        long part1 = buffer.readUnsignedIntLE();
+        long part2 = buffer.readUnsignedShortLE();
+        long part3 = buffer.readUnsignedShortLE();
+        long part4 = buffer.readLong(); // intentionally Big Endian
+
+        long msb = (part1 << 32) | (part2 << 16) | part3;
+
+        return new UUID(msb, part4);
+    }
+
+    public XmlElement readXmlElement() throws UaSerializationException {
+        ByteString byteString = readByteString();
+        byte[] bs = byteString.bytes();
+
+        if (bs == null) {
+            return new XmlElement(null);
+        } else {
+            String fragment = new String(bs, StandardCharsets.UTF_8);
+            return new XmlElement(fragment);
+        }
+    }
+
+    public DataValue readDataValue() throws UaSerializationException {
+        int mask = buffer.readByte() & 0xFF;
+
+        Variant value = ((mask & 0x01) != 0) ? readVariant() : Variant.NULL_VALUE;
+        StatusCode status = ((mask & 0x02) != 0) ? readStatusCode() : StatusCode.GOOD;
+        DateTime sourceTime = ((mask & 0x04) != 0) ? readDateTime() : DateTime.MIN_VALUE;
+        UShort sourcePicoseconds = ((mask & 0x10) != 0) ? readUInt16() : null;
+        DateTime serverTime = ((mask & 0x08) != 0) ? readDateTime() : DateTime.MIN_VALUE;
+        UShort serverPicoseconds = ((mask & 0x20) != 0) ? readUInt16() : null;
+
+        return new DataValue(value, status, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
+    }
+
+    public DiagnosticInfo readDiagnosticInfo() throws UaSerializationException {
+        if (depth.get() >= context.getEncodingLimits().getMaxRecursionDepth()) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                "max recursion depth exceeded: " +
+                    context.getEncodingLimits().getMaxRecursionDepth()
+            );
+        }
+
+        depth.incrementAndGet();
+        try {
+            int mask = buffer.readByte();
+
+            if (mask == 0) {
+                return null;
+            } else {
+                int symbolicId = ((mask & 0x01) == 0x01) ? readInt32() : -1;
+                int namespaceUri = ((mask & 0x02) == 0x02) ? readInt32() : -1;
+                int localizedText = ((mask & 0x04) == 0x04) ? readInt32() : -1;
+                int locale = ((mask & 0x08) == 0x08) ? readInt32() : -1;
+                String additionalInfo = ((mask & 0x10) == 0x10) ? readString() : null;
+                StatusCode innerStatusCode = ((mask & 0x20) == 0x20) ? readStatusCode() : null;
+                DiagnosticInfo innerDiagnosticInfo = ((mask & 0x40) == 0x40) ? readDiagnosticInfo() : null;
+
+                return new DiagnosticInfo(
+                    namespaceUri,
+                    symbolicId,
+                    locale,
+                    localizedText,
+                    additionalInfo,
+                    innerStatusCode,
+                    innerDiagnosticInfo
+                );
+            }
+        } finally {
+            depth.decrementAndGet();
+        }
+    }
+
+    public ExpandedNodeId readExpandedNodeId() throws UaSerializationException {
+        int flags = buffer.getByte(buffer.readerIndex());
+
+        NodeId nodeId = readNodeId();
+
+        String namespaceUri = null;
+        UInteger serverIndex = UInteger.MIN;
+
+        if ((flags & 0x80) == 0x80) {
+            namespaceUri = readString();
+        }
+
+        if ((flags & 0x40) == 0x40) {
+            serverIndex = readUInt32();
+        }
+
+        return new ExpandedNodeId(nodeId.getNamespaceIndex(), namespaceUri, nodeId.getIdentifier(), serverIndex);
+    }
+
+    public ExtensionObject readExtensionObject() throws UaSerializationException {
+        NodeId encodingTypeId = readNodeId();
+        int encoding = buffer.readByte();
+
+        if (encoding == 0) {
+            return new ExtensionObject(ByteString.NULL_VALUE, encodingTypeId);
+        } else if (encoding == 1) {
+            ByteString byteString = readByteString();
+
+            return new ExtensionObject(byteString, encodingTypeId);
+        } else if (encoding == 2) {
+            XmlElement xmlElement = readXmlElement();
+
+            return new ExtensionObject(xmlElement, encodingTypeId);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "unknown ExtensionObject encoding: " + encoding);
+        }
+    }
+
+    public LocalizedText readLocalizedText() throws UaSerializationException {
+        int mask = buffer.readByte();
+
+        String locale = null;
+        String text = null;
+
+        if ((mask & 1) == 1) {
+            locale = readString();
+        }
+
+        if ((mask & 2) == 2) {
+            text = readString();
+        }
+
+        return new LocalizedText(locale, text);
+    }
+
+    public NodeId readNodeId() throws UaSerializationException {
+        int format = buffer.readByte() & 0x0F;
+
+        if (format == 0x00) {
+            /* Two-byte format */
+            return new NodeId(UShort.MIN, uint(buffer.readUnsignedByte()));
+        } else if (format == 0x01) {
+            /* Four-byte format */
+            return new NodeId(ushort(buffer.readUnsignedByte()), uint(buffer.readUnsignedShortLE()));
+        } else if (format == 0x02) {
+            /* Numeric format */
+            return new NodeId(readUInt16(), readUInt32());
+        } else if (format == 0x03) {
+            /* String format */
+            return new NodeId(readUInt16(), readString());
+        } else if (format == 0x04) {
+            /* Guid format */
+            return new NodeId(readUInt16(), readGuid());
+        } else if (format == 0x05) {
+            /* Opaque format */
+            return new NodeId(readUInt16(), readByteString());
+        } else {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid NodeId format: " + format);
+        }
+    }
+
+    public QualifiedName readQualifiedName() throws UaSerializationException {
+        UShort namespaceIndex = readUInt16();
+        String name = readString();
+
+        // invalid QualifiedNames become "null" QualifiedNames
+        if (name != null && name.length() > 512) {
+            name = null;
+        }
+
+        return new QualifiedName(namespaceIndex, name);
+    }
+
+    public StatusCode readStatusCode() throws UaSerializationException {
+        return new StatusCode(readUInt32());
+    }
+
+    public String readString() throws UaSerializationException {
+        return readLengthPrefixedString(CHARSET_UTF8);
+    }
+
+    public Variant readVariant() throws UaSerializationException {
+        if (depth.get() >= context.getEncodingLimits().getMaxRecursionDepth()) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                "max recursion depth exceeded: " +
+                    context.getEncodingLimits().getMaxRecursionDepth()
+            );
+        }
+
+        depth.incrementAndGet();
+        try {
+            int encodingMask = buffer.readByte();
+
+            if (encodingMask == 0) {
+                return new Variant(null);
+            } else {
+                int typeId = encodingMask & 0x3F;
+                boolean dimensionsEncoded = (encodingMask & 0x40) == 0x40;
+                boolean arrayEncoded = (encodingMask & 0x80) == 0x80;
+
+                if (arrayEncoded) {
+                    Class<?> backingClass = TypeUtil.getBackingClass(typeId);
+                    int length = readInt32();
+
+                    if (length == -1) {
+                        return new Variant(null);
+                    } else {
+                        checkArrayLength(length);
+
+                        Object flatArray = Array.newInstance(backingClass, length);
+
+                        for (int i = 0; i < length; i++) {
+                            Object element = decodeBuiltinType(typeId);
+
+                            Array.set(flatArray, i, element);
+                        }
+
+                        int[] dimensions = dimensionsEncoded ? decodeDimensions() : new int[]{length};
+                        Object array = dimensions.length > 1 ? ArrayUtil.unflatten(flatArray, dimensions) : flatArray;
+
+                        return new Variant(array);
+                    }
+                } else {
+                    Object value = decodeBuiltinType(typeId);
+
+                    return new Variant(value);
+                }
+            }
+        } finally {
+            depth.decrementAndGet();
+        }
+    }
+
+    @Nullable
+    private String readLengthPrefixedString(Charset charset) {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            if (length > context.getEncodingLimits().getMaxMessageSize()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    String.format(
+                        "string length exceeds max message size (length=%s, max=%s)",
+                        length, context.getEncodingLimits().getMaxMessageSize())
+                );
+            }
+
+            String str = buffer.toString(buffer.readerIndex(), length, charset);
+            buffer.skipBytes(length);
+            return str;
+        }
+    }
+
+    private String readNullTerminatedString(Charset charset) {
+        int indexOfNull = buffer.forEachByte(ByteProcessor.FIND_NUL);
+
+        if (indexOfNull == -1) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError, "null terminator not found");
+        }
+
+        int index = buffer.readerIndex();
+        int length = indexOfNull - index;
+        String str = buffer.toString(index, length, charset);
+        buffer.skipBytes(length + 1);
+
+        return str;
+    }
+
+    private int[] decodeDimensions() {
+        int length = readInt32();
+
+        if (length == -1) {
+            return new int[0];
+        } else {
+            int[] is = new int[length];
+            for (int i = 0; i < length; i++) {
+                is[i] = readInt32();
+            }
+            return is;
+        }
+    }
+
+    private Object decodeBuiltinType(int typeId) throws UaSerializationException {
+        switch (typeId) {
+            case 1:
+                return readBoolean();
+            case 2:
+                return readSByte();
+            case 3:
+                return readByte();
+            case 4:
+                return readInt16();
+            case 5:
+                return readUInt16();
+            case 6:
+                return readInt32();
+            case 7:
+                return readUInt32();
+            case 8:
+                return readInt64();
+            case 9:
+                return readUInt64();
+            case 10:
+                return readFloat();
+            case 11:
+                return readDouble();
+            case 12:
+                return readString();
+            case 13:
+                return readDateTime();
+            case 14:
+                return readGuid();
+            case 15:
+                return readByteString();
+            case 16:
+                return readXmlElement();
+            case 17:
+                return readNodeId();
+            case 18:
+                return readExpandedNodeId();
+            case 19:
+                return readStatusCode();
+            case 20:
+                return readQualifiedName();
+            case 21:
+                return readLocalizedText();
+            case 22:
+                return readExtensionObject();
+            case 23:
+                return readDataValue();
+            case 24:
+                return readVariant();
+            case 25:
+                return readDiagnosticInfo();
+            default:
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, "unknown builtin type: " + typeId);
+        }
+    }
+
+    @Override
+    public Boolean decodeBoolean(String field) throws UaSerializationException {
+        return readBoolean();
+    }
+
+    @Override
+    public Byte decodeSByte(String field) throws UaSerializationException {
+        return readSByte();
+    }
+
+    @Override
+    public Short decodeInt16(String field) throws UaSerializationException {
+        return readInt16();
+    }
+
+    @Override
+    public Integer decodeInt32(String field) throws UaSerializationException {
+        return readInt32();
+    }
+
+    @Override
+    public Long decodeInt64(String field) throws UaSerializationException {
+        return readInt64();
+    }
+
+    @Override
+    public UByte decodeByte(String field) throws UaSerializationException {
+        return readByte();
+    }
+
+    @Override
+    public UShort decodeUInt16(String field) throws UaSerializationException {
+        return readUInt16();
+    }
+
+    @Override
+    public UInteger decodeUInt32(String field) throws UaSerializationException {
+        return readUInt32();
+    }
+
+    @Override
+    public ULong decodeUInt64(String field) throws UaSerializationException {
+        return readUInt64();
+    }
+
+    @Override
+    public Float decodeFloat(String field) throws UaSerializationException {
+        return readFloat();
+    }
+
+    @Override
+    public Double decodeDouble(String field) throws UaSerializationException {
+        return readDouble();
+    }
+
+    @Override
+    public String decodeString(String field) throws UaSerializationException {
+        return readString();
+    }
+
+    @Override
+    public DateTime decodeDateTime(String field) throws UaSerializationException {
+        return readDateTime();
+    }
+
+    @Override
+    public UUID decodeGuid(String field) throws UaSerializationException {
+        return readGuid();
+    }
+
+    @Override
+    public ByteString decodeByteString(String field) throws UaSerializationException {
+        return readByteString();
+    }
+
+    @Override
+    public XmlElement decodeXmlElement(String field) throws UaSerializationException {
+        return readXmlElement();
+    }
+
+    @Override
+    public NodeId decodeNodeId(String field) throws UaSerializationException {
+        return readNodeId();
+    }
+
+    @Override
+    public ExpandedNodeId decodeExpandedNodeId(String field) throws UaSerializationException {
+        return readExpandedNodeId();
+    }
+
+    @Override
+    public StatusCode decodeStatusCode(String field) throws UaSerializationException {
+        return readStatusCode();
+    }
+
+    @Override
+    public QualifiedName decodeQualifiedName(String field) throws UaSerializationException {
+        return readQualifiedName();
+    }
+
+    @Override
+    public LocalizedText decodeLocalizedText(String field) throws UaSerializationException {
+        return readLocalizedText();
+    }
+
+    @Override
+    public ExtensionObject decodeExtensionObject(String field) throws UaSerializationException {
+        return readExtensionObject();
+    }
+
+    @Override
+    public DataValue decodeDataValue(String field) throws UaSerializationException {
+        return readDataValue();
+    }
+
+    @Override
+    public Variant decodeVariant(String field) throws UaSerializationException {
+        return readVariant();
+    }
+
+    @Override
+    public DiagnosticInfo decodeDiagnosticInfo(String field) throws UaSerializationException {
+        return readDiagnosticInfo();
+    }
+
+    @Override
+    public UaMessageType decodeMessage(String field) throws UaSerializationException {
+        NodeId encodingId = readNodeId();
+
+        DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
+
+        if (codec != null) {
+            return (UaMessageType) codec.decode(context, this);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + encodingId
+            );
+        }
+    }
+
+    @Override
+    public Integer decodeEnum(String field) {
+        return decodeInt32(field);
+    }
+
+    @Override
+    public Object decodeStruct(String field, NodeId dataTypeId) throws UaSerializationException {
+        DataTypeCodec codec = context.getDataTypeManager()
+            .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+
+        if (codec != null) {
+            return codec.decode(context, this);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + dataTypeId
+            );
+        }
+    }
+
+    @Override
+    public Object decodeStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDataTypeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "namespace not registered: " + dataTypeId
+            ));
+
+        return decodeStruct(field, localDataTypeId);
+    }
+
+    @Override
+    public Object decodeStruct(String field, DataTypeCodec codec) throws UaSerializationException {
+        return codec.decode(context, this);
+    }
+
+    @Override
+    public Boolean[] decodeBooleanArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Boolean[] values = new Boolean[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeBoolean(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Byte[] decodeSByteArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Byte[] values = new Byte[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeSByte(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Short[] decodeInt16Array(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Short[] values = new Short[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeInt16(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Integer[] decodeInt32Array(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Integer[] values = new Integer[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeInt32(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Long[] decodeInt64Array(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Long[] values = new Long[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeInt64(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public UByte[] decodeByteArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            UByte[] values = new UByte[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeByte(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public UShort[] decodeUInt16Array(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            UShort[] values = new UShort[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeUInt16(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public UInteger[] decodeUInt32Array(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            UInteger[] values = new UInteger[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeUInt32(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public ULong[] decodeUInt64Array(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            ULong[] values = new ULong[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeUInt64(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Float[] decodeFloatArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Float[] values = new Float[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeFloat(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Double[] decodeDoubleArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Double[] values = new Double[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeDouble(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public String[] decodeStringArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            String[] values = new String[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeString(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public DateTime[] decodeDateTimeArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            DateTime[] values = new DateTime[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeDateTime(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public UUID[] decodeGuidArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            UUID[] values = new UUID[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeGuid(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public ByteString[] decodeByteStringArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            ByteString[] values = new ByteString[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeByteString(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public XmlElement[] decodeXmlElementArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            XmlElement[] values = new XmlElement[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeXmlElement(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public NodeId[] decodeNodeIdArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            NodeId[] values = new NodeId[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeNodeId(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public ExpandedNodeId[] decodeExpandedNodeIdArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            ExpandedNodeId[] values = new ExpandedNodeId[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeExpandedNodeId(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public StatusCode[] decodeStatusCodeArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            StatusCode[] values = new StatusCode[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeStatusCode(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public QualifiedName[] decodeQualifiedNameArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            QualifiedName[] values = new QualifiedName[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeQualifiedName(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public LocalizedText[] decodeLocalizedTextArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            LocalizedText[] values = new LocalizedText[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeLocalizedText(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public ExtensionObject[] decodeExtensionObjectArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            ExtensionObject[] values = new ExtensionObject[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeExtensionObject(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public DataValue[] decodeDataValueArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            DataValue[] values = new DataValue[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeDataValue(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Variant[] decodeVariantArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            Variant[] values = new Variant[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeVariant(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public DiagnosticInfo[] decodeDiagnosticInfoArray(String field) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            DiagnosticInfo[] values = new DiagnosticInfo[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = decodeDiagnosticInfo(field);
+            }
+            return values;
+        }
+    }
+
+    @Override
+    public Integer[] decodeEnumArray(String field) throws UaSerializationException {
+        return decodeInt32Array(field);
+    }
+
+    @Override
+    public Object[] decodeStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            DataTypeCodec codec = context.getDataTypeManager()
+                .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
+
+            if (codec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + dataTypeId
+                );
+            }
+
+            Class<?> clazz = codec.getType();
+            Object array = Array.newInstance(clazz, length);
+
+            for (int i = 0; i < length; i++) {
+                Object value = codec.decode(context, this);
+
+                Array.set(array, i, value);
+            }
+
+            return (Object[]) array;
+        }
+    }
+
+    @Override
+    public Object[] decodeStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId dataTypeNodeId = dataTypeId.toNodeId(context.getNamespaceTable())
+            .orElse(null);
+
+        if (dataTypeNodeId != null) {
+            return decodeStructArray(field, dataTypeNodeId);
+        } else {
+            if (dataTypeId.isLocal()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "namespace not registered: " + dataTypeId.getNamespaceUri()
+                );
+            } else {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "ExpandedNodeId not local: " + dataTypeId
+                );
+            }
+        }
+    }
+
+    private void checkArrayLength(int length) throws UaSerializationException {
+        if (length > context.getEncodingLimits().getMaxMessageSize()) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                String.format(
+                    "array length exceeds max message size (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxMessageSize())
+            );
+        }
+    }
+
+    @Override
+    public <T> T[] decodeArray(
+        String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException {
+
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            checkArrayLength(length);
+
+            @SuppressWarnings("unchecked")
+            T[] array = (T[]) Array.newInstance(clazz, length);
+
+            for (int i = 0; i < length; i++) {
+                array[i] = decoder.apply(field);
+            }
+
+            return array;
+        }
+    }
+
+}

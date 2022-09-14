@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,14 +98,14 @@ public class EventFilter extends MonitoringFilter implements UaStructuredType {
         }
 
         @Override
-        public EventFilter decodeType(SerializationContext context, UaDecoder decoder) {
+        public EventFilter decodeType(EncodingContext context, UaDecoder decoder) {
             SimpleAttributeOperand[] selectClauses = (SimpleAttributeOperand[]) decoder.decodeStructArray("SelectClauses", SimpleAttributeOperand.TYPE_ID);
             ContentFilter whereClause = (ContentFilter) decoder.decodeStruct("WhereClause", ContentFilter.TYPE_ID);
             return new EventFilter(selectClauses, whereClause);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, EventFilter value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, EventFilter value) {
             encoder.encodeStructArray("SelectClauses", value.getSelectClauses(), SimpleAttributeOperand.TYPE_ID);
             encoder.encodeStruct("WhereClause", value.getWhereClause(), ContentFilter.TYPE_ID);
         }

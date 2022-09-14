@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -154,7 +154,7 @@ public class EndpointConfiguration extends Structure implements UaStructuredType
         }
 
         @Override
-        public EndpointConfiguration decodeType(SerializationContext context, UaDecoder decoder) {
+        public EndpointConfiguration decodeType(EncodingContext context, UaDecoder decoder) {
             Integer operationTimeout = decoder.decodeInt32("OperationTimeout");
             Boolean useBinaryEncoding = decoder.decodeBoolean("UseBinaryEncoding");
             Integer maxStringLength = decoder.decodeInt32("MaxStringLength");
@@ -168,7 +168,7 @@ public class EndpointConfiguration extends Structure implements UaStructuredType
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                EndpointConfiguration value) {
             encoder.encodeInt32("OperationTimeout", value.getOperationTimeout());
             encoder.encodeBoolean("UseBinaryEncoding", value.getUseBinaryEncoding());

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -135,7 +135,7 @@ public class ResponseHeader extends Structure implements UaStructuredType {
         }
 
         @Override
-        public ResponseHeader decodeType(SerializationContext context, UaDecoder decoder) {
+        public ResponseHeader decodeType(EncodingContext context, UaDecoder decoder) {
             DateTime timestamp = decoder.decodeDateTime("Timestamp");
             UInteger requestHandle = decoder.decodeUInt32("RequestHandle");
             StatusCode serviceResult = decoder.decodeStatusCode("ServiceResult");
@@ -146,7 +146,7 @@ public class ResponseHeader extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, ResponseHeader value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ResponseHeader value) {
             encoder.encodeDateTime("Timestamp", value.getTimestamp());
             encoder.encodeUInt32("RequestHandle", value.getRequestHandle());
             encoder.encodeStatusCode("ServiceResult", value.getServiceResult());

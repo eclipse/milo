@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -108,7 +108,7 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
         }
 
         @Override
-        public BrowseNextRequest decodeType(SerializationContext context, UaDecoder decoder) {
+        public BrowseNextRequest decodeType(EncodingContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
             Boolean releaseContinuationPoints = decoder.decodeBoolean("ReleaseContinuationPoints");
             ByteString[] continuationPoints = decoder.decodeByteStringArray("ContinuationPoints");
@@ -116,7 +116,7 @@ public class BrowseNextRequest extends Structure implements UaRequestMessageType
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                BrowseNextRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeBoolean("ReleaseContinuationPoints", value.getReleaseContinuationPoints());

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,14 +98,14 @@ public class RolePermissionType extends Structure implements UaStructuredType {
         }
 
         @Override
-        public RolePermissionType decodeType(SerializationContext context, UaDecoder decoder) {
+        public RolePermissionType decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId roleId = decoder.decodeNodeId("RoleId");
             PermissionType permissions = new PermissionType(decoder.decodeUInt32("Permissions"));
             return new RolePermissionType(roleId, permissions);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                RolePermissionType value) {
             encoder.encodeNodeId("RoleId", value.getRoleId());
             encoder.encodeUInt32("Permissions", value.getPermissions().getValue());

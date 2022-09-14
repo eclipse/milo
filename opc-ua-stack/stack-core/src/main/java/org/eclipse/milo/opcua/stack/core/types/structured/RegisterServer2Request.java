@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -108,7 +108,7 @@ public class RegisterServer2Request extends Structure implements UaRequestMessag
         }
 
         @Override
-        public RegisterServer2Request decodeType(SerializationContext context, UaDecoder decoder) {
+        public RegisterServer2Request decodeType(EncodingContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
             RegisteredServer server = (RegisteredServer) decoder.decodeStruct("Server", RegisteredServer.TYPE_ID);
             ExtensionObject[] discoveryConfiguration = decoder.decodeExtensionObjectArray("DiscoveryConfiguration");
@@ -116,7 +116,7 @@ public class RegisterServer2Request extends Structure implements UaRequestMessag
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                RegisterServer2Request value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeStruct("Server", value.getServer(), RegisteredServer.TYPE_ID);

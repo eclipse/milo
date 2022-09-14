@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -116,7 +116,7 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public UadpDataSetWriterMessageDataType decodeType(SerializationContext context,
+        public UadpDataSetWriterMessageDataType decodeType(EncodingContext context,
                                                            UaDecoder decoder) {
             UadpDataSetMessageContentMask dataSetMessageContentMask = new UadpDataSetMessageContentMask(decoder.decodeUInt32("DataSetMessageContentMask"));
             UShort configuredSize = decoder.decodeUInt16("ConfiguredSize");
@@ -126,7 +126,7 @@ public class UadpDataSetWriterMessageDataType extends DataSetWriterMessageDataTy
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                UadpDataSetWriterMessageDataType value) {
             encoder.encodeUInt32("DataSetMessageContentMask", value.getDataSetMessageContentMask().getValue());
             encoder.encodeUInt16("ConfiguredSize", value.getConfiguredSize());

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -124,7 +124,7 @@ public class AxisInformation extends Structure implements UaStructuredType {
         }
 
         @Override
-        public AxisInformation decodeType(SerializationContext context, UaDecoder decoder) {
+        public AxisInformation decodeType(EncodingContext context, UaDecoder decoder) {
             EUInformation engineeringUnits = (EUInformation) decoder.decodeStruct("EngineeringUnits", EUInformation.TYPE_ID);
             Range euRange = (Range) decoder.decodeStruct("EURange", Range.TYPE_ID);
             LocalizedText title = decoder.decodeLocalizedText("Title");
@@ -134,7 +134,7 @@ public class AxisInformation extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, AxisInformation value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AxisInformation value) {
             encoder.encodeStruct("EngineeringUnits", value.getEngineeringUnits(), EUInformation.TYPE_ID);
             encoder.encodeStruct("EURange", value.getEuRange(), Range.TYPE_ID);
             encoder.encodeLocalizedText("Title", value.getTitle());

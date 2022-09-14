@@ -13,10 +13,10 @@ package org.eclipse.milo.examples.server.types;
 import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -107,7 +107,7 @@ public class CustomUnionType extends Union implements UaStructuredType {
         }
 
         @Override
-        public CustomUnionType decodeType(SerializationContext context, UaDecoder decoder) {
+        public CustomUnionType decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger switchValue = decoder.decodeUInt32("SwitchValue");
             switch (switchValue.intValue()) {
                 case 0:
@@ -129,7 +129,7 @@ public class CustomUnionType extends Union implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, CustomUnionType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CustomUnionType value) {
             encoder.encodeUInt32("SwitchValue", uint(value.type.ordinal()));
             switch (value.type) {
                 case Null:

@@ -22,10 +22,10 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -75,7 +75,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
 
     @Override
     public StructureT decode(
-        SerializationContext context,
+        EncodingContext context,
         OpcUaBinaryDecoder decoder
     ) throws UaSerializationException {
 
@@ -164,7 +164,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
 
     @Override
     public void encode(
-        SerializationContext context,
+        EncodingContext context,
         OpcUaBinaryEncoder encoder,
         Object structure
     ) throws UaSerializationException {
@@ -194,7 +194,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
     }
 
     private void encodeField(
-        SerializationContext context,
+        EncodingContext context,
         OpcUaBinaryEncoder encoder,
         LinkedHashMap<String, MemberT> members,
         FieldType field
@@ -268,7 +268,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
     }
 
     private Object decode(
-        SerializationContext context,
+        EncodingContext context,
         String fieldName,
         String namespaceUri,
         String description,
@@ -313,7 +313,7 @@ public abstract class AbstractBsdCodec<StructureT, MemberT> implements BinaryDat
     }
 
     private void encode(
-        SerializationContext context,
+        EncodingContext context,
         String fieldName,
         String namespaceUri,
         String description,

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -116,7 +116,7 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
         }
 
         @Override
-        public ReadRequest decodeType(SerializationContext context, UaDecoder decoder) {
+        public ReadRequest decodeType(EncodingContext context, UaDecoder decoder) {
             RequestHeader requestHeader = (RequestHeader) decoder.decodeStruct("RequestHeader", RequestHeader.TYPE_ID);
             Double maxAge = decoder.decodeDouble("MaxAge");
             TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.decodeEnum("TimestampsToReturn"));
@@ -125,7 +125,7 @@ public class ReadRequest extends Structure implements UaRequestMessageType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, ReadRequest value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ReadRequest value) {
             encoder.encodeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
             encoder.encodeDouble("MaxAge", value.getMaxAge());
             encoder.encodeEnum("TimestampsToReturn", value.getTimestampsToReturn());

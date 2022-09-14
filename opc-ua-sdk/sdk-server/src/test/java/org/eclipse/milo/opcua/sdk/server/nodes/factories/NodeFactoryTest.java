@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.model.VariableTypeInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.objects.ServerTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.AnalogItemTypeNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.NodeLoader;
-import org.eclipse.milo.opcua.sdk.server.nodes.TestSerializationContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.TestEncodingContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -86,7 +86,7 @@ public class NodeFactoryTest {
 
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
 
-        Mockito.when(server.getSerializationContext()).thenReturn(new TestSerializationContext());
+        Mockito.when(server.getSerializationContext()).thenReturn(new TestEncodingContext());
 
         UaNodeContext context = new UaNodeContext() {
             @Override

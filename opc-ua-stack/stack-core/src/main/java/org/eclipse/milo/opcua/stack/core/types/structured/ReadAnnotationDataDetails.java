@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -91,13 +91,13 @@ public class ReadAnnotationDataDetails extends HistoryReadDetails implements UaS
         }
 
         @Override
-        public ReadAnnotationDataDetails decodeType(SerializationContext context, UaDecoder decoder) {
+        public ReadAnnotationDataDetails decodeType(EncodingContext context, UaDecoder decoder) {
             DateTime[] reqTimes = decoder.decodeDateTimeArray("ReqTimes");
             return new ReadAnnotationDataDetails(reqTimes);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ReadAnnotationDataDetails value) {
             encoder.encodeDateTimeArray("ReqTimes", value.getReqTimes());
         }

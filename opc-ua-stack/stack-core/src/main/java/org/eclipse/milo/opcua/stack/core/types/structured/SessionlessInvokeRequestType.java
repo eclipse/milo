@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -123,7 +123,7 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         }
 
         @Override
-        public SessionlessInvokeRequestType decodeType(SerializationContext context,
+        public SessionlessInvokeRequestType decodeType(EncodingContext context,
                                                        UaDecoder decoder) {
             UInteger urisVersion = decoder.decodeUInt32("UrisVersion");
             String[] namespaceUris = decoder.decodeStringArray("NamespaceUris");
@@ -134,7 +134,7 @@ public class SessionlessInvokeRequestType extends Structure implements UaStructu
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                SessionlessInvokeRequestType value) {
             encoder.encodeUInt32("UrisVersion", value.getUrisVersion());
             encoder.encodeStringArray("NamespaceUris", value.getNamespaceUris());

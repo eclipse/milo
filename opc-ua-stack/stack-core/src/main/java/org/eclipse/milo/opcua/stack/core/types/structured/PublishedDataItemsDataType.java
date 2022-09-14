@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -90,13 +90,13 @@ public class PublishedDataItemsDataType extends PublishedDataSetSourceDataType i
         }
 
         @Override
-        public PublishedDataItemsDataType decodeType(SerializationContext context, UaDecoder decoder) {
+        public PublishedDataItemsDataType decodeType(EncodingContext context, UaDecoder decoder) {
             PublishedVariableDataType[] publishedData = (PublishedVariableDataType[]) decoder.decodeStructArray("PublishedData", PublishedVariableDataType.TYPE_ID);
             return new PublishedDataItemsDataType(publishedData);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                PublishedDataItemsDataType value) {
             encoder.encodeStructArray("PublishedData", value.getPublishedData(), PublishedVariableDataType.TYPE_ID);
         }

@@ -14,10 +14,10 @@ import java.io.StringWriter;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.json.OpcUaJsonDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.json.OpcUaJsonEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.json.OpcUaJsonEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -42,7 +42,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public Object encode(SerializationContext context, Object decodedBody, NodeId encodingId) {
+    public Object encode(EncodingContext context, Object decodedBody, NodeId encodingId) {
         DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
         if (codec != null) {
@@ -59,7 +59,7 @@ public class OpcUaDefaultJsonEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public Object decode(SerializationContext context, Object encodedBody, NodeId encodingId) {
+    public Object decode(EncodingContext context, Object encodedBody, NodeId encodingId) {
         DataTypeCodec codec = context.getDataTypeManager().getCodec(encodingId);
 
         if (codec != null) {

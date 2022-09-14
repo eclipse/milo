@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -108,7 +108,7 @@ public class CallResponse extends Structure implements UaResponseMessageType {
         }
 
         @Override
-        public CallResponse decodeType(SerializationContext context, UaDecoder decoder) {
+        public CallResponse decodeType(EncodingContext context, UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             CallMethodResult[] results = (CallMethodResult[]) decoder.decodeStructArray("Results", CallMethodResult.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
@@ -116,7 +116,7 @@ public class CallResponse extends Structure implements UaResponseMessageType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, CallResponse value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CallResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Results", value.getResults(), CallMethodResult.TYPE_ID);
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

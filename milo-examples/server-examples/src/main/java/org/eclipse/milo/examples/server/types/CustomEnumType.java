@@ -11,10 +11,10 @@
 package org.eclipse.milo.examples.server.types;
 
 import org.eclipse.milo.examples.server.ExampleNamespace;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaEnumeratedType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.jetbrains.annotations.Nullable;
@@ -68,12 +68,12 @@ public enum CustomEnumType implements UaEnumeratedType {
         }
 
         @Override
-        public CustomEnumType decodeType(SerializationContext context, UaDecoder decoder) {
+        public CustomEnumType decodeType(EncodingContext context, UaDecoder decoder) {
             return CustomEnumType.from(decoder.decodeInt32(null));
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, CustomEnumType value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, CustomEnumType value) {
             encoder.encodeInt32(null, value.getValue());
         }
     }

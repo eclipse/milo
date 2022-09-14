@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,14 +98,14 @@ public class PortableNodeId extends Structure implements UaStructuredType {
         }
 
         @Override
-        public PortableNodeId decodeType(SerializationContext context, UaDecoder decoder) {
+        public PortableNodeId decodeType(EncodingContext context, UaDecoder decoder) {
             String namespaceUri = decoder.decodeString("NamespaceUri");
             NodeId identifier = decoder.decodeNodeId("Identifier");
             return new PortableNodeId(namespaceUri, identifier);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, PortableNodeId value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, PortableNodeId value) {
             encoder.encodeString("NamespaceUri", value.getNamespaceUri());
             encoder.encodeNodeId("Identifier", value.getIdentifier());
         }

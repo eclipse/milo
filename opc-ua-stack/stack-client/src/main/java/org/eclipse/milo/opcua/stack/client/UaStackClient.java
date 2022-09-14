@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
@@ -62,8 +62,8 @@ public class UaStackClient {
     private final DataTypeManager dynamicDataTypeManager =
         DefaultDataTypeManager.createAndInitialize(namespaceTable);
 
-    private final SerializationContext staticSerializationContext;
-    private final SerializationContext dynamicSerializationContext;
+    private final EncodingContext staticEncodingContext;
+    private final EncodingContext dynamicEncodingContext;
 
     private final UaTransport transport;
     private final ExecutionQueue deliveryQueue;
@@ -84,7 +84,7 @@ public class UaStackClient {
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
 
-        staticSerializationContext = new SerializationContext() {
+        staticEncodingContext = new EncodingContext() {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return staticDataTypeManager;
@@ -106,7 +106,7 @@ public class UaStackClient {
             }
         };
 
-        dynamicSerializationContext = new SerializationContext() {
+        dynamicEncodingContext = new EncodingContext() {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return dynamicDataTypeManager;
@@ -229,27 +229,27 @@ public class UaStackClient {
     }
 
     /**
-     * Get a "static" {@link SerializationContext} instance.
+     * Get a "static" {@link EncodingContext} instance.
      * <p>
-     * This {@link SerializationContext} instance returns the client's static {@link DataTypeManager}.
+     * This {@link EncodingContext} instance returns the client's static {@link DataTypeManager}.
      *
-     * @return a "static" {@link SerializationContext} instance.
+     * @return a "static" {@link EncodingContext} instance.
      * @see #getStaticDataTypeManager()
      */
-    public SerializationContext getStaticSerializationContext() {
-        return staticSerializationContext;
+    public EncodingContext getStaticSerializationContext() {
+        return staticEncodingContext;
     }
 
     /**
-     * Get a "dynamic" {@link SerializationContext}.
+     * Get a "dynamic" {@link EncodingContext}.
      * <p>
-     * This {@link SerializationContext} instance returns the client's dynamic {@link DataTypeManager}.
+     * This {@link EncodingContext} instance returns the client's dynamic {@link DataTypeManager}.
      *
-     * @return a "dynamic" {@link SerializationContext}.
+     * @return a "dynamic" {@link EncodingContext}.
      * @see #getDynamicDataTypeManager()
      */
-    public SerializationContext getDynamicSerializationContext() {
-        return dynamicSerializationContext;
+    public EncodingContext getDynamicSerializationContext() {
+        return dynamicEncodingContext;
     }
 
     /**

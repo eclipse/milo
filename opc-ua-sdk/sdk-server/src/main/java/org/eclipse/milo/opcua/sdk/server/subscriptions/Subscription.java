@@ -35,7 +35,7 @@ import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.diagnostics.SubscriptionDiagnostics;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -110,7 +110,7 @@ public class Subscription {
 
     private final SubscriptionDiagnostics subscriptionDiagnostics;
 
-    private final SerializationContext serializationContext;
+    private final EncodingContext encodingContext;
     private final UInteger subscriptionId;
 
     public Subscription(
@@ -129,7 +129,7 @@ public class Subscription {
 
         subscriptionDiagnostics = new SubscriptionDiagnostics(this);
 
-        serializationContext = subscriptionManager.getServer().getSerializationContext();
+        encodingContext = subscriptionManager.getServer().getSerializationContext();
 
         setPublishingInterval(publishingInterval);
         setMaxKeepAliveCount(maxKeepAliveCount);
@@ -401,7 +401,7 @@ public class Subscription {
         NotificationMessage notificationMessage = new NotificationMessage(
             sequenceNumber,
             DateTime.now(),
-            new ExtensionObject[]{ExtensionObject.encode(serializationContext, statusChange)}
+            new ExtensionObject[]{ExtensionObject.encode(encodingContext, statusChange)}
         );
 
         ResponseHeader header = service.createResponseHeader();
@@ -511,7 +511,7 @@ public class Subscription {
             );
 
             notificationData.add(ExtensionObject.encode(
-                serializationContext,
+                encodingContext,
                 dataChange,
                 dataChange.getBinaryEncodingId(),
                 OpcUaDefaultBinaryEncoding.getInstance()
@@ -526,7 +526,7 @@ public class Subscription {
             );
 
             notificationData.add(ExtensionObject.encode(
-                serializationContext,
+                encodingContext,
                 eventChange,
                 eventChange.getBinaryEncodingId(),
                 OpcUaDefaultBinaryEncoding.getInstance()

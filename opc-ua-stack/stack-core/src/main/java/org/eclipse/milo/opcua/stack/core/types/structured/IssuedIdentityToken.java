@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -101,7 +101,7 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
 
         @Override
-        public IssuedIdentityToken decodeType(SerializationContext context, UaDecoder decoder) {
+        public IssuedIdentityToken decodeType(EncodingContext context, UaDecoder decoder) {
             String policyId = decoder.decodeString("PolicyId");
             ByteString tokenData = decoder.decodeByteString("TokenData");
             String encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
@@ -109,7 +109,7 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                IssuedIdentityToken value) {
             encoder.encodeString("PolicyId", value.getPolicyId());
             encoder.encodeByteString("TokenData", value.getTokenData());

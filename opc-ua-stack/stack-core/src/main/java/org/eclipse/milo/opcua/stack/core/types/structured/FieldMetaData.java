@@ -16,10 +16,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -167,7 +167,7 @@ public class FieldMetaData extends Structure implements UaStructuredType {
         }
 
         @Override
-        public FieldMetaData decodeType(SerializationContext context, UaDecoder decoder) {
+        public FieldMetaData decodeType(EncodingContext context, UaDecoder decoder) {
             String name = decoder.decodeString("Name");
             LocalizedText description = decoder.decodeLocalizedText("Description");
             DataSetFieldFlags fieldFlags = new DataSetFieldFlags(decoder.decodeUInt16("FieldFlags"));
@@ -182,7 +182,7 @@ public class FieldMetaData extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, FieldMetaData value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, FieldMetaData value) {
             encoder.encodeString("Name", value.getName());
             encoder.encodeLocalizedText("Description", value.getDescription());
             encoder.encodeUInt16("FieldFlags", value.getFieldFlags().getValue());

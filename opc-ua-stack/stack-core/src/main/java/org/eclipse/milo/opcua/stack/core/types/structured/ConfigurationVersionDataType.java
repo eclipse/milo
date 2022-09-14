@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,7 +98,7 @@ public class ConfigurationVersionDataType extends Structure implements UaStructu
         }
 
         @Override
-        public ConfigurationVersionDataType decodeType(SerializationContext context,
+        public ConfigurationVersionDataType decodeType(EncodingContext context,
                                                        UaDecoder decoder) {
             UInteger majorVersion = decoder.decodeUInt32("MajorVersion");
             UInteger minorVersion = decoder.decodeUInt32("MinorVersion");
@@ -106,7 +106,7 @@ public class ConfigurationVersionDataType extends Structure implements UaStructu
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ConfigurationVersionDataType value) {
             encoder.encodeUInt32("MajorVersion", value.getMajorVersion());
             encoder.encodeUInt32("MinorVersion", value.getMinorVersion());

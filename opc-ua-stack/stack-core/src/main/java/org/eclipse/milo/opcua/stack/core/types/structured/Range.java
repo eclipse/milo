@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,14 +98,14 @@ public class Range extends Structure implements UaStructuredType {
         }
 
         @Override
-        public Range decodeType(SerializationContext context, UaDecoder decoder) {
+        public Range decodeType(EncodingContext context, UaDecoder decoder) {
             Double low = decoder.decodeDouble("Low");
             Double high = decoder.decodeDouble("High");
             return new Range(low, high);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, Range value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, Range value) {
             encoder.encodeDouble("Low", value.getLow());
             encoder.encodeDouble("High", value.getHigh());
         }

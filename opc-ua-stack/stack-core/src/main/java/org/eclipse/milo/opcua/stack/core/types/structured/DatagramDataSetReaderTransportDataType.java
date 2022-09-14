@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -115,7 +115,7 @@ public class DatagramDataSetReaderTransportDataType extends DataSetReaderTranspo
         }
 
         @Override
-        public DatagramDataSetReaderTransportDataType decodeType(SerializationContext context,
+        public DatagramDataSetReaderTransportDataType decodeType(EncodingContext context,
                                                                  UaDecoder decoder) {
             NetworkAddressDataType address = (NetworkAddressDataType) decoder.decodeStruct("Address", NetworkAddressDataType.TYPE_ID);
             String qosCategory = decoder.decodeString("QosCategory");
@@ -125,7 +125,7 @@ public class DatagramDataSetReaderTransportDataType extends DataSetReaderTranspo
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                DatagramDataSetReaderTransportDataType value) {
             encoder.encodeStruct("Address", value.getAddress(), NetworkAddressDataType.TYPE_ID);
             encoder.encodeString("QosCategory", value.getQosCategory());

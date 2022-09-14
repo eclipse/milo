@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -107,7 +107,7 @@ public class QueryDataSet extends Structure implements UaStructuredType {
         }
 
         @Override
-        public QueryDataSet decodeType(SerializationContext context, UaDecoder decoder) {
+        public QueryDataSet decodeType(EncodingContext context, UaDecoder decoder) {
             ExpandedNodeId nodeId = decoder.decodeExpandedNodeId("NodeId");
             ExpandedNodeId typeDefinitionNode = decoder.decodeExpandedNodeId("TypeDefinitionNode");
             Variant[] values = decoder.decodeVariantArray("Values");
@@ -115,7 +115,7 @@ public class QueryDataSet extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, QueryDataSet value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, QueryDataSet value) {
             encoder.encodeExpandedNodeId("NodeId", value.getNodeId());
             encoder.encodeExpandedNodeId("TypeDefinitionNode", value.getTypeDefinitionNode());
             encoder.encodeVariantArray("Values", value.getValues());

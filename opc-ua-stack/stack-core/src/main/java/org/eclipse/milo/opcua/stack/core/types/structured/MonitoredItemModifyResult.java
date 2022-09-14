@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -117,7 +117,7 @@ public class MonitoredItemModifyResult extends Structure implements UaStructured
         }
 
         @Override
-        public MonitoredItemModifyResult decodeType(SerializationContext context, UaDecoder decoder) {
+        public MonitoredItemModifyResult decodeType(EncodingContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
             Double revisedSamplingInterval = decoder.decodeDouble("RevisedSamplingInterval");
             UInteger revisedQueueSize = decoder.decodeUInt32("RevisedQueueSize");
@@ -126,7 +126,7 @@ public class MonitoredItemModifyResult extends Structure implements UaStructured
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                MonitoredItemModifyResult value) {
             encoder.encodeStatusCode("StatusCode", value.getStatusCode());
             encoder.encodeDouble("RevisedSamplingInterval", value.getRevisedSamplingInterval());

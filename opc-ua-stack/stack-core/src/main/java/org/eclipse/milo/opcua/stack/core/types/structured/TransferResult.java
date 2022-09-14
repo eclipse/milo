@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -99,14 +99,14 @@ public class TransferResult extends Structure implements UaStructuredType {
         }
 
         @Override
-        public TransferResult decodeType(SerializationContext context, UaDecoder decoder) {
+        public TransferResult decodeType(EncodingContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
             UInteger[] availableSequenceNumbers = decoder.decodeUInt32Array("AvailableSequenceNumbers");
             return new TransferResult(statusCode, availableSequenceNumbers);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, TransferResult value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, TransferResult value) {
             encoder.encodeStatusCode("StatusCode", value.getStatusCode());
             encoder.encodeUInt32Array("AvailableSequenceNumbers", value.getAvailableSequenceNumbers());
         }

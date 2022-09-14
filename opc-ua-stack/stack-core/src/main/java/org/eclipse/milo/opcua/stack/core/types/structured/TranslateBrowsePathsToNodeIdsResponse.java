@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -108,7 +108,7 @@ public class TranslateBrowsePathsToNodeIdsResponse extends Structure implements 
         }
 
         @Override
-        public TranslateBrowsePathsToNodeIdsResponse decodeType(SerializationContext context,
+        public TranslateBrowsePathsToNodeIdsResponse decodeType(EncodingContext context,
                                                                 UaDecoder decoder) {
             ResponseHeader responseHeader = (ResponseHeader) decoder.decodeStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             BrowsePathResult[] results = (BrowsePathResult[]) decoder.decodeStructArray("Results", BrowsePathResult.TYPE_ID);
@@ -117,7 +117,7 @@ public class TranslateBrowsePathsToNodeIdsResponse extends Structure implements 
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                TranslateBrowsePathsToNodeIdsResponse value) {
             encoder.encodeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
             encoder.encodeStructArray("Results", value.getResults(), BrowsePathResult.TYPE_ID);

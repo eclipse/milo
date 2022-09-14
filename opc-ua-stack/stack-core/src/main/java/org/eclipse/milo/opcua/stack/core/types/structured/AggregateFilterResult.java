@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -108,7 +108,7 @@ public class AggregateFilterResult extends MonitoringFilterResult implements UaS
         }
 
         @Override
-        public AggregateFilterResult decodeType(SerializationContext context, UaDecoder decoder) {
+        public AggregateFilterResult decodeType(EncodingContext context, UaDecoder decoder) {
             DateTime revisedStartTime = decoder.decodeDateTime("RevisedStartTime");
             Double revisedProcessingInterval = decoder.decodeDouble("RevisedProcessingInterval");
             AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.decodeStruct("RevisedAggregateConfiguration", AggregateConfiguration.TYPE_ID);
@@ -116,7 +116,7 @@ public class AggregateFilterResult extends MonitoringFilterResult implements UaS
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                AggregateFilterResult value) {
             encoder.encodeDateTime("RevisedStartTime", value.getRevisedStartTime());
             encoder.encodeDouble("RevisedProcessingInterval", value.getRevisedProcessingInterval());

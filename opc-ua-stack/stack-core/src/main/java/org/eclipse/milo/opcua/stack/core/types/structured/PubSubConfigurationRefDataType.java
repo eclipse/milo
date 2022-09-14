@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -116,7 +116,7 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         }
 
         @Override
-        public PubSubConfigurationRefDataType decodeType(SerializationContext context,
+        public PubSubConfigurationRefDataType decodeType(EncodingContext context,
                                                          UaDecoder decoder) {
             PubSubConfigurationRefMask configurationMask = new PubSubConfigurationRefMask(decoder.decodeUInt32("ConfigurationMask"));
             UShort elementIndex = decoder.decodeUInt16("ElementIndex");
@@ -126,7 +126,7 @@ public class PubSubConfigurationRefDataType extends Structure implements UaStruc
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                PubSubConfigurationRefDataType value) {
             encoder.encodeUInt32("ConfigurationMask", value.getConfigurationMask().getValue());
             encoder.encodeUInt16("ElementIndex", value.getElementIndex());

@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -116,7 +116,7 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructured
         }
 
         @Override
-        public ReadEventDetails decodeType(SerializationContext context, UaDecoder decoder) {
+        public ReadEventDetails decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
             DateTime startTime = decoder.decodeDateTime("StartTime");
             DateTime endTime = decoder.decodeDateTime("EndTime");
@@ -125,7 +125,7 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructured
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ReadEventDetails value) {
             encoder.encodeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
             encoder.encodeDateTime("StartTime", value.getStartTime());

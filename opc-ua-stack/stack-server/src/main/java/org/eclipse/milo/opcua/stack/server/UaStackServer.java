@@ -35,8 +35,8 @@ import org.eclipse.milo.opcua.stack.core.ServerTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
@@ -136,7 +136,7 @@ public class UaStackServer {
     private final Set<EndpointConfiguration> boundEndpoints = ConcurrentHashMap.newKeySet();
 
     private final ServerChannelManager channelManager;
-    private final SerializationContext serializationContext;
+    private final EncodingContext encodingContext;
 
     private final UaStackServerConfig config;
 
@@ -147,7 +147,7 @@ public class UaStackServer {
 
         channelManager = new ServerChannelManager(this);
 
-        serializationContext = new SerializationContext() {
+        encodingContext = new EncodingContext() {
             @Override
             public DataTypeManager getDataTypeManager() {
                 return dataTypeManager;
@@ -259,8 +259,8 @@ public class UaStackServer {
         return dataTypeManager;
     }
 
-    public SerializationContext getSerializationContext() {
-        return serializationContext;
+    public EncodingContext getSerializationContext() {
+        return encodingContext;
     }
 
     public void registerConnectedChannel(Channel channel) {

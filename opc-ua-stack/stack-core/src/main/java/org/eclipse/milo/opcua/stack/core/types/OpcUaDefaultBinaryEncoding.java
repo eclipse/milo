@@ -15,10 +15,10 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -47,7 +47,7 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
     @Override
     public Object encode(
-        SerializationContext context,
+        EncodingContext context,
         Object decodedBody,
         NodeId encodingId
     ) {
@@ -76,7 +76,7 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
     @Override
     public Object decode(
-        SerializationContext context,
+        EncodingContext context,
         Object encodedBody,
         NodeId encodingId
     ) {

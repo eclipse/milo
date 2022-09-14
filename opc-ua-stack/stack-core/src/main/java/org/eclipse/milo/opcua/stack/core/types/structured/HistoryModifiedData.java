@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -93,14 +93,14 @@ public class HistoryModifiedData extends HistoryData implements UaStructuredType
         }
 
         @Override
-        public HistoryModifiedData decodeType(SerializationContext context, UaDecoder decoder) {
+        public HistoryModifiedData decodeType(EncodingContext context, UaDecoder decoder) {
             DataValue[] dataValues = decoder.decodeDataValueArray("DataValues");
             ModificationInfo[] modificationInfos = (ModificationInfo[]) decoder.decodeStructArray("ModificationInfos", ModificationInfo.TYPE_ID);
             return new HistoryModifiedData(dataValues, modificationInfos);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                HistoryModifiedData value) {
             encoder.encodeDataValueArray("DataValues", value.getDataValues());
             encoder.encodeStructArray("ModificationInfos", value.getModificationInfos(), ModificationInfo.TYPE_ID);

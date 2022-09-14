@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,14 +98,14 @@ public class NetworkGroupDataType extends Structure implements UaStructuredType 
         }
 
         @Override
-        public NetworkGroupDataType decodeType(SerializationContext context, UaDecoder decoder) {
+        public NetworkGroupDataType decodeType(EncodingContext context, UaDecoder decoder) {
             String serverUri = decoder.decodeString("ServerUri");
             EndpointUrlListDataType[] networkPaths = (EndpointUrlListDataType[]) decoder.decodeStructArray("NetworkPaths", EndpointUrlListDataType.TYPE_ID);
             return new NetworkGroupDataType(serverUri, networkPaths);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                NetworkGroupDataType value) {
             encoder.encodeString("ServerUri", value.getServerUri());
             encoder.encodeStructArray("NetworkPaths", value.getNetworkPaths(), EndpointUrlListDataType.TYPE_ID);

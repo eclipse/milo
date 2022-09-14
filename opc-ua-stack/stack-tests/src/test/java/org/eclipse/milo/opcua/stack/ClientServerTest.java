@@ -109,7 +109,7 @@ public class ClientServerTest extends SecurityFixture {
             {new Variant(new QualifiedName(0, "QualifiedName"))},
             {new Variant(LocalizedText.english("LocalizedText"))},
             {new Variant(ExtensionObject.encode(
-                new TestSerializationContext(),
+                new TestEncodingContext(),
                 new ReadValueId(NodeId.NULL_VALUE, uint(1), null, new QualifiedName(0, "DataEncoding"))
             ))},
         };

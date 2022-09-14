@@ -16,10 +16,10 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcUaXmlDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcUaXmlEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.xml.OpcUaXmlDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.xml.OpcUaXmlEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
@@ -45,7 +45,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
 
     @Override
     public Object encode(
-        SerializationContext context,
+        EncodingContext context,
         Object struct,
         NodeId encodingId
     ) {
@@ -68,7 +68,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
 
     @Override
     public Object decode(
-        SerializationContext context,
+        EncodingContext context,
         Object body,
         NodeId encodingId
     ) {

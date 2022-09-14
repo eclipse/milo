@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -110,7 +110,7 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails implements Ua
         }
 
         @Override
-        public DeleteRawModifiedDetails decodeType(SerializationContext context, UaDecoder decoder) {
+        public DeleteRawModifiedDetails decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.decodeNodeId("NodeId");
             Boolean isDeleteModified = decoder.decodeBoolean("IsDeleteModified");
             DateTime startTime = decoder.decodeDateTime("StartTime");
@@ -119,7 +119,7 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails implements Ua
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                DeleteRawModifiedDetails value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeBoolean("IsDeleteModified", value.getIsDeleteModified());

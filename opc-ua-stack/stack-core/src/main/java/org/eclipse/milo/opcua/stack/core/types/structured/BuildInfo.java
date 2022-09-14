@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -132,7 +132,7 @@ public class BuildInfo extends Structure implements UaStructuredType {
         }
 
         @Override
-        public BuildInfo decodeType(SerializationContext context, UaDecoder decoder) {
+        public BuildInfo decodeType(EncodingContext context, UaDecoder decoder) {
             String productUri = decoder.decodeString("ProductUri");
             String manufacturerName = decoder.decodeString("ManufacturerName");
             String productName = decoder.decodeString("ProductName");
@@ -143,7 +143,7 @@ public class BuildInfo extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, BuildInfo value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, BuildInfo value) {
             encoder.encodeString("ProductUri", value.getProductUri());
             encoder.encodeString("ManufacturerName", value.getManufacturerName());
             encoder.encodeString("ProductName", value.getProductName());

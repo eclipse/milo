@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -100,14 +100,14 @@ public class ContentFilterElement extends Structure implements UaStructuredType 
         }
 
         @Override
-        public ContentFilterElement decodeType(SerializationContext context, UaDecoder decoder) {
+        public ContentFilterElement decodeType(EncodingContext context, UaDecoder decoder) {
             FilterOperator filterOperator = FilterOperator.from(decoder.decodeEnum("FilterOperator"));
             ExtensionObject[] filterOperands = decoder.decodeExtensionObjectArray("FilterOperands");
             return new ContentFilterElement(filterOperator, filterOperands);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ContentFilterElement value) {
             encoder.encodeEnum("FilterOperator", value.getFilterOperator());
             encoder.encodeExtensionObjectArray("FilterOperands", value.getFilterOperands());

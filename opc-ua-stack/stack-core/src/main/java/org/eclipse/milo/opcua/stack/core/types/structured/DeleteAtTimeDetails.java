@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -93,14 +93,14 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
         }
 
         @Override
-        public DeleteAtTimeDetails decodeType(SerializationContext context, UaDecoder decoder) {
+        public DeleteAtTimeDetails decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.decodeNodeId("NodeId");
             DateTime[] reqTimes = decoder.decodeDateTimeArray("ReqTimes");
             return new DeleteAtTimeDetails(nodeId, reqTimes);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                DeleteAtTimeDetails value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeDateTimeArray("ReqTimes", value.getReqTimes());

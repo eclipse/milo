@@ -39,8 +39,8 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.UaRequestMessageType;
 import org.eclipse.milo.opcua.stack.core.types.UaResponseMessageType;
@@ -357,14 +357,14 @@ public class OpcUaClient implements UaClient {
     /**
      * @see UaStackClient#getStaticSerializationContext()
      */
-    public SerializationContext getStaticSerializationContext() {
+    public EncodingContext getStaticSerializationContext() {
         return stackClient.getStaticSerializationContext();
     }
 
     /**
      * @see UaStackClient#getDynamicSerializationContext()
      */
-    public SerializationContext getDynamicSerializationContext() {
+    public EncodingContext getDynamicSerializationContext() {
         return stackClient.getDynamicSerializationContext();
     }
 

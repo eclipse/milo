@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -164,7 +164,7 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
         }
 
         @Override
-        public ProgramDiagnosticDataType decodeType(SerializationContext context, UaDecoder decoder) {
+        public ProgramDiagnosticDataType decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId createSessionId = decoder.decodeNodeId("CreateSessionId");
             String createClientName = decoder.decodeString("CreateClientName");
             DateTime invocationCreationTime = decoder.decodeDateTime("InvocationCreationTime");
@@ -179,7 +179,7 @@ public class ProgramDiagnosticDataType extends Structure implements UaStructured
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ProgramDiagnosticDataType value) {
             encoder.encodeNodeId("CreateSessionId", value.getCreateSessionId());
             encoder.encodeString("CreateClientName", value.getCreateClientName());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -22,19 +22,19 @@ public interface DataTypeEncoding {
     QualifiedName getName();
 
     Object encode(
-        SerializationContext context,
+        EncodingContext context,
         Object decodedBody,
         NodeId encodingId
     );
 
     Object decode(
-        SerializationContext context,
+        EncodingContext context,
         Object encodedBody,
         NodeId encodingId
     );
 
     default Object encode(
-        SerializationContext context,
+        EncodingContext context,
         Object decodedBody,
         ExpandedNodeId xEncodingId
     ) {
@@ -52,7 +52,7 @@ public interface DataTypeEncoding {
     }
 
     default Object decode(
-        SerializationContext context,
+        EncodingContext context,
         Object encodedBody,
         ExpandedNodeId xEncodingId
     ) {

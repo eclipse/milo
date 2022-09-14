@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -115,7 +115,7 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
         }
 
         @Override
-        public SamplingIntervalDiagnosticsDataType decodeType(SerializationContext context,
+        public SamplingIntervalDiagnosticsDataType decodeType(EncodingContext context,
                                                               UaDecoder decoder) {
             Double samplingInterval = decoder.decodeDouble("SamplingInterval");
             UInteger monitoredItemCount = decoder.decodeUInt32("MonitoredItemCount");
@@ -125,7 +125,7 @@ public class SamplingIntervalDiagnosticsDataType extends Structure implements Ua
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                SamplingIntervalDiagnosticsDataType value) {
             encoder.encodeDouble("SamplingInterval", value.getSamplingInterval());
             encoder.encodeUInt32("MonitoredItemCount", value.getMonitoredItemCount());

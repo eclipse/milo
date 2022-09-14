@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 the Eclipse Milo Authors
+ * Copyright (c) 2022 the Eclipse Milo Authors
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -53,7 +53,7 @@ public class UaNodeTest {
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getObjectTypeManager()).thenReturn(objectTypeManager);
         Mockito.when(server.getVariableTypeManager()).thenReturn(variableTypeManager);
-        Mockito.when(server.getSerializationContext()).thenReturn(new TestSerializationContext());
+        Mockito.when(server.getSerializationContext()).thenReturn(new TestEncodingContext());
 
         UaNodeManager nodeManager = new UaNodeManager();
         addressSpaceManager.register(nodeManager);

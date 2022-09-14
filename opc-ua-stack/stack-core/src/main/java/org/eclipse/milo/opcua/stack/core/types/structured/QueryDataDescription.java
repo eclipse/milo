@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -106,7 +106,7 @@ public class QueryDataDescription extends Structure implements UaStructuredType 
         }
 
         @Override
-        public QueryDataDescription decodeType(SerializationContext context, UaDecoder decoder) {
+        public QueryDataDescription decodeType(EncodingContext context, UaDecoder decoder) {
             RelativePath relativePath = (RelativePath) decoder.decodeStruct("RelativePath", RelativePath.TYPE_ID);
             UInteger attributeId = decoder.decodeUInt32("AttributeId");
             String indexRange = decoder.decodeString("IndexRange");
@@ -114,7 +114,7 @@ public class QueryDataDescription extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                QueryDataDescription value) {
             encoder.encodeStruct("RelativePath", value.getRelativePath(), RelativePath.TYPE_ID);
             encoder.encodeUInt32("AttributeId", value.getAttributeId());

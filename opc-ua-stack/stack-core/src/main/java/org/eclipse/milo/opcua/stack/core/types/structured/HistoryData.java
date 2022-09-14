@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -91,13 +91,13 @@ public class HistoryData extends Structure implements UaStructuredType {
         }
 
         @Override
-        public HistoryData decodeType(SerializationContext context, UaDecoder decoder) {
+        public HistoryData decodeType(EncodingContext context, UaDecoder decoder) {
             DataValue[] dataValues = decoder.decodeDataValueArray("DataValues");
             return new HistoryData(dataValues);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, HistoryData value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, HistoryData value) {
             encoder.encodeDataValueArray("DataValues", value.getDataValues());
         }
     }

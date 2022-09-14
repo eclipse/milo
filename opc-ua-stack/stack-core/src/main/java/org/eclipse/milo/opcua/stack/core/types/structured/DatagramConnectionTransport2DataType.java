@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -118,7 +118,7 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         }
 
         @Override
-        public DatagramConnectionTransport2DataType decodeType(SerializationContext context,
+        public DatagramConnectionTransport2DataType decodeType(EncodingContext context,
                                                                UaDecoder decoder) {
             NetworkAddressDataType discoveryAddress = (NetworkAddressDataType) decoder.decodeStruct("DiscoveryAddress", NetworkAddressDataType.TYPE_ID);
             UInteger discoveryAnnounceRate = decoder.decodeUInt32("DiscoveryAnnounceRate");
@@ -129,7 +129,7 @@ public class DatagramConnectionTransport2DataType extends DatagramConnectionTran
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                DatagramConnectionTransport2DataType value) {
             encoder.encodeStruct("DiscoveryAddress", value.getDiscoveryAddress(), NetworkAddressDataType.TYPE_ID);
             encoder.encodeUInt32("DiscoveryAnnounceRate", value.getDiscoveryAnnounceRate());

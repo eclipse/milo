@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -107,7 +107,7 @@ public class UserManagementDataType extends Structure implements UaStructuredTyp
         }
 
         @Override
-        public UserManagementDataType decodeType(SerializationContext context, UaDecoder decoder) {
+        public UserManagementDataType decodeType(EncodingContext context, UaDecoder decoder) {
             String userName = decoder.decodeString("UserName");
             UserConfigurationMask userConfiguration = new UserConfigurationMask(decoder.decodeUInt32("UserConfiguration"));
             String description = decoder.decodeString("Description");
@@ -115,7 +115,7 @@ public class UserManagementDataType extends Structure implements UaStructuredTyp
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                UserManagementDataType value) {
             encoder.encodeString("UserName", value.getUserName());
             encoder.encodeUInt32("UserConfiguration", value.getUserConfiguration().getValue());

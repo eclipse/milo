@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -143,7 +143,7 @@ public class AddNodesItem extends Structure implements UaStructuredType {
         }
 
         @Override
-        public AddNodesItem decodeType(SerializationContext context, UaDecoder decoder) {
+        public AddNodesItem decodeType(EncodingContext context, UaDecoder decoder) {
             ExpandedNodeId parentNodeId = decoder.decodeExpandedNodeId("ParentNodeId");
             NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
             ExpandedNodeId requestedNewNodeId = decoder.decodeExpandedNodeId("RequestedNewNodeId");
@@ -155,7 +155,7 @@ public class AddNodesItem extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, AddNodesItem value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AddNodesItem value) {
             encoder.encodeExpandedNodeId("ParentNodeId", value.getParentNodeId());
             encoder.encodeNodeId("ReferenceTypeId", value.getReferenceTypeId());
             encoder.encodeExpandedNodeId("RequestedNewNodeId", value.getRequestedNewNodeId());

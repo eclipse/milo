@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -100,14 +100,14 @@ public class DataChangeNotification extends NotificationData implements UaStruct
         }
 
         @Override
-        public DataChangeNotification decodeType(SerializationContext context, UaDecoder decoder) {
+        public DataChangeNotification decodeType(EncodingContext context, UaDecoder decoder) {
             MonitoredItemNotification[] monitoredItems = (MonitoredItemNotification[]) decoder.decodeStructArray("MonitoredItems", MonitoredItemNotification.TYPE_ID);
             DiagnosticInfo[] diagnosticInfos = decoder.decodeDiagnosticInfoArray("DiagnosticInfos");
             return new DataChangeNotification(monitoredItems, diagnosticInfos);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                DataChangeNotification value) {
             encoder.encodeStructArray("MonitoredItems", value.getMonitoredItems(), MonitoredItemNotification.TYPE_ID);
             encoder.encodeDiagnosticInfoArray("DiagnosticInfos", value.getDiagnosticInfos());

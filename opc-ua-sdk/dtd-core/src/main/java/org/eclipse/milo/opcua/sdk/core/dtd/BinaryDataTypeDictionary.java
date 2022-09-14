@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.sun.istack.Nullable;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.opcfoundation.opcua.binaryschema.TypeDescription;

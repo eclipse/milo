@@ -14,10 +14,10 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.examples.server.ExampleNamespace;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -121,7 +121,7 @@ public class CustomStructType implements UaStructuredType {
 
         @Override
         public CustomStructType decodeType(
-            SerializationContext context,
+            EncodingContext context,
             UaDecoder decoder
         ) throws UaSerializationException {
 
@@ -135,7 +135,7 @@ public class CustomStructType implements UaStructuredType {
 
         @Override
         public void encodeType(
-            SerializationContext context,
+            EncodingContext context,
             UaEncoder encoder, CustomStructType value
         ) throws UaSerializationException {
 

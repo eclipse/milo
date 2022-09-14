@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -99,14 +99,14 @@ public class MonitoredItemModifyRequest extends Structure implements UaStructure
         }
 
         @Override
-        public MonitoredItemModifyRequest decodeType(SerializationContext context, UaDecoder decoder) {
+        public MonitoredItemModifyRequest decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger monitoredItemId = decoder.decodeUInt32("MonitoredItemId");
             MonitoringParameters requestedParameters = (MonitoringParameters) decoder.decodeStruct("RequestedParameters", MonitoringParameters.TYPE_ID);
             return new MonitoredItemModifyRequest(monitoredItemId, requestedParameters);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                MonitoredItemModifyRequest value) {
             encoder.encodeUInt32("MonitoredItemId", value.getMonitoredItemId());
             encoder.encodeStruct("RequestedParameters", value.getRequestedParameters(), MonitoringParameters.TYPE_ID);

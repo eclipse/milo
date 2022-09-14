@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -107,7 +107,7 @@ public class ObjectNode extends InstanceNode implements UaStructuredType {
         }
 
         @Override
-        public ObjectNode decodeType(SerializationContext context, UaDecoder decoder) {
+        public ObjectNode decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.decodeNodeId("NodeId");
             NodeClass nodeClass = NodeClass.from(decoder.decodeEnum("NodeClass"));
             QualifiedName browseName = decoder.decodeQualifiedName("BrowseName");
@@ -124,7 +124,7 @@ public class ObjectNode extends InstanceNode implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, ObjectNode value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ObjectNode value) {
             encoder.encodeNodeId("NodeId", value.getNodeId());
             encoder.encodeEnum("NodeClass", value.getNodeClass());
             encoder.encodeQualifiedName("BrowseName", value.getBrowseName());

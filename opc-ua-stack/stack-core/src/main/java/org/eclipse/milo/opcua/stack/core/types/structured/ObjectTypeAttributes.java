@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -97,7 +97,7 @@ public class ObjectTypeAttributes extends NodeAttributes implements UaStructured
         }
 
         @Override
-        public ObjectTypeAttributes decodeType(SerializationContext context, UaDecoder decoder) {
+        public ObjectTypeAttributes decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
             LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
             LocalizedText description = decoder.decodeLocalizedText("Description");
@@ -108,7 +108,7 @@ public class ObjectTypeAttributes extends NodeAttributes implements UaStructured
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ObjectTypeAttributes value) {
             encoder.encodeUInt32("SpecifiedAttributes", value.getSpecifiedAttributes());
             encoder.encodeLocalizedText("DisplayName", value.getDisplayName());

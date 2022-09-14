@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -115,7 +115,7 @@ public class ServerOnNetwork extends Structure implements UaStructuredType {
         }
 
         @Override
-        public ServerOnNetwork decodeType(SerializationContext context, UaDecoder decoder) {
+        public ServerOnNetwork decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger recordId = decoder.decodeUInt32("RecordId");
             String serverName = decoder.decodeString("ServerName");
             String discoveryUrl = decoder.decodeString("DiscoveryUrl");
@@ -124,7 +124,7 @@ public class ServerOnNetwork extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, ServerOnNetwork value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, ServerOnNetwork value) {
             encoder.encodeUInt32("RecordId", value.getRecordId());
             encoder.encodeString("ServerName", value.getServerName());
             encoder.encodeString("DiscoveryUrl", value.getDiscoveryUrl());

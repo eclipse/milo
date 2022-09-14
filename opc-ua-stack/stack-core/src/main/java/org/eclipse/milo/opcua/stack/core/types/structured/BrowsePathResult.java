@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -99,14 +99,14 @@ public class BrowsePathResult extends Structure implements UaStructuredType {
         }
 
         @Override
-        public BrowsePathResult decodeType(SerializationContext context, UaDecoder decoder) {
+        public BrowsePathResult decodeType(EncodingContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.decodeStatusCode("StatusCode");
             BrowsePathTarget[] targets = (BrowsePathTarget[]) decoder.decodeStructArray("Targets", BrowsePathTarget.TYPE_ID);
             return new BrowsePathResult(statusCode, targets);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                BrowsePathResult value) {
             encoder.encodeStatusCode("StatusCode", value.getStatusCode());
             encoder.encodeStructArray("Targets", value.getTargets(), BrowsePathTarget.TYPE_ID);

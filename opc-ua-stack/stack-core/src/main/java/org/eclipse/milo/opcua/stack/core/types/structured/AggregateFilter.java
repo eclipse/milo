@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -116,7 +116,7 @@ public class AggregateFilter extends MonitoringFilter implements UaStructuredTyp
         }
 
         @Override
-        public AggregateFilter decodeType(SerializationContext context, UaDecoder decoder) {
+        public AggregateFilter decodeType(EncodingContext context, UaDecoder decoder) {
             DateTime startTime = decoder.decodeDateTime("StartTime");
             NodeId aggregateType = decoder.decodeNodeId("AggregateType");
             Double processingInterval = decoder.decodeDouble("ProcessingInterval");
@@ -125,7 +125,7 @@ public class AggregateFilter extends MonitoringFilter implements UaStructuredTyp
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, AggregateFilter value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, AggregateFilter value) {
             encoder.encodeDateTime("StartTime", value.getStartTime());
             encoder.encodeNodeId("AggregateType", value.getAggregateType());
             encoder.encodeDouble("ProcessingInterval", value.getProcessingInterval());

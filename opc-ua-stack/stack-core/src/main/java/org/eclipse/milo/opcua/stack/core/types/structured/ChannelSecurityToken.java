@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -116,7 +116,7 @@ public class ChannelSecurityToken extends Structure implements UaStructuredType 
         }
 
         @Override
-        public ChannelSecurityToken decodeType(SerializationContext context, UaDecoder decoder) {
+        public ChannelSecurityToken decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger channelId = decoder.decodeUInt32("ChannelId");
             UInteger tokenId = decoder.decodeUInt32("TokenId");
             DateTime createdAt = decoder.decodeDateTime("CreatedAt");
@@ -125,7 +125,7 @@ public class ChannelSecurityToken extends Structure implements UaStructuredType 
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                ChannelSecurityToken value) {
             encoder.encodeUInt32("ChannelId", value.getChannelId());
             encoder.encodeUInt32("TokenId", value.getTokenId());

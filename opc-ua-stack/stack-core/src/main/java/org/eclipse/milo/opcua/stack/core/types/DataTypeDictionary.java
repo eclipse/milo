@@ -12,7 +12,7 @@ package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.List;
 
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.jetbrains.annotations.Nullable;
 

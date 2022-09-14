@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -142,7 +142,7 @@ public class RequestHeader extends Structure implements UaStructuredType {
         }
 
         @Override
-        public RequestHeader decodeType(SerializationContext context, UaDecoder decoder) {
+        public RequestHeader decodeType(EncodingContext context, UaDecoder decoder) {
             NodeId authenticationToken = decoder.decodeNodeId("AuthenticationToken");
             DateTime timestamp = decoder.decodeDateTime("Timestamp");
             UInteger requestHandle = decoder.decodeUInt32("RequestHandle");
@@ -154,7 +154,7 @@ public class RequestHeader extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, RequestHeader value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, RequestHeader value) {
             encoder.encodeNodeId("AuthenticationToken", value.getAuthenticationToken());
             encoder.encodeDateTime("Timestamp", value.getTimestamp());
             encoder.encodeUInt32("RequestHandle", value.getRequestHandle());

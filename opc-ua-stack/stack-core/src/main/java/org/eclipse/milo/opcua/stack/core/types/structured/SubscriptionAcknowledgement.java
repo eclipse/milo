@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -98,14 +98,14 @@ public class SubscriptionAcknowledgement extends Structure implements UaStructur
         }
 
         @Override
-        public SubscriptionAcknowledgement decodeType(SerializationContext context, UaDecoder decoder) {
+        public SubscriptionAcknowledgement decodeType(EncodingContext context, UaDecoder decoder) {
             UInteger subscriptionId = decoder.decodeUInt32("SubscriptionId");
             UInteger sequenceNumber = decoder.decodeUInt32("SequenceNumber");
             return new SubscriptionAcknowledgement(subscriptionId, sequenceNumber);
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder,
+        public void encodeType(EncodingContext context, UaEncoder encoder,
                                SubscriptionAcknowledgement value) {
             encoder.encodeUInt32("SubscriptionId", value.getSubscriptionId());
             encoder.encodeUInt32("SequenceNumber", value.getSequenceNumber());

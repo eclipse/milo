@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -139,7 +139,7 @@ public class StructureField extends Structure implements UaStructuredType {
         }
 
         @Override
-        public StructureField decodeType(SerializationContext context, UaDecoder decoder) {
+        public StructureField decodeType(EncodingContext context, UaDecoder decoder) {
             String name = decoder.decodeString("Name");
             LocalizedText description = decoder.decodeLocalizedText("Description");
             NodeId dataType = decoder.decodeNodeId("DataType");
@@ -151,7 +151,7 @@ public class StructureField extends Structure implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, StructureField value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, StructureField value) {
             encoder.encodeString("Name", value.getName());
             encoder.encodeLocalizedText("Description", value.getDescription());
             encoder.encodeNodeId("DataType", value.getDataType());

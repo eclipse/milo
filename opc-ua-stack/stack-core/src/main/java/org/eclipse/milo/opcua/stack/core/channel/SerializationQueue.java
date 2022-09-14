@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.util.concurrent.ExecutorService;
 
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.OpcUaBinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.binary.OpcUaBinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {
@@ -33,7 +33,7 @@ public class SerializationQueue {
     public SerializationQueue(
         ExecutorService executor,
         ChannelParameters parameters,
-        SerializationContext context
+        EncodingContext context
     ) {
 
         this.parameters = parameters;

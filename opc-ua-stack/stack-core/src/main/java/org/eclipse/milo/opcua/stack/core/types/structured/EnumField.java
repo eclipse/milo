@@ -14,10 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.encoding.EncodingContext;
+import org.eclipse.milo.opcua.stack.core.encoding.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.encoding.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.encoding.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.types.UaStructuredType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -94,7 +94,7 @@ public class EnumField extends EnumValueType implements UaStructuredType {
         }
 
         @Override
-        public EnumField decodeType(SerializationContext context, UaDecoder decoder) {
+        public EnumField decodeType(EncodingContext context, UaDecoder decoder) {
             Long value = decoder.decodeInt64("Value");
             LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
             LocalizedText description = decoder.decodeLocalizedText("Description");
@@ -103,7 +103,7 @@ public class EnumField extends EnumValueType implements UaStructuredType {
         }
 
         @Override
-        public void encodeType(SerializationContext context, UaEncoder encoder, EnumField value) {
+        public void encodeType(EncodingContext context, UaEncoder encoder, EnumField value) {
             encoder.encodeInt64("Value", value.getValue());
             encoder.encodeLocalizedText("DisplayName", value.getDisplayName());
             encoder.encodeLocalizedText("Description", value.getDescription());
